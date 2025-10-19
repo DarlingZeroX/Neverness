@@ -52,7 +52,7 @@ namespace VisionGal
 
 	std::string Core::GetDefaultSpriteTexturePath()
 	{
-		return GetEngineResourcePathVFS() + "texture/white.png";
+		return GetEngineResourcePathVFS() + "textures/white.png";
 	}
 
 	std::string Core::GetAssetsPathVFS()

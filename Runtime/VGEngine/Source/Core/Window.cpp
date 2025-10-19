@@ -1,4 +1,8 @@
 #include "Core/Window.h"
+
+#include <SDL3_image/SDL_image.h>
+
+#include "Core/VFS.h"
 #include "Graphics/OpenGL/OpenGL.h"
 
 namespace VisionGal
@@ -25,11 +29,11 @@ namespace VisionGal
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-		// ´´½¨ Backbuffer
+		// åˆ›å»º Backbuffer
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);    // ÉèÖÃÉî¶È»º³åÇø´óĞ¡
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);    // è®¾ç½®æ·±åº¦ç¼“å†²åŒºå¤§å°
 
-		// ÉèÖÃ¹²ÏíÊôĞÔ£¨ÈôSDL3Ö§³Ö£©  
+		// è®¾ç½®å…±äº«å±æ€§ï¼ˆè‹¥SDL3æ”¯æŒï¼‰  
 		SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 
 		const float window_size_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
@@ -45,6 +49,25 @@ namespace VisionGal
 		SDL_Window* window = SDL_CreateWindowWithProperties(props);
 		SDL_DestroyProperties(props);
 
+		// å¼•æ“å›¾æ ‡
+		std::string iconPath = "/editor/icons/engineIcon.png";
+		VFS::SafeReadFileFromVFS(iconPath, [&](const VFS::DataRef& data) {
+
+			const size_t i_ext = iconPath.rfind('.');
+			String extension = (i_ext == String::npos ? String() : iconPath.substr(i_ext + 1));
+
+			auto CreateSurface = [&]() { return IMG_LoadTyped_IO(SDL_IOFromMem(data->data(), data->size()), 1, extension.c_str()); };
+			SDL_Surface* surface = CreateSurface();
+
+			if (surface) {
+				SDL_SetWindowIcon(window, surface);
+				SDL_DestroySurface(surface);
+			}
+
+			return 0;
+			});
+
+		// è®¾ç½®çª—å£æŒ‡é’ˆ
 		SetSDLWindowPtr(window);
 
 		if (!window)
@@ -61,7 +84,7 @@ namespace VisionGal
 			return false;
 		}
 
-		// ³õÊ¼»¯GLAD
+		// åˆå§‹åŒ–GLAD
 		//if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
 		//	H_LOG_ERROR("Failed to initialize GLAD");
 		//	return 1;
@@ -73,11 +96,11 @@ namespace VisionGal
 			return false;
 		}
 
-		// ³õÊ¼»¯Êó±êºÍ¼üÅÌ
+		// åˆå§‹åŒ–é¼ æ ‡å’Œé”®ç›˜
 		//InitialMouseKeyboard();
 
-		//×¢Òâ£º»¹±ØĞëÔÚ°´ÏÂ×Ö·û¼üÊ±ÆôÓÃ SDL µÄÎÄ±¾ÊäÈëÄ£Ê½£º
-		//SDL_StartTextInput(window);   // ÔÚÓ¦ÓÃ¿ªÊ¼Ê±µ÷ÓÃ
+		//æ³¨æ„ï¼šè¿˜å¿…é¡»åœ¨æŒ‰ä¸‹å­—ç¬¦é”®æ—¶å¯ç”¨ SDL çš„æ–‡æœ¬è¾“å…¥æ¨¡å¼ï¼š
+		//SDL_StartTextInput(window);   // åœ¨åº”ç”¨å¼€å§‹æ—¶è°ƒç”¨
 
 		return true;
 	}

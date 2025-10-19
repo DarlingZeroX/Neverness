@@ -86,11 +86,6 @@ namespace VisionGal::Editor
 			ImGui::SameLine();
 			*/
 
-			//ImGui::SameLine(ImGui::GetWindowWidth() - 100);
-			ImGui::Button(EditorText{ "Setting" ,ICON_FA_COG }.c_str());
-
-			ImGui::SameLine();
-
 			// 让按钮居中
 			{
 				float windowWidth = ImGui::GetWindowSize().x;
@@ -98,6 +93,7 @@ namespace VisionGal::Editor
 				ImGui::SetCursorPosX(x);
 			}
 
+			// 播放/停止场景按钮
 			if (GetSceneManager()->IsPlayMode() == false)
 			{
 				if (ImGui::Button(ICON_FA_PLAY))
@@ -116,9 +112,9 @@ namespace VisionGal::Editor
 			ImGui::PopStyleColor(4);
 			ImGui::PopStyleVar();
 
-			LoadDefaultLayout();
-
 			ImGui::DockSpace(m_DockSpaceWindowClass.ClassId, ImVec2(0, 0), 0, &m_DockSpaceWindowClass);
+
+			LoadDefaultLayout();
 
 			for (auto& panel : m_Panels)
 			{

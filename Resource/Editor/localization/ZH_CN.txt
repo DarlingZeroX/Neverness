@@ -16,6 +16,11 @@ The project already exists!=该项目已存在！
 Create project successfully=创建项目成功
 Create project failed=创建项目失败
 
+Scene=场景
+Texture=纹理
+LuaScript=Lua脚本
+GalGameStoryScript=GalGame剧情脚本
+
 Build=生成
 Target Platform=目标平台
 Build Setting...=生成设置

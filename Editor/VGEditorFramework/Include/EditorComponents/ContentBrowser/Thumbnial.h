@@ -1,5 +1,6 @@
 #pragma once
 #include "../../EditorCore/ContentBrowser.h"
+#include "../../EditorCore/Localization.h"
 #include <VGImgui/IncludeImGuiEx.h>
 
 namespace VisionGal::Editor {
@@ -74,7 +75,7 @@ namespace VisionGal::Editor {
 				draw_list->AddText(textPosStart, IM_COL32_WHITE, item.Name.c_str());
 
 				if (!item.IsDirectory)
-					draw_list->AddText(assetTypeStart, assetTypeColor, item.AssetType.c_str());
+					draw_list->AddText(assetTypeStart, assetTypeColor, EditorText{ item.AssetType }.c_str());
 
 			}
 

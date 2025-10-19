@@ -150,6 +150,13 @@ namespace VisionGal
 			if (tex == nullptr)
 			{
 				auto tex = LoadObject<Texture2D>(Core::GetDefaultSpriteTexturePath());
+
+				if (tex == nullptr)
+				{
+					H_LOG_ERROR("Failed to load default sprite texture.");
+					throw "Failed to load default sprite texture.";
+				}
+
 				com.sprite = Sprite::Create(tex, tex->Size());
 			}
 		}
