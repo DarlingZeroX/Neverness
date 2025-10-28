@@ -53,9 +53,14 @@ namespace Horizon
 		 */
 		void Invoke(Args ... args);
 
+		//void operator()(Args ... args)
+		//{
+		//	Invoke(std::forward<Args>(args...));
+		//}
+
 		void operator()(Args ... args)
 		{
-			Invoke(std::forward<Args>(args...));
+			Invoke(std::forward<Args>(args)...);
 		}
 	private:
 		std::unordered_map<uint32, std::function<void(Args ...)>> handler;

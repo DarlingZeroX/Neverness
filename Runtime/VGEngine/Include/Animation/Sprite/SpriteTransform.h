@@ -1,6 +1,6 @@
 #pragma once
-#include "../Interface/GameInterface.h"
-#include "../Game/TransformProperty.h"
+#include "../../Interface/GameInterface.h"
+#include "../Interface/AnimationProperty.h"
 
 namespace VisionGal
 {
@@ -19,14 +19,14 @@ namespace VisionGal
             bool visible = true;
         };
 
-        TransformProperty alpha;
-        TransformProperty xoffset;
-        TransformProperty yoffset; 
-        TransformProperty rotate;
-        TransformProperty zoom;
-        TransformProperty xzoom;
-        TransformProperty yzoom;
-        TransformProperty visible; // 将bool转为float(0.0/1.0)
+        SingleAnimationProperty alpha;
+        SingleAnimationProperty xoffset;
+        SingleAnimationProperty yoffset; 
+        SingleAnimationProperty rotate;
+        SingleAnimationProperty zoom;
+        SingleAnimationProperty xzoom;
+        SingleAnimationProperty yzoom;
+        SingleAnimationProperty visible; // 将bool转为float(0.0/1.0)
 
         // 立即设置所有属性值
         void SetAll(const TransformData& data);
@@ -36,13 +36,13 @@ namespace VisionGal
         bool IsFinish();
         void Reset();
 		 
-        void TravelProperty(std::function<void(TransformProperty& property)> callback);
+        void TravelProperty(std::function<void(SingleAnimationProperty& property)> callback);
 
         // 获取当前状态（转换为原始格式）
         TransformData GetCurrent() const;
     };
 
-    class SpriteTransformScript: public ITransformScript
+    class SpriteTransformScript: public IAnimationScript
     {
     public:
         SpriteTransformScript() = default;

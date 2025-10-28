@@ -1,27 +1,26 @@
-#include "Audio/AudioTransform.h"
-
+#include "Animation/Audio/AudioAnimation.h"
 #include "Scene/Components.h"
 
 namespace VisionGal
 {
-	AudioTransformState::AudioTransformState()
+	AudioAnimationState::AudioAnimationState()
 	{
 		Reset();
 	}
 
-	void AudioTransformState::SetAll(const TransformData& data)
+	void AudioAnimationState::SetAll(const TransformData& data)
 	{
 		volume.currentValue = data.volume;
 		visible.currentValue = data.visible ? 1.0f : 0.0f;
 	}
 
-	void AudioTransformState::SetAll(const AudioTransformState& data)
+	void AudioAnimationState::SetAll(const AudioAnimationState& data)
 	{
 		volume.currentValue = data.volume.currentValue;
 		visible.currentValue = data.visible.currentValue;
 	}
 
-	AudioTransformState::TransformData AudioTransformState::GetCurrent() const
+	AudioAnimationState::TransformData AudioAnimationState::GetCurrent() const
 	{
 		TransformData data;
 		data.volume = volume.currentValue;
@@ -29,64 +28,64 @@ namespace VisionGal
 		return data;
 	}
 
-	void AudioTransformState::Finish()
+	void AudioAnimationState::Finish()
 	{
-		TravelProperty([this](TransformProperty& property)
+		TravelProperty([this](SingleAnimationProperty& property)
 			{
 				property.Finish();
 			});
 	}
 
-	bool AudioTransformState::IsFinish()
+	bool AudioAnimationState::IsFinish()
 	{
 		return volume.IsFinish() &&
 			visible.IsFinish();
 	}
 
-	void AudioTransformState::Reset()
+	void AudioAnimationState::Reset()
 	{
 		SetAll(TransformData());
-		TravelProperty([this](TransformProperty& property)
+		TravelProperty([this](SingleAnimationProperty& property)
 			{
 				property.active = false;
 				property.easing = EasingCallbacks::linear;
 			});
 	}
 
-	void AudioTransformState::TravelProperty(std::function<void(TransformProperty& property)> callback)
+	void AudioAnimationState::TravelProperty(std::function<void(SingleAnimationProperty& property)> callback)
 	{
 		callback(volume);
 		callback(visible);
 	}
 
-	void AudioTransformScript::TransformVolume(float startTime, float duration, float startVal, float endVal,
+	void AudioAnimationScript::TransformVolume(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.volume.Start(startTime, duration, startVal, endVal, easing);
 	}
 
-	void AudioTransformScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
+	void AudioAnimationScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, easing);
 	}
 
-	void AudioTransformScript::Reset()
+	void AudioAnimationScript::Reset()
 	{
 		state.Reset();
 	}
 
-	void AudioTransformScript::Finish()
+	void AudioAnimationScript::Finish()
 	{
 		state.Finish();
 	}
 
-	void AudioTransformScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void AudioAnimationScript::OnUpdate(Horizon::HEntityInterface* entity)
 	{
 		float currentTime = GetCurrentTime(); // 假设存在获取当前时间的函数
 
 		// 更新所有属性
-		state.TravelProperty([this, currentTime](TransformProperty& property)
+		state.TravelProperty([this, currentTime](SingleAnimationProperty& property)
 			{
 				property.Update(currentTime);
 			});
@@ -94,17 +93,17 @@ namespace VisionGal
 		ApplyStateToEntity(entity);
 	}
 
-	void AudioTransformScript::OnFixUpdate(Horizon::HEntityInterface* entity)
+	void AudioAnimationScript::OnFixUpdate(Horizon::HEntityInterface* entity)
 	{
 
 	}
 
-	float AudioTransformScript::GetCurrentTime() const
+	float AudioAnimationScript::GetCurrentTime() const
 	{
 		return Core::GetCurrentTime();
 	}
 
-	void AudioTransformScript::ApplyStateToEntity(Horizon::HEntityInterface* entity)
+	void AudioAnimationScript::ApplyStateToEntity(Horizon::HEntityInterface* entity)
 	{
 		auto* audioSource = entity->GetComponent<AudioSourceComponent>();
 		if (audioSource)

@@ -164,11 +164,11 @@ namespace VisionGal
 		if (scene == nullptr)
 			return;
 
-		// 更新变换脚本
+		// 更新动画脚本
 		{
-			auto view = scene->GetWorld()->view<TransformScriptComponent>();
+			auto view = scene->GetWorld()->view<AnimationScriptComponent>();
 
-			view.each([this](TransformScriptComponent& com) { // flecs::entity argument is optional
+			view.each([this](AnimationScriptComponent& com) { // flecs::entity argument is optional
 				for (auto& script : com.scripts)
 				{
 					script->OnUpdate(com.GetOwner());

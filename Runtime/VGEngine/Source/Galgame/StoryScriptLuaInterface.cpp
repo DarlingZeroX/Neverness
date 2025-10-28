@@ -55,10 +55,10 @@ namespace VisionGal::GalGame
 		Lua::CoreTypesLuaInterface::Initialize(lua);
 		GalGameLuaInterface::Initialise(lua);
 
-		lua.new_usertype<Transform>("GalTransform",
-			sol::constructors<Transform()>()
-			//"SlideDown", &Transform::SlideDown
-		);
+		//lua.new_usertype<Transform>("GalTransform",
+		//	sol::constructors<Transform()>()
+		//	//"SlideDown", &Transform::SlideDown
+		//);
 
 		lua.new_usertype<GalCharacter>("GalCharacter",
 			sol::constructors<GalCharacter(const std::string&)>(),
@@ -90,7 +90,7 @@ namespace VisionGal::GalGame
 			//sol::constructors<Background(const std::string&)>(),
 			"Show", &GalSprite::Show,
 			"With", sol::overload(
-				static_cast<GalSprite * (GalSprite::*)(Transform)>(&GalSprite::With),
+				//static_cast<GalSprite * (GalSprite::*)(Transform)>(&GalSprite::With),
 				static_cast<GalSprite * (GalSprite::*)(const std::string&)>(&GalSprite::With)
 			),
 			"Cut", &GalSprite::Cut,
@@ -107,7 +107,7 @@ namespace VisionGal::GalGame
 
 			//中文
 			"随着", sol::overload(
-				static_cast<GalSprite * (GalSprite::*)(Transform)>(&GalSprite::With),
+				//static_cast<GalSprite * (GalSprite::*)(Transform)>(&GalSprite::With),
 				static_cast<GalSprite * (GalSprite::*)(const std::string&)>(&GalSprite::With)
 			),
 			"转场", &GalSprite::Cut,

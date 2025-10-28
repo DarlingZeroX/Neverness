@@ -1,4 +1,4 @@
-#include "Render/SpriteTransform.h"
+#include "Animation/Sprite/SpriteTransform.h"
 #include <HCore/Include/Math/HMathHelper.h>
 
 #include "Scene/Components.h"
@@ -50,7 +50,7 @@ namespace VisionGal
 
 	void SpriteTransformState::Finish()
 	{
-		TravelProperty([this](TransformProperty& property)
+		TravelProperty([this](SingleAnimationProperty& property)
 			{
 				property.Finish();
 			});
@@ -71,14 +71,14 @@ namespace VisionGal
 	void SpriteTransformState::Reset()
 	{
 		SetAll(TransformData());
-		TravelProperty([this](TransformProperty& property)
+		TravelProperty([this](SingleAnimationProperty& property)
 			{
 				property.active = false;
 				property.easing = EasingCallbacks::linear;
 			});
 	}
 
-	void SpriteTransformState::TravelProperty(std::function<void(TransformProperty& property)> callback)
+	void SpriteTransformState::TravelProperty(std::function<void(SingleAnimationProperty& property)> callback)
 	{
 		callback(alpha);
 		callback(xoffset);
@@ -150,10 +150,10 @@ namespace VisionGal
 
 	void SpriteTransformScript::OnUpdate(Horizon::HEntityInterface* entity)
 	{
-		float currentTime = GetCurrentTime(); // ¼ÙÉè´æÔÚ»ñÈ¡µ±Ç°Ê±¼äµÄº¯Êı
+		float currentTime = GetCurrentTime(); // å‡è®¾å­˜åœ¨è·å–å½“å‰æ—¶é—´çš„å‡½æ•°
 
-		// ¸üĞÂËùÓĞÊôĞÔ
-		state.TravelProperty([this, currentTime](TransformProperty& property)
+		// æ›´æ–°æ‰€æœ‰å±æ€§
+		state.TravelProperty([this, currentTime](SingleAnimationProperty& property)
 			{
 				property.Update(currentTime);
 			});

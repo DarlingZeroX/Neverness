@@ -305,7 +305,7 @@ namespace VisionGal::GalGame
 		//actor->SetVisible(false);
 
 		// 添加必要组件
-		actor->AddComponent<TransformScriptComponent>();
+		actor->AddComponent<AnimationScriptComponent>();
 		actor->AddComponent<SpriteRendererComponent>()->sprite = Sprite::Create(tex, tex->Size());
 
 		return actor;

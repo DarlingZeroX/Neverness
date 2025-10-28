@@ -1,9 +1,9 @@
 #pragma once
-#include "Render/SpriteTransform.h"
+#include "Animation/Sprite/SpriteTransform.h"
 
 namespace VisionGal::GalGame
 {
-    class ScrollTransformScript : public ITransformScript
+    class ScrollTransformScript : public IAnimationScript
     {
     public:
         enum class Direction
@@ -35,7 +35,7 @@ namespace VisionGal::GalGame
         EasingFunction m_EasingFunction = EasingCallbacks::linear;
     };
 
-    class FadeInOutTransformScript : public ITransformScript
+    class FadeInOutTransformScript : public IAnimationScript
     {
     public:
         enum class Direction

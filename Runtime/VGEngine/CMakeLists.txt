@@ -32,8 +32,10 @@ add_definitions(-DENGINE_API_EXPORT)
 file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Animation/Interface/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Animation/Audio/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Animation/Sprite/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Audio/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/Accessor/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/*.cpp"
@@ -59,25 +61,15 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Sol/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Sol/Elements/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Lua/Elements/*.cpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Accessor/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Asset/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Importer/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGContentSystem/*.cpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/OpenGL3/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/SDL3Renderer/*.cpp"
 )
 
 file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Interface/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Audio/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Sprite/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Audio/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/Accessor/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Core/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Engine/*.h"
@@ -102,18 +94,6 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Lua/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Sol/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Lua/Elements/*.h"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Accessor/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Asset/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Importer/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGAsset/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGContentSystem/*.h"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/OpenGL3/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/VGRI/SDL3Renderer/*.h"
 )
 
 # 启用预编译头支持

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Interface/GameInterface.h"
+#include "../../Interface/GameInterface.h"
 
 namespace VisionGal
 {
@@ -7,7 +7,7 @@ namespace VisionGal
     using EasingFunction = std::function<float(float)>;
 
     // 单个属性的插值器
-    struct TransformProperty {
+    struct SingleAnimationProperty {
         float startValue = 0.0f;
         float endValue = 0.0f;
         float currentValue = 0.0f;

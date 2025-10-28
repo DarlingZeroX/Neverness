@@ -1,10 +1,10 @@
-#include "Audio/AudioTransformScript.h"
+#include "Animation/Audio/AudioAnimationScript.h"
 
 namespace VisionGal
 {
-	AudioFadeInOutTransformScript::AudioFadeInOutTransformScript(Direction direction)
+	AudioFadeInOutAnimationScript::AudioFadeInOutAnimationScript(Direction direction)
 	{
-		m_Script = CreateRef<AudioTransformScript>();
+		m_Script = CreateRef<AudioAnimationScript>();
 
 		switch (direction)
 		{
@@ -19,17 +19,17 @@ namespace VisionGal
 		}
 	}
 
-	void AudioFadeInOutTransformScript::SetDuration(float duration)
+	void AudioFadeInOutAnimationScript::SetDuration(float duration)
 	{
 		m_Duration = duration;
 	}
 
-	void AudioFadeInOutTransformScript::SetEasing(EasingFunction easing)
+	void AudioFadeInOutAnimationScript::SetEasing(EasingFunction easing)
 	{
 		m_EasingFunction = easing;
 	}
 
-	void AudioFadeInOutTransformScript::Start()
+	void AudioFadeInOutAnimationScript::Start()
 	{
 		m_Script->TransformVolume(
 			Core::GetCurrentTime(),
@@ -40,7 +40,7 @@ namespace VisionGal
 		);
 	}
 
-	void AudioFadeInOutTransformScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void AudioFadeInOutAnimationScript::OnUpdate(Horizon::HEntityInterface* entity)
 	{
 		m_Script->OnUpdate(entity);
 	}

@@ -12,17 +12,6 @@ namespace VisionGal::GalGame
 		Right,
 	};
 
-	class Transform
-	{
-	public:
-		Transform();
-		Transform(const Transform&) = default;
-		Transform& operator=(const Transform&) = default;
-		Transform(Transform&&) noexcept = default;
-		Transform& operator=(Transform&&) noexcept = default;
-		~Transform() = default;
-	};
-
 	class GalSprite : public IGalGameSprite
 	{
 	public:
@@ -39,7 +28,6 @@ namespace VisionGal::GalGame
 		void SetResourceLayer(const std::string& layer) override;
 
 		virtual GalSprite* Show();
-		virtual GalSprite* With(Transform transform);
 		virtual GalSprite* With(const std::string& transform);
 
 		virtual GalSprite* SetPosX(float offset);

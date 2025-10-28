@@ -192,7 +192,7 @@ namespace VisionGal
 		return "RmlUIDocumentComponent";
 	}
 
-	std::string TransformScriptComponent::GetComponentType() const
+	std::string AnimationScriptComponent::GetComponentType() const
 	{
 		return "TransformScript";
 	}

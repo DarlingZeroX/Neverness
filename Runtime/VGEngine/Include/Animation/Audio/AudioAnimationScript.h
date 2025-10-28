@@ -1,9 +1,9 @@
 #pragma once
-#include "AudioTransform.h"
+#include "AudioAnimation.h"
 
 namespace VisionGal
 {
-    class AudioFadeInOutTransformScript : public ITransformScript
+    class AudioFadeInOutAnimationScript : public IAnimationScript
     {
     public:
         enum class Direction
@@ -12,12 +12,12 @@ namespace VisionGal
             Out
         };
 
-        AudioFadeInOutTransformScript(Direction direction);
-        ~AudioFadeInOutTransformScript() override = default;
-        AudioFadeInOutTransformScript(const AudioFadeInOutTransformScript&) = delete;
-        AudioFadeInOutTransformScript& operator=(const AudioFadeInOutTransformScript&) = delete;
-        AudioFadeInOutTransformScript(AudioFadeInOutTransformScript&&) noexcept = default;
-        AudioFadeInOutTransformScript& operator=(AudioFadeInOutTransformScript&&) noexcept = default;
+        AudioFadeInOutAnimationScript(Direction direction);
+        ~AudioFadeInOutAnimationScript() override = default;
+        AudioFadeInOutAnimationScript(const AudioFadeInOutAnimationScript&) = delete;
+        AudioFadeInOutAnimationScript& operator=(const AudioFadeInOutAnimationScript&) = delete;
+        AudioFadeInOutAnimationScript(AudioFadeInOutAnimationScript&&) noexcept = default;
+        AudioFadeInOutAnimationScript& operator=(AudioFadeInOutAnimationScript&&) noexcept = default;
 
         void SetDuration(float duration);
         void SetEasing(EasingFunction easing);
@@ -27,7 +27,7 @@ namespace VisionGal
 
         void OnUpdate(Horizon::HEntityInterface* entity) override;
     private:
-        Ref<AudioTransformScript> m_Script;
+        Ref<AudioAnimationScript> m_Script;
 
         Direction m_Direction = Direction::In;
         float m_StartVolume, m_EndVolume;

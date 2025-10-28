@@ -1,16 +1,16 @@
-#include "Audio/AudioTransformScriptManager.h"
+#include "Animation/Audio/AudioAnimationScriptManager.h"
 #include "Scene/Components.h"
-#include "Audio/AudioTransformScript.h"
+#include "Animation/Audio/AudioAnimationScript.h"
 
 namespace VisionGal {
 
-	AudioTransformScriptManager* AudioTransformScriptManager::GetInstance()
+	AudioAnimationScriptManager* AudioAnimationScriptManager::GetInstance()
 	{
-		static AudioTransformScriptManager s_Manager;
+		static AudioAnimationScriptManager s_Manager;
 		return &s_Manager;
 	}
 
-	Ref<ITransformScript> AudioTransformScriptManager::CreateAudioTransformWithCommand(GameActor* actor, const String& cmd)
+	Ref<IAnimationScript> AudioAnimationScriptManager::CreateAudioTransformWithCommand(GameActor* actor, const String& cmd)
 	{
 		if (actor == nullptr)
 			return nullptr;
@@ -35,7 +35,7 @@ namespace VisionGal {
 
 		if (command == "fade_in" || command == "淡入")
 		{
-			auto transform = CreateRef<AudioFadeInOutTransformScript>(AudioFadeInOutTransformScript::Direction::In);
+			auto transform = CreateRef<AudioFadeInOutAnimationScript>(AudioFadeInOutAnimationScript::Direction::In);
 			transform->SetInVolume(audioSource->volume);
 			transform->SetDuration(duration);
 			return transform;
@@ -43,7 +43,7 @@ namespace VisionGal {
 
 		if (command == "fade_out" || command == "淡出")
 		{
-			auto transform = CreateRef<AudioFadeInOutTransformScript>(AudioFadeInOutTransformScript::Direction::Out);
+			auto transform = CreateRef<AudioFadeInOutAnimationScript>(AudioFadeInOutAnimationScript::Direction::Out);
 			transform->SetOutVolume(audioSource->volume);
 			transform->SetDuration(duration);
 			return transform;
@@ -54,7 +54,7 @@ namespace VisionGal {
 		return nullptr;
 	}
 
-	bool AudioTransformScriptManager::StartAudioTransformWithCommand(GameActor* actor, const String& cmd)
+	bool AudioAnimationScriptManager::StartAudioTransformWithCommand(GameActor* actor, const String& cmd)
 	{
 		auto script = CreateAudioTransformWithCommand(actor, cmd);
 
@@ -69,7 +69,7 @@ namespace VisionGal {
 		return false;
 	}
 
-	bool AudioTransformScriptManager::StartAudioTransform(GameActor* actor, const Ref<ITransformScript>& script)
+	bool AudioAnimationScriptManager::StartAudioTransform(GameActor* actor, const Ref<IAnimationScript>& script)
 	{
 		if (actor == nullptr)
 			return false;
@@ -77,11 +77,11 @@ namespace VisionGal {
 		if (script == nullptr)
 			return false;
 
-		auto* com = actor->GetComponent<TransformScriptComponent>();
+		auto* com = actor->GetComponent<AnimationScriptComponent>();
 
 		if (com == nullptr)
 		{
-			com = actor->AddComponent<TransformScriptComponent>();
+			com = actor->AddComponent<AnimationScriptComponent>();
 		}
 
 		com->scripts.push_back(script);

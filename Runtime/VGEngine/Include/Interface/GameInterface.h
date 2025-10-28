@@ -81,9 +81,9 @@ namespace VisionGal
 		virtual float GetHeight() = 0;
 	};
 
-	struct ITransformScript
+	struct IAnimationScript
 	{
-		virtual ~ITransformScript() = default;
+		virtual ~IAnimationScript() = default;
 
 		virtual void Start() {}
 		virtual void OnUpdate(Horizon::HEntityInterface* actor) {};

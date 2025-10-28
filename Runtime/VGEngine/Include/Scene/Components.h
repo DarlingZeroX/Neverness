@@ -465,20 +465,20 @@ namespace VisionGal {
 		Ref<RmlUIDocument> document = nullptr;
 	};
 
-	class TransformScriptComponent : public IComponent
+	class AnimationScriptComponent : public IComponent
 	{
 	public:
-		TransformScriptComponent() = default;
-		TransformScriptComponent(const TransformScriptComponent&) = default;
-		TransformScriptComponent& operator=(const TransformScriptComponent&) = default;
-		TransformScriptComponent(TransformScriptComponent&&) noexcept = default;
-		TransformScriptComponent& operator=(TransformScriptComponent&&) noexcept = default;
-		~TransformScriptComponent() override = default;
+		AnimationScriptComponent() = default;
+		AnimationScriptComponent(const AnimationScriptComponent&) = default;
+		AnimationScriptComponent& operator=(const AnimationScriptComponent&) = default;
+		AnimationScriptComponent(AnimationScriptComponent&&) noexcept = default;
+		AnimationScriptComponent& operator=(AnimationScriptComponent&&) noexcept = default;
+		~AnimationScriptComponent() override = default;
 
 		// 通过 IComponent 继承
 		std::string GetComponentType() const override;
 
 	public:
-		std::vector<Ref<ITransformScript>> scripts;
+		std::vector<Ref<IAnimationScript>> scripts;
 	};
 }

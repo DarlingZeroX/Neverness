@@ -14,7 +14,7 @@ namespace VisionGal::GalGame {
 		return &s_Manager;
 	}
 
-	Ref<ITransformScript> SpriteTransformScriptManager::CreateSpriteTransformWithCommand(GameActor* actor, const String& cmd)
+	Ref<IAnimationScript> SpriteTransformScriptManager::CreateSpriteTransformWithCommand(GameActor* actor, const String& cmd)
 	{
 		if (actor == nullptr)
 			return nullptr;
@@ -104,7 +104,7 @@ namespace VisionGal::GalGame {
 		return false;
 	}
 
-	bool SpriteTransformScriptManager::StartSpriteTransform(GameActor* actor, const Ref<ITransformScript>& script)
+	bool SpriteTransformScriptManager::StartSpriteTransform(GameActor* actor, const Ref<IAnimationScript>& script)
 	{
 		if (actor == nullptr)
 			return false;
@@ -112,11 +112,11 @@ namespace VisionGal::GalGame {
 		if (script == nullptr)
 			return false;
 
-		auto* com = actor->GetComponent<TransformScriptComponent>();
+		auto* com = actor->GetComponent<AnimationScriptComponent>();
 
 		if (com == nullptr)
 		{
-			com = actor->AddComponent<TransformScriptComponent>();
+			com = actor->AddComponent<AnimationScriptComponent>();
 		}
 
 		com->scripts.push_back(script);
@@ -128,9 +128,9 @@ namespace VisionGal::GalGame {
 	//{
 	//	// 更新变换脚本
 	//	{
-	//		auto view = scene->GetWorld()->view<TransformScriptComponent>();
+	//		auto view = scene->GetWorld()->view<AnimationScriptComponent>();
 	//
-	//		view.each([this](TransformScriptComponent& com) { // flecs::entity argument is optional
+	//		view.each([this](AnimationScriptComponent& com) { // flecs::entity argument is optional
 	//			for (auto& script : com.scripts)
 	//			{
 	//				script->OnUpdate(com.GetOwner());

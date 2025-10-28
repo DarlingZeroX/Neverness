@@ -1,11 +1,11 @@
-#include "Game/TransformProperty.h"
+#include "Animation/Interface/AnimationProperty.h"
 #include <HCore/Include/Math/HMathHelper.h>
 
 namespace VisionGal
 {
 	EasingFunction EasingCallbacks::linear = [](float t) { return t; };
 
-	void TransformProperty::Update(float currentTime)
+	void SingleAnimationProperty::Update(float currentTime)
 	{
 		if (active == false)
 		{
@@ -31,7 +31,7 @@ namespace VisionGal
 			currentValue = startValue + easing(t) * (endValue - startValue);
 		}
 
-		// ÅÐ¶ÏÊÇ·ñ½áÊø
+		// ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
 		if (startValue < endValue)
 		{
 			if (currentValue >= endValue)
@@ -48,7 +48,7 @@ namespace VisionGal
 		}
 	}
 
-	void TransformProperty::Start(float startTime, float duration, float startValue, float endValue,
+	void SingleAnimationProperty::Start(float startTime, float duration, float startValue, float endValue,
 		EasingFunction easing)
 	{
 		this->startTime = startTime;
@@ -60,12 +60,12 @@ namespace VisionGal
 		this->isFinish = false;
 	}
 
-	void TransformProperty::Finish()
+	void SingleAnimationProperty::Finish()
 	{
 		currentValue = endValue;
 	}
 
-	bool TransformProperty::IsFinish()
+	bool SingleAnimationProperty::IsFinish()
 	{
 		return active;
 	}
