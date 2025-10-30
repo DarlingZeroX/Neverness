@@ -1,8 +1,8 @@
 #include "Galgame/Game.h"
 #include "Galgame/GalGameEngine.h"
 #include "Galgame/GameEngineCore.h"
-#include "Galgame/SpriteTransformScript.h"
-#include "Galgame/SpriteTransformScriptManager.h"
+#include "Galgame/SpriteAnimationScript.h"
+#include "GalGame/SpriteAnimationScriptManager.h"
 #include "Animation/Audio/AudioAnimationScriptManager.h"
 #include "Render/TransitionManager.h"
 
@@ -351,7 +351,7 @@ namespace VisionGal::GalGame
 
 	GalAudio* GalAudio::With(const std::string& transform)
 	{
-		AudioAnimationScriptManager::StartAudioTransformWithCommand(m_Actor, transform);
+		AudioAnimationScriptManager::StartAudioAnimationWithCommand(m_Actor, transform);
 
 		return nullptr;
 	}

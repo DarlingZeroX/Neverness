@@ -8,7 +8,7 @@ namespace VisionGal
 		Reset();
 	}
 
-	void AudioAnimationState::SetAll(const TransformData& data)
+	void AudioAnimationState::SetAll(const AnimationData& data)
 	{
 		volume.currentValue = data.volume;
 		visible.currentValue = data.visible ? 1.0f : 0.0f;
@@ -20,9 +20,9 @@ namespace VisionGal
 		visible.currentValue = data.visible.currentValue;
 	}
 
-	AudioAnimationState::TransformData AudioAnimationState::GetCurrent() const
+	AudioAnimationState::AnimationData AudioAnimationState::GetCurrent() const
 	{
-		TransformData data;
+		AnimationData data;
 		data.volume = volume.currentValue;
 		data.visible = visible.currentValue > 0.5f;
 		return data;
@@ -30,7 +30,7 @@ namespace VisionGal
 
 	void AudioAnimationState::Finish()
 	{
-		TravelProperty([this](SingleAnimationProperty& property)
+		TravelProperty([this](FloatAnimationProperty& property)
 			{
 				property.Finish();
 			});
@@ -44,15 +44,15 @@ namespace VisionGal
 
 	void AudioAnimationState::Reset()
 	{
-		SetAll(TransformData());
-		TravelProperty([this](SingleAnimationProperty& property)
+		SetAll(AnimationData());
+		TravelProperty([this](FloatAnimationProperty& property)
 			{
 				property.active = false;
 				property.easing = EasingCallbacks::linear;
 			});
 	}
 
-	void AudioAnimationState::TravelProperty(std::function<void(SingleAnimationProperty& property)> callback)
+	void AudioAnimationState::TravelProperty(std::function<void(FloatAnimationProperty& property)> callback)
 	{
 		callback(volume);
 		callback(visible);
@@ -85,7 +85,7 @@ namespace VisionGal
 		float currentTime = GetCurrentTime(); // 假设存在获取当前时间的函数
 
 		// 更新所有属性
-		state.TravelProperty([this, currentTime](SingleAnimationProperty& property)
+		state.TravelProperty([this, currentTime](FloatAnimationProperty& property)
 			{
 				property.Update(currentTime);
 			});

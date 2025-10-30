@@ -1,11 +1,11 @@
-#include "Galgame/SpriteTransformScript.h"
+#include "Galgame/SpriteAnimationScript.h"
 #include "Galgame/GameEngineCore.h"
 
 namespace VisionGal::GalGame
 {
 	ScrollTransformScript::ScrollTransformScript(Direction direction, float2 texSize)
 	{
-		m_Script = CreateRef<SpriteTransformScript>();
+		m_Script = CreateRef<TransformAnimationScript>();
 
 		switch (direction)
 		{
@@ -68,49 +68,6 @@ namespace VisionGal::GalGame
 	}
 
 	void ScrollTransformScript::OnUpdate(Horizon::HEntityInterface* entity)
-	{
-		m_Script->OnUpdate(entity);
-	}
-
-	FadeInOutTransformScript::FadeInOutTransformScript(Direction direction)
-	{
-		m_Script = CreateRef<SpriteTransformScript>();
-
-		switch (direction)
-		{
-		case Direction::In:
-			m_StartOffset = 0.0f;
-			m_EndOffset = 1.0f;
-			break;
-		case Direction::Out:
-			m_StartOffset = 1.0f;
-			m_EndOffset = 0.0f;
-			break;
-		}
-	}
-
-	void FadeInOutTransformScript::SetDuration(float duration)
-	{
-		m_Duration = duration;
-	}
-
-	void FadeInOutTransformScript::SetEasing(EasingFunction easing)
-	{
-		m_EasingFunction = easing;
-	}
-
-	void FadeInOutTransformScript::Start()
-	{
-		m_Script->TransformAlpha(
-			Core::GetCurrentTime(),
-			m_Duration,
-			m_StartOffset,
-			m_EndOffset,
-			m_EasingFunction
-		);
-	}
-
-	void FadeInOutTransformScript::OnUpdate(Horizon::HEntityInterface* entity)
 	{
 		m_Script->OnUpdate(entity);
 	}

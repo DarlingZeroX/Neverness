@@ -1,10 +1,11 @@
-#include "Galgame/SpriteTransformScriptManager.h"
-
+#include "Galgame/SpriteAnimationScriptManager.h"
 #include "Galgame/GameEngineCore.h"
-#include "Galgame/SpriteTransformScript.h"
+#include "Galgame/SpriteAnimationScript.h"
 #include "HCore/Include/Core/HLocalization.h"
 #include "HCore/Include/Core/HStringTools.h"
 #include "Scene/Components.h"
+#include "Animation/Base/SpriteAnimationScript.h"
+#include "Animation/Interface/AnimationScriptManager.h"
 
 namespace VisionGal::GalGame {
 
@@ -72,14 +73,14 @@ namespace VisionGal::GalGame {
 
 		if (command == "fade_in" || command == "淡入")
 		{
-			auto transform = CreateRef<FadeInOutTransformScript>(FadeInOutTransformScript::Direction::In);
+			auto transform = CreateRef<SpriteFadeInOutTransformScript>(SpriteFadeInOutTransformScript::Direction::In);
 			transform->SetDuration(duration);
 			return transform;
 		}
 
 		if (command == "fade_out" || command == "淡出")
 		{
-			auto transform = CreateRef<FadeInOutTransformScript>(FadeInOutTransformScript::Direction::Out);
+			auto transform = CreateRef<SpriteFadeInOutTransformScript>(SpriteFadeInOutTransformScript::Direction::Out);
 			transform->SetDuration(duration);
 			return transform;
 		}
@@ -98,45 +99,11 @@ namespace VisionGal::GalGame {
 			//开启变换
 			script->Start();
 
-			return StartSpriteTransform(actor, script);
+			return AnimationScriptManager::AddActorAnimationScript(actor, script);
+			//return StartSpriteTransform(actor, script);
 		}
 
 		return false;
 	}
-
-	bool SpriteTransformScriptManager::StartSpriteTransform(GameActor* actor, const Ref<IAnimationScript>& script)
-	{
-		if (actor == nullptr)
-			return false;
-
-		if (script == nullptr)
-			return false;
-
-		auto* com = actor->GetComponent<AnimationScriptComponent>();
-
-		if (com == nullptr)
-		{
-			com = actor->AddComponent<AnimationScriptComponent>();
-		}
-
-		com->scripts.push_back(script);
-
-		return true;
-	}
-
-	//void SpriteTransformScriptManager::Update(IScene* scene)
-	//{
-	//	// 更新变换脚本
-	//	{
-	//		auto view = scene->GetWorld()->view<AnimationScriptComponent>();
-	//
-	//		view.each([this](AnimationScriptComponent& com) { // flecs::entity argument is optional
-	//			for (auto& script : com.scripts)
-	//			{
-	//				script->OnUpdate(com.GetOwner());
-	//			}
-	//			});
-	//	}
-	//}
 
 }

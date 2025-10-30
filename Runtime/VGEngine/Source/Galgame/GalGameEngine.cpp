@@ -7,7 +7,7 @@
 #include "Galgame/Components.h"
 #include "Galgame/GameLua.h"
 #include "Galgame/StoryScriptLuaInterface.h"
-#include "Galgame/SpriteTransformScriptManager.h"
+#include "Galgame/SpriteAnimationScriptManager.h"
 #include "Render/TransitionManager.h"
 #include "Engine/EngineResource.h"
 

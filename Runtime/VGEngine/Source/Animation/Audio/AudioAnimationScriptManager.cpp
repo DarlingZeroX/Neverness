@@ -1,6 +1,7 @@
 #include "Animation/Audio/AudioAnimationScriptManager.h"
 #include "Scene/Components.h"
 #include "Animation/Audio/AudioAnimationScript.h"
+#include "Animation/Interface/AnimationScriptManager.h"
 
 namespace VisionGal {
 
@@ -10,7 +11,7 @@ namespace VisionGal {
 		return &s_Manager;
 	}
 
-	Ref<IAnimationScript> AudioAnimationScriptManager::CreateAudioTransformWithCommand(GameActor* actor, const String& cmd)
+	Ref<IAnimationScript> AudioAnimationScriptManager::CreateAudioAnimationWithCommand(GameActor* actor, const String& cmd)
 	{
 		if (actor == nullptr)
 			return nullptr;
@@ -54,39 +55,40 @@ namespace VisionGal {
 		return nullptr;
 	}
 
-	bool AudioAnimationScriptManager::StartAudioTransformWithCommand(GameActor* actor, const String& cmd)
+	bool AudioAnimationScriptManager::StartAudioAnimationWithCommand(GameActor* actor, const String& cmd)
 	{
-		auto script = CreateAudioTransformWithCommand(actor, cmd);
+		auto script = CreateAudioAnimationWithCommand(actor, cmd);
 
 		if (script != nullptr)
 		{
 			//开启变换
 			script->Start();
 
-			return StartAudioTransform(actor, script);
+			//return StartAudioTransform(actor, script);
+			return AnimationScriptManager::AddActorAnimationScript(actor, script);
 		}
 
 		return false;
 	}
 
-	bool AudioAnimationScriptManager::StartAudioTransform(GameActor* actor, const Ref<IAnimationScript>& script)
-	{
-		if (actor == nullptr)
-			return false;
-
-		if (script == nullptr)
-			return false;
-
-		auto* com = actor->GetComponent<AnimationScriptComponent>();
-
-		if (com == nullptr)
-		{
-			com = actor->AddComponent<AnimationScriptComponent>();
-		}
-
-		com->scripts.push_back(script);
-
-		return true;
-	}
+	//bool AudioAnimationScriptManager::StartAudioTransform(GameActor* actor, const Ref<IAnimationScript>& script)
+	//{
+	//	if (actor == nullptr)
+	//		return false;
+	//
+	//	if (script == nullptr)
+	//		return false;
+	//
+	//	auto* com = actor->GetComponent<AnimationScriptComponent>();
+	//
+	//	if (com == nullptr)
+	//	{
+	//		com = actor->AddComponent<AnimationScriptComponent>();
+	//	}
+	//
+	//	com->scripts.push_back(script);
+	//
+	//	return true;
+	//}
 
 }

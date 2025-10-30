@@ -1,18 +1,18 @@
-#include "Animation/Sprite/SpriteTransform.h"
+#include "Animation/Base/TransformAnimation.h"
 #include <HCore/Include/Math/HMathHelper.h>
 
+#include "Animation/Base/SpriteAnimation.h"
 #include "Scene/Components.h"
 
 namespace VisionGal
 {
-	SpriteTransformState::SpriteTransformState()
+	TransformAnimationState::TransformAnimationState()
 	{
 		Reset();
 	}
 
-	void SpriteTransformState::SetAll(const TransformData& data)
+	void TransformAnimationState::SetAll(const AnimationData& data)
 	{
-		alpha.currentValue = data.alpha;
 		xoffset.currentValue = data.xoffset;
 		yoffset.currentValue = data.yoffset;
 		rotate.currentValue = data.rotate;
@@ -22,9 +22,8 @@ namespace VisionGal
 		visible.currentValue = data.visible ? 1.0f : 0.0f;
 	}
 
-	void SpriteTransformState::SetAll(const SpriteTransformState& data)
+	void TransformAnimationState::SetAll(const TransformAnimationState& data)
 	{
-		alpha.currentValue = data.alpha.currentValue;
 		xoffset.currentValue = data.xoffset.currentValue;
 		yoffset.currentValue = data.yoffset.currentValue;
 		rotate.currentValue = data.rotate.currentValue;
@@ -34,10 +33,9 @@ namespace VisionGal
 		visible.currentValue = data.visible.currentValue;
 	}
 
-	SpriteTransformState::TransformData SpriteTransformState::GetCurrent() const
+	TransformAnimationState::AnimationData TransformAnimationState::GetCurrent() const
 	{
-		TransformData data;
-		data.alpha = alpha.currentValue;
+		AnimationData data;
 		data.xoffset = xoffset.currentValue;
 		data.yoffset = yoffset.currentValue;
 		data.rotate = rotate.currentValue;
@@ -48,39 +46,37 @@ namespace VisionGal
 		return data;
 	}
 
-	void SpriteTransformState::Finish()
+	void TransformAnimationState::Finish()
 	{
-		TravelProperty([this](SingleAnimationProperty& property)
+		TravelProperty([this](FloatAnimationProperty& property)
 			{
 				property.Finish();
 			});
 	}
 
-	bool SpriteTransformState::IsFinish()
+	bool TransformAnimationState::IsFinish()
 	{
-		return alpha.IsFinish() &&
-		xoffset.IsFinish() &&
-		yoffset.IsFinish() &&
-		rotate.IsFinish() &&
-		zoom.IsFinish() &&
-		xzoom.IsFinish() &&
-		yzoom.IsFinish() &&
-		visible.IsFinish();
+		return xoffset.IsFinish() &&
+			yoffset.IsFinish() &&
+			rotate.IsFinish() &&
+			zoom.IsFinish() &&
+			xzoom.IsFinish() &&
+			yzoom.IsFinish() &&
+			visible.IsFinish();
 	}
 
-	void SpriteTransformState::Reset()
+	void TransformAnimationState::Reset()
 	{
-		SetAll(TransformData());
-		TravelProperty([this](SingleAnimationProperty& property)
+		SetAll(AnimationData());
+		TravelProperty([this](FloatAnimationProperty& property)
 			{
 				property.active = false;
 				property.easing = EasingCallbacks::linear;
 			});
 	}
 
-	void SpriteTransformState::TravelProperty(std::function<void(SingleAnimationProperty& property)> callback)
+	void TransformAnimationState::TravelProperty(std::function<void(FloatAnimationProperty& property)> callback)
 	{
-		callback(alpha);
 		callback(xoffset);
 		callback(yoffset);
 		callback(rotate);
@@ -90,70 +86,64 @@ namespace VisionGal
 		callback(visible);
 	}
 
-	void SpriteTransformScript::TransformAlpha(float startTime, float duration, float startVal, float endVal,
-	                                           EasingFunction easing)
-	{
-		state.alpha.Start(startTime, duration, startVal, endVal, easing);
-	}
-
-	void SpriteTransformScript::TransformXOffset(float startTime, float duration, float startVal, float endVal,
+	void TransformAnimationScript::TransformXOffset(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.xoffset.Start(startTime, duration, startVal, endVal, easing);
 	}
 
-	void SpriteTransformScript::TransformYOffset(float startTime, float duration, float startVal, float endVal,
+	void TransformAnimationScript::TransformYOffset(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.yoffset.Start(startTime, duration, startVal, endVal, easing);
 	}
 
-	void SpriteTransformScript::TransformRotate(float startTime, float duration, float startVal, float endVal,
+	void TransformAnimationScript::TransformRotate(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.rotate.Start(startTime, duration, startVal, endVal, easing);
 	}
 
-	void SpriteTransformScript::TransformZoom(float startTime, float duration, float startVal, float endVal,
+	void TransformAnimationScript::TransformZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.zoom.Start(startTime, duration, startVal, endVal, easing);
 	}
 
-	void SpriteTransformScript::TransformXZoom(float startTime, float duration, float startVal, float endVal,
+	void TransformAnimationScript::TransformXZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.xzoom.Start(startTime, duration, startVal, endVal, easing);
 	}
 
-	void SpriteTransformScript::TransformYZoom(float startTime, float duration, float startVal, float endVal,
+	void TransformAnimationScript::TransformYZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.yzoom.Start(startTime, duration, startVal, endVal, easing);
 	}
 
-	void SpriteTransformScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
+	void TransformAnimationScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
 		EasingFunction easing)
 	{
 		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, easing);
 	}
 
-	void SpriteTransformScript::Reset()
+	void TransformAnimationScript::Reset()
 	{
 		state.Reset();
 	}
 
-	void SpriteTransformScript::Finish()
+	void TransformAnimationScript::Finish()
 	{
 		state.Finish();
 	}
 
-	void SpriteTransformScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void TransformAnimationScript::OnUpdate(Horizon::HEntityInterface* entity)
 	{
 		float currentTime = GetCurrentTime(); // 假设存在获取当前时间的函数
 
 		// 更新所有属性
-		state.TravelProperty([this, currentTime](SingleAnimationProperty& property)
+		state.TravelProperty([this, currentTime](FloatAnimationProperty& property)
 			{
 				property.Update(currentTime);
 			});
@@ -169,17 +159,17 @@ namespace VisionGal
 		ApplyStateToEntity(entity);
 	}
 
-	void SpriteTransformScript::OnFixUpdate(Horizon::HEntityInterface* entity)
+	void TransformAnimationScript::OnFixUpdate(Horizon::HEntityInterface* entity)
 	{
 
 	}
 
-	float SpriteTransformScript::GetCurrentTime() const
+	float TransformAnimationScript::GetCurrentTime() const
 	{
 		return Core::GetCurrentTime();
 	}
 
-	void SpriteTransformScript::ApplyStateToEntity(Horizon::HEntityInterface* entity)
+	void TransformAnimationScript::ApplyStateToEntity(Horizon::HEntityInterface* entity)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
 		if (transform)
@@ -217,14 +207,5 @@ namespace VisionGal
 			}
 		}
 
-		auto* sr = entity->GetComponent<SpriteRendererComponent>();
-		if (sr)
-		{
-			if (state.alpha.active)
-			{
-				sr->color.a = state.alpha.currentValue;
-				//H_LOG_INFO("sr->color.a = %f", sr->color.a);
-			}
-		}
 	}
 }

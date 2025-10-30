@@ -6,26 +6,110 @@ namespace VisionGal
     // 缓动函数类型
     using EasingFunction = std::function<float(float)>;
 
-    // 单个属性的插值器
-    struct SingleAnimationProperty {
-        float startValue = 0.0f;
-        float endValue = 0.0f;
-        float currentValue = 0.0f;
-        float startTime = 0.0f;
-        float duration = 1.0f;
-        EasingFunction easing = [](float t) { return t; }; // 默认线性插值
-        bool active = false;
-        bool isFinish = false;
+	struct IAnimationProperty
+	{
+		virtual ~IAnimationProperty() = default;
 
-        // 更新属性值
-        void Update(float currentTime);
-		 
-        // 开始插值
-        void Start(float startTime, float duration, float startValue, float endValue, EasingFunction easing = [](float t) { return t; });
+		// 更新属性值
+		virtual void Update(float currentTime) = 0;
+		virtual void Finish() = 0;
+		virtual bool IsFinish() = 0;
+		virtual void Reset() = 0;
+	};
 
-        void Finish();
-        bool IsFinish();
-    };
+	// 单个Float的插值器
+	struct FloatAnimationProperty : public IAnimationProperty{
+		float startValue = 0.0f;
+		float endValue = 0.0f;
+		float currentValue = 0.0f;
+		float startTime = 0.0f;
+		float duration = 1.0f;
+		EasingFunction easing = [](float t) { return t; }; // 默认线性插值
+		bool active = false;
+		bool isFinish = false;
+
+		~FloatAnimationProperty() override = default;
+
+		void SetCurrentValue(float value);
+		void SetCurrentValue(const FloatAnimationProperty& value);
+		float GetCurrentValue();
+
+		// 更新属性值
+		void Update(float currentTime) override;
+
+		// 开始插值
+		void Start(float startTime, float duration, float startValue, float endValue, EasingFunction easing = [](float t) { return t; });
+
+		void Finish() override;
+		bool IsFinish() override;
+		void Reset() override;
+	};
+
+	// Float2插值属性
+	struct Float2AnimationProperty : public IAnimationProperty {
+		FloatAnimationProperty value0;
+		FloatAnimationProperty value1;
+
+		~Float2AnimationProperty() override = default;
+
+		void SetCurrentValue(const float2& value);
+		void SetCurrentValue(const Float2AnimationProperty& value);
+		float2 GetCurrentValue() const;
+
+		// 更新属性值
+		void Update(float currentTime) override;
+
+		// 开始插值
+		void Start(float startTime, float duration, const float2& startValue, const float2& endValue, EasingFunction easing = [](float t) { return t; });
+
+		void Finish() override;
+		bool IsFinish() override;
+		void Reset() override;
+	};
+
+	// Float3插值属性
+	struct Float3AnimationProperty : public IAnimationProperty {
+		FloatAnimationProperty value0;
+		Float2AnimationProperty value12;
+
+		~Float3AnimationProperty() override = default;
+
+		void SetCurrentValue(const float3& value);
+		void SetCurrentValue(const Float3AnimationProperty& value);
+		float3 GetCurrentValue() const;
+
+		// 更新属性值
+		void Update(float currentTime) override;
+
+		// 开始插值
+		void Start(float startTime, float duration, const float3& startValue, const float3& endValue, EasingFunction easing = [](float t) { return t; });
+
+		void Finish() override;
+		bool IsFinish() override;
+		void Reset() override;
+	};
+
+	// Float4插值属性
+	struct Float4AnimationProperty : public IAnimationProperty {
+		Float2AnimationProperty value01;
+		Float2AnimationProperty value23;
+
+		~Float4AnimationProperty() override = default;
+
+		void SetCurrentValue(const float4& value);
+		void SetCurrentValue(const Float4AnimationProperty& value);
+		float4 GetCurrentValue() const;
+
+		// 更新属性值
+		void Update(float currentTime) override;
+
+		// 开始插值
+		void Start(float startTime, float duration, const float4& startValue, const float4& endValue, EasingFunction easing = [](float t) { return t; });
+
+		void Finish() override;
+		bool IsFinish() override;
+		void Reset() override;
+	};
 
     struct EasingCallbacks
     {

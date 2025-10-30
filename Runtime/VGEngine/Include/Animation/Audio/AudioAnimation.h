@@ -8,27 +8,27 @@ namespace VisionGal
         AudioAnimationState();
         ~AudioAnimationState() = default;
 
-        struct TransformData
+        struct AnimationData
         {
             float volume = 1.f;
             bool visible = true;
         };
 
-        SingleAnimationProperty volume;
-        SingleAnimationProperty visible; // 将bool转为float(0.0/1.0)
+        FloatAnimationProperty volume;
+        FloatAnimationProperty visible; // 将bool转为float(0.0/1.0)
 
         // 立即设置所有属性值
-        void SetAll(const TransformData& data);
+        void SetAll(const AnimationData& data);
         void SetAll(const AudioAnimationState& data);
 
         void Finish();
         bool IsFinish();
         void Reset();
 		 
-        void TravelProperty(std::function<void(SingleAnimationProperty& property)> callback);
+        void TravelProperty(std::function<void(FloatAnimationProperty& property)> callback);
 
         // 获取当前状态（转换为原始格式）
-        TransformData GetCurrent() const;
+        AnimationData GetCurrent() const;
     };
 
     class AudioAnimationScript : public IAnimationScript

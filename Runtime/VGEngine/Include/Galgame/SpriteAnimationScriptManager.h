@@ -11,9 +11,6 @@ namespace VisionGal::GalGame {
 		static Ref<IAnimationScript> CreateSpriteTransformWithCommand(GameActor* actor, const String& cmd);
 
 		static bool StartSpriteTransformWithCommand(GameActor* actor, const String& cmd);
-		static bool StartSpriteTransform(GameActor* actor, const Ref<IAnimationScript>& script);
-
-		//void Update(IScene* scene);
 	};
 
 }
