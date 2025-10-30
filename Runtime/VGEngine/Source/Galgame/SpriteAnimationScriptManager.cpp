@@ -4,7 +4,7 @@
 #include "HCore/Include/Core/HLocalization.h"
 #include "HCore/Include/Core/HStringTools.h"
 #include "Scene/Components.h"
-#include "Animation/Base/SpriteAnimationScript.h"
+#include "Animation/Core/SpriteAnimationScript.h"
 #include "Animation/Interface/AnimationScriptManager.h"
 
 namespace VisionGal::GalGame {

@@ -115,4 +115,19 @@ namespace VisionGal
     {
         static EasingFunction linear;
     };
+
+	struct FloatAnimationPropertyScript : public  IAnimationScript
+	{
+		~FloatAnimationPropertyScript() override = default;
+
+		FloatAnimationProperty property;
+
+		bool IsFinished() override;
+	protected:
+		void Start(float duration, float startVal = 1.0f, float endVal = 1.0f, EasingFunction easing = EasingCallbacks::linear);
+
+		float GetCurrentTime();
+
+		void UpdateProperty();
+	};
 }

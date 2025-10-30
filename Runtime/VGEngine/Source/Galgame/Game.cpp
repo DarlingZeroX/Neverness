@@ -5,6 +5,7 @@
 #include "GalGame/SpriteAnimationScriptManager.h"
 #include "Animation/Audio/AudioAnimationScriptManager.h"
 #include "Render/TransitionManager.h"
+#include "Animation/Interface/AnimationScriptManager.h"
 
 namespace VisionGal::GalGame
 {
@@ -59,6 +60,19 @@ namespace VisionGal::GalGame
 		SpriteTransformScriptManager::StartSpriteTransformWithCommand(m_Actor, transform);
 
 		return this;
+	}
+
+	Animation2DScript* GalSprite::Animate(const sol::table& targetValue, float duration, std::string tween)
+	{
+		auto script = CreateRef<Animation2DScript>(m_Actor);
+
+		if (script->AnimateLua(targetValue, duration, tween))
+		{
+			AnimationScriptManager::AddActorAnimationScript(m_Actor, script);
+			return script.get();
+		}
+
+		return nullptr;
 	}
 
 	GalSprite* GalSprite::SetPosX(float offset)

@@ -236,4 +236,26 @@ namespace VisionGal
 		value01.Reset();
 		value23.Reset();
 	}
+
+	bool FloatAnimationPropertyScript::IsFinished()
+	{
+		return property.IsFinish();
+	}
+
+	void FloatAnimationPropertyScript::Start(float duration, float startVal, float endVal, EasingFunction easing)
+	{
+		property.Start(GetCurrentTime(), duration, startVal, endVal, easing);
+	}
+
+	float FloatAnimationPropertyScript::GetCurrentTime()
+	{
+		return Core::GetCurrentTime();
+	}
+
+	void FloatAnimationPropertyScript::UpdateProperty()
+	{
+		float currentTime = GetCurrentTime(); 
+
+		property.Update(currentTime);
+	}
 }

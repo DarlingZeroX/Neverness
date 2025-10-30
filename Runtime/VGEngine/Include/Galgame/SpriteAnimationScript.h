@@ -1,5 +1,5 @@
 #pragma once
-#include "Animation/Base/TransformAnimation.h"
+#include "Animation/Core/TransformAnimation.h"
 
 namespace VisionGal::GalGame
 {

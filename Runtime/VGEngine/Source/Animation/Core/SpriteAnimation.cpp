@@ -1,4 +1,4 @@
-#include "Animation/Base/SpriteAnimation.h"
+#include "Animation/Core/SpriteAnimation.h"
 #include <HCore/Include/Math/HMathHelper.h>
 
 #include "Scene/Components.h"

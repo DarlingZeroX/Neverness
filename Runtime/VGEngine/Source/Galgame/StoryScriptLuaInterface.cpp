@@ -2,6 +2,7 @@
 #include "Galgame/GameLua.h"
 #include <string>
 #include "Lua/CoreLuaInterface.h"
+#include "Animation/Core/Animation2DScript.h"
 
 namespace VisionGal::GalGame
 {
@@ -86,6 +87,10 @@ namespace VisionGal::GalGame
 			)
 		);
 
+		lua.new_usertype<Animation2DScript>("GalSpriteAnimation",
+			"添加动画关键帧", &Animation2DScript::AddAnimationKeyLua
+			);
+
 		lua.new_usertype<GalSprite>("GalSprite",
 			//sol::constructors<Background(const std::string&)>(),
 			"Show", &GalSprite::Show,
@@ -110,6 +115,7 @@ namespace VisionGal::GalGame
 				//static_cast<GalSprite * (GalSprite::*)(Transform)>(&GalSprite::With),
 				static_cast<GalSprite * (GalSprite::*)(const std::string&)>(&GalSprite::With)
 			),
+			"开始动画", &GalSprite::Animate,
 			"转场", &GalSprite::Cut,
 			"设置缩放", &GalSprite::SetScale,
 			"设置位置偏移X", &GalSprite::SetPosOffsetX,

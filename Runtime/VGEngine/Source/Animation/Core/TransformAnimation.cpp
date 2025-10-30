@@ -1,7 +1,7 @@
-#include "Animation/Base/TransformAnimation.h"
+#include "Animation/Core/TransformAnimation.h"
 #include <HCore/Include/Math/HMathHelper.h>
 
-#include "Animation/Base/SpriteAnimation.h"
+#include "Animation/Core/SpriteAnimation.h"
 #include "Scene/Components.h"
 
 namespace VisionGal

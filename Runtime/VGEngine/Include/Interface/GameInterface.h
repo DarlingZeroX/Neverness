@@ -86,6 +86,7 @@ namespace VisionGal
 		virtual ~IAnimationScript() = default;
 
 		virtual void Start() {}
+		virtual bool IsFinished() { return true; }
 		virtual void OnUpdate(Horizon::HEntityInterface* actor) {};
 		virtual void OnFixUpdate(Horizon::HEntityInterface* actor) {};
 	};

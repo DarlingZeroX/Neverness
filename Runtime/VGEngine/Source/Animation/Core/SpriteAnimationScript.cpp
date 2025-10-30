@@ -1,4 +1,4 @@
-#include "Animation/Base/SpriteAnimationScript.h"
+#include "Animation/Core/SpriteAnimationScript.h"
 
 namespace VisionGal
 {
