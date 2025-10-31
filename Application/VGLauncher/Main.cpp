@@ -73,10 +73,14 @@ int main()
 	// 加载启动器数据
 	Editor::VGLauncherData::LoadLauncherData();
 
+	// 加载所有示例项目
+	Editor::VGLauncherData::GetLauncherData().LoadAllProjectsInDirectory(editorProjectRootDir + "/Project/");
+	Editor::VGLauncherData::GetLauncherData().LoadAllProjectsInDirectory("Project/");
+
 	// 初始化启动器
-	Ref<Editor::VGLauncher> editor = CreateRef<Editor::VGLauncher>();
-	editor->Initialize();
-	VGEngine::Get()->AddApplication(editor);
+	Ref<Editor::VGLauncher> launcher = CreateRef<Editor::VGLauncher>();
+	launcher->Initialize();
+	VGEngine::Get()->AddApplication(launcher);
 
 	// 运行引擎
 	VGEngine::Get()->Run();

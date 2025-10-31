@@ -1,0 +1,108 @@
+<rml>
+    <head>
+        <link type="text/template" href="../window.lua" />
+        <link type="text/css" href="game.css"/>
+
+        <script>
+            HTMLGame = HTMLGame or {}
+
+            -- 当对话框被点击
+            function HTMLGame.DialogBoxClick()
+                if(GalGame.GetEngine().DialogueSystem.isTypingText)
+                then
+                    GalGame.GetEngine().DialogueSystem:FinishTyping()
+                else
+                    GalGame.GetEngine().DialogueSystem:ContinueDialogue()
+                end
+            end
+            
+            -- 页面加载时调用
+            function HTMLGame.OnGalgameEngineLoad()
+                html_CurrentGameState = "Gaming"
+                HTMLGame.autoDialogueChecked = false
+                HTMLGame.fastForwardChecked = false
+            end
+
+            -- 加载游戏设置界面
+            function HTMLGame.LoadGameSetting(event, document)
+                event:StopPropagation()
+                Window.LoadMenu('/assets/menu/options_menu',document)
+            end
+
+            -- 自动对话
+            function HTMLGame.AutoDialogue(event, element, document)
+                event:StopPropagation()
+                HTMLGame.autoDialogueChecked = not GalGame.GetEngine().DialogueSystem.autoDialogue
+                if HTMLGame.autoDialogueChecked then
+                    element:SetAttribute('class', 'choice-btn-checked')
+                else
+                    element:SetAttribute('class', 'choice-btn')
+                end
+                GalGame.GetEngine().DialogueSystem.autoDialogue = HTMLGame.autoDialogueChecked
+            end
+
+            -- 快进按钮点击事件
+            function HTMLGame.FastForward(event, element, document)
+                event:StopPropagation()
+                HTMLGame.fastForwardChecked = not GalGame.GetEngine().DialogueSystem.fastForward
+                if HTMLGame.fastForwardChecked then
+                    element:SetAttribute('class', 'choice-btn-checked')
+                else
+                    element:SetAttribute('class', 'choice-btn')
+                end
+                GalGame.GetEngine().DialogueSystem.fastForward = HTMLGame.fastForwardChecked
+            end
+
+            -- 加载存档保存界面
+            function HTMLGame.SaveArchive(event, document)
+                event:StopPropagation()
+                Window.LoadMenu('/assets/game/archiveSave',document)
+            end
+
+            -- 加载读取界面
+            function HTMLGame.ReadArchive(event, document)
+                event:StopPropagation()
+                Window.LoadMenu('/assets/game/archiveRead',document)
+            end
+
+            -- 加载记录界面
+            function HTMLGame.LoadRecord(event, document)
+                event:StopPropagation()
+                Window.LoadMenu('/assets/game/record',document)
+            end
+
+            -- 当按下ESC键时调用
+            function HTMLGame.OnEscapePressed(event,document)
+                --[[
+                if Window.EscapePressed(event) then 
+                    if document.visibility then
+                        document.visibility = true
+                    else
+                        document.visibility = false
+                    end
+                end
+                 --]]
+            end
+        </script>
+    </head>
+    <body onkeydown="HTMLGame.OnEscapePressed(event,document)" onload="HTMLGame.OnGalgameEngineLoad()">  
+        
+        <div class="game-container">
+            <div class="dialog-box" onclick="HTMLGame.DialogBoxClick()" data-model="dialog">
+                <div class="name-tag" id="name-tag">{{dialog_name}}</div>
+                <div class="dialog-text" id="dialog-text">{{dialog_text}}</div>
+                <div class="choices" id="choices">
+                    <button class="choice-btn" id="btn1" onclick="HTMLGame.SaveArchive(event,document)">保存</button>
+                    <button class="choice-btn" id="btn2" onclick="HTMLGame.ReadArchive(event,document)">读取</button>
+                    <button class="choice-btn" id="btn3" onclick="HTMLGame.LoadGameSetting(event,document)">设置</button>
+                    <button class="choice-btn" id="btn4" onclick="HTMLGame.AutoDialogue(event,element,document)">自动</button>
+                    <button class="choice-btn" id="btn5" onclick="HTMLGame.FastForward(event,element,document)">快进</button>
+                    <button class="choice-btn" id="btn6" onclick="HTMLGame.LoadRecord(event,document)">记录</button>
+                </div>
+
+            </div>
+        </div>
+            
+    </body>
+    </rml>
+    

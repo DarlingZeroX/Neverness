@@ -1,0 +1,121 @@
+{
+    "SegmentNumber": 9,
+    "SegmentType": "Script",
+    "ComponentNumber": 0,
+    "SegmentType": "Entity",
+    "EntityNumber": 4,
+    "Label": "UI文档",
+    "ID": 13135295619153017924,
+    "Parent": 0,
+    "ComponentIDs": [
+        13135295619153017924,
+        11525862322656296263
+    ],
+    "Label": "相机",
+    "ID": 11139995194842245878,
+    "Parent": 0,
+    "ComponentIDs": [
+        11139995194842245878,
+        3509040283753573490
+    ],
+    "Label": "GalGame引擎",
+    "ID": 6440210757220177232,
+    "Parent": 0,
+    "ComponentIDs": [
+        7714668887001147666,
+        8139420644421808243
+    ],
+    "Label": "Scene",
+    "ID": 0,
+    "Parent": 0,
+    "ComponentIDs": [],
+    "SegmentType": "AudioSourceComponent",
+    "ComponentNumber": 0,
+    "SegmentType": "Transform",
+    "ComponentNumber": 3,
+    "Transform": {
+        "EntityComponentID": 13135295619153017924,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
+    "Transform": {
+        "EntityComponentID": 11139995194842245878,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
+    "Transform": {
+        "EntityComponentID": 7714668887001147666,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
+    "SegmentType": "SpriteRenderer",
+    "ComponentNumber": 0,
+    "SegmentType": "RmlUIDocumentComponent",
+    "ComponentNumber": 1,
+    "RmlUIDocumentComponent": {
+        "EntityComponentID": 11525862322656296263,
+        "HasDocument": true,
+        "m_DocumentPath": "/assets/游戏UI\\game.html"
+    },
+    "SegmentType": "Camera",
+    "ComponentNumber": 1,
+    "Camera": {
+        "EntityComponentID": 3509040283753573490,
+        "HasCamera": true,
+        "m_CameraType": "Letterbox2D"
+    },
+    "SegmentType": "VideoPlayer",
+    "ComponentNumber": 0,
+    "SegmentType": "GalGameEngine",
+    "ComponentNumber": 1,
+    "GalGameEngine": {
+        "EntityComponentID": 8139420644421808243,
+        "HasScript": true,
+        "m_ScriptPath": "/assets/剧情脚本\\动画\\基础动画.lua"
+    }
+}

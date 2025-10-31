@@ -1,0 +1,107 @@
+{
+    "SegmentNumber": 9,
+    "SegmentType": "Script",
+    "ComponentNumber": 0,
+    "SegmentType": "Entity",
+    "EntityNumber": 3,
+    "Label": "精灵",
+    "ID": 7565472559013602276,
+    "Parent": 0,
+    "ComponentIDs": [
+        6557717273463339951,
+        10179991923200072659
+    ],
+    "Label": "相机",
+    "ID": 2441793602883057820,
+    "Parent": 0,
+    "ComponentIDs": [
+        2441793602883057820,
+        7565472559013602276
+    ],
+    "Label": "Scene",
+    "ID": 0,
+    "Parent": 0,
+    "ComponentIDs": [],
+    "SegmentType": "AudioSourceComponent",
+    "ComponentNumber": 0,
+    "SegmentType": "Transform",
+    "ComponentNumber": 2,
+    "Transform": {
+        "EntityComponentID": 6557717273463339951,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
+    "Transform": {
+        "EntityComponentID": 2441793602883057820,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
+    "SegmentType": "SpriteRenderer",
+    "ComponentNumber": 1,
+    "SpriteRenderer": {
+        "EntityComponentID": 10179991923200072659,
+        "HasSprite": true,
+        "m_SpriteSize": {
+            "x": 101.0,
+            "y": 100.0
+        },
+        "m_SpritePosition": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "m_SpriteTexturePath": "/engine/textures/white.png",
+        "Color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+        },
+        "Flip": {
+            "x": 0,
+            "y": 0
+        }
+    },
+    "SegmentType": "RmlUIDocumentComponent",
+    "ComponentNumber": 0,
+    "SegmentType": "Camera",
+    "ComponentNumber": 1,
+    "Camera": {
+        "EntityComponentID": 7565472559013602276,
+        "HasCamera": true,
+        "m_CameraType": "Letterbox2D"
+    },
+    "SegmentType": "VideoPlayer",
+    "ComponentNumber": 0,
+    "SegmentType": "GalGameEngine",
+    "ComponentNumber": 0
+}

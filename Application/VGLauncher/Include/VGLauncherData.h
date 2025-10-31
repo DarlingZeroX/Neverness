@@ -66,6 +66,8 @@ namespace VisionGal::Editor
 		/// @brief 设置最后创建项目的目录
 		void SetLastProjectCreateDirectory(const std::string& directory);
 
+		/// 加载目录下的所有项目
+		bool LoadAllProjectsInDirectory(const std::string& directory);
 	private:
 		std::string m_LastProjectCreateDirectory;			/// @brief 最后的创建项目的目录
 		std::vector<VGProjectItem> m_Projects;				/// @brief 项目列表

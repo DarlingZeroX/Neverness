@@ -1,0 +1,94 @@
+<rml>
+<head>
+    <link type="text/template" href="../window.lua" />
+    <link type="text/css" href="archive.css"/>
+    <script>
+            HTMLArchiveRead = HTMLArchiveRead or {}
+
+            -- 当页面被加载
+            function HTMLArchiveRead.OnLoad(element,document)
+                local save_box = element:GetElementById('save-box')
+                for i = 1, 60 do
+                    local number = string.format("%02d", i)
+
+                    -- 存档槽
+                    local save_slot = document:CreateElement('button')
+                    save_slot = save_box:AppendChild(save_slot)
+                    save_slot:SetAttribute('class', 'save-slot-disable')
+
+                    -- 存档数字
+                    local save_number = document:CreateElement('div')
+                    save_number = save_slot:AppendChild(save_number)
+                    save_number:SetAttribute('class', 'save-number')
+                    save_number.innerRml = number
+
+                    -- 存档日期时间
+                    local save_time = document:CreateElement('div')
+                    save_time = save_slot:AppendChild(save_time)
+                    save_time:SetAttribute('class', 'save-time')
+
+                    -- 存档描述
+                    local save_description = document:CreateElement('div')
+                    save_description = save_slot:AppendChild(save_description)
+                    save_description:SetAttribute('class', 'save-description')
+
+                    -- 读取存档如果存在
+                    local archive = GalGame.GetEngine().ArchiveSystem:GetArchiveByNumber(number)
+                    if archive.isValid then
+                        save_slot:SetAttribute('class', 'save-slot')
+                        save_time.innerRml = archive.dateTime
+                        save_description.innerRml = archive.description
+                        local onClickScript = string.format("HTMLArchiveRead.LoadArchive(element, document, '%s')", number)
+                        save_slot:SetAttribute('onclick', onClickScript)
+                    end
+                end
+            end
+
+            -- 当存档槽被点击
+            function HTMLArchiveRead.LoadArchive(element,document, number)
+                --print(number)
+                local archive = GalGame.GetEngine().ArchiveSystem:GetArchiveByNumber(number)
+                if archive.isValid then  
+                    TransitionManager:StartTransitionWithCommand('Screen','fade_out 1.0')
+                    TransitionManager:StartTransitionWithCommand('Screen','fade_in 1.0')
+
+                    if(html_CurrentGameState == "MainMenu") then
+                        SceneManager:LoadScene('/assets/GalgameScene.vgasset')
+                    elseif(html_CurrentGameState == "Gaming") then
+                        Window.LoadMenu('/assets/game/game',document)
+                    end
+                    GalGame.GetEngine():LoadArchive(archive)   
+                    --print("dddddddddddddddddd")
+                end
+            end
+
+            -- 当Esc按下
+            function HTMLArchiveRead.OnEscPressed(element,document, event)
+                if Window.EscapePressed(event) then 
+                    if(html_CurrentGameState == "MainMenu") then
+                        Window.LoadMenu('/assets/menu/main_menu',document)
+                    elseif(html_CurrentGameState == "Gaming") then
+                        Window.LoadMenu('/assets/game/game',document)
+                    end           
+                end
+            end
+    </script>
+
+</head>
+<!-- -->
+<body onload="HTMLArchiveRead.OnLoad(element,document)" onkeydown="HTMLArchiveRead.OnEscPressed(element,document, event)">
+    <div class="save-container">
+        <div class="save-box" id="save-box">
+            <!-- 存档格子 1 
+            <div onclick="HTMLArchiveRead.SaveCurrentGame(element,'01')" class="save-slot">
+                <div class="save-number" id="save-number">01</div>
+                <img class="save-screenshot" id="save-screenshot" />
+                <div class="save-time" id="save-time"></div>
+                <div class="save-description" id="save-description"></div>
+                <div class="new-tag">NEW!</div>
+            </div>-->
+
+        </div>
+    </div>
+</body>
+</rml>

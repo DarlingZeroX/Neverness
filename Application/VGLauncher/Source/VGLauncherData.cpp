@@ -183,6 +183,58 @@ namespace VisionGal::Editor
 		m_LastProjectCreateDirectory = directory;
 	}
 
+	// 伪代码/实现计划（详尽）：
+	// 1. 使用 std::filesystem 检查传入的 directory 是否存在且为目录。
+	// 2. 如果不存在或不是目录，返回 false。
+	// 3. 使用 std::filesystem::directory_iterator 遍历目录下的直接子项。
+	// 4. 对于每个子项，判断是否为目录（is_directory）。
+	// 5. 对目录子项：
+	//    a. 使用 path.filename().string() 作为项目名称（与之前 HFileSystem 的行为一致）。
+	//    b. 使用 path.string() 作为项目路径。
+	//    c. 构造 VGProjectItem 并调用 AddProject 添加（AddProject 内部会去重并验证路径）。
+	// 6. 任何文件系统错误（通过 std::error_code 捕获）将导致函数返回 false。
+	// 7. 遍历完成后返回 true（即使未添加任何项目也返回 true，行为与原注释代码一致）。
+	bool VGLauncherData::LoadAllProjectsInDirectory(const std::string& directory)
+	{
+		std::error_code ec;
+
+		// 检查目录是否存在并且是目录
+		if (!std::filesystem::exists(directory, ec) || ec)
+			return false;
+
+		if (!std::filesystem::is_directory(directory, ec) || ec)
+			return false;
+
+		// 遍历目录下的直接子目录
+		for (auto it = std::filesystem::directory_iterator(directory, ec); it != std::filesystem::directory_iterator(); it.increment(ec))
+		{
+			if (ec)
+			{
+				// 遍历过程中发生错误
+				return false;
+			}
+
+			const auto& entry = *it;
+			// 仅处理目录
+			if (!entry.is_directory(ec) || ec)
+				continue;
+
+			const auto& path = entry.path();
+			// 使用目录名称作为项目名称（不包含扩展）
+			std::string projectName = path.filename().string();
+			std::string projectPath = path.string();
+
+			VGProjectItem projectItem;
+			projectItem.Name = projectName;
+			projectItem.Path = projectPath;
+
+			// AddProject 会检查重复以及目录有效性
+			AddProject(projectItem);
+		}
+
+		return true;
+	}
+
 	void VGLauncherData::RemoveInvalidProjects()
 	{
 		// 移除路径不存在的项目
