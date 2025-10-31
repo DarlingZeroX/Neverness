@@ -1,5 +1,6 @@
 #pragma once
 #include "../../Interface/GameInterface.h"
+#include "Tween.h"
 
 namespace VisionGal
 {
@@ -24,7 +25,7 @@ namespace VisionGal
 		float currentValue = 0.0f;
 		float startTime = 0.0f;
 		float duration = 1.0f;
-		EasingFunction easing = [](float t) { return t; }; // 默认线性插值
+		Tween tween = Tween{}; // 默认线性插值
 		bool active = false;
 		bool isFinish = false;
 
@@ -38,7 +39,7 @@ namespace VisionGal
 		void Update(float currentTime) override;
 
 		// 开始插值
-		void Start(float startTime, float duration, float startValue, float endValue, EasingFunction easing = [](float t) { return t; });
+		void Start(float startTime, float duration, float startValue, float endValue, Tween tween = Tween{});
 
 		void Finish() override;
 		bool IsFinish() override;
@@ -60,7 +61,7 @@ namespace VisionGal
 		void Update(float currentTime) override;
 
 		// 开始插值
-		void Start(float startTime, float duration, const float2& startValue, const float2& endValue, EasingFunction easing = [](float t) { return t; });
+		void Start(float startTime, float duration, const float2& startValue, const float2& endValue, Tween tween = Tween{});
 
 		void Finish() override;
 		bool IsFinish() override;
@@ -82,7 +83,7 @@ namespace VisionGal
 		void Update(float currentTime) override;
 
 		// 开始插值
-		void Start(float startTime, float duration, const float3& startValue, const float3& endValue, EasingFunction easing = [](float t) { return t; });
+		void Start(float startTime, float duration, const float3& startValue, const float3& endValue, Tween tween = Tween{});
 
 		void Finish() override;
 		bool IsFinish() override;
@@ -104,7 +105,7 @@ namespace VisionGal
 		void Update(float currentTime) override;
 
 		// 开始插值
-		void Start(float startTime, float duration, const float4& startValue, const float4& endValue, EasingFunction easing = [](float t) { return t; });
+		void Start(float startTime, float duration, const float4& startValue, const float4& endValue, Tween tween = Tween{});
 
 		void Finish() override;
 		bool IsFinish() override;
@@ -124,7 +125,7 @@ namespace VisionGal
 
 		bool IsFinished() override;
 	protected:
-		void Start(float duration, float startVal = 1.0f, float endVal = 1.0f, EasingFunction easing = EasingCallbacks::linear);
+		void Start(float duration, float startVal = 1.0f, float endVal = 1.0f, Tween tween = Tween{});
 
 		float GetCurrentTime();
 

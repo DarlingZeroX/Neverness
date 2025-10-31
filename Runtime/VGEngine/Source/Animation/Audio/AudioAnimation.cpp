@@ -48,7 +48,7 @@ namespace VisionGal
 		TravelProperty([this](FloatAnimationProperty& property)
 			{
 				property.active = false;
-				property.easing = EasingCallbacks::linear;
+				property.tween = Tween{};
 			});
 	}
 
@@ -61,13 +61,13 @@ namespace VisionGal
 	void AudioAnimationScript::TransformVolume(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.volume.Start(startTime, duration, startVal, endVal, easing);
+		state.volume.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void AudioAnimationScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, easing);
+		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, Tween{});
 	}
 
 	void AudioAnimationScript::Reset()

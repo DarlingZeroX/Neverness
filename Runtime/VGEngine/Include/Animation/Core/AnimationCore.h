@@ -1,4 +1,5 @@
 #pragma once
+#include "Tween.h"
 #include "../../Interface/GameInterface.h"
 
 namespace VisionGal
@@ -34,7 +35,7 @@ namespace VisionGal
 		std::vector<Animation2DPrimitive> primitive;
 
 		float duration = 0.f;
-		std::string tween;
+		Tween tween = Tween{};
 
 		void Reset();
 	};

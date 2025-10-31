@@ -117,6 +117,8 @@ namespace Horizon
 		// switch / value pairs
 		static std::vector< std::pair<wstring, wstring>>	SplitCmdLineParams(const wstring& cmdLine);
 
+		static std::string			TrimCopy(const std::string& str);
+
 		static wstring              Trim(const wstring& inputStr, const wchar_t* trimCharStr);
 		static string               Trim(const string& inputStr, const char* trimCharStr);
 		//static wstring            TrimLeft( const wchar_t * trimCharsStr );

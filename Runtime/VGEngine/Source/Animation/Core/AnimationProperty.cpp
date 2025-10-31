@@ -1,4 +1,4 @@
-#include "Animation/Interface/AnimationProperty.h"
+#include "Animation/Core/AnimationProperty.h"
 #include <HCore/Include/Math/HMathHelper.h>
 
 namespace VisionGal
@@ -34,7 +34,10 @@ namespace VisionGal
 		}
 
 		if (currentTime < startTime)
+		{
+			isFinish = true;
 			return;
+		}
 
 		float elapsed = currentTime - startTime;
 		if (elapsed >= duration) {
@@ -43,36 +46,36 @@ namespace VisionGal
 		}
 		else {
 			float t = elapsed / duration;
-			currentValue = startValue + easing(t) * (endValue - startValue);
+			currentValue = startValue + tween(t) * (endValue - startValue);
 		}
 
 		// �ж��Ƿ����
-		if (startValue < endValue)
-		{
-			if (currentValue >= endValue)
-			{
-				currentValue = endValue;
-				isFinish = true;
-			}
-		}
-		else
-		{
-			if (currentValue <= endValue)
-			{
-				currentValue = endValue;
-				isFinish = true;
-			}
-		}
+		//if (startValue < endValue)
+		//{
+		//	if (currentValue >= endValue)
+		//	{
+		//		currentValue = endValue;
+		//		isFinish = true;
+		//	}
+		//}
+		//else
+		//{
+		//	if (currentValue <= endValue)
+		//	{
+		//		currentValue = endValue;
+		//		isFinish = true;
+		//	}
+		//}
 	}
 
 	void FloatAnimationProperty::Start(float startTime, float duration, float startValue, float endValue,
-		EasingFunction easing)
+		Tween tween)
 	{
 		this->startTime = startTime;
 		this->duration = duration;
 		this->startValue = startValue;
 		this->endValue = endValue;
-		this->easing = easing;
+		this->tween = tween;
 		this->active = true;
 		this->isFinish = false;
 	}
@@ -116,10 +119,10 @@ namespace VisionGal
 	}
 
 	void Float2AnimationProperty::Start(float startTime, float duration, const float2& startValue, const float2& endValue,
-		EasingFunction easing)
+		Tween tween)
 	{
-		value0.Start(startTime, duration, startValue.x, endValue.x, easing);
-		value1.Start(startTime, duration, startValue.y, endValue.y, easing);
+		value0.Start(startTime, duration, startValue.x, endValue.x, tween);
+		value1.Start(startTime, duration, startValue.y, endValue.y, tween);
 	}
 
 	void Float2AnimationProperty::Finish()
@@ -163,10 +166,10 @@ namespace VisionGal
 	}
 
 	void Float3AnimationProperty::Start(float startTime, float duration, const float3& startValue, const float3& endValue,
-		EasingFunction easing)
+		Tween tween)
 	{
-		value0.Start(startTime, duration, startValue.x, endValue.x, easing);
-		value12.Start(startTime, duration, float2(startValue.y, startValue.z), float2(endValue.y, endValue.z), easing);
+		value0.Start(startTime, duration, startValue.x, endValue.x, tween);
+		value12.Start(startTime, duration, float2(startValue.y, startValue.z), float2(endValue.y, endValue.z), tween);
 	}
 
 	void Float3AnimationProperty::Finish()
@@ -214,10 +217,10 @@ namespace VisionGal
 	}
 
 	void Float4AnimationProperty::Start(float startTime, float duration, const float4& startValue,
-		const float4& endValue, EasingFunction easing)
+		const float4& endValue, Tween tween)
 	{
-		value01.Start(startTime, duration, float2(startValue.x, startValue.y), float2(endValue.x, endValue.y), easing);
-		value23.Start(startTime, duration, float2(startValue.z, startValue.w), float2(endValue.z, endValue.w), easing);
+		value01.Start(startTime, duration, float2(startValue.x, startValue.y), float2(endValue.x, endValue.y), tween);
+		value23.Start(startTime, duration, float2(startValue.z, startValue.w), float2(endValue.z, endValue.w), tween);
 	}
 
 	void Float4AnimationProperty::Finish()
@@ -242,9 +245,9 @@ namespace VisionGal
 		return property.IsFinish();
 	}
 
-	void FloatAnimationPropertyScript::Start(float duration, float startVal, float endVal, EasingFunction easing)
+	void FloatAnimationPropertyScript::Start(float duration, float startVal, float endVal, Tween tween)
 	{
-		property.Start(GetCurrentTime(), duration, startVal, endVal, easing);
+		property.Start(GetCurrentTime(), duration, startVal, endVal, tween);
 	}
 
 	float FloatAnimationPropertyScript::GetCurrentTime()

@@ -1,4 +1,4 @@
-#include "Animation/Core/Animation2DScript.h"
+#include "Animation/Interface/Animation2DScript.h"
 #include "Animation/Core/PrimitiveScript.h"
 
 namespace VisionGal
@@ -45,16 +45,19 @@ namespace VisionGal
 		return true;
 	}
 
-	bool Animation2DScript::AnimateLua(const sol::table& targetValue, float duration, std::string tween, int numIterations,
+	bool Animation2DScript::AnimateLua(const sol::table& targetValue, float duration, std::string tweenStr, int numIterations,
 		bool alternateDirection, float delay)
 	{
 		Animation2DProperty property;
 		if (ParseAnimationProperty(targetValue, property))
 		{
 			property.duration = duration;
-			property.tween = tween;
-
-			return Animate(property, numIterations, alternateDirection, delay);
+			if (Tween::ParseTweenByString(tweenStr, property.tween))
+			{
+				return Animate(property, numIterations, alternateDirection, delay);
+			}
+			//property.tween = Tween{};
+			//return Animate(property, numIterations, alternateDirection, delay);
 		}
 
 		return false;
@@ -74,18 +77,20 @@ namespace VisionGal
 		return true;
 	}
 
-	Animation2DScript* Animation2DScript::AddAnimationKeyLua(const sol::table& targetValue, float duration, std::string tween)
+	Animation2DScript* Animation2DScript::AddAnimationKeyLua(const sol::table& targetValue, float duration, std::string tweenStr)
 	{
 		Animation2DProperty property;
 		if (ParseAnimationProperty(targetValue, property))
 		{
 			property.duration = duration;
-			property.tween = tween;
-
-			this->AddAnimationKey(property);
+			if (Tween::ParseTweenByString(tweenStr, property.tween))
+			{
+				this->AddAnimationKey(property);
+				return this;
+			}
 		}
 
-		return this;
+		return nullptr;
 	}
 
 	bool Animation2DScript::ParseAnimationProperty(const sol::table& table, Animation2DProperty& outProperty)

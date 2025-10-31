@@ -61,7 +61,7 @@ namespace VisionGal
 	void SpriteAnimationScript::TransformAlpha(float startTime, float duration, float startVal, float endVal,
 	                                           EasingFunction easing)
 	{
-		state.alpha.Start(startTime, duration, startVal, endVal, easing);
+		state.alpha.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void SpriteAnimationScript::Reset()

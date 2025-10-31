@@ -1,6 +1,6 @@
 #pragma once
-#include "../Interface/AnimationCore.h"
-#include "../Interface/AnimationProperty.h"
+#include "AnimationCore.h"
+#include "AnimationProperty.h"
 
 namespace VisionGal
 {
@@ -25,7 +25,7 @@ namespace VisionGal
 		TranslateXAnimationScript& operator=(TranslateXAnimationScript&&) noexcept = default;
 		~TranslateXAnimationScript() override = default;
 
-		bool StartAnimation(float targetValue, float duration, EasingFunction easing);
+		bool StartAnimation(float targetValue, float duration, Tween tween);
 
 		void OnUpdate(Horizon::HEntityInterface* entity) override;
 
@@ -48,7 +48,7 @@ namespace VisionGal
 		TranslateYAnimationScript& operator=(TranslateYAnimationScript&&) noexcept = default;
 		~TranslateYAnimationScript() override = default;
 
-		bool StartAnimation(float targetValue, float duration, EasingFunction easing);
+		bool StartAnimation(float targetValue, float duration, Tween tween);
 
 		void OnUpdate(Horizon::HEntityInterface* entity) override;
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Interface/AnimationCore.h"
+#include "../Core/AnimationCore.h"
 #include "../../Lua/sol2/sol.hpp"
 
 namespace VisionGal
@@ -16,13 +16,16 @@ namespace VisionGal
 
 		void OnUpdate(Horizon::HEntityInterface* entity) override;
 
+		// 开始动画
 		bool Animate(const Animation2DProperty& targetProperty, int numIterations = 1, bool alternateDirection = true, float delay = 0.0f);
 		bool AnimateLua(const sol::table& targetValue, float duration, std::string tween, int numIterations = 1, bool alternateDirection = true, float delay = 0.0f);
 
+		// 添加动画关键帧
 		bool AddAnimationKey(const Animation2DProperty& targetProperty);
 		Animation2DScript* AddAnimationKeyLua(const sol::table& targetValue, float duration, std::string tween);
 
-		static bool ParseAnimationProperty(const sol::table& table, Animation2DProperty& outProperty);
+		// 解析动画属性
+		static bool ParseAnimationProperty(const sol::table& value, Animation2DProperty& outProperty);
 	private:
 		void SetEntity(Horizon::HEntityInterface* entity);
 

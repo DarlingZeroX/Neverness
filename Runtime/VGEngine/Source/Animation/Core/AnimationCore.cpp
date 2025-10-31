@@ -1,4 +1,4 @@
-#include "Animation/Interface/AnimationCore.h"
+#include "Animation/Core/AnimationCore.h"
 
 namespace VisionGal
 {
@@ -14,7 +14,7 @@ namespace VisionGal
 	{
 		primitive.clear();
 		duration = 0.f;
-		tween = "";
+		tween = Tween{};
 	}
 }
 

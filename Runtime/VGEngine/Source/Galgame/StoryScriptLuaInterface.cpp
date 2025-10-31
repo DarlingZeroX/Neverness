@@ -2,7 +2,7 @@
 #include "Galgame/GameLua.h"
 #include <string>
 #include "Lua/CoreLuaInterface.h"
-#include "Animation/Core/Animation2DScript.h"
+#include "Animation/Interface/Animation2DScript.h"
 
 namespace VisionGal::GalGame
 {

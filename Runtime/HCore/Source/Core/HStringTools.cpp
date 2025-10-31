@@ -67,7 +67,7 @@ string HStringTools::Format(const char* fmtString, va_list args)
 //	return string(szBuffer);
 
 
-	// ÏÈ³¢ÊÔĞ¡»º³åÇø
+	// å…ˆå°è¯•å°ç¼“å†²åŒº
 	char smallBuf[1024];
 	va_list argsCopy;
 	va_copy(argsCopy, args);
@@ -80,7 +80,7 @@ string HStringTools::Format(const char* fmtString, va_list args)
 		return std::string(smallBuf);
 	}
 
-	// fallback£º·ÖÅä×ã¹»´ó»º³åÇø
+	// fallbackï¼šåˆ†é…è¶³å¤Ÿå¤§ç¼“å†²åŒº
 	std::vector<char> bigBuf(needed + 1);
 	va_copy(argsCopy, args);
 	vsnprintf(bigBuf.data(), bigBuf.size(), fmtString, argsCopy);
@@ -376,6 +376,15 @@ void HStringTools::ToLower(wstring& str)
 void HStringTools::ToLower(string& str)
 {
 	std::transform(str.begin(), str.end(), str.begin(), ::towlower);
+}
+
+std::string HStringTools::TrimCopy(const std::string& s)
+{
+	size_t b = 0;
+	while (b < s.size() && std::isspace(static_cast<unsigned char>(s[b]))) ++b;
+	size_t e = s.size();
+	while (e > b && std::isspace(static_cast<unsigned char>(s[e - 1]))) --e;
+	return s.substr(b, e - b);
 }
 
 void HStringTools::ToUpper(wstring& str)

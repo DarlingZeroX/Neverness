@@ -9,13 +9,13 @@ namespace VisionGal
 	{
 	}
 
-	bool TranslateXAnimationScript::StartAnimation(float targetValue, float duration, EasingFunction easing)
+	bool TranslateXAnimationScript::StartAnimation(float targetValue, float duration, Tween tween)
 	{
 		auto* transform = m_Entity->GetComponent<TransformComponent>();
 		float startX = transform->location.x;
 		float endX = startX + targetValue;
 
-		Start(duration, startX, endX, easing);
+		Start(duration, startX, endX, tween);
 		return true;
 	}
 
@@ -64,7 +64,7 @@ namespace VisionGal
 		H_ASSERT_NOT_NULL(entity);
 
 		auto script = CreateRef<TranslateXAnimationScript>(entity);
-		script->StartAnimation(primitive.valueF, targetProperty.duration, EasingCallbacks::linear);
+		script->StartAnimation(primitive.valueF, targetProperty.duration, targetProperty.tween);
 
 		return script;
 	}
@@ -74,13 +74,13 @@ namespace VisionGal
 	{
 	}
 
-	bool TranslateYAnimationScript::StartAnimation(float targetValue, float duration, EasingFunction easing)
+	bool TranslateYAnimationScript::StartAnimation(float targetValue, float duration, Tween tween)
 	{
 		auto* transform = m_Entity->GetComponent<TransformComponent>();
 		float startY = transform->location.y;
 		float endY = startY + targetValue;
 
-		Start(duration, startY, endY, easing);
+		Start(duration, startY, endY, tween);
 		return true;
 	}
 
@@ -129,7 +129,7 @@ namespace VisionGal
 		H_ASSERT_NOT_NULL(entity);
 
 		auto script = CreateRef<TranslateYAnimationScript>(entity);
-		script->StartAnimation(primitive.valueF, targetProperty.duration, EasingCallbacks::linear);
+		script->StartAnimation(primitive.valueF, targetProperty.duration, targetProperty.tween);
 
 		return script;
 	}

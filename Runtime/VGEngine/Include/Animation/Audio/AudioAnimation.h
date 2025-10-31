@@ -1,6 +1,6 @@
 #pragma once
 #include "../../Interface/GameInterface.h"
-#include "../Interface/AnimationProperty.h"
+#include "../Core/AnimationProperty.h"
 
 namespace VisionGal
 {

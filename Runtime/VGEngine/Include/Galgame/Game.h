@@ -1,6 +1,6 @@
 #pragma once
 #include "Interface.h"
-#include "../Animation/Core/Animation2DScript.h"
+#include "../Animation/Interface/Animation2DScript.h"
 #include "../Lua/sol2/sol.hpp"
 #include "../Scene/Components.h"
 

@@ -71,7 +71,7 @@ namespace VisionGal
 		TravelProperty([this](FloatAnimationProperty& property)
 			{
 				property.active = false;
-				property.easing = EasingCallbacks::linear;
+				property.tween = Tween{};
 			});
 	}
 
@@ -89,43 +89,43 @@ namespace VisionGal
 	void TransformAnimationScript::TransformXOffset(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.xoffset.Start(startTime, duration, startVal, endVal, easing);
+		state.xoffset.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void TransformAnimationScript::TransformYOffset(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.yoffset.Start(startTime, duration, startVal, endVal, easing);
+		state.yoffset.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void TransformAnimationScript::TransformRotate(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.rotate.Start(startTime, duration, startVal, endVal, easing);
+		state.rotate.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void TransformAnimationScript::TransformZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.zoom.Start(startTime, duration, startVal, endVal, easing);
+		state.zoom.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void TransformAnimationScript::TransformXZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.xzoom.Start(startTime, duration, startVal, endVal, easing);
+		state.xzoom.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void TransformAnimationScript::TransformYZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.yzoom.Start(startTime, duration, startVal, endVal, easing);
+		state.yzoom.Start(startTime, duration, startVal, endVal, Tween{});
 	}
 
 	void TransformAnimationScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, easing);
+		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, Tween{});
 	}
 
 	void TransformAnimationScript::Reset()
