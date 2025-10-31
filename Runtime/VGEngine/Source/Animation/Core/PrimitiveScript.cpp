@@ -9,11 +9,17 @@ namespace VisionGal
 	{
 	}
 
-	bool TranslateXAnimationScript::StartAnimation(float targetValue, float duration, Tween tween)
+	bool TranslateXAnimationScript::StartAnimation(float targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = m_Entity->GetComponent<TransformComponent>();
 		float startX = transform->location.x;
 		float endX = startX + targetValue;
+
+		if (reverse)
+		{
+			endX = startX - targetValue;
+			tween.reverse();
+		}
 
 		Start(duration, startX, endX, tween);
 		return true;
@@ -58,13 +64,14 @@ namespace VisionGal
 	Ref<IAnimationScript> TranslateXAnimationScript::GetAnimationScript(
 		Horizon::HEntityInterface* entity, 
 		const Animation2DProperty& targetProperty,
-		const Animation2DPrimitive& primitive
+		const Animation2DPrimitive& primitive,
+		bool reverse
 	)
 	{
 		H_ASSERT_NOT_NULL(entity);
 
 		auto script = CreateRef<TranslateXAnimationScript>(entity);
-		script->StartAnimation(primitive.valueF, targetProperty.duration, targetProperty.tween);
+		script->StartAnimation(primitive.valueF, targetProperty.duration, targetProperty.tween, reverse);
 
 		return script;
 	}
@@ -74,11 +81,17 @@ namespace VisionGal
 	{
 	}
 
-	bool TranslateYAnimationScript::StartAnimation(float targetValue, float duration, Tween tween)
+	bool TranslateYAnimationScript::StartAnimation(float targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = m_Entity->GetComponent<TransformComponent>();
 		float startY = transform->location.y;
 		float endY = startY + targetValue;
+
+		if (reverse)
+		{
+			endY = startY - targetValue;
+			tween.reverse();
+		}
 
 		Start(duration, startY, endY, tween);
 		return true;
@@ -123,13 +136,14 @@ namespace VisionGal
 	Ref<IAnimationScript> TranslateYAnimationScript::GetAnimationScript(
 		Horizon::HEntityInterface* entity, 
 		const Animation2DProperty& targetProperty,
-		const Animation2DPrimitive& primitive
+		const Animation2DPrimitive& primitive,
+		bool reverse
 	)
 	{
 		H_ASSERT_NOT_NULL(entity);
 
 		auto script = CreateRef<TranslateYAnimationScript>(entity);
-		script->StartAnimation(primitive.valueF, targetProperty.duration, targetProperty.tween);
+		script->StartAnimation(primitive.valueF, targetProperty.duration, targetProperty.tween, reverse);
 
 		return script;
 	}
@@ -165,14 +179,15 @@ namespace VisionGal
 	Ref<IAnimationScript> AnimationPrimitiveManager::GetPrimitiveScript(
 		Horizon::HEntityInterface* entity,
 		const Animation2DProperty& targetProperty,
-		const Animation2DPrimitive& primitive
+		const Animation2DPrimitive& primitive,
+		bool reverse
 	)
 	{
 		H_ASSERT_NOT_NULL(entity);
 
 		for (const auto& parser : m_Primitives) {
 			if (parser->GetPrimitiveType() == primitive.type) {
-				return parser->GetAnimationScript(entity, targetProperty, primitive);
+				return parser->GetAnimationScript(entity, targetProperty, primitive, reverse);
 			}
 		}
 

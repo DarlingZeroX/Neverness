@@ -31,7 +31,7 @@ namespace VisionGal::GalGame
 		virtual GalSprite* Show();
 		virtual GalSprite* With(const std::string& transform);
 
-		Animation2DScript* Animate(const sol::table& targetValue, float duration, std::string tween);
+		Animation2DScript* Animate(const sol::table& targetValue, float duration, std::string tween, int numIterations = 1, bool alternateDirection = true);
 
 		virtual GalSprite* SetPosX(float offset);
 		virtual GalSprite* SetPosY(float offset);

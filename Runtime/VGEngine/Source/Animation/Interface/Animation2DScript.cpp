@@ -20,13 +20,57 @@ namespace VisionGal
 		{
 			m_CurrentAnimationScript.Reset();
 
-			// 应用下一个动画关键帧
-			if (m_AnimationKeyDeque.empty() == false)
-			{
-				auto property = m_AnimationKeyDeque.front();
-				m_AnimationKeyDeque.pop_front();
+			const int keyCount = static_cast<int>(m_AnimationKeys.size());
+			if (keyCount == 0)
+				return;
 
-				ApplyAnimationKey(property);
+			int nextIndex = m_CurrentKeyIndex + m_CurrentDirection;
+
+			// 如果下一个索引仍然在范围内，直接切换到下一个关键帧
+			if (nextIndex >= 0 && nextIndex < keyCount)
+			{
+				m_CurrentKeyIndex = nextIndex;
+				ApplyAnimationKey(m_AnimationKeys[m_CurrentKeyIndex]);
+				return;
+			}
+
+			// 到达边界，完成一次序列遍历
+			m_CurrentIteration++;
+
+			// 如果达到或超过迭代次数，停止继续播放
+			if (m_CurrentIteration >= m_NumIterations)
+			{
+				// 完成所有迭代，不再应用新的关键帧
+				return;
+			}
+
+			// 只有一个关键帧时，重复播放该帧
+			if (keyCount == 1)
+			{
+				m_CurrentKeyIndex = 0;
+				ApplyAnimationKey(m_AnimationKeys[0]);
+				return;
+			}
+
+			// 处理方向交替（往返）或重头开始
+			if (m_AlternateDirection)
+			{
+				// 反转方向并移动到下一个有效索引
+				m_CurrentDirection = -m_CurrentDirection;
+				nextIndex = m_CurrentKeyIndex;// +m_CurrentDirection;
+				if (nextIndex >= 0 && nextIndex < keyCount)
+				{
+					m_CurrentKeyIndex = nextIndex;
+					ApplyAnimationKey(m_AnimationKeys[m_CurrentKeyIndex]);
+				}
+			}
+			else
+			{
+				RestoreInitialState();
+				// 不交替方向，则从头开始（正向）
+				m_CurrentDirection = 1;
+				m_CurrentKeyIndex = 0;
+				ApplyAnimationKey(m_AnimationKeys[0]);
 			}
 		}
 	}
@@ -38,8 +82,13 @@ namespace VisionGal
 
 	bool Animation2DScript::Animate(const Animation2DProperty& targetProperty, int numIterations, bool alternateDirection, float delay)
 	{
-		m_NumIterations = numIterations;
+		// 保证至少一次迭代（如果需要支持无限，可改为特殊值）
+		m_NumIterations = (numIterations > 0) ? numIterations : 1;
 		m_AlternateDirection = alternateDirection;
+
+		// 重置运行状态，从头开始（默认正向）
+		m_CurrentIteration = 0;
+		m_CurrentDirection = 1;
 
 		AddAnimationKey(targetProperty);
 		return true;
@@ -65,13 +114,13 @@ namespace VisionGal
 
 	bool Animation2DScript::AddAnimationKey(const Animation2DProperty& targetProperty)
 	{
+		m_AnimationKeys.push_back(targetProperty);
+
+		// 如果当前没有运行中的动画，则立即应用新加入的关键帧，并确保索引指向该关键帧
 		if (m_CurrentAnimationScript.IsEmpty())
 		{
+			m_CurrentKeyIndex = static_cast<int>(m_AnimationKeys.size()) - 1;
 			ApplyAnimationKey(targetProperty);
-		}
-		else
-		{
-			m_AnimationKeyDeque.push_back(targetProperty);
 		}
 
 		return true;
@@ -118,39 +167,36 @@ namespace VisionGal
 
 	void Animation2DScript::ApplyAnimationKey(const Animation2DProperty& targetProperty)
 	{
+		auto* apm = AnimationPrimitiveManager::GetInstance();
+
 		for (auto& primitive: targetProperty.primitive)
 		{
-			AddAnimationPrimitiveScript(targetProperty, primitive);
+			//AddAnimationPrimitiveScript(targetProperty, primitive);
+			if (auto script = apm->GetPrimitiveScript(m_Entity, targetProperty, primitive, m_CurrentDirection < 0))
+			{
+				m_CurrentAnimationScript.scripts.push_back(script);
+			}
 		}
 
 	}
 
-	void Animation2DScript::AddAnimationPrimitiveScript(const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive)
+	void Animation2DScript::RestoreInitialState()
 	{
 		auto* apm = AnimationPrimitiveManager::GetInstance();
 
-		if (auto script = apm->GetPrimitiveScript(m_Entity, targetProperty, primitive))
+		for (int i = m_AnimationKeys.size() - 1; i >= 0; --i)
 		{
-			m_CurrentAnimationScript.scripts.push_back(script);
-		}
+			auto key = m_AnimationKeys[i];
+			key.duration = 0.f; // 设置为瞬时恢复
 
-		//switch (primitive.type)
-		//{
-		//case Animation2DPrimitiveType::TranslateX:
-		//	{
-		//	auto script = CreateRef<TranslateXAnimationScript>(m_Entity);
-		//	script->StartAnimation(primitive.valueF, targetProperty.duration, EasingCallbacks::linear);
-		//	m_CurrentAnimationScript.scripts.push_back(script);
-		//	}
-		//	break;
-		//case Animation2DPrimitiveType::TranslateY:
-		//	{
-		//	auto script = CreateRef<TranslateYAnimationScript>(m_Entity);
-		//	script->StartAnimation(primitive.valueF, targetProperty.duration, EasingCallbacks::linear);
-		//	m_CurrentAnimationScript.scripts.push_back(script);
-		//	}
-		//	break;
-		//}
+			for (auto& primitive : key.primitive)
+			{
+				if (auto script = apm->GetPrimitiveScript(m_Entity, key, primitive, true))
+				{
+					script->OnUpdate(m_Entity);
+				}
+			}
+		}
 	}
 
 	bool Animation2DScript::PropertyAnimationScriptList::IsEmpty()

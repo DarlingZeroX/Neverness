@@ -11,7 +11,7 @@ namespace VisionGal
 		virtual bool CanParse(const std::string& key) const = 0;
 		virtual bool ParseLua(sol::object value, Animation2DPrimitive& primitive) const = 0;
 		virtual Animation2DPrimitiveType GetPrimitiveType() = 0;
-		virtual Ref<IAnimationScript> GetAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive) = 0;
+		virtual Ref<IAnimationScript> GetAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive, bool reverse) = 0;
 	};
 
 	struct TranslateXAnimationScript : public FloatAnimationPropertyScript, public IAnimationPrimitive
@@ -25,14 +25,14 @@ namespace VisionGal
 		TranslateXAnimationScript& operator=(TranslateXAnimationScript&&) noexcept = default;
 		~TranslateXAnimationScript() override = default;
 
-		bool StartAnimation(float targetValue, float duration, Tween tween);
+		bool StartAnimation(float targetValue, float duration, Tween tween, bool reverse);
 
 		void OnUpdate(Horizon::HEntityInterface* entity) override;
 
 		bool CanParse(const std::string& key) const override;
 		bool ParseLua(sol::object value, Animation2DPrimitive& primitive) const override;
 		Animation2DPrimitiveType GetPrimitiveType() override;
-		Ref<IAnimationScript> GetAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive) override;
+		Ref<IAnimationScript> GetAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive, bool reverse) override;
 	private:
 		Horizon::HEntityInterface* m_Entity;
 	};
@@ -48,14 +48,14 @@ namespace VisionGal
 		TranslateYAnimationScript& operator=(TranslateYAnimationScript&&) noexcept = default;
 		~TranslateYAnimationScript() override = default;
 
-		bool StartAnimation(float targetValue, float duration, Tween tween);
+		bool StartAnimation(float targetValue, float duration, Tween tween, bool reverse);
 
 		void OnUpdate(Horizon::HEntityInterface* entity) override;
 
 		bool CanParse(const std::string& key) const override;
 		bool ParseLua(sol::object value, Animation2DPrimitive& primitive) const override;
 		Animation2DPrimitiveType GetPrimitiveType() override;
-		Ref<IAnimationScript> GetAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive) override;
+		Ref<IAnimationScript> GetAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive, bool reverse) override;
 	private:
 		Horizon::HEntityInterface* m_Entity;
 	};
@@ -79,6 +79,6 @@ namespace VisionGal
 
 		bool Parse(const std::string& key, sol::object value, Animation2DPrimitive& primitive) const;
 
-		Ref<IAnimationScript> GetPrimitiveScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive);
+		Ref<IAnimationScript> GetPrimitiveScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, const Animation2DPrimitive& primitive, bool reverse);
 	};
 }

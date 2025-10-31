@@ -115,7 +115,11 @@ namespace VisionGal::GalGame
 				//static_cast<GalSprite * (GalSprite::*)(Transform)>(&GalSprite::With),
 				static_cast<GalSprite * (GalSprite::*)(const std::string&)>(&GalSprite::With)
 			),
-			"开始动画", &GalSprite::Animate,
+			"开始动画", sol::overload(
+				[](GalSprite& self, const sol::table& targetValue, float duration, std::string tween) { return self.Animate(targetValue, duration, tween); },
+				[](GalSprite& self, const sol::table& targetValue, float duration, std::string tween, int numIterations) { return self.Animate(targetValue, duration, tween, numIterations); },
+				[](GalSprite& self, const sol::table& targetValue, float duration, std::string tween, int numIterations, bool alternateDirection) { return self.Animate(targetValue, duration, tween, numIterations, alternateDirection); }
+			),
 			"转场", &GalSprite::Cut,
 			"设置缩放", &GalSprite::SetScale,
 			"设置位置偏移X", &GalSprite::SetPosOffsetX,

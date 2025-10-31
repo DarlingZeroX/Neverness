@@ -29,9 +29,11 @@ namespace VisionGal
 	private:
 		void SetEntity(Horizon::HEntityInterface* entity);
 
+		// 应用动画关键帧
 		void ApplyAnimationKey(const Animation2DProperty& targetProperty);
 
-		void AddAnimationPrimitiveScript(const Animation2DProperty& targetProperty,const Animation2DPrimitive& primitive);
+		// 恢复初始状态,仅在动画完成一轮时调用
+		void RestoreInitialState();
 	private:
 		struct PropertyAnimationScriptList
 		{
@@ -43,9 +45,13 @@ namespace VisionGal
 		};
 	private:
 		PropertyAnimationScriptList m_CurrentAnimationScript;
-		std::deque<Animation2DProperty> m_AnimationKeyDeque;
+		std::vector<Animation2DProperty> m_AnimationKeys;
 		int m_NumIterations = 1;
 		bool m_AlternateDirection = true;
 		Horizon::HEntityInterface* m_Entity = nullptr;
+
+		int m_CurrentIteration = 0;
+		int m_CurrentDirection = 1;
+		int m_CurrentKeyIndex = 0;
 	};
 }
