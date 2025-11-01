@@ -1,0 +1,56 @@
+<rml>
+<head>
+    <link type="text/template" href="../窗口.lua" />
+	<link type="text/css" href="主菜单CSS.css"/>
+
+    <script>
+        HTML主菜单 = HTML主菜单 or {}
+
+        function HTML主菜单.页面加载调用(event,document)
+            --html_CurrentGameState = "MainMenu"
+            html当前游戏UI状态 = "主菜单"
+        end
+
+        function HTML主菜单.开始游戏(event,documnet)
+            转场管理器:开始转场命令('Screen','fadeOut 1.5')
+            转场管理器:开始转场命令('Screen','fadeIn 1.0')
+            场景管理器:加载场景('/assets/游戏场景.vgasset')
+        end
+    </script>
+</head>
+<body onload="HTML主菜单.页面加载调用(event, document)">
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 标题 -->
+        <h1 class="title">星 野 幻 想</h1>
+        <p class="subtitle"> 去一个有梦的地方,  邂逅一场治愈的温暖 </p>
+        
+        <!-- 菜单 -->
+        <div class="menu">
+            <button class="menu-item" onclick="HTML主菜单.开始游戏(event,documnet)">
+                <span>开始游戏</span>
+            </button>
+            <button class="menu-item" onclick="HTML窗口.加载文档('/assets/game/archiveRead',document)">
+                <span>读取存档</span>
+            </button>
+            <button class="menu-item" onclick="HTML窗口.加载文档('/assets/UI/主菜单/设置菜单',document)">
+                <span>游戏设置</span>
+            </button>
+            <button class="menu-item">
+                <span>关于游戏</span>
+            </button>
+            <button class="menu-item" onclick="Application.Quit()">
+                <span>结束游戏</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <div class="footer">
+        <p>VisonGal 引擎示例项目: 版本 1.0.0</p>
+    </div>
+		
+</body>
+
+</rml>

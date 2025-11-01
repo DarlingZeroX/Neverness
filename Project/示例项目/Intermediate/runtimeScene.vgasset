@@ -100,7 +100,7 @@
     "RmlUIDocumentComponent": {
         "EntityComponentID": 11525862322656296263,
         "HasDocument": true,
-        "m_DocumentPath": "/assets/游戏UI\\game.html"
+        "m_DocumentPath": "/assets/UI\\游戏\\游戏.html"
     },
     "SegmentType": "Camera",
     "ComponentNumber": 1,
@@ -116,6 +116,6 @@
     "GalGameEngine": {
         "EntityComponentID": 8139420644421808243,
         "HasScript": true,
-        "m_ScriptPath": "/assets/剧情脚本\\动画\\基础动画.lua"
+        "m_ScriptPath": "/assets/剧情脚本\\人物基础.lua"
     }
 }

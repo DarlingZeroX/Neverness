@@ -6,12 +6,12 @@ namespace Horizon
 {
 	HPackage::HPackage(HPath vpath)
 	{
-		wstring outDirectory;
+		string outDirectory;
 		fsPath filePath = vpath.parent_path();
-		wstring name;
-		wstring ext;
+		string name;
+		string ext;
 
-		HFileSystem::SplitPath(vpath.c_str(), &outDirectory, &name, &ext);
+		HFileSystem::SplitPath(vpath, &outDirectory, &name, &ext);
 
 		auto fileFullName = outDirectory + name;
 
@@ -29,14 +29,14 @@ namespace Horizon
 		fsPath parentPath = path.parent_path();
 		fsPath metaPath = parentPath / (name + L".gmeta");
 
-		// ´ò¿ªMetaÎÄ¼ş
+		// æ‰“å¼€Metaæ–‡ä»¶
 		std::fstream m_MetaFile;
 		m_MetaFile.open(metaPath, std::ios::in);
 
 		if (!m_MetaFile.is_open())
 			return false;
 
-		// ¶ÁÈ¡ÎÄ¼şµÚÒ»ĞĞ
+		// è¯»å–æ–‡ä»¶ç¬¬ä¸€è¡Œ
 		std::string metaData;
 		getline(m_MetaFile, metaData);
 
@@ -45,7 +45,7 @@ namespace Horizon
 		if (split.size() != 3)
 			return false;
 
-		// ±êÊ¶·û
+		// æ ‡è¯†ç¬¦
 		if (split[0].compare("[GASSET]") != 0)
 			return false;
 
@@ -54,7 +54,7 @@ namespace Horizon
 		char* uuidEnd;
 		metadata.UUID = std::strtoull(uuid.data(), &uuidEnd, 10);
 
-		// ×Ê²úÀà±ğ
+		// èµ„äº§ç±»åˆ«
 		auto& assetType = split[2];
 		char* assetTypeEnd;
 		metadata.AssetType = assetType;
@@ -66,9 +66,9 @@ namespace Horizon
 
 	Ref<HPackage> HPackage::NewPackage(const HPath& path)
 	{
-		std::wstring ext, name, parentPath;
+		std::string ext, name, parentPath;
 
-		HFileSystem::SplitPath(path.c_str(), &parentPath, &name, &ext);
+		HFileSystem::SplitPath(path, &parentPath, &name, &ext);
 
 		fsPath metaPath = parentPath;
 
@@ -119,7 +119,7 @@ namespace Horizon
 
 	void HPackage::CloseOutputStream()
 	{
-		// ¹Ø±Õ¶ş½øÖÆÎÄ¼şÁ÷ BinaryData Stream
+		// å…³é—­äºŒè¿›åˆ¶æ–‡ä»¶æµ BinaryData Stream
 		m_AssetBinaryDataFile.close();
 
 		CloseOutputMetaStream();
@@ -132,11 +132,11 @@ namespace Horizon
 
 	void HPackage::CloseOutputMetaStream()
 	{
-		// ´ò¿ªMetaÁ÷ MetaData Stream
+		// æ‰“å¼€Metaæµ MetaData Stream
 		std::fstream metaStream;
 		metaStream.open(m_PhysicalMetaFilePath, std::ios::out);
 
-		// Ğ´ÈëGASSET×Ê²úµÄ±êÊ¶·û£¬UUID,×Ê²úÀà±ğ
+		// å†™å…¥GASSETèµ„äº§çš„æ ‡è¯†ç¬¦ï¼ŒUUID,èµ„äº§ç±»åˆ«
 		std::string metaData = "";
 		metaData += "[GASSET];";
 		metaData += m_AssetMetaData.MetaData.UUID.ToString();
@@ -213,7 +213,7 @@ namespace Horizon
 		char* uuidEnd;
 		m_AssetMetaData.MetaData.UUID = std::strtoull(uuid.data(), &uuidEnd, 10);
 
-		// ×Ê²úÀà±ğ
+		// èµ„äº§ç±»åˆ«
 		auto& assetType = split[2];
 		m_AssetMetaData.MetaData.AssetType = assetType;
 

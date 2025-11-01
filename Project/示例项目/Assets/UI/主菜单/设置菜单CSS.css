@@ -1,0 +1,239 @@
+body {
+	font-family: "Microsoft YaHei";
+    /***font-family: "Segoe UI";***/
+}
+
+@keyframes container-animation {
+    from { 
+        transform: scale(0.8) ;
+        opacity: 0;
+        visibility: hidden;
+    }
+    to { 
+        transform: scale(1.0);
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.settings-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: visible;
+    animation: 0.3s container-animation;
+}
+
+scrollbarvertical
+{
+	width: 27px;
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
+
+/*** 范围条 ***/
+scrollbarvertical slidertrack {
+    margin-left: 1px;
+	width: 12dp;
+	background: rgba(63, 93, 120, 250); 
+    border-radius: 3px;
+}
+
+/*** 范围按钮 ***/
+scrollbarvertical sliderbar {
+	width: 14dp;
+	height: 24dp;
+    background: rgba(74, 134, 189, 255);
+    border-radius: 2px;
+}
+
+scrollbarvertical sliderbar:hover, scrollbarvertical slidertrack:hover + sliderbar  {
+    transform: scale(1.1);
+    background: rgba(74, 134, 189, 240);
+}
+
+.settings-panel{
+    background: rgba(34, 78, 106, 150);
+    backdrop-filter: blur(5px); 
+    /***border: 2px rgb(184, 184, 184); ***/
+    border-radius: 0.75rem;
+    width: 600px;
+    max-height: 90vh;
+	overflow: hidden auto;
+    padding: 2rem;
+
+    /***filter: drop-shadow(rgba(34, 78, 106, 100) 4px 4px 5px);  ***/
+
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px rgba(255, 255, 255, 50);
+}
+
+.settings-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+
+    font-effect: outline(1px #969696);
+	color: white;
+}
+
+.setting-group {
+    margin-bottom: 0.5rem;
+    background: rgba(34, 78, 106, 50);
+    /*background: rgb(184, 112, 19);*/
+    display: block;
+    border-radius: 3px;
+    backdrop-filter: blur(15px); 
+}
+
+.setting-header{
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.setting-title {
+    font-size: 1.5rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+
+    font-effect: outline(1px #525252);
+	color: white;
+}
+
+.slider-setting {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+
+    /*** background: rgba(77, 93, 200, 50); ***/
+
+    border-radius: 3px;
+}
+
+.slider-label {
+    width: 10rem;
+    font-size: 1.25rem;
+    margin-left: 1rem;
+
+    font-effect: outline(1px #3a3a3a);
+}
+
+/*** 范围边框 ***/
+input.range {
+	width: 90%;
+	height: 32dp;
+    margin-right: 1rem;
+   /*** background: rgb(139, 74, 74); ***/
+}
+
+/*** 范围条 ***/
+input.range slidertrack {
+	margin-top: 10dp;
+	height: 12dp;
+	background: rgba(63, 93, 120, 240); 
+    border-radius: 3px;
+}
+
+/*** 范围按钮 ***/
+input.range sliderbar {
+    margin-top: 4dp;
+	width: 14dp;
+	height: 24dp;
+    background: rgba(74, 134, 189, 220);
+    border-radius: 2px;
+}
+
+input.range sliderbar:hover, input.range slidertrack:hover + sliderbar  {
+    transform: scale(1.1);
+    background: rgba(74, 134, 189, 240);
+}
+input.range sliderbar:active, input.range slidertrack:active + sliderbar  {
+    background: rgba(74, 134, 189, 180);
+}
+
+
+tabset
+{
+	display: block;
+    width: 90%;
+    background: rgba(63, 93, 120, 240);
+    text-align: center;
+
+    margin-right: 1rem;
+    border-radius: 2px;
+}
+
+tab
+{
+	width: 30%;
+	padding: 0 20dp;
+    margin-left: 20dp;
+
+	display: inline-block;
+
+	font-size: 15dp;
+	text-align: center;
+    border-radius: 2px;
+
+    font-effect: outline(1px #3a3a3a);
+}
+tab:hover
+{
+	background: rgba(145, 246, 255,100);
+}
+tab:active, tab:selected
+{
+	background-color: rgba(145, 246, 255,200);
+}
+
+.option-menu-bottom-button {
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; /*** 浮动到右边***/
+}
+/***
+.back-btn {
+    display: block;
+    width: 80px;
+    height: 20px;
+    border-radius: 3px;
+    background-color: rgb(109, 178, 238);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s;
+}***/
+.back-btn {
+    margin: 5px;
+    padding: 2px 18px;
+    background: rgba(109, 178, 238, 200);
+    border: 1px rgba(255,255,255,70);
+    color: #fff;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.3s;
+    font-size: 14px;
+    font-effect: outline(1px #899eb1);
+    z-index: 2;
+}
+
+.back-btn:hover {
+    background-color: rgba(74, 134, 189, 255);
+}

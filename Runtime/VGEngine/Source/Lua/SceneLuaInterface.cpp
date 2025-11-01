@@ -96,10 +96,12 @@ namespace VisionGal
 		);
 
 		lua.new_usertype<SceneManager>("SceneManagerClass",
-			"LoadScene", &SceneManager::LoadScene
+			"LoadScene", &SceneManager::LoadScene,
+			"加载场景", &SceneManager::LoadScene
 		);
 
 		lua["SceneManager"] = sol::make_object(lua, SceneManager::Get());
+		lua["场景管理器"] = sol::make_object(lua, SceneManager::Get());
 	}
 
 }

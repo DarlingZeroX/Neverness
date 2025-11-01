@@ -1,0 +1,132 @@
+<rml>
+    <head>
+        <link type="text/template" href="../窗口.lua" />
+        <link type="text/css" href="设置菜单CSS.css"/>
+
+        
+        <script>
+            HTML选项菜单 = HTML选项菜单 or {}
+
+            function HTML选项菜单.返回主菜单(event,document)
+                TransitionManager:StartTransitionWithCommand('Screen','fade_out 1.0')
+                TransitionManager:StartTransitionWithCommand('Screen','fade_in 1.0')
+
+                SceneManager:LoadScene('/assets/MainMenuScene.vgasset')
+            end
+
+            function HTML选项菜单.结束游戏(event,document)
+                Application.Quit()
+            end
+
+            function HTML选项菜单.OnLoad(element, document)
+                if(html_CurrentGameState == "Gaming") then
+                    local option_menu_bottom_button = element:GetElementById('option-menu-bottom-button')
+
+                    local return_main_menu = document:CreateElement('button')
+                    return_main_menu = option_menu_bottom_button:AppendChild(return_main_menu)
+                    return_main_menu:SetAttribute('class', 'back-btn')
+                    return_main_menu:SetAttribute('onclick', 'HTML选项菜单.返回主菜单(event,document)')
+                    return_main_menu.innerRml = '返回主菜单'
+
+                    local end_game = document:CreateElement('button')
+                    end_game = option_menu_bottom_button:AppendChild(end_game)
+                    end_game:SetAttribute('class', 'back-btn')
+                    end_game:SetAttribute('onclick', 'HTML选项菜单.结束游戏(event,document)')
+                    end_game.innerRml = '结束游戏'
+                end
+            end
+
+            function HTML选项菜单.关闭选项菜单(event,document)
+                print(html当前游戏UI状态)
+                if(html当前游戏UI状态 == '主菜单') then
+                    HTML窗口.加载文档('/assets/UI/主菜单/主菜单',document)
+                elseif(html当前游戏UI状态 == "Gaming") then
+                    HTML窗口.加载文档('/assets/game/game',document)
+                end    
+            end
+        </script>
+    </head>
+    <body onload="HTML选项菜单.OnLoad(element,document)" onkeydown="if HTML窗口.ESC按下(event) then HTML选项菜单.关闭选项菜单(event,document) end" class="fade-in">  
+        <!-- 设置界面 -->
+        <div class="settings-container"> 
+            <div class="settings-panel">
+
+                <!-- 菜单 -->
+                <div class="settings-header">
+                    <div class="settings-title">游戏设置</div>
+                    <button class="close-btn" id="closeSettings">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="setting-group">
+
+                    <div class="setting-header">   
+                        <div class="setting-title">声音设置</div>
+                    </div>
+
+                    <div class="slider-setting">
+                        <div class="slider-label">音乐</div>
+                        <input type="range" min="0" max="100" step="1" value="50"/> 
+                    </div>
+            
+                    <div class="slider-setting">
+                        <div class="slider-label">效果音</div>
+                        <input type="range" min="0" max="100" step="1" value="50"/> 
+                    </div>
+             
+                    <div class="slider-setting">
+                        <div class="slider-label">系统音</div>
+                        <input type="range" min="0" max="100" step="1" value="100"/> 
+                    </div>
+
+                    <div class="slider-setting">
+                        <div class="slider-label">语音</div>
+                        <input type="range" min="0" max="100" step="1" value="100"/> 
+                    </div>
+
+                </div>
+
+
+                <div class="setting-group">
+
+                    <div class="slider-setting">
+                        <div class="slider-label">对话框透明度</div>
+                        <input type="range" min="0" max="100" step="1" value="50"/> 
+                    </div>
+            
+                    <div class="slider-setting">
+                        <div class="slider-label">文字显示速度</div>
+                        <input type="range" min="0" max="100" step="1" value="50"/> 
+                    </div>
+             
+                    <div class="slider-setting">
+                        <div class="slider-label">文字快进</div>
+                        <tabset id="textfast">
+                            <tab>已读</tab>
+                            <tab>全部</tab>
+                        </tabset>
+                    </div>
+
+                </div>
+
+                <div class="setting-group">
+                    <div class="setting-header">   
+                        <div class="setting-title">自动模式设定</div>
+                    </div>
+                    <div class="slider-setting">
+                        <div class="slider-label">文字播放速度</div>
+                        <input type="range" min="0" max="100" step="1" value="50"/> 
+                    </div>
+                </div>
+                <div class="option-menu-bottom-button" id="option-menu-bottom-button">
+                    <button class="back-btn" onclick="HTML选项菜单.关闭选项菜单(event,document)">返回</button>
+                </div>
+            </div>
+
+        </div>
+            
+    </body>
+    
+    </rml>
+    

@@ -210,16 +210,15 @@ namespace Horizon
 		CORE_MODULE_API bool							   ReadTextFromFile(const fsPath& path, std::string& text);
 		CORE_MODULE_API bool							   WriteTextToFile(const fsPath& path, const std::string& text);
 
-		CORE_MODULE_API void                               SplitPath(const string& inFullPath, string* outDirectory, string* outFileName, string* outFileExt);
-		CORE_MODULE_API void                               SplitPath(const wstring& inFullPath, wstring* outDirectory, wstring* outFileName, wstring* outFileExt);
+		CORE_MODULE_API void                               SplitPath(const fsPath& inFullPath, string* outDirectory, string* outFileName, string* outFileExt);
+		CORE_MODULE_API void                               SplitPath(const fsPath& inFullPath, wstring* outDirectory, wstring* outFileName, wstring* outFileExt);
 
 		CORE_MODULE_API bool                               PathHasDirectory(const string& inFullPath);
 
-		CORE_MODULE_API wstring                            FixExtension(const wstring& path, const wstring& ext);
+		//CORE_MODULE_API wstring                            FixExtension(const wstring& path, const wstring& ext);
 		CORE_MODULE_API string                             FixExtension(const string& path, const string& ext);
 
-		CORE_MODULE_API string                             SplitPathExt(const string& inFullPath);
-		CORE_MODULE_API wstring                            SplitPathExt(const wstring& inFullPath);
+		CORE_MODULE_API string                             SplitPathExt(const fsPath& inFullPath);
 
 		CORE_MODULE_API std::string						   ToWindowsPath(const std::string& path);
 		CORE_MODULE_API	std::string						   ToUnixPath(const std::string& path);

@@ -3,7 +3,14 @@
     "SegmentType": "Script",
     "ComponentNumber": 0,
     "SegmentType": "Entity",
-    "EntityNumber": 3,
+    "EntityNumber": 4,
+    "Label": "UI文档",
+    "ID": 12240215965250073802,
+    "Parent": 0,
+    "ComponentIDs": [
+        5530299029171720523,
+        15262516470008218613
+    ],
     "Label": "精灵",
     "ID": 7565472559013602276,
     "Parent": 0,
@@ -25,7 +32,27 @@
     "SegmentType": "AudioSourceComponent",
     "ComponentNumber": 0,
     "SegmentType": "Transform",
-    "ComponentNumber": 2,
+    "ComponentNumber": 3,
+    "Transform": {
+        "EntityComponentID": 5530299029171720523,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
     "Transform": {
         "EntityComponentID": 6557717273463339951,
         "location": {
@@ -72,14 +99,14 @@
         "EntityComponentID": 10179991923200072659,
         "HasSprite": true,
         "m_SpriteSize": {
-            "x": 101.0,
-            "y": 100.0
+            "x": 1921.0,
+            "y": 1080.0
         },
         "m_SpritePosition": {
             "x": 0.0,
             "y": 0.0
         },
-        "m_SpriteTexturePath": "/engine/textures/white.png",
+        "m_SpriteTexturePath": "/assets/UI\\主菜单\\主菜单背景.png",
         "Color": {
             "x": 1.0,
             "y": 1.0,
@@ -92,7 +119,12 @@
         }
     },
     "SegmentType": "RmlUIDocumentComponent",
-    "ComponentNumber": 0,
+    "ComponentNumber": 1,
+    "RmlUIDocumentComponent": {
+        "EntityComponentID": 15262516470008218613,
+        "HasDocument": true,
+        "m_DocumentPath": "/assets/UI\\主菜单\\主菜单.html"
+    },
     "SegmentType": "Camera",
     "ComponentNumber": 1,
     "Camera": {

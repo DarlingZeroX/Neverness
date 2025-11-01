@@ -234,7 +234,7 @@ namespace VisionGal {
 				std::string name;
 				std::string ext;
 
-				Horizon::HFileSystem::SplitPath(entry.path().string(), &outDirectory, &name, &ext);
+				Horizon::HFileSystem::SplitPath(entry.path(), &outDirectory, &name, &ext);
 
 				file.AbsolutePath = entry.path();
 				file.AbsolutePathStr = file.AbsolutePath.string();

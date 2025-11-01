@@ -260,49 +260,33 @@ bool HFileSystem::WriteTextToFile(const fsPath& path, const std::string& text)
     return file.good();
 }
 
-void HFileSystem::SplitPath(const string& inFullPath, string* outDirectory, string* outFileName, string* outFileExt)
+void HFileSystem::SplitPath(const fsPath& inFullPath, string* outDirectory, string* outFileName, string* outFileExt)
 {
-	char buffDrive[32];
-	char buffDir[4096];
-	char buffName[4096];
-	char buffExt[4096];
+	if (outDirectory != nullptr) 
+		*outDirectory = inFullPath.parent_path().string();
 
-	_splitpath_s(inFullPath.c_str(), buffDrive, _countof(buffDrive),
-		buffDir, _countof(buffDir), buffName, _countof(buffName), buffExt, _countof(buffExt));
+	if (outFileName != nullptr)  
+		*outFileName = inFullPath.stem().string();
 
-	if (outDirectory != NULL) *outDirectory = string(buffDrive) + string(buffDir);
-	if (outFileName != NULL)  *outFileName = buffName;
-	if (outFileExt != NULL)   *outFileExt = buffExt;
+	if (outFileExt != nullptr)   
+		*outFileExt = inFullPath.extension().string();
 }
 
-void HFileSystem::SplitPath(const wstring& inFullPath, wstring* outDirectory, wstring* outFileName, wstring* outFileExt)
+void HFileSystem::SplitPath(const fsPath& inFullPath, wstring* outDirectory, wstring* outFileName, wstring* outFileExt)
 {
-	wchar_t buffDrive[32];
-	wchar_t buffDir[4096];
-	wchar_t buffName[4096];
-	wchar_t buffExt[4096];
+	if (outDirectory != nullptr)
+		*outDirectory = inFullPath.parent_path().wstring();
 
-	//assert( !((outDirectory != NULL) && ( (outDirectory != outFileName) || (outDirectory != outFileExt) )) );
-	//assert( !((outFileName != NULL) && (outFileName != outFileExt)) );
+	if (outFileName != nullptr)
+		*outFileName = inFullPath.stem().wstring();
 
-	_wsplitpath_s(inFullPath.c_str(), buffDrive, _countof(buffDrive),
-		buffDir, _countof(buffDir), buffName, _countof(buffName), buffExt, _countof(buffExt));
-
-	if (outDirectory != NULL) *outDirectory = wstring(buffDrive) + wstring(buffDir);
-	if (outFileName != NULL)  *outFileName = buffName;
-	if (outFileExt != NULL)   *outFileExt = buffExt;
+	if (outFileExt != nullptr)
+		*outFileExt = inFullPath.extension().wstring();
 }
 
-string  HFileSystem::SplitPathExt(const string& inFullPath)
+string HFileSystem::SplitPathExt(const fsPath& inFullPath)
 {
 	string ret;
-	SplitPath(inFullPath, nullptr, nullptr, &ret);
-	return ret;
-}
-
-wstring HFileSystem::SplitPathExt(const wstring& inFullPath)
-{
-	wstring ret;
 	SplitPath(inFullPath, nullptr, nullptr, &ret);
 	return ret;
 }
@@ -362,22 +346,23 @@ wstring HFileSystem::FindLocalFile(const wstring& fileName)
 	return L"";
 }
 
-wstring HFileSystem::FixExtension(const wstring& path, const wstring& _ext)
-{
-	wstring ext = _ext;
-	if (ext.length() == 0) return path;
-	if (ext[0] != L'.')
-	{
-		assert(false);
-		return L"";
-	}
-	wstring currentExt;
-	SplitPath(path, nullptr, nullptr, &currentExt);
-	if (HStringTools::CompareNoCase(currentExt, ext) != 0)
-		return path + ext;
-	else
-		return path;
-}
+//wstring HFileSystem::FixExtension(const wstring& path, const wstring& _ext)
+//{
+//	string ext = _ext;
+//	if (ext.length() == 0) return path;
+//	if (ext[0] != L'.')
+//	{
+//		assert(false);
+//		return L"";
+//	}
+//
+//	string currentExt;
+//	SplitPath(path, nullptr, nullptr, &currentExt);
+//	if (HStringTools::CompareNoCase(currentExt, ext) != 0)
+//		return path + ext;
+//	else
+//		return path;
+//}
 
 string HFileSystem::FixExtension(const string& path, const string& _ext)
 {
