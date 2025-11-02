@@ -27,6 +27,14 @@ PS{
         float multipliedAlpha = prev.a * next.a;
         float addedAlpha = prev.a + next.a;
         float mixedAlpha = addedAlpha - multipliedAlpha;   // 混合透明度
+
+        if(addedAlpha > 1.0)
+        {
+            //mixedColor = prev.rgb * 0.5 + next.rgb * 0.5;  // 混合颜色
+            FragColor = vec4(next.rgb, 1.0);
+            return;
+        }
+
         addedAlpha = clamp(addedAlpha, 0.0, 1.0);
 
         // 防止除以零，避免NaN或错误的结果

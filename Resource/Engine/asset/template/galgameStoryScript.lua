@@ -1,4 +1,4 @@
-local 零 = 引擎:创建人物('零')
+local 零 = GalGame:创建人物('零')
 
 return function()
     零:说('这是一个Galgame游戏脚本初始化模版')

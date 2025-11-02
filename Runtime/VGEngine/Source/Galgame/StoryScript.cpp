@@ -28,8 +28,9 @@ namespace VisionGal::GalGame
 
     bool LuaStoryScript::Run(IGalGameEngine* engine)
     {
-        m_LuaState["Engine"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
-        m_LuaState["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
+        //m_LuaState["Engine"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
+        //m_LuaState["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
+        m_LuaState["GalGame"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
 
         if (!LoadScript(GetResourcePath()))
             return false;

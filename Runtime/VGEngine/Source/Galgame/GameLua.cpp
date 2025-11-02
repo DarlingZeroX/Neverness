@@ -82,13 +82,13 @@ namespace VisionGal::GalGame
 
 	void GalGameLuaInterface::Initialise(sol::state& lua)
 	{
-		sol::table galgame = lua.create_named_table("GalGame");
-
+		sol::table galgame = lua.create_named_table("GalEngine");
+		
 		// 引擎
 		{
 			sol::table engine = galgame.create_named("Engine");
 			engine.set_function("LoadArchive", &GalGameEngineLuaInterface::LoadArchive);
-
+		
 			galgame.set("GetEngine", []() -> GalGameEngine*
 				{
 					return dynamic_cast<GalGameEngine*>(GameEngineCore::GetCurrentEngine());
@@ -189,15 +189,9 @@ namespace VisionGal::GalGame
 			//中文
 			"等待", sol::yielding(&GalGameEngine::Wait),
 			"转场命令", &GalGameEngine::TransitionCommand,
-			"自定义图片转场命令", &GalGameEngine::TransitionCommandWithCustomImage,
+			"图片转场命令", &GalGameEngine::TransitionCommandWithCustomImage,
 			"加载剧情脚本", &GalGameEngine::LoadStoryScriptOnUpdate,
 			"加载存档", &GalGameEngine::LoadArchive,
-			"对话系统", sol::property(
-				[](GalGameEngine& self) -> DialogueSystem* { return dynamic_cast<DialogueSystem*>(self.GetDialogueSystem()); }
-			),
-			"存档系统", sol::property(
-				[](GalGameEngine& self) -> ArchiveSystem* { return dynamic_cast<ArchiveSystem*>(self.GetArchiveSystem()); }
-			),
 			"创建人物", &GalGameEngine::CreateCharacter,
 			"显示背景", sol::overload(
 				[](GalGameEngine& self, const std::string& path) ->GalSprite* { return self.ShowSprite("Background", path); },
@@ -213,7 +207,14 @@ namespace VisionGal::GalGame
 			),
 			"播放背景音乐", [](GalGameEngine& self, const std::string& path) ->GalAudio* { return self.PlayAudio("BGM", path); },
 			"播放效果音乐", [](GalGameEngine& self, const std::string& path) ->GalAudio* { return self.PlayAudio("Effect", path); },
-			"隐藏全部人物立绘", &GalGameEngine::HideAllCharacterSprite
+			"隐藏全部人物立绘", &GalGameEngine::HideAllCharacterSprite,
+
+			"对话系统", sol::property(
+				[](GalGameEngine& self) -> DialogueSystem* { return dynamic_cast<DialogueSystem*>(self.GetDialogueSystem()); }
+			),
+			"存档系统", sol::property(
+				[](GalGameEngine& self) -> ArchiveSystem* { return dynamic_cast<ArchiveSystem*>(self.GetArchiveSystem()); }
+			)
 		);
 
 		//// 存档系统

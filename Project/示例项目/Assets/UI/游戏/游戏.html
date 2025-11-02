@@ -8,19 +8,19 @@
 
             -- 当对话框被点击
             function HTML游戏对话框.对话框点击()
-                if(GalGame.GetEngine().DialogueSystem.isTypingText)
+                if(GalEngine.GetEngine().DialogueSystem.isTypingText)
                 then
-                    GalGame.GetEngine().DialogueSystem:FinishTyping()
+                    GalEngine.GetEngine().DialogueSystem:FinishTyping()
                 else
-                    GalGame.GetEngine().DialogueSystem:ContinueDialogue()
+                    GalEngine.GetEngine().DialogueSystem:ContinueDialogue()
                 end
             end
             
             -- 页面加载时调用
             function HTML游戏对话框.页面加载调用()
                 html当前游戏UI状态 = "游戏中"
-                HTMLGame.autoDialogueChecked = false
-                HTMLGame.fastForwardChecked = false
+                HTML游戏对话框.autoDialogueChecked = false
+                HTML游戏对话框.fastForwardChecked = false
             end
 
             -- 加载游戏设置界面
@@ -32,13 +32,13 @@
             -- 自动对话
             function HTML游戏对话框.自动对话(event, element, document)
                 event:StopPropagation()
-                HTMLGame.autoDialogueChecked = not GalGame.GetEngine().DialogueSystem.autoDialogue
-                if HTMLGame.autoDialogueChecked then
+                HTML游戏对话框.autoDialogueChecked = not GalEngine.GetEngine().DialogueSystem.autoDialogue
+                if HTML游戏对话框.autoDialogueChecked then
                     element:SetAttribute('class', 'choice-btn-checked')
                 else
                     element:SetAttribute('class', 'choice-btn')
                 end
-                GalGame.GetEngine().DialogueSystem.autoDialogue = HTMLGame.autoDialogueChecked
+                GalEngine.GetEngine().DialogueSystem.autoDialogue = HTMLGame.autoDialogueChecked
             end
 
             -- 快进按钮点击事件
@@ -50,7 +50,7 @@
                 else
                     element:SetAttribute('class', 'choice-btn')
                 end
-                GalGame.GetEngine().DialogueSystem.fastForward = HTMLGame.fastForwardChecked
+                GalEngine.GetEngine().DialogueSystem.fastForward = HTMLGame.fastForwardChecked
             end
 
             -- 加载存档保存界面
