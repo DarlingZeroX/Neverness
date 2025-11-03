@@ -1,6 +1,9 @@
 # The VisionGal Visual Novel Engine
 VisionGal 是一个功能强大的视觉小说引擎，专为创建高质量视觉小说和交互式叙事体验而设计。引擎采用 C++ 开发，具有良好的跨平台性和可扩展性。
 
+![screenshot1](./Screenshot/screenshot1.PNG)
+![screenshot2](./Screenshot/screenshot2.PNG)
+
 ## 功能特点
 - 提供完善的可视化编辑器，支持实时预览编辑效果，方便创作和管理视觉小说内容
 - 全部自定义的UI界面，用类似Html和Css的语法来定义界面，用Lua脚本定义界面的行为
@@ -36,24 +39,8 @@ cmake --build Build
 path-to-vcpkg 替换为你实际的vcpkg安装路径，例如：C:\vcpkg
 
 ## 快速开始
-1.使用 VGLauncher 启动示例项目
-
-## 目录结构
-VisionGal/  <br>
-├── Application/         # 应用程序模块 <br>
-│   ├── VGDesktopApplication/  # 桌面应用<br>
-│   ├── VGLauncher/            # 启动器<br>
-│   └── VGPackageTool/         # 打包工具<br>
-├── Editor/              # 编辑器模块<br>
-│   ├── VGEditor/              # 主编辑器<br>
-│   └── VGEditorFramework/     # 编辑器框架<br>
-├── Runtime/             # 运行时模块<br>
-│   ├── HCore/                 # 核心系统<br>
-│   ├── VGEngine/              # 引擎核心<br>
-│   ├── VGImgui/               # ImGui 集成<br>
-│   ├── VGLua/                 # Lua 脚本支持<br>
-│   └── VGPackager/            # 资产打包库<br>
-└── Resource/            # 资源文件<br>
+请查看引擎主页： [VisionGal 文档](https://darlingzerox.github.io/VisionGalDoc/)   
+了解如何使用 VisionGal 引擎创建您的第一个视觉小说项目。
 
 ## 贡献指南
 欢迎任何形式的贡献！如果您想为 VisionGal 做出贡献，请：

@@ -67,11 +67,10 @@ namespace VisionGal::GalGame
 			"name", &GalCharacter::m_Name,
 
 			//中文
-			"创建", &GalCharacter::Create,
+			//"创建", &GalCharacter::Create,
 			//"说着", sol::yielding(&GalCharacter::Say),
 			"说", sol::yielding(&GalCharacter::Say),
 			"语音", &GalCharacter::Voice,
-			"名称", &GalCharacter::m_Name,
 			"添加立绘", &GalCharacter::AddFigure,
 			"显示立绘", &GalCharacter::ShowFigure,
 			"隐藏立绘", &GalCharacter::HideFigure,
@@ -79,6 +78,8 @@ namespace VisionGal::GalGame
 			"清除全部立绘显示回调", &GalCharacter::ClearShowFigureCallbacks,
 			"添加立绘隐藏回调", &GalCharacter::AddHideFigureCallback,
 			"清除全部立绘隐藏回调", &GalCharacter::ClearHideFigureCallbacks,
+
+			"名称", & GalCharacter::m_Name,
 			"当前立绘", sol::property(
 				[](GalCharacter& self) -> GalSprite* { return self.GetCurrentFigure(); }
 			),
@@ -87,7 +88,7 @@ namespace VisionGal::GalGame
 			)
 		);
 
-		lua.new_usertype<Animation2DScript>("GalSpriteAnimation",
+		lua.new_usertype<Animation2DScript>("Animation2DScript",
 			"添加动画关键帧", &Animation2DScript::AddAnimationKeyLua
 			);
 
@@ -109,6 +110,7 @@ namespace VisionGal::GalGame
 				[](GalSprite& self, float value) { self.SetScaleHeight(value); }
 			),
 			"AlignBottom", &GalSprite::AlignBottom,
+			"path", &GalSprite::m_Path,
 
 			//中文
 			"随着", sol::overload(
@@ -127,6 +129,8 @@ namespace VisionGal::GalGame
 			"设置位置X", &GalSprite::SetPosX,
 			"设置位置Y", &GalSprite::SetPosY,
 			"设置缩放", &GalSprite::SetScale,
+			"底部对齐", & GalSprite::AlignBottom,
+			//属性
 			"位置X", sol::property(
 				[](GalSprite& self) -> float { return self.GetPosX(); },
 				[](GalSprite& self, float value) { self.SetPosX(value); }
@@ -143,10 +147,6 @@ namespace VisionGal::GalGame
 				[](GalSprite& self) -> float { return self.GetScaleHeight(); },
 				[](GalSprite& self, float value) { self.SetScaleHeight(value); }
 			),
-			"底部对齐", &GalSprite::AlignBottom,
-
-			//属性
-			"path", &GalSprite::m_Path,
 			"路径", &GalSprite::m_Path
 		);
 
@@ -159,6 +159,14 @@ namespace VisionGal::GalGame
 			"获取音量", &GalAudio::GetVolume,
 			"随着", &GalAudio::With,
 
+			"循环播放", sol::property(
+				[](GalAudio& self) -> bool { return self.IsLooping(); },
+				[](GalAudio& self, bool value) { self.SetLoop(value); }
+			),
+			"音量", sol::property(
+				[](GalAudio& self) -> float { return self.GetVolume(); },
+				[](GalAudio& self, float value) { self.SetVolume(value); }
+			),
 			"路径", &GalAudio::m_Path
 		);
 	}

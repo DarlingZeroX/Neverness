@@ -141,15 +141,16 @@ namespace VisionGal::GalGame
 
 			//中文
 			"继续对话", & DialogueSystem::ContinueDialogue,
+			"完成打印对话", &DialogueSystem::FinishTyping,
+			"获取对话人物", &DialogueSystem::GetDialogCharacter,
+			"获取对话文本", &DialogueSystem::GetDialogText,
+
 			"是否正在打印对话", sol::property(
 				[](DialogueSystem& self) -> bool { return self.IsTypingText(); }
 			),
-			"完成打印对话", &DialogueSystem::FinishTyping,
 			"对话数目", sol::property(
 				[](DialogueSystem& self) -> unsigned int { return self.GetDialogNumber(); }
 			),
-			"获取对话人物", &DialogueSystem::GetDialogCharacter,
-			"获取对话文本", &DialogueSystem::GetDialogText,
 			"自动对话", sol::property(
 				[](DialogueSystem& self) -> bool { return self.IsAutoDialogue(); },
 				[](DialogueSystem& self, bool value) { self.AutoDialogue(value); }
