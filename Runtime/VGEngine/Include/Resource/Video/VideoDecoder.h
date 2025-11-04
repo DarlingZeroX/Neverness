@@ -4,9 +4,9 @@
 #include "../../Core/Core.h"
 #include "../../EngineConfig.h"
 
-#include "IOContext.h"
-#include "AudioRingBuffer.h"
-#include "InMemoryRemuxer.h"
+#include "../Common/FFmpegIOContext.h"
+#include "../Audio/AudioRingBuffer.h"
+//#include "InMemoryRemuxer.h"
 
 extern "C" {
 #include <libavformat/avformat.h>
@@ -66,7 +66,7 @@ namespace VisionGal {
         int width, height;
         AVRational timeBase;
 
-        VFS_VIDEO_IO_Context io_ctx;
+		VFSFFmpegIOContext io_ctx;
 
         //音频
         AVCodecContext* actx = nullptr;

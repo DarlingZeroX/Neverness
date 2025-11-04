@@ -34,7 +34,7 @@
 #include <RmlUi/Core/ElementDocument.h>
 #include <RmlUi/Core/Factory.h>
 
-#include "Engine/UISystem.h"
+#include "UI/UISystem.h"
 
 namespace Rml {
 namespace Lua {

@@ -26,9 +26,9 @@
  *
  */
 
-#include "UI/Shell.h"
+#include "UI/Rml/Shell.h"
 //#include "UI/PlatformExtensions.h"
-#include "UI/ShellFileInterface.h"
+#include "UI/Rml/ShellFileInterface.h"
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/ElementDocument.h>

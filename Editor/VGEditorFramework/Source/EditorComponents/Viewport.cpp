@@ -1,6 +1,6 @@
 #include "EditorComponents/Viewport.h"
 #include "VGImgui/Include/ImGuiEx/ImGuiEx.h"
-#include <VGEngine/Include/Engine/UISystem.h>
+#include <VGEngine/Include/UI/UISystem.h>
 #include "EditorCore/Localization.h"
 
 namespace VisionGal::Editor
@@ -31,7 +31,7 @@ namespace VisionGal::Editor
 
 			//H_LOG_INFO("Imgui X:%f, Y: %f", pos.x, pos.y);
 			m_Viewport->SetViewportPosition({ pos.x, pos.y });
-			// 确保视口尺寸是正确的
+			// 纭繚瑙嗗彛灏哄鏄纭殑
 			if (size.x > 0 && size.y > 0)
 				m_Viewport->SetViewportSize({ size.x,size.y });
 
@@ -41,7 +41,7 @@ namespace VisionGal::Editor
 			//H_LOG_INFO("window :%d", window);
 			////m_Viewport->SetWindowID(windowID);
 
-			// 这里存在问题,因为PlatformHandle获取的可能并不是SDL_Window*，而是SDL_WindowID
+			// 杩欓噷瀛樺湪闂,鍥犱负PlatformHandle鑾峰彇鐨勫彲鑳藉苟涓嶆槸SDL_Window*锛岃�屾槸SDL_WindowID
 			ImGuiViewport* imViewport = ImGui::GetWindowViewport();
 			SDL_WindowID windowID = reinterpret_cast<SDL_WindowID>(imViewport->PlatformHandle);
 			//H_LOG_INFO("windowID X:%d", windowID);

@@ -10,7 +10,7 @@
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <VGEngine/Include/Core/VFS.h>
-#include <VGEngine/Include/Engine/UISystem.h>
+#include <VGEngine/Include/UI/UISystem.h>
 #include <VGEditorFramework/Framework.h>
 
 namespace VisionGal::Editor

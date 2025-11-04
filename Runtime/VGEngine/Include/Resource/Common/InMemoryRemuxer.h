@@ -3,7 +3,7 @@
 #include "../../Core/Core.h"
 #include "../../EngineConfig.h"
 
-#include "IOContext.h"
+#include "FFmpegIOContext.h"
 
 extern "C" {
 #include <libavformat/avformat.h>
@@ -41,7 +41,7 @@ namespace VisionGal {
         uint8_t* avio_internal_buf = nullptr; // avio_alloc_context的内部缓冲
         uint8_t* memory_buffer = nullptr;     // 复制后的完整mp4文件
 
-        VFS_VIDEO_IO_Context io_ctx;
+		VFSFFmpegIOContext io_ctx;
 
         void Cleanup();
     };

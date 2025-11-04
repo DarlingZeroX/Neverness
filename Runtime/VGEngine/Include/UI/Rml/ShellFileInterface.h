@@ -31,7 +31,7 @@
 
 #include <RmlUi/Core/FileInterface.h>
 #include <RmlUi/Core/Types.h>
-#include "../Core/VFS.h"
+#include "../../Core/VFS.h"
 
 /**
     RmlUi file interface for the shell examples.

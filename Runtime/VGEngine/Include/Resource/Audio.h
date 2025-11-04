@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <atomic>
+#include "Audio/AudioDecoder.h"
 
 namespace VisionGal
 {
@@ -18,11 +19,13 @@ namespace VisionGal
         void Clear();
 
         //vfspp::IFilePtr file; // VFSpp 文件句柄
-        SDL_IOStream* ioStream;
-        SDL_AudioSpec audioSpec;
-        uint8_t* audioBuffer;       // 原始WAV数据
-        uint32_t bufferLength;      // 数据总长度
-		VFS::DataRef audioData; // 用于存储音频数据
+        //SDL_IOStream* ioStream;
+        //SDL_AudioSpec audioSpec;
+        //uint8_t* audioBuffer;       // 原始WAV数据
+        //uint32_t bufferLength;      // 数据总长度
+		//VFS::DataRef audioData; // 用于存储音频数据
+
+		AudioDecoder audioDecoder;
     private:
         bool LoadAudio();
     };

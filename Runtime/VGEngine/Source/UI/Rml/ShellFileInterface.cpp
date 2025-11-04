@@ -26,7 +26,7 @@
  *
  */
 
-#include "UI/ShellFileInterface.h"
+#include "UI/Rml/ShellFileInterface.h"
 #include <stdio.h>
 #include "Core/VFS.h"
 
@@ -121,16 +121,16 @@ bool UIFileInterfaceVFS::Seek(Rml::FileHandle file, long offset, int origin)
 			vfsOrigin = vfspp::IFile::Origin::Begin;
 			break;
 		case SEEK_CUR:
-			vfsOrigin = vfspp::IFile::Origin::Set; //  ÕâÀï×¢Òâ£ºÇëÈ·ÈÏSetÊÇ·ñ´ú±í Current
+			vfsOrigin = vfspp::IFile::Origin::Set; //  è¿™é‡Œæ³¨æ„ï¼šè¯·ç¡®è®¤Setæ˜¯å¦ä»£è¡¨ Current
 			break;
 		case SEEK_END:
 			vfsOrigin = vfspp::IFile::Origin::End;
 			break;
 		default:
-			return false; // ²»Ö§³Ö
+			return false; // ä¸æ”¯æŒ
 		}
 
-		// µ÷ÓÃÄãµÄ Seek
+		// è°ƒç”¨ä½ çš„ Seek
 		result->second->Seek(static_cast<uint64_t>(offset), vfsOrigin);
 		return true;
 	}

@@ -32,7 +32,7 @@
 #ifndef RMLUI_BACKENDS_PLATFORM_SDL_H
 #define RMLUI_BACKENDS_PLATFORM_SDL_H
 
-#include "../Core/Viewport.h"
+#include "../../Core/Viewport.h"
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/SystemInterface.h>
 #include <RmlUi/Core/Types.h>

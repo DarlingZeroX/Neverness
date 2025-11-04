@@ -26,7 +26,7 @@
  *
  */
 
-#include "UI/RmlUi_Renderer_GL3.h"
+#include "UI/Rml/RmlUi_Renderer_GL3.h"
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/DecorationTypes.h>
 #include <RmlUi/Core/FileInterface.h>
@@ -2167,7 +2167,7 @@ const Gfx::FramebufferData& RenderInterface_GL3::GetRenderResult()
 
 bool RmlGL3::Initialize(Rml::String* out_message)
 {
-	// ≥ı ºªØGLAD
+	// ÂàùÂßãÂåñGLAD
 //	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
 //		Rml::Log::Message(Rml::Log::LT_ERROR, "Failed to initialize GLAD");
 //		return 1;

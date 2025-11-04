@@ -26,7 +26,7 @@
  *
  */
 
-#include "UI/RendererExtensions.h"
+#include "UI/Rml/RendererExtensions.h"
 #include <RmlUi/Core/Log.h>
 #include <RmlUi/Core/Platform.h>
 

@@ -5,7 +5,7 @@
 #include <VGEngine/Include/Galgame/GalGameEngine.h>
 #include <VGEngine/Include/Galgame/Components.h>
 
-#include "VGEngine/Include/Engine/UISystem.h"
+#include "VGEngine/Include/UI/UISystem.h"
 #include "VGEngine/Include/Galgame/GameEngineCore.h"
 #include "VGEngine/Include/Interface/Loader.h"
 #include "VGEngine/Include/Lua/LuaScript.h"

@@ -19,13 +19,13 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_NUMBER_OF_LOGICAL_CORES}>
 if (MSVC)
     add_compile_options(/utf-8)
 endif()
-
+ 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
 # 添加宏
-add_definitions(-DENGINE_API_EXPORT)
+add_definitions(-DENGINE_API_EXPORT) 
 #add_definitions(-DIMGUI_IMPL_OPENGL_ES3)
 
 # 将源代码添加到此项目的可执行文件。
@@ -48,10 +48,12 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Project/*.cpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Render/*.cpp"
+	 
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/Interface/*.cpp" 
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Render/*.cpp" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Audio/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Common/*.cpp" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Video/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Scene/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Utils/*.cpp"
@@ -59,11 +61,12 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Lua/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Sol/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Rml/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Sol/Elements/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Lua/Elements/*.cpp"
 )
-
-file(GLOB ENGINE_HEADER_FILES
+ 
+file(GLOB ENGINE_HEADER_FILES 
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Interface/*.h"
@@ -86,13 +89,16 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Render/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Audio/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Common/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Video/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Lua/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Sol/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Rml/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Lua/Elements/*.h"
 )
 
@@ -111,7 +117,7 @@ target_include_directories(VGEngine PUBLIC "${PROJECT_SOURCE_DIR}/Runtime/VGLua/
 target_precompile_headers(VGEngine PRIVATE
     "Include/pch.h"  # 项目级头文件
 )
-
+ 
 # 包
 #find_package(glad CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)

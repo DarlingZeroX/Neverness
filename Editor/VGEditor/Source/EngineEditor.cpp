@@ -4,7 +4,7 @@
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <VGImgui/Include/Imgui/imgui_impl_opengl3.h>
 #include <VGEditorFramework/Framework.h>
-#include <VGEngine/Include/Engine/UISystem.h>
+#include <VGEngine/Include/UI/UISystem.h>
 #include "VGEditorFramework/Include/EditorCore/EditorCore.h"
 #include "VGEngine/Include/Core/VFS.h"
 

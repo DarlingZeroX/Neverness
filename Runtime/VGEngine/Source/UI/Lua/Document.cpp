@@ -32,7 +32,7 @@
 #include <RmlUi/Core/ElementDocument.h>
 #include <UI/Lua/Utilities.h>
 
-#include "Engine/UISystem.h"
+#include "UI/UISystem.h"
 
 namespace Rml {
 namespace Lua {

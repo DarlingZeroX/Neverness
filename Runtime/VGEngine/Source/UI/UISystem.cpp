@@ -1,14 +1,14 @@
-#include "Engine/UISystem.h"
+#include "UI/UISystem.h"
 #include <RmlUi/Debugger.h>
 #include <SDL3_image/SDL_image.h>
 //#include "Galgame/GalGameEngine.h"
 #include "Engine/Manager.h"
 #include "Galgame/GameLua.h"
 #include "Lua/LuaInterface.h"
-#include "UI/Shell.h"
+#include "UI/Rml/Shell.h"
 #include "UI/Lua/Lua.h"
-#include "UI/RmlUi_Platform_SDL.h"
-#include "UI/RmlUi_Renderer_GL3.h"
+#include "UI/Rml/RmlUi_Platform_SDL.h"
+#include "UI/Rml/RmlUi_Renderer_GL3.h"
 #include "VGEngine/Source/UI/Lua/LuaPlugin.h"
 
 #include "UI/Sol/Sol.h"

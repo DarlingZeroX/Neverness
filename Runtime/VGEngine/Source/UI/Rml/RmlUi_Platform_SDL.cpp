@@ -26,7 +26,7 @@
  *
  */
 
-#include "UI/RmlUi_Platform_SDL.h"
+#include "UI/Rml/RmlUi_Platform_SDL.h"
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/StringUtilities.h>
