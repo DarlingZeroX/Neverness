@@ -4,12 +4,12 @@
     "ComponentNumber": 0,
     "SegmentType": "Entity",
     "EntityNumber": 4,
-    "Label": "GalGame引擎",
-    "ID": 6440210757220177232,
+    "Label": "UI文档",
+    "ID": 13135295619153017924,
     "Parent": 0,
     "ComponentIDs": [
-        7714668887001147666,
-        8139420644421808243
+        13135295619153017924,
+        11525862322656296263
     ],
     "Label": "相机",
     "ID": 11139995194842245878,
@@ -18,12 +18,12 @@
         11139995194842245878,
         3509040283753573490
     ],
-    "Label": "UI文档",
-    "ID": 13135295619153017924,
+    "Label": "GalGame引擎",
+    "ID": 6440210757220177232,
     "Parent": 0,
     "ComponentIDs": [
-        13135295619153017924,
-        11525862322656296263
+        7714668887001147666,
+        8139420644421808243
     ],
     "Label": "Scene",
     "ID": 0,
@@ -34,7 +34,7 @@
     "SegmentType": "Transform",
     "ComponentNumber": 3,
     "Transform": {
-        "EntityComponentID": 7714668887001147666,
+        "EntityComponentID": 13135295619153017924,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -74,7 +74,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 13135295619153017924,
+        "EntityComponentID": 7714668887001147666,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -116,6 +116,6 @@
     "GalGameEngine": {
         "EntityComponentID": 8139420644421808243,
         "HasScript": true,
-        "m_ScriptPath": "/assets/开发使用\\storyScript0.lua"
+        "m_ScriptPath": "/assets/剧情脚本\\人物基础.lua"
     }
 }

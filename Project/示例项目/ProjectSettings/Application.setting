@@ -1,6 +1,6 @@
 {
   "ApplicationName": "GalGame",
-  "RunningMainScene": "",
+  "RunningMainScene": "/assets/主菜单场景.vgasset",
   "WindowAllowResize": true,
   "WindowHeight": 720,
   "WindowWidth": 1280

@@ -1,74 +1,77 @@
 <rml>
     <head>
-        <link type="text/template" href="../window.lua" />
+        <link type="text/template" href="../窗口.lua" />
         <link type="text/css" href="游戏CSS.css"/>
 
         <script>
+            HTML游戏状态 = HTML游戏状态 or { 当前场景 = "游戏中" }
             HTML游戏对话框 = HTML游戏对话框 or {}
 
             -- 当对话框被点击
-            function HTML游戏对话框.对话框点击()
-                if(GalEngine.GetEngine().DialogueSystem.isTypingText)
+            function HTML游戏对话框.对话框点击(event, element, document)
+                if(GalEngine.GetEngine().对话系统.是否正在打印对话)
                 then
-                    GalEngine.GetEngine().DialogueSystem:FinishTyping()
+                    GalEngine.GetEngine().对话系统:完成打印对话()
                 else
-                    GalEngine.GetEngine().DialogueSystem:ContinueDialogue()
+                    GalEngine.GetEngine().对话系统:继续对话()
                 end
             end
             
             -- 页面加载时调用
-            function HTML游戏对话框.页面加载调用()
-                html当前游戏UI状态 = "游戏中"
-                HTML游戏对话框.autoDialogueChecked = false
-                HTML游戏对话框.fastForwardChecked = false
+            function HTML游戏对话框.页面加载调用(event, element, document)
+                HTML游戏状态.当前场景 = "游戏中"
+                HTML游戏对话框.自动对话标记 = false
+                HTML游戏对话框.快进对话标记 = false
+
+                element:GetElementById('dialog-box').style.decorator = 'vertical-gradient( rgba(65, 88, 87, 200) rgba(89, 144, 163, 200) )'
             end
 
             -- 加载游戏设置界面
             function HTML游戏对话框.加载游戏设置界面(event, document)
                 event:StopPropagation()
-                Window.LoadMenu('/assets/menu/options_menu',document)
+                HTML窗口.加载文档('/assets/UI/主菜单/游戏设置',document)
             end
 
             -- 自动对话
             function HTML游戏对话框.自动对话(event, element, document)
                 event:StopPropagation()
-                HTML游戏对话框.autoDialogueChecked = not GalEngine.GetEngine().DialogueSystem.autoDialogue
-                if HTML游戏对话框.autoDialogueChecked then
+                HTML游戏对话框.自动对话标记 = not GalEngine.GetEngine().对话系统.自动对话
+                if HTML游戏对话框.自动对话标记 then
                     element:SetAttribute('class', 'choice-btn-checked')
                 else
                     element:SetAttribute('class', 'choice-btn')
                 end
-                GalEngine.GetEngine().DialogueSystem.autoDialogue = HTMLGame.autoDialogueChecked
+                GalEngine.GetEngine().对话系统.自动对话 = HTML游戏对话框.自动对话标记
             end
 
             -- 快进按钮点击事件
-            function HTML游戏对话框.快进(event, element, document)
+            function HTML游戏对话框.快进对话(event, element, document)
                 event:StopPropagation()
-                HTMLGame.fastForwardChecked = not GalGame.GetEngine().DialogueSystem.fastForward
-                if HTMLGame.fastForwardChecked then
+                HTML游戏对话框.快进对话标记 = not GalEngine.GetEngine().对话系统.快进
+                if HTML游戏对话框.快进对话标记 then
                     element:SetAttribute('class', 'choice-btn-checked')
                 else
                     element:SetAttribute('class', 'choice-btn')
                 end
-                GalEngine.GetEngine().DialogueSystem.fastForward = HTMLGame.fastForwardChecked
+                GalEngine.GetEngine().对话系统.快进 = HTML游戏对话框.快进对话标记
             end
 
             -- 加载存档保存界面
             function HTML游戏对话框.加载存档保存界面(event, document)
                 event:StopPropagation()
-                Window.LoadMenu('/assets/game/archiveSave',document)
+                HTML窗口.加载文档('/assets/UI/游戏/存档保存',document)
             end
 
             -- 加载读取存档界面
             function HTML游戏对话框.加载存档读取界面(event, document)
                 event:StopPropagation()
-                Window.LoadMenu('/assets/game/archiveRead',document)
+                HTML窗口.加载文档('/assets/UI/游戏/存档读取',document)
             end
 
             -- 加载记录界面
             function HTML游戏对话框.加载记录界面(event, document)
                 event:StopPropagation()
-                Window.LoadMenu('/assets/game/record',document)
+                HTML窗口.加载文档('/assets/UI/游戏/对话记录',document)
             end
 
             -- 当按下ESC键时调用
@@ -85,10 +88,10 @@
             end
         </script>
     </head>
-    <body onkeydown="HTML游戏对话框.当ESC按下(event,document)" onload="HTML游戏对话框.页面加载调用()">  
+    <body onkeydown="HTML游戏对话框.当ESC按下(event,document)" onload="HTML游戏对话框.页面加载调用(event, element, document)">  
         
         <div class="game-container">
-            <div class="dialog-box" onclick="HTML游戏对话框.对话框点击()" data-model="dialog">
+            <div class="dialog-box" id="dialog-box" onclick="HTML游戏对话框.对话框点击(event, element, document)" data-model="dialog">
                 <div class="name-tag" id="name-tag">{{dialog_name}}</div>
                 <div class="dialog-text" id="dialog-text">{{dialog_text}}</div>
                 <div class="choices" id="choices">
@@ -96,7 +99,7 @@
                     <button class="choice-btn" id="btn2" onclick="HTML游戏对话框.加载存档读取界面(event,document)">读取</button>
                     <button class="choice-btn" id="btn3" onclick="HTML游戏对话框.加载游戏设置界面(event,document)">设置</button>
                     <button class="choice-btn" id="btn4" onclick="HTML游戏对话框.自动对话(event,element,document)">自动</button>
-                    <button class="choice-btn" id="btn5" onclick="HTML游戏对话框.快进(event,element,document)">快进</button>
+                    <button class="choice-btn" id="btn5" onclick="HTML游戏对话框.快进对话(event,element,document)">快进</button>
                     <button class="choice-btn" id="btn6" onclick="HTML游戏对话框.加载记录界面(event,document)">记录</button>
                 </div>
 

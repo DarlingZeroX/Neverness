@@ -1,17 +1,16 @@
 <rml>
     <head>
         <link type="text/template" href="../窗口.lua" />
-        <link type="text/css" href="设置菜单CSS.css"/>
+        <link type="text/css" href="游戏设置CSS.css"/>
 
         
         <script>
             HTML选项菜单 = HTML选项菜单 or {}
 
             function HTML选项菜单.返回主菜单(event,document)
-                TransitionManager:StartTransitionWithCommand('Screen','fade_out 1.0')
-                TransitionManager:StartTransitionWithCommand('Screen','fade_in 1.0')
-
-                SceneManager:LoadScene('/assets/MainMenuScene.vgasset')
+                转场管理器:开始转场命令('Screen','fadeOut 1.0')
+                转场管理器:开始转场命令('Screen','fadeIn 1.0')
+                场景管理器:加载场景('/assets/主菜单场景.vgasset')
             end
 
             function HTML选项菜单.结束游戏(event,document)
@@ -19,7 +18,7 @@
             end
 
             function HTML选项菜单.OnLoad(element, document)
-                if(html_CurrentGameState == "Gaming") then
+                if(HTML游戏状态.当前场景 == "游戏中") then
                     local option_menu_bottom_button = element:GetElementById('option-menu-bottom-button')
 
                     local return_main_menu = document:CreateElement('button')
@@ -37,12 +36,18 @@
             end
 
             function HTML选项菜单.关闭选项菜单(event,document)
-                print(html当前游戏UI状态)
-                if(html当前游戏UI状态 == '主菜单') then
+                print(HTML游戏状态.当前场景)
+                if(HTML游戏状态.当前场景 == '主菜单') then
                     HTML窗口.加载文档('/assets/UI/主菜单/主菜单',document)
-                elseif(html当前游戏UI状态 == "Gaming") then
-                    HTML窗口.加载文档('/assets/game/game',document)
+                elseif(HTML游戏状态.当前场景 == "游戏中") then
+                    HTML窗口.加载文档('/assets/UI/游戏/游戏',document)
                 end    
+            end
+
+            HTML选项菜单按钮 = HTML选项菜单按钮 or {}
+            function HTML选项菜单按钮.改变音乐音量(drag_element)
+                print(drag_element:GetAttribute('value'))
+                --print(drag_element)
             end
         </script>
     </head>
@@ -67,7 +72,7 @@
 
                     <div class="slider-setting">
                         <div class="slider-label">音乐</div>
-                        <input type="range" min="0" max="100" step="1" value="50"/> 
+                        <input type="range" min="0" max="1" step="0.01" value="1" ondrag = "HTML选项菜单按钮.改变音乐音量(element)" /> 
                     </div>
             
                     <div class="slider-setting">

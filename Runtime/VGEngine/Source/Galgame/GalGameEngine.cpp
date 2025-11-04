@@ -78,7 +78,7 @@ namespace VisionGal::GalGame
 			com.script = m_StoryScript;
 			});
 
-		return false;
+		return true;
 	}
 
 	void GalGameEngine::LoadStoryScriptOnUpdate(const String& path)

@@ -4,11 +4,13 @@
 	<link type="text/css" href="主菜单CSS.css"/>
 
     <script>
+        HTML游戏状态 = HTML游戏状态 or { 当前场景 = "主菜单" }
         HTML主菜单 = HTML主菜单 or {}
 
         function HTML主菜单.页面加载调用(event,document)
             --html_CurrentGameState = "MainMenu"
-            html当前游戏UI状态 = "主菜单"
+            --html当前游戏UI状态 = "主菜单"
+            HTML游戏状态.当前场景 = "主菜单"
         end
 
         function HTML主菜单.开始游戏(event,documnet)
@@ -24,17 +26,17 @@
     <div class="container">
         <!-- 标题 -->
         <h1 class="title">星 野 幻 想</h1>
-        <p class="subtitle"> 去一个有梦的地方,  邂逅一场治愈的温暖 </p>
+        <p class="subtitle"> 去一个有风的地方,  邂逅一场治愈的温暖 </p>
         
         <!-- 菜单 -->
         <div class="menu">
             <button class="menu-item" onclick="HTML主菜单.开始游戏(event,documnet)">
                 <span>开始游戏</span>
             </button>
-            <button class="menu-item" onclick="HTML窗口.加载文档('/assets/game/archiveRead',document)">
+            <button class="menu-item" onclick="HTML窗口.加载文档('/assets/UI/游戏/存档读取',document)">
                 <span>读取存档</span>
             </button>
-            <button class="menu-item" onclick="HTML窗口.加载文档('/assets/UI/主菜单/设置菜单',document)">
+            <button class="menu-item" onclick="HTML窗口.加载文档('/assets/UI/主菜单/游戏设置',document)">
                 <span>游戏设置</span>
             </button>
             <button class="menu-item">

@@ -39,7 +39,7 @@ cmake --build Build
 path-to-vcpkg 替换为你实际的vcpkg安装路径，例如：C:\vcpkg
 
 ## 快速开始
-请查看引擎主页： [VisionGal 文档](https://darlingzerox.github.io/VisionGalDoc/)   
+请查看引擎主页： [(https://darlingzerox.github.io/VisionGalDoc/](https://darlingzerox.github.io/VisionGalDoc/)   
 了解如何使用 VisionGal 引擎创建您的第一个视觉小说项目。
 
 ## 贡献指南
