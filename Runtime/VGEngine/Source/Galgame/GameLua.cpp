@@ -178,10 +178,17 @@ namespace VisionGal::GalGame
 		);
 
 		// 注册场景管理系统
-		galgame.new_usertype<LayeredSceneManager>("GalGameLayeredSceneManager"
-			//"GetLayerNames", &LayeredSceneManager::GetLayerNames,
-			//中文
-			//"获取图层名称列表", &LayeredSceneManager::GetLayerNames
+		galgame.new_usertype<LayeredSceneManager::AudioLayer>("GalGameLayeredSceneManagerAudioLayer",
+			"音量", sol::property(
+				[](LayeredSceneManager::AudioLayer& self) -> float { return self.GetVolume(); },
+				[](LayeredSceneManager::AudioLayer& self, float value) { self.SetVolume(value); }
+			)
+			);
+		galgame.new_usertype<LayeredSceneManager::SpriteLayer>("GalGameLayeredSceneManagerSpriteLayer");
+
+		galgame.new_usertype<LayeredSceneManager>("GalGameLayeredSceneManager",
+			"获取音频层", &LayeredSceneManager::GetAudioLayer,
+			"获取精灵层", &LayeredSceneManager::GetSpriteLayer
 		);
 
 		// 注册引擎类

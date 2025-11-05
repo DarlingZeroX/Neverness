@@ -11,15 +11,38 @@ namespace VisionGal::GalGame
 	class VG_ENGINE_API LayeredSceneManager: public ILayeredSceneManager
 	{
 	public:
+		struct SpriteLayer
+		{
+			String name;
+			std::vector<IGalGameSprite*> sprites;
+
+			void Clear();
+			void AddSprite(IGalGameSprite* sprite);
+			bool RemoveSprite(IGalGameSprite* sprite);
+		};
+
+		struct AudioLayer
+		{
+			String name;
+			std::vector<IGalGameAudio*> audios;
+
+			void SetVolume(float volume);
+			float GetVolume();
+			void Clear();
+			void AddAudio(IGalGameAudio* audio);
+			void StopPlay();
+			bool RemoveAudio(IGalGameAudio* audio);
+
+		private:
+			float m_Volume = 1.0f;
+		};
+	public:
 		LayeredSceneManager();
 		~LayeredSceneManager() override = default;
 		LayeredSceneManager(const LayeredSceneManager&) = delete;
 		LayeredSceneManager& operator=(const LayeredSceneManager&) = delete;
 		LayeredSceneManager(LayeredSceneManager&&) noexcept = default;
 		LayeredSceneManager& operator=(LayeredSceneManager&&) noexcept = default;
-
-		//void SetBackgroundImage(const String& path);
-		//GameActor* ShowImage(const String& path);
 
 		void ShowSprite(const String& layer, GameActor* actor) override;
 		void AddSprite(IGalGameSprite* sprite) override;
@@ -44,28 +67,21 @@ namespace VisionGal::GalGame
 
 		void AddSpriteLayer(const String& layer);
 		void AddAudioLayer(const String& layer);
+
+		AudioLayer* GetAudioLayer(const String& layer);
+		SpriteLayer* GetSpriteLayer(const String& layer);
 	public:
 		//void Initialize(Scene* scene);
 		//void OnRender();
 		//void OnUpdate();
 		void Initialize();
 	private:
-		struct AudioLayer
-		{
-			String name;
-			std::vector<IGalGameAudio*> audios;
 
-			void Clear();
-			void AddAudio(IGalGameAudio* audio);
-			void StopPlay();
-			bool RemoveAudio(IGalGameAudio* audio);
-		};
+		std::deque<SpriteLayer>  m_SpriteLayers;
+		std::vector<AudioLayer> m_AudioLayers;
 
-		std::deque<std::vector<IGalGameSprite*>>  m_Sprite;
-		std::vector<AudioLayer> m_Audio;
-
-		std::unordered_map<String, int> m_SpriteLayer;
-		std::unordered_map<String, int> m_AudioLayer;
+		std::unordered_map<String, int> m_SpriteLayerIndexer;
+		std::unordered_map<String, int> m_AudioLayerIndexer;
 	};
 
 
