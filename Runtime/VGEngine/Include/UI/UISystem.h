@@ -19,15 +19,14 @@ namespace VisionGal
 		static UISystem* Get();
 
 		int Initialize(Horizon::SDL3::OpenGLWindow* window, Viewport* viewport);
-		bool LoadDocument(std::string doc);
 
 		Ref<RmlUIDocument> LoadUIDocument(const String& path);
-		bool ShowUIDocument(const Ref<RmlUIDocument>& doc);
-		bool ShowUIDocument(const RmlUIDocument* doc);
+		bool ShowUIDocument(RmlUIDocument* doc);
 		void ReloadUIDocument(Ref<RmlUIDocument>& doc);
 		void CloseAllDocuments();
+		Ref<RmlUIDocument> FindDocumentByElementDocument(Rml::ElementDocument* document);
 		 
-		void OnScriptOpenDocument(Rml::ElementDocument* document);
+		Ref<RmlUIDocument> OnScriptOpenDocument(Rml::ElementDocument* document);
 		// Source/UI/Lua/Document.cpp 122行使用了这里
 		void OnScriptCloseDocument(const Rml::ElementDocument* document);
 
@@ -63,7 +62,7 @@ namespace VisionGal
 
 		std::function<int(Rml::Context*, const SDL_Event&)> m_ProcessContextEventFunction;
 		std::vector<Ref<RmlUIDocument>> m_Documents;
-		std::vector<Rml::ElementDocument*> m_NativeDocument;
+		//std::vector<Rml::ElementDocument*> m_NativeDocument;
 	};
 
 

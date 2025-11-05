@@ -1,6 +1,6 @@
-local 旁白 = GalGame:创建人物('')
-local 梦女 = GalGame:创建人物('梦女')
-local 缘心 = GalGame:创建人物('缘心')
+local 旁白 = GalGame.引擎:创建人物('')
+local 梦女 = GalGame.引擎:创建人物('梦女')
+local 缘心 = GalGame.引擎:创建人物('缘心')
 
 游戏立绘 = 游戏立绘 or {{ }} --namespace
 function 游戏立绘.立绘显示回调(人物立绘)
@@ -32,7 +32,7 @@ return function()
 	缘心:添加立绘显示回调(游戏立绘.立绘显示回调)
 	缘心:添加立绘隐藏回调(游戏立绘.立绘隐藏回调)
 
-    GalGame:显示背景('图片/背景/教室背景.png')
+    GalGame.引擎:显示背景('图片/背景/教室背景.png')
     旁白:说('动画测试开始')
 
     缘心:显示立绘('疲惫'):开始动画( {位置偏移X = 200}, 1.3, "弹跳 inout", 3, true)

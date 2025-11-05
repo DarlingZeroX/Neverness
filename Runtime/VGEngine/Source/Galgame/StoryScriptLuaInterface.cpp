@@ -53,15 +53,17 @@ namespace VisionGal::GalGame
 
 	void StoryScriptLuaInterface::Initialise(sol::state& lua)
 	{
+		sol::table galgame = lua.create_named_table("GalGame");
+
 		Lua::CoreTypesLuaInterface::Initialize(lua);
-		GalGameLuaInterface::Initialise(lua);
+		GalGameLuaInterface::Initialise(galgame);
 
 		//lua.new_usertype<Transform>("GalTransform",
 		//	sol::constructors<Transform()>()
 		//	//"SlideDown", &Transform::SlideDown
 		//);
 
-		lua.new_usertype<GalCharacter>("GalCharacter",
+		galgame.new_usertype<GalCharacter>("GalCharacter",
 			sol::constructors<GalCharacter(const std::string&)>(),
 			"Say", sol::yielding(&GalCharacter::Say),
 			"name", &GalCharacter::m_Name,
@@ -88,11 +90,11 @@ namespace VisionGal::GalGame
 			)
 		);
 
-		lua.new_usertype<Animation2DScript>("Animation2DScript",
+		galgame.new_usertype<Animation2DScript>("Animation2DScript",
 			"添加动画关键帧", &Animation2DScript::AddAnimationKeyLua
 			);
 
-		lua.new_usertype<GalSprite>("GalSprite",
+		galgame.new_usertype<GalSprite>("GalSprite",
 			//sol::constructors<Background(const std::string&)>(),
 			"Show", &GalSprite::Show,
 			"With", sol::overload(
@@ -150,7 +152,7 @@ namespace VisionGal::GalGame
 			"路径", &GalSprite::m_Path
 		);
 
-		lua.new_usertype<GalAudio>("GalAudio",
+		galgame.new_usertype<GalAudio>("GalAudio",
 			"设置循环播放", &GalAudio::SetLoop,
 			"停止播放", &GalAudio::Stop,
 			"是否正在播放", &GalAudio::IsPlayingAudio,

@@ -39,7 +39,7 @@
                     存档描述:SetAttribute('id', 'save-description-'..索引..'')
 
                     -- 读取存档如果存在
-                    local 存档 = GalEngine.GetEngine().存档系统:获取存档(索引)
+                    local 存档 = GalGame.获取引擎().存档系统:获取存档(索引)
                     if 存档.isValid then
                         存档日期时间.innerRml = 存档.dateTime
                         存档描述.innerRml = 存档.description
@@ -50,7 +50,7 @@
             -- 当存档槽被点击
             function HTML存档保存.保存当前游戏(element, index)
                 --print(index)
-                local 存档 = GalEngine.GetEngine().存档系统:保存存档(index)
+                local 存档 = GalGame.获取引擎().存档系统:保存存档(index)
                 if 存档.isValid then
                     element:GetElementById('save-time-'..index..'').innerRml = 存档.dateTime
                     element:GetElementById('save-description-'..index..'').innerRml = 存档.description

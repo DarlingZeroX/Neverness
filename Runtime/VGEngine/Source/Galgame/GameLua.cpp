@@ -80,9 +80,9 @@ namespace VisionGal::GalGame
 		return engine->LoadArchive(archive);
 	}
 
-	void GalGameLuaInterface::Initialise(sol::state& lua)
+	void GalGameLuaInterface::Initialise(sol::table& galgame)
 	{
-		sol::table galgame = lua.create_named_table("GalEngine");
+		//sol::table galgame = lua.create_named_table("GalEngine");
 		
 		// 引擎
 		{
@@ -114,7 +114,7 @@ namespace VisionGal::GalGame
 		//}
 
 		// 注册引擎存档类
-		lua.new_usertype<DialogueSystem>("GalGameDialogueSystem",
+		galgame.new_usertype<DialogueSystem>("GalGameDialogueSystem",
 			"ContinueDialogue", &DialogueSystem::ContinueDialogue,
 			"isTypingText", sol::property(
 				[](DialogueSystem& self) -> bool { return self.IsTypingText(); }
@@ -167,7 +167,7 @@ namespace VisionGal::GalGame
 		);
 
 		// 注册存档系统
-		lua.new_usertype<ArchiveSystem>("GalGameArchiveSystem",
+		galgame.new_usertype<ArchiveSystem>("GalGameArchiveSystem",
 			"SaveArchiveByNumber", &ArchiveSystem::SaveArchiveByNumber,
 			"GetArchiveByNumber", &ArchiveSystem::GetArchiveByNumber,
 			"HasArchiveByNumber", &ArchiveSystem::HasArchiveByNumber,
@@ -177,8 +177,15 @@ namespace VisionGal::GalGame
 			"是否存在存档", &ArchiveSystem::HasArchiveByNumber
 		);
 
+		// 注册场景管理系统
+		galgame.new_usertype<LayeredSceneManager>("GalGameLayeredSceneManager"
+			//"GetLayerNames", &LayeredSceneManager::GetLayerNames,
+			//中文
+			//"获取图层名称列表", &LayeredSceneManager::GetLayerNames
+		);
+
 		// 注册引擎类
-		lua.new_usertype<GalGameEngine>("GalGameEngine",
+		galgame.new_usertype<GalGameEngine>("GalGameEngine",
 			"LoadArchive", &GalGameEngine::LoadArchive,
 			"DialogueSystem", sol::property(
 				[](GalGameEngine& self) -> DialogueSystem* { return dynamic_cast<DialogueSystem*>(self.GetDialogueSystem()); }
@@ -215,6 +222,9 @@ namespace VisionGal::GalGame
 			),
 			"存档系统", sol::property(
 				[](GalGameEngine& self) -> ArchiveSystem* { return dynamic_cast<ArchiveSystem*>(self.GetArchiveSystem()); }
+			),
+			"场景系统", sol::property(
+				[](GalGameEngine& self) -> LayeredSceneManager* { return dynamic_cast<LayeredSceneManager*>(self.GetLayeredSceneManager()); }
 			)
 		);
 
@@ -228,7 +238,7 @@ namespace VisionGal::GalGame
 		//}
 
 		// 注册存档类
-		lua.new_usertype<SaveArchive>("GalGameSaveArchive",
+		galgame.new_usertype<SaveArchive>("GalGameSaveArchive",
 			sol::constructors<SaveArchive()>(),
 			"isGalGameArchive", &SaveArchive::isGalGameArchive,
 			"isValid", &SaveArchive::isValid,

@@ -50,8 +50,19 @@ namespace VisionGal::GalGame
 		//void OnUpdate();
 		void Initialize();
 	private:
+		struct AudioLayer
+		{
+			String name;
+			std::vector<IGalGameAudio*> audios;
+
+			void Clear();
+			void AddAudio(IGalGameAudio* audio);
+			void StopPlay();
+			bool RemoveAudio(IGalGameAudio* audio);
+		};
+
 		std::deque<std::vector<IGalGameSprite*>>  m_Sprite;
-		std::vector<std::vector<IGalGameAudio*>> m_Audio;
+		std::vector<AudioLayer> m_Audio;
 
 		std::unordered_map<String, int> m_SpriteLayer;
 		std::unordered_map<String, int> m_AudioLayer;

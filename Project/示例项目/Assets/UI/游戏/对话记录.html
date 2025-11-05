@@ -10,7 +10,7 @@
             对话记录盒子 = element:GetElementById('dialogue-box')
 
             local 索引 = 0
-            local 对话数量 = GalEngine.GetEngine().对话系统.对话数目
+            local 对话数量 = GalGame.获取引擎().对话系统.对话数目
             while 索引 < 对话数量 do
                 -- 对话项
                 对话项 = document:CreateElement('div')
@@ -20,12 +20,12 @@
                 对话角色 = document:CreateElement('div')
                 对话角色 = 对话项:AppendChild(对话角色)
                 对话角色:SetAttribute('class', 'character-name')
-                对话角色.innerRml = GalEngine.GetEngine().对话系统:获取对话人物(索引)
+                对话角色.innerRml = GalGame.获取引擎().对话系统:获取对话人物(索引)
                 -- 对话内容
                 对话文本 = document:CreateElement('div')
                 对话文本 = 对话项:AppendChild(对话文本)
                 对话文本:SetAttribute('class', 'dialogue-text')
-                对话文本.innerRml = GalEngine.GetEngine().对话系统:获取对话文本(索引)
+                对话文本.innerRml = GalGame.获取引擎().对话系统:获取对话文本(索引)
 
                 索引 = 索引 + 1
             end

@@ -1,0 +1,59 @@
+<rml>
+    <head>
+        <link type="text/template" href="../窗口.lua" />
+        <link type="text/css" href="关于游戏CSS.css"/>
+
+        
+        <script>
+            HTML关于游戏 = HTML关于游戏 or {}
+
+            function HTML关于游戏.返回主菜单(event,document)
+                转场管理器:开始转场命令('Screen','fadeOut 1.0')
+                转场管理器:开始转场命令('Screen','fadeIn 1.0')
+                场景管理器:加载场景('/assets/主菜单场景.vgasset')
+            end
+
+            function HTML关于游戏.OnLoad(element, document)
+            end
+
+            function HTML关于游戏.关闭页面(event,document)
+                print(HTML游戏状态.当前场景)
+                if(HTML游戏状态.当前场景 == '主菜单') then
+                    HTML窗口.加载文档('/assets/UI/主菜单/主菜单',document)
+                end    
+            end
+        </script>
+    </head>
+    <body onload="HTML关于游戏.OnLoad(element,document)" onkeydown="if HTML窗口.ESC按下(event) then HTML关于游戏.关闭页面(event,document) end" class="fade-in">  
+        <!-- 设置界面 -->
+        <div class="about-container"> 
+            <div class="about-panel">
+
+                <!-- 菜单 -->
+                <div class="about-header">
+                    <div class="about-title">关于游戏</div>
+                    <button class="close-btn" id="closeAbout">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="about-group">
+                    <textarea class="about-text" cols="40" rows="20" name="message">
+                        本游戏由VisionGal引擎开发的视觉小说游戏
+                        为引擎的初始示例项目
+                        引擎主页：https://darlingzerox.github.io/VisionGalDoc/
+                        Github主页：https://github.com/DarlingZeroX/VisionGal
+                    </textarea>
+                </div>
+
+                <div class="option-menu-bottom-button" id="option-menu-bottom-button">
+                    <button class="back-btn" onclick="HTML选项菜单.关闭选项菜单(event,document)">返回</button>
+                </div>
+            </div>
+
+        </div>
+            
+    </body>
+    
+    </rml>
+    

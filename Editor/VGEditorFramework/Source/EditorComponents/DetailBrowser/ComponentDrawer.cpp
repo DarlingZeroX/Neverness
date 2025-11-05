@@ -359,6 +359,7 @@ namespace VisionGal::Editor
 				ImGui::TableSetColumnIndex(1);
 				if (ImGui::Button(ICON_FA_REDO "##ReloadUIDocument"))
 				{
+					H_ASSERT_NOT_NULL(com->document)
 					UISystem::Get()->ReloadUIDocument(com->document);
 				}}
 
@@ -387,7 +388,7 @@ namespace VisionGal::Editor
 				//	//com->Play();
 				//}
 				com->document = UISystem::Get()->LoadUIDocument(data);
-				UISystem::Get()->ShowUIDocument(com->document);
+				UISystem::Get()->ShowUIDocument(com->document.get());
 
 				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drop Video" });
 			}

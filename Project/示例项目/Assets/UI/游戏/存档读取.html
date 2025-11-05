@@ -33,7 +33,7 @@
                     存档描述:SetAttribute('class', 'save-description')
 
                     -- 读取存档如果存在
-                    local 存档 = GalEngine.GetEngine().存档系统:获取存档(索引)
+                    local 存档 = GalGame.获取引擎().存档系统:获取存档(索引)
                     if 存档.isValid then
                         存档槽:SetAttribute('class', 'save-slot')
                         存档日期时间.innerRml = 存档.dateTime
@@ -47,7 +47,7 @@
             -- 当存档槽被点击
             function HTML存档读取.加载存档(element,document, index)
                 --print(index)
-                local 存档 = GalEngine.GetEngine().存档系统:获取存档(index)
+                local 存档 = GalGame.获取引擎().存档系统:获取存档(index)
                 if 存档.isValid then  
                     转场管理器:开始转场命令('Screen','fadeOut 1.0')
                     转场管理器:开始转场命令('Screen','fadeIn 1.0')
@@ -57,7 +57,7 @@
                     elseif(html当前游戏UI状态 == "游戏中") then
                         HTML窗口.加载文档('/assets/UI/游戏/游戏',document)
                     end
-                    GalEngine.GetEngine():加载存档(存档)   
+                    GalGame.获取引擎():加载存档(存档)   
                     --print("dddddddddddddddddd")
                 end
             end

@@ -53,6 +53,6 @@ namespace VisionGal::GalGame
 
 	struct GalGameLuaInterface
 	{
-		static void Initialise(sol::state& lua);
+		static void Initialise(sol::table& galgame);
 	};
 }

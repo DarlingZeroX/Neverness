@@ -1,12 +1,13 @@
 <rml>
     <head>
         <link type="text/template" href="../窗口.lua" />
+        <link type="text/template" href="../UI状态.lua" />
         <link type="text/css" href="游戏设置CSS.css"/>
 
-        
         <script>
             HTML选项菜单 = HTML选项菜单 or {}
-
+            --HTML_UI状态 = nil
+            
             function HTML选项菜单.返回主菜单(event,document)
                 转场管理器:开始转场命令('Screen','fadeOut 1.0')
                 转场管理器:开始转场命令('Screen','fadeIn 1.0')
@@ -17,7 +18,14 @@
                 Application.Quit()
             end
 
+            function HTML选项菜单.设置UI状态(element)
+                element:GetElementById('dialogue-opacity'):SetAttribute('value', tostring(HTML_UI状态.对话框透明度))
+                --element:GetElementById('dialogue-opacity').attributes.value = HTML_UI状态.对话框透明度
+            end
+
             function HTML选项菜单.OnLoad(element, document)
+                HTML选项菜单.设置UI状态(element)
+
                 if(HTML游戏状态.当前场景 == "游戏中") then
                     local option_menu_bottom_button = element:GetElementById('option-menu-bottom-button')
 
@@ -40,7 +48,8 @@
                 if(HTML游戏状态.当前场景 == '主菜单') then
                     HTML窗口.加载文档('/assets/UI/主菜单/主菜单',document)
                 elseif(HTML游戏状态.当前场景 == "游戏中") then
-                    HTML窗口.加载文档('/assets/UI/游戏/游戏',document)
+                    --HTML窗口.加载文档('/assets/UI/游戏/游戏',document)
+                    document:Close()
                 end    
             end
 
@@ -48,6 +57,11 @@
             function HTML选项菜单按钮.改变音乐音量(drag_element)
                 print(drag_element:GetAttribute('value'))
                 --print(drag_element)
+            end
+
+            function HTML选项菜单按钮.改变对话框透明度(drag_element)
+                HTML_UI状态.对话框透明度 = drag_element:GetAttribute('value')
+                HTML_UI状态.对话框状态改变 = true
             end
         </script>
     </head>
@@ -72,7 +86,7 @@
 
                     <div class="slider-setting">
                         <div class="slider-label">音乐</div>
-                        <input type="range" min="0" max="1" step="0.01" value="1" ondrag = "HTML选项菜单按钮.改变音乐音量(element)" /> 
+                        <input id="music-volume" type="range" min="0" max="1" step="0.01" value="1" ondrag = "HTML选项菜单按钮.改变音乐音量(element)" /> 
                     </div>
             
                     <div class="slider-setting">
@@ -97,7 +111,7 @@
 
                     <div class="slider-setting">
                         <div class="slider-label">对话框透明度</div>
-                        <input type="range" min="0" max="100" step="1" value="50"/> 
+                        <input id="dialogue-opacity" type="range" min="0" max="255" step="1" value="200" ondrag = "HTML选项菜单按钮.改变对话框透明度(element)"/> 
                     </div>
             
                     <div class="slider-setting">

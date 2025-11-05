@@ -60,21 +60,15 @@ namespace VisionGal::GalGame
 			AddAudioLayer(layer);
 		}
 
+		auto& audioLayer = m_Audio[m_AudioLayer[audio->GetResourceLayer()]];
+
 		// 如果是语音图层，则停止当前所有语音播放
 		if (audio->GetResourceLayer() == "Voice")
 		{
-			auto& audios = m_Audio[m_AudioLayer[audio->GetResourceLayer()]];
-			for (auto& audio: audios)
-			{
-				auto* galAudio = dynamic_cast<GalAudio*>(audio);
-				if (galAudio != nullptr)
-				{
-					galAudio->Stop();
-				}
-			}
+			audioLayer.StopPlay();
 		}
 
-		m_Audio[m_AudioLayer[audio->GetResourceLayer()]].push_back(audio);
+		audioLayer.AddAudio(audio);
 	}
 
 	bool LayeredSceneManager::RemoveSprite(IGalGameSprite* sprite)
@@ -101,16 +95,8 @@ namespace VisionGal::GalGame
 		if (audio == nullptr)
 			return false;
 
-		auto& audios = m_Audio[m_AudioLayer[audio->GetResourceLayer()]];
-		for (auto& ad : audios)
-		{
-			if (ad == audio)
-			{
-				delete ad;
-				ad = nullptr;
-				return true;
-			}
-		}
+		auto& audioLayer = m_Audio[m_AudioLayer[audio->GetResourceLayer()]];
+		audioLayer.RemoveAudio(audio);
 
 		return false;
 	}
@@ -150,7 +136,7 @@ namespace VisionGal::GalGame
 
 	void LayeredSceneManager::ClearSoundLayer(const String& layer)
 	{
-		m_Audio[m_AudioLayer[layer]].clear();
+		m_Audio[m_AudioLayer[layer]].Clear();
 	}
 
 	void LayeredSceneManager::ClearAllSprite()
@@ -172,7 +158,7 @@ namespace VisionGal::GalGame
 			});
 
 		for (auto& audio : m_Audio)
-			audio.clear();
+			audio.Clear();
 	}
 
 	void LayeredSceneManager::ClearAll()
@@ -210,13 +196,13 @@ namespace VisionGal::GalGame
 
 	void LayeredSceneManager::TraverseAudioLayer(const String& layer, const std::function<void(IGalGameAudio* audio)>& callback)
 	{
-		auto& sounds = m_Audio[m_AudioLayer[layer]];
+		auto& audioLayer = m_Audio[m_AudioLayer[layer]];
 
-		for (auto* sound : sounds)
+		for (auto* audio : audioLayer.audios)
 		{
-			if (sound != nullptr)
+			if (audio != nullptr)
 			{
-				callback(sound);
+				callback(audio);
 			}
 		}
 	}
@@ -225,7 +211,7 @@ namespace VisionGal::GalGame
 	{
 		for (auto& layer : m_Audio)
 		{
-			for (auto* sound : layer)
+			for (auto* sound : layer.audios)
 			{
 				if (sound != nullptr)
 				{
@@ -265,5 +251,40 @@ namespace VisionGal::GalGame
 		AddAudioLayer("Voice");
 		AddAudioLayer("Effect");
 		AddAudioLayer("System");
+	}
+
+	void LayeredSceneManager::AudioLayer::Clear()
+	{
+		audios.clear();
+	}
+
+	void LayeredSceneManager::AudioLayer::AddAudio(IGalGameAudio* audio)
+	{
+		audios.push_back(audio);
+	}
+
+	void LayeredSceneManager::AudioLayer::StopPlay()
+	{
+		for (auto& audio : audios)
+		{
+			auto* galAudio = dynamic_cast<GalAudio*>(audio);
+			if (galAudio != nullptr)
+			{
+				galAudio->Stop();
+			}
+		}
+	}
+
+	bool LayeredSceneManager::AudioLayer::RemoveAudio(IGalGameAudio* audio)
+	{
+		for (auto& ad : audios)
+		{
+			if (ad == audio)
+			{
+				delete ad;
+				ad = nullptr;
+				return true;
+			}
+		}
 	}
 }

@@ -16,7 +16,7 @@ namespace VisionGal {
 		}
 
 		if (IsAlmostFull()) {
-			std::cerr << "[Audio] RingBuffer almost full (" << size << "/" << buffer.size() << ")" << std::endl;
+			//std::cerr << "[Audio] RingBuffer almost full (" << size << "/" << buffer.size() << ")" << std::endl;
 		}
 
 		return written;
@@ -33,7 +33,7 @@ namespace VisionGal {
 
 
 		if (IsAlmostFull() == false) {
-			std::cout << "[Audio] RingBuffer size (" << size << "/" << buffer.size() << ")" << std::endl;
+			//std::cout << "[Audio] RingBuffer size (" << size << "/" << buffer.size() << ")" << std::endl;
 		}
 
 		return read;

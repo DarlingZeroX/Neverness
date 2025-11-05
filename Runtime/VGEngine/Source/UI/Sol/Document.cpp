@@ -10,6 +10,7 @@ namespace RmlSol {
 		// Rml::ElementDocument
 		lua->new_usertype<Rml::ElementDocument>("RmlElementDocument",
 			sol::constructors<Rml::ElementDocument(const Rml::String&)>(),
+			// 方法
 			"PullToFront", &Rml::ElementDocument::PullToFront,
 			"PushToBack", &Rml::ElementDocument::PushToBack,
 			"Show", [](Rml::ElementDocument& self) {
@@ -24,7 +25,15 @@ namespace RmlSol {
 				Rml::ElementPtr* ele = new Rml::ElementPtr(self.CreateElement(name));
 				return ele->get();
 			},
-
+			"AddUpdateCallback", [](Rml::ElementDocument& self, const sol::function& callback) {
+				auto uiDocument = VisionGal::UISystem::Get()->FindDocumentByElementDocument(&self);
+				if (uiDocument == nullptr)
+				{
+					uiDocument = VisionGal::UISystem::Get()->OnScriptOpenDocument(&self);
+				}
+				uiDocument->AddUpdateCallback(callback);
+			},
+			// 属性
 			"title", sol::property(
 				[](Rml::ElementDocument& self) -> const std::string& { return self.GetTitle(); },
 				[](Rml::ElementDocument& self, const std::string& value) { self.SetTitle(value); }

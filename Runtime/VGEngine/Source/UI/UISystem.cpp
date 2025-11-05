@@ -1,96 +1,15 @@
 #include "UI/UISystem.h"
 #include <RmlUi/Debugger.h>
-#include <SDL3_image/SDL_image.h>
-//#include "Galgame/GalGameEngine.h"
 #include "Engine/Manager.h"
 #include "Galgame/GameLua.h"
-#include "Lua/LuaInterface.h"
 #include "UI/Rml/Shell.h"
-#include "UI/Lua/Lua.h"
 #include "UI/Rml/RmlUi_Platform_SDL.h"
 #include "UI/Rml/RmlUi_Renderer_GL3.h"
-#include "VGEngine/Source/UI/Lua/LuaPlugin.h"
-
-#include "UI/Sol/Sol.h"
-#include "VGEngine/Source/UI/Sol/SolPlugin.h"
+#include "UI/Rml/RenderInterfaceGL3SDL.h"
+#include <algorithm>
 
 namespace VisionGal
 {
-	/**
-		Custom render interface example for the SDL/GL3 backend.
-
-		Overloads the OpenGL3 render interface to load textures through SDL_image's built-in texture loading functionality.
-	 */
-	class RenderInterface_GL3_SDL : public RenderInterface_GL3 {
-	public:
-		RenderInterface_GL3_SDL() {}
-
-		Rml::TextureHandle LoadTexture(Rml::Vector2i& texture_dimensions, const Rml::String& source) override
-		{
-			Rml::FileInterface* file_interface = Rml::GetFileInterface();
-			Rml::FileHandle file_handle = file_interface->Open(source);
-			if (!file_handle)
-				return {};
-
-			file_interface->Seek(file_handle, 0, SEEK_END);
-			const size_t buffer_size = file_interface->Tell(file_handle);
-			file_interface->Seek(file_handle, 0, SEEK_SET);
-
-			using Rml::byte;
-			Rml::UniquePtr<byte[]> buffer(new byte[buffer_size]);
-			file_interface->Read(buffer.get(), buffer_size, file_handle);
-			file_interface->Close(file_handle);
-
-			const size_t i_ext = source.rfind('.');
-			Rml::String extension = (i_ext == Rml::String::npos ? Rml::String() : source.substr(i_ext + 1));
-
-#if SDL_MAJOR_VERSION >= 3
-			auto CreateSurface = [&]() { return IMG_LoadTyped_IO(SDL_IOFromMem(buffer.get(), int(buffer_size)), 1, extension.c_str()); };
-			auto GetSurfaceFormat = [](SDL_Surface* surface) { return surface->format; };
-			auto ConvertSurface = [](SDL_Surface* surface, SDL_PixelFormat format) { return SDL_ConvertSurface(surface, format); };
-			auto DestroySurface = [](SDL_Surface* surface) { SDL_DestroySurface(surface); };
-#else
-			auto CreateSurface = [&]() { return IMG_LoadTyped_RW(SDL_RWFromMem(buffer.get(), int(buffer_size)), 1, extension.c_str()); };
-			auto GetSurfaceFormat = [](SDL_Surface* surface) { return surface->format->format; };
-			auto ConvertSurface = [](SDL_Surface* surface, Uint32 format) { return SDL_ConvertSurfaceFormat(surface, format, 0); };
-			auto DestroySurface = [](SDL_Surface* surface) { SDL_FreeSurface(surface); };
-#endif
-
-			SDL_Surface* surface = CreateSurface();
-			if (!surface)
-				return {};
-
-			texture_dimensions = { surface->w, surface->h };
-
-			if (GetSurfaceFormat(surface) != SDL_PIXELFORMAT_RGBA32)
-			{
-				// Ensure correct format for premultiplied alpha conversion and GenerateTexture below.
-				SDL_Surface* converted_surface = ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
-				DestroySurface(surface);
-				if (!converted_surface)
-					return {};
-
-				surface = converted_surface;
-			}
-
-			// Convert colors to premultiplied alpha, which is necessary for correct alpha compositing.
-			const size_t pixels_byte_size = surface->w * surface->h * 4;
-			byte* pixels = static_cast<byte*>(surface->pixels);
-			for (size_t i = 0; i < pixels_byte_size; i += 4)
-			{
-				const byte alpha = pixels[i + 3];
-				for (size_t j = 0; j < 3; ++j)
-					pixels[i + j] = byte(int(pixels[i + j]) * int(alpha) / 255);
-			}
-
-			Rml::TextureHandle texture_handle = RenderInterface_GL3::GenerateTexture({ pixels, pixels_byte_size }, texture_dimensions);
-
-			DestroySurface(surface);
-
-			return texture_handle;
-		}
-	};
-
 	UISystem::UISystem()
 	{
 	}
@@ -147,24 +66,18 @@ namespace VisionGal
 		return 0;
 	}
 
-	bool UISystem::LoadDocument(std::string doc)
-	{
-		// Load and show the tutorial document.
-		if (Rml::ElementDocument* document = m_pContext->LoadDocument(doc))
-		{
-			m_NativeDocument.push_back(document);
-			document->Show();
-			return true;
-		}
-
-		return false;
-	}
-
 	Ref<RmlUIDocument> UISystem::LoadUIDocument(const String& path)
 	{
 		Rml::ElementDocument* document;
 		if (document = m_pContext->LoadDocument(path))
 		{
+			// 检查是否已经加载过该文档, 在脚本使用AddUpdateCallback时会事先注册好
+			if (auto result = FindDocumentByElementDocument(document))
+			{
+				result->SetResourcePath(path);
+				return result;
+			}
+
 			auto uiDocument = CreateRef<RmlUIDocument>();
 			uiDocument->document = document;
 
@@ -176,17 +89,7 @@ namespace VisionGal
 		return nullptr;
 	}
 
-	bool UISystem::ShowUIDocument(const Ref<RmlUIDocument>& doc)
-	{
-		if (doc != nullptr)
-		{
-			return ShowUIDocument(doc.get());
-		}
-
-		return false;
-	}
-
-	bool UISystem::ShowUIDocument(const RmlUIDocument* doc)
+	bool UISystem::ShowUIDocument(RmlUIDocument* doc)
 	{
 		if (doc != nullptr && doc->document != nullptr)
 		{
@@ -209,7 +112,7 @@ namespace VisionGal
 			//Rml::ReleaseTextures();
 
 			doc = LoadUIDocument(path);
-			ShowUIDocument(doc);
+			ShowUIDocument(doc.get());
 		}
 
 		return;
@@ -225,40 +128,56 @@ namespace VisionGal
 			}
 		}
 
-		for (auto& doc: m_NativeDocument)
+		m_Documents.clear();
+	}
+
+	Ref<RmlUIDocument> UISystem::FindDocumentByElementDocument(Rml::ElementDocument* document)
+	{
+		for (auto& doc : m_Documents)
 		{
-			if (doc)
+			if (doc && doc->document == document)
 			{
-				doc->Close();
+				return doc;
 			}
 		}
 
-		m_Documents.clear();
-		m_NativeDocument.clear();
+		return nullptr;
 	}
 
-	void UISystem::OnScriptOpenDocument(Rml::ElementDocument* document)
+	Ref<RmlUIDocument> UISystem::OnScriptOpenDocument(Rml::ElementDocument* document)
 	{
-		m_NativeDocument.push_back(document);
+		auto uiDocument = CreateRef<RmlUIDocument>();
+		uiDocument->document = document;
+
+		m_Documents.push_back(uiDocument);
+
+		return uiDocument;
+		//m_NativeDocument.push_back(document);
 	}
 
 	void UISystem::OnScriptCloseDocument(const Rml::ElementDocument* document)
 	{
-		for (auto& doc : m_Documents)
-		{
-			if (doc->document == document)
+		// 移除与 document 匹配的文档，同时调用 Close 以释放资源
+		m_Documents.erase(std::remove_if(m_Documents.begin(), m_Documents.end(),
+			[document](const Ref<RmlUIDocument>& doc) -> bool
 			{
-				doc->isClosed = true;
-			}
-		}
+				// 移除空引用
+				if (!doc)
+					return true;
 
-		for (auto& doc : m_NativeDocument)
-		{
-			if (doc == document)
-			{
-				doc = nullptr;
-			}
-		}
+				// 如果匹配到脚本关闭的原生文档，先关闭再移除
+				if (doc->document == document)
+				{
+					if (doc->document)
+					{
+						// 保护性调用 Close（原实现中 CloseAllDocuments 会调用 Close）
+						doc->Close();
+					}
+					return true;
+				}
+
+				return false;
+			}), m_Documents.end());
 	}
 
 	Rml::SystemInterface* UISystem::GetSystemInterface() const
@@ -289,9 +208,7 @@ namespace VisionGal
 
 	void UISystem::RenderContext()
 	{
-
-			m_pContext->Render();
-
+		m_pContext->Render();
 	}
 
 	void UISystem::EndFrame()
@@ -308,6 +225,13 @@ namespace VisionGal
 
 	void UISystem::OnUpdate()
 	{
+		// 更新所有UI文档
+		for (auto& doc: m_Documents)
+		{
+			doc->Update();
+		}
+
+		// 更新UI上下文
 		m_pContext->Update();
 	}
 
@@ -353,15 +277,7 @@ namespace VisionGal
 		// RmlUi initialisation.
 		Rml::Initialise();
 
-		//Rml::Lua::Initialise();
-		//sol::state_view view(Rml::Lua::LuaPlugin::GetLuaState());
-		//VGLuaInterface::Initialise(view);
-		//GalGame::GalGameLuaInterface::Initialise(view);
-
-		RmlSol::Initialise();
-		sol::state* solState = RmlSol::SolPlugin::GetLuaState();
-		VGLuaInterface::Initialise(*solState);
-		GalGame::GalGameLuaInterface::Initialise(*solState);
+		//RmlSol::Initialise();
 
 		int width = m_Window->WindowWidth();
 		int height = m_Window->WindowHeight();

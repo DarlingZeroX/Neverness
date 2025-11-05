@@ -28,12 +28,14 @@ namespace RmlSol {
 			g_L->open_libraries(sol::lib::base,
 				sol::lib::math,
 				sol::lib::string,
-				sol::lib::table); // 默认已加载这些库
+				sol::lib::table); // 榛樿宸插姞杞借繖浜涘簱
 			owns_lua_state = true;
 		}
 		else
 		{
-			Rml::Log::Message(Rml::Log::LT_INFO, "Loading Lua plugin using the provided Lua state.");
+			//Rml::Log::Message(Rml::Log::LT_INFO, "Loading Lua plugin using the provided Lua state.");
+			//owns_lua_state = false;
+			Rml::Log::Message(Rml::Log::LT_INFO, "Loading Lua plugin using a exist Lua state.");
 			owns_lua_state = false;
 		}
 		RegisterTypes();

@@ -1,4 +1,4 @@
-local 梦女 = GalGame:创建人物('梦女')
+local 梦女 = GalGame.引擎:创建人物('梦女')
 
 游戏立绘 = 游戏立绘 or {{ }} --namespace
 function 游戏立绘.立绘显示回调(人物立绘)
@@ -15,21 +15,21 @@ return function()
 	梦女:添加立绘隐藏回调(游戏立绘.立绘隐藏回调)
 
     梦女:显示立绘('女孩1')
-    GalGame:显示背景('图片/背景/教室背景.png')
+    GalGame.引擎:显示背景('图片/背景/教室背景.png')
     梦女:说('测试开始')
 
-    GalGame:图片转场命令('背景','图片/转场/WIP_BLTR.png','2.0')
+    GalGame.引擎:图片转场命令('背景','图片/转场/WIP_BLTR.png','2.0')
     local 红色 = float4.new(1.0, 0.0, 0.0, 1.0)
-    GalGame:显示背景(红色)
+    GalGame.引擎:显示背景(红色)
     梦女:说('当前测试：在背景层显示红色')
 
-    GalGame:图片转场命令('前景','图片/转场/WIP_BLTR.png','2.0')
+    GalGame.引擎:图片转场命令('前景','图片/转场/WIP_BLTR.png','2.0')
     local 绿色 = float4.new(0.0, 1.0, 0.0, 1.0)
-    GalGame:显示前景(绿色)
+    GalGame.引擎:显示前景(绿色)
     梦女:说('当前测试：在前景层显示绿色')
 
-    GalGame:图片转场命令('屏幕','图片/转场/WIP_BLTR.png','2.0')
+    GalGame.引擎:图片转场命令('屏幕','图片/转场/WIP_BLTR.png','2.0')
     local 蓝色 = float4.new(0.0, 0.0, 1.0, 1.0)
-    GalGame:显示屏幕(蓝色)
+    GalGame.引擎:显示屏幕(蓝色)
     梦女:说('当前测试：在屏幕层显示蓝色')
 end

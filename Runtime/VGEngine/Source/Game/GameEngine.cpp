@@ -6,6 +6,7 @@
 #include "Scene/Components.h"
 #include "Galgame/GalGameEngine.h"
 #include "Render/TransitionManager.h"
+#include "Core/CoreLua.h"
 
 namespace VisionGal
 {
@@ -150,7 +151,7 @@ namespace VisionGal
 				if (com.document)
 				{
 					com.document = UISystem::Get()->LoadUIDocument(com.document->GetResourcePath());
-					UISystem::Get()->ShowUIDocument(com.document);
+					UISystem::Get()->ShowUIDocument(com.document.get());
 				}
 
 				});
@@ -256,5 +257,8 @@ namespace VisionGal
 		auto galgameEngine = CreateRef<GalGame::GalGameEngine>();
 		galgameEngine->Initialize(&m_EngineContext);
 		m_SubGameEngines.push_back(galgameEngine);
+
+		// 初始化 Core Lua
+		CoreLua::Initialize();
 	}
 }
