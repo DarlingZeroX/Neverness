@@ -9,8 +9,8 @@ namespace VisionGal
 	AudioDecoder::AudioDecoder()
 	{
 
-		audioBuf[0] = nullptr;
-		audioBuf[1] = nullptr;
+		//audioBuf[0] = nullptr;
+		//audioBuf[1] = nullptr;
 	}
 
 	AudioDecoder::~AudioDecoder()
@@ -60,82 +60,14 @@ namespace VisionGal
 
 			audioRingBuffer = CreateRef<AudioRingBuffer>(2 * 1024 * 1024);
 
-			auto MyAudioCallback = [](void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount)
-				{
-					auto* ring = static_cast<AudioRingBuffer*>(userdata);
-					size_t frame_size = 2 * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16); // 2ch s16
 
-					while (additional_amount >= (int)frame_size && ring->Available() >= frame_size) {
-						uint8_t temp[4096];
-						size_t to_read = std::min(sizeof(temp), (size_t)additional_amount);
-
-						// 保证读取的是完整帧数
-						to_read = (to_read / frame_size) * frame_size;
-
-						if (to_read == 0) break;
-
-						size_t read = ring->Read(temp, to_read);
-
-						// 再次对齐防止 AudioRingBuffer 只返回部分
-						read = (read / frame_size) * frame_size;
-
-						if (read > 0) {
-							SDL_PutAudioStreamData(stream, temp, (int)read);
-							additional_amount -= (int)read;
-						}
-						else {
-							break;
-						}
-					}
-
-					if (ring->IsFinish())
-					{
-						SDL_PauseAudioStreamDevice(stream);
-						return;
-					}
-
-					if (ring->Available() < frame_size * 10) {
-						if (ring->IsWriteFinish())
-						{
-							SDL_PauseAudioStreamDevice(stream);
-						}
-						else
-						{
-							std::cerr << "[Audio] Warning: underrun imminent, ring buffer low" << std::endl;
-						}
-					}
-				};
-
-			if (SDL_InitSubSystem(SDL_INIT_AUDIO) == false) {
-				std::cerr << "音频初始化失败: " << SDL_GetError() << std::endl;
-				return false;
-			}
-
-			SDL_AudioSpec spec{};
-			spec.freq = 44100;
-			spec.format = SDL_AUDIO_S16;
-			spec.channels = 2;
-
-			// 1. 打开默认输出设备
-			audioDev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-			if (!audioDev) {
-				std::cerr << "Failed to open audio device: " << SDL_GetError() << std::endl;
-				return false;
-			}
-
-			// 2. 用 audioDev 打开 stream
-			audioStream = SDL_OpenAudioDeviceStream(audioDev, &spec, MyAudioCallback, audioRingBuffer.get());
-			if (!audioStream) {
-				std::cerr << "Failed to create audio stream: " << SDL_GetError() << std::endl;
-				return false;
-			}
 
 			//SDL_PauseAudioDevice(audioDev);
 
 			//audioMaxSamples = 1024;
 			audioMaxSamples = av_rescale_rnd(4096, 44100, actx->sample_rate, AV_ROUND_UP);
 
-			av_samples_alloc(audioBuf, nullptr, 2, audioMaxSamples, AV_SAMPLE_FMT_S16, 0);
+			av_samples_alloc(&audioBuf, nullptr, 2, audioMaxSamples, AV_SAMPLE_FMT_S16, 0);
 		}
 
 		// 分配帧和包
@@ -148,15 +80,54 @@ namespace VisionGal
 		return true;
 	}
 
+	void AudioDecoder::SetDecodeLoop(bool enable)
+	{
+		m_EnableDecodeLoop = enable;
+	}
+
+	bool AudioDecoder::IsDecodeLoop()
+	{
+		return m_EnableDecodeLoop;
+	}
+
 	void AudioDecoder::AudioThread()
 	{
 		while (running) {
 			AVPacket* pkt = av_packet_alloc();
 			if (av_read_frame(m_fContext->formatContext, pkt) < 0)
 			{
-				audioRingBuffer->WriteFinish();
 				av_packet_free(&pkt);
-				break;
+
+				// 到达文件结尾
+				if (m_EnableDecodeLoop && running)
+				{
+					// 尝试回到文件头并继续解码
+					// 对音频流使用时间戳 0，向后搜索
+					int ret = av_seek_frame(m_fContext->formatContext, audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
+					if (ret < 0)
+					{
+						// 如果按流索引失败，尝试全局 seek
+						av_seek_frame(m_fContext->formatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
+					}
+
+					// 清空解码器内部缓冲区，避免残留帧
+					if (actx)
+						avcodec_flush_buffers(actx);
+
+					// 重置时钟（从头播放）
+					audioClock = 0.0;
+
+					// 继续循环读取
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					continue;
+				}
+				else
+				{
+					// 非循环：标记写入结束并退出线程
+					if (audioRingBuffer)
+						audioRingBuffer->WriteFinish();
+					break;
+				}
 			}
 
 			if (pkt->stream_index == audioStreamIndex)
@@ -164,7 +135,7 @@ namespace VisionGal
 				avcodec_send_packet(actx, pkt);
 				av_packet_free(&pkt);
 				while (avcodec_receive_frame(actx, aframe) >= 0) {
-					int samples = swr_convert(swr, audioBuf, audioMaxSamples, (const uint8_t**)aframe->data, aframe->nb_samples);
+					int samples = swr_convert(swr, &audioBuf, audioMaxSamples, (const uint8_t**)aframe->data, aframe->nb_samples);
 
 					if (samples > 0) {
 						int channels = 2;
@@ -172,7 +143,7 @@ namespace VisionGal
 						int bytes = samples * channels * bps;
 						int bufSize = av_samples_get_buffer_size(
 							nullptr, channels, samples, AV_SAMPLE_FMT_S16, 1);
-						audioRingBuffer->Write(audioBuf[0], bufSize);
+						audioRingBuffer->Write(audioBuf, bufSize);
 
 						AVRational tb = m_fContext->formatContext->streams[audioStreamIndex]->time_base;
 						audioClock = aframe->best_effort_timestamp * av_q2d(tb);
@@ -193,41 +164,21 @@ namespace VisionGal
 		}
 	}
 
-	void AudioDecoder::PlayAudio()
-	{
-		// 如果存在音频流
-		if (audioStream)
-		{
-			StartDecode();
-
-			// 开始播放
-			SDL_ResumeAudioStreamDevice(audioStream);
-			// 启动线程
-			//audioThreadRunning = true;
-			//audioThread = std::thread(&AudioDecoder::AudioDecodeLoop, this);
-		}
-	}
-
 	void AudioDecoder::StartDecode()
 	{
 		running = true;
 		audioThread = std::thread(&AudioDecoder::AudioThread, this);
 	}
 
-	void AudioDecoder::Stop()
+	void AudioDecoder::StopDecode()
 	{
-		if (audioStream)
-		{
-			SDL_PauseAudioStreamDevice(audioStream);
-		}
-
 		running = false;
 		if (audioThread.joinable()) audioThread.join();
 	}
 
 	void AudioDecoder::Close()
 	{
-		Stop();
+		StopDecode();
 
 		// 音频
 		if (actx) {
@@ -244,6 +195,13 @@ namespace VisionGal
 			swr_free(&swr);
 			swr = nullptr;
 		}
+
+		if (audioBuf)
+		{
+			av_freep(&audioBuf);
+			audioBuf = nullptr;
+		}
+
 	}
 
 	double AudioDecoder::GetDuration() const

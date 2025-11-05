@@ -16,15 +16,6 @@ namespace VisionGal
         ~AudioClip() override;
 
         bool Open(const String& filePath);
-        void Clear();
-
-        //vfspp::IFilePtr file; // VFSpp 文件句柄
-        //SDL_IOStream* ioStream;
-        //SDL_AudioSpec audioSpec;
-        //uint8_t* audioBuffer;       // 原始WAV数据
-        //uint32_t bufferLength;      // 数据总长度
-		//VFS::DataRef audioData; // 用于存储音频数据
-
 		AudioDecoder audioDecoder;
     private:
         bool LoadAudio();
@@ -55,18 +46,15 @@ namespace VisionGal
         // 获取音量
         float GetVolume() const;
     private:
+		void FinishPlay(SDL_AudioStream* stream);
         // 处理音频流数据
-        void HandleAudioStream(SDL_AudioStream* stream, int need_bytes);
+		void HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount);
 
         Ref<AudioClip> audioClip;
         SDL_AudioStream* audioStream = nullptr;
-
-        uint8_t* bufferCopy = nullptr;// 复制的播放缓冲区
-        uint8_t* bufferPosition;    // 当前播放位置
-        uint32_t remainingLength;   // 剩余未播放长度
+		SDL_AudioDeviceID audioDev;
 
         std::atomic<bool> isPlaying;
-        bool m_EnableLoop = false;
         float m_Volume = 1.0f;
     };
 }

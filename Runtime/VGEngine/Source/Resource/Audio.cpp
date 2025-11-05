@@ -4,14 +4,11 @@
 namespace VisionGal
 {
 	AudioClip::AudioClip()
-        //audioSpec(),
-        //audioBuffer(nullptr), bufferLength(0)
 	{
 	}
 
 	AudioClip::~AudioClip()
 	{
-        Clear();
 	}
 
     bool AudioClip::Open(const String& filePath)
@@ -21,50 +18,13 @@ namespace VisionGal
 			SDL_Init(SDL_INIT_AUDIO);
 		}
 
-        //auto result = VFS::SafeReadFileFromVFS(filePath, [&](const VFS::DataRef& data) {
-        //    ioStream = SDL_IOFromMem(data->data(), data->size());
-		//	audioData = data; // 保存音频数据引用，避免提前释放
-        //    return 0;
-        //    });
-
 		return audioDecoder.Open(filePath);
-
-        //if (result < 0)
-        //    return false;
-
-        return LoadAudio();
-    }
-
-    void AudioClip::Clear()
-    {
-        //if (audioBuffer) {
-        //    SDL_free(audioBuffer);
-        //    audioBuffer = nullptr;
-        //}
-    }
-
-    bool AudioClip::LoadAudio()
-    {
-        // 释放旧数据
-        //if (audioBuffer) {
-        //    SDL_free(audioBuffer);
-        //    audioBuffer = nullptr;
-        //}
-		//
-        //// 加载音频文件
-        //if (SDL_LoadWAV_IO(ioStream, 1, &audioSpec, &audioBuffer, &bufferLength) == false) {
-        //    std::cerr << "加载WAV失败: " << SDL_GetError() << std::endl;
-        //    return false;
-        //}
-		
-        return true;
     }
 
     AudioPlayer::AudioPlayer()
         :
         audioStream(nullptr),
-        isPlaying(false),
-        bufferCopy(nullptr)
+        isPlaying(false)
     {
         Init();
     }
@@ -88,12 +48,6 @@ namespace VisionGal
         audioClip = clip;
 
         //Stop();
-		//
-        //// 复制数据用于播放
-        //bufferCopy = new uint8_t[audioClip->bufferLength];
-        //memcpy(bufferCopy, audioClip->audioBuffer, audioClip->bufferLength);
-        //bufferPosition = bufferCopy;
-        //remainingLength = audioClip->bufferLength;
 
         return true;
     }
@@ -101,53 +55,65 @@ namespace VisionGal
     // 音频流回调函数
     static void AudioStreamCallback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
         AudioPlayer* player = static_cast<AudioPlayer*>(userdata);
-        player->HandleAudioStream(stream, additional_amount);
+        //player->HandleAudioStream(stream, additional_amount);
+		player->HandelAudioStream(stream, additional_amount, total_amount);
     }
 
     bool AudioPlayer::Play()
     {
+		//if (audioClip->audioDecoder == nullptr)
+		//	return false;
+
         if (!audioClip || isPlaying) return false;
 
-		audioClip->audioDecoder.PlayAudio();
-        // 打开音频设备并创建流
-        //audioStream = SDL_OpenAudioDeviceStream(
-        //    SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,  // 默认播放设备
-        //    &audioClip->audioSpec,               // 音频规格
-        //    AudioStreamCallback,                 // 回调函数
-        //    this                                 // 用户数据
-        //);
-		//
-        //if (!audioStream) {
-        //    std::cerr << "创建音频流失败: " << SDL_GetError() << std::endl;
-        //    return false;
-        //}
-		//
-        //// 开始播放
-        //SDL_ResumeAudioStreamDevice(audioStream);
+		audioClip->audioDecoder.StartDecode();
+
+
+		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == false) {
+			std::cerr << "音频初始化失败: " << SDL_GetError() << std::endl;
+			return false;
+		}
+
+		SDL_AudioSpec spec{};
+		spec.freq = 44100;
+		spec.format = SDL_AUDIO_S16;
+		spec.channels = 2;
+
+		// 1. 打开默认输出设备
+		audioDev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+		if (!audioDev) {
+			std::cerr << "Failed to open audio device: " << SDL_GetError() << std::endl;
+			return false;
+		}
+
+		audioStream = SDL_OpenAudioDeviceStream(audioDev, &spec, AudioStreamCallback, this);
+		if (!audioStream) {
+			std::cerr << "Failed to create audio stream: " << SDL_GetError() << std::endl;
+			return false;
+		}
+
+		// 3. 开始播放
+		SDL_ResumeAudioStreamDevice(audioStream);
+
         isPlaying = true;
         return true;
     }
 
-    void AudioPlayer::SetLoop(bool enable)
-    {
-        m_EnableLoop = enable;
-    }
-
     void AudioPlayer::Stop()
     {
-        if (!isPlaying) return;
-		audioClip->audioDecoder.Stop();
+		if (isPlaying == false)
+			return;
 
-        // 暂停并销毁流
-        //SDL_PauseAudioStreamDevice(audioStream);
-        //SDL_DestroyAudioStream(audioStream);
-        //audioStream = nullptr;
-		//
-        //// 释放复制缓冲区
-        //if (bufferCopy) {
-        //    delete[] bufferCopy;
-        //    bufferCopy = nullptr;
-        //}
+		audioClip->audioDecoder.StopDecode();
+
+		//SDL_PauseAudioStreamDevice(audioStream);
+		// 暂停并销毁流
+		if (audioStream != nullptr)
+		{
+			SDL_PauseAudioStreamDevice(audioStream);
+			SDL_DestroyAudioStream(audioStream);
+			audioStream = nullptr;
+		}
 
         isPlaying = false;
     }
@@ -157,9 +123,23 @@ namespace VisionGal
         return isPlaying;
     }
 
+	void AudioPlayer::SetLoop(bool enable)
+	{
+		if (audioClip)
+		{
+			audioClip->audioDecoder.SetDecodeLoop(enable);
+		}
+	}
+
     bool AudioPlayer::IsLooping() const
     {
-        return m_EnableLoop;
+		if (audioClip)
+		{
+			return audioClip->audioDecoder.IsDecodeLoop();
+		}
+
+		return false;
+        //return m_EnableLoop;
     }
 
     void AudioPlayer::SetVolume(float v)
@@ -172,45 +152,74 @@ namespace VisionGal
         return m_Volume;
     }
 
-    void AudioPlayer::HandleAudioStream(SDL_AudioStream* stream, int need_bytes)
+    void AudioPlayer::FinishPlay(SDL_AudioStream* stream)
     {
-        //if (remainingLength <= 0) {
-        //    if (m_EnableLoop)
-        //    {
-        //        bufferPosition = bufferCopy;
-        //        remainingLength = audioClip->bufferLength;
-        //    }
-        //    else
-        //    {
-        //        // 播放完毕，填充静音
-        //        SDL_PauseAudioStreamDevice(stream);
-        //        isPlaying = false;
-        //        return;
-        //    }
-        //}
-		//
-        //// 计算可复制的数据量
-        //int copy_bytes = SDL_min(remainingLength, need_bytes);
-		//
-        //// 如果音量 < 1，做音量缩放
-        //if (m_Volume < 0.99f) {
-        //    int16_t* samples = reinterpret_cast<int16_t*>(bufferPosition);
-        //    size_t sampleCount = copy_bytes / sizeof(int16_t);
-        //    std::vector<int16_t> temp(samples, samples + sampleCount);
-		//
-        //    for (auto& s : temp) {
-        //        s = static_cast<int16_t>(s * m_Volume);
-        //    }
-        //    SDL_PutAudioStreamData(stream, temp.data(), copy_bytes);
-        //}
-        //else {
-        //    // 无需调整
-        //    SDL_PutAudioStreamData(stream, bufferPosition, copy_bytes);
-        //}
-        ////SDL_PutAudioStreamData(stream, bufferPosition, copy_bytes);
-		//
-        //// 更新位置和剩余长度
-        //bufferPosition += copy_bytes;
-        //remainingLength -= copy_bytes;
+		SDL_PauseAudioStreamDevice(stream);
+		isPlaying = false;
+    }
+
+    void AudioPlayer::HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount)
+    {
+		//auto* ring = static_cast<AudioRingBuffer*>(userdata);
+		auto* ring = this->audioClip->audioDecoder.GetAudioBuffer();
+		size_t frame_size = 2 * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16); // 2ch s16
+
+		while (additional_amount >= (int)frame_size && ring->Available() >= frame_size) {
+			uint8_t temp[4096];
+			size_t to_read = std::min(sizeof(temp), (size_t)additional_amount);
+
+			// 保证读取的是完整帧数
+			to_read = (to_read / frame_size) * frame_size;
+
+			if (to_read == 0) break;
+
+			size_t read = ring->Read(temp, to_read);
+
+			// 再次对齐防止 AudioRingBuffer 只返回部分
+			read = (read / frame_size) * frame_size;
+
+			if (read > 0) {
+				// 音量调整
+				if (m_Volume < 0.99f) {
+					int16_t* samples = reinterpret_cast<int16_t*>(temp);
+					size_t sampleCount = read / sizeof(int16_t);
+					std::vector<int16_t> adjustedSamples(samples, samples + sampleCount);
+					for (auto& s : adjustedSamples) {
+						s = static_cast<int16_t>(s * m_Volume);
+					}
+					SDL_PutAudioStreamData(stream, adjustedSamples.data(), (int)read);
+				}
+				else {
+					// 无需调整
+					SDL_PutAudioStreamData(stream, temp, (int)read);
+				}
+
+				//SDL_PutAudioStreamData(stream, temp, (int)read);
+				additional_amount -= (int)read;
+			}
+			else {
+				break;
+			}
+		}
+
+		if (ring->IsFinish())
+		{
+			FinishPlay(stream);
+			//SDL_PauseAudioStreamDevice(stream);
+			return;
+		}
+
+		if (ring->Available() < frame_size * 10) {
+			if (ring->IsWriteFinish())
+			{
+				FinishPlay(stream);
+				//SDL_PauseAudioStreamDevice(stream);
+				return;
+			}
+			else
+			{
+				std::cerr << "[Audio] Warning: underrun imminent, ring buffer low" << std::endl;
+			}
+		}
     }
 }

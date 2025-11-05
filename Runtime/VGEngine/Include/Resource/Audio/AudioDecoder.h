@@ -29,32 +29,29 @@ namespace VisionGal {
 		bool Open(const std::string& filePath);
 		void Close();
 		double GetDuration() const;
-		void PlayAudio();
 
-		void Stop();
-		void AudioThread();
-
-		AudioRingBuffer* GetAudioBuffer() { return audioRingBuffer.get(); }
+		AudioRingBuffer* GetAudioBuffer() const { return audioRingBuffer.get(); }
 		double GetAudioClock() const { return audioClock; }
-	private:
-		void StartDecode();
 
+		void StartDecode();
+		void StopDecode();
+		void SetDecodeLoop(bool enable);
+		bool IsDecodeLoop();
+	private:
+		void AudioThread();
+	private:
 		Ref<FFmpegContext> m_fContext = nullptr;
-		int audioStreamIndex;
+		bool m_EnableDecodeLoop = false;
 
 		//音频
+		int audioStreamIndex;
+		int audioMaxSamples = 1024;
+		Ref<AudioRingBuffer> audioRingBuffer;
 		AVCodecContext* actx = nullptr;
 		AVFrame* aframe = nullptr;
 		SwrContext* swr = nullptr;
-		SDL_AudioDeviceID audioDev;
-		SDL_AudioStream* audioStream = nullptr;
-		uint8_t* audioBuf[2];
-		int audioMaxSamples = 1024;
-		Ref<AudioRingBuffer> audioRingBuffer;
-		bool audioThreadRunning = true;
+		uint8_t* audioBuf = nullptr;
 
-
-		mutable std::mutex mutex;
 		std::thread audioThread;
 		std::atomic<bool> running = false;
 		double audioClock = 0.0;

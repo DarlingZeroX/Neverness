@@ -41,7 +41,7 @@
     "AudioSourceComponent": {
         "EntityComponentID": 1486735350898506029,
         "HasAudio": true,
-        "m_AudioPath": "/assets/UI\\主菜单\\主菜单BGM.mp3",
+        "m_AudioPath": "/assets/开发使用\\AK000007.wav",
         "playOnAwake": true,
         "loop": false,
         "volume": 1.0

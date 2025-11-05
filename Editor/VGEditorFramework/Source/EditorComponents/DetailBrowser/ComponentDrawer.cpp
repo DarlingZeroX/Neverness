@@ -441,6 +441,14 @@ namespace VisionGal::Editor
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Checkbox("##Loop", &com->loop);
 
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text(EditorText{ "Volume" }.c_str());
+			ImGui::TableSetColumnIndex(1);
+			float volume = com->GetVolume();
+			ImGui::SliderFloat("##Volume", &volume, 0 ,1.0);
+			com->SetVolume(volume);
+
 			ImGui::EndTable();
 		}
 	}
