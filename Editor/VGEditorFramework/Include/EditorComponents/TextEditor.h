@@ -35,6 +35,8 @@ namespace VisionGal::Editor
 		void RenderTextEditorUI();
 		void RenderFileListUI();
 
+		void ReadLastWriteTime();
+
 		bool m_bItemDragging;
 		bool m_IsTextChanged = false;
 
@@ -45,6 +47,7 @@ namespace VisionGal::Editor
 
 		std::string m_Text;
 		std::string m_CurrentTextPath;
+		std::filesystem::file_time_type m_TextFileLastWriteTime;
 
 		bool m_HasText = false;
 		bool m_IsOpen = false;

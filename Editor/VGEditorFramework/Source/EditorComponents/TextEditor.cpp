@@ -14,6 +14,8 @@
 #include <sstream>
 
 #include "EditorCore/Localization.h"
+#include "HCore/Include/System/HFileSystem.h"
+#include "VGEngine/Include/Asset/Package.h"
 #include "VGEngine/Include/Core/VFS.h"
 //#include "VGImgui/Include/ImGuiColorTextEdit/TextEditorOriginal.h"
 
@@ -81,15 +83,23 @@ namespace VisionGal::Editor
 	TextEditorPanel::TextEditorPanel()
 		:m_ListPanel(new ShaderEditorList(this))
 	{
-		using ImGuiTextEditor::TextEditor;
+		//using ImGuiTextEditor::TextEditor;
 
 		//SetWindowName("Shader Editor");
 
-		auto lang = ImGuiTextEditor::LanguageDefinition::GalGameScript();
-		m_TexEditor.SetLanguageDefinition(lang);
-		m_TexEditor.SetPalette(TextEditor::GetDarkPalette());
+		m_TexEditor.SetPalette(ImGuiTextEditor::TextEditor::GetDarkPalette());
 		m_TexEditor.SetActiveAutocomplete(true);
+		m_TexEditor.SetUIScale(1.1f);
 
+		// 保存回调
+		m_TexEditor.OnSave = [this](ImGuiTextEditor::TextEditor* editor, const std::string& path)
+		{
+			if (m_CurrentTextPath.empty())
+				return;
+			VFS::WriteTextToFile(m_CurrentTextPath, editor->GetText());
+			m_IsTextChanged = false;
+			ReadLastWriteTime();
+		};
 		//auto lang = ImGuiTextEditorOriginal::TextEditor::LanguageDefinition::Lua();
 		//m_TexEditor.SetLanguageDefinition(lang);
 		//m_TexEditor.SetPalette(ImGuiTextEditorOriginal::TextEditor::GetDarkPalette());
@@ -127,37 +137,40 @@ namespace VisionGal::Editor
 	void TextEditorPanel::RenderTextEditorUI()
 	{
 		if (m_CurrentTextPath.empty())
+		{
 			return;
+		}
+
+		// 检测文件是否被外部修改
+		auto absPath = VFS::GetInstance()->AbsolutePath(m_CurrentTextPath);
+		if (Horizon::HFileSystem::ExistsFile(absPath))
+		{
+			if (m_TextFileLastWriteTime != std::filesystem::last_write_time(absPath))
+			{
+				OpenTextFile(m_CurrentTextPath);
+			}
+		}
 
 		if (m_TexEditor.IsTextChanged())
 		{
 			m_IsTextChanged = true;
 		}
+			
 
 		auto windowName = EditorText{ "Text Editor" }.GetText() + ": " + m_CurrentTextPath;
+		if (m_HasText == false)
 		{
-			//static std::string test;
-			//ImGuiEx::InputText("Steawste", test);
-			if (m_HasText)
-			{
-
-				//if (m_TexEditor.IsEditorHovered())
-				//{
-				ImGuiViewport* imViewport = ImGui::GetWindowViewport();
-				SDL_WindowID windowID = reinterpret_cast<SDL_WindowID>(imViewport->PlatformHandle);
-				SDL_StartTextInput(SDL_GetWindowFromID(windowID));
-				//H_LOG_INFO("SDL_StartTextInput");
-			//}
-			//else
-			//{
-			//	//H_LOG_INFO("resize");
-			//	ImGuiEx::GetIO().InputQueueCharacters.resize(0);
-			//}
-
-				m_TexEditor.Render("Editor");
-			}
-
+			return;
 		}
+
+		if (m_TexEditor.IsFocused())
+		{
+			ImGuiViewport* imViewport = ImGui::GetWindowViewport();
+			SDL_WindowID windowID = reinterpret_cast<SDL_WindowID>(imViewport->PlatformHandle);
+			SDL_StartTextInput(SDL_GetWindowFromID(windowID));
+		}
+
+		m_TexEditor.Render("Editor");
 	}
 
 	void TextEditorPanel::RenderFileListUI()
@@ -174,6 +187,15 @@ namespace VisionGal::Editor
 		}
 	}
 
+	void TextEditorPanel::ReadLastWriteTime()
+	{
+		auto absPath = VFS::GetInstance()->AbsolutePath(m_CurrentTextPath);
+		if (Horizon::HFileSystem::ExistsFile(absPath))
+		{
+			m_TextFileLastWriteTime = std::filesystem::last_write_time(absPath);
+		}
+	}
+
 	bool TextEditorPanel::OpenTextFile(const VGPath& path)
 	{
 		auto result = VFS::ReadTextFromFile(path, m_Text);
@@ -185,6 +207,26 @@ namespace VisionGal::Editor
 		m_HasText = true;
 		m_CurrentTextPath = path;
 		m_FileList.insert(path);
+
+		// 获取文件最后写入时间
+		ReadLastWriteTime();
+
+		// 根据文件类型设置语法高亮
+		VGAssetMetaData metadata;
+		if (VGPackage::GetMeatData(path, metadata))
+		{
+			if (metadata.AssetType == "HTML" || metadata.AssetType == "CSS")
+			{
+				auto lang = ImGuiTextEditor::LanguageDefinition::RmlUI();
+				m_TexEditor.SetLanguageDefinition(lang);
+			}
+
+			if (metadata.AssetType == "LuaScript" || metadata.AssetType == "GalGameStoryScript")
+			{
+				auto lang = ImGuiTextEditor::LanguageDefinition::GalGameScript();
+				m_TexEditor.SetLanguageDefinition(lang);
+			}
+		}
 
 		return true;
 	}

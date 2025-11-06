@@ -312,32 +312,4 @@ namespace ImGuiEx
 		//ImGui::GetForegroundDrawList( )->AddRect( vMin, vMax, col ); //will draw on top of everything 
 		ImGui::GetWindowDrawList()->AddRect(vMin, vMax, col, rounding, 15, tickness);
 	}
-
-	ImGuiExIO& ImGuiExIO::GetInstance()
-	{
-		static ImGuiExIO s_Instance;
-		return s_Instance;
-	}
-
-	void ImGuiExIO::AddInputCharacter(unsigned int c)
-	{
-		InputQueueCharacters.push_back(c <= IM_UNICODE_CODEPOINT_MAX ? (ImWchar)c : IM_UNICODE_CODEPOINT_INVALID);
-	}
-
-	void ImGuiExIO::AddInputCharactersUTF8(const char* utf8_chars)
-	{
-		//if (!AppAcceptingEvents)
-		//	return;
-		while (*utf8_chars != 0)
-		{
-			unsigned int c = 0;
-			utf8_chars += ImTextCharFromUtf8(&c, utf8_chars, NULL);
-			AddInputCharacter(c);
-		}
-	}
-
-	ImGuiExIO& GetIO()
-	{
-		return ImGuiExIO::GetInstance();
-	}
 }

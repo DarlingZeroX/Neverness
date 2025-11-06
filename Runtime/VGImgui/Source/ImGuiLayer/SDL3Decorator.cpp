@@ -90,11 +90,6 @@ namespace ImGuiEx
 
 	int Opengl3ImGuiWindowLayer::ProcessEvent(const SDL_Event& event)
 	{
-		if (event.type == SDL_EVENT_TEXT_INPUT)
-		{
-			// 向 ImGui 注入 UTF-8 字符串（可能包含多个字符，如中文）
-			ImGuiEx::GetIO().AddInputCharactersUTF8(event.text.text);
-		}
 		//SDL_StartTextInput
 		ImGui_ImplSDL3_ProcessEvent(&event);
 

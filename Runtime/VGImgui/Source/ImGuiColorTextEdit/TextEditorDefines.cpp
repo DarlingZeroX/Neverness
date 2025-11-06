@@ -1,3 +1,15 @@
+// https://github.com/dfranx/ImGuiColorTextEdit	 start on Commits on Oct 21, 2020		Fix scrolling
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * Github page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "pch.h"
 #include <string>
 #include <algorithm>
@@ -1161,9 +1173,9 @@ namespace ImGuiTextEditor {
 				 "pow", "frexp", "ldexp", "log10", "pi", "huge", "maxinteger", "mininteger", "loadlib", "searchpath", "seeall", "preload", "cpath", "path", "searchers", "loaded", "module", "require", "clock",
 				 "date", "difftime", "execute", "exit", "getenv", "remove", "rename", "setlocale", "time", "tmpname", "byte", "char", "dump", "find", "format", "gmatch", "gsub", "len", "lower", "match", "rep",
 				 "reverse", "sub", "upper", "pack", "packsize", "unpack", "concat", "maxn", "insert", "pack", "unpack", "remove", "move", "sort", "offset", "codepoint", "char", "len", "codes", "charpattern",
-				 "coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package",
+				 "coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package"//,
 
-				 u8"创建人物",u8"引擎",u8"显示背景",u8"播放效果音乐",u8"播放音乐"
+				 //"创建人物","引擎","显示背景","播放效果音乐","播放音乐"
 			};
 			for (auto& k : identifiers)
 			{
@@ -1263,4 +1275,73 @@ namespace ImGuiTextEditor {
 		}
 		return langDef;
 	}
+
+    const LanguageDefinition& LanguageDefinition::RmlUI()
+    {
+		static bool inited = false;
+		static LanguageDefinition langDef;
+		if (!inited)
+		{
+			static const char* const keywords[] = {
+				// HTML
+				"html","head","title","base","link","meta","style","script","noscript","body","section","nav","article","aside","h1","h2","h3","h4","h5","h6",
+				"header","footer","address","main","p","hr","pre","blockquote","ol","ul","li","dl","dt","dd","figure","figcaption","div","span","a","em","strong",
+				"small","s","cite","q","dfn","abbr","data","time","code","var","samp","kbd","sub","sup","i","b","u","mark","ruby","rt","rp","bdi","bdo","br","wbr",
+				"ins","del","img","iframe","embed","object","param","video","audio","source","track","canvas","map","area","svg","math","table","caption","colgroup",
+				"col","tbody","thead","tfoot","tr","td","th","form","fieldset","legend","label","input","button","select","datalist","optgroup","option","textarea",
+				"keygen","output","progress","meter","details","summary","menuitem","menu",
+
+				// Lua
+				"and", "break", "do", "", "else", "elseif", "end", "false", "for", "function", "if", "in", "", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while"
+			};
+
+			for (auto& k : keywords)
+				langDef.mKeywords.insert(k);
+
+			static const char* const identifiers[] = {
+				// Lua
+				"assert", "collectgarbage", "dofile", "error", "getmetatable", "ipairs", "loadfile", "load", "loadstring",  "next",  "pairs",  "pcall",  "print",  "rawequal",  "rawlen",  "rawget",  "rawset",
+				"select",  "setmetatable",  "tonumber",  "tostring",  "type",  "xpcall",  "_G",  "_VERSION","arshift", "band", "bnot", "bor", "bxor", "btest", "extract", "lrotate", "lshift", "replace",
+				"rrotate", "rshift", "create", "resume", "running", "status", "wrap", "yield", "isyieldable", "debug","getuservalue", "gethook", "getinfo", "getlocal", "getregistry", "getmetatable",
+				"getupvalue", "upvaluejoin", "upvalueid", "setuservalue", "sethook", "setlocal", "setmetatable", "setupvalue", "traceback", "close", "flush", "input", "lines", "open", "output", "popen",
+				"read", "tmpfile", "type", "write", "close", "flush", "lines", "read", "seek", "setvbuf", "write", "__gc", "__tostring", "abs", "acos", "asin", "atan", "ceil", "cos", "deg", "exp", "tointeger",
+				"floor", "fmod", "ult", "log", "max", "min", "modf", "rad", "random", "randomseed", "sin", "sqrt", "string", "tan", "type", "atan2", "cosh", "sinh", "tanh",
+				 "pow", "frexp", "ldexp", "log10", "pi", "huge", "maxinteger", "mininteger", "loadlib", "searchpath", "seeall", "preload", "cpath", "path", "searchers", "loaded", "module", "require", "clock",
+				 "date", "difftime", "execute", "exit", "getenv", "remove", "rename", "setlocale", "time", "tmpname", "byte", "char", "dump", "find", "format", "gmatch", "gsub", "len", "lower", "match", "rep",
+				 "reverse", "sub", "upper", "pack", "packsize", "unpack", "concat", "maxn", "insert", "pack", "unpack", "remove", "move", "sort", "offset", "codepoint", "char", "len", "codes", "charpattern",
+				 "coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package",
+
+				 // HTML
+				"id","class","style","title","name","value","type","src","href","alt","width","height","rel","media","charset","content","http-equiv","lang","dir",
+				"role","aria-label","aria-hidden","placeholder","disabled","checked","readonly","required","multiple","selected","size","maxlength","min","max","step",
+				"onclick","onload","onchange","data-*","contenteditable"
+			};
+			for (auto& k : identifiers)
+			{
+				Identifier id;
+				id.mDeclaration = "Built-in function";
+				langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
+			}
+
+			langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("L?\\\"(\\\\.|[^\\\"])*\\\"", PaletteIndex::String));
+			langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("\\\'[^\\\']*\\\'", PaletteIndex::String));
+			langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("0[xX][0-9a-fA-F]+[uU]?[lL]?[lL]?", PaletteIndex::Number));
+			langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][+-]?[0-9]+)?[fF]?", PaletteIndex::Number));
+			langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[+-]?[0-9]+[Uu]?[lL]?[lL]?", PaletteIndex::Number));
+			langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[a-zA-Z_][a-zA-Z0-9_]*", PaletteIndex::Identifier));
+			langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[\\[\\]\\{\\}\\!\\%\\^\\&\\*\\(\\)\\-\\+\\=\\~\\|\\<\\>\\?\\/\\;\\,\\.]", PaletteIndex::Punctuation));
+
+			langDef.mCommentStart = "<!--";
+			langDef.mCommentEnd = "-->";
+			langDef.mSingleLineComment = "--";
+
+			langDef.mCaseSensitive = true;
+			langDef.mAutoIndentation = false;
+
+			langDef.mName = "RmlUI";
+
+			inited = true;
+		}
+		return langDef;
+    }
 }

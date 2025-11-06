@@ -1,3 +1,14 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "Engine/VGEngine.h"
 #include "Resource/ResourceManager.h"
 #include "Core/Core.h"
@@ -9,8 +20,42 @@
 
 #include "HCore/Include/Core/HStringTools.h"
 
+#include <exception>
+#include <iostream>
+#include <sstream>
+
 namespace VisionGal
 {
+	namespace
+	{
+		// 辅助：报告异常并弹窗
+		inline void ReportException(const std::exception* e, const char* context)
+		{
+			std::string msg;
+			if (e)
+			{
+				msg = Horizon::HStringTools::Format("Unhandled exception in %s: %s", context, e->what());
+			}
+			else
+			{
+				msg = Horizon::HStringTools::Format("Unknown exception in %s", context);
+			}
+
+			// 弹出错误对话框
+			try
+			{
+				pfd::message("Error", msg, pfd::choice::ok, pfd::icon::error);
+			}
+			catch (...)
+			{
+				// 如果弹窗失败，也要保证至少在 stderr 输出
+			}
+
+			// 输出到标准错误
+			std::cerr << msg << std::endl;
+		}
+	}
+
 	VGEngine::VGEngine()
 	{
 		m_LastUpdateTime = std::chrono::high_resolution_clock::now();
@@ -64,7 +109,19 @@ namespace VisionGal
 
 	void VGEngine::OnUpdateSubSystem(float deltaTime)
 	{
-		GetViewportManager()->FrameUpdate();
+		try
+		{
+			GetViewportManager()->FrameUpdate();
+		}
+		catch (const std::exception& e)
+		{
+			ReportException(&e, "OnUpdateSubSystem");
+			// 视情况决定是否结束程序，这里仅记录并继续
+		}
+		catch (...)
+		{
+			ReportException(nullptr, "OnUpdateSubSystem");
+		}
 	}
 
 	void VGEngine::LoadProjectMainScene()
@@ -90,30 +147,43 @@ namespace VisionGal
 		auto lastTime = clock::now();
 
 		while (ProcessEvents()) {
-			// 1. 计算时间间隔 (deltaTime)
-			auto now = clock::now();
-			double deltaTime = std::chrono::duration<double>(now - lastTime).count();
-			deltaTime = std::min(deltaTime, MAX_FRAME_TIME);
-			lastTime = now;
+			try
+			{
+				// 1. 计算时间间隔 (deltaTime)
+				auto now = clock::now();
+				double deltaTime = std::chrono::duration<double>(now - lastTime).count();
+				deltaTime = std::min(deltaTime, MAX_FRAME_TIME);
+				lastTime = now;
 
-			updateLag += deltaTime;
+				updateLag += deltaTime;
 
-			// 2. 固定更新
-			while (updateLag >= FIXED_TIME) {
-				//FixedUpdate(FIXED_TIME);
-				updateLag -= FIXED_TIME;
+				// 2. 固定更新
+				while (updateLag >= FIXED_TIME) {
+					//FixedUpdate(FIXED_TIME);
+					updateLag -= FIXED_TIME;
+				}
+
+				// 3. 渲染和应用更新
+				//float alpha = static_cast<float>(updateLag / FIXED_TIME);
+				OnUpdateSubSystem(static_cast<float>(deltaTime));
+				OnApplicationUpdate(static_cast<float>(deltaTime));
+				//RenderWithInterpolation(alpha);
+
+				// 4. 可选帧率控制
+				double frameTime = std::chrono::duration<double>(clock::now() - now).count();
+				if (frameTime < FIXED_TIME) {
+					std::this_thread::sleep_for(std::chrono::duration<double>(FIXED_TIME - frameTime));
+				}
 			}
-
-			// 3. 渲染和应用更新
-			//float alpha = static_cast<float>(updateLag / FIXED_TIME);
-			OnUpdateSubSystem(static_cast<float>(deltaTime));
-			OnApplicationUpdate(static_cast<float>(deltaTime));
-			//RenderWithInterpolation(alpha);
-
-			// 4. 可选帧率控制
-			double frameTime = std::chrono::duration<double>(clock::now() - now).count();
-			if (frameTime < FIXED_TIME) {
-				std::this_thread::sleep_for(std::chrono::duration<double>(FIXED_TIME - frameTime));
+			catch (const std::exception& e)
+			{
+				ReportException(&e, "Run");
+				RequestExit();
+			}
+			catch (...)
+			{
+				ReportException(nullptr, "Run");
+				RequestExit();
 			}
 		}
 	}
@@ -127,8 +197,20 @@ namespace VisionGal
 	{
         for (auto& app : m_Applications)
         {
-			app->MakeCurrentRenderContext();
-			app->OnApplicationUpdate(deltaTime);
+			try
+			{
+				app->MakeCurrentRenderContext();
+				app->OnApplicationUpdate(deltaTime);
+			}
+			catch (const std::exception& e)
+			{
+				ReportException(&e, "OnApplicationUpdate - application");
+				// 单个应用异常，不影响其他应用
+			}
+			catch (...)
+			{
+				ReportException(nullptr, "OnApplicationUpdate - application");
+			}
         }
 	}
 
@@ -163,33 +245,49 @@ namespace VisionGal
 		bool result = m_Running;
 		m_Running = true;
 
-		SDL_PumpEvents();
-
-		SDL_Event ev;
-		//if (m_PowerSave)
-		//	has_event = SDL_WaitEventTimeout(&ev, static_cast<int>(Rml::Math::Min(context->GetNextUpdateDelay(), 10.0) * 1000));
-		//else
-		//	has_event = SDL_PollEvent(&ev);
-		has_event = SDL_PollEvent(&ev);
-
-		while (has_event)
+		try
 		{
-			switch (ev.type)
-			{
-			case SDL_EVENT_QUIT:
-				return false;
-			//case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-			//	return false;
-			}
+			SDL_PumpEvents();
 
-			// 交给窗口处理事件
-			for (auto& app : m_Applications)
-			{
-				app->MakeCurrentRenderContext();
-				app->ProcessEvent(ev);
-			}
-
+			SDL_Event ev;
+			//if (m_PowerSave)
+			//	has_event = SDL_WaitEventTimeout(&ev, static_cast<int>(Rml::Math::Min(context->GetNextUpdateDelay(), 10.0) * 1000));
+			//else
+			//	has_event = SDL_PollEvent(&ev);
 			has_event = SDL_PollEvent(&ev);
+
+			while (has_event)
+			{
+				switch (ev.type)
+				{
+				case SDL_EVENT_QUIT:
+					return false;
+				//case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+				//	return false;
+				}
+
+				// 交给窗口处理事件
+				for (auto& app : m_Applications)
+				{
+					app->MakeCurrentRenderContext();
+					app->ProcessEvent(ev);
+				}
+
+				has_event = SDL_PollEvent(&ev);
+			}
+		}
+		catch (const std::exception& e)
+		{
+			ReportException(&e, "ProcessEvents");
+			// 出现异常时尽量安全退出
+			RequestExit();
+			return false;
+		}
+		catch (...)
+		{
+			ReportException(nullptr, "ProcessEvents");
+			RequestExit();
+			return false;
 		}
 
 		return result;

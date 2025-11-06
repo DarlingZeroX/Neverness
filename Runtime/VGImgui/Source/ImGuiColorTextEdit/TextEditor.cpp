@@ -1,3 +1,15 @@
+// https://github.com/dfranx/ImGuiColorTextEdit	 start on Commits on Oct 21, 2020		Fix scrolling
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * Github page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "pch.h"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_keyboard.h>
@@ -20,8 +32,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui/imgui.h> // for imGui::GetCurrentWindow()
 #include <imgui/imgui_internal.h>
- 
-#include "ImGuiEx/ImGuiEx.h"
   
 namespace ImGuiTextEditor {
 	// TODO
@@ -115,6 +125,7 @@ namespace ImGuiTextEditor {
 		mFindFocused = false;
 		mReplaceFocused = false;
 
+		OnSave = nullptr;
 		OnDebuggerJump = nullptr;
 		OnDebuggerAction = nullptr;
 		OnBreakpointRemove = nullptr;
@@ -195,7 +206,8 @@ namespace ImGuiTextEditor {
 		ret[(int)ShortcutID::DebugBreakpoint] = Shortcut(SDLK_F9, -1, 0, 0, 0); // F9
 		ret[(int)ShortcutID::DebugJumpHere] = Shortcut(SDLK_H, -1, 1, 1, 0); // CTRL+ALT+H
 		ret[(int)ShortcutID::DuplicateLine] = Shortcut(SDLK_D, -1, 0, 1, 0); // CTRL+D
-
+		ret[(int)ShortcutID::Save] = Shortcut(SDLK_S, -1, 0, 1, 0); // CTRL+S
+		 
 		return ret;
 	}
 
@@ -1214,12 +1226,16 @@ namespace ImGuiTextEditor {
 
 					AddUndo(undo);
 				} break;
+				case ShortcutID::Save:
+					if (OnSave)
+						OnSave(this, GetPath());
+					break;
 				}
 			}
 			// 是键盘字符输入的情况
 			else if (!IsReadOnly())
 			{
-				auto& characters = ImGuiEx::GetIO().InputQueueCharacters;
+				auto& characters = ImGui::GetIO().InputQueueCharacters;
 				for (int i = 0; i < characters.size(); i++)
 				{
 					// 修复中文显示问题
@@ -2354,7 +2370,7 @@ namespace ImGuiTextEditor {
 		{
 			HandleKeyboardInputs();
 			//ImGui::PushAllowKeyboardFocus(true);
-			ImGui::SetKeyboardFocusHere();
+			//ImGui::SetKeyboardFocusHere();
 		}
 
 		if (mHandleMouseInputs)

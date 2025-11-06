@@ -52,15 +52,4 @@ namespace ImGuiEx
 	IMGUI_API void DrawObjBorderFloat2(Horizon::float2 obj_pos, Horizon::float2 obj_size, float distance_thickness = 5.f, ImU32 col = IM_COL32(255, 255, 0, 255), float rounding = 0.f, float tickness = 1.0f);
 	IMGUI_API void DrawObjBorder(ImVec2 obj_pos, ImVec2 obj_size, float distance_thickness = 5.f, ImU32 col = IM_COL32(255, 255, 0, 255), float rounding = 0.f, float tickness = 1.0f);
 
-	struct IMGUI_API ImGuiExIO
-	{
-		static ImGuiExIO& GetInstance();
-
-		void  AddInputCharacter(unsigned int c);                      // Queue a new character input
-		void  AddInputCharactersUTF8(const char* str);                // Queue a new characters input from a UTF-8 string
-
-		std::vector<unsigned int> InputQueueCharacters;
-	};
-
-	IMGUI_API ImGuiExIO& GetIO();
 }

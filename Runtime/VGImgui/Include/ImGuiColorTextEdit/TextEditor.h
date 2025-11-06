@@ -1,5 +1,16 @@
-#pragma once
 // https://github.com/dfranx/ImGuiColorTextEdit	 start on Commits on Oct 21, 2020		Fix scrolling
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * Github page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
+#pragma once
 #include "TextEditorDefines.h"
 
 #include <array>
@@ -178,6 +189,7 @@ namespace ImGuiTextEditor {
 		static const Palette& GetLightPalette();
 		static const Palette& GetRetroBluePalette();
 
+		std::function<void(TextEditor*, const std::string&)> OnSave;
 		std::function<void(TextEditor*, int)> OnDebuggerJump;
 		std::function<void(TextEditor*, DebugAction)> OnDebuggerAction;
 		std::function<void(TextEditor*, const std::string&)> OnIdentifierHover;
@@ -368,7 +380,7 @@ namespace ImGuiTextEditor {
 		bool mHandleMouseInputs;
 		bool mIgnoreImGuiChild;
 		bool mShowWhitespaces = false;	// 用点代表显示空格
-		bool mShowTabArrow = true;		// 用箭头代表显示制表符
+		bool mShowTabArrow = false;		// 用箭头代表显示制表符
 		bool mAutoindentOnPaste;
 
 		Palette mPaletteBase;

@@ -1,5 +1,15 @@
+// https://github.com/dfranx/ImGuiColorTextEdit	 start on Commits on Oct 21, 2020		Fix scrolling
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * Github page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
 #pragma once
-// https://github.com/dfranx/ImGuiColorTextEdit
 #include <vector>
 #include <map>
 #include <unordered_map>
@@ -106,6 +116,7 @@ namespace ImGuiTextEditor {
 		DebugBreakpoint,         // 调试断点      F9
 		DebugJumpHere,           // 调试跳转到此处  CTRL+ALT+H
 		DuplicateLine,           // 复制行        CTRL+D
+		Save,                    // 保存          CTRL+S
 		Count                    // 总数
 	};
 
@@ -302,6 +313,7 @@ namespace ImGuiTextEditor {
 		static const LanguageDefinition& AngelScript();
 		static const LanguageDefinition& Lua();
 		static const LanguageDefinition& GalGameScript();
+		static const LanguageDefinition& RmlUI();
 
 	private:
 		static void m_HLSLDocumentation(Identifiers& idents);
