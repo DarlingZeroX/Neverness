@@ -15,12 +15,12 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GenTex();
 		BindTex();
 
-		// 设置纹理参数
+		// 璁剧疆绾圭悊鍙傛暟
 
 		TexWrapping(GL_CLAMP_TO_EDGE);
 		TexFlitering(GL_LINEAR);
 
-		// 上传纹理数据
+		// 涓婁紶绾圭悊鏁版嵁
 		GL_THROW_INFO(glTexImage2D(GL_TEXTURE_2D, 0, desc.InternalFormat, desc.Width, desc.Height, 0, desc.Format, desc.Type, desc.Data));
 
 		GenMipmap();

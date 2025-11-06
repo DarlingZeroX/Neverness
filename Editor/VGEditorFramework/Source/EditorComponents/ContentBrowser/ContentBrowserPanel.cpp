@@ -251,7 +251,7 @@ namespace VisionGal::Editor {
 		ImVec2 thumbnailSize = { 25.0f,24.0f };
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
-		auto projectParentDirectory = m_pContentBrowser->GetProjectDirectory().parent_path();
+		auto projectParentDirectory = m_pContentBrowser->GetProjectDirectory().parent_path().parent_path();
 
 		size_t pathPos = 0;
 		pfsPath relativePath = Horizon::HFileSystem::RelativePath(path, projectParentDirectory);

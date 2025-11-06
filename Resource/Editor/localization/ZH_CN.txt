@@ -110,6 +110,8 @@ Main Viewport=主视口
 Preferences...=偏好...
 Editor Preferences=编辑器偏好
 
+Engine homepage=引擎主页
+
 Place Actors=放置actor
 Label=标签
 Type=类型

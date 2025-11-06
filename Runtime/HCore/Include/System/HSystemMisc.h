@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../CoreModuleDefinitions.h"
 
 /**
@@ -41,6 +41,6 @@ namespace Horizon
 		* \since This function is available since SDL 2.0.14.
 		*/
 
-		int OpenURL(const char* url);
+		static int OpenURL(const char* url);
 	};
 }

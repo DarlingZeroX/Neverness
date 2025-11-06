@@ -11,7 +11,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		Texture2D(Texture2D&) = delete;
 		~Texture2D() override = default;
 
-		virtual GLenum GetTexType() const noexcept;
+		GLenum GetTexType() const noexcept override;
 
 		int Width() const noexcept { return m_Desc.Width; }
 		int Height() const noexcept { return m_Desc.Height; }
@@ -20,6 +20,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 		const VGFX::TextureDesc& GetDesc() override;
 		void* GetShaderResourceView() override;
+		//bool ReadPixels(VGFX::TexturePixels& outPixels) override;
 	protected:
 		virtual void GenMipmap() const;
 

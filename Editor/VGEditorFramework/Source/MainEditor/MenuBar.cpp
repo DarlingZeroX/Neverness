@@ -15,6 +15,7 @@
 #include "PanelManager.h"
 #include "EditorCore/Localization.h"
 #include "EditorCore/EdtiorScene.h"
+#include "HCore/Include/System/HSystemMisc.h"
 #include "MainEditor/MainPanel.h"
 #include "VGEngine/Include/Engine/Manager.h"
 #include "VGEngine/Include/Engine/VGEngine.h"
@@ -139,6 +140,16 @@ namespace VisionGal::Editor
 			}
 			if (ImGui::BeginMenu(EditorText{ "Help" }.c_str()))
 			{
+				if (ImGui::MenuItem(EditorText{ "Engine homepage" }.c_str()))
+				{
+					Horizon::HSystemMisc::OpenURL("https://darlingzerox.github.io/VisionGalDoc/");
+				}
+
+				if (ImGui::MenuItem(EditorText{ "GitHub" }.c_str()))
+				{
+					Horizon::HSystemMisc::OpenURL("https://github.com/DarlingZeroX/VisionGal");
+				}
+
 				ImGui::EndMenu();
 			}
 
