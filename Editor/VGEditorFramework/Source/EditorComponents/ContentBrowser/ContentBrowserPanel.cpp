@@ -5,6 +5,7 @@
 #include <VGImgui/IncludeImGuiEx.h>
 #include <HCore//Include/Core/HStringTools.h>
 #include <HCore/Include/Utils/HFileSystemGenerator.h>
+#include <HCore/Include/System/HClipboard.h>
 
 #include "AssetEditor/AssetEditor.h"
 #include "EditorCore/EditorCore.h"
@@ -458,6 +459,31 @@ namespace VisionGal::Editor {
 				if (ImGui::Selectable(EditorText{ "Show in Explorer" }.c_str()))
 				{
 					m_pContentBrowser->ShowInExplorer(item.AbsolutePath.parent_path());
+					return true;
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::Selectable(EditorText{ "Copy galgame asset path" }.c_str()))
+				{
+					auto assetPath = std::filesystem::path(item.Path).lexically_relative("/assets");
+					auto assetPathStr = assetPath.string();
+					assetPathStr = Horizon::HFileSystem::ToUnixPath(assetPathStr);
+					Horizon::HClipboard::SetText(assetPathStr.c_str());
+					return true;
+				}
+
+				if (ImGui::Selectable(EditorText{ "Copy relative path" }.c_str()))
+				{
+					auto PathStr = item.Path;
+					PathStr = Horizon::HFileSystem::ToUnixPath(PathStr);
+					Horizon::HClipboard::SetText(PathStr.c_str());
+					return true;
+				}
+
+				if (ImGui::Selectable(EditorText{ "Copy absolute path" }.c_str()))
+				{
+					Horizon::HClipboard::SetText(item.AbsolutePath.string().c_str());
 					return true;
 				}
 
