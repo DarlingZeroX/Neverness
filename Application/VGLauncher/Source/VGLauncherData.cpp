@@ -1,7 +1,13 @@
-// Copyright (c) 2025 梦旅缘心
-// This file is part of VisionGal and is licensed under the MIT License.
-// For the latest information, see https://github.com/DarlingZeroX/VisionGal
-// See the LICENSE file in the project root for details.
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
 
 #include "VGLauncherData.h"
 #include <HCore/Include/File/nlohmann/json.hpp>

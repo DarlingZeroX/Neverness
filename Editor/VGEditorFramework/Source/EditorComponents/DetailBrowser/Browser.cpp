@@ -1,3 +1,14 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present æ¢¦æ—…ç¼˜å¿ƒ
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "EditorComponents/DetailBrowser/Browser.h"
 #include "EditorComponents/DetailBrowser/ComponentDrawer.h"
 #include "EditorCore/Localization.h"
@@ -64,11 +75,11 @@ namespace VisionGal::Editor {
 				}
 			}
 
-			// 1. »ñÈ¡´°¿Ú³ß´ç
+			// 1. è·å–çª—å£å°ºå¯¸
 			ImVec2 windowPos = ImGui::GetWindowPos();
 			ImVec2 windowSize = ImGui::GetWindowSize();
 
-			// 2. ´´½¨¸²¸ÇÕû¸ö´°¿ÚµÄÍ¸Ã÷°´Å¥£¨ÎŞÊÓ¾õĞ§¹û£¬½öÓÃÓÚ½»»¥£©
+			// 2. åˆ›å»ºè¦†ç›–æ•´ä¸ªçª—å£çš„é€æ˜æŒ‰é’®ï¼ˆæ— è§†è§‰æ•ˆæœï¼Œä»…ç”¨äºäº¤äº’ï¼‰
 			ImGui::SetCursorScreenPos(windowPos);
 			ImGui::InvisibleButton("##DetailBrowserPanelDragTarget", windowSize);
 			BeginDropTarget();

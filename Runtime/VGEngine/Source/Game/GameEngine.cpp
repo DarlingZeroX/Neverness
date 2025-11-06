@@ -165,61 +165,75 @@ namespace VisionGal
 		if (scene == nullptr)
 			return;
 
-		// 更新动画脚本
+		////////////////////////// 下面是输入的更新 //////////////////////////
 		{
-			auto view = scene->GetWorld()->view<AnimationScriptComponent>();
-
-			view.each([this](AnimationScriptComponent& com) { // flecs::entity argument is optional
-				for (auto& script : com.scripts)
-				{
-					script->OnUpdate(com.GetOwner());
-				}
-			});
+			// 更新输入
+			Input::Get()->Update();
 		}
 
-		// 更新输入
-		Input::Get()->Update();
-
-		// 更新所有矩阵
-		auto view = scene->GetWorld()->view<TransformComponent>();
-		view.each([this](TransformComponent& com) { // flecs::entity argument is optional
-			com.Update();
-			});
-
-		// 更新子引擎
-		for (auto& subEngine: m_SubGameEngines)
+		////////////////////////// 下面是数据的更新 //////////////////////////
 		{
-			subEngine->OnUpdate(deltaTime);
-		}
+			// 更新子引擎
+			for (auto& subEngine : m_SubGameEngines)
+			{
+				subEngine->OnUpdate(deltaTime);
+			}
 
-		// 更新渲染引擎
-		m_RenderEngine->OnUpdate(deltaTime);
+			// 更新动画脚本
+			{
+				auto view = scene->GetWorld()->view<AnimationScriptComponent>();
 
-		// 更新所有脚本
-		if (GetSceneManager()->IsPlayMode())
-		{
-			auto view = scene->GetWorld()->view<ScriptComponent>();
-			view.each([this, deltaTime](ScriptComponent& com) { // flecs::entity argument is optional
-				for (auto& script : com.scripts)
-				{
-					if (script != nullptr)
+				view.each([this](AnimationScriptComponent& com) { // flecs::entity argument is optional
+					for (auto& script : com.scripts)
 					{
-						GameActor* actor = dynamic_cast<GameActor*>(com.GetOwner());
-						script->Update(actor, deltaTime);
+						script->OnUpdate(com.GetOwner());
 					}
-				}
-				});
+					});
+			}
+
+			// 更新所有脚本
+			if (GetSceneManager()->IsPlayMode())
+			{
+				auto view = scene->GetWorld()->view<ScriptComponent>();
+				view.each([this, deltaTime](ScriptComponent& com) { // flecs::entity argument is optional
+					for (auto& script : com.scripts)
+					{
+						if (script != nullptr)
+						{
+							GameActor* actor = dynamic_cast<GameActor*>(com.GetOwner());
+							script->Update(actor, deltaTime);
+						}
+					}
+					});
+			}
+
+			// 更新所有矩阵,放在最后更新，因为Actor脚本，剧情脚本，子系统可能会修改Transform
+			{
+				auto view = scene->GetWorld()->view<TransformComponent>();
+				view.each([this](TransformComponent& com) { // flecs::entity argument is optional
+					com.Update();
+					});
+			}
 		}
 
-		// 更新转场管理器
-		TransitionManager::GetInstance()->Update();
-		
+		////////////////////////// 下面是渲染相关的更新 //////////////////////////
+		{
+			// 更新转场管理器
+			TransitionManager::GetInstance()->Update();
+
+			// 更新渲染引擎
+			m_RenderEngine->OnUpdate(deltaTime);
+		}
+
+		////////////////////////// 最后是场景相关的更新 //////////////////////////
+		{
+			SceneManager::Get()->Update(deltaTime);
+		}
+
 		//if (Input::GetKeyDown("B"))
 		//{
 		//	H_LOG_INFO("GetKeyDown B");
 		//}
-
-		SceneManager::Get()->Update(deltaTime);
 	}
 
 	void CoreGameEngine::OnRender()

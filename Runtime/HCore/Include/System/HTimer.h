@@ -1,8 +1,13 @@
-/* ----------------------------------------------------------------------------
-** Copyright (c) 2022 code2x, All Rights Reserved.
-**
-** HTimer.h
-** --------------------------------------------------------------------------*/
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present æ¢¦æ—…ç¼˜å¿ƒ
+ *
+ * See the LICENSE file in the project root for details.
+ */
 
 #pragma once
 #include "../Core/HCoreTypes.h"
@@ -21,10 +26,10 @@ namespace Horizon
 		float TotalTime() const;
 		float DeltaTime() const;
 
-		// ÔÚÏûÏ¢Ñ­»·Ö®Ç°µ÷ÓÃ
+		// åœ¨æ¶ˆæ¯å¾ªç¯ä¹‹å‰è°ƒç”¨
 		void Reset();
 
-		// ÔÚÃ¿Ò»Ö¡µÄÊ±ºòµ÷ÓÃ
+		// åœ¨æ¯ä¸€å¸§çš„æ—¶å€™è°ƒç”¨
 		void Tick();
 
 		// Query current time, and calculate the delta time.
@@ -33,10 +38,10 @@ namespace Horizon
 		// Update the previous time to current time.
 		void EndTick();
 
-		// ÔÚÈ¡ÏûÔİÍ£µÄÊ±ºòµ÷ÓÃ
+		// åœ¨å–æ¶ˆæš‚åœçš„æ—¶å€™è°ƒç”¨
 		void Start();
 
-		// ÔÚÔİÍ£µÄÊ±ºòµ÷ÓÃ
+		// åœ¨æš‚åœçš„æ—¶å€™è°ƒç”¨
 		void Stop();
 	private:
 		double m_SecondsPerCount;

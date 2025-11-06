@@ -51,14 +51,12 @@
                 if 存档.isValid then  
                     转场管理器:开始转场命令('Screen','fadeOut 1.0')
                     转场管理器:开始转场命令('Screen','fadeIn 1.0')
-
-                    if(html当前游戏UI状态 == "主菜单") then
+                    if(HTML游戏状态.当前场景 == "主菜单") then
                         场景管理器:加载场景('/assets/游戏场景.vgasset')
-                    elseif(html当前游戏UI状态 == "游戏中") then
+                    elseif(HTML游戏状态.当前场景 == "游戏中") then
                         HTML窗口.加载文档('/assets/UI/游戏/游戏',document)
                     end
                     GalGame.获取引擎():加载存档(存档)   
-                    --print("dddddddddddddddddd")
                 end
             end
 

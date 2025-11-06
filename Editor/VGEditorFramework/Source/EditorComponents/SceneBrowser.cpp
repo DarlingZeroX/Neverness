@@ -1,3 +1,14 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present æ¢¦æ—…ç¼˜å¿ƒ
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "EditorComponents/SceneBrowser.h"
 #include "EditorCore/Localization.h"
 #include <VGImgui/IncludeImGuiEx.h>
@@ -183,11 +194,11 @@ namespace VisionGal::Editor
 
 		ImGuiTreeNodeFlags parentFlags = ImGuiTreeNodeFlags_SpanFullWidth ;
 
-		// Èç¹ûÑ¡ÖÐÁË
+		// å¦‚æžœé€‰ä¸­äº†
 		if (parent.GetEntityID() == m_SelectedEntityID)
 			parentFlags |= ImGuiTreeNodeFlags_Selected;
 
-		// Èç¹ûÊÇ³¡¾°
+		// å¦‚æžœæ˜¯åœºæ™¯
 		if (parent.GetEntityID() == 0)
 			parentFlags |= ImGuiTreeNodeFlags_DefaultOpen;
 
@@ -209,11 +220,11 @@ namespace VisionGal::Editor
 		else
 			flags = ImGuiTreeNodeFlags_Leaf |ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth;
 
-		// Èç¹ûÑ¡ÖÐÁË
+		// å¦‚æžœé€‰ä¸­äº†
 		if (actor->GetEntityID() == m_SelectedEntityID)
 			flags |= ImGuiTreeNodeFlags_Selected;
 
-		// Èç¹ûÊÇ³¡¾°
+		// å¦‚æžœæ˜¯åœºæ™¯
 		if (actor->GetEntityID() == 0)
 			flags |= ImGuiTreeNodeFlags_DefaultOpen;
 

@@ -327,7 +327,7 @@ namespace VisionGal::GalGame
 		// 开启自动对话
 		if (m_EnableAutoDialogue)
 		{
-			if (m_TypingEffect.IsTyping())
+			if (IsTypingText())
 			{
 				// 还在打字，不动
 			}
