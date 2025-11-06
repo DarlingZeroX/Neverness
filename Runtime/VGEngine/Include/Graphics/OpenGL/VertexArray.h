@@ -23,7 +23,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		void PushElement(std::vector<VertexElement::IElement*> elements);
 		void PushElement(std::vector<VGFX::VertexElement::IElement*> elements);
 	private:
-		void Gen();
+		void Gen(); 
 		void ParserElement(VertexElement::TYPE type);
 		void ParserElement(VGFX::VertexElement::TYPE type);
 		//void PushElement();

@@ -27,5 +27,5 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		Ref<OpenGL::FrameBufferDepth> m_DepthFBT;
 		Ref<OpenGL::FrameBuffer> m_FrameBuffer;
 	};
-
+ 
 VISIONGAL_OPENGL_NAMESPACE_END

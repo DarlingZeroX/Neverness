@@ -24,7 +24,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 	{
 		*this = std::move(other);
 	}
-
+	 
 	TextureBase& TextureBase::operator=(TextureBase&& other) noexcept
 	{
 		m_RendererID = other.m_RendererID;

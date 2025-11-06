@@ -54,6 +54,8 @@ namespace VisionGal::GalGame
 
 		void Reset() override;	/// 重置引擎的状态，通常用于将引擎恢复到初始状态。
 		void Wait(float duration) override;	/// 等待指定的时间长度。
+
+		void CaptureSceneImage();
 	private:
 		GameActor* CreateSpriteInline(const std::string& path);
 		GalSprite* AddSprite(GameActor* sprite,const std::string& layer, const std::string& path);

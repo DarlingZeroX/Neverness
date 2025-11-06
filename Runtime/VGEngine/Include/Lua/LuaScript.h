@@ -29,7 +29,7 @@ namespace VisionGal
 		void SetVariable(const ScriptVariableTable& variables);
 
 		void Initialize();
-		Ref<LuaScript> Reload();
+		Ref<LuaScript> Reload(); 
 	private:
 		void ReadScriptVariables();
 	private:
@@ -38,7 +38,7 @@ namespace VisionGal
 		sol::state m_LuaState;
 		sol::table m_Script;
 
-		sol::function m_UpdateFunction; // Lua ¸üÐÂº¯Êý
+		sol::function m_UpdateFunction; // Lua æ›´æ–°å‡½æ•°
 		sol::function m_StartFunction;
 
 		ScriptVariableTable  m_Variables;

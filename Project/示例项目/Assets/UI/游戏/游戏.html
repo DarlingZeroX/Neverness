@@ -72,6 +72,7 @@
             -- 加载存档保存界面
             function HTML游戏对话框.加载存档保存界面(event, document)
                 event:StopPropagation()
+                GalGame.获取引擎():场景截图()
                 HTML窗口.加载文档('/assets/UI/游戏/存档保存',document)
             end
 

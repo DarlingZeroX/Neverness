@@ -24,7 +24,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		virtual std::string GetErrorInfo() const noexcept = 0;
 	};
 
-
+ 
 	class InitException : public Exception
 	{
 	public:

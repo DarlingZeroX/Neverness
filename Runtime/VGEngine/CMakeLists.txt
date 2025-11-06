@@ -55,6 +55,7 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Audio/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Common/*.cpp" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Video/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Texture/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Scene/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Utils/*.cpp"
 
@@ -92,6 +93,7 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Audio/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Common/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Video/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Texture/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"
 

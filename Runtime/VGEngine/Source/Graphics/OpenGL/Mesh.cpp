@@ -26,11 +26,11 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 	unsigned int VertexBuffer::GetRendererID() const noexcept
 	{
 		return m_glBuffer.GetRendererID();
-	}
+	} 
 
 	void VertexBuffer::UpdateAllData(void* data)
 	{
-		// 更新VBO中的顶点数据
+		// 鏇存柊VBO涓殑椤剁偣鏁版嵁
 		Bind();
 		GL_THROW_INFO(glBufferSubData(GL_ARRAY_BUFFER, 0, m_Size, data));
 	}

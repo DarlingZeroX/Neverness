@@ -118,6 +118,7 @@ file(GLOB HCORE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Platform/SDL3/*.cpp"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Stb/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/System/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/System/Input/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"

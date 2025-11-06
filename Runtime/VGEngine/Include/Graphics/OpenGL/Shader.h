@@ -20,7 +20,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		Shader(Shader&) = delete;
 		Shader& operator=(Shader&) = delete;
 		~Shader() override;
-	public:
+	public: 
 		bool Exist() const;
 		std::string GetErrorMsg() const;
 		unsigned int GetRendererID();

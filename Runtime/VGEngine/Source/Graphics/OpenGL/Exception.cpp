@@ -27,7 +27,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		whatBuffer = oss.str();
 		return whatBuffer.c_str();
 	}
-
+	 
 	std::string InitException::GetErrorInfo() const noexcept
 	{
 		std::ostringstream errorMsg;

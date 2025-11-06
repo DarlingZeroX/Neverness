@@ -49,6 +49,41 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return reinterpret_cast<void*>(GetRendererID());;
 	}
 
+	bool Texture2D::ReadPixels(VGFX::TexturePixels& outPixels)
+	{
+		if (m_Desc.Format != GL_RGBA)
+		{
+			throw "Only support reading RGBA format texture pixels.";
+		}
+
+		outPixels.NumComponents = 4;
+		outPixels.Width = m_Desc.Width;
+		outPixels.Height = m_Desc.Height;
+
+		if (outPixels.Width < 1 || outPixels.Height < 1)
+			return false;
+
+		const int byteSize = outPixels.Width * outPixels.Height * outPixels.NumComponents;
+		outPixels.Data.resize(byteSize);
+
+		glBindTexture(GL_TEXTURE_2D, GetRendererID());
+		glGetTexImage(GL_TEXTURE_2D, 0, m_Desc.Format, GL_UNSIGNED_BYTE, outPixels.Data.data());
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		bool result = true;
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR)
+		{
+			result = false;
+			H_LOG_ERROR("Could not capture screenshot, got GL error: 0x%x", err);
+		}
+
+		if (!result)
+			return false;
+
+		return true;
+	}
+
 	void Texture2D::GenMipmap() const
 	{
 		if (m_Desc.Width <= 0 || m_Desc.Height <= 0)

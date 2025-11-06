@@ -19,5 +19,5 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		static void StencilTest(bool enable = true);
 
 	};
-
+ 
 VISIONGAL_OPENGL_NAMESPACE_END

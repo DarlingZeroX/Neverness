@@ -25,7 +25,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		virtual unsigned int GetSlot() const noexcept;
 		virtual void SetSlot(unsigned int slot) noexcept;
 
-		virtual bool operator==(const TextureBase& other) const;
+		virtual bool operator==(const TextureBase& other) const; 
 	protected:
 		virtual void GenTex();
 		virtual void BindTex() const;

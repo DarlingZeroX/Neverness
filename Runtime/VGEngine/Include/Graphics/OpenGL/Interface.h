@@ -20,5 +20,5 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		virtual unsigned int GetRendererID() const noexcept = 0;
 		virtual ~Renderable() = default;
 	};
-
+	 
 VISIONGAL_OPENGL_NAMESPACE_END

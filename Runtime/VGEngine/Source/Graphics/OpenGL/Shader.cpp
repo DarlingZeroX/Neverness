@@ -26,7 +26,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		if (m_RendererID == NULL)
 		{
 			return false;
-		}
+		} 
 
 		const char* src = source.c_str();
 		ShaderSource(&src);

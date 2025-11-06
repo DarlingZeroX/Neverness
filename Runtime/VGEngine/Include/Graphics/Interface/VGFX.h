@@ -21,7 +21,7 @@ namespace VisionGal::VGFX
 
 	Ref<IShader> CreateShaderBySource(int shaderType, const String& source);
 	Ref<IShaderProgram> CreateProgram(const std::vector<IShader*>& shaders);
-
+	 
 	void UseProgram(IShaderProgram* program);
 	void SetUniformInt(const std::string& name, int v);
 	void SetUniformInt2(const std::string& name, int2 v);

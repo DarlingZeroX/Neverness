@@ -25,7 +25,7 @@ namespace VisionGal::VGFX
 			return OpenGL::CreateShader(GL_FRAGMENT_SHADER, source);
 		}
 	}
-
+	 
 	Ref<IShaderProgram> CreateProgram(const std::vector<IShader*>& shaders)
 	{
 		return OpenGL::ShaderProgram::Create(shaders);;

@@ -15,4 +15,4 @@ H_ASSERT(!VISIONGAL_OPENGL_NAMESPACE::Exception::CheckError(#call,__FILE__,__LIN
 #define OPENGL_CLEAR_ERROR() 
 #define OPENGL_CHECK_ERROR() 
 #define GL_THROW_INFO(x) x
-#endif
+#endif 

@@ -15,13 +15,13 @@ namespace VisionGal::VGFX
 		unsigned int DataSize;
 	};
 
-	//struct TexturePixels
-	//{
-	//	int Width = 0;
-	//	int Height = 0;
-	//	int NumComponents = 0;
-	//	std::vector<unsigned char> Data;
-	//};
+	struct TexturePixels
+	{
+		int Width = 0;
+		int Height = 0;
+		int NumComponents = 0;
+		std::vector<unsigned char> Data;
+	};
 
 	struct ITexture
 	{
@@ -30,6 +30,6 @@ namespace VisionGal::VGFX
  
 		virtual const TextureDesc& GetDesc() = 0;
 		virtual void* GetShaderResourceView() = 0;
-		//virtual bool ReadPixels(TexturePixels& outPixels) = 0;
+		virtual bool ReadPixels(TexturePixels& outPixels) = 0;
 	};
 }

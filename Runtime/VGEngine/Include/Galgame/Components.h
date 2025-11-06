@@ -15,7 +15,7 @@ namespace VisionGal::GalGame
 		GalGameEngineComponent(GalGameEngineComponent&&) noexcept = default;
 		GalGameEngineComponent& operator=(GalGameEngineComponent&&) noexcept = default;
 
-		// Í¨¹ý IComponent ¼Ì³Ð
+		// é€šè¿‡ IComponent ç»§æ‰¿ 
 		std::string GetComponentType() const override;
 
 		struct DeserializeData

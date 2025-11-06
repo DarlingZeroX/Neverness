@@ -6,4 +6,4 @@
 namespace VisionGal::VGFX
 {
 	VG_ENGINE_API Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc);
-}
+} 

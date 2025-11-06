@@ -27,7 +27,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 			NativeCreate(data, size);
 		}
 	public:
-		virtual void Bind() const override;
+		virtual void Bind() const override; 
 		virtual void Unbind() const override;
 		void Delete();
 		virtual unsigned int GetRendererID() const noexcept override;

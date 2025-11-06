@@ -25,7 +25,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 	{
 		if (enable)
 		{
-			glEnable(GL_CULL_FACE);
+			glEnable(GL_CULL_FACE); 
 			glCullFace(GL_FRONT);
 		}
 	}

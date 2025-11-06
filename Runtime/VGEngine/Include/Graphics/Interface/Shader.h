@@ -17,7 +17,7 @@ namespace VisionGal::VGFX
 		virtual ~IShaderProgram() = default;
 
 		virtual void UseProgram() = 0;
-
+		 
 		virtual void SetInt(const std::string& name, int v) = 0;
 		virtual void SetInt2(const std::string& name, int2 v) = 0;
 		virtual void SetInt3(const std::string& name, int3 v) = 0;

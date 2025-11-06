@@ -14,4 +14,4 @@
 
 #ifndef VISIONGAL_OPENGL_NAMESPACE
 #define VISIONGAL_OPENGL_NAMESPACE VisionGal::OpenGL
-#endif
+#endif 

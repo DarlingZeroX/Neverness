@@ -20,7 +20,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 		const VGFX::TextureDesc& GetDesc() override;
 		void* GetShaderResourceView() override;
-		//bool ReadPixels(VGFX::TexturePixels& outPixels) override;
+		bool ReadPixels(VGFX::TexturePixels& outPixels) override;
 	protected:
 		virtual void GenMipmap() const;
 

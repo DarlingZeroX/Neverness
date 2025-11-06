@@ -26,7 +26,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		virtual void Unbind() const override;
 
 		std::string GetErrorMsg() const;
-	public:
+	public: 
 		void UseProgram() override;
 		unsigned int GetRenderID() { return m_RendererID; }
 

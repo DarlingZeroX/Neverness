@@ -181,7 +181,9 @@ namespace VisionGal::GalGame
 			"播放背景音乐", [](GalGameEngine& self, const std::string& path) ->GalAudio* { return self.PlayAudio("BGM", path); },
 			"播放效果音乐", [](GalGameEngine& self, const std::string& path) ->GalAudio* { return self.PlayAudio("Effect", path); },
 			"隐藏全部人物立绘", &GalGameEngine::HideAllCharacterSprite,
+			"场景截图", &GalGameEngine::CaptureSceneImage,
 
+			//属性
 			"对话系统", sol::property(
 				[](GalGameEngine& self) -> DialogueSystem* { return dynamic_cast<DialogueSystem*>(self.GetDialogueSystem()); }
 			),

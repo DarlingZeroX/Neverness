@@ -22,7 +22,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 	{
 		Delete();
 	}
-
+	 
 	void BufferGL::Gen(int size)
 	{
 		H_ASSERT_NULL(m_RendererID);

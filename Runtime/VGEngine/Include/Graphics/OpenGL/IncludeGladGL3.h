@@ -24,7 +24,7 @@
  *    http://glad.sh/#api=gl%3Acore%3D3.3&extensions=&generator=c&options=HEADER_ONLY%2CLOADER
  *
  */
-
+ 
 #ifndef GLAD_GL_H_
 #define GLAD_GL_H_
 

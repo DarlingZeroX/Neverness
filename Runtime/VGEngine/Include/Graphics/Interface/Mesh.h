@@ -13,4 +13,4 @@ namespace VisionGal::VGFX
 	{
 		virtual void Render() = 0;
 	};
-}
+} 

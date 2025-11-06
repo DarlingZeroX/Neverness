@@ -26,7 +26,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 	void ShaderProgram::AttachShader(VGFX::IShader* shader) const
 	{
 		GL_THROW_INFO(glAttachShader(m_RendererID, shader->GetResourceHandle()));
-	}
+	} 
 
 	void ShaderProgram::DeleteProgram()
 	{

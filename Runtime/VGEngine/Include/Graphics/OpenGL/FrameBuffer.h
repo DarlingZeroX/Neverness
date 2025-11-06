@@ -24,7 +24,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	protected:
 		void CreateImp();
-	private:
+	private: 
 		GLuint m_RendererID;
 	};
 

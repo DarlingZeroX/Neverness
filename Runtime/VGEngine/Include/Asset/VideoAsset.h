@@ -20,7 +20,7 @@ namespace VisionGal
 	public:
 		VideoAssetLoader() = default;
 		~VideoAssetLoader() override = default;
-
+		 
 		bool Read(const std::string path, Ref<VGAsset>& asset) override;
 	};
 }

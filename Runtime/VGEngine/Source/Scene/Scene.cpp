@@ -23,7 +23,7 @@ namespace VisionGal
 	void Scene::Update()
 	{
 	}
-
+	 
 
 	Horizon::HECS* Scene::GetWorld()
 	{
@@ -142,7 +142,7 @@ namespace VisionGal
 		entity->Initialize(this);
 		entity->AddComponent<TransformComponent>();
 
-		// 事件
+		// 浜嬩欢
 		SceneEvent evt;
 		evt.EventType = SceneEventType::EntityCreating;
 		evt.Entity = entity.get();
@@ -214,7 +214,7 @@ namespace VisionGal
 
 			m_Registry.destroy(entity.GetEntity());
 
-			// 事件
+			// 浜嬩欢
 			SceneEvent evt;
 			evt.EventType = SceneEventType::EntityRemoved;
 			evt.Entity = &entity;

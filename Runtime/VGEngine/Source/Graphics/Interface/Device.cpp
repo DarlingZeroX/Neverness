@@ -7,4 +7,4 @@ namespace VisionGal::VGFX
 	{
 		return OpenGL::Texture2D::CreateFromMemory(desc);;
 	}
-}
+} 

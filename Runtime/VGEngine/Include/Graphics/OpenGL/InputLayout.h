@@ -26,7 +26,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 			virtual TYPE GetElementType() = 0;
 			virtual const std::string GetElementName() = 0;
 		};
-
+		 
 		//Element class
 #define ElEMENT_CLASS(class_name,entity_name)			\
 		class class_name: public IElement					\

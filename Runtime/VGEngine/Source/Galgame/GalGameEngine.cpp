@@ -11,6 +11,8 @@
 #include "Render/TransitionManager.h"
 #include "Engine/EngineResource.h"
 
+#include "Resource/Texture/TextureConverter.h"
+
 namespace VisionGal::GalGame
 {
 	GalGameEngine::GalGameEngine()
@@ -137,6 +139,16 @@ namespace VisionGal::GalGame
 		m_Wait.Helper.SetDuration(std::max(duration, 0.f));
 		m_Wait.Helper.Reset();
 		m_Wait.IsWait = true;
+	}
+
+	void GalGameEngine::CaptureSceneImage()
+	{
+		VGFX::TexturePixels scenePixels;
+		if (m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(scenePixels))
+		{
+			TextureConverter::SaveAsJPG(scenePixels, "D:/test.jpg");
+		}
+		
 	}
 
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)

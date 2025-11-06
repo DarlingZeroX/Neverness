@@ -3,7 +3,7 @@
 
 namespace VisionGal
 {
-    // 顶点着色器
+    // 椤剁偣鐫�鑹插櫒
     const char* s_DefualtVertexShader = R"(
         #version 330 core
         layout (location = 0) in vec3 aPos;
@@ -23,8 +23,8 @@ namespace VisionGal
             //gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
         }
     )";
-
-    // 片段着色器
+	 
+    // 鐗囨鐫�鑹插櫒
     const char* s_DefualtFragmentShader = R"(
         #version 330 core
         in vec2 TexCoord;

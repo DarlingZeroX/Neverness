@@ -18,7 +18,7 @@ namespace VisionGal::VGFX
 			FLOAT3_COLOR,
 			FLOAT4_COLOR
 		};
-
+		 
 		//Interface
 		class IElement
 		{

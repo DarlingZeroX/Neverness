@@ -25,7 +25,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 				VGFX_VERTEX_ELEMENT_PARSER_SWITCH_CASE(BIT_TANGENT)
 				VGFX_VERTEX_ELEMENT_PARSER_SWITCH_CASE(FLOAT3_COLOR)
 				VGFX_VERTEX_ELEMENT_PARSER_SWITCH_CASE(FLOAT4_COLOR)
-
+					 
 			//case VGFX::VertexElement::TYPE::POSITION2:
 			//	m_Type = GetGLType(VGFX::Element<VGFX::VertexElement::POSITION2>::type);
 			//	mSize = VGFX::Element<VGFX::VertexElement::POSITION2>::size;
@@ -43,7 +43,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 				return GL_FLOAT;
 			}
 
-			throw "¦Ä???Vertex Element????";
+			throw "Î´???Vertex Element????";
 		}
 
 		GLenum GetElementType() { return m_Type; };

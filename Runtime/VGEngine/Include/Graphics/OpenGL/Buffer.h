@@ -23,7 +23,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		void SetStaticData(GLenum eTarget, GLsizeiptr size, const void* data) const;
 		void SetDynamicData(GLenum eTarget, GLsizeiptr size, const void* data) const;
 		void SetStreamData(GLenum eTarget, GLsizeiptr size, const void* data) const;
-
+		 
 		GLuint GetRendererID() const noexcept;
 	private:
 		unsigned int m_Size = 0;
