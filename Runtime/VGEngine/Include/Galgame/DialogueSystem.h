@@ -16,7 +16,7 @@ namespace VisionGal::GalGame
 		TypingEffect& operator=(TypingEffect&&) noexcept = default;
 		~TypingEffect() = default;
 
-		void StartTyping(const std::string& full_text, float delay_per_character = 0.01f);
+		void StartTyping(const std::string& full_text);
 		void Update();
 
 		std::wstring Utf8ToWString(const std::string& utf8_str);			// 辅助函数：将UTF-8字符串转换为UTF-16 wstring
@@ -25,10 +25,12 @@ namespace VisionGal::GalGame
 		std::pair<std::string, size_t> GetNextUtf8Char(const std::string& utf8_str, size_t start_pos);			// 辅助函数：获取UTF-8字符串中的下一个完整字符及其长度
 		bool IsTyping() const { return is_typing; }
 		void FinishTyping();
+		float GetTypingDelay();									// 获取打字延迟
+		void SetTypingDelay(float delay);						// 设置打字延迟
 	private:
 		std::string& display_text;  // 当前显示的文本
 		std::string target_text;   // 完整目标文本
-		float typing_delay = 0.1f; // 每个字符之间的延迟（秒）
+		float typing_delay = 0.02f; // 每个字符之间的延迟（秒）
 		bool is_typing = false;
 		std::chrono::high_resolution_clock::time_point last_update_time;
 
@@ -52,6 +54,8 @@ namespace VisionGal::GalGame
 		void FinishTyping() override;							// 完成打字效果
 		bool IsTypingText() override;							// 是否正在打字
 		void ContinueDialogue();								// 继续对话，通常用于脚本中调用
+		float GetTypingDelay();									// 获取打字延迟
+		void SetTypingDelay(float delay);						// 设置打字延迟
 
 		uint GetCurrentDialogLine() const override;				// 获取当前对话从开始是第几个对话
 		uint GetDialogNumber() const override;					// 获取对话数量

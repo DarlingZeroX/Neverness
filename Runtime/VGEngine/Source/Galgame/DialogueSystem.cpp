@@ -11,11 +11,10 @@ namespace VisionGal::GalGame
 	{
 	}
 
-	void TypingEffect::StartTyping(const std::string& full_text, float delay_per_character)
+	void TypingEffect::StartTyping(const std::string& full_text)
 	{
 		target_text = full_text;
 		display_text.clear();
-		typing_delay = delay_per_character;
 		last_update_time = std::chrono::high_resolution_clock::now();
 		is_typing = true;
 
@@ -109,6 +108,16 @@ namespace VisionGal::GalGame
 		is_typing = false;
 	}
 
+	float TypingEffect::GetTypingDelay()
+	{
+		return typing_delay;
+	}
+
+	void TypingEffect::SetTypingDelay(float delay)
+	{
+		typing_delay = delay;
+	}
+
 
 	DialogueSystem::DialogueSystem()
 		:m_TypingEffect(m_DialogText)
@@ -139,7 +148,7 @@ namespace VisionGal::GalGame
 
 		if (m_EnableTyping)
 		{
-			m_TypingEffect.StartTyping(text, 0.02f);
+			m_TypingEffect.StartTyping(text);
 		}
 		else
 		{
@@ -173,6 +182,16 @@ namespace VisionGal::GalGame
 	void DialogueSystem::ContinueDialogue()
 	{
 		StoryScriptLuaInterface::Continue();
+	}
+
+	float DialogueSystem::GetTypingDelay()
+	{
+		return m_TypingEffect.GetTypingDelay();
+	}
+
+	void DialogueSystem::SetTypingDelay(float delay)
+	{
+		m_TypingEffect.SetTypingDelay(delay);
 	}
 
 	uint DialogueSystem::GetCurrentDialogLine() const

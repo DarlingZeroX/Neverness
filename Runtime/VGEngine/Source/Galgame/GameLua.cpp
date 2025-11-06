@@ -82,13 +82,8 @@ namespace VisionGal::GalGame
 
 	void GalGameLuaInterface::Initialise(sol::table& galgame)
 	{
-		//sol::table galgame = lua.create_named_table("GalEngine");
-		
 		// 引擎
 		{
-			sol::table engine = galgame.create_named("Engine");
-			engine.set_function("LoadArchive", &GalGameEngineLuaInterface::LoadArchive);
-		
 			galgame.set("GetEngine", []() -> GalGameEngine*
 				{
 					return dynamic_cast<GalGameEngine*>(GameEngineCore::GetCurrentEngine());
@@ -99,46 +94,8 @@ namespace VisionGal::GalGame
 				});
 		}
 
-		// 对话系统
-		//{
-		//	sol::table dialogueSystem = galgame.create_named("DialogueSystem");
-		//
-		//	dialogueSystem.set_function("Continue", DialogSystemLuaInterface::Continue);
-		//	dialogueSystem.set_function("IsTypingText", DialogSystemLuaInterface::IsTypingText);
-		//	dialogueSystem.set_function("FinishTyping", DialogSystemLuaInterface::FinishTyping);
-		//	dialogueSystem.set_function("GetDialogNumber", DialogSystemLuaInterface::GetDialogNumber);
-		//	dialogueSystem.set_function("GetDialogCharacter", DialogSystemLuaInterface::GetDialogCharacter);
-		//	dialogueSystem.set_function("GetDialogText", DialogSystemLuaInterface::GetDialogText);
-		//	dialogueSystem.set_function("AutoDialogue", DialogSystemLuaInterface::AutoDialogue);
-		//	dialogueSystem.set_function("FastForward", DialogSystemLuaInterface::FastForward);
-		//}
-
 		// 注册引擎存档类
 		galgame.new_usertype<DialogueSystem>("GalGameDialogueSystem",
-			"ContinueDialogue", &DialogueSystem::ContinueDialogue,
-			"isTypingText", sol::property(
-				[](DialogueSystem& self) -> bool { return self.IsTypingText(); }
-			),
-			"FinishTyping", &DialogueSystem::FinishTyping,
-
-			"GetDialogCharacter", &DialogueSystem::GetDialogCharacter,
-			"GetDialogText", &DialogueSystem::GetDialogText,
-			"dialogNumber", sol::property(
-				[](DialogueSystem& self) -> unsigned int { return self.GetDialogNumber(); }
-			),
-			"autoDialogue", sol::property(
-				[](DialogueSystem& self) -> bool { return self.IsAutoDialogue(); },
-				[](DialogueSystem& self, bool value) { self.AutoDialogue(value); }
-			),
-			"fastForward", sol::property(
-				[](DialogueSystem& self) -> bool { return self.IsFastForward(); },
-				[](DialogueSystem& self, bool value) { self.FastForward(value); }
-			),
-			"fastForwardDelay", sol::property(
-				[](DialogueSystem& self) -> float { return self.GetFastForwardDelay(); },
-				[](DialogueSystem& self, float value) { self.SetFastForwardDelay(value); }
-			),
-
 			//中文
 			"继续对话", & DialogueSystem::ContinueDialogue,
 			"完成打印对话", &DialogueSystem::FinishTyping,
@@ -162,15 +119,16 @@ namespace VisionGal::GalGame
 			"快进间隔时间", sol::property(
 				[](DialogueSystem& self) -> float { return self.GetFastForwardDelay(); },
 				[](DialogueSystem& self, float value) { self.SetFastForwardDelay(value); }
+			),
+			"文字显示速度", sol::property(
+				[](DialogueSystem& self) -> float { return self.GetTypingDelay(); },
+				[](DialogueSystem& self, float value) { self.SetTypingDelay(value); }
 			)
 			//"跳到对话", & DialogueSystem::JumpToDialog
 		);
 
 		// 注册存档系统
 		galgame.new_usertype<ArchiveSystem>("GalGameArchiveSystem",
-			"SaveArchiveByNumber", &ArchiveSystem::SaveArchiveByNumber,
-			"GetArchiveByNumber", &ArchiveSystem::GetArchiveByNumber,
-			"HasArchiveByNumber", &ArchiveSystem::HasArchiveByNumber,
 			//中文
 			"保存存档", &ArchiveSystem::SaveArchiveByNumber,
 			"获取存档", &ArchiveSystem::GetArchiveByNumber,
@@ -234,15 +192,6 @@ namespace VisionGal::GalGame
 				[](GalGameEngine& self) -> LayeredSceneManager* { return dynamic_cast<LayeredSceneManager*>(self.GetLayeredSceneManager()); }
 			)
 		);
-
-		//// 存档系统
-		//{
-		//	sol::table archiveSystem = galgame.create_named("ArchiveSystem");
-		//
-		//	archiveSystem.set_function("SaveArchiveByNumber", ArchiveSystemLuaInterface::SaveArchiveByNumber);
-		//	archiveSystem.set_function("GetArchiveByNumber", ArchiveSystemLuaInterface::GetArchiveByNumber);
-		//	archiveSystem.set_function("HasArchiveByNumber", ArchiveSystemLuaInterface::HasArchiveByNumber);
-		//}
 
 		// 注册存档类
 		galgame.new_usertype<SaveArchive>("GalGameSaveArchive",
