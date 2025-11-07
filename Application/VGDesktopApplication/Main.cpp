@@ -14,7 +14,13 @@
 #include <VGEngine/Include/Engine/VGEngine.h>
 #include "HCore/Include/System/HFileSystem.h"
 
-int main(int argc, char* argv[])
+ /// @brief 程序入口点。Windows平台使用WinMain，其他平台使用main。
+#ifdef _WIN32
+#include <Windows.h>
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
+int main()
+#endif
 {
 	using namespace VisionGal;
 

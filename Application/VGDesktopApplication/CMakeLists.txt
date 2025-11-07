@@ -29,6 +29,11 @@ file(GLOB EDITOR_SRC_FILES
 
 add_executable (VGDesktopApplication ${EDITOR_HEADER_FILES} ${EDITOR_SRC_FILES})
 
+# 设置为Windows应用程序
+set_target_properties(VGDesktopApplication PROPERTIES
+    WIN32_EXECUTABLE TRUE
+)
+
 target_compile_definitions(VGDesktopApplication PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")
 
 # 添加头文件搜索路径

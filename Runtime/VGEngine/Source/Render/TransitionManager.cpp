@@ -1,3 +1,14 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "Render/TransitionManager.h"
 
 #include "Interface/Loader.h"
@@ -80,11 +91,12 @@ namespace VisionGal {
 
 	bool TransitionManager::StartTransitionWithCommand(const String& layer, const String& cmd)
 	{
+		auto enLayer = LayerTranslateEnglish(layer);
 		auto transition = CreateTransitionWithCommand(cmd);
 
 		if (transition != nullptr)
 		{
-			transition->SetLayer(layer);
+			transition->SetLayer(enLayer);
 			transition->Start();
 			StartTransition(transition);
 
@@ -124,10 +136,12 @@ namespace VisionGal {
 	bool TransitionManager::StartCustomImageTransitionWithCommand(const String& layer, const String& imagePath,
 		const String& cmd)
 	{
+		auto enLayer = LayerTranslateEnglish(layer);
+
 		auto transition = CreateCustomImageTransitionWithCommand(imagePath, cmd);
 		if (transition != nullptr)
 		{
-			transition->SetLayer(layer);
+			transition->SetLayer(enLayer);
 			transition->Start();
 			StartTransition(transition);
 			return true;
@@ -224,5 +238,22 @@ namespace VisionGal {
 				nextTransition->Start();
 			}
 		}
+	}
+
+	std::string TransitionManager::LayerTranslateEnglish(const String& layer)
+	{
+		if (layer == "背景")
+		{
+			return "Background";
+		}
+		else if (layer == "前景")
+		{
+			return "Foreground";
+		}
+		else if (layer == "屏幕")
+		{
+			return "Screen";
+		}
+		return layer;
 	}
 }

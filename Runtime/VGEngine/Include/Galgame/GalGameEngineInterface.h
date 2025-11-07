@@ -30,13 +30,6 @@ namespace VisionGal::GalGame
 		 * @return 如果资源预加载成功，则返回 true；否则返回 false。
 		 */
 		virtual bool PreLoadResource(const String& path) = 0;
-		 
-		/**
-		 * @brief 执行转场操作。
-		 * @param transition 指向转场对象的引用，用于定义切换的具体方式。
-		 * @return 如果转场成功，返回 true；否则返回 false。
-		 */
-		virtual bool SceneTransition(const Ref<ISceneTransition>& transition) = 0;
 
 		/**
 		 * @brief 执行指定图层上的转场命令。
@@ -59,8 +52,8 @@ namespace VisionGal::GalGame
 		virtual IDialogueSystem* GetDialogueSystem() = 0;
 
 		/**
-		 * @brief 获取分层场景管理器的指针（纯虚函数）。
-		 * @return 指向分层场景管理器（ILayeredSceneManager）的指针。
+		 * @brief 获取分场景管理器的指针（纯虚函数）。
+		 * @return 指向场景管理器（ILayeredSceneManager）的指针。
 		 */
 		virtual ILayeredSceneManager* GetLayeredSceneManager() = 0;
 

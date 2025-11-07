@@ -107,7 +107,7 @@ namespace VisionGal::GalGame
 		GameActor* m_Actor = nullptr;
 	};
 
-	class GalCharacter
+	class GalCharacter : public IGalCharacter
 	{
 	public:
 		struct FigureState
@@ -123,7 +123,7 @@ namespace VisionGal::GalGame
 		GalCharacter& operator=(const GalCharacter&) = delete;
 		GalCharacter(GalCharacter&&) noexcept = default;
 		GalCharacter& operator=(GalCharacter&&) noexcept = default;
-		~GalCharacter() = default;
+		~GalCharacter() override = default;
 
 		static GalCharacter Create(const std::string& name);
 

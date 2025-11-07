@@ -10,16 +10,16 @@
  */
 
 #include "Galgame/GalGameEngine.h"
-#include "Interface/Loader.h"
-#include "Scene/Scene.h"
 #include "Galgame/GameEngineCore.h"
-#include "Core/EventBus.h"
-#include "Engine/Manager.h"
 #include "Galgame/Components.h"
 #include "Galgame/GameLua.h"
 #include "Galgame/StoryScriptLuaInterface.h"
 #include "Galgame/SpriteAnimationScriptManager.h"
+#include "Interface/Loader.h"
+#include "Core/EventBus.h"
 #include "Render/TransitionManager.h"
+#include "Scene/Scene.h"
+#include "Engine/Manager.h"
 #include "Engine/EngineResource.h"
 
 namespace VisionGal::GalGame
@@ -44,22 +44,19 @@ namespace VisionGal::GalGame
 				Reset();
 
 				// 加载脚本
-				{
-					auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
+				auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
+				view.each([this](GalGameEngineComponent& com) { // flecs::entity argument is optional
 
-					view.each([this](GalGameEngineComponent& com) { // flecs::entity argument is optional
-
-						if (com.script)
-						{
-							com.script = LuaStoryScript::LoadFromFile(com.script->GetResourcePath());
-							m_StoryScript = com.script;
-						}
-						});
-
-					if (m_StoryScript)
+					if (com.script)
 					{
-						m_StoryScript->Run(this);
+						com.script = LuaStoryScript::LoadFromFile(com.script->GetResourcePath());
+						m_StoryScript = com.script;
 					}
+					});
+
+				if (m_StoryScript)
+				{
+					m_StoryScript->Run(this);
 				}
 			});
 
@@ -125,7 +122,7 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::Reset()
 	{
-		m_Characters.clear();
+		m_LayeredSceneManager->ClearAllCharacter();
 
 		// 这里要放在m_Characters.clear();后面，因为m_Characters清除时候会删除Lua脚本的回调
 		// 如果放在前面，Lua脚本的回调析构会出现异常，因为lua_state已经被清除
@@ -145,8 +142,8 @@ namespace VisionGal::GalGame
 		if (m_DialogueSystem->IsFastForward())
 			return;
 
-		m_Wait.Helper.SetDuration(std::max(duration, 0.f));
-		m_Wait.Helper.Reset();
+		m_Wait.Timer.SetDuration(std::max(duration, 0.f));
+		m_Wait.Timer.Reset();
 		m_Wait.IsWait = true;
 	}
 
@@ -229,65 +226,21 @@ namespace VisionGal::GalGame
 			});
 	}
 
-	bool GalGameEngine::SceneTransition(const Ref<ISceneTransition>& transition)
-	{
-		TransitionManager::GetInstance()->StartTransition(transition);
-
-		//m_RenderPipeline->CaptureScene();
-		//
-		//auto* actor = m_Scene->CreateActor();
-		//actor->SetLabel("SceneTransition");
-		//auto* com = actor->AddComponent<SceneTransitionComponent>();
-		//com->transition = transition;
-
-		return true;
-	}
-
 	bool GalGameEngine::TransitionCommand(const String& layer, const String& cmd)
 	{
 		if (m_DialogueSystem->IsFastForward())
 			return true;
 
-		auto tLayer = layer;
-		if (tLayer == "背景")
-		{
-			tLayer = "Background";
-		}
-		else if (tLayer == "前景")
-		{
-			tLayer = "Foreground";
-		}
-		else if (tLayer == "屏幕")
-		{
-			tLayer = "Screen";
-		}
-
-		return TransitionManager::GetInstance()->StartTransitionWithCommand(tLayer, cmd);
+		return TransitionManager::GetInstance()->StartTransitionWithCommand(layer, cmd);
 	}
 
-	bool GalGameEngine::TransitionCommandWithCustomImage(const String& layer, const String& imagePath,
-		const String& cmd)
+	bool GalGameEngine::TransitionCommandWithCustomImage(const String& layer, const String& imagePath, const String& cmd)
 	{
 		if (m_DialogueSystem->IsFastForward())
 			return true;
 
-		auto tLayer = layer;
-		if (tLayer == "背景")
-		{
-			tLayer = "Background";
-		}
-		else if (tLayer == "前景")
-		{
-			tLayer = "Foreground";
-		}
-		else if (tLayer == "屏幕")
-		{
-			tLayer = "Screen";
-		}
-
 		String path = Core::GetAssetsPathVFS() + imagePath;
-
-		return TransitionManager::GetInstance()->StartCustomImageTransitionWithCommand(tLayer, path, cmd);
+		return TransitionManager::GetInstance()->StartCustomImageTransitionWithCommand(layer, path, cmd);
 	}
 
 	bool GalGameEngine::PreLoadResource(const String& path)
@@ -306,7 +259,7 @@ namespace VisionGal::GalGame
 		return true;
 	}
 
-	GameActor* GalGameEngine::CreateSpriteInline(const std::string& path)
+	GameActor* GalGameEngine::CreateSpriteImp(const std::string& path)
 	{
 		// 读取纹理资产
 		auto tex = LoadObject<Texture2D>(path);
@@ -319,7 +272,6 @@ namespace VisionGal::GalGame
 		// 创建精灵角色
 		auto* actor = m_Scene->CreateActor();
 		actor->SetLabel(path);
-		//actor->SetVisible(false);
 
 		// 添加必要组件
 		actor->AddComponent<AnimationScriptComponent>();
@@ -337,9 +289,9 @@ namespace VisionGal::GalGame
 		GalSprite* sprite = new GalSprite(layer, path);
 		sprite->m_Actor = actor;
 
+		// 设置渲染管线
 		auto* spriteCom = actor->GetComponent<SpriteRendererComponent>();
-		if (spriteCom)
-		{
+		if (spriteCom){
 			spriteCom->pipelineIndex = static_cast<uint>(RenderPipelineIndex::GalGamePipeline);
 
 			// 设置屏幕专属渲染管线
@@ -358,17 +310,57 @@ namespace VisionGal::GalGame
 		return sprite;
 	}
 
+	GameActor* GalGameEngine::CreateAudioImp(const std::string& resPath)
+	{
+		// 读取音频资产
+		auto audioClip = LoadObject<AudioClip>(resPath);
+		if (audioClip == nullptr)
+		{
+			H_LOG_WARN("加载音频失败: %s", resPath.c_str());
+			return nullptr;
+		}
+
+		// 创建音频角色
+		auto* actor = m_Scene->CreateActor();
+		actor->SetLabel(resPath);
+
+		// 添加音频源组件
+		auto* audioSource = actor->AddComponent<AudioSourceComponent>();
+		audioSource->audioClip = audioClip;
+
+		return actor;
+	}
+
+	GalAudio* GalGameEngine::AddAudio(GameActor* actor, const std::string& layer, const std::string& path)
+	{
+		// 创建GalGame的音频类
+		GalAudio* audio = new GalAudio(layer, path);
+		audio->m_Actor = actor;
+
+		// 添加到管理器
+		m_LayeredSceneManager->AddAudio(audio);
+
+		return audio;
+	}
+
 	GalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)
 	{
 		String resPath = Core::GetAssetsPathVFS() + path;
-		GameActor* actor = CreateSpriteInline(resPath);
+		GameActor* actor = CreateSpriteImp(resPath);
+
+		if (actor == nullptr)
+			return nullptr;
+
 		return AddSprite(actor, layer, resPath);
 	}
 
 	GalSprite* GalGameEngine::ShowColor(const std::string& layer, const float4& color)
 	{
 		String resPath = EngineResource::GetDefaultSpriteTexturePath();
-		GameActor* actor = CreateSpriteInline(resPath);
+		GameActor* actor = CreateSpriteImp(resPath);
+
+		if (actor == nullptr)
+			return nullptr;
 
 		GalSprite* sprite = AddSprite(actor, layer, resPath);
 
@@ -382,48 +374,32 @@ namespace VisionGal::GalGame
 	GalAudio* GalGameEngine::PlayAudio(const std::string& layer, const std::string& path)
 	{
 		String resPath = Core::GetAssetsPathVFS() + path;
+		GameActor* actor = CreateAudioImp(resPath);
 
-		// 读取音频资产
-		auto audioClip = LoadObject<AudioClip>(resPath);
-		if (audioClip == nullptr)
-		{
-			H_LOG_WARN("Failed to load audio: %s", resPath.c_str());
+		if (actor == nullptr)
 			return nullptr;
-		}
 
-		// 创建音频角色
-		auto* actor = m_Scene->CreateActor();
-		actor->SetLabel(resPath);
+		actor->GetComponent<AudioSourceComponent>()->Play();
 
-		// 添加音频源组件
-		auto* audioSource = actor->AddComponent<AudioSourceComponent>();
-		audioSource->audioClip = audioClip;
-		audioSource->Play();
-
-		// 创建GalGame的音频类
-		GalAudio* audio = new GalAudio(layer, path);
-		audio->m_Actor = actor;
-
-		// 添加到管理器
-		m_LayeredSceneManager->AddAudio(audio);
-
-		return audio;
+		return AddAudio(actor, layer, resPath);
 	}
 
 	GalCharacter* GalGameEngine::CreateCharacter(const String& name)
 	{
-		auto character = CreateRef<GalCharacter>(name);
-		m_Characters.push_back(character);
+		GalCharacter* character = new GalCharacter(name);
 
-		return character.get();
+		GetLayeredSceneManager()->AddCharacter(character);
+
+		return character;
 	}
 
 	void GalGameEngine::HideAllCharacterSprite()
 	{
-		for (auto& character: m_Characters)
-		{
-			character->HideFigure();
-		}
+		m_LayeredSceneManager->TraverseCharacter([this](IGalCharacter* character)
+			{
+				GalCharacter* galChar = dynamic_cast<GalCharacter*>(character);
+				galChar->HideFigure();
+			});
 	}
 
 	bool GalGameEngine::RemoveSprite(GalSprite* sprite)
@@ -477,6 +453,31 @@ namespace VisionGal::GalGame
 		m_UpdateCallback.push_back(callback);
 	}
 
+	void GalGameEngine::UpdateArchiveSystem()
+	{
+		SaveArchive archive;
+		if (m_StoryScript)
+			archive.scriptPath = m_StoryScript->GetResourcePath();	//脚本路径
+		if (m_CapturedSceneImage)
+			archive.screenshotPixels = m_CapturedSceneImage;		//截图像素
+		archive.line = m_DialogueSystem->GetCurrentDialogLine();	//对话当前行
+		archive.description = m_DialogueSystem->GetCurrentDialogText(); //对话描述
+		m_ArchiveSystem->UpdateSaveArchive(archive);
+	}
+
+	void GalGameEngine::UpdateWaitState()
+	{
+		if (m_Wait.IsWait)
+		{
+			m_Wait.Timer.Update();
+			if (m_Wait.Timer.IsFinished())
+			{
+				m_Wait.IsWait = false;
+				StoryScriptLuaInterface::Continue();
+			}
+		}
+	}
+
 	void GalGameEngine::OnUpdate(float deltaTime)
 	{
 		if (m_IsEngineEnable == false)
@@ -489,29 +490,9 @@ namespace VisionGal::GalGame
 
 		// 更新对话系统
 		GetDialogueSystem()->Update();
-
 		// 更新存档系统
-		SaveArchive archive;
-		if (m_StoryScript)
-			archive.scriptPath = m_StoryScript->GetResourcePath();	//脚本路径
-		if (m_CapturedSceneImage)
-			archive.screenshotPixels = m_CapturedSceneImage;		//截图像素
-		archive.line = m_DialogueSystem->GetCurrentDialogLine();	//对话当前行
-		archive.description = m_DialogueSystem->GetCurrentDialogText(); //对话描述
-		m_ArchiveSystem->UpdateSaveArchive(archive);
-
-		// 更新变换脚本
-		//SpriteTransformScriptManager::GetInstance()->Update(m_Scene);
-
+		UpdateArchiveSystem();
 		// 更新等待状态
-		if (m_Wait.IsWait)
-		{
-			m_Wait.Helper.Update();
-			if (m_Wait.Helper.IsFinished())
-			{
-				m_Wait.IsWait = false;
-				StoryScriptLuaInterface::Continue();
-			}
-		}
+		UpdateWaitState();
 	}
 }

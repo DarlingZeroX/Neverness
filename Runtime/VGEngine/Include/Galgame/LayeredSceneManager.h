@@ -58,6 +58,7 @@ namespace VisionGal::GalGame
 		void ShowSprite(const String& layer, GameActor* actor) override;
 		void AddSprite(IGalGameSprite* sprite) override;
 		void AddAudio(IGalGameAudio* audio) override;
+		void AddCharacter(IGalCharacter* character) override;
 
 		bool RemoveSprite(IGalGameSprite* sprite) override;
 		bool RemoveAudio(IGalGameAudio* audio) override;
@@ -69,12 +70,14 @@ namespace VisionGal::GalGame
 		void ClearAllSprite() override;
 		void ClearAllAudio() override;
 		void ClearAll() override;
+		void ClearAllCharacter();
 
 		void TraverseSpriteLayer(const String& layer, const std::function<void(IGalGameSprite* sprite)>& callback) override;
 		void TraverseSprite(const std::function<void(IGalGameSprite* sprite)>& callback) override;
 		void TraverseAudioLayer(const String& layer, const std::function<void(IGalGameAudio* audio)>& callback) override;
 		void TraverseAudio(const std::function<void(IGalGameAudio* audio)>& callback) override;
 		void TraverseScene(std::function<void(IGalGameResource* actor)> callback) override;
+		void TraverseCharacter(const std::function<void(IGalCharacter* character)>& callback);
 
 		void AddSpriteLayer(const String& layer);
 		void AddAudioLayer(const String& layer);
@@ -93,6 +96,8 @@ namespace VisionGal::GalGame
 
 		std::unordered_map<String, int> m_SpriteLayerIndexer;
 		std::unordered_map<String, int> m_AudioLayerIndexer;
+
+		std::vector<IGalCharacter*> m_Characters;			// 当前游戏中的所有角色列表，存储了所有创建的 GalCharacter 实例。
 	};
 
 

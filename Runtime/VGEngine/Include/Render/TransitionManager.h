@@ -1,3 +1,14 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "../Core/Core.h"
 #include "../Interface/RenderInterface.h"
 #include <HCore/Include/Event/HEventDelegate.h>
@@ -34,6 +45,8 @@ namespace VisionGal {
 		void Update();
 		ISceneTransition* GetLayerTransition(const String& layer);
 		void LayerTransition(const String& layer, const Ref<VGFX::ITexture>& prevFrame, const Ref<VGFX::ITexture>& nextFrame);
+
+		std::string LayerTranslateEnglish(const String& layer);
 
 		Horizon::HEventDelegate<const TransitionEvent&> OnTransitionEvent;
 	private:

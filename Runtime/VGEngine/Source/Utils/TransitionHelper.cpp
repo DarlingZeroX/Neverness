@@ -1,3 +1,14 @@
+/*
+* This source file is part of VisionGal, the Visual Novel Engine
+*
+* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+* GitHub page: https://github.com/DarlingZeroX/VisionGal
+*
+* Copyright (c) 2025-present æ¢¦æ—…ç¼˜å¿ƒ
+*
+* See the LICENSE file in the project root for details.
+*/
+
 #include "Utils/TransitionHelper.h"
 
 namespace VisionGal
@@ -26,8 +37,8 @@ namespace VisionGal
 		progress = std::min(elapsed.count() / duration, 1.0f);
 
 		if (progress >= 1.0f && callback) {
-			callback();  // ×ª³¡Íê³ÉÊ±´¥·¢»Øµ÷
-			callback = nullptr;  // ±ÜÃâÖØ¸´µ÷ÓÃ
+			callback();  // è½¬åœºå®Œæˆæ—¶è§¦å‘å›è°ƒ
+			callback = nullptr;  // é¿å…é‡å¤è°ƒç”¨
 		}
 
 		return progress;

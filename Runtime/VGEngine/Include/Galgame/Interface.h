@@ -81,6 +81,11 @@ namespace VisionGal::GalGame
 		~IGalGameAudio() override = default;
 	};
 
+	struct IGalCharacter
+	{
+		virtual ~IGalCharacter() = default;
+	};
+
 	/**
 	 * @brief 定义了一个剧情存档系统接口的结构体。
 	 */
@@ -302,6 +307,9 @@ namespace VisionGal::GalGame
 		 * @return 是否移除成功
 		 */
 		virtual bool RemoveAudio(IGalGameAudio* audio) = 0;
+
+		/// @brief 添加角色对象。
+		virtual void AddCharacter(IGalCharacter* character) = 0;
 
 		/// @brief 将精灵移动到指定的图层。
 		/// @param sprite 要移动的精灵对象指针。

@@ -10,8 +10,9 @@
  */
 
 #include "Galgame/StoryScriptLuaInterface.h"
+#include "Galgame/Game.h"
+#include "Galgame/ArchiveSystem.h"
 #include "Galgame/GameLua.h"
-#include <string>
 #include "Lua/CoreLuaInterface.h"
 #include "Animation/Interface/Animation2DScript.h"
 

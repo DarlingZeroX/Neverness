@@ -1,3 +1,14 @@
+/*
+* This source file is part of VisionGal, the Visual Novel Engine
+*
+* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+* GitHub page: https://github.com/DarlingZeroX/VisionGal
+*
+* Copyright (c) 2025-present æ¢¦æ—…ç¼˜å¿ƒ
+*
+* See the LICENSE file in the project root for details.
+*/
+
 #include "Asset/Package.h"
 
 #include "Core/VFS.h"
@@ -66,7 +77,7 @@ namespace VisionGal
 		if (!stream.Open(metaPath))
 			return false;
 
-		// ¶ÁÈ¡ÎÄ¼þµÚÒ»ÐÐ
+		// è¯»å–æ–‡ä»¶ç¬¬ä¸€è¡Œ
 		std::string metaData;
 		getline(stream.GetStream(), metaData);
 
@@ -75,7 +86,7 @@ namespace VisionGal
 		if (split.size() != 3)
 			return false;
 
-		// ±êÊ¶·û
+		// æ ‡è¯†ç¬¦
 		if (split[0].compare("[VGASSET]") != 0)
 			return false;
 
@@ -84,7 +95,7 @@ namespace VisionGal
 		char* uuidEnd;
 		metadata.UUID = std::strtoull(uuid.data(), &uuidEnd, 10);
 
-		// ×Ê²úÀà±ð
+		// èµ„äº§ç±»åˆ«
 		auto& assetType = split[2];
 		char* assetTypeEnd;
 		metadata.AssetType = assetType;
@@ -142,7 +153,7 @@ namespace VisionGal
 
 	void VGPackage::CloseWriteStream()
 	{
-		// ¹Ø±Õ¶þ½øÖÆÎÄ¼þÁ÷ BinaryData Stream
+		// å…³é—­äºŒè¿›åˆ¶æ–‡ä»¶æµ BinaryData Stream
 		m_AssetBinaryDataFile.close();
 
 		//CloseOutputMetaStream();
@@ -150,12 +161,12 @@ namespace VisionGal
 
 	bool VGPackage::WriteMetaData(const String& data)
 	{
-		// ´´½¨»ò´ò¿ªÒ»¸öÎÄ¼þÓÃÓÚÐ´Èë
+		// åˆ›å»ºæˆ–æ‰“å¼€ä¸€ä¸ªæ–‡ä»¶ç”¨äºŽå†™å…¥
 		auto metaFile = VFS::GetInstance()->OpenFile(vfspp::FileInfo(m_VirtualMetaFilePath), vfspp::IFile::FileMode::Write);
 		if (!metaFile->IsOpened())
 			return false;
 
-		// Ð´ÈëGASSET×Ê²úµÄ±êÊ¶·û£¬UUID,×Ê²úÀà±ð
+		// å†™å…¥GASSETèµ„äº§çš„æ ‡è¯†ç¬¦ï¼ŒUUID,èµ„äº§ç±»åˆ«
 		std::string metaData = "";
 		metaData += "[VGASSET];";
 		metaData += m_AssetMetaData.UUID.ToString();
@@ -235,7 +246,7 @@ namespace VisionGal
 	//	char* uuidEnd;
 	//	m_AssetMetaData.UUID = std::strtoull(uuid.data(), &uuidEnd, 10);
 	//
-	//	// ×Ê²úÀà±ð
+	//	// èµ„äº§ç±»åˆ«
 	//	auto& assetType = split[2];
 	//	m_AssetMetaData.AssetType = assetType;
 	//

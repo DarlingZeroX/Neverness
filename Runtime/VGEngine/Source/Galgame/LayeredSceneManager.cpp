@@ -73,6 +73,11 @@ namespace VisionGal::GalGame
 		audioLayer.AddAudio(audio);
 	}
 
+	void LayeredSceneManager::AddCharacter(IGalCharacter* character)
+	{
+		m_Characters.push_back(character);
+	}
+
 	bool LayeredSceneManager::RemoveSprite(IGalGameSprite* sprite)
 	{
 		if (sprite == nullptr)
@@ -147,6 +152,21 @@ namespace VisionGal::GalGame
 	{
 		ClearAllAudio();
 		ClearAllSprite();
+		ClearAllCharacter();
+	}
+
+	void LayeredSceneManager::ClearAllCharacter()
+	{
+		for (auto& character: m_Characters)
+		{
+			if (character != nullptr)
+			{
+				delete character;
+				character = nullptr;
+			}
+		}
+
+		m_Characters.clear();
 	}
 
 	void LayeredSceneManager::TraverseSpriteLayer(const String& layer, const std::function<void(IGalGameSprite* galSprite)>& callback)
@@ -207,6 +227,14 @@ namespace VisionGal::GalGame
 	{
 		TraverseSprite(callback);
 		TraverseAudio(callback);
+	}
+
+	void LayeredSceneManager::TraverseCharacter(const std::function<void(IGalCharacter* character)>& callback)
+	{
+		for (auto& character: m_Characters)
+		{
+			callback(character);
+		}
 	}
 
 	void LayeredSceneManager::AddSpriteLayer(const String& layer)
