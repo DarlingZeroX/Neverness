@@ -137,9 +137,8 @@ body {
     position: absolute;
     top: 20px;
     left: 80px;
-    width: 100px;
+    width: 140px;
     height: 100px;
-    image-color: rgba(57, 119, 134, 180);
 
     border-color: rgba(27, 89, 104,240);
     border-radius: 3dp;

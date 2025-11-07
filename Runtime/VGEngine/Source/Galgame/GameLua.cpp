@@ -1,3 +1,14 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "Galgame/GameLua.h"
 #include <string>
 #include "Galgame/GalGameEngine.h"
@@ -207,7 +218,8 @@ namespace VisionGal::GalGame
 			"data", &SaveArchive::date,
 			"time", &SaveArchive::time,
 			"dateTime", &SaveArchive::dateTime,
-			"description", &SaveArchive::description
+			"description", &SaveArchive::description,
+			"screenshotPath", &SaveArchive::screenshotPath
 		);
 	}
 }

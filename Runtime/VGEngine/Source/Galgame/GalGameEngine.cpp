@@ -1,3 +1,14 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "Galgame/GalGameEngine.h"
 #include "Interface/Loader.h"
 #include "Scene/Scene.h"
@@ -10,8 +21,6 @@
 #include "Galgame/SpriteAnimationScriptManager.h"
 #include "Render/TransitionManager.h"
 #include "Engine/EngineResource.h"
-
-#include "Resource/Texture/TextureConverter.h"
 
 namespace VisionGal::GalGame
 {
@@ -143,12 +152,8 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::CaptureSceneImage()
 	{
-		VGFX::TexturePixels scenePixels;
-		if (m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(scenePixels))
-		{
-			TextureConverter::SaveAsJPG(scenePixels, "D:/test.jpg");
-		}
-		
+		m_CapturedSceneImage = CreateRef<VGFX::TexturePixels>();
+		m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_CapturedSceneImage);
 	}
 
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)
@@ -489,8 +494,10 @@ namespace VisionGal::GalGame
 		SaveArchive archive;
 		if (m_StoryScript)
 			archive.scriptPath = m_StoryScript->GetResourcePath();	//脚本路径
+		if (m_CapturedSceneImage)
+			archive.screenshotPixels = m_CapturedSceneImage;		//截图像素
 		archive.line = m_DialogueSystem->GetCurrentDialogLine();	//对话当前行
-		archive.description = m_DialogueSystem->GetCurrentDialogText();
+		archive.description = m_DialogueSystem->GetCurrentDialogText(); //对话描述
 		m_ArchiveSystem->UpdateSaveArchive(archive);
 
 		// 更新变换脚本

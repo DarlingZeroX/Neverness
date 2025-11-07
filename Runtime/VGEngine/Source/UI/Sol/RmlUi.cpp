@@ -19,6 +19,11 @@ namespace RmlSol {
 
 	void RmlRmlUI::RegisterType(sol::state* lua, sol::table& rml)
 	{
+		rml.set_function("ReleaseTextures", []()
+			{
+				return Rml::ReleaseTextures();
+			});
+
 		rml.set_function("CreateContext", [](const std::string& name, const Rml::Vector2i& dimensions)
 			{
 				return Rml::CreateContext(name, dimensions);

@@ -74,6 +74,7 @@ namespace VisionGal::GalGame
 		};
 
 		IGameEngineContext* m_EngineContext;					// 引擎上下文，包含了引擎的各种系统和状态。
+		Ref<VGFX::TexturePixels> m_CapturedSceneImage;			// 捕获的场景图像数据，用于存储当前场景的截图。
 
 		// 引擎核心子系统
 		Ref<ArchiveSystem> m_ArchiveSystem;						// 存档系统，用于管理游戏存档。

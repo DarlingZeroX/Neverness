@@ -1,6 +1,19 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
 #include "Galgame/ArchiveSystem.h"
 #include <HCore/Include/System/HFileSystem.h>
 #include <HCore/Include/File/nlohmann/json.hpp>
+
+#include "Resource/Texture/TextureConverter.h"
 
 namespace VisionGal::GalGame
 {
@@ -84,6 +97,7 @@ namespace VisionGal::GalGame
 		archive.time = save.value("Time", "");
 		archive.dateTime = save.value("DateTime", "");
 		archive.description = save.value("Description", "");
+		archive.screenshotPath = save.value("ScreenshotPath", "");
 
 		archive.isValid = archive.isGalGameArchive;
 		m_Archives[saveNumber] = archive;
@@ -120,6 +134,13 @@ namespace VisionGal::GalGame
 	SaveArchive ArchiveSystem::SaveArchiveByNumber(const String& number)
 	{
 		std::filesystem::path savePath = m_SaveDirectoryPath / (number + m_ArchiveExt);
+		std::filesystem::path screenshotPath = m_SaveDirectoryPath / (number + ".jpg");
+
+		// 保存截图
+		if (m_CurrentSaveArchiveState.screenshotPixels)
+		{
+			TextureConverter::SaveAsJPG(*m_CurrentSaveArchiveState.screenshotPixels, screenshotPath.string().c_str());
+		}
 
 		// 设置存档的一些参数
 		SaveArchive archive = m_CurrentSaveArchiveState;
@@ -127,7 +148,7 @@ namespace VisionGal::GalGame
 		archive.time = GetCurrentTimeFormat();
 		archive.dateTime = archive.date + " " + archive.time;
 		archive.isValid = true;
-		archive.saveNumberString = number;
+		archive.screenshotPath = screenshotPath.string();
 
 		// 序列化到json
 		nlohmann::json json;
@@ -141,6 +162,7 @@ namespace VisionGal::GalGame
 		json["Save"]["Time"] = archive.time;
 		json["Save"]["DateTime"] = archive.dateTime;
 		json["Save"]["Description"] = archive.description;
+		json["Save"]["ScreenshotPath"] = archive.screenshotPath;
 
 		std::string jsonStr = json.dump(2);
 

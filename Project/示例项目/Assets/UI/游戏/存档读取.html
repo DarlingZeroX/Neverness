@@ -7,6 +7,9 @@
 
             -- 当页面被加载
             function HTML存档读取.加载时调用(element,document)
+                -- 释放纹理缓存，以加载新的存档截图
+                rmlui:ReleaseTextures()
+
                 local 存档项 = element:GetElementById('save-box')
                 for i = 1, 60 do
                     local 索引 = string.format("%02d", i)
@@ -32,12 +35,18 @@
                     存档描述 = 存档槽:AppendChild(存档描述)
                     存档描述:SetAttribute('class', 'save-description')
 
+                    -- 存档截图
+                    local 存档截图 = document:CreateElement('img')
+                    存档截图 = 存档槽:AppendChild(存档截图)
+                    存档截图:SetAttribute('class', 'save-screenshot')
+
                     -- 读取存档如果存在
                     local 存档 = GalGame.获取引擎().存档系统:获取存档(索引)
                     if 存档.isValid then
                         存档槽:SetAttribute('class', 'save-slot')
                         存档日期时间.innerRml = 存档.dateTime
                         存档描述.innerRml = 存档.description
+                        存档截图:SetAttribute('src', string.format('[system]%s',存档.screenshotPath))
                         local onClickScript = string.format("HTML存档读取.加载存档(element, document, '%s')", 索引)
                         存档槽:SetAttribute('onclick', onClickScript)
                     end

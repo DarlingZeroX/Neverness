@@ -3,7 +3,6 @@
 #include "../EngineConfig.h"
 #include "../Core/Core.h"
 #include <HCore/Include/System/HFileSystem.h>
-
 #include "HCore/Include/File/nlohmann/json.hpp"
 
 namespace VisionGal::GalGame
@@ -21,6 +20,9 @@ namespace VisionGal::GalGame
 		String time;
 		String dateTime;
 		String description;
+		String screenshotPath;
+
+		Ref<VGFX::TexturePixels> screenshotPixels = nullptr;
 	};
 
 	class VG_ENGINE_API ArchiveSystem: public IArchiveSystem

@@ -1,33 +1,15 @@
 /*
- * This source file is part of RmlUi, the HTML/CSS Interface Middleware
+ * This source file is part of VisionGal, the Visual Novel Engine
  *
- * For the latest information, see http://github.com/mikke89/RmlUi
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
  *
- * Copyright (c) 2008-2010 CodePoint Ltd, Shift Technology Ltd
- * Copyright (c) 2019-2023 The RmlUi Team, and contributors
+ * Copyright (c) 2025-present 梦旅缘心
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
+ * See the LICENSE file in the project root for details.
  */
 
 #include "UI/Rml/ShellFileInterface.h"
-#include <stdio.h>
 #include "Core/VFS.h"
 
 ShellFileInterface::ShellFileInterface(const Rml::String& root) : root(root) {}
@@ -76,16 +58,27 @@ UIFileInterfaceVFS::~UIFileInterfaceVFS()
 
 Rml::FileHandle UIFileInterfaceVFS::Open(const Rml::String& path)
 {
-	auto file = VisionGal::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+	std::filesystem::path fspath = path;
 
-	if (!file)
-		return 0;
+	Rml::String processPath;
+	PathType type = ProcessPath(path, processPath);
 
-	if (!file->IsOpened())
+	//auto file = VisionGal::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+	//
+	//if (!file)
+	//	return 0;
+	//
+	//if (!file->IsOpened())
+	//	return 0;
+
+	Ref<FilePtr> filePtr = CreateRef<FilePtr>();
+	bool result = filePtr->Open(type, processPath);
+
+	if (result == false)
 		return 0;
 
 	auto handle = GetNewFileHandle();
-	m_FilPtrMap[handle] = file;
+	m_FilPtrMap[handle] = filePtr;
 
 	return handle;
 }
@@ -115,6 +108,83 @@ bool UIFileInterfaceVFS::Seek(Rml::FileHandle file, long offset, int origin)
 	auto result = m_FilPtrMap.find(file);
 	if (result != m_FilPtrMap.end())
 	{
+		return result->second->Seek(static_cast<uint64_t>(offset), origin);
+	}
+
+	return false;
+}
+
+size_t UIFileInterfaceVFS::Tell(Rml::FileHandle file)
+{
+	auto result = m_FilPtrMap.find(file);
+	if (result != m_FilPtrMap.end())
+	{
+		return result->second->Tell();
+	}
+
+	return 0;
+}
+
+bool UIFileInterfaceVFS::FilePtr::Open(PathType pathType, const Rml::String& path)
+{
+	type = pathType;
+
+	if (type == PathType::VFS)
+	{
+		fpVFS = VisionGal::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+
+		if (!fpVFS)
+			return false;
+
+		if (!fpVFS->IsOpened())
+			return false;
+
+		return true;
+	}
+
+	if (type == PathType::FS)
+	{
+		// Attempt to open the file relative to the application's root.
+		fp = fopen(path.c_str(), "rb");
+		if (fp == nullptr)
+			return false;
+
+		return true;
+	}
+
+	return false;
+}
+
+void UIFileInterfaceVFS::FilePtr::Close()
+{
+	if (type == PathType::VFS)
+	{
+		fpVFS->Close();
+	}
+
+	if (type == PathType::FS)
+	{
+		fclose(fp);
+	}
+}
+
+size_t UIFileInterfaceVFS::FilePtr::Read(void* buffer, size_t size)
+{
+	if (type == PathType::VFS)
+	{
+		return fpVFS->Read(static_cast<uint8_t*>(buffer), size);
+	}
+
+	if (type == PathType::FS)
+	{
+		return fread(buffer, 1, size, fp);
+	}
+}
+
+bool UIFileInterfaceVFS::FilePtr::Seek(long offset, int origin)
+{
+	if (type == PathType::VFS)
+	{
 		vfspp::IFile::Origin vfsOrigin;
 		switch (origin) {
 		case SEEK_SET:
@@ -131,22 +201,51 @@ bool UIFileInterfaceVFS::Seek(Rml::FileHandle file, long offset, int origin)
 		}
 
 		// 调用你的 Seek
-		result->second->Seek(static_cast<uint64_t>(offset), vfsOrigin);
+		fpVFS->Seek(static_cast<uint64_t>(offset), vfsOrigin);
 		return true;
+	}
+
+	if (type == PathType::FS)
+	{
+		return fseek(fp, offset, origin) == 0;
 	}
 
 	return false;
 }
 
-size_t UIFileInterfaceVFS::Tell(Rml::FileHandle file)
+size_t UIFileInterfaceVFS::FilePtr::Tell()
 {
-	auto result = m_FilPtrMap.find(file);
-	if (result != m_FilPtrMap.end())
+	if (type == PathType::VFS)
 	{
-		return result->second->Tell();
+		return fpVFS->Tell();
+	}
+
+	if (type == PathType::FS)
+	{
+		return ftell(fp);
 	}
 
 	return 0;
+}
+
+UIFileInterfaceVFS::PathType UIFileInterfaceVFS::ProcessPath(const Rml::String& path, Rml::String& outPath)
+{
+	size_t absPos = path.find("[system]");
+	if (absPos != std::string::npos)
+	{
+		outPath = path.substr(absPos + 8); // 8 是 "[system]" 的长度
+		return PathType::FS;
+	}
+
+	size_t rootPos = path.find("[root]");
+	if (rootPos != std::string::npos)
+	{
+		outPath = path.substr(rootPos + 6); // 6 是 "[root]" 的长度
+		return PathType::VFS;
+	}
+
+	outPath = path;
+	return PathType::VFS;
 }
 
 Rml::FileHandle UIFileInterfaceVFS::GetNewFileHandle()
