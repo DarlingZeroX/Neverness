@@ -53,6 +53,11 @@ namespace VisionGal::GalGame
 		return 0;
 	}
 
+	void StoryScriptLuaInterface::ResetStoryScript()
+	{
+		s_StoryScriptCoroutine = nullptr;
+	}
+
 	void StoryScriptLuaInterface::SetStoryScriptCoroutine(sol::coroutine* co)
 	{
 		s_StoryScriptCoroutine = co;

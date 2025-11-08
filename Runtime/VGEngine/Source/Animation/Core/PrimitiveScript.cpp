@@ -47,7 +47,7 @@ namespace VisionGal
 			{
 				transform->location.x = property.GetCurrentValue();
 				transform->is_dirty = true;
-				std::cout << " TranslateX: " << property.GetCurrentValue() << std::endl;
+				//std::cout << " TranslateX: " << property.GetCurrentValue() << std::endl;
 			}
 		}
 	}
@@ -119,7 +119,7 @@ namespace VisionGal
 			{
 				transform->location.y = property.GetCurrentValue();
 				transform->is_dirty = true;
-				std::cout << " TranslateY: " << property.GetCurrentValue() << std::endl;
+				//std::cout << " TranslateY: " << property.GetCurrentValue() << std::endl;
 			}
 		}
 	}

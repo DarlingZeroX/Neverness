@@ -61,11 +61,15 @@ namespace VisionGal::Editor
 		//static Horizon::HText labelText("Label");
 		//static Horizon::HText typeText("Type");
 
+		if (ImGui::Begin(GetWindowFullName().c_str()))
 		{
-			ImGuiEx::ScopedWindow window(GetWindowFullName().c_str());
+			//ImGuiEx::ScopedWindow window(GetWindowFullName().c_str());
 
 			if (m_rScene == nullptr)
+			{
+				ImGui::End();
 				return;
+			}
 
 			m_IsAnyItemHovered = false;
 
@@ -81,6 +85,8 @@ namespace VisionGal::Editor
 			TickBottomOverlayUI();
 			PanelContextMenu();
 		}
+
+		ImGui::End();
 	}
 
 	std::string SceneBrowserPanel::GetWindowFullName()

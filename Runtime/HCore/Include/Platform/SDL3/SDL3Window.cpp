@@ -107,7 +107,7 @@ namespace Horizon::SDL3
 
 		//////////////////////////////////////
 				// Setup SDL
-		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO))
 		{
 			printf("Error: SDL_Init(): %s\n", SDL_GetError());
 			return;

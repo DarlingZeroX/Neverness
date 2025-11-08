@@ -56,12 +56,12 @@ namespace VisionGal
 			}
 
 			// 只有一个关键帧时，重复播放该帧
-			if (keyCount == 1)
-			{
-				m_CurrentKeyIndex = 0;
-				ApplyAnimationKey(m_AnimationKeys[0]);
-				return;
-			}
+			//if (keyCount == 1)
+			//{
+			//	m_CurrentKeyIndex = 0;
+			//	ApplyAnimationKey(m_AnimationKeys[0]);
+			//	return;
+			//}
 
 			// 处理方向交替（往返）或重头开始
 			if (m_AlternateDirection)

@@ -17,6 +17,7 @@ namespace VisionGal::GalGame
 	struct StoryScriptLuaInterface
 	{
 		static int Continue();
+		static void ResetStoryScript();
 
 		static void SetStoryScriptCoroutine(sol::coroutine* co);
 		static sol::coroutine* GetStoryScriptCoroutine();

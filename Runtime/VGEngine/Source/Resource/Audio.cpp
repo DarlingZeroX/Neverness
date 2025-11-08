@@ -24,11 +24,6 @@ namespace VisionGal
 
     bool AudioClip::Open(const String& filePath)
     {
-		// 初始化音频编解码器（如果尚未初始化）
-		if (!SDL_WasInit(SDL_INIT_AUDIO)) {
-			SDL_Init(SDL_INIT_AUDIO);
-		}
-
 		return audioDecoder.Open(filePath);
     }
 

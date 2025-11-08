@@ -319,7 +319,7 @@ namespace VisionGal::Editor
 				var.VariableType = "GameActor";
 				var.ValueEntityID = actor->GetEntityID();
 
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drop Content Item" });
+				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置脚本成功!" });
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -401,7 +401,7 @@ namespace VisionGal::Editor
 				com->document = UISystem::Get()->LoadUIDocument(data);
 				UISystem::Get()->ShowUIDocument(com->document.get());
 
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drop Video" });
+				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置UI文档成功!" });
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -485,7 +485,7 @@ namespace VisionGal::Editor
 					//com->Play();
 				}
 
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drop Video" });
+				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置音频成功!" });
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -579,7 +579,7 @@ namespace VisionGal::Editor
 					//com->Play();
 				}
 
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drop Video" });
+				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置视频成功!" });
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -663,7 +663,7 @@ namespace VisionGal::Editor
 
 				com->script = GalGame::LuaStoryScript::LoadFromFile(path);
 
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drop Video" });
+				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置剧情脚本成功!" });
 			}
 			ImGui::EndDragDropTarget();
 		}

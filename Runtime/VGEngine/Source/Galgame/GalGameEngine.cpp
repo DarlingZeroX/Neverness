@@ -122,6 +122,7 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::Reset()
 	{
+		StoryScriptLuaInterface::ResetStoryScript();
 		m_LayeredSceneManager->ClearAllCharacter();
 
 		// 这里要放在m_Characters.clear();后面，因为m_Characters清除时候会删除Lua脚本的回调
