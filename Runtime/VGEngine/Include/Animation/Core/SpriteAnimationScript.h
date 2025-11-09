@@ -10,7 +10,8 @@
 */
 
 #pragma once
-#include "SpriteAnimation.h"
+//#include "SpriteAnimation.h"
+#include "PrimitiveScript.h"
 
 namespace VisionGal
 {
@@ -23,7 +24,7 @@ namespace VisionGal
             Out
         };
 
-		SpriteFadeInOutTransformScript(Direction direction);
+		SpriteFadeInOutTransformScript(Horizon::HEntityInterface* entity, Direction direction);
         ~SpriteFadeInOutTransformScript() override = default;
 		SpriteFadeInOutTransformScript(const SpriteFadeInOutTransformScript&) = delete;
 		SpriteFadeInOutTransformScript& operator=(const SpriteFadeInOutTransformScript&) = delete;
@@ -36,7 +37,7 @@ namespace VisionGal
 
         void OnUpdate(Horizon::HEntityInterface* entity) override;
     private:
-        Ref<SpriteAnimationScript> m_Script;
+        Ref<SpriteAlphaAnimationScript> m_Script;
 
         float m_StartOffset, m_EndOffset;
         float m_Duration = 0.f;

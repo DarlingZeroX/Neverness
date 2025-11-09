@@ -84,14 +84,14 @@ namespace VisionGal::GalGame {
 
 		if (command == "fade_in" || command == "淡入")
 		{
-			auto transform = CreateRef<SpriteFadeInOutTransformScript>(SpriteFadeInOutTransformScript::Direction::In);
+			auto transform = CreateRef<SpriteFadeInOutTransformScript>(actor, SpriteFadeInOutTransformScript::Direction::In);
 			transform->SetDuration(duration);
 			return transform;
 		}
 
 		if (command == "fade_out" || command == "淡出")
 		{
-			auto transform = CreateRef<SpriteFadeInOutTransformScript>(SpriteFadeInOutTransformScript::Direction::Out);
+			auto transform = CreateRef<SpriteFadeInOutTransformScript>(actor, SpriteFadeInOutTransformScript::Direction::Out);
 			transform->SetDuration(duration);
 			return transform;
 		}

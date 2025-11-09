@@ -26,6 +26,8 @@ namespace VisionGal
 			script->OnUpdate(entity);
 		}
 
+		//std::cout << "Animation2DScript::OnUpdate 当前关键帧索引: " << m_CurrentKeyIndex << std::endl;
+
 		// 检查当前动画是否完成
 		if (m_CurrentAnimationScript.IsFinished())
 		{
@@ -131,7 +133,7 @@ namespace VisionGal
 		if (m_CurrentAnimationScript.IsEmpty())
 		{
 			m_CurrentKeyIndex = static_cast<int>(m_AnimationKeys.size()) - 1;
-			ApplyAnimationKey(targetProperty);
+			ApplyAnimationKey(m_AnimationKeys.back());		// 这里要用back()，因为刚加入的关键帧在最后，而不是用targetProperty临时对象
 		}
 
 		return true;
@@ -176,14 +178,14 @@ namespace VisionGal
 		return true;
 	}
 
-	void Animation2DScript::ApplyAnimationKey(const Animation2DProperty& targetProperty)
+	void Animation2DScript::ApplyAnimationKey(Animation2DProperty& targetProperty)
 	{
 		auto* apm = AnimationPrimitiveManager::GetInstance();
 
 		for (auto& primitive: targetProperty.primitive)
 		{
 			//AddAnimationPrimitiveScript(targetProperty, primitive);
-			if (auto script = apm->GetPrimitiveScript(m_Entity, targetProperty, primitive, m_CurrentDirection < 0))
+			if (auto script = apm->StartAnimationScript(m_Entity, targetProperty, primitive, m_CurrentDirection < 0))
 			{
 				m_CurrentAnimationScript.scripts.push_back(script);
 			}
@@ -202,7 +204,7 @@ namespace VisionGal
 
 			for (auto& primitive : key.primitive)
 			{
-				if (auto script = apm->GetPrimitiveScript(m_Entity, key, primitive, true))
+				if (auto script = apm->StartAnimationScript(m_Entity, key, primitive, true))
 				{
 					script->OnUpdate(m_Entity);
 				}

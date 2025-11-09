@@ -16,6 +16,11 @@ namespace VisionGal
 {
 	EasingFunction EasingCallbacks::linear = [](float t) { return t; };
 
+	float IAnimationProperty::GetCurrentTime()
+	{
+		return Core::GetCurrentTime();
+	}
+
 	void FloatAnimationProperty::SetCurrentValue(float value)
 	{
 		currentValue = value;
@@ -31,8 +36,10 @@ namespace VisionGal
 		return currentValue;
 	}
 
-	void FloatAnimationProperty::Update(float currentTime)
+	void FloatAnimationProperty::Update()
 	{
+		float currentTime = GetCurrentTime();
+
 		if (active == false)
 		{
 			return;
@@ -79,9 +86,11 @@ namespace VisionGal
 		//}
 	}
 
-	void FloatAnimationProperty::Start(float startTime, float duration, float startValue, float endValue,
-		Tween tween)
+	void FloatAnimationProperty::Start(float startValue, float endValue, float duration, Tween tween, float startTime)
 	{
+		if (startTime == 0.f)
+			startTime = GetCurrentTime();
+
 		this->startTime = startTime;
 		this->duration = duration;
 		this->startValue = startValue;
@@ -99,6 +108,11 @@ namespace VisionGal
 	bool FloatAnimationProperty::IsFinish()
 	{
 		return active == false;
+	}
+
+	bool FloatAnimationProperty::IsActive()
+	{
+		return active;
 	}
 
 	void FloatAnimationProperty::Reset()
@@ -123,17 +137,16 @@ namespace VisionGal
 		return float2(value0.currentValue, value1.currentValue);
 	}
 
-	void Float2AnimationProperty::Update(float currentTime)
+	void Float2AnimationProperty::Update()
 	{
-		value0.Update(currentTime);
-		value1.Update(currentTime);
+		value0.Update();
+		value1.Update();
 	}
 
-	void Float2AnimationProperty::Start(float startTime, float duration, const float2& startValue, const float2& endValue,
-		Tween tween)
+	void Float2AnimationProperty::Start(const float2& startValue, const float2& endValue, float duration, Tween tween, float startTime)
 	{
-		value0.Start(startTime, duration, startValue.x, endValue.x, tween);
-		value1.Start(startTime, duration, startValue.y, endValue.y, tween);
+		value0.Start(startValue.x, endValue.x, duration, tween, startTime);
+		value1.Start(startValue.x, endValue.x, duration, tween, startTime);
 	}
 
 	void Float2AnimationProperty::Finish()
@@ -145,6 +158,11 @@ namespace VisionGal
 	bool Float2AnimationProperty::IsFinish()
 	{
 		return value0.IsFinish() && value1.IsFinish();
+	}
+
+	bool Float2AnimationProperty::IsActive()
+	{
+		return value0.IsActive() || value1.IsActive();
 	}
 
 	void Float2AnimationProperty::Reset()
@@ -170,17 +188,16 @@ namespace VisionGal
 		return float3(value0.currentValue, value12.value0.currentValue, value12.value1.currentValue);
 	}
 
-	void Float3AnimationProperty::Update(float currentTime)
+	void Float3AnimationProperty::Update()
 	{
-		value0.Update(currentTime);
-		value12.Update(currentTime);
+		value0.Update();
+		value12.Update();
 	}
 
-	void Float3AnimationProperty::Start(float startTime, float duration, const float3& startValue, const float3& endValue,
-		Tween tween)
+	void Float3AnimationProperty::Start(const float3& startValue, const float3& endValue, float duration, Tween tween, float startTime)
 	{
-		value0.Start(startTime, duration, startValue.x, endValue.x, tween);
-		value12.Start(startTime, duration, float2(startValue.y, startValue.z), float2(endValue.y, endValue.z), tween);
+		value0.Start(startValue.x, endValue.x, duration, tween, startTime);
+		value12.Start(float2(startValue.y, startValue.z), float2(endValue.y, endValue.z), duration, tween, startTime);
 	}
 
 	void Float3AnimationProperty::Finish()
@@ -192,6 +209,11 @@ namespace VisionGal
 	bool Float3AnimationProperty::IsFinish()
 	{
 		return value0.IsFinish() && value12.IsFinish();
+	}
+
+	bool Float3AnimationProperty::IsActive()
+	{
+		return value0.IsActive() || value12.IsActive();
 	}
 
 	void Float3AnimationProperty::Reset()
@@ -221,17 +243,16 @@ namespace VisionGal
 		);
 	}
 
-	void Float4AnimationProperty::Update(float currentTime)
+	void Float4AnimationProperty::Update()
 	{
-		value01.Update(currentTime);
-		value23.Update(currentTime);
+		value01.Update();
+		value23.Update();
 	}
 
-	void Float4AnimationProperty::Start(float startTime, float duration, const float4& startValue,
-		const float4& endValue, Tween tween)
+	void Float4AnimationProperty::Start(const float4& startValue, const float4& endValue, float duration, Tween tween, float startTime)
 	{
-		value01.Start(startTime, duration, float2(startValue.x, startValue.y), float2(endValue.x, endValue.y), tween);
-		value23.Start(startTime, duration, float2(startValue.z, startValue.w), float2(endValue.z, endValue.w), tween);
+		value01.Start(float2(startValue.x, startValue.y), float2(endValue.x, endValue.y), duration, tween, startTime);
+		value23.Start(float2(startValue.z, startValue.w), float2(endValue.z, endValue.w), duration, tween, startTime);
 	}
 
 	void Float4AnimationProperty::Finish()
@@ -245,31 +266,14 @@ namespace VisionGal
 		return value01.IsFinish() && value23.IsFinish();
 	}
 
+	bool Float4AnimationProperty::IsActive()
+	{
+		return value01.IsActive() || value23.IsActive();
+	}
+
 	void Float4AnimationProperty::Reset()
 	{
 		value01.Reset();
 		value23.Reset();
-	}
-
-	bool FloatAnimationPropertyScript::IsFinished()
-	{
-		return property.IsFinish();
-	}
-
-	void FloatAnimationPropertyScript::Start(float duration, float startVal, float endVal, Tween tween)
-	{
-		property.Start(GetCurrentTime(), duration, startVal, endVal, tween);
-	}
-
-	float FloatAnimationPropertyScript::GetCurrentTime()
-	{
-		return Core::GetCurrentTime();
-	}
-
-	void FloatAnimationPropertyScript::UpdateProperty()
-	{
-		float currentTime = GetCurrentTime(); 
-
-		property.Update(currentTime);
 	}
 }

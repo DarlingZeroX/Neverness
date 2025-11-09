@@ -11,8 +11,6 @@
 
 #include "Animation/Core/TransformAnimation.h"
 #include <HCore/Include/Math/HMathHelper.h>
-
-#include "Animation/Core/SpriteAnimation.h"
 #include "Scene/Components.h"
 
 namespace VisionGal
@@ -100,43 +98,43 @@ namespace VisionGal
 	void TransformAnimationScript::TransformXOffset(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.xoffset.Start(startTime, duration, startVal, endVal, Tween{});
+		state.xoffset.Start(startVal, endVal,duration, Tween{}, startTime);
 	}
 
 	void TransformAnimationScript::TransformYOffset(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.yoffset.Start(startTime, duration, startVal, endVal, Tween{});
+		state.yoffset.Start(startVal, endVal,duration, Tween{}, startTime);
 	}
 
 	void TransformAnimationScript::TransformRotate(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.rotate.Start(startTime, duration, startVal, endVal, Tween{});
+		state.rotate.Start(startVal, endVal,duration, Tween{}, startTime);
 	}
 
 	void TransformAnimationScript::TransformZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.zoom.Start(startTime, duration, startVal, endVal, Tween{});
+		state.zoom.Start(startVal, endVal,duration, Tween{}, startTime);
 	}
 
 	void TransformAnimationScript::TransformXZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.xzoom.Start(startTime, duration, startVal, endVal, Tween{});
+		state.xzoom.Start(startVal, endVal,duration, Tween{}, startTime);
 	}
 
 	void TransformAnimationScript::TransformYZoom(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.yzoom.Start(startTime, duration, startVal, endVal, Tween{});
+		state.yzoom.Start(startVal, endVal,duration, Tween{}, startTime);
 	}
 
 	void TransformAnimationScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, Tween{});
+		state.visible.Start(startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f,duration, Tween{}, startTime);
 	}
 
 	void TransformAnimationScript::Reset()
@@ -151,12 +149,10 @@ namespace VisionGal
 
 	void TransformAnimationScript::OnUpdate(Horizon::HEntityInterface* entity)
 	{
-		float currentTime = GetCurrentTime(); // 假设存在获取当前时间的函数
-
 		// 更新所有属性
-		state.TravelProperty([this, currentTime](FloatAnimationProperty& property)
+		state.TravelProperty([this](FloatAnimationProperty& property)
 			{
-				property.Update(currentTime);
+				property.Update();
 			});
 		//state.alpha.Update(currentTime);
 		//state.xoffset.Update(currentTime);

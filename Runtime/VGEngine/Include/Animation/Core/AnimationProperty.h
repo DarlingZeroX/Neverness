@@ -23,10 +23,13 @@ namespace VisionGal
 		virtual ~IAnimationProperty() = default;
 
 		// 更新属性值
-		virtual void Update(float currentTime) = 0;
+		virtual void Update() = 0;
 		virtual void Finish() = 0;
 		virtual bool IsFinish() = 0;
+		virtual bool IsActive() = 0;
 		virtual void Reset() = 0;
+
+		static float GetCurrentTime();
 	};
 
 	// 单个Float的插值器
@@ -47,13 +50,14 @@ namespace VisionGal
 		float GetCurrentValue();
 
 		// 更新属性值
-		void Update(float currentTime) override;
+		void Update() override;
 
 		// 开始插值
-		void Start(float startTime, float duration, float startValue, float endValue, Tween tween = Tween{});
+		void Start(float startValue, float endValue, float duration, Tween tween = Tween{}, float startTime = 0.f);
 
 		void Finish() override;
 		bool IsFinish() override;
+		bool IsActive() override;
 		void Reset() override;
 	};
 
@@ -69,13 +73,14 @@ namespace VisionGal
 		float2 GetCurrentValue() const;
 
 		// 更新属性值
-		void Update(float currentTime) override;
+		void Update() override;
 
 		// 开始插值
-		void Start(float startTime, float duration, const float2& startValue, const float2& endValue, Tween tween = Tween{});
+		void Start(const float2& startValue, const float2& endValue, float duration,  Tween tween = Tween{}, float startTime = 0.f);
 
 		void Finish() override;
 		bool IsFinish() override;
+		bool IsActive() override;
 		void Reset() override;
 	};
 
@@ -91,13 +96,14 @@ namespace VisionGal
 		float3 GetCurrentValue() const;
 
 		// 更新属性值
-		void Update(float currentTime) override;
+		void Update() override;
 
 		// 开始插值
-		void Start(float startTime, float duration, const float3& startValue, const float3& endValue, Tween tween = Tween{});
+		void Start(const float3& startValue, const float3& endValue, float duration,  Tween tween = Tween{}, float startTime = 0.f);
 
 		void Finish() override;
 		bool IsFinish() override;
+		bool IsActive() override;
 		void Reset() override;
 	};
 
@@ -113,13 +119,14 @@ namespace VisionGal
 		float4 GetCurrentValue() const;
 
 		// 更新属性值
-		void Update(float currentTime) override;
+		void Update() override;
 
 		// 开始插值
-		void Start(float startTime, float duration, const float4& startValue, const float4& endValue, Tween tween = Tween{});
+		void Start(const float4& startValue, const float4& endValue, float duration,  Tween tween = Tween{}, float startTime = 0.f);
 
 		void Finish() override;
 		bool IsFinish() override;
+		bool IsActive() override;
 		void Reset() override;
 	};
 
@@ -127,19 +134,4 @@ namespace VisionGal
     {
         static EasingFunction linear;
     };
-
-	struct FloatAnimationPropertyScript : public  IAnimationScript
-	{
-		~FloatAnimationPropertyScript() override = default;
-
-		FloatAnimationProperty property;
-
-		bool IsFinished() override;
-	protected:
-		void Start(float duration, float startVal = 1.0f, float endVal = 1.0f, Tween tween = Tween{});
-
-		float GetCurrentTime();
-
-		void UpdateProperty();
-	};
 }

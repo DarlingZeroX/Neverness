@@ -18,18 +18,6 @@
 
 namespace VisionGal {
 
-	//enum class TweenType
-	//{
-	//	None, Back, Bounce, Circular, Cubic, Elastic, Exponential, Linear, Quadratic, Quartic, Quintic, Sine, Callback, Count
-	//};
-	//
-	//enum class TweenDirection
-	//{
-	//	In = 1,
-	//	Out = 2,
-	//	InOut = 3
-	//};
-
 	class Tween {
 	public:
 		enum Type { None, Back, Bounce, Circular, Cubic, Elastic, Exponential, Linear, Quadratic, Quartic, Quintic, Sine, Callback, Count };

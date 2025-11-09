@@ -13,9 +13,9 @@
 
 namespace VisionGal
 {
-	SpriteFadeInOutTransformScript::SpriteFadeInOutTransformScript(Direction direction)
+	SpriteFadeInOutTransformScript::SpriteFadeInOutTransformScript(Horizon::HEntityInterface* entity,Direction direction)
 	{
-		m_Script = CreateRef<SpriteAnimationScript>();
+		m_Script = CreateRef<SpriteAlphaAnimationScript>();
 
 		switch (direction)
 		{
@@ -42,12 +42,11 @@ namespace VisionGal
 
 	void SpriteFadeInOutTransformScript::Start()
 	{
-		m_Script->TransformAlpha(
-			Core::GetCurrentTime(),
-			m_Duration,
+		m_Script->StartAnimation(
 			m_StartOffset,
 			m_EndOffset,
-			m_EasingFunction
+			m_Duration,
+			Tween{}
 		);
 	}
 

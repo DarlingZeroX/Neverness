@@ -72,13 +72,13 @@ namespace VisionGal
 	void AudioAnimationScript::TransformVolume(float startTime, float duration, float startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.volume.Start(startTime, duration, startVal, endVal, Tween{});
+		state.volume.Start(startVal, endVal, duration, Tween{}, startTime);
 	}
 
 	void AudioAnimationScript::TransformVisible(float startTime, float duration, bool startVal, float endVal,
 		EasingFunction easing)
 	{
-		state.visible.Start(startTime, duration, startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, Tween{});
+		state.visible.Start(startVal ? 1.0f : 0.0f, endVal ? 1.0f : 0.0f, duration, Tween{}, startTime);
 	}
 
 	void AudioAnimationScript::Reset()
@@ -98,7 +98,7 @@ namespace VisionGal
 		// 更新所有属性
 		state.TravelProperty([this, currentTime](FloatAnimationProperty& property)
 			{
-				property.Update(currentTime);
+				property.Update();
 			});
 
 		ApplyStateToEntity(entity);

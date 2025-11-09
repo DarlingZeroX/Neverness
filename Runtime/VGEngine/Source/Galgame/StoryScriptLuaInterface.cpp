@@ -147,7 +147,6 @@ namespace VisionGal::GalGame
 			"设置位置偏移Y", &GalSprite::SetPosOffsetY,
 			"设置位置X", &GalSprite::SetPosX,
 			"设置位置Y", &GalSprite::SetPosY,
-			"设置缩放", &GalSprite::SetScale,
 			"底部对齐", & GalSprite::AlignBottom,
 			//属性
 			"位置X", sol::property(

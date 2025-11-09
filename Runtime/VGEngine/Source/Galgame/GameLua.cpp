@@ -142,11 +142,23 @@ namespace VisionGal::GalGame
 			"scriptPath", &SaveArchive::scriptPath,
 			"line", &SaveArchive::line,
 			"saveNumberString", &SaveArchive::saveNumberString,
-			"data", &SaveArchive::date,
+			"date", &SaveArchive::date,
 			"time", &SaveArchive::time,
 			"dateTime", &SaveArchive::dateTime,
 			"description", &SaveArchive::description,
-			"screenshotPath", &SaveArchive::screenshotPath
+			"screenshotPath", &SaveArchive::screenshotPath,
+
+			"是否为Galgame存档", &SaveArchive::isGalGameArchive,
+			"是否有效", &SaveArchive::isValid,
+			"版本", &SaveArchive::version,
+			"脚本路径", &SaveArchive::scriptPath,
+			"行号", &SaveArchive::line,
+			"存档编号字符串", &SaveArchive::saveNumberString,
+			"日期", &SaveArchive::date,
+			"时间", &SaveArchive::time,
+			"日期时间", &SaveArchive::dateTime,
+			"描述", &SaveArchive::description,
+			"截图路径", &SaveArchive::screenshotPath
 		);
 	}
 }

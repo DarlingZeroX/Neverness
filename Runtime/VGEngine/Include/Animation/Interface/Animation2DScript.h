@@ -41,7 +41,7 @@ namespace VisionGal
 		void SetEntity(Horizon::HEntityInterface* entity);
 
 		// 应用动画关键帧
-		void ApplyAnimationKey(const Animation2DProperty& targetProperty);
+		void ApplyAnimationKey(Animation2DProperty& targetProperty);
 
 		// 恢复初始状态,仅在动画完成一轮时调用
 		void RestoreInitialState();

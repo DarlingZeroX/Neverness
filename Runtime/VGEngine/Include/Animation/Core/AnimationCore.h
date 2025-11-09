@@ -22,8 +22,11 @@ namespace VisionGal
 		TranslateY,
 		ScaleX,
 		ScaleY,
+		Scale,
 		Rotate,
-		Alpha
+		SpriteAlpha,
+		SpriteColor3,
+		Visible,
 	};
 
 	struct Animation2DPrimitive
@@ -36,6 +39,15 @@ namespace VisionGal
 			float2 valueF2;
 			float3 valueF3;
 			float4 valueF4;
+		};
+
+		// 用于内部存储起始值
+		union
+		{
+			float __StartValueF;
+			float2 __StartValueF2;
+			float3 __StartValueF3;
+			float4 __StartValueF4;
 		};
 
 		Animation2DPrimitive();
