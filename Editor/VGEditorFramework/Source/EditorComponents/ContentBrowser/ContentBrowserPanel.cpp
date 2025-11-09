@@ -601,7 +601,7 @@ namespace VisionGal::Editor {
 			return m_Icons["CSS"]->GetTexture()->GetShaderResourceView();
 		}
 
-		if (item.MetaData.AssetType == "LuaScript")
+		if (item.MetaData.AssetType == "LuaScript" || item.MetaData.AssetType == "GalGameStoryScript")
 		{
 			return m_Icons["LuaScript"]->GetTexture()->GetShaderResourceView();
 		}

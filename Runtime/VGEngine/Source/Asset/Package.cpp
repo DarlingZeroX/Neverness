@@ -34,48 +34,50 @@ namespace VisionGal
 
 		Horizon::HFileSystem::SplitPath(path, &outDirectory, &name, &ext);
 
-		if (ext == ".png" || ext == ".jpg" || ext == ".bmp" || ext == ".tga")
-		{
-			metadata.AssetType = "Texture";
-			return true;
-		}
-		if (ext == ".lua")
-		{
-			metadata.AssetType = "LuaScript";
-			return true;
-		}
-		if (ext == ".html")
-		{
-			metadata.AssetType = "HTML";
-			return true;
-		}
-		if (ext == ".css")
-		{
-			metadata.AssetType = "CSS";
-			return true;
-		}
-		if (ext == ".ttf" || ext == ".ttc" || ext == ".otf")
-		{
-			metadata.AssetType = "Font";
-			return true;
-		}
-		if (ext == ".mp3" || ext == ".wav")
-		{
-			metadata.AssetType = "Sound";
-			return true;
-		}
-		if (ext == ".mp4")
-		{
-			metadata.AssetType = "Video";
-			return true;
-		}
-
 		// MetaData Stream
 		String metaPath = path + ".meta";
 
 		IStringStreamVFS stream;
 		if (!stream.Open(metaPath))
+		{
+			if (ext == ".png" || ext == ".jpg" || ext == ".bmp" || ext == ".tga")
+			{
+				metadata.AssetType = "Texture";
+				return true;
+			}
+			if (ext == ".lua")
+			{
+				metadata.AssetType = "LuaScript";
+				return true;
+			}
+			if (ext == ".html")
+			{
+				metadata.AssetType = "HTML";
+				return true;
+			}
+			if (ext == ".css")
+			{
+				metadata.AssetType = "CSS";
+				return true;
+			}
+			if (ext == ".ttf" || ext == ".ttc" || ext == ".otf")
+			{
+				metadata.AssetType = "Font";
+				return true;
+			}
+			if (ext == ".mp3" || ext == ".wav")
+			{
+				metadata.AssetType = "Sound";
+				return true;
+			}
+			if (ext == ".mp4")
+			{
+				metadata.AssetType = "Video";
+				return true;
+			}
+
 			return false;
+		}
 
 		// 读取文件第一行
 		std::string metaData;

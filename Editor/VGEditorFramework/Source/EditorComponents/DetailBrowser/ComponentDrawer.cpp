@@ -16,6 +16,7 @@
 #include <VGEngine/Include/Galgame/GalGameEngine.h>
 #include <VGEngine/Include/Galgame/Components.h>
 
+#include "VGEngine/Include/Asset/Package.h"
 #include "VGEngine/Include/UI/UISystem.h"
 #include "VGEngine/Include/Galgame/GameEngineCore.h"
 #include "VGEngine/Include/Interface/Loader.h"
@@ -398,10 +399,27 @@ namespace VisionGal::Editor
 				//	com->videoClip = video;
 				//	//com->Play();
 				//}
-				com->document = UISystem::Get()->LoadUIDocument(data);
-				UISystem::Get()->ShowUIDocument(com->document.get());
+				VGAssetMetaData meta;
+				VGPackage::GetMeatData(data, meta);
 
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置UI文档成功!" });
+				if (meta.AssetType != "HTML")
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Error, "错误文件类型!" });
+					ImGui::EndDragDropTarget();
+					return;
+				}
+
+				com->document = UISystem::Get()->LoadUIDocument(data);
+				if (UISystem::Get()->ShowUIDocument(com->document.get()))
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置UI文档成功!" });
+				}
+				else
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置UI文档失败!" });
+				}
+
+
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -660,6 +678,16 @@ namespace VisionGal::Editor
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
 			{
 				std::string path = static_cast<char*>(payload->Data);
+
+				VGAssetMetaData meta;
+				VGPackage::GetMeatData(path, meta);
+
+				if (meta.AssetType != "GalGameStoryScript" && meta.AssetType != "LuaScript")
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Error, "错误文件类型!" });
+					ImGui::EndDragDropTarget();
+					return;
+				}
 
 				com->script = GalGame::LuaStoryScript::LoadFromFile(path);
 

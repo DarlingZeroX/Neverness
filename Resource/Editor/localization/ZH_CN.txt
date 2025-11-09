@@ -19,7 +19,7 @@ Create project failed=创建项目失败
 Scene=场景
 Texture=纹理
 LuaScript=Lua脚本
-GalGameStoryScript=GalGame剧情脚本
+GalGameStoryScript=Gal剧情脚本
 
 Build=生成
 Target Platform=目标平台

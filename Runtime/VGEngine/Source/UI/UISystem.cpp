@@ -79,8 +79,7 @@ namespace VisionGal
 
 	Ref<RmlUIDocument> UISystem::LoadUIDocument(const String& path)
 	{
-		Rml::ElementDocument* document;
-		if (document = m_pContext->LoadDocument(path))
+		if (Rml::ElementDocument* document = m_pContext->LoadDocument(path) )
 		{
 			// 检查是否已经加载过该文档, 在脚本使用AddUpdateCallback时会事先注册好
 			if (auto result = FindDocumentByElementDocument(document))
