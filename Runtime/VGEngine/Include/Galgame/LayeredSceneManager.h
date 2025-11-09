@@ -43,7 +43,7 @@ namespace VisionGal::GalGame
 			void AddAudio(IGalGameAudio* audio);
 			void StopPlay();
 			bool RemoveAudio(IGalGameAudio* audio);
-
+			bool IsPlayFinished();
 		private:
 			float m_Volume = 1.0f;
 		};

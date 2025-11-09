@@ -393,4 +393,18 @@ namespace VisionGal::GalGame
 
 		return false;
 	}
+
+	bool LayeredSceneManager::AudioLayer::IsPlayFinished()
+	{
+		for (auto& audio : audios)
+		{
+			auto* galAudio = dynamic_cast<GalAudio*>(audio);
+			if (galAudio != nullptr && galAudio->IsPlayingAudio())
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

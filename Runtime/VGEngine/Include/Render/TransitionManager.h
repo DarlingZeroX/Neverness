@@ -46,6 +46,8 @@ namespace VisionGal {
 		ISceneTransition* GetLayerTransition(const String& layer);
 		void LayerTransition(const String& layer, const Ref<VGFX::ITexture>& prevFrame, const Ref<VGFX::ITexture>& nextFrame);
 
+		bool IsTransitioning() const;
+
 		std::string LayerTranslateEnglish(const String& layer);
 
 		Horizon::HEventDelegate<const TransitionEvent&> OnTransitionEvent;

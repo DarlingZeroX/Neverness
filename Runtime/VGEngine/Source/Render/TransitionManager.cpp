@@ -240,6 +240,17 @@ namespace VisionGal {
 		}
 	}
 
+	bool TransitionManager::IsTransitioning() const
+	{
+		for (auto& layer: m_Transitions)
+		{
+			if (layer.second.empty() == false)
+				return true;
+		}
+
+		return false;
+	}
+
 	std::string TransitionManager::LayerTranslateEnglish(const String& layer)
 	{
 		if (layer == "背景")

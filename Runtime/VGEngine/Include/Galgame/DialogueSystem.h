@@ -83,6 +83,8 @@ namespace VisionGal::GalGame
 		void SetFastForwardDelay(float delay) override;			// 设置快进间隔
 		float GetFastForwardDelay() const override;				// 获取快进间隔
 
+		bool IsVoicing();
+
 		// 跳到对话
 		void JumpToDialog(const std::string& text);
 
@@ -90,6 +92,9 @@ namespace VisionGal::GalGame
 		void Update() override;
 		void ClearDialogList();
 	private:
+		void ProcessFastForward();
+		void ProcessAutoDialogue();
+
 		std::string m_DialogName;
 		std::string m_DialogText;
 

@@ -11,9 +11,13 @@
 
 #include "Galgame/DialogueSystem.h"
 #include <codecvt>
+
+#include "Galgame/GameEngineCore.h"
+#include "Galgame/LayeredSceneManager.h"
 #include "Galgame/GameLua.h"
 #include "Galgame/StoryScriptLuaInterface.h"
 #include "HCore/Include/System/HSystemTimer.h"
+#include "Render/TransitionManager.h"
 
 namespace VisionGal::GalGame
 {
@@ -283,6 +287,15 @@ namespace VisionGal::GalGame
 		return m_FastForwardDelay;
 	}
 
+	bool DialogueSystem::IsVoicing()
+	{
+		LayeredSceneManager* sceneManager = dynamic_cast<LayeredSceneManager*>(GameEngineCore::GetCurrentEngine()->GetLayeredSceneManager());
+
+		LayeredSceneManager::AudioLayer* voiceLayer = sceneManager->GetAudioLayer("Voice");
+
+		return voiceLayer->IsPlayFinished() == false;
+	}
+
 	void DialogueSystem::JumpToDialog(const std::string& text)
 	{
 		bool loop = true;
@@ -305,64 +318,13 @@ namespace VisionGal::GalGame
 
 	void DialogueSystem::Update()
 	{
-		static int i = 0;
-
-		//std::cout << i++ << std::endl;
-
 		m_TypingEffect.Update();
 
-		// 开启快进
-		if (m_EnableFastForward)
-		{
-			m_TypingEffect.FinishTyping();
+		// 处理快进
+		ProcessFastForward();
 
-			// 已经打字结束，准备自动切换
-			if (!m_FastForwardWaitingForNextAuto)
-			{
-				// 启动计时器
-				m_FastForwardTimerStart = std::chrono::high_resolution_clock::now();
-				m_FastForwardWaitingForNextAuto = true;
-			}
-			else
-			{
-				auto current_time = std::chrono::high_resolution_clock::now();
-				std::chrono::duration<float> elapsed = current_time - m_FastForwardTimerStart;
-				if (elapsed.count() >= m_FastForwardDelay)
-				{
-					ContinueDialogue();
-					m_FastForwardWaitingForNextAuto = false; // 重置计时器状态
-				}
-			}
-		}
-
-		// 开启自动对话
-		if (m_EnableAutoDialogue)
-		{
-			if (IsTypingText())
-			{
-				// 还在打字，不动
-			}
-			else
-			{
-				// 已经打字结束，准备自动切换
-				if (!m_WaitingForNextAuto)
-				{
-					// 启动计时器
-					m_AutoTimerStart = std::chrono::high_resolution_clock::now();
-					m_WaitingForNextAuto = true;
-				}
-				else
-				{
-					auto current_time = std::chrono::high_resolution_clock::now();
-					std::chrono::duration<float> elapsed = current_time - m_AutoTimerStart;
-					if (elapsed.count() >= m_AutoDelay)
-					{
-						ContinueDialogue();
-						m_WaitingForNextAuto = false; // 重置计时器状态
-					}
-				}
-			}
-		}
+		// 处理自动对话
+		ProcessAutoDialogue();
 
 		m_ModelHandle.DirtyAllVariables();
 	}
@@ -378,5 +340,76 @@ namespace VisionGal::GalGame
 		m_FastForwardWaitingForNextAuto = false;
 		m_EnableFastForward = false;
 		m_EnableAutoDialogue = false;
+	}
+
+	void DialogueSystem::ProcessFastForward()
+	{
+		// 没有开启快进
+		if (!m_EnableFastForward)
+			return;
+
+		m_TypingEffect.FinishTyping();
+
+		// 已经打字结束，准备自动切换
+		if (!m_FastForwardWaitingForNextAuto)
+		{
+			// 启动计时器
+			m_FastForwardTimerStart = std::chrono::high_resolution_clock::now();
+			m_FastForwardWaitingForNextAuto = true;
+			return;
+		}
+
+		// 计时器到达，继续对话
+		auto current_time = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> elapsed = current_time - m_FastForwardTimerStart;
+		if (elapsed.count() >= m_FastForwardDelay)
+		{
+			ContinueDialogue();
+			m_FastForwardWaitingForNextAuto = false; // 重置计时器状态
+		}
+	}
+
+	void DialogueSystem::ProcessAutoDialogue()
+	{
+		// 没有开启自动对话
+		if (!m_EnableAutoDialogue)
+			return;
+
+		// 还在打字
+		if (IsTypingText())
+			return;
+
+		// 播放语音中
+		if (IsVoicing())
+			return;
+
+		// 开启快进时，不处理自动对话
+		if (m_EnableFastForward)
+		{
+			AutoDialogue(false);
+			return;
+		}
+
+		// 正在转场中
+		if (TransitionManager::GetInstance()->IsTransitioning())
+			return;
+
+		// 已经打字结束，准备自动切换
+		if (!m_WaitingForNextAuto)
+		{
+			// 启动计时器
+			m_AutoTimerStart = std::chrono::high_resolution_clock::now();
+			m_WaitingForNextAuto = true;
+			return;
+		}
+
+		// 计时器到达，继续对话
+		auto current_time = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> elapsed = current_time - m_AutoTimerStart;
+		if (elapsed.count() >= m_AutoDelay)
+		{
+			ContinueDialogue();
+			m_WaitingForNextAuto = false; // 重置计时器状态
+		}
 	}
 }
