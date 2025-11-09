@@ -19,7 +19,7 @@
 #include "Include/MainEditor/MenuBar.h"
 #include "Include/MainEditor/SideBar.h"
 
-#include "Include/EditorComponents/TextEditor.h"
+#include "Include/EditorComponents/CodeStudio/CodeStudio.h"
 #include "Include/EditorComponents/Viewport.h"
 #include "Include/EditorComponents/ConsolePanel.h"
 #include "Include/EditorComponents/FileSystem.h"

@@ -88,6 +88,7 @@ Cancel=取消
 Don't Save=不保存
 Please Confirm...=待确认...
 Save current scene=保存当前场景
+Save change to the following files?=是否保存对以下文件的更改？
 
 New Scene=创建新场景
 Open Scene=打开场景
@@ -111,6 +112,8 @@ Preferences...=偏好...
 Editor Preferences=编辑器偏好
 
 Engine homepage=引擎主页
+
+Code Studio=代码编辑器
 
 Place Actors=放置actor
 Label=标签

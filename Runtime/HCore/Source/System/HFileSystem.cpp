@@ -327,6 +327,11 @@ bool HFileSystem::IsSubPath(const fsPath& base, const fsPath& target)
 	return rel != absTarget; // rel == absTarget 表示不在 base 里
 }
 
+std::string HFileSystem::GetFileNameFromPath(const fsPath& path)
+{
+	return path.filename().string();
+}
+
 bool HFileSystem::PathHasDirectory(const string& inFullPath)
 {
 	string dir;

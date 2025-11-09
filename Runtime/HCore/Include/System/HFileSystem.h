@@ -224,5 +224,7 @@ namespace Horizon
 		CORE_MODULE_API	std::string						   ToUnixPath(const std::string& path);
 
 		CORE_MODULE_API	bool							   IsSubPath(const fsPath& base, const fsPath& target);
+
+		CORE_MODULE_API std::string						   GetFileNameFromPath(const fsPath& path);
 	};
 }

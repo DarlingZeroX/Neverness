@@ -73,7 +73,7 @@ namespace VisionGal::Editor
 		mainWindow->AddPanelWithID("SceneBrowserPanel", CreateRef<SceneBrowserPanel>());
 		mainWindow->AddPanelWithID("DetailBrowserPanel", CreateRef<DetailBrowserPanel>());
 		mainWindow->AddPanelWithID("EditorViewport", CreateRef<EditorViewport>(m_GameEngine->GetViewport()));
-		mainWindow->AddPanelWithID("TextEditorPanel", CreateRef<TextEditorPanel>());
+		mainWindow->AddPanelWithID("CodeStudioPanel", CreateRef<CodeStudioPanel>());
 	}
 
 	void VGEditorApplication::InitializeEditorUI()

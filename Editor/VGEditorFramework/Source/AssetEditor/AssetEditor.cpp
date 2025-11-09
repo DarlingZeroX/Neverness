@@ -14,7 +14,7 @@
 
 #include "PanelManager.h"
 #include "AssetEditor/TextureViewer.h"
-#include "EditorComponents/TextEditor.h"
+#include "EditorComponents/CodeStudio/CodeStudio.h"
 #include "EditorCore/EdtiorScene.h"
 #include "MainEditor/MainPanel.h"
 #include "VGEngine/Include/Engine/Manager.h"
@@ -71,7 +71,7 @@ namespace VisionGal::Editor
 		if (mainWindow == nullptr)
 			return;
 
-		auto* textEditor = dynamic_cast<TextEditorPanel*>( mainWindow->GetPanelWithID("TextEditorPanel"));
+		auto* textEditor = dynamic_cast<CodeStudioPanel*>( mainWindow->GetPanelWithID("CodeStudioPanel"));
 		if (textEditor == nullptr)
 			return;
 
