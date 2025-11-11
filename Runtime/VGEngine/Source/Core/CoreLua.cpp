@@ -11,9 +11,11 @@
 
 #include "Core/CoreLua.h"
 
+#include "Core/EventBus.h"
 #include "Galgame/GameLua.h"
 #include "Lua/LuaInterface.h"
 #include "UI/Sol/Sol.h"
+#include "VGEngine/Source/UI/Sol/SolPlugin.h"
 
 namespace VisionGal
 {
@@ -21,6 +23,11 @@ namespace VisionGal
 	{
 		CoreLuaImp()
 		{
+		}
+
+		~CoreLuaImp()
+		{
+			
 		}
 
 		static CoreLuaImp* Get()
@@ -32,6 +39,19 @@ namespace VisionGal
 		void Initialize()
 		{
 			InitializeLuaState();
+			static Ref<sol::state> lastState = g_CoreLuaState;
+
+			// 当进入游戏播放模式时，我们需要一个新的干净的 Lua 状态，以防止脚本污染以及数据遗留问题
+			EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
+				{
+					switch (evt.EventType)
+					{
+					case EngineEventType::EnterScenePlayMode:
+						lastState = g_CoreLuaState;
+						ResetLuaState();
+						break;
+					}
+				});
 		}
 
 		void InitializeLuaState()
@@ -46,8 +66,25 @@ namespace VisionGal
 			// 创建命名空间
 			sol::table galgameNS = g_CoreLuaState->create_named_table("GalGame");
 
-			RmlSol::Initialise(g_CoreLuaState.get());
+			RmlSol::Initialise(g_CoreLuaState);
 			//sol::state* solState = RmlSol::SolPlugin::GetLuaState();
+			VGLuaInterface::Initialise(*g_CoreLuaState);
+			GalGame::GalGameLuaInterface::Initialise(galgameNS);
+		}
+
+		void ResetLuaState()
+		{
+			g_CoreLuaState = CreateRef<sol::state>();
+
+			g_CoreLuaState->open_libraries(sol::lib::base,
+				sol::lib::math,
+				sol::lib::string,
+				sol::lib::table); // 默认已加载这些库
+
+			// 创建命名空间
+			sol::table galgameNS = g_CoreLuaState->create_named_table("GalGame");
+
+			RmlSol::SolPlugin::RebindLuaState(g_CoreLuaState);
 			VGLuaInterface::Initialise(*g_CoreLuaState);
 			GalGame::GalGameLuaInterface::Initialise(galgameNS);
 		}

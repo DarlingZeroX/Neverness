@@ -11,9 +11,11 @@ namespace RmlSol {
 
 	class RMLUISOL_API SolPlugin : public Rml::Plugin {
 	public:
-		SolPlugin(sol::state* lua_state);
+		SolPlugin(Ref<sol::state> lua_state);
 
 		static sol::state* GetLuaState();
+
+		static void RebindLuaState(Ref<sol::state> lua_state);
 
 	private:
 		int GetEventClasses() override;
