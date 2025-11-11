@@ -25,7 +25,7 @@ namespace VisionGal::GalGame
 {
     LuaStoryScript::LuaStoryScript()
     {
-        //StoryScriptLuaInterface::Initialise(m_LuaState);
+        StoryScriptLuaInterface::Initialise(m_LuaState);
     }
 
     Ref<LuaStoryScript> LuaStoryScript::LoadFromFile(const std::string& file)
@@ -39,10 +39,9 @@ namespace VisionGal::GalGame
 
     bool LuaStoryScript::Run(IGalGameEngine* engine)
     {
-		auto& luaState = StoryScriptLuaInterface::GetLuaState();
         //m_LuaState["Engine"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
         //m_LuaState["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
-		luaState["GalGame"]["引擎"] = sol::object(luaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
+		m_LuaState["GalGame"]["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
 
         if (!LoadScript(GetResourcePath()))
             return false;
@@ -102,8 +101,7 @@ namespace VisionGal::GalGame
 		}
 
         try {
-			auto& luaState = StoryScriptLuaInterface::GetLuaState();
-            m_Coroutine = luaState.script(m_ScriptCode);
+            m_Coroutine = m_LuaState.script(m_ScriptCode);
         }
         catch (const sol::error& e) {
             H_LOG_ERROR(e.what());

@@ -37,6 +37,10 @@ namespace VisionGal::Editor
 		{
 			OpenTextFile(path);
 		}
+		else if (metaData.AssetType == "GalGameStoryScript")
+		{
+			OpenTextFile(path);
+		}
 		else if (metaData.AssetType == "HTML")
 		{
 			OpenTextFile(path);

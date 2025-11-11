@@ -31,7 +31,7 @@ namespace VisionGal::GalGame
 		bool LoadScript(const String& file);
 	private:
 		String m_ScriptCode;
-		//sol::state m_LuaState;
+		sol::state m_LuaState;
 		sol::coroutine m_Coroutine;
 	};
 }

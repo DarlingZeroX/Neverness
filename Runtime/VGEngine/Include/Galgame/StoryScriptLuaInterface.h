@@ -21,9 +21,6 @@ namespace VisionGal::GalGame
 
 		static void SetStoryScriptCoroutine(sol::coroutine* co);
 		static sol::coroutine* GetStoryScriptCoroutine();
-
-		static sol::state& GetLuaState();
-		static sol::state& ResetLuaState();
 		//
 		//	static void Initialise(lua_State* L);
 		//
