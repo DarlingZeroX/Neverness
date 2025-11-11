@@ -4,12 +4,12 @@
     "ComponentNumber": 0,
     "SegmentType": "Entity",
     "EntityNumber": 4,
-    "Label": "GalGame引擎",
-    "ID": 7713997001336619322,
+    "Label": "UI文档",
+    "ID": 17636095698512748872,
     "Parent": 0,
     "ComponentIDs": [
-        7713997001336619322,
-        4444702422606666105
+        17636095698512748872,
+        15816189716896999106
     ],
     "Label": "相机",
     "ID": 6153294073035377295,
@@ -18,12 +18,12 @@
         6153294073035377295,
         11787622572199011013
     ],
-    "Label": "UI文档",
-    "ID": 17636095698512748872,
+    "Label": "GalGame引擎",
+    "ID": 7713997001336619322,
     "Parent": 0,
     "ComponentIDs": [
-        17636095698512748872,
-        15816189716896999106
+        7713997001336619322,
+        4444702422606666105
     ],
     "Label": "Scene",
     "ID": 0,
@@ -34,7 +34,7 @@
     "SegmentType": "Transform",
     "ComponentNumber": 3,
     "Transform": {
-        "EntityComponentID": 7713997001336619322,
+        "EntityComponentID": 17636095698512748872,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -74,7 +74,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 17636095698512748872,
+        "EntityComponentID": 7713997001336619322,
         "location": {
             "x": 0.0,
             "y": 0.0,

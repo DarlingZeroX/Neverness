@@ -15,6 +15,7 @@
 #include "Galgame/Game.h"
 #include "Galgame/GameEngineCore.h"
 #include "Galgame/ArchiveSystem.h"
+#include "Lua/LuaDataBridge.h"
 
 namespace VisionGal::GalGame
 {
@@ -120,6 +121,7 @@ namespace VisionGal::GalGame
 			"播放效果音乐", [](GalGameEngine& self, const std::string& path) ->GalAudio* { return self.PlayAudio("Effect", path); },
 			"隐藏全部人物立绘", &GalGameEngine::HideAllCharacterSprite,
 			"场景截图", &GalGameEngine::CaptureSceneImage,
+			"获取数据桥", [](GalGameEngine & self, const std::string& name)-> LuaDataBridge* { return LuaDataBridgeManager::GetInstance()->GetDataBridge(name); },
 
 			//属性
 			"对话系统", sol::property(

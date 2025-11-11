@@ -13,7 +13,7 @@
 #include "Galgame/Game.h"
 #include "Galgame/ArchiveSystem.h"
 #include "Galgame/GameLua.h"
-#include "Lua/CoreLuaInterface.h"
+#include "Lua/LuaInterface.h"
 #include "Animation/Interface/Animation2DScript.h"
 
 namespace VisionGal::GalGame
@@ -72,7 +72,11 @@ namespace VisionGal::GalGame
 	{
 		sol::table galgame = lua.create_named_table("GalGame");
 
-		Lua::CoreTypesLuaInterface::Initialize(lua);
+		lua.open_libraries(sol::lib::base,
+			sol::lib::math,
+			sol::lib::string,
+			sol::lib::table); // 默认已加载这些库
+		VGLuaInterface::Initialise(lua);
 		GalGameLuaInterface::Initialise(galgame);
 
 		//lua.new_usertype<Transform>("GalTransform",
