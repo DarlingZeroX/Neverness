@@ -79,8 +79,8 @@ namespace Horizon
 		std::ostringstream ostream;
 		ostream << LogColor::Error() << "[Error] " << error << LogColor::Reset() << std::endl;
 
-		//SDL_LogError(3,"[Error] %s", error.c_str());
-		SDL_LogError(3, ostream.str().c_str());
+		// 必须用"%s" 来避免SDL_LogError对字符串中的%进行二次格式化
+		SDL_LogError(3, "%s", ostream.str().c_str());
 
 		HCoreLoggerImp::GetInstance()->NotifyListeners(HLogLevel::Error, error);
 	}
@@ -100,8 +100,8 @@ namespace Horizon
 		std::ostringstream ostream;
 		ostream << "[Info] " << info << std::endl;
 
-		//SDL_LogInfo(0,"[Info] %s", info.c_str());
-		SDL_LogInfo(0, ostream.str().c_str());
+		// 必须用"%s" 来避免SDL_LogError对字符串中的%进行二次格式化
+		SDL_LogInfo(0,"%s" ,ostream.str().c_str());
 
 		HCoreLoggerImp::GetInstance()->NotifyListeners(HLogLevel::Info, info);
 	}
@@ -121,8 +121,8 @@ namespace Horizon
 		std::ostringstream ostream;
 		ostream << LogColor::Warn() << "[Warn] " << warn << LogColor::Reset() << std::endl;
 
-		//SDL_LogError(1,"[Warn] %s", warn.c_str());
-		SDL_LogError(1, ostream.str().c_str());
+		// 必须用"%s" 来避免SDL_LogError对字符串中的%进行二次格式化
+		SDL_LogError(1,"%s", ostream.str().c_str());
 
 		HCoreLoggerImp::GetInstance()->NotifyListeners(HLogLevel::Warn, warn);
 	}
@@ -142,8 +142,8 @@ namespace Horizon
 		std::ostringstream ostream;
 		ostream << LogColor::Critical() << "[Critical] " << critical << LogColor::Reset() << std::endl;
 
-		//SDL_LogError(2,"[Critical] %s", critical.c_str());
-		SDL_LogError(2, ostream.str().c_str());
+		// 必须用"%s" 来避免SDL_LogError对字符串中的%进行二次格式化
+		SDL_LogError(2,"%s", ostream.str().c_str());
 
 		HCoreLoggerImp::GetInstance()->NotifyListeners(HLogLevel::Critical, critical);
 	}

@@ -48,15 +48,20 @@ namespace RmlSol {
 		if (!owner_document && attached)
 			owner_document = attached->GetOwnerDocument();
 
-		if (Interpreter::LoadFunction(m_Function, strFunc, m_Code))
-		{
-			auto result = m_Function(&event, attached, owner_document);
-			if (!result.valid())
+		try {
+			if (Interpreter::LoadFunction(m_Function, strFunc, m_Code))
 			{
-				sol::error err = result;
-				H_LOG_ERROR(err.what());
-				Rml::Log::Message(Rml::Log::LT_WARNING, "%s", err.what());
+				auto result = m_Function(&event, attached, owner_document);
+				if (!result.valid())
+				{
+					sol::error err = result;
+					H_LOG_ERROR(err.what());
+					Rml::Log::Message(Rml::Log::LT_WARNING, "%s", err.what());
+				}
 			}
+		}
+		catch (const sol::error& e) {
+			H_LOG_ERROR("Error: %s", e.what());
 		}
 
 	}

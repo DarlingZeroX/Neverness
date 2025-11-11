@@ -29,7 +29,7 @@ namespace VisionGal
 	class LuaDataBridgeManager
 	{
 	public:
-		LuaDataBridgeManager() = default;
+		LuaDataBridgeManager();
 		~LuaDataBridgeManager() = default;
 
 		static LuaDataBridgeManager* GetInstance();

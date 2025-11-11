@@ -10,7 +10,7 @@
 */
 
 #include "Lua/LuaDataBridge.h"
-
+#include "Core/EventBus.h"
 #include "Render/TransitionManager.h"
 
 namespace VisionGal
@@ -37,6 +37,22 @@ namespace VisionGal
 		m_Data[name] = LuaVariant::FromLuaObject(srcObj, luaState);
 	}
 
+	LuaDataBridgeManager::LuaDataBridgeManager()
+	{
+		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
+			{
+				switch (evt.EventType)
+				{
+				case EngineEventType::EnterScenePlayMode:
+					m_DateBridges.clear();
+					break;
+				case EngineEventType::ExitScenePlayMode:
+					m_DateBridges.clear();
+					break;
+				}
+			});
+	}
+
 	LuaDataBridgeManager* LuaDataBridgeManager::GetInstance()
 	{
 		static LuaDataBridgeManager instance;
@@ -59,7 +75,13 @@ namespace VisionGal
 	{
 		lua.new_usertype<LuaDataBridge>("LuaDataBridge",
 			"设置变量", &LuaDataBridge::SetVariable,
-			"获取变量", &LuaDataBridge::GetVariable
+			"获取变量", &LuaDataBridge::GetVariable,
+			sol::meta_function::index, [](LuaDataBridge& self, const std::string& key, sol::this_state state) {
+				return self.GetVariable(key, state);
+			},
+			sol::meta_function::new_index, [](LuaDataBridge& self, const std::string& key, const sol::object& value, sol::this_state state) {
+				return self.SetVariable(key, value, state);
+			}
 		);
 
 		lua.new_usertype<LuaDataBridgeManager>("LuaDataBridgeManager",

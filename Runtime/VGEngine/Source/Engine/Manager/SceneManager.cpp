@@ -118,21 +118,21 @@ namespace VisionGal
 		auto prevScene = m_CurrentScene;
 		m_CurrentScene = scene;
 
-		// 场景切换事件
-		{
-			EngineEvent evt;
-			evt.EventType = EngineEventType::MainSceneChanged;
-			evt.Scene = m_CurrentScene.get();
-			evt.PrevScene = prevScene.get();
-			EngineEventBus::Get().OnEngineEvent.Invoke(evt);
-		}
-
 		// 开始播放场景事件
 		if (IsPlayMode())
 		{
 			EngineEvent evt;
 			evt.EventType = EngineEventType::EnterScenePlayMode;
 			evt.Scene = m_CurrentScene.get();
+			EngineEventBus::Get().OnEngineEvent.Invoke(evt);
+		}
+
+		// 场景切换事件
+		{
+			EngineEvent evt;
+			evt.EventType = EngineEventType::MainSceneChanged;
+			evt.Scene = m_CurrentScene.get();
+			evt.PrevScene = prevScene.get();
 			EngineEventBus::Get().OnEngineEvent.Invoke(evt);
 		}
 

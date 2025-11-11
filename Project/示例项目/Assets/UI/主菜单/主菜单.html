@@ -6,6 +6,7 @@
     <script>
         HTML游戏状态 = HTML游戏状态 or { 当前场景 = "主菜单" }
         HTML主菜单 = HTML主菜单 or {}
+		print('主菜单HTML: ', string.format('[主菜单 ]%s',string.format('[system]%s',存档.screenshotPath))  )
 
         function HTML主菜单.页面加载调用(event,document)
             --html_CurrentGameState = "MainMenu"

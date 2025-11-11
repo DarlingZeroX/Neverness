@@ -21,6 +21,8 @@ namespace VisionGal
 	{
 		static void Initialize();
 		static sol::state* GetCoreLuaState();
+
+		static void Update();
 	};
 
 

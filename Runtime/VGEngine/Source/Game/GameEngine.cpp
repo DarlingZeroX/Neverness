@@ -176,6 +176,8 @@ namespace VisionGal
 		if (scene == nullptr)
 			return;
 
+		CoreLua::Update();
+
 		////////////////////////// 下面是输入的更新 //////////////////////////
 		{
 			// 更新输入

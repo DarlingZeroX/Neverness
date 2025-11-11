@@ -31,7 +31,12 @@ namespace VisionGal
 
 		void Initialize()
 		{
-			g_CoreLuaState = new sol::state();
+			InitializeLuaState();
+		}
+
+		void InitializeLuaState()
+		{
+			g_CoreLuaState = CreateRef<sol::state>();
 
 			g_CoreLuaState->open_libraries(sol::lib::base,
 				sol::lib::math,
@@ -41,13 +46,13 @@ namespace VisionGal
 			// 创建命名空间
 			sol::table galgameNS = g_CoreLuaState->create_named_table("GalGame");
 
-			RmlSol::Initialise(g_CoreLuaState);
+			RmlSol::Initialise(g_CoreLuaState.get());
 			//sol::state* solState = RmlSol::SolPlugin::GetLuaState();
 			VGLuaInterface::Initialise(*g_CoreLuaState);
 			GalGame::GalGameLuaInterface::Initialise(galgameNS);
 		}
 
-		sol::state* g_CoreLuaState = nullptr;
+		Ref<sol::state> g_CoreLuaState = nullptr;
 	};
 
 	void CoreLua::Initialize()
@@ -57,6 +62,10 @@ namespace VisionGal
 
 	sol::state* CoreLua::GetCoreLuaState()
 	{
-		return CoreLuaImp::Get()->g_CoreLuaState;
+		return CoreLuaImp::Get()->g_CoreLuaState.get();
+	}
+
+	void CoreLua::Update()
+	{
 	}
 }
