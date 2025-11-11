@@ -47,6 +47,7 @@ namespace VisionGal::Editor
 
 		if (TexEditor.IsTextChanged() == true)
 		{
+			TexEditor.SetErrorMarkers({});
 			Dirty = true;
 		}
 

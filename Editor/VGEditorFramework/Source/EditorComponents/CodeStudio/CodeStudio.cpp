@@ -13,6 +13,7 @@
 #include "EditorCore/Localization.h"
 #include "HCore/Include/System/HFileSystem.h"
 #include "VGEngine/Include/Asset/Package.h"
+#include "VGEngine/Include/Core/EventBus.h"
 #include "VGEngine/Include/Core/VFS.h"
 #include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 
@@ -20,6 +21,24 @@ namespace VisionGal::Editor
 {
 	CodeStudioPanel::CodeStudioPanel()
 	{
+		EngineEventBus::Get().OnLuaScriptEvent.Subscribe([this](const LuaScriptEvent& evt)
+			{
+				// 处理脚本错误事件
+				switch (evt.EventType)
+				{
+				case LuaScriptEventType::ScriptError:
+					OpenWindow(true);
+					OpenTextFile(evt.ScriptPath);
+
+					if (auto* doc = m_DocManager.GetDocument(evt.ScriptPath))
+					{
+						ImGuiTextEditor::ErrorMarkers markers;
+						markers[evt.ErrorLineNumber] = evt.ErrorMessage;
+						doc->TexEditor.SetErrorMarkers(markers);
+					}
+					break;
+				}
+			});
 	}
 
 	CodeStudioPanel::~CodeStudioPanel()

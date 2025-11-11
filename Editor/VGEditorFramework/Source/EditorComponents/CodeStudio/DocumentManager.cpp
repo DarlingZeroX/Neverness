@@ -25,6 +25,18 @@ namespace VisionGal::Editor
 		return true;
 	}
 
+	CodeDocument* DocumentManager::GetDocument(const VGPath& path)
+	{
+		for (auto& doc : Documents)
+		{
+			if (doc->DocPath == path)
+			{
+				return doc.get();
+			}
+		}
+		return nullptr;
+	}
+
 	void DocumentManager::AddDocument(const Ref<CodeDocument>& document)
 	{
 		FileList.insert(document->DocPath);

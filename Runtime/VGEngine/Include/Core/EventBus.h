@@ -23,6 +23,8 @@ namespace VisionGal
 
 		Horizon::HEventDelegate<const EngineEvent&> OnEngineEvent;
 
+		Horizon::HEventDelegate<const LuaScriptEvent&> OnLuaScriptEvent;
+
 		static EngineEventBus& Get();
 	};
 

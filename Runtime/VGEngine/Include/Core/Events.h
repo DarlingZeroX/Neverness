@@ -15,6 +15,21 @@
 
 namespace VisionGal
 {
+	////////////////		LuaScript Event
+	enum class LuaScriptEventType
+	{
+		None = 0,
+		ScriptError,
+	};
+
+	struct LuaScriptEvent
+	{
+		LuaScriptEventType EventType = LuaScriptEventType::None;
+		std::string ScriptPath;
+		std::string ErrorMessage;
+		int ErrorLineNumber = 0;
+	};
+
 	////////////////		Engine Event
 	enum class EngineEventType
 	{

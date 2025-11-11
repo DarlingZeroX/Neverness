@@ -28,7 +28,9 @@
 #include "lstring.h"
 #include "ltable.h"
 
+#include "../VGLuaCore/LuaLocalizator.h"
 
+//#include <HCore/Include/Core/HLocalization.h>
 
 /* maximum number of local variables per function (must be smaller
    than 250, due to the bytecode format) */
@@ -1093,7 +1095,9 @@ static void primaryexp (LexState *ls, expdesc *v) {
       return;
     }
     default: {
-      luaX_syntaxerror(ls, "unexpected symbol");
+        //auto* localizator = Horizon::HLocalizationManager::GetInstance();
+        //auto language = localizator->GetCurrentLanguage();
+      luaX_syntaxerror(ls, VGLuaCoreLocalize("unexpected symbol"));
     }
   }
 }

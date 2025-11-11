@@ -1,10 +1,18 @@
 ﻿# 子目录首行：强制初始化C环境
-enable_language(C)
+enable_language(C CXX)
 
 # 设置C标准（Lua源码需ANSI C）
 set(CMAKE_C_STANDARD 90)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# 为 MSVC 编译器添加 /Zc:__cplusplus 选项
+#if (MSVC)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+#endif()
 
 # 将源代码添加到此项目的可执行文件。
 file(GLOB SRC_FILES
@@ -41,6 +49,9 @@ file(GLOB SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/lvm.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/lzio.c"
 
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/VGLuaCore/LuaLocalizator.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/VGLuaCore/LuaErrorManager.cpp"
+
 	#"${PROJECT_SOURCE_DIR}/VGLua/Source/lua.c"
 	#"${PROJECT_SOURCE_DIR}/VGLua/Source/luac.c"
 	#"${PROJECT_SOURCE_DIR}/VGLua/Source/*.c"
@@ -50,6 +61,7 @@ file(GLOB SRC_FILES
 file(GLOB HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"  # 递归匹配所有 .h 文件
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.hpp"  # 递归匹配所有 .hpp 文件
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/VGLuaCore/*.h"  # 递归匹配所有 .hpp 文件
 )
 
 # 缺失关键配置 ↓
@@ -65,7 +77,12 @@ add_library(VGLua SHARED
     ${HEADER_FILES}  # 重要：将头文件添加到目标中
 )
 
+target_include_directories(VGLua PRIVATE ${PROJECT_SOURCE_DIR}/Runtime)
 target_include_directories(VGLua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua")
+target_include_directories(VGLua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include")
+
+target_link_libraries(VGLua PRIVATE HCore)
+
 set_target_properties(VGLua PROPERTIES LINKER_LANGUAGE C)
 
 

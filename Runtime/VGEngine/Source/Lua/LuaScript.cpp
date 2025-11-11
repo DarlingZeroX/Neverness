@@ -21,7 +21,7 @@ namespace VisionGal
 		auto script = CreateRef<LuaScript>();
 
 		auto result = VFS::ReadTextFromFile(file, script->m_ScriptString);
-
+		 
 		if (!result)
 			return nullptr;
 

@@ -5,7 +5,7 @@ return function()
 	print(  GalGame.引擎:获取数据桥('测试').变量1  )	
 	GalGame.引擎:获取数据桥('测试').变量1 =  '测试'
 	print(  GalGame.引擎:获取数据桥('测试').变量1  )	
-	1
+	
     GalGame.引擎:显示背景('图片/背景/教室背景.png')
     梦女:说('测试开始')
   

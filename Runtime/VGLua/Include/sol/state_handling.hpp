@@ -31,6 +31,8 @@
 #include <sol/object.hpp>
 #include <sol/lua_value.hpp>
 
+#include <HCore/Include/Core/HLocalization.h>
+
 #if SOL_IS_ON(SOL_PRINT_ERRORS)
 #include <iostream>
 #endif
@@ -116,10 +118,17 @@ namespace sol {
 	}
 
 	inline protected_function_result script_throw_on_error(lua_State* L, protected_function_result result) {
+		auto* localizator = Horizon::HLocalizationManager::GetInstance();
+		auto language = localizator->GetCurrentLanguage();
+
 		type t = type_of(L, result.stack_index());
 		std::string err = "sol: ";
-		err += to_string(result.status());
-		err += " error";
+		err += localizator->Translate(to_string(result.status()));
+		if (language == Horizon::HLocalLanguageType::ZH_CN)
+			err += "错误";
+		else
+			err += " error";
+
 #if SOL_IS_ON(SOL_EXCEPTIONS)
 		std::exception_ptr eptr = std::current_exception();
 		if (eptr) {
@@ -150,9 +159,10 @@ namespace sol {
 			err.append(serr.data(), serr.size());
 		}
 #if SOL_IS_ON(SOL_PRINT_ERRORS)
-		std::cerr << "[sol2] An error occurred and has been passed to an error handler: ";
-		std::cerr << err;
-		std::cerr << std::endl;
+		H_LOG_ERROR("[sol2] An error occurred and has been passed to an error handler: %s", err.c_str());
+		//std::cerr << "[sol2] An error occurred and has been passed to an error handler: ";
+		//std::cerr << err;
+		//std::cerr << std::endl;
 #endif
 		// replacing information of stack error into pfr
 		int target = result.stack_index();

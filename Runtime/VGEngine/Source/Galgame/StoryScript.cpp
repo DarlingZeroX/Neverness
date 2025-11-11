@@ -21,6 +21,9 @@
 #include "Galgame/GameEngineCore.h"
 #include <sol/state.hpp>
 
+#include "Core/EventBus.h"
+#include "VGLuaCore/LuaErrorManager.h"
+
 namespace VisionGal::GalGame
 {
     LuaStoryScript::LuaStoryScript()
@@ -122,6 +125,15 @@ namespace VisionGal::GalGame
         }
         catch (const sol::error& e) {
             H_LOG_ERROR(e.what());
+			std::cout << "Lua Script Load Error: " << VGLuaCoreGetErrorLineNumber() << std::endl;
+
+			// 事件
+			LuaScriptEvent evt;
+			evt.EventType = LuaScriptEventType::ScriptError;
+			evt.ScriptPath = file;
+			evt.ErrorMessage = e.what();
+			evt.ErrorLineNumber = VGLuaCoreGetErrorLineNumber();
+			EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
             return false;
         }
 

@@ -21,6 +21,12 @@ Texture=纹理
 LuaScript=Lua脚本
 GalGameStoryScript=Gal剧情脚本
 
+
+syntax=语法
+[sol2] An error occurred and has been passed to an error handler: %s=[sol2] Lua 脚本出现错误，并已传递给错误处理程序: %s
+unexpected symbol=非法符号
+
+
 Build=生成
 Target Platform=目标平台
 Build Setting...=生成设置

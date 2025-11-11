@@ -24,7 +24,9 @@ namespace VisionGal::Editor
 		int NextUID;
 		DocumentManager() : NextUID(1) {}
 
-		bool OpenTextFile(const VGPath& path); 
+		bool OpenTextFile(const VGPath& path);
+
+		CodeDocument* GetDocument(const VGPath& path);
 
 		void AddDocument(const Ref<CodeDocument>& document);
 
