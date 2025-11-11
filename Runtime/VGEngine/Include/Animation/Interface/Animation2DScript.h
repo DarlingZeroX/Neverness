@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../Core/AnimationCore.h"
-#include "../../Lua/sol2/sol.hpp"
+#include <sol/table.hpp>
 
 namespace VisionGal
 {

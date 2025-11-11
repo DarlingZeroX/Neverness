@@ -12,6 +12,7 @@
 #include "Lua/LuaDataBridge.h"
 #include "Core/EventBus.h"
 #include "Render/TransitionManager.h"
+#include <sol/sol.hpp>
 
 namespace VisionGal
 {

@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Lua/sol2/sol.hpp"
+#include <sol/table.hpp>
 
 namespace VisionGal::GalGame
 {

@@ -12,12 +12,13 @@
 #pragma once
 #include "GalGameEngineInterface.h"
 #include "../Core/Core.h"
-#include "../Lua/sol2/sol.hpp"
+#include <sol/state.hpp>
+#include <sol/coroutine.hpp>
 
 namespace VisionGal::GalGame
 {
 	class VG_ENGINE_API LuaStoryScript : public VGEngineResource
-	{
+	{ 
 	public:
 		LuaStoryScript();
 		~LuaStoryScript() override = default;

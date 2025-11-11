@@ -12,6 +12,7 @@
 #pragma once
 #include "AnimationCore.h"
 #include "AnimationProperty.h"
+#include <sol/object.hpp>
 
 namespace VisionGal
 {

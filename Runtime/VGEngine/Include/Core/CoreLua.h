@@ -12,7 +12,7 @@
 #pragma once
 #include "CoreTypes.h"
 #include "../EngineConfig.h"
-#include "../Lua/sol2/sol.hpp"
+#include <sol/state.hpp>
 
 namespace VisionGal
 {

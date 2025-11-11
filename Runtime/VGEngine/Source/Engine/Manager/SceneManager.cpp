@@ -18,27 +18,6 @@
 
 namespace VisionGal
 {
-	//bool SceneManager::EnterPlayModeApplicaiotn()
-	//{
-	//	// 已经在播放模式中，不需要再次进入
-	//	if (IsPlayMode())
-	//		return true;
-	//
-	//	if (m_CurrentScene == nullptr)
-	//		return false;
-	//
-	//	// 开始播放场景事件
-	//	if (IsPlayMode())
-	//	{
-	//		EngineEvent evt;
-	//		evt.EventType = EngineEventType::EnterScenePlayMode;
-	//		evt.Scene = m_CurrentScene.get();
-	//		EngineEventBus::Get().OnEngineEvent.Invoke(evt);
-	//	}
-	//
-	//	m_IsPlayMode = true;
-	//}
-
 	bool SceneManager::EnterPlayMode()
 	{
 		// 已经在播放模式中，不需要再次进入

@@ -19,14 +19,14 @@
 #include "Core/VFS.h"
 #include "Galgame/GalGameEngine.h"
 #include "Galgame/GameEngineCore.h"
-#include "Lua/sol2/sol.hpp"
+#include <sol/state.hpp>
 
 namespace VisionGal::GalGame
 {
     LuaStoryScript::LuaStoryScript()
     {
         StoryScriptLuaInterface::Initialise(m_LuaState);
-    }
+    } 
 
     Ref<LuaStoryScript> LuaStoryScript::LoadFromFile(const std::string& file)
     {
@@ -102,6 +102,23 @@ namespace VisionGal::GalGame
 
         try {
             m_Coroutine = m_LuaState.script(m_ScriptCode);
+			//sol::protected_function_result result = m_LuaState.safe_script(m_ScriptCode, sol::script_pass_on_error);
+			//
+			//if (!result.valid()) {
+			//	sol::error err = result;
+			//
+			//	// 获取调用栈
+			//	sol::function debug_traceback = m_LuaState["debug"]["traceback"];
+			//	if (debug_traceback.valid()) {
+			//		std::string stack_trace = debug_traceback();
+			//		H_LOG_ERROR("Lua错误: {}\n调用栈: {}", err.what(), stack_trace);
+			//	} else {
+			//		H_LOG_ERROR("Lua错误: {}", err.what());
+			//	}
+			//	return false;
+			//}
+
+			//m_Coroutine = result;
         }
         catch (const sol::error& e) {
             H_LOG_ERROR(e.what());

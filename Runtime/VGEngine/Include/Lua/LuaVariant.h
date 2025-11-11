@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "sol2/sol.hpp"
+#include <sol/object.hpp>
 #include <unordered_map>
 
 namespace VisionGal

@@ -1,6 +1,8 @@
 #pragma once
 #include "Header.h"
 #include <RmlUi/Core/Types.h>
+#include <sol/state.hpp>
+#include <sol/function.hpp>
 
 namespace RmlSol {
 	namespace Interpreter {

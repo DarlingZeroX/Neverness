@@ -15,6 +15,7 @@
 #include "Galgame/GameLua.h"
 #include "Lua/LuaInterface.h"
 #include "Animation/Interface/Animation2DScript.h"
+#include <sol/sol.hpp>
 
 namespace VisionGal::GalGame
 {

@@ -10,6 +10,7 @@
 */
 
 #include "Lua/LuaVariant.h"
+#include <sol/sol.hpp>
 
 namespace VisionGal
 {

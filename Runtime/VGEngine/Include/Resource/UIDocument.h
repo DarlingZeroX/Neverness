@@ -13,7 +13,7 @@
 #include "../EngineConfig.h"
 #include "../Core/Core.h"
 #include <RmlUi/Core.h>
-#include "../Lua/sol2/sol.hpp"
+#include <sol/function.hpp>
 
 namespace VisionGal
 {

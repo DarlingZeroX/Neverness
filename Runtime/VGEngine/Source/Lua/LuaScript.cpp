@@ -12,6 +12,7 @@
 #include "Lua/LuaScript.h"
 #include "Core/VFS.h"
 #include "Lua/LuaInterface.h"
+#include <sol/sol.hpp>
 
 namespace VisionGal
 {

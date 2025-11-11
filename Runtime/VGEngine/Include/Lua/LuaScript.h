@@ -11,7 +11,9 @@
 
 #pragma once
 #include "../Interface/GameInterface.h"
-#include "../Lua/sol2/sol.hpp"
+#include <sol/table.hpp>
+#include <sol/function.hpp>
+#include <sol/state.hpp>
 
 namespace VisionGal
 {

@@ -11,6 +11,7 @@
 
 #include "Animation/Core/PrimitiveScript.h"
 #include "Scene/Components.h"
+#include <sol/table.hpp>
 
 namespace VisionGal
 {
