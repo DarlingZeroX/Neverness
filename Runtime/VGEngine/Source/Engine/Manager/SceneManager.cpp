@@ -48,7 +48,15 @@ namespace VisionGal
 		if (m_CurrentScene == nullptr)
 			return false;
 
+		// 开始播放场景事件
 		m_IsPlayMode = true;
+		{
+			EngineEvent evt;
+			evt.EventType = EngineEventType::EnterScenePlayMode;
+			evt.Scene = m_CurrentScene.get();
+			EngineEventBus::Get().OnEngineEvent.Invoke(evt);
+		}
+
 		m_EditorScene = m_CurrentScene;
 		SaveScene(dynamic_cast<Scene*>(m_CurrentScene.get()),  Core::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
 		LoadScene(Core::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
@@ -117,15 +125,6 @@ namespace VisionGal
 		// 这里传值，因为当前场景下一条命令会赋值
 		auto prevScene = m_CurrentScene;
 		m_CurrentScene = scene;
-
-		// 开始播放场景事件
-		if (IsPlayMode())
-		{
-			EngineEvent evt;
-			evt.EventType = EngineEventType::EnterScenePlayMode;
-			evt.Scene = m_CurrentScene.get();
-			EngineEventBus::Get().OnEngineEvent.Invoke(evt);
-		}
 
 		// 场景切换事件
 		{
