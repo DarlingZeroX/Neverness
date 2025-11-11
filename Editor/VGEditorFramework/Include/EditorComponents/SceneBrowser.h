@@ -48,7 +48,7 @@ namespace VisionGal::Editor
 		void PanelContextMenu();							// 场景浏览器上下文菜单
 		void CreateGameActor(const String& type, IEntity* parent = nullptr) const;
 	private:
-		EntityID m_SelectedEntityID = 0;
+		VGActorID m_SelectedEntityID = 0;
 		Scene* m_rScene;
 
 		EditorUIMenu m_Menu;

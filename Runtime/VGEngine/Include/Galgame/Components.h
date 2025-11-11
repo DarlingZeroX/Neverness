@@ -77,6 +77,6 @@ namespace VisionGal::GalGame
 		GalGameEngineComponentSerializer& operator=(GalGameEngineComponentSerializer&&) noexcept = default;
 		~GalGameEngineComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id) override;
+		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
 	};
 }

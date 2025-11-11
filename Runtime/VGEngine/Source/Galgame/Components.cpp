@@ -22,7 +22,7 @@ namespace VisionGal::GalGame
 		return "GalGameEngine";
 	}
 
-	void GalGameEngineComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void GalGameEngineComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		GalGameEngineComponent& com = world->emplace<GalGameEngineComponent>(actor->GetEntity());

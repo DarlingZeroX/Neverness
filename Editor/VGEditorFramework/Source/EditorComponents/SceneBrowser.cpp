@@ -253,7 +253,7 @@ namespace VisionGal::Editor
 		m_IsAnyItemHovered = true;
 
 		ImGui::BeginTooltip();
-		String tip = "EntityID: " + std::to_string(entityID.GetEntityID());
+		String tip = "ActorID: " + std::to_string(entityID.GetEntityID());
 		ImGui::Text(tip.c_str());
 		ImGui::EndTooltip();
 		
@@ -275,7 +275,7 @@ namespace VisionGal::Editor
 		{
 			if (ImGui::MenuItem(EditorText{ "Remove" }.c_str()))
 			{
-				m_rScene->RemoveEntity(entityID.GetEntityID());
+				m_rScene->RemoveActor(entityID.GetEntityID());
 
 				ImGui::EndPopup();
 				return true;
@@ -294,7 +294,7 @@ namespace VisionGal::Editor
 
 		SceneEvent evt;
 		evt.EventType = SceneEventType::ActorSelected;
-		evt.EntityID = entityInfo->ID;
+		evt.ActorID = entityInfo->ID;
 		EngineEventBus::Get().OnSceneEvent.Invoke(evt);
 
 		m_SelectedEntityID = entity.GetEntityID();

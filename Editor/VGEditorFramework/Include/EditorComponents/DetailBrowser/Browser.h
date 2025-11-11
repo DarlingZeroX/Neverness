@@ -38,7 +38,7 @@ namespace VisionGal::Editor {
 		bool IsWindowOpened() override;
 	private:
 		//GameActor* m_pSelectedEntity;
-		EntityID m_SelectEntityID;
+		VGActorID m_SelectEntityID;
 		Scene* m_pScene;
 		bool m_IsOpen = true;
 

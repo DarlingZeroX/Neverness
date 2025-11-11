@@ -190,6 +190,14 @@ namespace VisionGal
 		return scene;
 	}
 
+	void SceneManager::LoadSceneOnUpdate(const String& path)
+	{
+		m_UpdateTask.push_back([this, path]()
+			{
+				LoadScene(path);
+			});
+	}
+
 	IScene* SceneManager::GetCurrentEditorScene() const
 	{
 		if (m_EditorScene)
@@ -221,5 +229,6 @@ namespace VisionGal
 		{
 			task();
 		}
+		m_UpdateTask.clear();
 	}
 }

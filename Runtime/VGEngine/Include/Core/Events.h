@@ -35,16 +35,16 @@ namespace VisionGal
 	enum class SceneEventType
 	{
 		None = 0,
-		EntityCreating,
-		EntityRemoved,
+		ActorCreating,
+		ActorRemoved,
 		ActorSelected
 	};
 
 	struct SceneEvent
 	{
 		SceneEventType EventType = SceneEventType::None;
-		GameActor* Entity = nullptr;
-		EntityID EntityID = 0;
+		GameActor* Actor = nullptr;
+		VGActorID ActorID = 0;
 	};
 
 	////////////////		 Viewport Event

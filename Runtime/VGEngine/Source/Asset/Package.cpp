@@ -105,6 +105,16 @@ namespace VisionGal
 		return true;
 	}
 
+	std::string VGPackage::GetAssetType(const String& path)
+	{
+		VGAssetMetaData metadata;
+		if (GetMeatData(path, metadata))
+		{
+			return metadata.AssetType;
+		}
+		return "None";
+	}
+
 	Ref<VGPackage> VGPackage::NewPackage(const String& path)
 	{
 		//String ext, name, parentPath;

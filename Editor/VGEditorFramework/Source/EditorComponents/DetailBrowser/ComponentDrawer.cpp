@@ -15,12 +15,11 @@
 #include <VGImgui/Include/ImGuiEx/ImGuiVector.h>
 #include <VGEngine/Include/Galgame/GalGameEngine.h>
 #include <VGEngine/Include/Galgame/Components.h>
-
-#include "VGEngine/Include/Asset/Package.h"
-#include "VGEngine/Include/UI/UISystem.h"
-#include "VGEngine/Include/Galgame/GameEngineCore.h"
-#include "VGEngine/Include/Interface/Loader.h"
-#include "VGEngine/Include/Lua/LuaScript.h"
+#include <VGEngine/Include/Asset/Package.h>
+#include <VGEngine/Include/UI/UISystem.h>
+#include <VGEngine/Include/Galgame/GameEngineCore.h>
+#include <VGEngine/Include/Interface/Loader.h>
+#include <VGEngine/Include/Lua/LuaScript.h>
 
 namespace VisionGal::Editor
 {
@@ -38,7 +37,7 @@ namespace VisionGal::Editor
 
 		if (ImGui::BeginTable("TransformTable", 2, ImGuiTableFlags_SizingFixedFit))
 		{
-
+			// 位置
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
@@ -48,6 +47,7 @@ namespace VisionGal::Editor
 				ImGuiEx::DrawVec3Control("Location", transform->location, 0.f, 1.0f);
 			}
 
+			// 旋转
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
@@ -55,12 +55,11 @@ namespace VisionGal::Editor
 				ImGui::TableSetColumnIndex(1);
 
 				float3 rotation = glm::degrees(glm::eulerAngles(transform->rotation));
-				float3 copy = rotation;
 				ImGuiEx::DrawVec3Control("Rotation", rotation, 0.f, 1.0f, -360.f, 360.f);
-
 				transform->rotation = quaternion( glm::radians(rotation) );
 			}
 
+			// 缩放
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
@@ -70,6 +69,7 @@ namespace VisionGal::Editor
 				ImGuiEx::DrawVec3Control("Scale", transform->scale, 1.f, 0.0025f);
 			}
 
+			// 可见性
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
@@ -138,46 +138,53 @@ namespace VisionGal::Editor
 			return;
 
 		auto* com = entity->GetComponent<SpriteRendererComponent>();
-
 		if (com == nullptr)
 			return;
 
 		std::string spritePath;
-
 		if (com->sprite != nullptr && com->sprite->GetTexture2D() != nullptr)
 		{
 			spritePath = com->sprite->GetTexture2D()->GetResourcePath();
 		}
-		static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 		if (ImGui::BeginTable("SpriteRendererComponentDrawerTable", 2, flags))
 		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Sprite" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGuiEx::InputText("##Sprite", spritePath, ImGuiInputTextFlags_ReadOnly);
-			SpriteBeginDropTarget(com);
+			// 设置精灵纹理
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Sprite" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGuiEx::InputText("##Sprite", spritePath, ImGuiInputTextFlags_ReadOnly);
+				SpriteBeginDropTarget(com);
+			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Color" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::ColorEdit4("##Color", &com->color.x,ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float);
+			// 设置颜色
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Color" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::ColorEdit4("##Color", &com->color.x, ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float);
+			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Flip" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			bool flipX = com->flip.x;
-			bool flipY = com->flip.y;
-			ImGui::Checkbox("X", &flipX);
-			ImGui::SameLine();
-			ImGui::Checkbox("Y", &flipY);
-			com->flip.x = flipX;
-			com->flip.y = flipY;
+			// 设置反转
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Flip" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				bool flipX = com->flip.x;
+				bool flipY = com->flip.y;
+				ImGui::Checkbox("X", &flipX);
+				ImGui::SameLine();
+				ImGui::Checkbox("Y", &flipY);
+				com->flip.x = flipX;
+				com->flip.y = flipY;
+			}
 
 			ImGui::EndTable();
 		}
@@ -200,15 +207,17 @@ namespace VisionGal::Editor
 		{
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
 			{
-				std::string data = static_cast<char*>(payload->Data);
-				//std::cout << data << std::endl;
-				auto text2d = LoadObject<Texture2D>(data);
-				if (text2d)
+				std::string path = static_cast<char*>(payload->Data);
+				if (auto text2d = LoadObject<Texture2D>(path))
 				{
 					com->sprite = Sprite::Create(text2d, text2d->Size());
+					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置精灵纹理成功!" });
 				}
-
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drag Sprite" });
+				else
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置精灵纹理失败!" });
+				}
+				
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -220,7 +229,6 @@ namespace VisionGal::Editor
 			return;
 
 		auto* com = entity->GetComponent<ScriptComponent>();
-
 		if (com == nullptr)
 			return;
 
@@ -301,7 +309,6 @@ namespace VisionGal::Editor
 
 				ImGui::EndTable();
 			}
-			//ImGui::Text(script->GetResourcePath().c_str());
 		}
 	}
 
@@ -317,10 +324,16 @@ namespace VisionGal::Editor
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_GAME_ACTOR"))
 			{
 				GameActor* actor = static_cast<GameActor*>(payload->Data);
-				var.VariableType = "GameActor";
-				var.ValueEntityID = actor->GetEntityID();
-
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置脚本成功!" });
+				if (actor != nullptr)
+				{
+					var.VariableType = "GameActor";
+					var.ValueEntityID = actor->GetEntityID();
+					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置脚本变量成功: " + var.VariableName });
+				}
+				else
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置脚本变量失败: " + var.VariableName });
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -391,25 +404,17 @@ namespace VisionGal::Editor
 		{
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
 			{
-				std::string data = static_cast<char*>(payload->Data);
-				//std::cout << data << std::endl;
-				//auto video = LoadObject<VideoClip>(data);
-				//if (video)
-				//{
-				//	com->videoClip = video;
-				//	//com->Play();
-				//}
-				VGAssetMetaData meta;
-				VGPackage::GetMeatData(data, meta);
+				std::string path = static_cast<char*>(payload->Data);
 
-				if (meta.AssetType != "HTML")
+				auto assetType = VGPackage::GetAssetType(path);
+				if (assetType != "HTML")
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Error, "错误文件类型!" });
 					ImGui::EndDragDropTarget();
 					return;
 				}
 
-				com->document = UISystem::Get()->LoadUIDocument(data);
+				com->document = UISystem::Get()->LoadUIDocument(path);
 				if (UISystem::Get()->ShowUIDocument(com->document.get()))
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置UI文档成功!" });
@@ -418,8 +423,6 @@ namespace VisionGal::Editor
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置UI文档失败!" });
 				}
-
-
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -431,53 +434,60 @@ namespace VisionGal::Editor
 			return;
 
 		auto* com = entity->GetComponent<AudioSourceComponent>();
-
 		if (com == nullptr)
 			return;
 
 		std::string audioPath;
-
 		if (com->audioClip != nullptr)
-		{
 			audioPath = com->audioClip->GetResourcePath();
-		}
 
 		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
-
 		if (ImGui::BeginTable("AudioSourceComponentDrawerTable", 2, flags))
 		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Audio Clip" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 20);
-			ImGuiEx::InputText("##AudioSource", audioPath, ImGuiInputTextFlags_ReadOnly);
-			AudioSourceBeginDropTarget(com);
-			ImGui::SameLine();
-			if (ImGui::Button(ICON_FA_TIMES "##RemoveAudioSource"))
+			// 音频剪辑设置
 			{
-				com->audioClip = nullptr;
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Audio Clip" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 20);
+				ImGuiEx::InputText("##AudioSource", audioPath, ImGuiInputTextFlags_ReadOnly);
+				AudioSourceBeginDropTarget(com);
+				ImGui::SameLine();
+				if (ImGui::Button(ICON_FA_TIMES "##RemoveAudioSource"))
+				{
+					com->audioClip = nullptr;
+				}
 			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Play On Awake" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Checkbox("##Play On Awake", &com->playOnAwake);
+			// 唤醒时播放
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Play On Awake" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Checkbox("##Play On Awake", &com->playOnAwake);
+			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Loop" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Checkbox("##Loop", &com->loop);
+			// 循环播放
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Loop" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Checkbox("##Loop", &com->loop);
+			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Volume" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			float volume = com->GetVolume();
-			ImGui::SliderFloat("##Volume", &volume, 0 ,1.0);
-			com->SetVolume(volume);
+			// 音量
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Volume" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				float volume = com->GetVolume();
+				ImGui::SliderFloat("##Volume", &volume, 0 ,1.0);
+				com->SetVolume(volume);
+			}
 
 			ImGui::EndTable();
 		}
@@ -494,16 +504,17 @@ namespace VisionGal::Editor
 		{
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
 			{
-				std::string data = static_cast<char*>(payload->Data);
-				//std::cout << data << std::endl;
-				auto audioClip = LoadObject<AudioClip>(data);
-				if (audioClip)
+				std::string path = static_cast<char*>(payload->Data);
+
+				if (auto audioClip = LoadObject<AudioClip>(path))
 				{
 					com->audioClip = audioClip;
-					//com->Play();
+					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置音频成功!" });
 				}
-
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置音频成功!" });
+				else
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置音频失败!" });
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -515,71 +526,80 @@ namespace VisionGal::Editor
 			return;
 
 		auto* com = entity->GetComponent<VideoPlayerComponent>();
-
 		if (com == nullptr)
 			return;
 
 		std::string videoPath;
-
 		if (com->videoClip != nullptr)
-		{
 			videoPath = com->videoClip->GetResourcePath();
-		}
-		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 		if (ImGui::BeginTable("VideoPlayerComponentDrawerTable", 2, flags))
 		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Video Clip" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 20);
-			ImGuiEx::InputText("##VideoClip", videoPath, ImGuiInputTextFlags_ReadOnly);
-			VideoPlayerBeginDropTarget(com);
-			ImGui::SameLine();
-			if (ImGui::Button(ICON_FA_TIMES "##RemoveVideoClip"))
+			// 视频剪辑设置
 			{
-				com->videoClip = nullptr;
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Video Clip" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 20);
+				ImGuiEx::InputText("##VideoClip", videoPath, ImGuiInputTextFlags_ReadOnly);
+				VideoPlayerBeginDropTarget(com);
+				ImGui::SameLine();
+				if (ImGui::Button(ICON_FA_TIMES "##RemoveVideoClip"))
+				{
+					com->videoClip = nullptr;
+				}
 			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Play On Awake" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Checkbox("##Play On Awake", &com->playOnAwake);
+			// 唤醒时播放
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Play On Awake" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Checkbox("##Play On Awake", &com->playOnAwake);
+			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Wait For First Frame" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Checkbox("##Wait For First Frame", &com->waitForFirstFrame);
+			// 等待首帧
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Wait For First Frame" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Checkbox("##Wait For First Frame", &com->waitForFirstFrame);
+			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Loop" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Checkbox("##Loop", &com->loop);
-
+			// 循环播放
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Loop" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Checkbox("##Loop", &com->loop);
+			}
 			ImGui::EndTable();
 		}
 
-		if (com->videoPlayer == nullptr)
-			return;
-
-		if (com->videoPlayer->GetSprite() == nullptr)
-			return;
-
-		if (com->videoPlayer->GetSprite()->GetITexture() != nullptr)
+		// 显示视频预览
 		{
-			auto* tex = com->videoPlayer->GetSprite()->GetITexture();
-			ImGuiEx::ImageGL(tex->GetShaderResourceView(), 100, 100);
+			if (com->videoPlayer == nullptr)
+				return;
+
+			if (com->videoPlayer->GetSprite() == nullptr)
+				return;
+
+			if (com->videoPlayer->GetSprite()->GetITexture() != nullptr)
+			{
+				auto* tex = com->videoPlayer->GetSprite()->GetITexture();
+				ImGuiEx::ImageGL(tex->GetShaderResourceView(), 100, 100);
+			}
 		}
 	}
 
 	const String VideoPlayerComponentDrawer::GetBindType() const
 	{
 		return VideoPlayerComponent{}.GetComponentType();
-		//return "VideoPlayer";
 	}
 
 	void VideoPlayerComponentDrawer::VideoPlayerBeginDropTarget(VideoPlayerComponent* com)
@@ -588,16 +608,17 @@ namespace VisionGal::Editor
 		{
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
 			{
-				std::string data = static_cast<char*>(payload->Data);
-				//std::cout << data << std::endl;
-				auto video = LoadObject<VideoClip>(data);
-				if (video)
+				std::string path = static_cast<char*>(payload->Data);
+
+				if (auto video = LoadObject<VideoClip>(path))
 				{
 					com->videoClip = video;
-					//com->Play();
+					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置视频成功!" });
 				}
-
-				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置视频成功!" });
+				else
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置视频失败!" });
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -605,60 +626,47 @@ namespace VisionGal::Editor
 
 	void GalGameEngineComponentDrawer::OnGUI(IEntity* entity)
 	{
-		//if (ImGui::CollapsingHeader("Plot Script", ImGuiTreeNodeFlags_DefaultOpen) == false)
-		//	return;
-		//
-		//auto* com = entity->GetComponent<GalGame::GalGameEngineComponent>();
-		//
-		//if (com == nullptr)
-		//	return;
-		//
-		//ImGui::Text("Path: %s", com->path.c_str());
-		//
-		//if (ImGui::Button(ICON_FA_REDO "##ReloadPlot"))
-		//{
-		//	GalGame::GalGameEngine::Get()->ReloadPlotScript();
-		//}
-
 		if (ImGui::CollapsingHeader(EditorText{ "GalGame Engine" }.c_str(), ImGuiTreeNodeFlags_DefaultOpen) == false)
 			return;
 
 		auto* com = entity->GetComponent<GalGame::GalGameEngineComponent>();
-
 		if (com == nullptr)
 			return;
 
 		std::string scriptPath;
-
 		if (com->script != nullptr)
-		{
 			scriptPath = com->script->GetResourcePath();
-		}
 
 		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 
 		if (ImGui::BeginTable("GalGameEngineComponentDrawerTable", 2, flags))
 		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Story Script" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 20);
-			ImGuiEx::InputText("##GalGameStoryScript", scriptPath, ImGuiInputTextFlags_ReadOnly);
-			ScriptBeginDropTarget(com);
-			ImGui::SameLine();
-			if (ImGui::Button(ICON_FA_TIMES "##RemoveAudioSource"))
+			// 剧情脚本设置
 			{
-				com->script = nullptr;
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Story Script" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 20);
+				ImGuiEx::InputText("##GalGameStoryScript", scriptPath, ImGuiInputTextFlags_ReadOnly);
+				ScriptBeginDropTarget(com);
+				ImGui::SameLine();
+				if (ImGui::Button(ICON_FA_TIMES "##RemoveStoryScript"))
+				{
+					com->script = nullptr;
+				}
 			}
 
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text(EditorText{ "Reload Story Script" }.c_str());
-			ImGui::TableSetColumnIndex(1);
-			if (ImGui::Button(ICON_FA_REDO "##Reload Story Script"))
+			// 重新加载剧情脚本
 			{
-				dynamic_cast<GalGame::GalGameEngine*>(GalGame::GameEngineCore::GetCurrentEngine())->ReloadStoryScript();
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text(EditorText{ "Reload Story Script" }.c_str());
+				ImGui::TableSetColumnIndex(1);
+				if (ImGui::Button(ICON_FA_REDO "##Reload Story Script"))
+				{
+					dynamic_cast<GalGame::GalGameEngine*>(GalGame::GameEngineCore::GetCurrentEngine())->ReloadStoryScript();
+				}
 			}
 
 			ImGui::EndTable();
@@ -667,7 +675,6 @@ namespace VisionGal::Editor
 
 	const String GalGameEngineComponentDrawer::GetBindType() const
 	{
-		//return GalGame::StoryScriptComponent{}.GetComponentType();
 		return GalGame::GalGameEngineComponent{}.GetComponentType();
 	}
 
@@ -679,16 +686,16 @@ namespace VisionGal::Editor
 			{
 				std::string path = static_cast<char*>(payload->Data);
 
-				VGAssetMetaData meta;
-				VGPackage::GetMeatData(path, meta);
-
-				if (meta.AssetType != "GalGameStoryScript" && meta.AssetType != "LuaScript")
+				// 检查文件类型
+				auto assetType = VGPackage::GetAssetType(path);
+				if (assetType != "GalGameStoryScript" && assetType != "LuaScript")
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Error, "错误文件类型!" });
 					ImGui::EndDragDropTarget();
 					return;
 				}
 
+				// 设置剧情脚本
 				com->script = GalGame::LuaStoryScript::LoadFromFile(path);
 
 				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置剧情脚本成功!" });

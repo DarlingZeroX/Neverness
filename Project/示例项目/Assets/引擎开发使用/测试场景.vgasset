@@ -4,26 +4,26 @@
     "ComponentNumber": 0,
     "SegmentType": "Entity",
     "EntityNumber": 4,
-    "Label": "GalGame引擎",
-    "ID": 6440210757220177232,
+    "Label": "UI文档",
+    "ID": 17789510860419978248,
     "Parent": 0,
     "ComponentIDs": [
-        7714668887001147666,
-        8139420644421808243
+        17789510860419978248,
+        6720681762508709654
     ],
     "Label": "相机",
-    "ID": 11139995194842245878,
+    "ID": 3435778515964613437,
     "Parent": 0,
     "ComponentIDs": [
-        11139995194842245878,
-        3509040283753573490
+        10087010364732220265,
+        1272368393881600685
     ],
-    "Label": "UI文档",
-    "ID": 13135295619153017924,
+    "Label": "精灵",
+    "ID": 14902245263820032711,
     "Parent": 0,
     "ComponentIDs": [
-        13135295619153017924,
-        11525862322656296263
+        14902245263820032711,
+        15838812139504331185
     ],
     "Label": "Scene",
     "ID": 0,
@@ -34,7 +34,7 @@
     "SegmentType": "Transform",
     "ComponentNumber": 3,
     "Transform": {
-        "EntityComponentID": 7714668887001147666,
+        "EntityComponentID": 17789510860419978248,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -54,7 +54,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 11139995194842245878,
+        "EntityComponentID": 10087010364732220265,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -74,7 +74,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 13135295619153017924,
+        "EntityComponentID": 14902245263820032711,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -94,28 +94,46 @@
         "visible": true
     },
     "SegmentType": "SpriteRenderer",
-    "ComponentNumber": 0,
+    "ComponentNumber": 1,
+    "SpriteRenderer": {
+        "EntityComponentID": 15838812139504331185,
+        "HasSprite": true,
+        "m_SpriteSize": {
+            "x": 1921.0,
+            "y": 1080.0
+        },
+        "m_SpritePosition": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "m_SpriteTexturePath": "/assets/UI\\主菜单\\主菜单背景.png",
+        "Color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+        },
+        "Flip": {
+            "x": 0,
+            "y": 0
+        }
+    },
     "SegmentType": "RmlUIDocumentComponent",
     "ComponentNumber": 1,
     "RmlUIDocumentComponent": {
-        "EntityComponentID": 11525862322656296263,
+        "EntityComponentID": 6720681762508709654,
         "HasDocument": true,
-        "m_DocumentPath": "/assets/UI\\游戏\\游戏.html"
+        "m_DocumentPath": "/assets/引擎开发使用\\测试HTML.html"
     },
     "SegmentType": "Camera",
     "ComponentNumber": 1,
     "Camera": {
-        "EntityComponentID": 3509040283753573490,
+        "EntityComponentID": 1272368393881600685,
         "HasCamera": true,
         "m_CameraType": "Letterbox2D"
     },
     "SegmentType": "VideoPlayer",
     "ComponentNumber": 0,
     "SegmentType": "GalGameEngine",
-    "ComponentNumber": 1,
-    "GalGameEngine": {
-        "EntityComponentID": 8139420644421808243,
-        "HasScript": true,
-        "m_ScriptPath": "/assets/剧情脚本\\Demo\\操场.lua"
-    }
+    "ComponentNumber": 0
 }

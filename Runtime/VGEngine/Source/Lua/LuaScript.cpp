@@ -135,7 +135,7 @@ namespace VisionGal
 			else if (v.VariableType == "GameActor")
 			{
 				auto* scene = dynamic_cast<IScene*>(actor->GetScene());
-				auto* actor = dynamic_cast<GameActor*>(scene->GetEntity(v.ValueEntityID));
+				auto* actor = dynamic_cast<GameActor*>(scene->GetActor(v.ValueEntityID));
 				if (actor)
 				{
 					m_Script[v.VariableName] = sol::object(m_LuaState, sol::in_place, actor);

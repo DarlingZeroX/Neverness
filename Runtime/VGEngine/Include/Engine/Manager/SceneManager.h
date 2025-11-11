@@ -34,6 +34,7 @@ namespace VisionGal
         bool SaveScene(Scene* scene, const String& path);	// 保存当前场景到指定路径
 		Ref<IScene> LoadScene(const String& path);		// 从指定路径加载场景
 		Ref<Scene> LoadNewScene();						// 加载新场景
+		void LoadSceneOnUpdate(const String& path);
 		 
         IScene* GetCurrentEditorScene() const;			// 获取当前编辑器场景
 		IScene* GetCurrentRunningScene() const;			// 获取当前运行时场景

@@ -23,7 +23,7 @@ namespace VisionGal
 	{
 		Scene* scene;
 		std::vector<SceneDeserializeEntity> entities;
-		std::unordered_map<EntityID, ISceneSegmentSerializer*> componentMap;
+		std::unordered_map<VGActorID, ISceneSegmentSerializer*> componentMap;
 	};
 
 	struct ISceneSegmentSerializer
@@ -40,7 +40,7 @@ namespace VisionGal
 		virtual int ReadSegment(cereal::JSONInputArchive& archive, SceneDeserializeDataContainer& data) = 0;
 		virtual int ReadSegment(cereal::BinaryInputArchive& archive, SceneDeserializeDataContainer& data) = 0;
 
-		virtual void AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id) = 0;
+		virtual void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) = 0;
 	};
 	  
 	/// <summary>
@@ -104,6 +104,6 @@ namespace VisionGal
 			return 0;
 		}
 
-		std::unordered_map<EntityID, T> m_ComponentMap;
+		std::unordered_map<VGActorID, T> m_ComponentMap;
 	};
 }

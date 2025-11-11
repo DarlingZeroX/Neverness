@@ -107,7 +107,8 @@ namespace VisionGal
 
 		lua.new_usertype<SceneManager>("SceneManagerClass",
 			"LoadScene", &SceneManager::LoadScene,
-			"加载场景", &SceneManager::LoadScene
+			"加载场景", &SceneManager::LoadScene,
+			"延迟加载场景", &SceneManager::LoadSceneOnUpdate
 		);
 
 		lua["SceneManager"] = sol::make_object(lua, SceneManager::Get());

@@ -19,7 +19,7 @@ namespace VisionGal
 		std::string Text;
 
 		UIDocumentAsset()
-			: VGAsset("UIDocument")
+			: VGAsset("HTML")
 			//: HAssetBase(HAssetType::Scene)
 		{
 		}
@@ -39,7 +39,7 @@ namespace VisionGal
 		std::string Text;
 
 		UICssAsset()
-			: VGAsset("UICss")
+			: VGAsset("CSS")
 			//: HAssetBase(HAssetType::Scene)
 		{
 		}

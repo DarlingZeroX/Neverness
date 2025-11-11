@@ -33,6 +33,7 @@ namespace VisionGal
 		std::fstream& GetBinaryStream() { return m_AssetBinaryDataFile; }
 		VGAssetMetaData GetMeatData();
 		static bool GetMeatData(const String& path, VGAssetMetaData& metadata);
+		static std::string GetAssetType(const String& path);
 	public:
 		void SetAssetType(const String& type);
 		void SetAsset(VGAsset* asset);

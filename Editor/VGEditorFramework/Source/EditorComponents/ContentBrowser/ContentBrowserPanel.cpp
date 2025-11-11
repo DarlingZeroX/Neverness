@@ -538,13 +538,13 @@ namespace VisionGal::Editor {
 
 			if (ImGui::MenuItem(EditorText{ "Create UI Document" }.c_str()))
 			{
-				factory.CreateAsset(path, "UIDocument");
+				factory.CreateAsset(path, "HTML");
 				RefreshDirectory();
 			}
 
 			if (ImGui::MenuItem(EditorText{ "Create UI Css" }.c_str()))
 			{
-				factory.CreateAsset(path, "UICss");
+				factory.CreateAsset(path, "CSS");
 				RefreshDirectory();
 			}
 

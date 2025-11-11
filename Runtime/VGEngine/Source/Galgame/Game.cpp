@@ -37,7 +37,7 @@ namespace VisionGal::GalGame
 
 		if (scene != nullptr)
 		{
-			scene->RemoveEntity(m_Actor->GetEntityID());
+			scene->RemoveActor(m_Actor->GetEntityID());
 		}
 	}
 
@@ -284,7 +284,7 @@ namespace VisionGal::GalGame
 
 		if (scene != nullptr)
 		{
-			scene->RemoveEntity(m_Actor->GetEntityID());
+			scene->RemoveActor(m_Actor->GetEntityID());
 		}
 	}
 

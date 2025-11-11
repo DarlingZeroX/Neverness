@@ -59,7 +59,7 @@ namespace VisionGal
 	using String = std::string;
 	using VGPath = String;
 
-	typedef Horizon::HEntityID EntityID;
-	using ComponentID = Horizon::uint64;
-	constexpr EntityID ENTITY_ID_NULL = 0;
+	typedef Horizon::HEntityID VGActorID;
+	using VGComponentID = Horizon::uint64;
+	constexpr VGActorID ACTOR_ID_NULL = 0;
 }

@@ -18,6 +18,33 @@
 
 namespace VisionGal::GalGame
 {
+	struct StoryScriptLuaInterfaceImp
+	{
+		StoryScriptLuaInterfaceImp()
+		{
+			ResetLuaState();
+		}
+
+		static StoryScriptLuaInterfaceImp& GetInstance()
+		{
+			static StoryScriptLuaInterfaceImp instance;
+			return instance;
+		}
+
+		void BindLuaInterface()
+		{
+			StoryScriptLuaInterface::Initialise(*m_LuaState);
+		}
+
+		void ResetLuaState()
+		{
+			m_LuaState = CreateRef<sol::state>();
+			BindLuaInterface();
+		}
+
+		Ref<sol::state> m_LuaState;
+	};
+
 	static sol::coroutine* s_StoryScriptCoroutine = nullptr;
 
 	int StoryScriptLuaInterface::Continue()
@@ -66,6 +93,17 @@ namespace VisionGal::GalGame
 	sol::coroutine* StoryScriptLuaInterface::GetStoryScriptCoroutine()
 	{
 		return s_StoryScriptCoroutine;
+	}
+
+	sol::state& StoryScriptLuaInterface::GetLuaState()
+	{
+		return *StoryScriptLuaInterfaceImp::GetInstance().m_LuaState;
+	}
+
+	sol::state& StoryScriptLuaInterface::ResetLuaState()
+	{
+		StoryScriptLuaInterfaceImp::GetInstance().ResetLuaState();
+		return GetLuaState();
 	}
 
 	void StoryScriptLuaInterface::Initialise(sol::state& lua)

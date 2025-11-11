@@ -97,7 +97,7 @@ namespace VisionGal
 
 	std::string UIDocumentAssetFactory::GetFactoryType()
 	{
-		return "UIDocument";
+		return "HTML";
 	}
 
 	Ref<VGAsset> UIDocumentAssetFactory::CreateAsset(const String& path)
@@ -133,7 +133,7 @@ namespace VisionGal
 
 	std::string UICssAssetFactory::GetFactoryType()
 	{
-		return "UICss";
+		return "CSS";
 	}
 
 	Ref<VGAsset> UICssAssetFactory::CreateAsset(const String& path)

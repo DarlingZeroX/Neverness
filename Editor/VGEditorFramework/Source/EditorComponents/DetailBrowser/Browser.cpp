@@ -16,6 +16,7 @@
 #include <VGImgui/IncludeImGui.h>
 #include <HCore/Include/Core/HStringTools.h>
 
+#include "VGEngine/Include/Asset/Package.h"
 #include "VGEngine/Include/Lua/LuaScript.h"
 #include "VGImgui/Include/ImGuiEx/ImGuiEx.h"
 #include "VGImgui/Include/ImGuiEx/ImNotify.h"
@@ -47,7 +48,7 @@ namespace VisionGal::Editor {
 
 		if (ImGui::Begin(GetWindowFullName().c_str()))
 		{
-			auto* selectedEntity = m_pScene->GetEntity(m_SelectEntityID);
+			auto* selectedEntity = m_pScene->GetActor(m_SelectEntityID);
 			if (m_SelectEntityID == 0 || selectedEntity == nullptr)
 			{
 				ImGui::Separator();
@@ -95,7 +96,7 @@ namespace VisionGal::Editor {
 				switch (evt.EventType)
 				{
 				case EngineEventType::MainSceneChanged:
-					m_pScene = static_cast<Scene*>(evt.Scene);
+					m_pScene = dynamic_cast<Scene*>(evt.Scene);
 					break;
 				}
 			});
@@ -108,14 +109,10 @@ namespace VisionGal::Editor {
 				switch (evt.EventType)
 				{
 				case SceneEventType::ActorSelected:
-				//	m_pSelectedEntity = dynamic_cast<GameActor*>( m_pScene->GetEntity(evt.EntityID) );
-					m_SelectEntityID = evt.EntityID;
+					m_SelectEntityID = evt.ActorID;
 					break;
-				//case SceneEventType::EntityRemoved:
-				//	if (m_pSelectedEntity != nullptr && m_pSelectedEntity->GetEntityID() == evt.EntityID)
-				//	{
-				//		m_pSelectedEntity = nullptr;
-				//	}
+				case SceneEventType::ActorRemoved:
+					break;
 				}
 			});
 	}
@@ -127,12 +124,12 @@ namespace VisionGal::Editor {
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
 			{
 				std::string path = static_cast<char*>(payload->Data);
-				Horizon::HPath hPath = path;
-				std::string ext = hPath.extension().string();
 
-				if (ext == ".lua")
+				// 检查文件类型
+				auto assetType = VGPackage::GetAssetType(path);
+				if (assetType == "LuaScript")
 				{
-					if (auto* selectedEntity = dynamic_cast<GameActor*>( m_pScene->GetEntity(m_SelectEntityID) ))
+					if (auto* selectedEntity = dynamic_cast<GameActor*>( m_pScene->GetActor(m_SelectEntityID) ))
 					{
 						if (selectedEntity->GetComponent<ScriptComponent>() == nullptr)
 						{
@@ -142,10 +139,14 @@ namespace VisionGal::Editor {
 						auto* com = selectedEntity->GetComponent<ScriptComponent>();
 						auto script = LuaScript::LoadFromFile(path);
 						com->scripts.push_back(script);
+
+						ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置脚本成功!" });
 					}
 				}
-
-				//ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Drag Sprite" });
+				else
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置脚本失败!" });
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}

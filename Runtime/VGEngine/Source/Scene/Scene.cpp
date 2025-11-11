@@ -16,7 +16,7 @@
 
 namespace VisionGal
 {
-	constexpr EntityID ConstHUISceneActor = 0;
+	constexpr VGActorID ConstHUISceneActor = 0;
 
 	class SceneActor : public GameActor
 	{
@@ -47,7 +47,7 @@ namespace VisionGal
 	}
 
 
-	EntityID Scene::NewEntityID()
+	VGActorID Scene::NewEntityID()
 	{
 		srand(std::clock());
 
@@ -64,7 +64,7 @@ namespace VisionGal
 		return result;
 	}
 
-	ComponentID Scene::NewComponentID()
+	VGComponentID Scene::NewComponentID()
 	{
 		srand(std::clock());
 
@@ -81,7 +81,7 @@ namespace VisionGal
 		return result;
 	}
 
-	void Scene::SetEntityBaseData(IEntity* entity, EntityID id, EntityID parentID, const std::string& lable)
+	void Scene::SetEntityBaseData(IEntity* entity, VGActorID id, VGActorID parentID, const std::string& lable)
 	{
 		entity->SetEntityID(id); 
 		entity->SetBaseScene(this);
@@ -155,8 +155,8 @@ namespace VisionGal
 
 		// 事件
 		SceneEvent evt;
-		evt.EventType = SceneEventType::EntityCreating;
-		evt.Entity = entity.get();
+		evt.EventType = SceneEventType::ActorCreating;
+		evt.Actor = entity.get();
 		EngineEventBus::Get().OnSceneEvent.Invoke(evt);
 
 		return entity.get();
@@ -205,7 +205,7 @@ namespace VisionGal
 		m_EntityComponentID.insert(comID);
 	}
 
-	IEntity* Scene::GetEntity(EntityID entityID)
+	IEntity* Scene::GetActor(VGActorID entityID)
 	{
 		if (auto result = m_IDEntityMap.find(entityID); result != m_IDEntityMap.end())
 		{
@@ -214,7 +214,7 @@ namespace VisionGal
 		return nullptr;
 	}
 
-	bool Scene::RemoveEntity(EntityID entityID)
+	bool Scene::RemoveActor(VGActorID entityID)
 	{
 		if (auto result = m_IDEntityMap.find(entityID); result != m_IDEntityMap.end())
 		{
@@ -227,9 +227,9 @@ namespace VisionGal
 
 			// 事件
 			SceneEvent evt;
-			evt.EventType = SceneEventType::EntityRemoved;
-			evt.Entity = &entity;
-			evt.EntityID = entity.GetEntityID();
+			evt.EventType = SceneEventType::ActorRemoved;
+			evt.Actor = &entity;
+			evt.ActorID = entity.GetEntityID();
 			EngineEventBus::Get().OnSceneEvent.Invoke(evt);
 
 			m_IDEntityMap.erase(entityID);
@@ -240,7 +240,7 @@ namespace VisionGal
 		return 0;
 	}
 
-	bool Scene::ExistEntity(EntityID entityID)
+	bool Scene::ExistActor(VGActorID entityID)
 	{
 		return m_IDEntityMap.find(entityID) != m_IDEntityMap.end();
 	}

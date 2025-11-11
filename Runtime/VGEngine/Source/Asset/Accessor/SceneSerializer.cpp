@@ -77,11 +77,11 @@ namespace VisionGal
 		return 0;
 	}
 
-	void EntitySerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void EntitySerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 	}
 
-	void TransformComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void TransformComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		TransformComponent& com = world->emplace<TransformComponent>(actor->GetEntity());
@@ -91,7 +91,7 @@ namespace VisionGal
 		scene->UpdateDeserializeComponent(actor, &com);
 	}
 
-	void CameraComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void CameraComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		CameraComponent& com = world->emplace<CameraComponent>(actor->GetEntity());
@@ -115,7 +115,7 @@ namespace VisionGal
 		scene->UpdateDeserializeComponent(actor, &com);
 	}
 
-	void ScriptComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void ScriptComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		ScriptComponent& com = world->emplace<ScriptComponent>(actor->GetEntity());
@@ -146,7 +146,7 @@ namespace VisionGal
 		scene->UpdateDeserializeComponent(actor, &com);
 	}
 
-	void SpriteRendererComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void SpriteRendererComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		SpriteRendererComponent& com = world->emplace<SpriteRendererComponent>(actor->GetEntity());
@@ -180,7 +180,7 @@ namespace VisionGal
 		scene->UpdateDeserializeComponent(actor, &com);
 	}
 
-	void AudioSourceComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void AudioSourceComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		AudioSourceComponent& com = world->emplace<AudioSourceComponent>(actor->GetEntity());
@@ -196,7 +196,7 @@ namespace VisionGal
 		scene->UpdateDeserializeComponent(actor, &com);
 	}
 
-	void VideoPlayerComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void VideoPlayerComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		VideoPlayerComponent& com = world->emplace<VideoPlayerComponent>(actor->GetEntity());
@@ -212,7 +212,7 @@ namespace VisionGal
 		scene->UpdateDeserializeComponent(actor, &com);
 	}
 
-	void RmlUIDocumentComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, EntityID id)
+	void RmlUIDocumentComponentSerializer::AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id)
 	{
 		auto* world = scene->GetWorld();
 		RmlUIDocumentComponent& com = world->emplace<RmlUIDocumentComponent>(actor->GetEntity());

@@ -25,7 +25,7 @@ namespace VisionGal
 		String VariableName;
 		bool Changed = false;
 
-		EntityID ValueEntityID;
+		VGActorID ValueEntityID;
 		VGPath ValuePath;
 		String ValueString;
 		bool ValueBoolean;

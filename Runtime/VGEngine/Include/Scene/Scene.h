@@ -44,9 +44,9 @@ namespace VisionGal
 		void AddEntityComponent(IEntity* entity, IComponent* component) override;
 		 
 		// 通过 IScene 继承
-		IEntity* GetEntity(EntityID entityID) override;
-		bool RemoveEntity(EntityID entityID) override;
-		bool ExistEntity(EntityID entityID) override;
+		IEntity* GetActor(VGActorID entityID) override;
+		bool RemoveActor(VGActorID entityID) override;
+		bool ExistActor(VGActorID entityID) override;
 		Horizon::HECS* GetWorld() override;
 
 		void Update();
@@ -57,14 +57,14 @@ namespace VisionGal
 		void UpdateDeserializeActorRelationship();
 	private:
 
-		EntityID NewEntityID();
-		ComponentID NewComponentID();
-		void SetEntityBaseData(IEntity* entity, EntityID id, EntityID parentID, const std::string& lable);
+		VGActorID NewEntityID();
+		VGComponentID NewComponentID();
+		void SetEntityBaseData(IEntity* entity, VGActorID id, VGActorID parentID, const std::string& lable);
 		void CreateSceneActor();
 		std::string GetNewLabel(IEntity* hObj);
 	private:
-		std::unordered_map<EntityID, std::shared_ptr<GameActor>> m_IDEntityMap;
-		std::unordered_set<ComponentID> m_EntityComponentID;
+		std::unordered_map<VGActorID, std::shared_ptr<GameActor>> m_IDEntityMap;
+		std::unordered_set<VGComponentID> m_EntityComponentID;
 		ECS m_Registry;
 
 		std::shared_ptr<GameActor> m_SceneActor;

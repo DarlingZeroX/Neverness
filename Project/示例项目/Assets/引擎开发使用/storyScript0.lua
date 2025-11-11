@@ -11,7 +11,7 @@ return function()
 	GalGame.引擎:转场命令('屏幕','淡出 1.0')
 	GalGame.引擎:转场命令('屏幕','淡入 1.0')
     GalGame.引擎:显示背景('图片/背景/走廊背景2.png')
-    GalGame.引擎:等待(2.0)
+    GalGame.引擎:等待(2.0) 
     梦女:说('当前测试：黑屏渐变转场')
     return
 end

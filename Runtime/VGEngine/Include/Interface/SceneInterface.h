@@ -132,9 +132,9 @@ namespace VisionGal
 		virtual GameActor* CreateActor(IEntity* parent = nullptr) = 0;
 		virtual void AddEntityComponent(IEntity* entity, IComponent* component) = 0;
 
-		virtual IEntity* GetEntity(EntityID entityID) = 0;
-		virtual bool RemoveEntity(EntityID entityID) = 0;
-		virtual bool ExistEntity(EntityID entityID) = 0;
+		virtual IEntity* GetActor(VGActorID entityID) = 0;
+		virtual bool RemoveActor(VGActorID entityID) = 0;
+		virtual bool ExistActor(VGActorID entityID) = 0;
 	};
 
 	template <typename T>
@@ -150,8 +150,8 @@ namespace VisionGal
 	struct SceneDeserializeEntity
 	{
 		String Label;
-		EntityID ID;
-		EntityID Parent;
+		VGActorID ID;
+		VGActorID Parent;
 		std::vector<uint64> ComponentIDs;
 	};
 }
