@@ -495,6 +495,7 @@ namespace Horizon
 
 	HMousePos HMouse::GetMousePosition() const noexcept
 	{
+
 		return m_MouseContext.GetPos();
 	}
 

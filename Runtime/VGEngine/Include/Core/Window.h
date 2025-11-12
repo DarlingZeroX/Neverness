@@ -27,10 +27,14 @@ namespace VisionGal
         VGWindow& operator=(const VGWindow&) = delete;
         ~VGWindow() override = default;
     public:
+		void SetInitializeBorderless(bool borderless);
         bool Initialize(const char* window_name, int width, int height, bool allow_resize);
         SDL_GLContext GetContext() override { return m_GLContext; }
     private:
         SDL_GLContext m_GLContext;
+
+		bool m_OnResizeWindowMode = false;
+		bool m_Borderless = false;
     };
 
 }

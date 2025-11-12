@@ -35,6 +35,7 @@ namespace VisionGal::Editor
 
 		// 初始化编辑器窗口
 		m_EditorWindow = CreateRef<VGWindow>();
+		m_EditorWindow->SetInitializeBorderless(true);
 		m_EditorWindow->Initialize(editorName.c_str(), windowWidth, windowHeight,true);
 
 		// 初始化游戏引擎
@@ -61,7 +62,7 @@ namespace VisionGal::Editor
 		auto mainWindow = CreateRef<EditorMainWindow>();
 		//auto editorSidebar = CreateRef<EditorSideBar>();
 
-		editor->AddPanelWithID("EditorMenuBar", CreateRef<EditorMenuBar>());
+		editor->AddPanelWithID("EditorMenuBar", CreateRef<EditorMenuBar>(m_EditorWindow.get()));
 		//editor->AddPanelWithID("EditorSideBar", editorSidebar);
 		editor->AddPanelWithID("EditorMainWindow", mainWindow);
 		editor->AddPanelWithID("EditorPreferences", CreateRef<PreferencesPanel>());

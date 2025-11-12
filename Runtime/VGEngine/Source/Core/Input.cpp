@@ -44,31 +44,68 @@ namespace VisionGal
 
 	bool Input::GetMouseButtonDown(int button)
 	{
+		if (Get()->m_Viewport == nullptr)
+			return false;
+
+		if (Get()->m_Viewport->IsEnableInput() == false)
+			return false;
+			//return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+
 		return GetMouse().IsMouseButtonDown(static_cast<Horizon::HMouseButton>(button));
 	}
 
 	bool Input::GetMouseButtonUp(int button)
 	{
+		if (Get()->m_Viewport == nullptr)
+			return false;
+
+		if (Get()->m_Viewport->IsEnableInput() == false)
+			return false;
+
 		return GetMouse().IsMouseButtonUp(static_cast<Horizon::HMouseButton>(button));
 	}
 
 	bool Input::GetMouseButtonHeld(int button)
 	{
+		if (Get()->m_Viewport == nullptr)
+			return false;
+
+		if (Get()->m_Viewport->IsEnableInput() == false)
+			return false;
+
 		return GetMouse().IsMouseButtonHeld(static_cast<Horizon::HMouseButton>(button));
 	}
 
 	bool Input::GetKey(Horizon::HKeycode code)
 	{
+		if (Get()->m_Viewport == nullptr)
+			return false;
+
+		if (Get()->m_Viewport->IsEnableInput() == false)
+			return false;
+
 		return GetKeyboard().IsKeyHeld(code);
 	}
 
 	bool Input::GetKeyDown(Horizon::HKeycode code)
 	{
+		if (Get()->m_Viewport == nullptr)
+			return false;
+
+		if (Get()->m_Viewport->IsEnableInput() == false)
+			return false;
+
 		return GetKeyboard().IsKeyDown(code);
 	}
 
 	bool Input::GetKeyUp(Horizon::HKeycode code)
 	{
+		if (Get()->m_Viewport == nullptr)
+			return false;
+
+		if (Get()->m_Viewport->IsEnableInput() == false)
+			return false;
+
 		return GetKeyboard().IsKeyUp(code);
 	}
 

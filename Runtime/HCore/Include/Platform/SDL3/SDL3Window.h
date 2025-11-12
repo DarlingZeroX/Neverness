@@ -70,7 +70,7 @@ namespace Horizon::SDL3
 		unsigned WindowHeight() const noexcept override;
 
 		void SetWindowPos(int x, int y) override;
-		uint2 GetWindowPos() const override;
+		int2 GetWindowPos() const override;
 
 		void MinimizeWindow() override;
 		void MaximizeWindow() override;

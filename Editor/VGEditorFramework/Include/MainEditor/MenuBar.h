@@ -14,12 +14,15 @@
 #include <vector>
 #include <HCore/Include/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
+#include <VGEngine/Include/Core/Window.h>
+#include <VGEngine/Include/Resource/Texture2D.h>
 
 namespace VisionGal::Editor
 {
 	struct VG_EDITOR_FRAMEWORK_API EditorMenuBar : public IEditorPanel
 	{
 		EditorMenuBar() = default;
+		EditorMenuBar(VGWindow* window);
 		EditorMenuBar(const EditorMenuBar&) = default;
 		EditorMenuBar& operator=(const EditorMenuBar&) = default;
 		EditorMenuBar(EditorMenuBar&&) noexcept = default;
@@ -31,6 +34,14 @@ namespace VisionGal::Editor
 		std::string GetWindowName() override;
 		void OpenWindow(bool open) override;
 		bool IsWindowOpened() override;
+
+	private:
+		void HandleDraggingWindow();
+		void HandleWindowControl();
+		bool m_bDragging = false;
+		VGWindow* m_EditorWindow = nullptr;
+		bool m_EditorMaximized = false;
+		Ref<Texture2D> m_EngineIcon = nullptr;
 	};
 
 }

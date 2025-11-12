@@ -21,6 +21,7 @@ namespace VisionGal::Editor
 		}
 
 		AddDocument(doc);
+		SetDocumentActive(path);
 
 		return true;
 	}

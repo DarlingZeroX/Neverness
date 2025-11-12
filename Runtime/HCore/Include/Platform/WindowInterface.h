@@ -30,7 +30,7 @@ H_BEGIN_ROOT_NAMESPACE
 	virtual unsigned int WindowHeight() const noexcept = 0;
 
 	virtual void SetWindowPos(int x, int y) = 0;
-	virtual uint2 GetWindowPos() const = 0;
+	virtual int2 GetWindowPos() const = 0;
 
 	virtual void MinimizeWindow() = 0;
 	virtual void MaximizeWindow() = 0;

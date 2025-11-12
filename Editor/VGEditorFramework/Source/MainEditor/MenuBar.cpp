@@ -13,15 +13,24 @@
 //#include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 #include <VGImgui/IncludeImGuiEx.h>
 #include "PanelManager.h"
+#include "EditorCore/EditorCore.h"
 #include "EditorCore/Localization.h"
 #include "EditorCore/EdtiorScene.h"
 #include "HCore/Include/System/HSystemMisc.h"
 #include "MainEditor/MainPanel.h"
+#include "VGEngine/Include/Core/Input.h"
 #include "VGEngine/Include/Engine/Manager.h"
 #include "VGEngine/Include/Engine/VGEngine.h"
+#include "VGEngine/Include/Interface/Loader.h"
 
 namespace VisionGal::Editor
 {
+	EditorMenuBar::EditorMenuBar(VGWindow* window)
+		:m_EditorWindow(window)
+	{
+		m_EngineIcon = LoadObject<Texture2D>(  "/editor/icons/engineIcon.png");
+	}
+
 	void EditorMenuBar::OnGUI()
 	{
 		static bool s_ShowImguiStyleEditor = false;
@@ -34,7 +43,15 @@ namespace VisionGal::Editor
 
 		if (ImGui::BeginMainMenuBar())
 		{
-			//HandleDraggingWindow();
+			// 拖动窗口
+			HandleDraggingWindow();
+
+			// 引擎图标
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+			ImVec2 size = { 40,ImGui::GetFrameHeight() * 2 };
+			ImGui::Image(m_EngineIcon->GetTexture()->GetShaderResourceView(),
+				size);
+			ImGui::PopStyleVar();
 
 			// 文件菜单
 			if (ImGui::BeginMenu(EditorText{ "File" }.c_str()))
@@ -153,7 +170,7 @@ namespace VisionGal::Editor
 				ImGui::EndMenu();
 			}
 
-			//HandleWindowControl();
+			HandleWindowControl();
 			ImGui::EndMainMenuBar();
 		}
 
@@ -185,5 +202,80 @@ namespace VisionGal::Editor
 	bool EditorMenuBar::IsWindowOpened()
 	{
 		return true;
+	}
+
+	void EditorMenuBar::HandleDraggingWindow()
+	{
+		if (!ImGui::IsWindowHovered() && !m_bDragging)
+			return;
+
+		if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+		{
+			m_bDragging = false;
+			return;
+		}
+
+		static int2 position = int2(0, 0);
+		if (m_bDragging == false)
+		{
+			position = m_EditorWindow->GetWindowPos();
+		}
+
+		m_bDragging = true;
+		if (m_EditorWindow)
+		{
+			auto dragDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
+			//std::cout << "Drag Delta: " << dragDelta.x << ", " << dragDelta.y << std::endl;
+			//std::cout << "position: " << position.x << ", " << position.y << std::endl;
+			m_EditorWindow->SetWindowPos(position.x + dragDelta.x, position.y + dragDelta.y);
+		}
+	}
+
+	void EditorMenuBar::HandleWindowControl()
+	{
+		if (m_EditorWindow == nullptr)
+			return;
+
+		//ImGui::SameLine(ImGui::GetWindowWidth() - 160);
+		ImGui::Indent(ImGui::GetWindowWidth() - 160);
+
+		ImGui::PushID("MainMenuBarPanel WindowControl");
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.1f, 0.1f, 0.1f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 1.0f, 1.0f, 1.0f, 0.2f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 1.0f, 1.0f, 1.0f, 0.4f });
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.0f, 0.0f, 0.0f, 0.01f });
+
+		ImVec2 size = { 40,ImGui::GetFrameHeight() };
+
+		if (ImGui::Button(ICON_FA_MINUS"##WindowMin", size))
+		{
+			m_EditorWindow->MinimizeWindow();
+		}//ImGui::SameLine();
+
+		if (m_EditorMaximized)
+		{
+			if (ImGui::Button(ICON_FA_WINDOW_RESTORE"##WindowMax", size))
+			{
+				m_EditorWindow->RestoreWindow();
+				m_EditorMaximized = false;
+			}//ImGui::SameLine();
+		}
+		else
+		{
+			if (ImGui::Button(ICON_FA_WINDOW_MAXIMIZE"##WindowMax", size))
+			{
+				m_EditorWindow->MaximizeWindow();
+				m_EditorMaximized = true;
+			}//ImGui::SameLine();
+		}
+
+
+		if (ImGui::Button(ICON_FA_TIMES"##WindowClose", size))
+		{
+			VGEngine::Get()->RequestExit();
+		}
+
+		ImGui::PopStyleColor(4);
+		ImGui::PopID();
 	}
 }

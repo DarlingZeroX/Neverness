@@ -235,7 +235,7 @@ namespace Horizon::SDL3
 		SDL_SetWindowPosition(m_pWindow, x, y);
 	}
 
-	uint2 Window::GetWindowPos() const
+	int2 Window::GetWindowPos() const
 	{
 		int x, y;
 		SDL_GetWindowPosition(m_pWindow, &x, &y);

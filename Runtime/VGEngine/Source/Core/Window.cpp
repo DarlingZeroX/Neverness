@@ -24,6 +24,50 @@ namespace VisionGal
 			});
 	}
 
+	SDL_HitTestResult VGHitTestCallback(SDL_Window* win, const SDL_Point* pt, void* data)
+	{
+#define REPORT_RESIZE_HIT(name) { std::cout << "HIT-TEST: RESIZE_" #name "\n" << std::endl;OnResizeWindowMode = true; return SDL_HITTEST_RESIZE_##name;  }
+
+		static constexpr int RESIZE_BORDER = 5;
+		bool& OnResizeWindowMode = *reinterpret_cast<bool*>(data);
+
+		int w, h;
+		SDL_GetWindowSize(win, &w, &h);
+
+		if (pt->x < RESIZE_BORDER && pt->y < RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(TOPLEFT);
+		}
+		else if (pt->x > RESIZE_BORDER && pt->x < w - RESIZE_BORDER && pt->y < RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(TOP);
+		}
+		else if (pt->x > w - RESIZE_BORDER && pt->y < RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(TOPRIGHT);
+		}
+		else if (pt->x > w - RESIZE_BORDER && pt->y > RESIZE_BORDER && pt->y < h - RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(RIGHT);
+		}
+		else if (pt->x > w - RESIZE_BORDER && pt->y > h - RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(BOTTOMRIGHT);
+		}
+		else if (pt->x < w - RESIZE_BORDER && pt->x > RESIZE_BORDER && pt->y > h - RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(BOTTOM);
+		}
+		else if (pt->x < RESIZE_BORDER && pt->y > h - RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(BOTTOMLEFT);
+		}
+		else if (pt->x < RESIZE_BORDER && pt->y < h - RESIZE_BORDER && pt->y > RESIZE_BORDER) {
+			REPORT_RESIZE_HIT(LEFT);
+		}
+
+		return SDL_HITTEST_NORMAL;
+	}
+
+	void VGWindow::SetInitializeBorderless(bool borderless)
+	{
+		m_Borderless = borderless;
+		//return SDL_SetWindowBordered(GetSDLWindow(), !borderless);
+	}
+
 	bool VGWindow::Initialize(const char* window_name, int width, int height, bool allow_resize)
 	{
 		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO))
@@ -55,6 +99,12 @@ namespace VisionGal
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, allow_resize);
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
+
+		// 无边框
+		if (m_Borderless)
+			SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN, true);
+
+		// 创建窗口
 		SDL_Window* window = SDL_CreateWindowWithProperties(props);
 		SDL_DestroyProperties(props);
 
@@ -110,6 +160,17 @@ namespace VisionGal
 
 		//注意：还必须在按下字符键时启用 SDL 的文本输入模式：
 		//SDL_StartTextInput(window);   // 在应用开始时调用
+
+		// 设置无边框可调整大小
+		if (m_Borderless)
+		{
+			SDL_GetWindowID(GetSDLWindow());
+			SDL_SetWindowResizable(GetSDLWindow(), true);
+			SDL_SetWindowHitTest(GetSDLWindow(), VGHitTestCallback, &m_OnResizeWindowMode);
+		}
+
+		// 设置窗口获得焦点
+		SDL_RaiseWindow(GetSDLWindow());
 
 		return true;
 	}

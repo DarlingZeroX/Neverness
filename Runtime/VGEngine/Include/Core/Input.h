@@ -48,7 +48,7 @@ namespace VisionGal
 		Ref<Horizon::SDL3::Mouse> m_Mouse = nullptr;
 		Ref<Horizon::SDL3::Keyboard> m_Keyboard = nullptr;
 
-		Viewport* m_Viewport;
+		Viewport* m_Viewport = nullptr;
 		std::unordered_map<std::string, Horizon::HKeycode> m_NameKeycodeMap;
 	};
 
