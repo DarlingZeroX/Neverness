@@ -14,7 +14,9 @@
 #include "../EngineConfig.h"
 #include <chrono>
 #include <RmlUi/Core.h>
- 
+
+#include "sol/function.hpp"
+
 namespace VisionGal::GalGame
 {
 	class TypingEffect
@@ -38,6 +40,9 @@ namespace VisionGal::GalGame
 		void FinishTyping();
 		float GetTypingDelay();									// 获取打字延迟
 		void SetTypingDelay(float delay);						// 设置打字延迟
+
+		void AddTypingCallback(sol::function callback);
+		void ClearAllTypingCallbacks();
 	private:
 		std::string& display_text;  // 当前显示的文本
 		std::string target_text;   // 完整目标文本
@@ -46,6 +51,8 @@ namespace VisionGal::GalGame
 		std::chrono::high_resolution_clock::time_point last_update_time;
 
 		size_t current_char_pos = 0; // 当前字符位置（按字节）
+
+		std::vector<sol::function> m_TypingCallbacks;	// 打字回调列表
 	};
 
 	class VG_ENGINE_API DialogueSystem: public IDialogueSystem
@@ -83,7 +90,10 @@ namespace VisionGal::GalGame
 		void SetFastForwardDelay(float delay) override;			// 设置快进间隔
 		float GetFastForwardDelay() const override;				// 获取快进间隔
 
-		bool IsVoicing();
+		bool IsVoicing();										// 是否正在播放语音
+
+		void AddTypingCallback(sol::function callback);
+		void ClearAllTypingCallbacks();
 
 		// 跳到对话
 		void JumpToDialog(const std::string& text);

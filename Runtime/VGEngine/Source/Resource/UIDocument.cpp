@@ -11,6 +11,8 @@
 
 #include "Resource/UIDocument.h"
 
+#include "Engine/Manager/SceneManager.h"
+
 namespace VisionGal
 {
 	RmlUIDocument::RmlUIDocument()
@@ -39,6 +41,9 @@ namespace VisionGal
 
 	void RmlUIDocument::Update()
 	{
+		if (SceneManager::Get()->IsPlayMode() == false)
+			return;
+
 		// 调用显示回调
 		for (auto& callback : m_LuaUpdateCallbacks)
 		{

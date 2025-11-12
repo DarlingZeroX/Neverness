@@ -40,7 +40,15 @@ namespace VisionGal::GalGame
 			"完成打印对话", &DialogueSystem::FinishTyping,
 			"获取对话人物", &DialogueSystem::GetDialogCharacter,
 			"获取对话文本", &DialogueSystem::GetDialogText,
+			"添加打印回调", &DialogueSystem::AddTypingCallback,
+			"清除全部打印回调", &DialogueSystem::ClearAllTypingCallbacks,
 
+			"当前对话人物", sol::property(
+				[](DialogueSystem& self) -> std::string { return self.GetCurrentCharacter(); }
+			),
+			"当前对话文本", sol::property(
+				[](DialogueSystem& self) -> std::string { return self.GetCurrentDialogText(); }
+			),
 			"是否正在打印对话", sol::property(
 				[](DialogueSystem& self) -> bool { return self.IsTypingText(); }
 			),

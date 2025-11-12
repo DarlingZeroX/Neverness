@@ -33,6 +33,16 @@ namespace VisionGal::GalGame
 		last_update_time = std::chrono::high_resolution_clock::now();
 		is_typing = true;
 
+		// 调用打印回调
+		for (auto& callback:m_TypingCallbacks)
+		{
+			sol::protected_function_result res = callback("", false);
+			if (!res.valid()) {
+				sol::error err = res;
+				H_LOG_ERROR("%s", err.what());
+			}
+		}
+
 		current_char_pos = 0;
 	}
 
@@ -60,6 +70,16 @@ namespace VisionGal::GalGame
 			// 检查是否完成
 			if (current_char_pos >= target_text.length())
 				is_typing = false;
+
+			// 调用打印回调
+			for (auto& callback:m_TypingCallbacks)
+			{
+				sol::protected_function_result res = callback(next_char, true);
+				if (!res.valid()) {
+					sol::error err = res;
+					H_LOG_ERROR("%s", err.what());
+				}
+			}
 
 			//std::cout << display_text.length() << std::endl;
 		}
@@ -121,6 +141,16 @@ namespace VisionGal::GalGame
 		display_text = target_text;
 		current_char_pos = target_text.length();
 		is_typing = false;
+
+		// 调用打印回调
+		for (auto& callback:m_TypingCallbacks)
+		{
+			sol::protected_function_result res = callback(target_text, is_typing);
+			if (!res.valid()) {
+				sol::error err = res;
+				H_LOG_ERROR("%s", err.what());
+			}
+		}
 	}
 
 	float TypingEffect::GetTypingDelay()
@@ -133,6 +163,15 @@ namespace VisionGal::GalGame
 		typing_delay = delay;
 	}
 
+	void TypingEffect::AddTypingCallback(sol::function callback)
+	{
+		m_TypingCallbacks.push_back(callback);
+	}
+
+	void TypingEffect::ClearAllTypingCallbacks()
+	{
+		m_TypingCallbacks.clear();
+	}
 
 	DialogueSystem::DialogueSystem()
 		:m_TypingEffect(m_DialogText)
@@ -294,6 +333,16 @@ namespace VisionGal::GalGame
 		LayeredSceneManager::AudioLayer* voiceLayer = sceneManager->GetAudioLayer("Voice");
 
 		return voiceLayer->IsPlayFinished() == false;
+	}
+
+	void DialogueSystem::AddTypingCallback(sol::function callback)
+	{
+		m_TypingEffect.AddTypingCallback(callback);
+	}
+
+	void DialogueSystem::ClearAllTypingCallbacks()
+	{
+		m_TypingEffect.ClearAllTypingCallbacks();
 	}
 
 	void DialogueSystem::JumpToDialog(const std::string& text)
