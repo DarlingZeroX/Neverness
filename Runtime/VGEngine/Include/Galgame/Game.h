@@ -132,7 +132,7 @@ namespace VisionGal::GalGame
 		GalAudio* GetCurrentVoice();
 		void AddFigure(const String& state, const String& spritePath);
 
-		GalSprite* ShowFigure(const String& state);
+		GalSprite* ShowFigure(const String& stateOrPath);
 		void HideFigure();
 		GalSprite* GetCurrentFigure();
 		

@@ -1,22 +1,19 @@
 {
+    "VGSCENE_Magic": "VGSCENE",
+    "VGSCENE_MajorVersion": 0,
+    "VGSCENE_MinorVersion": 1,
+    "VGSCENE_Loader": "DEFAULT;",
     "SegmentNumber": 9,
     "SegmentType": "Script",
     "ComponentNumber": 0,
     "SegmentType": "Entity",
     "EntityNumber": 5,
-    "Label": "音频源",
-    "ID": 7172084121472160308,
+    "Label": "UI文档",
+    "ID": 12240215965250073802,
     "Parent": 0,
     "ComponentIDs": [
-        7172084121472160308,
-        1486735350898506029
-    ],
-    "Label": "相机",
-    "ID": 2441793602883057820,
-    "Parent": 0,
-    "ComponentIDs": [
-        2441793602883057820,
-        7565472559013602276
+        5530299029171720523,
+        15262516470008218613
     ],
     "Label": "精灵",
     "ID": 7565472559013602276,
@@ -25,12 +22,19 @@
         6557717273463339951,
         10179991923200072659
     ],
-    "Label": "UI文档",
-    "ID": 12240215965250073802,
+    "Label": "相机",
+    "ID": 2441793602883057820,
     "Parent": 0,
     "ComponentIDs": [
-        5530299029171720523,
-        15262516470008218613
+        2441793602883057820,
+        7565472559013602276
+    ],
+    "Label": "音频源",
+    "ID": 7172084121472160308,
+    "Parent": 0,
+    "ComponentIDs": [
+        7172084121472160308,
+        1486735350898506029
     ],
     "Label": "Scene",
     "ID": 0,
@@ -49,27 +53,7 @@
     "SegmentType": "Transform",
     "ComponentNumber": 4,
     "Transform": {
-        "EntityComponentID": 7172084121472160308,
-        "location": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
-        "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "w": 1.0
-        },
-        "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-        },
-        "visible": true
-    },
-    "Transform": {
-        "EntityComponentID": 2441793602883057820,
+        "EntityComponentID": 5530299029171720523,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -109,7 +93,27 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 5530299029171720523,
+        "EntityComponentID": 2441793602883057820,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
+    "Transform": {
+        "EntityComponentID": 7172084121472160308,
         "location": {
             "x": 0.0,
             "y": 0.0,

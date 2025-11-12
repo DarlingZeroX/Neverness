@@ -10,11 +10,12 @@
 */
 
 #include "Asset/Accessor/SceneAccessor.h"
+#include "Asset/Accessor/SceneSerializer.h"
+#include "Asset/Accessor/SceneSerializeFormat.h"
 #include <HCore/Include/Core/HSerialization.h>
+#include "Core/VFS.h"
 #include "Asset/Package.h"
 #include "Scene/Components.h"
-#include "Asset/Accessor/SceneSerializer.h"
-#include "Core/VFS.h"
 
 namespace VisionGal
 {
@@ -30,11 +31,18 @@ namespace VisionGal
 
 		if (!file->IsOpened())
 			return false;
+
+		SceneSerializeFormatHeader header;
 		 
 		// 1. 序列化对象到内存流
 		std::stringstream serializedStream;
 		{
 			cereal::JSONOutputArchive archive(serializedStream);
+
+			archive(cereal::make_nvp("VGSCENE_Magic", header.magic));
+			archive(cereal::make_nvp("VGSCENE_MajorVersion", header.majorVersion));
+			archive(cereal::make_nvp("VGSCENE_MinorVersion", header.minorVersion));
+			archive(cereal::make_nvp("VGSCENE_Loader", header.loader));
 
 			SceneSerializer serializer;
 			serializer.SerializeScene(archive, scene);
@@ -62,27 +70,48 @@ namespace VisionGal
 		if (stream.Open(path) == false)
 			return false;
 	//
+		SceneSerializeFormatHeader currentVersionHeader;
+		SceneSerializeFormatHeader fileHeader;
 		bool isException = false;
 		// 创建cereal归档器
 		try {
 			cereal::JSONInputArchive archive(stream.GetStream());
 
+			archive(fileHeader.magic);
+			archive(fileHeader.majorVersion);
+			archive(fileHeader.minorVersion);
+			archive(fileHeader.loader);
+
+			if (fileHeader.magic != currentVersionHeader.magic)
+			{
+				H_LOG_ERROR( "错误场景文件" );
+				isException = true;
+			}
+			else if (fileHeader.majorVersion > currentVersionHeader.majorVersion)
+			{
+				H_LOG_ERROR( "旧版引擎不支持新版场景资产" );
+				isException = true;
+			}
+
 			SceneSerializer serializer;
-			serializer.DeserializeScene(archive, sceneAsset->LoadedScene.get());
+			if (isException == false)
+			{
+				serializer.DeserializeScene(archive, sceneAsset->LoadedScene.get());
+			}
 		}
 		catch (const cereal::RapidJSONException& e) {
 			isException = true;
-			std::cerr << "JSON解析错误: " << e.what() << std::endl;
+			H_LOG_ERROR( "JSON解析错误: %s", e.what() );
 			// 输出当前JSON位置和内容，帮助调试
 			// 可能需要使用cereal的调试API
 		}
 		catch (const cereal::Exception& e) {
 			isException = true;
-			std::cerr << "序列化错误: " << e.what() << std::endl;
+			H_LOG_ERROR( "序列化错误: %s", e.what() );
 		}
 		catch (const std::exception& e) {
 			isException = true;
-			std::cerr << "标准异常: " << e.what() << std::endl;
+			H_LOG_ERROR( "标准异常: %s", e.what() );
 		}
 
 		if (isException)

@@ -442,63 +442,74 @@ namespace VisionGal::GalGame
 		m_CharacterSpriteStates[state] = spritePath;
 	}
 
-	GalSprite* GalCharacter::ShowFigure(const String& state)
+	GalSprite* GalCharacter::ShowFigure(const String& stateOrPath)
 	{
 		auto* engine = GameEngineCore::GetCurrentEngine();
 
 		// 隐藏当前立绘
 		HideFigure();
 
+		bool isState = false;
+		std::string path;
 		// 查找人物立绘状态
-		auto result = m_CharacterSpriteStates.find(state);
+		auto result = m_CharacterSpriteStates.find(stateOrPath);
 		if (result != m_CharacterSpriteStates.end())
 		{
-			// 显示立绘
-			auto& path = result->second;
-			//auto* sprite = engine->ShowSprite("Scene", path);
-			auto* sprite = engine->ShowSprite("SceneCharacterSpriteCurrent", path);
-
-			if (sprite == nullptr)
-				return nullptr;
-
-			// 调用显示回调
-			for (auto& callback:m_ShowFigureCallbacks)
-			{
-				sol::protected_function_result res = callback(sprite);
-				if (!res.valid()) {
-					sol::error err = res;
-					H_LOG_ERROR("%s", err.what());
-				}
-			}
-
-			// 复制立绘X位置
-			if (m_CurrentState.Sprite)
-			{
-				sprite->SetPosX(m_CurrentState.Sprite->GetPosX());
-			}
-
-			// 删除最后的立绘
-			if (m_LastState.Sprite != nullptr)
-			{
-				engine->RemoveSprite(m_LastState.Sprite);
-			}
-
-			// 保存到最后的立绘状态
-			m_LastState.State = m_CurrentState.State;
-			m_LastState.Sprite = m_CurrentState.Sprite;
-			m_LastState.IsHide = m_CurrentState.IsHide;
-
-			// 将上一个立绘移动到前一层
-			engine->GetLayeredSceneManager()->MoveSpriteToLayer(m_LastState.Sprite, "SceneCharacterSpritePrev");
-
-			// 保存当前显示状态
-			m_CurrentState.State = state;
-			m_CurrentState.Sprite = sprite;
-			m_CurrentState.IsHide = false;
-			return sprite;
+			path = result->second;
+			isState = true;
+		}
+		else
+		{
+			path = stateOrPath;
 		}
 
-		return nullptr;
+		
+		// 显示立绘
+		//auto& path = result->second;
+		//auto* sprite = engine->ShowSprite("Scene", path);
+		auto* sprite = engine->ShowSprite("SceneCharacterSpriteCurrent", path);
+
+		if (sprite == nullptr)
+			return nullptr;
+
+		// 调用显示回调
+		for (auto& callback:m_ShowFigureCallbacks)
+		{
+			sol::protected_function_result res = callback(sprite);
+			if (!res.valid()) {
+				sol::error err = res;
+				H_LOG_ERROR("%s", err.what());
+			}
+		}
+
+		// 复制立绘X位置
+		if (m_CurrentState.Sprite)
+		{
+			sprite->SetPosX(m_CurrentState.Sprite->GetPosX());
+		}
+
+		// 删除最后的立绘
+		if (m_LastState.Sprite != nullptr)
+		{
+			engine->RemoveSprite(m_LastState.Sprite);
+		}
+
+		// 保存到最后的立绘状态
+		m_LastState.State = m_CurrentState.State;
+		m_LastState.Sprite = m_CurrentState.Sprite;
+		m_LastState.IsHide = m_CurrentState.IsHide;
+
+		// 将上一个立绘移动到前一层
+		engine->GetLayeredSceneManager()->MoveSpriteToLayer(m_LastState.Sprite, "SceneCharacterSpritePrev");
+
+		// 保存当前显示状态
+		if (isState)
+			m_CurrentState.State = stateOrPath;
+		else
+			m_CurrentState.State = "";
+		m_CurrentState.Sprite = sprite;
+		m_CurrentState.IsHide = false;
+		return sprite;
 	}
 
 	void GalCharacter::HideFigure()
