@@ -13,6 +13,7 @@
 #include "Texture2D.h"
 #include "Video.h"
 #include "../Interface/Loader.h"
+#include "../Asset/TextureAsset.h"
 #include <HCore/Include/Core/HSingleton.h>
 
 namespace VisionGal {
@@ -27,6 +28,7 @@ namespace VisionGal {
 		TextureResourceManager& operator=(TextureResourceManager&&) noexcept = default;
 		~TextureResourceManager() override = default;
 
+		static Ref<Texture2D> CreateRenderTexture(TextureAsset& asset);
 		static void CreateManager();
 		uint64 NumCacheTexture() const { return m_CachedTextures.size(); }
 		VGObjectPtr StaticLoadObject(const String& path) override;

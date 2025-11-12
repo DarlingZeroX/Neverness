@@ -19,6 +19,10 @@
 #include <iostream>
 #include <filesystem>
 
+#ifndef VFSPP_ENABLE_MULTITHREADING
+#define VFSPP_ENABLE_MULTITHREADING true
+#endif
+
 #ifdef VFSPP_ENABLE_MULTITHREADING
 #define VFSPP_MT_SUPPORT_ENABLED true
 #else

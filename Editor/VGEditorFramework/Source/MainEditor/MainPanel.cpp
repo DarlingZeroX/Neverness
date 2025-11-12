@@ -151,7 +151,15 @@ namespace VisionGal::Editor
 
 	void EditorMainWindow::OnUpdate(float delta)
 	{
+		for (auto& panel: m_Panels)
+		{
+			panel->OnUpdate(delta);
+		}
 
+		for (auto& [name, panel] : m_IDPanels)
+		{
+			panel->OnUpdate(delta);
+		}
 	}
 
 	void EditorMainWindow::OnFixedUpdate()

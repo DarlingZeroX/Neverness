@@ -31,7 +31,7 @@ namespace VisionGal
 		new TextureResourceManager();
 	}
 
-	Ref<Texture2D> CreateRenderTexture(TextureAsset& asset)
+	Ref<Texture2D> TextureResourceManager::CreateRenderTexture(TextureAsset& asset)
 	{
 		VGFX::TextureDesc desc;
 		desc.Width = asset.Width;

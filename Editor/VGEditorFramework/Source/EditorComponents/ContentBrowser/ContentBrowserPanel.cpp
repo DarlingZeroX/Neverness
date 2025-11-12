@@ -9,9 +9,10 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "EditorComponents/ContentBrowser/Thumbnial.h"
+#include "EditorComponents/ContentBrowser/ContentBrowserFileUIBox.h"
 #include "EditorComponents/ContentBrowser/ContentBrowserPanel.h"
 #include "EditorComponents/ContentBrowser/ContentBrowserUITasks.h"
+#include "EditorComponents/ContentBrowser/ThumbnialManager.h"
 
 #include <VGImgui/IncludeImGuiEx.h>
 #include <HCore//Include/Core/HStringTools.h>
@@ -35,15 +36,8 @@ namespace VisionGal::Editor {
 		m_pContentBrowser = ContentBrowser::GetInstancePtr();
 		//RefreshDirectory();
 
-		m_Icons["Image"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/image.png");
-		m_Icons["Folder"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/folder.png");
-		m_Icons["File"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/file.png");
-		m_Icons["LuaScript"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/lua.png");
-		m_Icons["Scene"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/scene.png");
-		m_Icons["HTML"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/html.png");
-		m_Icons["CSS"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/css.png");
-		m_Icons["Sound"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/sound.png");
-		m_Icons["GalGameStoryScript"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/galStoryScript.png");
+		// 初始化缩略图管理器
+		ThumbnailManager::GetInstance().Initialize();
 	}
 
 	ContentBrowserPanel::ContentBrowserPanel(const pfsPath& path)
@@ -123,6 +117,11 @@ namespace VisionGal::Editor {
 			ImGui::EndChild();
 		}
 		ImGui::End();
+	}
+
+	void ContentBrowserPanel::OnUpdate(float delta)
+	{
+		ThumbnailManager::GetInstance().OnUpdate();
 	}
 
 	std::string ContentBrowserPanel::GetWindowFullName()
@@ -366,7 +365,7 @@ namespace VisionGal::Editor {
 		ImGuiEx::ScopedStyleColor colButton(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		ImGuiEx::ScopedStyleVar itemSpacing(ImGuiStyleVar_ItemSpacing, ImVec2(4, 8));
 
-		Thumbnial& thumbnial = Thumbnial::Get();
+		ContentBrowserFileUIBox& thumbnial = ContentBrowserFileUIBox::Get();
 
 		const ImVec2 windowPos = ImGui::GetWindowPos();
 		const ImVec2 windowSize = ImGui::GetWindowSize();
@@ -402,7 +401,7 @@ namespace VisionGal::Editor {
 					return;
 				}
 
-				item.iconView = GetFileIcon(item);
+				item.iconView = GetAssetThumbnail(item);
 				thumbnial.Draw(m_pContentBrowser, draw_list, item, p0, p1);
 			};
 
@@ -476,6 +475,14 @@ namespace VisionGal::Editor {
 
 				ImGui::Separator();
 
+				if (ImGui::Selectable(EditorText{ "Copy asset name" }.c_str()))
+				{
+					auto PathStr = item.Path;
+					PathStr = Horizon::HFileSystem::GetFileNameFromPath(PathStr);
+					Horizon::HClipboard::SetText(PathStr.c_str());
+					return true;
+				}
+
 				if (ImGui::Selectable(EditorText{ "Copy galgame asset path" }.c_str()))
 				{
 					auto assetPath = std::filesystem::path(item.Path).lexically_relative("/assets");
@@ -507,7 +514,6 @@ namespace VisionGal::Editor {
 	{
 		if (!m_IsAnyContentBrowserItemHovered && ImGui::BeginPopupContextItem("ContentBrowserContextMenu"))
 		{
-
 			if (ImGui::MenuItemEx(EditorText{ "Create Directory" }.c_str(), ICON_FA_FOLDER))
 			{
 				auto task = ImGuiEx::ImTaskManager::GetInstance().NewTask(
@@ -575,54 +581,9 @@ namespace VisionGal::Editor {
 		}
 	}
 
-	void* ContentBrowserPanel::GetFileIcon(ContentBrowserItem& item)
+	void* ContentBrowserPanel::GetAssetThumbnail(ContentBrowserItem& item)
 	{
-		if (item.IsDirectory)
-		{
-			return m_Icons["Folder"]->GetTexture()->GetShaderResourceView();
-		}
-
-		if (item.MetaData.AssetType == "Texture")
-		{
-			return m_Icons["Image"]->GetTexture()->GetShaderResourceView();
-		}
-
-		if (item.MetaData.AssetType == "Sound")
-		{
-			return m_Icons["Sound"]->GetTexture()->GetShaderResourceView();
-		}
-
-		if (item.MetaData.AssetType == "HTML")
-		{
-			return m_Icons["HTML"]->GetTexture()->GetShaderResourceView();
-		}
-
-		if (item.MetaData.AssetType == "CSS")
-		{
-			return m_Icons["CSS"]->GetTexture()->GetShaderResourceView();
-		}
-
-		if (item.MetaData.AssetType == "LuaScript")
-		{
-			return m_Icons["LuaScript"]->GetTexture()->GetShaderResourceView();
-		}
-
-		if (item.MetaData.AssetType == "GalGameStoryScript")
-		{
-			return m_Icons["GalGameStoryScript"]->GetTexture()->GetShaderResourceView();
-		}
-
-		if (item.MetaData.AssetType == "Scene")
-		{
-			return m_Icons["Scene"]->GetTexture()->GetShaderResourceView();
-		}
-
-		//if (item.Ext == ".png" || item.Ext == ".jpg" || item.Ext == ".bmp" || item.Ext == ".tga")
-		//{
-		//	return m_Icons["Image"]->GetTexture()->GetShaderResourceView();
-		//}
-
-		return m_Icons["File"]->GetTexture()->GetShaderResourceView();
+		return ThumbnailManager::GetInstance().GetAssetThumbnail(item);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -635,12 +596,12 @@ namespace VisionGal::Editor {
 
 		for (auto& item : m_pContentBrowser->GetCurrentDirectoryNode().Directories)
 		{
-			item.iconView = GetFileIcon(item);
+			item.iconView =  GetAssetThumbnail(item);
 		}
 
 		for (auto& item : m_pContentBrowser->GetCurrentDirectoryNode().Files)
 		{
-			item.iconView = GetFileIcon(item);
+			item.iconView = GetAssetThumbnail(item);
 		}
 	}
 

@@ -30,7 +30,8 @@ namespace VisionGal::Editor {
 
 		void Toggle();
 		void OnGUI() override;
-		 
+		void OnUpdate(float delta) override;
+
 		std::string GetWindowFullName() override;
 		std::string GetWindowName() override;
 		void OpenWindow(bool open) override;
@@ -61,14 +62,12 @@ namespace VisionGal::Editor {
 		void ContentBrowserContextMenu(const pfsPath& path);
 	private:
 	//	bool ImageButton(DLG::ITextureView* view, float width, float height);
-		void* GetFileIcon(ContentBrowserItem& item);
+		static void* GetAssetThumbnail(ContentBrowserItem& item);
 	public:
 		struct ImContentBrowserWindow;
 		ContentBrowser* m_pContentBrowser;
 
 		bool m_ContentBrowserOpenFlag = true;
 		bool m_IsAnyContentBrowserItemHovered = false;
-
-		std::unordered_map<std::string, Ref<Texture2D>> m_Icons;
 	};
 }

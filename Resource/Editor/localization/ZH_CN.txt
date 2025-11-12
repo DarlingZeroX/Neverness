@@ -140,6 +140,7 @@ Show in Explorer=在资源管理器中显示
 Copy galgame asset path=复制Galgame资产路径
 Copy relative path=复制相对路径
 Copy absolute path=复制绝对路径
+Copy asset name=复制资产名
 Create Directory=创建目录
 Refresh=刷新
 Copy Path=复制路径
