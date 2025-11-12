@@ -30,6 +30,7 @@
 #include "ltm.h"
 #include "lvm.h"
 
+#include "VGLuaCore/LuaLocalizator.h"
 
 /*
 ** By default, use jump tables in the main interpreter loop on gcc
@@ -295,7 +296,7 @@ void luaV_finishget (lua_State *L, const TValue *t, TValue *key, StkId val,
       lua_assert(!ttistable(t));
       tm = luaT_gettmbyobj(L, t, TM_INDEX);
       if (l_unlikely(notm(tm)))
-        luaG_typeerror(L, t, "index");  /* no metamethod */
+        luaG_typeerror(L, t, VGLuaCoreLocalize("index"));  /* no metamethod */
       /* else will try the metamethod */
     }
     else {  /* 't' is a table */

@@ -1,3 +1,14 @@
+/*
+* This source file is part of VisionGal, the Visual Novel Engine
+*
+* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+* GitHub page: https://github.com/DarlingZeroX/VisionGal
+*
+* Copyright (c) 2025-present 梦旅缘心
+*
+* See the LICENSE file in the project root for details.
+*/
+
 #pragma once
 #include "Header.h"
 #include <RmlUi/Core/Types.h>
@@ -22,6 +33,8 @@ namespace RmlSol {
 		@param[in] code String to execute
 		@param[in] name Name for the code that will show up in the Log  */
 		RMLUISOL_API bool DoString(const Rml::String& code, const Rml::String& name = "");
+
+		RMLUISOL_API bool DoStringErrorTrack(const Rml::String& code, const Rml::String& name , const Rml::String& source_path, int source_line);
 
 		RMLUISOL_API bool LoadFunction(sol::function& function, const Rml::String& code, const Rml::String& name = "");
 

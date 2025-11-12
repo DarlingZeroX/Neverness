@@ -25,7 +25,10 @@ GalGameStoryScript=Gal剧情脚本
 syntax=语法
 [sol2] An error occurred and has been passed to an error handler: %s=[sol2] Lua 脚本出现错误，并已传递给错误处理程序: %s
 unexpected symbol=非法符号
-
+attempt to %s a %s value%s=尝试%s一个%s值%s
+index=索引
+%s near %s=%s在附近 %s 
+syntax error=语法错误
 
 Build=生成
 Target Platform=目标平台

@@ -1,6 +1,20 @@
+/*
+* This source file is part of VisionGal, the Visual Novel Engine
+*
+* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+* GitHub page: https://github.com/DarlingZeroX/VisionGal
+*
+* Copyright (c) 2025-present 梦旅缘心
+*
+* See the LICENSE file in the project root for details.
+*/
+
 #include "LuaEventListener.h"
 #include <RmlUi/Core/Element.h>
 #include <UI/Sol/Interpreter.h>
+
+#include "Core/EventBus.h"
+#include "Lua/LuaInterface.h"
 
 namespace RmlSol {
 	typedef Rml::ElementDocument Document;
@@ -57,6 +71,19 @@ namespace RmlSol {
 					sol::error err = result;
 					H_LOG_ERROR(err.what());
 					Rml::Log::Message(Rml::Log::LT_WARNING, "%s", err.what());
+
+					// 错误事件,目前错误行号还没实现获取
+					//if ( owner_document != nullptr)
+					//{
+					//	VisionGal::LuaScriptEvent evt;
+					//	evt.EventType = VisionGal::LuaScriptEventType::ScriptError;
+					//	evt.ScriptPath = owner_document->GetSourceURL();
+					//	evt.ErrorMessage = err.what();
+					//	//evt.ErrorLineNumber = VisionGal::VGLuaInterface::ExtractErrorLineNumber(err.what());
+					//	evt.ErrorLineNumber = 0;
+					//	VisionGal::EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
+					//}
+
 				}
 			}
 		}

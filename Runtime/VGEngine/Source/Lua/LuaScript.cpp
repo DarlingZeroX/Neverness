@@ -14,6 +14,8 @@
 #include "Lua/LuaInterface.h"
 #include <sol/sol.hpp>
 
+#include "Core/EventBus.h"
+
 namespace VisionGal
 {
 	Ref<LuaScript> LuaScript::LoadFromFile(const String& file)
@@ -51,11 +53,27 @@ namespace VisionGal
 				sol::error err = result;
 				H_LOG_ERROR("%s Error: %s", m_ScriptPath.c_str(), err.what());
 				m_IsError = true;
+
+				// 事件
+				LuaScriptEvent evt;
+				evt.EventType = LuaScriptEventType::ScriptError;
+				evt.ScriptPath = GetResourcePath();
+				evt.ErrorMessage = err.what();
+				evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(err.what());
+				EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 			}
 		}
-		catch (const sol::error& e) {
+		catch (const sol::error& err) {
 			m_IsError = true;
-			H_LOG_ERROR("%s Error: %s", m_ScriptPath.c_str(), e.what());
+			H_LOG_ERROR("%s Error: %s", m_ScriptPath.c_str(), err.what());
+
+			// 事件
+			LuaScriptEvent evt;
+			evt.EventType = LuaScriptEventType::ScriptError;
+			evt.ScriptPath = GetResourcePath();
+			evt.ErrorMessage = err.what();
+			evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(err.what());
+			EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 		}
 
 		if (m_IsError == false)
@@ -157,13 +175,20 @@ namespace VisionGal
 
 		if (m_StartFunction)
 		{
-
 			//m_StartFunction(actor);
 			// 使用安全调用的方式
 			sol::protected_function_result result = m_StartFunction(m_Script);
 			if (!result.valid()) {
 				sol::error err = result;
 				H_LOG_ERROR("%s Error: %s", m_ScriptPath.c_str(), err.what());
+
+				// 事件
+				LuaScriptEvent evt;
+				evt.EventType = LuaScriptEventType::ScriptError;
+				evt.ScriptPath = GetResourcePath();
+				evt.ErrorMessage = err.what();
+				evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(err.what());
+				EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 			}
 		}
 	}
@@ -184,6 +209,14 @@ namespace VisionGal
 			if (!result.valid()) {
 				sol::error err = result;
 				H_LOG_ERROR("%s Error: %s", m_ScriptPath.c_str(), err.what());
+
+				// 事件
+				LuaScriptEvent evt;
+				evt.EventType = LuaScriptEventType::ScriptError;
+				evt.ScriptPath = GetResourcePath();
+				evt.ErrorMessage = err.what();
+				evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(err.what());
+				EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 			}
 		}
 	}

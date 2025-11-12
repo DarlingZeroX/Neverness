@@ -29,7 +29,7 @@
 #include "ltm.h"
 #include "lvm.h"
 
-
+#include "VGLuaCore/LuaLocalizator.h"
 
 #define LuaClosure(f)		((f) != NULL && (f)->c.tt == LUA_VLCL)
 
@@ -751,7 +751,7 @@ static const char *varinfo (lua_State *L, const TValue *o) {
 static l_noret typeerror (lua_State *L, const TValue *o, const char *op,
                           const char *extra) {
   const char *t = luaT_objtypename(L, o);
-  luaG_runerror(L, "attempt to %s a %s value%s", op, t, extra);
+  luaG_runerror(L, VGLuaCoreLocalize("attempt to %s a %s value%s"), op, t, extra);
 }
 
 

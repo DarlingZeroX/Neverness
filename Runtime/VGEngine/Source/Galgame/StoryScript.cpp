@@ -22,6 +22,7 @@
 #include <sol/state.hpp>
 
 #include "Core/EventBus.h"
+#include "Lua/LuaInterface.h"
 #include "VGLuaCore/LuaErrorManager.h"
 
 namespace VisionGal::GalGame
@@ -50,6 +51,7 @@ namespace VisionGal::GalGame
             return false;
 
         StoryScriptLuaInterface::SetStoryScriptCoroutine(&m_Coroutine);
+		StoryScriptLuaInterface::SetCurrentStoryScriptPath(GetResourcePath());
 
         PreLoadScriptResource();
 
@@ -60,6 +62,15 @@ namespace VisionGal::GalGame
             sol::error err = result;
             std::string errorStr = err.what();
             H_LOG_ERROR(err.what());
+
+			// 事件
+			LuaScriptEvent evt;
+			evt.EventType = LuaScriptEventType::ScriptError;
+			evt.ScriptPath = GetResourcePath();
+			evt.ErrorMessage = err.what();
+			evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(err.what());
+			EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
+
             return false;
         }
 
@@ -105,34 +116,36 @@ namespace VisionGal::GalGame
 
         try {
             m_Coroutine = m_LuaState.script(m_ScriptCode);
-			//sol::protected_function_result result = m_LuaState.safe_script(m_ScriptCode, sol::script_pass_on_error);
-			//
-			//if (!result.valid()) {
+
+			//auto result = m_LuaState.safe_script(m_ScriptCode, sol::script_pass_on_error);
+			//if (result.valid()) {
+			//	m_Coroutine = result;
+			//}
+			//else {
 			//	sol::error err = result;
 			//
-			//	// 获取调用栈
-			//	sol::function debug_traceback = m_LuaState["debug"]["traceback"];
-			//	if (debug_traceback.valid()) {
-			//		std::string stack_trace = debug_traceback();
-			//		H_LOG_ERROR("Lua错误: {}\n调用栈: {}", err.what(), stack_trace);
-			//	} else {
-			//		H_LOG_ERROR("Lua错误: {}", err.what());
-			//	}
+			//	H_LOG_ERROR("%s Error: %s", GetResourcePath().c_str(), err.what());
+			//
+			//	// 事件
+			//	LuaScriptEvent evt;
+			//	evt.EventType = LuaScriptEventType::ScriptError;
+			//	evt.ScriptPath = file;
+			//	evt.ErrorMessage = err.what();
+			//	evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(err.what());
+			//	EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 			//	return false;
 			//}
-
-			//m_Coroutine = result;
         }
         catch (const sol::error& e) {
             H_LOG_ERROR(e.what());
-			std::cout << "Lua Script Load Error: " << VGLuaCoreGetErrorLineNumber() << std::endl;
+			//std::cout << "Lua Script Load Error: " << VGLuaCoreGetErrorLineNumber() << std::endl;
 
 			// 事件
 			LuaScriptEvent evt;
 			evt.EventType = LuaScriptEventType::ScriptError;
 			evt.ScriptPath = file;
 			evt.ErrorMessage = e.what();
-			evt.ErrorLineNumber = VGLuaCoreGetErrorLineNumber();
+			evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(e.what());
 			EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
             return false;
         }

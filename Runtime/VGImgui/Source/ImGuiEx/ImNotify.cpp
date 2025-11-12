@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include <vector>
 #include "ImGuiEx/ImNotify.h"
 #include <HCore/Include/System/HSystemTimer.h>
@@ -21,6 +21,10 @@ namespace ImGuiEx
 
 	void PushNotification(const ImToast& toast)
 	{
+		// Limit to 5 notifications
+		if (notifications.size() > 5)
+			return;
+
 		notifications.push_back(toast);
 	}
 

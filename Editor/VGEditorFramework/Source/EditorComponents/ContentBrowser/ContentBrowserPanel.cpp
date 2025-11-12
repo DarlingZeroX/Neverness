@@ -43,6 +43,7 @@ namespace VisionGal::Editor {
 		m_Icons["HTML"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/html.png");
 		m_Icons["CSS"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/css.png");
 		m_Icons["Sound"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/sound.png");
+		m_Icons["GalGameStoryScript"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/galStoryScript.png");
 	}
 
 	ContentBrowserPanel::ContentBrowserPanel(const pfsPath& path)
@@ -601,9 +602,14 @@ namespace VisionGal::Editor {
 			return m_Icons["CSS"]->GetTexture()->GetShaderResourceView();
 		}
 
-		if (item.MetaData.AssetType == "LuaScript" || item.MetaData.AssetType == "GalGameStoryScript")
+		if (item.MetaData.AssetType == "LuaScript")
 		{
 			return m_Icons["LuaScript"]->GetTexture()->GetShaderResourceView();
+		}
+
+		if (item.MetaData.AssetType == "GalGameStoryScript")
+		{
+			return m_Icons["GalGameStoryScript"]->GetTexture()->GetShaderResourceView();
 		}
 
 		if (item.MetaData.AssetType == "Scene")

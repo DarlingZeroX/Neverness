@@ -4,15 +4,15 @@
 
     <script>
         -- 在这里可以添加Lua脚本
-		HTMLTemplate = HTMLTemplate or {}
-		
+		HTMLTemplate = HTMLTemplate or {}  
+
 		function HTMLTemplate.OnLoad(event,element,document)
 			print('OnLoad')
 		end
 		
 		function HTMLTemplate.OnClick(event,element,document)
 			print('OnClick')
-		end
+		end 
     </script>
 </head>
 <body onload="HTMLTemplate.OnLoad(event,element,document)">

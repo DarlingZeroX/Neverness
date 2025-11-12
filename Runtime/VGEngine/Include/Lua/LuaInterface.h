@@ -16,6 +16,8 @@ namespace VisionGal
 {
 	struct VGLuaInterface
 	{
+		static int ExtractErrorLineNumber(const std::string& error_msg);
+
 		static void Initialise(sol::state& L);
 	};
 }

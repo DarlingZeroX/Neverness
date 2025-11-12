@@ -17,9 +17,13 @@
 #include "Animation/Interface/Animation2DScript.h"
 #include <sol/sol.hpp>
 
+#include "Core/EventBus.h"
+#include "VGLuaCore/LuaErrorManager.h"
+
 namespace VisionGal::GalGame
 {
 	static sol::coroutine* s_StoryScriptCoroutine = nullptr;
+	static std::string s_StoryScriptPath = "";
 
 	int StoryScriptLuaInterface::Continue()
 	{
@@ -43,12 +47,30 @@ namespace VisionGal::GalGame
 					sol::error err = result;
 					s_StoryScriptCoroutine = nullptr;
 					H_LOG_ERROR(err.what());
+
+					int lineNumber = VGLuaInterface::ExtractErrorLineNumber(err.what());
+
+					// 事件
+					LuaScriptEvent evt;
+					evt.EventType = LuaScriptEventType::ScriptError;
+					evt.ScriptPath = s_StoryScriptPath;
+					evt.ErrorMessage = err.what();
+					evt.ErrorLineNumber = lineNumber;
+					EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 				}
 			}
 		}
 		catch (const sol::error& e) {
 			H_LOG_ERROR(e.what());
 			s_StoryScriptCoroutine = nullptr;
+
+			// 事件
+			LuaScriptEvent evt;
+			evt.EventType = LuaScriptEventType::ScriptError;
+			evt.ScriptPath = s_StoryScriptPath;
+			evt.ErrorMessage = e.what();
+			evt.ErrorLineNumber = VGLuaInterface::ExtractErrorLineNumber(e.what());
+			EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 		}
 
 		return 0;
@@ -67,6 +89,11 @@ namespace VisionGal::GalGame
 	sol::coroutine* StoryScriptLuaInterface::GetStoryScriptCoroutine()
 	{
 		return s_StoryScriptCoroutine;
+	}
+
+	void StoryScriptLuaInterface::SetCurrentStoryScriptPath(const String& path)
+	{
+		s_StoryScriptPath = path;
 	}
 
 	void StoryScriptLuaInterface::Initialise(sol::state& lua)

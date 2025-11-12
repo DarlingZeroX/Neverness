@@ -28,6 +28,7 @@
 #include "lzio.h"
 
 #include "VGLuaCore/LuaErrorManager.h"
+#include "VGLuaCore/LuaLocalizator.h"
 
 #define next(ls)	(ls->current = zgetc(ls->z))
 
@@ -114,7 +115,7 @@ static l_noret lexerror (LexState *ls, const char *msg, int token) {
   VGLuaCoreSetErrorLineNumber(ls->linenumber);
 
   if (token)
-    luaO_pushfstring(ls->L, "%s near %s", msg, txtToken(ls, token));
+    luaO_pushfstring(ls->L,  VGLuaCoreLocalize("%s near %s"), msg, txtToken(ls, token));
   luaD_throw(ls->L, LUA_ERRSYNTAX);
 }
 
