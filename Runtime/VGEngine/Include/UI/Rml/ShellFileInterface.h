@@ -75,6 +75,7 @@ private:
 		PathType type = PathType::VFS;
 		vfspp::IFilePtr fpVFS = nullptr;
 		FILE* fp = nullptr;
+		std::string filePath;
 
 		/// Opens a file.
 		bool Open(PathType pathType, const Rml::String& path);

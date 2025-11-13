@@ -32,17 +32,24 @@ namespace VisionGal::GalGame
         StoryScriptLuaInterface::Initialise(m_LuaState);
     } 
 
-    Ref<LuaStoryScript> LuaStoryScript::LoadFromFile(const std::string& file)
+    Ref<LuaStoryScript> LuaStoryScript::LoadFromFile(const std::string& path)
     {
         Ref<LuaStoryScript> script = CreateRef<LuaStoryScript>();
 
-        script->SetResourcePath(file);
+        script->SetResourcePath(path);
 
         return script;
     }
 
     bool LuaStoryScript::Run(IGalGameEngine* engine)
     {
+		// 记录脚本最后修改时间 
+		auto absPath = VFS::GetInstance()->AbsolutePath(GetResourcePath());
+		if (Horizon::HFileSystem::ExistsFile(absPath))
+		{
+			m_ScriptLastWriteTime = std::filesystem::last_write_time(absPath);
+		}
+
         //m_LuaState["Engine"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
         //m_LuaState["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
 		m_LuaState["GalGame"]["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));

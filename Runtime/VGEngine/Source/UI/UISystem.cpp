@@ -122,10 +122,37 @@ namespace VisionGal
 			//Rml::ReleaseTextures();
 
 			doc = LoadUIDocument(path);
-			ShowUIDocument(doc.get());
+			if (doc)
+			{
+				ShowUIDocument(doc.get());
+			}
 		}
 
 		return;
+	}
+
+	void UISystem::ReloadAllUIDocument()
+	{
+		std::vector < std::string > paths;
+
+		for (auto& doc: m_Documents)
+		{
+			if (doc->GetResourcePath().empty() == false)
+			{
+				paths.push_back(doc->GetResourcePath());
+			}
+		}
+
+		CloseAllDocuments();
+
+		Rml::Factory::ClearStyleSheetCache();
+		Rml::Factory::ClearTemplateCache();
+
+		for (auto& path: paths)
+		{
+			auto doc = LoadUIDocument(path);
+			ShowUIDocument(doc.get());
+		}
 	}
 
 	void UISystem::CloseAllDocuments()

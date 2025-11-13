@@ -154,10 +154,20 @@ namespace VisionGal::GalGame
 		m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_CapturedSceneImage);
 	}
 
+	LuaStoryScript* GalGameEngine::GetCurrentStoryScript() const
+	{
+		if (m_StoryScript == nullptr)
+			return nullptr;
+
+		return m_StoryScript.get();
+	}
+
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)
 	{
 		Reset();
 		m_DialogueSystem->ClearDialogList();
+		// 必须在更换场景时清除回调，因为回调是属于上一个场景，遗留调用会出错
+		m_DialogueSystem->ClearAllTypingCallbacks();		
 
 		// 先设置场景
 		m_Scene = dynamic_cast<Scene*>(evt.Scene);

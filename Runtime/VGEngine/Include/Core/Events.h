@@ -30,6 +30,20 @@ namespace VisionGal
 		int ErrorLineNumber = 0;
 	};
 
+	////////////////		LuaScript Event
+	enum class UISystemEventType
+	{
+		None = 0,
+		UIFileOpen,
+		UIFileClose,
+	};
+
+	struct UISystemEvent
+	{
+		UISystemEventType EventType = UISystemEventType::None;
+		std::string UIFilePath;
+	};
+
 	////////////////		Engine Event
 	enum class EngineEventType
 	{

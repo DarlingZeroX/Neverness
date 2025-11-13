@@ -161,7 +161,9 @@ namespace VisionGal
 			view.each([this](RmlUIDocumentComponent& com) { // flecs::entity argument is optional
 				if (com.document)
 				{
+					// 先加载UI
 					com.document = UISystem::Get()->LoadUIDocument(com.document->GetResourcePath());
+					// 再显示UI
 					UISystem::Get()->ShowUIDocument(com.document.get());
 				}
 

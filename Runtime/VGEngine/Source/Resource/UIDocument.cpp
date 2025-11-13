@@ -36,6 +36,9 @@ namespace VisionGal
 
 	void RmlUIDocument::AddUpdateCallback(const sol::function& callback)
 	{
+		if (SceneManager::Get()->IsPlayMode() == false)
+			return;
+
 		m_LuaUpdateCallbacks.push_back(callback);
 	}
 

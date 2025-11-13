@@ -71,6 +71,8 @@ namespace VisionGal::GalGame
 
 		// 场景图像捕获接口
 		void CaptureSceneImage();
+
+		LuaStoryScript* GetCurrentStoryScript() const;	/// 获取当前加载的剧情脚本对象。
 	private:
 		GameActor* CreateSpriteImp(const std::string& path);
 		GalSprite* AddSprite(GameActor* sprite,const std::string& layer, const std::string& path);
@@ -101,7 +103,7 @@ namespace VisionGal::GalGame
 		Ref<RenderPipeline> m_RenderPipeline;					// 渲染管线，用于处理游戏的渲染流程。
 
 		Scene* m_Scene;											// 当前的场景对象，表示游戏中的一个具体场景。
-		Ref<LuaStoryScript> m_StoryScript;						// 当前加载的剧情脚本对象，使用 Lua 脚本语言编写。
+		Ref<LuaStoryScript> m_StoryScript = nullptr;			// 当前加载的剧情脚本对象，使用 Lua 脚本语言编写。
 
 		std::vector<std::function<void()>> m_UpdateCallback;	// 更新回调函数列表，用于在每帧更新时执行特定的操作。
 		WaitStruct m_Wait;										// 等待结构体，用于处理等待状态和相关的时间管理。

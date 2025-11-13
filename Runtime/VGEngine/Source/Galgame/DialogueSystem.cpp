@@ -12,6 +12,7 @@
 #include "Galgame/DialogueSystem.h"
 #include <codecvt>
 
+#include "Engine/Manager/SceneManager.h"
 #include "Galgame/GameEngineCore.h"
 #include "Galgame/LayeredSceneManager.h"
 #include "Galgame/GameLua.h"
@@ -72,13 +73,24 @@ namespace VisionGal::GalGame
 				is_typing = false;
 
 			// 调用打印回调
-			for (auto& callback:m_TypingCallbacks)
-			{
-				sol::protected_function_result res = callback(next_char, true);
-				if (!res.valid()) {
-					sol::error err = res;
-					H_LOG_ERROR("%s", err.what());
+			try {
+				for (auto& callback : m_TypingCallbacks)
+				{
+					sol::protected_function_result res = callback(next_char, true);
+					if (!res.valid()) {
+						sol::error err = res;
+						H_LOG_ERROR("%s", err.what());
+					}
 				}
+			}
+			catch (const sol::error& err) 
+			{
+				H_LOG_ERROR("%s", err.what());
+				m_TypingCallbacks.clear();
+			}
+			catch (...)
+			{
+				m_TypingCallbacks.clear();
 			}
 
 			//std::cout << display_text.length() << std::endl;
@@ -165,11 +177,17 @@ namespace VisionGal::GalGame
 
 	void TypingEffect::AddTypingCallback(sol::function callback)
 	{
+		if (SceneManager::Get()->IsPlayMode() == false)
+			return;
+
 		m_TypingCallbacks.push_back(callback);
 	}
 
 	void TypingEffect::ClearAllTypingCallbacks()
 	{
+		if (SceneManager::Get()->IsPlayMode() == false)
+			return;
+
 		m_TypingCallbacks.clear();
 	}
 

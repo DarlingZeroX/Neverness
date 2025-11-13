@@ -20,6 +20,7 @@
 #include <HCore/Include/System/HClipboard.h>
 
 #include "AssetEditor/AssetEditor.h"
+#include "EditorCore/AssetWatcher.h"
 #include "EditorCore/EditorCore.h"
 #include "EditorCore/Localization.h"
 #include "VGEngine/Include/Asset/AssetFactory.h"
@@ -122,6 +123,7 @@ namespace VisionGal::Editor {
 	void ContentBrowserPanel::OnUpdate(float delta)
 	{
 		ThumbnailManager::GetInstance().OnUpdate();
+		AssetWatcher::GetInstance().OnUpdate();
 	}
 
 	std::string ContentBrowserPanel::GetWindowFullName()

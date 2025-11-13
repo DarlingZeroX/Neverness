@@ -26,7 +26,8 @@ namespace VisionGal
 
 	SDL_HitTestResult VGHitTestCallback(SDL_Window* win, const SDL_Point* pt, void* data)
 	{
-#define REPORT_RESIZE_HIT(name) { std::cout << "HIT-TEST: RESIZE_" #name "\n" << std::endl;OnResizeWindowMode = true; return SDL_HITTEST_RESIZE_##name;  }
+//#define REPORT_RESIZE_HIT(name) { std::cout << "HIT-TEST: RESIZE_" #name "\n" << std::endl;OnResizeWindowMode = true; return SDL_HITTEST_RESIZE_##name;  }
+#define REPORT_RESIZE_HIT(name) { OnResizeWindowMode = true; return SDL_HITTEST_RESIZE_##name;  }
 
 		static constexpr int RESIZE_BORDER = 5;
 		bool& OnResizeWindowMode = *reinterpret_cast<bool*>(data);

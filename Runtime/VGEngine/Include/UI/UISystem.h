@@ -34,6 +34,7 @@ namespace VisionGal
 		Ref<RmlUIDocument> LoadUIDocument(const String& path);
 		bool ShowUIDocument(RmlUIDocument* doc);
 		void ReloadUIDocument(Ref<RmlUIDocument>& doc);
+		void ReloadAllUIDocument();
 		void CloseAllDocuments();
 		Ref<RmlUIDocument> FindDocumentByElementDocument(Rml::ElementDocument* document);
 		 

@@ -11,6 +11,7 @@
 
 #include "UI/Rml/ShellFileInterface.h"
 #include "Core/VFS.h"
+#include "Core/EventBus.h"
 
 ShellFileInterface::ShellFileInterface(const Rml::String& root) : root(root) {}
 
@@ -128,6 +129,7 @@ size_t UIFileInterfaceVFS::Tell(Rml::FileHandle file)
 bool UIFileInterfaceVFS::FilePtr::Open(PathType pathType, const Rml::String& path)
 {
 	type = pathType;
+	filePath = path;
 
 	if (type == PathType::VFS)
 	{
@@ -138,6 +140,12 @@ bool UIFileInterfaceVFS::FilePtr::Open(PathType pathType, const Rml::String& pat
 
 		if (!fpVFS->IsOpened())
 			return false;
+
+		// 事件
+		VisionGal::UISystemEvent evt;
+		evt.EventType = VisionGal::UISystemEventType::UIFileOpen;
+		evt.UIFilePath = filePath;
+		VisionGal::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
 
 		return true;
 	}
@@ -160,6 +168,12 @@ void UIFileInterfaceVFS::FilePtr::Close()
 	if (type == PathType::VFS)
 	{
 		fpVFS->Close();
+
+		// 事件
+		VisionGal::UISystemEvent evt;
+		evt.EventType = VisionGal::UISystemEventType::UIFileClose;
+		evt.UIFilePath = filePath;
+		VisionGal::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
 	}
 
 	if (type == PathType::FS)

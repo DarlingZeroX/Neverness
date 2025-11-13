@@ -28,11 +28,14 @@ namespace VisionGal::GalGame
 
 		sol::coroutine GetCoroutine() { return m_Coroutine; }
 		void PreLoadScriptResource();
+
+		std::filesystem::file_time_type GetScriptLastWriteTime() const { return m_ScriptLastWriteTime; }
 	private:
 		bool LoadScript(const String& file);
 	private:
 		String m_ScriptCode;
 		sol::state m_LuaState;
 		sol::coroutine m_Coroutine;
+		std::filesystem::file_time_type m_ScriptLastWriteTime;
 	};
 }
