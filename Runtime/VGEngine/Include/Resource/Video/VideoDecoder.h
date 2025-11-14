@@ -40,7 +40,7 @@ namespace VisionGal {
 
         bool Open(const std::string& filePath);
 
-        bool ReadFrame(uint8_t*& frameData, int& linesize, int& width, int& height, double& videoPts, double& audioPts);
+        //bool ReadFrame(uint8_t*& frameData, int& linesize, int& width, int& height, double& videoPts, double& audioPts);
         void Close();
         int GetWidth() const { return width; }
         int GetHeight() const { return height; }
@@ -52,15 +52,23 @@ namespace VisionGal {
 
         void DemuxLoop();
         void AudioDecodeLoop();
+		bool VideoDecodeLoop();
 
         bool GetVideoFrame(uint8_t*& frameData, int& linesize, int& width, int& height, double& pts);
 
         AudioRingBuffer* GetAudioBuffer() { return audioRingBuffer.get(); }
         double GetAudioClock() const { return audioClock; }
+
+		void SetDecodeLoop(bool enable);
+		bool IsDecodeLoop();
+
+    	std::function<void(uint8_t* frameData, int& linesize, int width, int height, double pts)> OnVideoDataUpdate = nullptr;
     protected:
         AVCodecParameters* FindStream();
         bool OpenVideoDecoder(const AVCodecParameters* codecParameters);
     private:
+		bool m_LoopPlay = false;
+
 		AVIOContext* avio_ctx = nullptr;
 		unsigned char* io_buffer = nullptr;
         AVFormatContext* formatContext = nullptr;
@@ -99,6 +107,7 @@ namespace VisionGal {
 
         std::thread demuxThread;
         std::thread audioThread;
+		std::thread videoThread;
         std::atomic<bool> running = false;
         bool demuxFinished = false;
 

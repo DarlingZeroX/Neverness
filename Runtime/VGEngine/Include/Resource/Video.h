@@ -43,12 +43,17 @@ namespace VisionGal {
         void Stop();
         bool IsRunning() const;
         double GetDuration() const;
-        void PlayBackLoop();
+        //void PlayBackLoop();
+
+		void SetLoop(bool enable);
+		bool IsLoop();
 
         void Update();
 
         Sprite* GetSprite() const { return sprite.get(); }
     private:
+		void ProcessVideoUpdate(uint8_t* frameData, int& linesize, int width, int height, double pts);
+
         Ref<VideoDecoder> decoder;
         //std::unique_ptr<OpenGLRenderer> renderer;
         std::thread playbackThread;
@@ -58,7 +63,13 @@ namespace VisionGal {
         double totalDuration;
 
         Ref<Sprite> sprite;
-        uint8_t* frameData = nullptr;
+        uint8_t* m_FrameData = nullptr;
+
+		double m_LastPts = 0.0f;
+
+		bool m_VideoClockInitialized = false;
+		double m_VideoStartPTS = 0.f;
+		std::chrono::time_point<std::chrono::steady_clock>  m_SystemStartTime;
     };
 
 

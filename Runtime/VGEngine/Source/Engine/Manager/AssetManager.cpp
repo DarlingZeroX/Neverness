@@ -192,8 +192,29 @@ namespace VisionGal
 
 		auto aPath = VFS::GetInstance()->AbsolutePath(path);
 
+		if (aPath.empty())
+			return false;
+
+		if (Horizon::HFileSystem::ExistsFile(aPath) == false)
+			return false;
+
 		// remove data file
-		Horizon::HFileSystem::RemoveFile(aPath);
+		try {
+			std::filesystem::remove(aPath);
+		}
+		catch (const std::filesystem::filesystem_error& ex) {
+			H_LOG_ERROR("std::filesystem::remove error: %s", ex.what());
+			return false;
+		}
+		catch (const std::exception& ex) {
+			H_LOG_ERROR("Standard exception: %s", ex.what());
+			return false;
+		}
+		catch (...) {
+			H_LOG_ERROR("Unknown std::filesystem::remove exception occurred");
+			return false;
+		}
+		//Horizon::HFileSystem::RemoveFile(aPath);
 
 		// remove meta file
 		auto metaPath = aPath + ".meta";

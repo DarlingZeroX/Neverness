@@ -109,6 +109,7 @@ namespace VisionGal
 		{
 			videoPlayer->Open(videoClip);
 			videoPlayer->Play();
+			videoPlayer->SetLoop(loop);
 			return true;
 		}
 

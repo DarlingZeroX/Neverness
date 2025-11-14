@@ -89,7 +89,7 @@ namespace VisionGal
 		// 打包引擎资源
 		auto enginePath = VFS::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
 		H_LOG_INFO("Package engine resource: %s", enginePath.c_str());
-		if (Horizon::HFileSystem::ExistsFile("Data/engine.pak"))
+		if (Horizon::HFileSystem::ExistsFile("Data/engine.pak"))		// 应用程序模式
 		{
 			Horizon::HFileSystem::CopyFile("Data/engine.pak", dataPath / "engine.pak");
 		}
