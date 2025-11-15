@@ -219,6 +219,25 @@ namespace VisionGal::GalGame
 			),
 			"路径", &GalAudio::m_Path
 		);
+
+		galgame.new_usertype<GalVideo>("GalVideo",
+			"设置循环播放", &GalVideo::SetLoop,
+			"停止播放", &GalVideo::Stop,
+			"是否正在播放", &GalVideo::IsPlaying,
+			"是否循环播放", &GalVideo::IsLooping,
+			"设置音量", &GalVideo::SetVolume,
+			"获取音量", &GalVideo::GetVolume,
+
+			"循环播放", sol::property(
+				[](GalVideo& self) -> bool { return self.IsLooping(); },
+				[](GalVideo& self, bool value) { self.SetLoop(value); }
+			),
+			"音量", sol::property(
+				[](GalVideo& self) -> float { return self.GetVolume(); },
+				[](GalVideo& self, float value) { self.SetVolume(value); }
+			),
+			"路径", &GalVideo::m_Path
+		);
 	}
 }
 

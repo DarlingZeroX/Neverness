@@ -618,7 +618,8 @@ namespace VisionGal
             return;
 
         while (running) {
-            AVPacket* pkt = nullptr;
+            //AVPacket* pkt = nullptr;
+			AVPacket pktLocal;
             {
                 std::unique_lock<std::mutex> lock(mutex);
                 cond.wait(lock, [this] {
@@ -628,11 +629,15 @@ namespace VisionGal
                     audioRingBuffer->WriteFinish();
                     break;
                 }
-                pkt = aPackets.front(); aPackets.pop();
+
+				av_packet_ref(&pktLocal, aPackets.front());
+                //pkt = aPackets.front();
+				aPackets.pop();
             }
 
-            avcodec_send_packet(actx, pkt);
-            av_packet_free(&pkt);
+            avcodec_send_packet(actx, &pktLocal);
+            //av_packet_free(&pkt);
+			av_packet_unref(&pktLocal);
             while (avcodec_receive_frame(actx, aframe) >= 0) {
                 int samples = swr_convert(swr, audioBuf, audioMaxSamples, (const uint8_t**)aframe->data, aframe->nb_samples);
 

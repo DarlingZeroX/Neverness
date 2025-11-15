@@ -81,6 +81,11 @@ namespace VisionGal::GalGame
 		~IGalGameAudio() override = default;
 	};
 
+	struct IGalGameVideo: public IGalGameResource
+	{
+		~IGalGameVideo() override = default;
+	};
+
 	struct IGalCharacter
 	{
 		virtual ~IGalCharacter() = default;

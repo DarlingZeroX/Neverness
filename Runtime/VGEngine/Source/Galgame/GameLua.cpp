@@ -125,6 +125,9 @@ namespace VisionGal::GalGame
 				[](GalGameEngine& self, const std::string& path) ->GalSprite* { return self.ShowSprite("Screen", path); },
 				[](GalGameEngine& self, const float4& color) ->GalSprite* { return self.ShowColor("Screen", color); }
 			),
+			"播放背景视频", sol::overload(
+				[](GalGameEngine& self, const std::string& path) ->GalVideo* { return self.PlayVideo("Background", path); }
+			),
 			"播放背景音乐", [](GalGameEngine& self, const std::string& path) ->GalAudio* { return self.PlayAudio("BGM", path); },
 			"播放效果音乐", [](GalGameEngine& self, const std::string& path) ->GalAudio* { return self.PlayAudio("Effect", path); },
 			"隐藏全部人物立绘", &GalGameEngine::HideAllCharacterSprite,

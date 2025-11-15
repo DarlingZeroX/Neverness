@@ -44,6 +44,7 @@ namespace VisionGal::GalGame
 		GalSprite* ShowSprite(const std::string& layer, const std::string& path) override;	/// 在指定图层上显示精灵，并返回精灵对象指针。
 		GalSprite* ShowColor(const std::string& layer, const float4& color);				/// 在指定图层上显示颜色，并返回精灵对象指针。
 		GalAudio* PlayAudio(const std::string& layer, const std::string& path) override;	/// 播放指定图层上的音频文件。并返回音频对象指针。
+		GalVideo* PlayVideo(const std::string& layer, const std::string& path);				/// 播放指定图层上的视频文件。并返回视频对象指针。
 		GalCharacter* CreateCharacter(const String& name) override;							/// 创建一个具有指定人物名称的 GalCharacter 实例
 		bool LoadArchive(const SaveArchive& archive) override;								/// 加载指定的剧情存档对象
 
@@ -78,6 +79,8 @@ namespace VisionGal::GalGame
 		GalSprite* AddSprite(GameActor* sprite,const std::string& layer, const std::string& path);
 		GameActor* CreateAudioImp(const std::string& path);
 		GalAudio* AddAudio(GameActor* audio, const std::string& layer, const std::string& path);
+		GameActor* CreateVideoImp(const std::string& path);
+		GalVideo* AddVideo(GameActor* audio, const std::string& layer, const std::string& path);
 
 		void OnMainSceneChanged(const EngineEvent& evt);			/// 处理主场景更改事件的回调函数。
 		void CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext);		/// 创建引擎的核心子系统。

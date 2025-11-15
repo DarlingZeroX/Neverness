@@ -26,6 +26,8 @@ namespace VisionGal
 
 	void RmlUIDocument::Close()
 	{
+		m_LuaUpdateCallbacks.clear();
+
 		if (document && !isClosed)
 		{
 			document->Close();

@@ -7,38 +7,53 @@
     "SegmentType": "Script",
     "ComponentNumber": 0,
     "SegmentType": "Entity",
-    "EntityNumber": 4,
-    "Label": "视频播放器",
-    "ID": 11714570583010177713,
+    "EntityNumber": 5,
+    "Label": "音频源",
+    "ID": 7172084121472160308,
     "Parent": 0,
     "ComponentIDs": [
-        11714570583010177713,
-        17829223618953380900
+        7172084121472160308,
+        1486735350898506029
     ],
     "Label": "相机",
-    "ID": 2505263940555156723,
+    "ID": 2441793602883057820,
     "Parent": 0,
     "ComponentIDs": [
-        8463515069893347238,
-        3659918089117912369
+        2441793602883057820,
+        7565472559013602276
+    ],
+    "Label": "精灵",
+    "ID": 7565472559013602276,
+    "Parent": 0,
+    "ComponentIDs": [
+        6557717273463339951,
+        10179991923200072659
     ],
     "Label": "UI文档",
-    "ID": 13499148990373561517,
+    "ID": 12240215965250073802,
     "Parent": 0,
     "ComponentIDs": [
-        13499148990373561517,
-        16696080643510278071
+        5530299029171720523,
+        15262516470008218613
     ],
     "Label": "Scene",
     "ID": 0,
     "Parent": 0,
     "ComponentIDs": [],
     "SegmentType": "AudioSourceComponent",
-    "ComponentNumber": 0,
+    "ComponentNumber": 1,
+    "AudioSourceComponent": {
+        "EntityComponentID": 1486735350898506029,
+        "HasAudio": true,
+        "m_AudioPath": "/assets/声音\\背景音乐\\BGM2.mp3",
+        "playOnAwake": true,
+        "loop": false,
+        "volume": 1.0
+    },
     "SegmentType": "Transform",
-    "ComponentNumber": 3,
+    "ComponentNumber": 4,
     "Transform": {
-        "EntityComponentID": 11714570583010177713,
+        "EntityComponentID": 7172084121472160308,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -58,7 +73,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 8463515069893347238,
+        "EntityComponentID": 2441793602883057820,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -78,7 +93,27 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 13499148990373561517,
+        "EntityComponentID": 6557717273463339951,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
+    },
+    "Transform": {
+        "EntityComponentID": 5530299029171720523,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -98,35 +133,46 @@
         "visible": true
     },
     "SegmentType": "SpriteRenderer",
-    "ComponentNumber": 0,
+    "ComponentNumber": 1,
+    "SpriteRenderer": {
+        "EntityComponentID": 10179991923200072659,
+        "HasSprite": true,
+        "m_SpriteSize": {
+            "x": 1921.0,
+            "y": 1080.0
+        },
+        "m_SpritePosition": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "m_SpriteTexturePath": "/assets/UI\\主菜单\\主菜单背景.png",
+        "Color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+        },
+        "Flip": {
+            "x": 0,
+            "y": 0
+        }
+    },
     "SegmentType": "RmlUIDocumentComponent",
     "ComponentNumber": 1,
     "RmlUIDocumentComponent": {
-        "EntityComponentID": 16696080643510278071,
+        "EntityComponentID": 15262516470008218613,
         "HasDocument": true,
-        "m_DocumentPath": "/assets/引擎开发使用\\游戏Demo\\主菜单HTML.html"
+        "m_DocumentPath": "/assets/UI\\主菜单\\主菜单.html"
     },
     "SegmentType": "Camera",
     "ComponentNumber": 1,
     "Camera": {
-        "EntityComponentID": 3659918089117912369,
+        "EntityComponentID": 7565472559013602276,
         "HasCamera": true,
         "m_CameraType": "Letterbox2D"
     },
     "SegmentType": "VideoPlayer",
-    "ComponentNumber": 1,
-    "VideoPlayer": {
-        "EntityComponentID": 17829223618953380900,
-        "HasVideo": true,
-        "m_VideoSize": {
-            "x": 1920.0,
-            "y": 1080.0
-        },
-        "m_VideoPath": "/assets/引擎开发使用\\游戏Demo\\yzk.mp4",
-        "playOnAwake": true,
-        "waitForFirstFrame": true,
-        "loop": false
-    },
+    "ComponentNumber": 0,
     "SegmentType": "GalGameEngine",
     "ComponentNumber": 0
 }

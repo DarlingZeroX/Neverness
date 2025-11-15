@@ -341,6 +341,13 @@ namespace VisionGal {
 		 bool Play();
 		 void Stop();
 		 void Update();
+
+		 // 循环播放
+		 void SetLoop(bool enable);
+		 // 是否正在播放
+		 bool IsPlaying() const;
+		 // 是否循环播放
+		 bool IsLooping() const;
 	 };
 
 	 struct VG_ENGINE_API AudioSourceComponent : public IComponent

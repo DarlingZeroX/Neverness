@@ -107,6 +107,41 @@ namespace VisionGal::GalGame
 		GameActor* m_Actor = nullptr;
 	};
 
+	class GalVideo: public IGalGameVideo
+	{
+	public:
+		GalVideo(const std::string& layer, const std::string& path);
+		GalVideo(const GalVideo&) = delete;
+		GalVideo& operator=(const GalVideo&) = delete;
+		GalVideo(GalVideo&&) noexcept = default;
+		GalVideo& operator=(GalVideo&&) noexcept = default;
+		~GalVideo() override;
+
+		const std::string& GetResourcePath() override;
+		GameActor* GetResourceActor() override;
+		const std::string& GetResourceLayer() override;
+		void SetResourceLayer(const std::string& layer) override;
+
+		// 循环播放
+		GalVideo* SetLoop(bool enable);
+		// 停止播放
+		GalVideo* Stop();
+		// 是否正在播放音频
+		bool IsPlaying();
+		// 是否循环播放
+		bool IsLooping();
+		// 设置音量
+		GalVideo* SetVolume(float v);
+		// 获取音量
+		float GetVolume();
+
+		//virtual GalAudio* With(const std::string& transform);
+
+		std::string m_Path;
+		std::string m_Layer;
+		GameActor* m_Actor = nullptr;
+	};
+
 	class GalCharacter : public IGalCharacter
 	{
 	public:

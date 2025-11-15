@@ -301,12 +301,28 @@ namespace VisionGal {
 
 		if (!Horizon::HFileSystem::ExistsDirectory(newPath))
 		{
-			Horizon::HFileSystem::MoveFile(path.AbsolutePath, newPath);
+			// remove data file
+			try {
+				//std::filesystem::remove(aPath);
+				Horizon::HFileSystem::MoveFile(path.AbsolutePath, newPath);
 
-			pfsPath oMetaPath = path.AbsolutePath.string() + ".meta";
-			if (Horizon::HFileSystem::ExistsDirectory(oMetaPath))
-			{
-				Horizon::HFileSystem::MoveFile(oMetaPath, newMetaPath);
+				pfsPath oMetaPath = path.AbsolutePath.string() + ".meta";
+				if (Horizon::HFileSystem::ExistsDirectory(oMetaPath))
+				{
+					Horizon::HFileSystem::MoveFile(oMetaPath, newMetaPath);
+				}
+			}
+			catch (const std::filesystem::filesystem_error& ex) {
+				H_LOG_ERROR("std::filesystem::remove error: %s", ex.what());
+				return;
+			}
+			catch (const std::exception& ex) {
+				H_LOG_ERROR("Standard exception: %s", ex.what());
+				return;
+			}
+			catch (...) {
+				H_LOG_ERROR("Unknown std::filesystem::remove exception occurred");
+				return;
 			}
 
 			RefreshDirectory();

@@ -59,6 +59,12 @@
                 --element:GetElementById('dialog-box').style.decorator = 'vertical-gradient( rgba(65, 88, 87, 200) rgba(89, 144, 163, 200) )'
             end
 
+            -- 页面卸载时调用
+            function HTML游戏对话框.页面卸载调用(event, element, document)
+				print('页面卸载调用')
+                GalGame.获取引擎().对话系统:清除全部打印回调()
+            end
+
             -- 自动对话
             function HTML游戏对话框.自动对话(event, element, document)
                 event:StopPropagation()
@@ -122,7 +128,7 @@
             end
         </script>
     </head>
-    <body onkeydown="HTML游戏对话框.当ESC按下(event,document)" onload="HTML游戏对话框.页面加载调用(event, element, document)">  
+    <body onkeydown="HTML游戏对话框.当ESC按下(event,document)" onload="HTML游戏对话框.页面加载调用(event, element, document)" onunload=" GalGame.获取引擎().对话系统:清除全部打印回调()">  
         
         <div class="game-container">
             <div class="dialog-box" id="dialog-box" onclick="HTML游戏对话框.对话框点击(event, element, document)">

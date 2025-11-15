@@ -185,8 +185,8 @@ namespace VisionGal::GalGame
 
 	void TypingEffect::ClearAllTypingCallbacks()
 	{
-		if (SceneManager::Get()->IsPlayMode() == false)
-			return;
+		//if (SceneManager::Get()->IsPlayMode() == false)
+		//	return;
 
 		m_TypingCallbacks.clear();
 	}

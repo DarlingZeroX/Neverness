@@ -156,6 +156,7 @@ namespace VisionGal
 		if (std::filesystem::exists(pakPath))
 		{
 			fsPtr = std::make_unique<vfspp::VGPackageFileSystem>(pakPath);
+			H_LOG_INFO("%s使用运行时资源包: %s",alias.c_str(),pakPath.c_str());
 		}
 		else
 		{

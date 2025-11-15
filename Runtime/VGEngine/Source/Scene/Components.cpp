@@ -132,6 +132,34 @@ namespace VisionGal
 		}
 	}
 
+	void VideoPlayerComponent::SetLoop(bool enable)
+	{
+		if (videoClip)
+		{
+			videoPlayer->SetLoop(enable);
+		}
+	}
+
+	bool VideoPlayerComponent::IsPlaying() const
+	{
+		if (videoClip)
+		{
+			return videoPlayer->IsRunning();
+		}
+
+		return false;
+	}
+
+	bool VideoPlayerComponent::IsLooping() const
+	{
+		if (videoClip)
+		{
+			return videoPlayer->IsLoop();
+		}
+
+		return false;
+	}
+
 	AudioSourceComponent::AudioSourceComponent()
 	{
 		audioPlayer = CreateRef<AudioPlayer>();

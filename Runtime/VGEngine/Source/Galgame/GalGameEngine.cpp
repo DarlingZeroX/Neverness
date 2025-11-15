@@ -167,7 +167,7 @@ namespace VisionGal::GalGame
 		Reset();
 		m_DialogueSystem->ClearDialogList();
 		// 必须在更换场景时清除回调，因为回调是属于上一个场景，遗留调用会出错
-		m_DialogueSystem->ClearAllTypingCallbacks();		
+		//m_DialogueSystem->ClearAllTypingCallbacks();		
 
 		// 先设置场景
 		m_Scene = dynamic_cast<Scene*>(evt.Scene);
@@ -354,6 +354,39 @@ namespace VisionGal::GalGame
 		return audio;
 	}
 
+	GameActor* GalGameEngine::CreateVideoImp(const std::string& resPath)
+	{
+		// 读取视频资产
+		auto videoClip = LoadObject<VideoClip>(resPath);
+		if (videoClip == nullptr)
+		{
+			H_LOG_WARN("加载视频失败: %s", resPath.c_str());
+			return nullptr;
+		}
+
+		// 创建音频角色
+		auto* actor = m_Scene->CreateActor();
+		actor->SetLabel(resPath);
+
+		// 添加视频源组件
+		auto* audioSource = actor->AddComponent<VideoPlayerComponent>();
+		audioSource->videoClip = videoClip;
+
+		return actor;
+	}
+
+	GalVideo* GalGameEngine::AddVideo(GameActor* video, const std::string& layer, const std::string& path)
+	{
+		// 创建GalGame的音频类
+		GalVideo* audio = new GalVideo(layer, path);
+		audio->m_Actor = video;
+
+		// 添加到管理器
+		//m_LayeredSceneManager->AddAudio(audio);
+
+		return audio;
+	}
+
 	GalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)
 	{
 		String resPath = Core::GetAssetsPathVFS() + path;
@@ -390,9 +423,24 @@ namespace VisionGal::GalGame
 		if (actor == nullptr)
 			return nullptr;
 
+		// 播放
 		actor->GetComponent<AudioSourceComponent>()->Play();
 
 		return AddAudio(actor, layer, resPath);
+	}
+
+	GalVideo* GalGameEngine::PlayVideo(const std::string& layer, const std::string& path)
+	{
+		String resPath = Core::GetAssetsPathVFS() + path;
+		GameActor* actor = CreateVideoImp(resPath);
+
+		if (actor == nullptr)
+			return nullptr;
+
+		// 播放
+		actor->GetComponent<VideoPlayerComponent>()->Play();
+
+		return AddVideo(actor, layer, resPath);
 	}
 
 	GalCharacter* GalGameEngine::CreateCharacter(const String& name)

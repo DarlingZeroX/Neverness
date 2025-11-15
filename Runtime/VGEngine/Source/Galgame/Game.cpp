@@ -381,6 +381,106 @@ namespace VisionGal::GalGame
 		return nullptr;
 	}
 
+	GalVideo::GalVideo(const std::string& layer, const std::string& path)
+	{
+		m_Layer = layer;
+		m_Path = path;
+		//GameEngineCore::GetCurrentEngine()->PreLoadResource(path);
+	}
+
+	GalVideo::~GalVideo()
+	{
+		if (m_Actor == nullptr)
+			return;
+
+		auto* scene = dynamic_cast<Scene*>(m_Actor->GetScene());
+		auto* videoPlayer = m_Actor->GetComponent<VideoPlayerComponent>();
+
+		if (videoPlayer != nullptr)
+		{
+			videoPlayer->Stop();
+		}
+
+		if (scene != nullptr)
+		{
+			scene->RemoveActor(m_Actor->GetEntityID());
+		}
+	}
+
+	const std::string& GalVideo::GetResourcePath()
+	{
+		return m_Path;
+	}
+
+	GameActor* GalVideo::GetResourceActor()
+	{
+		return m_Actor;
+	}
+
+	const std::string& GalVideo::GetResourceLayer()
+	{
+		return m_Layer;
+	}
+
+	void GalVideo::SetResourceLayer(const std::string& layer)
+	{
+		m_Layer = layer;
+	}
+
+	GalVideo* GalVideo::SetLoop(bool enable)
+	{
+		auto* com = GetResourceActor()->GetComponent<VideoPlayerComponent>();
+		if (com)
+		{
+			com->SetLoop(enable);
+		}
+
+		return this;
+	}
+
+	GalVideo* GalVideo::Stop()
+	{
+		auto* com = GetResourceActor()->GetComponent<VideoPlayerComponent>();
+		if (com)
+		{
+			com->Stop();
+		}
+
+		return this;
+	}
+
+	bool GalVideo::IsPlaying()
+	{
+		auto* com = GetResourceActor()->GetComponent<VideoPlayerComponent>();
+		if (com)
+		{
+			return com->IsPlaying();
+		}
+
+		return false;
+	}
+
+	bool GalVideo::IsLooping()
+	{
+		auto* com = GetResourceActor()->GetComponent<VideoPlayerComponent>();
+		if (com)
+		{
+			return com->IsLooping();
+		}
+
+		return false;
+	}
+
+	GalVideo* GalVideo::SetVolume(float v)
+	{
+		return this;
+	}
+
+	float GalVideo::GetVolume()
+	{
+		return 0.f;
+	}
+
 	GalCharacter::GalCharacter(const std::string& name)
 	{
 		this->m_Name = name;
