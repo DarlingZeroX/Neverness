@@ -201,9 +201,9 @@ namespace VisionGal::GalGame
 	/**
 	 * @brief 用于遍历精灵层和精灵的接口。
 	 */
-	struct ISpriteLayerTraverse
+	struct ISceneSpriteManager
 	{
-		virtual ~ISpriteLayerTraverse() = default;
+		virtual ~ISceneSpriteManager() = default;
 
 		/**
 		 * @brief 遍历指定图层中的所有精灵，并对每个精灵执行回调函数。
@@ -217,14 +217,48 @@ namespace VisionGal::GalGame
 		 * @param callback 对每个IGalGameSprite指针执行的回调函数。
 		 */
 		virtual void TraverseSprite(const std::function<void(IGalGameSprite* actor)>& callback) = 0;
+
+		/**
+		 * @brief 清空指定图层的所有精灵。
+		 * @param layer 图层名称
+		 */
+		virtual void ClearSpriteLayer(const String& layer) = 0;
+		/**
+		 * @brief 清空所有精灵。
+		 */
+		virtual void ClearAllSprite() = 0;
+
+		/**
+		 * @brief 在指定图层显示精灵。
+		 * @param layer 图层名称
+		 * @param actor 精灵对象指针
+		 */
+		//virtual void ShowSprite(const String& layer, GameActor* actor) = 0;
+		/**
+		 * @brief 添加精灵对象。
+		 * @param sprite 精灵对象指针
+		 */
+		virtual void AddSprite(IGalGameSprite* sprite) = 0;
+		/**
+		 * @brief 移除精灵对象。
+		 * @param sprite 精灵对象指针
+		 * @return 是否移除成功
+		 */
+		virtual bool RemoveSprite(IGalGameSprite* sprite) = 0;
+		
+		/// @brief 将精灵移动到指定的图层。
+		/// @param sprite 要移动的精灵对象指针。
+		/// @param layer 目标图层的名称。
+		/// @return 如果移动成功，返回 true；否则返回 false。
+		virtual bool MoveSpriteToLayer(IGalGameSprite* sprite, const String& layer) = 0;
 	};
 
 	/**
 	 * @brief 音频层遍历接口，提供遍历音频层和音频对象的方法。
 	 */
-	struct IAudioLayerTraverse
+	struct ISceneAudioManager
 	{
-		virtual ~IAudioLayerTraverse() = default;
+		virtual ~ISceneAudioManager() = default;
 
 		/**
 		 * @brief 遍历指定音频层，并对每个音频对象执行回调函数。
@@ -238,89 +272,124 @@ namespace VisionGal::GalGame
 		 * @param callback 对每个 IGalGameAudio* 音频对象执行的回调函数。
 		 */
 		virtual void TraverseAudio(const std::function<void(IGalGameAudio* audio)>& callback) = 0;
-	};
 
-	/**
-	 * @brief 用于遍历分层场景的接口，继承自 ISpriteLayerTraverse 和 IAudioLayerTraverse。
-	 */
-	struct ILayeredSceneTraverse : public ISpriteLayerTraverse, public IAudioLayerTraverse
-	{
-		~ILayeredSceneTraverse() override = default;
-
-		/**
-		 * @brief 遍历场景中的所有资源，并对每个资源执行回调函数。
-		 * @param callback 对每个 IGalGameResource* 资源执行的回调函数。
-		 */
-		virtual void TraverseScene(std::function<void(IGalGameResource* actor)> callback) = 0;
-	};
-
-	/**
-	 * @brief 分层场景管理器接口，继承自 ILayeredSceneTraverse。
-	 */
-	struct ILayeredSceneManager : public ILayeredSceneTraverse
-	{
-		~ILayeredSceneManager() override = default;
-
-		/**
-		 * @brief 清空指定图层的所有精灵。
-		 * @param layer 图层名称
-		 */
-		virtual void ClearSpriteLayer(const String& layer) = 0;
 		/**
 		 * @brief 清空指定音频层的所有音频对象。
 		 * @param layer 音频层名称
 		 */
 		virtual void ClearSoundLayer(const String& layer) = 0;
-		/**
-		 * @brief 清空所有精灵。
-		 */
-		virtual void ClearAllSprite() = 0;
+
 		/**
 		 * @brief 清空所有音频对象。
 		 */
 		virtual void ClearAllAudio() = 0;
-		/**
-		 * @brief 清空所有资源。
-		 */
-		virtual void ClearAll() = 0;
-		
-		/**
-		 * @brief 在指定图层显示精灵。
-		 * @param layer 图层名称
-		 * @param actor 精灵对象指针
-		 */
-		virtual void ShowSprite(const String& layer, GameActor* actor) = 0;
-		/**
-		 * @brief 添加精灵对象。
-		 * @param sprite 精灵对象指针
-		 */
-		virtual void AddSprite(IGalGameSprite* sprite) = 0;
+
 		/**
 		 * @brief 添加音频对象。
 		 * @param audio 音频对象指针
 		 */
 		virtual void AddAudio(IGalGameAudio* audio) = 0;
-		/**
-		 * @brief 移除精灵对象。
-		 * @param sprite 精灵对象指针
-		 * @return 是否移除成功
-		 */
-		virtual bool RemoveSprite(IGalGameSprite* sprite) = 0;
+
 		/**
 		 * @brief 移除音频对象。
 		 * @param audio 音频对象指针
 		 * @return 是否移除成功
 		 */
 		virtual bool RemoveAudio(IGalGameAudio* audio) = 0;
+	};
 
-		/// @brief 添加角色对象。
-		virtual void AddCharacter(IGalCharacter* character) = 0;
+	/**
+	 * @brief 用于遍历分层场景的接口，继承自 ISpriteLayerTraverse 和 IAudioLayerTraverse。
+	 */
+	//struct ILayeredSceneTraverse //: public ISpriteLayerTraverse, public IAudioLayerTraverse
+	//{
+	//	virtual ~ILayeredSceneTraverse() = default;
+	//
+	//	/**
+	//	 * @brief 遍历场景中的所有资源，并对每个资源执行回调函数。
+	//	 * @param callback 对每个 IGalGameResource* 资源执行的回调函数。
+	//	 */
+	//	virtual void TraverseScene(std::function<void(IGalGameResource* actor)> callback) = 0;
+	//};
 
-		/// @brief 将精灵移动到指定的图层。
-		/// @param sprite 要移动的精灵对象指针。
-		/// @param layer 目标图层的名称。
-		/// @return 如果移动成功，返回 true；否则返回 false。
-		virtual bool MoveSpriteToLayer(IGalGameSprite* sprite, const String& layer) = 0;
+	/**
+	 * @brief 分层场景管理器接口，继承自 ILayeredSceneTraverse。
+	 */
+	struct ILayeredSceneManager
+	{
+		virtual ~ILayeredSceneManager() = default;
+
+		virtual void TraverseScene(std::function<void(IGalGameResource* actor)> callback) = 0;
+
+		/**
+		 * @brief 清空所有资源。
+		 */
+		virtual void ClearAll() = 0;
+
+		virtual ISceneSpriteManager* GetSpriteManager() = 0;
+
+		virtual ISceneAudioManager* GetAudioManager() = 0;
+	//
+	//	/**
+	//	 * @brief 清空指定图层的所有精灵。
+	//	 * @param layer 图层名称
+	//	 */
+	//	virtual void ClearSpriteLayer(const String& layer) = 0;
+	//	/**
+	//	 * @brief 清空指定音频层的所有音频对象。
+	//	 * @param layer 音频层名称
+	//	 */
+	//	virtual void ClearSoundLayer(const String& layer) = 0;
+	//	/**
+	//	 * @brief 清空所有精灵。
+	//	 */
+	//	virtual void ClearAllSprite() = 0;
+	//	/**
+	//	 * @brief 清空所有音频对象。
+	//	 */
+	//	virtual void ClearAllAudio() = 0;
+	//	/**
+	//	 * @brief 清空所有资源。
+	//	 */
+	//	virtual void ClearAll() = 0;
+	//	
+	//	/**
+	//	 * @brief 在指定图层显示精灵。
+	//	 * @param layer 图层名称
+	//	 * @param actor 精灵对象指针
+	//	 */
+	//	virtual void ShowSprite(const String& layer, GameActor* actor) = 0;
+	//	/**
+	//	 * @brief 添加精灵对象。
+	//	 * @param sprite 精灵对象指针
+	//	 */
+	//	virtual void AddSprite(IGalGameSprite* sprite) = 0;
+	//	/**
+	//	 * @brief 添加音频对象。
+	//	 * @param audio 音频对象指针
+	//	 */
+	//	virtual void AddAudio(IGalGameAudio* audio) = 0;
+	//	/**
+	//	 * @brief 移除精灵对象。
+	//	 * @param sprite 精灵对象指针
+	//	 * @return 是否移除成功
+	//	 */
+	//	virtual bool RemoveSprite(IGalGameSprite* sprite) = 0;
+	//	/**
+	//	 * @brief 移除音频对象。
+	//	 * @param audio 音频对象指针
+	//	 * @return 是否移除成功
+	//	 */
+	//	virtual bool RemoveAudio(IGalGameAudio* audio) = 0;
+	//
+	//	/// @brief 添加角色对象。
+	//	virtual void AddCharacter(IGalCharacter* character) = 0;
+	//
+	//	/// @brief 将精灵移动到指定的图层。
+	//	/// @param sprite 要移动的精灵对象指针。
+	//	/// @param layer 目标图层的名称。
+	//	/// @return 如果移动成功，返回 true；否则返回 false。
+	//	virtual bool MoveSpriteToLayer(IGalGameSprite* sprite, const String& layer) = 0;
 	};
 
 }

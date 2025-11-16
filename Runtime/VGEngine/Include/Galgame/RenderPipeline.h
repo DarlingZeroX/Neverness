@@ -31,7 +31,7 @@ namespace VisionGal::GalGame
 
 		void Initialize(IGameEngineContext* context);
 
-		void Render(ISpriteLayerTraverse* traverser, IOrthoCamera* camera, OpenGL::RenderTarget2D* rt);
+		void Render(ILayeredSceneManager* scene, IOrthoCamera* camera, OpenGL::RenderTarget2D* rt);
 		void OnScreenSizeChanged(int width, int height);
 		void CaptureBackgroundLayer();
 		void CaptureSceneLayer();
@@ -43,8 +43,8 @@ namespace VisionGal::GalGame
 		void RenderSprite(GameActor* actor, IOrthoCamera* camera);
 		void RenderFullScreen(FullScreenRendererComponent* renderer);
 
-		void RenderBackgroundLayer(ISpriteLayerTraverse* traverser, IOrthoCamera* camera);
-		void RenderSceneLayer(ISpriteLayerTraverse* traverser, IOrthoCamera* camera, OpenGL::RenderTarget2D* rt);
+		void RenderBackgroundLayer(ILayeredSceneManager* galScene, IOrthoCamera* camera);
+		void RenderSceneLayer(ILayeredSceneManager* galScene, IOrthoCamera* camera, OpenGL::RenderTarget2D* rt);
 		void RenderMixCharacterSprite();
 	private:
 		//IGameAppContext* m_AppContext;

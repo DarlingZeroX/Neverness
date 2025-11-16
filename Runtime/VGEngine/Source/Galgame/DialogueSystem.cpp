@@ -348,7 +348,7 @@ namespace VisionGal::GalGame
 	{
 		LayeredSceneManager* sceneManager = dynamic_cast<LayeredSceneManager*>(GameEngineCore::GetCurrentEngine()->GetLayeredSceneManager());
 
-		LayeredSceneManager::AudioLayer* voiceLayer = sceneManager->GetAudioLayer("Voice");
+		SceneAudioManager::AudioLayer* voiceLayer = sceneManager->GetAudioLayer("Voice");
 
 		return voiceLayer->IsPlayFinished() == false;
 	}

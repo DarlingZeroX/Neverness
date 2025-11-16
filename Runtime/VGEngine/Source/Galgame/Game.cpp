@@ -600,7 +600,7 @@ namespace VisionGal::GalGame
 		m_LastState.IsHide = m_CurrentState.IsHide;
 
 		// 将上一个立绘移动到前一层
-		engine->GetLayeredSceneManager()->MoveSpriteToLayer(m_LastState.Sprite, "SceneCharacterSpritePrev");
+		engine->GetLayeredSceneManager()->GetSpriteManager()->MoveSpriteToLayer(m_LastState.Sprite, "SceneCharacterSpritePrev");
 
 		// 保存当前显示状态
 		if (isState)

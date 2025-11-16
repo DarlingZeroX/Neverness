@@ -316,7 +316,7 @@ namespace VisionGal::GalGame
 		sprite->AlignBottom();
 
 		// 添加到管理器
-		m_LayeredSceneManager->AddSprite(sprite);
+		m_LayeredSceneManager->GetSpriteManager()->AddSprite(sprite);
 
 		return sprite;
 	}
@@ -349,7 +349,7 @@ namespace VisionGal::GalGame
 		audio->m_Actor = actor;
 
 		// 添加到管理器
-		m_LayeredSceneManager->AddAudio(audio);
+		m_LayeredSceneManager->GetAudioManager()->AddAudio(audio);
 
 		return audio;
 	}
@@ -447,7 +447,7 @@ namespace VisionGal::GalGame
 	{
 		GalCharacter* character = new GalCharacter(name);
 
-		GetLayeredSceneManager()->AddCharacter(character);
+		m_LayeredSceneManager->AddCharacter(character);
 
 		return character;
 	}
@@ -463,12 +463,12 @@ namespace VisionGal::GalGame
 
 	bool GalGameEngine::RemoveSprite(GalSprite* sprite)
 	{
-		return m_LayeredSceneManager->RemoveSprite(sprite);
+		return m_LayeredSceneManager->GetSpriteManager()->RemoveSprite(sprite);
 	}
 
 	bool GalGameEngine::RemoveAudio(GalAudio* audio)
 	{
-		return m_LayeredSceneManager->RemoveAudio(audio);
+		return m_LayeredSceneManager->GetAudioManager()->RemoveAudio(audio);
 	}
 
 	IArchiveSystem* GalGameEngine::GetArchiveSystem()

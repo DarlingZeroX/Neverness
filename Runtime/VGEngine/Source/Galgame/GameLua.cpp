@@ -83,13 +83,13 @@ namespace VisionGal::GalGame
 		);
 
 		// 注册场景管理系统
-		galgame.new_usertype<LayeredSceneManager::AudioLayer>("GalGameLayeredSceneManagerAudioLayer",
+		galgame.new_usertype<SceneAudioManager::AudioLayer>("GalGameSceneAudioManagerAudioLayer",
 			"音量", sol::property(
-				[](LayeredSceneManager::AudioLayer& self) -> float { return self.GetVolume(); },
-				[](LayeredSceneManager::AudioLayer& self, float value) { self.SetVolume(value); }
+				[](SceneAudioManager::AudioLayer& self) -> float { return self.GetVolume(); },
+				[](SceneAudioManager::AudioLayer& self, float value) { self.SetVolume(value); }
 			)
 			);
-		galgame.new_usertype<LayeredSceneManager::SpriteLayer>("GalGameLayeredSceneManagerSpriteLayer");
+		galgame.new_usertype<SceneSpriteManager::SpriteLayer>("GalGameSceneSpriteManagerSpriteLayer");
 
 		galgame.new_usertype<LayeredSceneManager>("GalGameLayeredSceneManager",
 			"获取音频层", &LayeredSceneManager::GetAudioLayer,

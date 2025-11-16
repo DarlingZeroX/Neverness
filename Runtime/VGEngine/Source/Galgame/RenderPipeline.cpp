@@ -99,11 +99,11 @@ namespace VisionGal::GalGame
 			});
 	}
 
-	void RenderPipeline::RenderBackgroundLayer(ISpriteLayerTraverse* traverser, IOrthoCamera* camera)
+	void RenderPipeline::RenderBackgroundLayer(ILayeredSceneManager* galScene, IOrthoCamera* camera)
 	{
 		// 渲染背景层
 		m_BackgroundRT->GetFrameBuffer()->Bind();
-		traverser->TraverseSpriteLayer("Background", [this, camera](IGalGameSprite* sprite)
+		galScene->GetSpriteManager()->TraverseSpriteLayer("Background", [this, camera](IGalGameSprite* sprite)
 			{
 				RenderSprite(sprite->GetResourceActor(), camera);
 			});
@@ -125,7 +125,7 @@ namespace VisionGal::GalGame
 		m_SceneRT->GetFrameBuffer()->Unbind();
 	}
 
-	void RenderPipeline::RenderSceneLayer(ISpriteLayerTraverse* traverser, IOrthoCamera* camera,
+	void RenderPipeline::RenderSceneLayer(ILayeredSceneManager* galScene, IOrthoCamera* camera,
 		OpenGL::RenderTarget2D* rt)
 	{
 		// 渲染人物立绘层
@@ -140,7 +140,7 @@ namespace VisionGal::GalGame
 			// 清除颜色缓冲区（和深度缓冲区，若启用了深度测试）
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT);
-			traverser->TraverseSpriteLayer("SceneCharacterSpritePrev", [this, camera](IGalGameSprite* sprite)
+			galScene->GetSpriteManager()->TraverseSpriteLayer("SceneCharacterSpritePrev", [this, camera](IGalGameSprite* sprite)
 				{
 					RenderSprite(sprite->GetResourceActor(), camera);
 				});
@@ -150,7 +150,7 @@ namespace VisionGal::GalGame
 			m_SceneCharacterSpriteCurrentRT->GetFrameBuffer()->Bind();
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT);
-			traverser->TraverseSpriteLayer("SceneCharacterSpriteCurrent", [this, camera](IGalGameSprite* sprite)
+			galScene->GetSpriteManager()->TraverseSpriteLayer("SceneCharacterSpriteCurrent", [this, camera](IGalGameSprite* sprite)
 				{
 					RenderSprite(sprite->GetResourceActor(), camera);
 				});
@@ -165,7 +165,7 @@ namespace VisionGal::GalGame
 
 		// 渲染前景层
 		m_SceneRT->GetFrameBuffer()->Bind();
-		traverser->TraverseSpriteLayer("Foreground", [this, camera](IGalGameSprite* sprite)
+		galScene->GetSpriteManager()->TraverseSpriteLayer("Foreground", [this, camera](IGalGameSprite* sprite)
 			{
 				RenderSprite(sprite->GetResourceActor(), camera);
 			});
@@ -232,7 +232,7 @@ namespace VisionGal::GalGame
 		m_SceneRT->GetFrameBuffer()->Unbind();
 	}
 
-	void RenderPipeline::Render(ISpriteLayerTraverse* traverser, IOrthoCamera* camera, OpenGL::RenderTarget2D* rt)
+	void RenderPipeline::Render(ILayeredSceneManager* traverser, IOrthoCamera* camera, OpenGL::RenderTarget2D* rt)
 	{
 		if (m_pScene == nullptr)
 		{
