@@ -25,7 +25,7 @@ namespace VisionGal::Editor
 
 		void RegisterHandler(std::string type, std::function<void(const VGPath&)> handle);
 
-		static AssetEditor& Instance();
+		static AssetEditor& GetInstance();
 
 		void OpenTextFile(const VGPath& path);
 	private:

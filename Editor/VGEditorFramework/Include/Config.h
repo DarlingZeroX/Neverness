@@ -11,7 +11,7 @@
 
 
 #pragma once
-#include "UIInterface.h"
+#include "../Interface/UIInterface.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #ifdef VG_EDITOR_FRAMEWORK_API_EXPORT

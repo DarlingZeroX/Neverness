@@ -284,6 +284,20 @@ void HFileSystem::SplitPath(const fsPath& inFullPath, wstring* outDirectory, wst
 		*outFileExt = inFullPath.extension().wstring();
 }
 
+void HFileSystem::SplitPath(const fsPath& inFullPath, string& outDirectory, string& outFileName, string& outFileExt)
+{
+	outDirectory = inFullPath.parent_path().string();
+	outFileName = inFullPath.stem().string();
+	outFileExt = inFullPath.extension().string();
+}
+
+void HFileSystem::SplitPath(const fsPath& inFullPath, wstring& outDirectory, wstring& outFileName, wstring& outFileExt)
+{
+	outDirectory = inFullPath.parent_path().wstring();
+	outFileName = inFullPath.stem().wstring();
+	outFileExt = inFullPath.extension().wstring();
+}
+
 string HFileSystem::SplitPathExt(const fsPath& inFullPath)
 {
 	string ret;

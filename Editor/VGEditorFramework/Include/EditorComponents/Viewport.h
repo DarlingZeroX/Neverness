@@ -11,7 +11,6 @@
 
 #pragma once
 #include "../Config.h"
-#include "../UIInterface.h"
 #include <vector>
 #include <HCore/Include/HConfig.h>
 #include <VGImgui/IncludeImGui.h>

@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../UIInterface.h"
+#include "../Config.h"
 #include <string>
 #include <functional>
 #include <VGEngine/Include/Core/Core.h>

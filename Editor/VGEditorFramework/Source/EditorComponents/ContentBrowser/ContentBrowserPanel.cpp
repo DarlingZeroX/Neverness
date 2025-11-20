@@ -312,7 +312,7 @@ namespace VisionGal::Editor {
 				}
 				else
 				{
-					AssetEditor::Instance().OpenAsset(item.Path, item.MetaData);
+					AssetEditor::GetInstance().OpenAsset(item.Path, item.MetaData);
 				}
 			}
 		}

@@ -394,7 +394,7 @@ namespace Horizon::SDL3
 		case SDL_EVENT_WINDOW_RESIZED:
 			if (event.window.windowID != SDL_GetWindowID(m_pWindow))
 				break;
-			windowEvent.event = Events::HWindowEventType::SIZE_CHANGED;
+			windowEvent.eventType = Events::HWindowEventType::SIZE_CHANGED;
 			windowEvent.data1 = event.window.data1;
 			windowEvent.data2 = event.window.data2;
 			int windowWidth, windowHeight;
@@ -409,7 +409,7 @@ namespace Horizon::SDL3
 			//}
 			break;
 		case SDL_EVENT_DROP_FILE:       // In case if dropped file
-			windowEvent.event = Events::HWindowEventType::DROP_FILE;
+			windowEvent.eventType = Events::HWindowEventType::DROP_FILE;
 			windowEvent.file = event.drop.data;
 			for (auto& listener : m_WindowEventListeners)
 			{
@@ -417,7 +417,7 @@ namespace Horizon::SDL3
 			}
 			break;
 		case SDL_EVENT_DROP_TEXT:
-			windowEvent.event = Events::HWindowEventType::DROP_TEXT;
+			windowEvent.eventType = Events::HWindowEventType::DROP_TEXT;
 			windowEvent.file = event.drop.data;
 			for (auto& listener : m_WindowEventListeners)
 			{
@@ -425,11 +425,11 @@ namespace Horizon::SDL3
 			}
 			break;
 		case SDL_EVENT_DROP_BEGIN:
-			windowEvent.event = Events::HWindowEventType::DROP_BEGIN;
+			windowEvent.eventType = Events::HWindowEventType::DROP_BEGIN;
 
 			break;
 		case SDL_EVENT_DROP_COMPLETE:
-			windowEvent.event = Events::HWindowEventType::DROP_COMPLETE;
+			windowEvent.eventType = Events::HWindowEventType::DROP_COMPLETE;
 
 			break;
 		default: break;

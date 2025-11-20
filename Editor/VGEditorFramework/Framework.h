@@ -15,6 +15,8 @@
 #include "Include/EditorCore/Localization.h"
 #include "Include/EditorCore/EditorCore.h"
 
+#include "Include/AssetImporter/AssetImporterManager.h"
+
 #include "Include/MainEditor/MainPanel.h"
 #include "Include/MainEditor/MenuBar.h"
 #include "Include/MainEditor/SideBar.h"

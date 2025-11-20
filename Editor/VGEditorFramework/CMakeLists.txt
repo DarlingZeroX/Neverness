@@ -24,7 +24,7 @@ file(GLOB EDITOR_FRMAEWORK_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/ImportStarter/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/ImporterUITask/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/AssetEditor/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetEditor/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/AssetImporter/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/EditorComponents/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/EditorComponents/DetailBrowser/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/EditorComponents/ContentBrowser/*.h"
@@ -33,6 +33,8 @@ file(GLOB EDITOR_FRMAEWORK_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Setting/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UITask/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/EditorCore/*.h"
+
+	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
 # 将源代码添加到此项目的可执行文件。
@@ -42,6 +44,7 @@ file(GLOB EDITOR_FRMAEWORK_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/ImportStarter/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/ImporterUITask/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetEditor/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetImporter/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorComponents/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorComponents/DetailBrowser/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorComponents/ContentBrowser/*.cpp"

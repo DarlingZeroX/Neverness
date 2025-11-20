@@ -60,7 +60,7 @@ namespace Horizon::Events
 
 		uint32 timestamp = 0;              /**< In milliseconds, populated using SDL_GetTicks() */
 		uint32 windowID = 0;               /**< The associated window */
-        HWindowEventType event;        /**< ::SDL_WindowEventID */
+        HWindowEventType eventType;        /**< ::SDL_WindowEventID */
 		uint8 padding1= 0;
 		uint8 padding2= 0;
 		uint8 padding3= 0;
@@ -68,7 +68,7 @@ namespace Horizon::Events
 		int32 data2 = 0;                    /**< event dependent data */
         std::string file;
 
-        std::uint32_t GetEventType() const override { return static_cast<unsigned>(event); }
+        std::uint32_t GetEventType() const override { return static_cast<unsigned>(eventType); }
         const char* GetName() const override { return ""; }
 
         virtual std::string ToString() const { return GetName(); }

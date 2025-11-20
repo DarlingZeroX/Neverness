@@ -61,7 +61,7 @@ namespace VisionGal::Editor
 		m_Handlers[type] = handle;
 	}
 
-	AssetEditor& AssetEditor::Instance()
+	AssetEditor& AssetEditor::GetInstance()
 	{
 		static AssetEditor editor;
 

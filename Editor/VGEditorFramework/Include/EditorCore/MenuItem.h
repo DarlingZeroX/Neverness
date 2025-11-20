@@ -12,7 +12,7 @@
 #pragma once
 #include <functional>
 #include <string>
-#include "../UIInterface.h"
+#include "../Config.h"
 
 namespace VisionGal::Editor
 {

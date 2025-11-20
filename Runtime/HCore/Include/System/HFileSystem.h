@@ -212,6 +212,8 @@ namespace Horizon
 
 		CORE_MODULE_API void                               SplitPath(const fsPath& inFullPath, string* outDirectory, string* outFileName, string* outFileExt);
 		CORE_MODULE_API void                               SplitPath(const fsPath& inFullPath, wstring* outDirectory, wstring* outFileName, wstring* outFileExt);
+		CORE_MODULE_API void                               SplitPath(const fsPath& inFullPath, string& outDirectory, string& outFileName, string& outFileExt);
+		CORE_MODULE_API void                               SplitPath(const fsPath& inFullPath, wstring& outDirectory, wstring& outFileName, wstring& outFileExt);
 
 		CORE_MODULE_API bool                               PathHasDirectory(const string& inFullPath);
 

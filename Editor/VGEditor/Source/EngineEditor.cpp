@@ -49,6 +49,9 @@ namespace VisionGal::Editor
 		// 初始化内容浏览器
 		String contentPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
 		ContentBrowser::Create(contentPath);
+
+		// 初始化资源导入管理器
+		AssetImporterManager::GetInstance().Initialize(m_EditorWindow);
 	}
 
 	void VGEditorApplication::AddApplicationLayer(IEngineApplicationLayer* layer)
