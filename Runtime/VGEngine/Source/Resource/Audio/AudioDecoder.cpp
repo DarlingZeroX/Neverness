@@ -38,14 +38,14 @@ namespace VisionGal
 
 		// 查找视频流和音频流
 		//AVCodecParameters* codecParameters = FindStream();
-		audioStreamIndex = m_fContext->FindAudioStreamIndex();
+		m_AudioStreamIndex = m_fContext->FindAudioStreamIndex();
 
 		// 音频解码器
-		if (audioStreamIndex != -1)
+		if (m_AudioStreamIndex != -1)
 		{
 			// 音频
-			actx = avcodec_alloc_context3(avcodec_find_decoder(m_fContext->formatContext->streams[audioStreamIndex]->codecpar->codec_id));
-			avcodec_parameters_to_context(actx, m_fContext->formatContext->streams[audioStreamIndex]->codecpar);
+			actx = avcodec_alloc_context3(avcodec_find_decoder(m_fContext->formatContext->streams[m_AudioStreamIndex]->codecpar->codec_id));
+			avcodec_parameters_to_context(actx, m_fContext->formatContext->streams[m_AudioStreamIndex]->codecpar);
 			avcodec_open2(actx, nullptr, nullptr);
 
 			// 假设 actx 是已经 open2 的 AVCodecContext*
@@ -69,16 +69,16 @@ namespace VisionGal
 				return false;
 			}
 
-			audioRingBuffer = CreateRef<AudioRingBuffer>(2 * 1024 * 1024);
+			m_AudioRingBuffer = CreateRef<AudioRingBuffer>(2 * 1024 * 1024);
 
 
 
 			//SDL_PauseAudioDevice(audioDev);
 
 			//audioMaxSamples = 1024;
-			audioMaxSamples = av_rescale_rnd(4096, 44100, actx->sample_rate, AV_ROUND_UP);
+			m_AudioMaxSamples = av_rescale_rnd(4096, 44100, actx->sample_rate, AV_ROUND_UP);
 
-			av_samples_alloc(&audioBuf, nullptr, 2, audioMaxSamples, AV_SAMPLE_FMT_S16, 0);
+			av_samples_alloc(&audioBuf, nullptr, 2, m_AudioMaxSamples, AV_SAMPLE_FMT_S16, 0);
 		}
 
 		// 分配帧和包
@@ -91,19 +91,37 @@ namespace VisionGal
 		return true;
 	}
 
-	void AudioDecoder::SetDecodeLoop(bool enable)
+	void AudioDecoder::SetLoopDecode(bool enable)
 	{
 		m_EnableDecodeLoop = enable;
 	}
 
-	bool AudioDecoder::IsDecodeLoop()
+	bool AudioDecoder::IsLoopDecode() const
 	{
 		return m_EnableDecodeLoop;
+	}
+
+	void AudioDecoder::SetPauseDecode(bool pause)
+	{
+		m_IsPauseDecode = pause;
+	}
+
+	bool AudioDecoder::IsPauseDecode() const
+	{
+		return m_IsPauseDecode;
 	}
 
 	void AudioDecoder::AudioThread()
 	{
 		while (running) {
+
+			// 暂停
+			if (m_IsPauseDecode) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				continue;
+			}
+
+			// 读取帧
 			AVPacket* pkt = av_packet_alloc();
 			if (av_read_frame(m_fContext->formatContext, pkt) < 0)
 			{
@@ -114,7 +132,7 @@ namespace VisionGal
 				{
 					// 尝试回到文件头并继续解码
 					// 对音频流使用时间戳 0，向后搜索
-					int ret = av_seek_frame(m_fContext->formatContext, audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
+					int ret = av_seek_frame(m_fContext->formatContext, m_AudioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
 					if (ret < 0)
 					{
 						// 如果按流索引失败，尝试全局 seek
@@ -135,18 +153,19 @@ namespace VisionGal
 				else
 				{
 					// 非循环：标记写入结束并退出线程
-					if (audioRingBuffer)
-						audioRingBuffer->WriteFinish();
+					if (m_AudioRingBuffer)
+						m_AudioRingBuffer->WriteFinish();
 					break;
 				}
 			}
 
-			if (pkt->stream_index == audioStreamIndex)
+			// 如果是音频流就解码
+			if (pkt->stream_index == m_AudioStreamIndex)
 			{
 				avcodec_send_packet(actx, pkt);
 				av_packet_free(&pkt);
 				while (avcodec_receive_frame(actx, aframe) >= 0) {
-					int samples = swr_convert(swr, &audioBuf, audioMaxSamples, (const uint8_t**)aframe->data, aframe->nb_samples);
+					int samples = swr_convert(swr, &audioBuf, m_AudioMaxSamples, (const uint8_t**)aframe->data, aframe->nb_samples);
 
 					if (samples > 0) {
 						int channels = 2;
@@ -154,14 +173,14 @@ namespace VisionGal
 						int bytes = samples * channels * bps;
 						int bufSize = av_samples_get_buffer_size(
 							nullptr, channels, samples, AV_SAMPLE_FMT_S16, 1);
-						audioRingBuffer->Write(audioBuf, bufSize);
+						m_AudioRingBuffer->Write(audioBuf, bufSize);
 
-						AVRational tb = m_fContext->formatContext->streams[audioStreamIndex]->time_base;
+						AVRational tb = m_fContext->formatContext->streams[m_AudioStreamIndex]->time_base;
 						audioClock = aframe->best_effort_timestamp * av_q2d(tb);
 					}
 
 					// 等待音频缓冲区有空间
-					while (audioRingBuffer && audioRingBuffer->IsAlmostFull())
+					while (m_AudioRingBuffer && m_AudioRingBuffer->IsAlmostFull())
 					{
 						if (!running)
 							return;

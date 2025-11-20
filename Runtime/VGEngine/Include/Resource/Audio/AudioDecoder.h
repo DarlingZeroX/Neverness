@@ -41,23 +41,26 @@ namespace VisionGal {
 		void Close();
 		double GetDuration() const;
 
-		AudioRingBuffer* GetAudioBuffer() const { return audioRingBuffer.get(); }
+		AudioRingBuffer* GetAudioBuffer() const { return m_AudioRingBuffer.get(); }
 		double GetAudioClock() const { return audioClock; }
 
-		void StartDecode();
-		void StopDecode();
-		void SetDecodeLoop(bool enable);
-		bool IsDecodeLoop();
+		void StartDecode();		// 开始解码
+		void StopDecode();		// 暂停解码
+		void SetLoopDecode(bool enable);	// 设置循环解码
+		bool IsLoopDecode() const;			// 是否循环解码
+		void SetPauseDecode(bool pause);	// 设置暂停解码
+		bool IsPauseDecode() const;			// 是否暂停解码
 	private:
 		void AudioThread();
 	private:
 		Ref<FFmpegContext> m_fContext = nullptr;
 		bool m_EnableDecodeLoop = false;
+		bool m_IsPauseDecode = false;
 
 		//音频
-		int audioStreamIndex;
-		int audioMaxSamples = 1024;
-		Ref<AudioRingBuffer> audioRingBuffer;
+		int m_AudioStreamIndex;
+		int m_AudioMaxSamples = 1024;
+		Ref<AudioRingBuffer> m_AudioRingBuffer;
 		AVCodecContext* actx = nullptr;
 		AVFrame* aframe = nullptr;
 		SwrContext* swr = nullptr;

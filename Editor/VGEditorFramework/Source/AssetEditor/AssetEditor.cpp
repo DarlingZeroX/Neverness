@@ -10,14 +10,14 @@
  */
 
 #include "AssetEditor/AssetEditor.h"
-#include <VGImgui/IncludeImGuiEx.h>
-
 #include "PanelManager.h"
-#include "AssetEditor/TextureViewer.h"
-#include "EditorComponents/CodeStudio/CodeStudio.h"
-#include "EditorCore/EdtiorScene.h"
 #include "MainEditor/MainPanel.h"
-#include "VGEngine/Include/Engine/Manager.h"
+#include "EditorCore/EdtiorScene.h"
+#include "AssetEditor/TextureViewer.h"
+#include "AssetEditor/AudioViewer.h"
+#include "EditorComponents/CodeStudio/CodeStudio.h"
+#include <VGImgui/IncludeImGuiEx.h>
+#include <VGEngine/Include/Engine/Manager.h>
 
 namespace VisionGal::Editor
 {
@@ -28,6 +28,10 @@ namespace VisionGal::Editor
 		if (metaData.AssetType == "Texture")
 		{
 			manager.NewTask(new TextureViewer(path), "Texture Viewer");
+		}
+		else if (metaData.AssetType == "Sound")
+		{
+			manager.NewTask(new AudioViewer(path), "Audio Viewer");
 		}
 		else if (metaData.AssetType == "Scene")
 		{

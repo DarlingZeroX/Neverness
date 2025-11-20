@@ -9,7 +9,6 @@
  * See the LICENSE file in the project root for details.
  */
 
-
 #pragma once
 #include <string>
 #include <VGImgui/Include/ImGuiEx/ImPanelInterface.h>

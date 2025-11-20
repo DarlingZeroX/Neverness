@@ -29,8 +29,8 @@ namespace VisionGal
 
     AudioPlayer::AudioPlayer()
         :
-        audioStream(nullptr),
-        isPlaying(false)
+        m_AudioStream(nullptr),
+        m_IsPlaying(false)
     {
         Init();
     }
@@ -38,6 +38,13 @@ namespace VisionGal
     AudioPlayer::~AudioPlayer()
     {
         //Stop();
+    }
+
+    Ref<AudioPlayer> AudioPlayer::CreatePlayer(const Ref<AudioClip>& clip)
+    {
+		auto player = CreateRef<AudioPlayer>();
+		player->OpenAudioClip(clip);
+		return player;
     }
 
     bool AudioPlayer::Init()
@@ -51,7 +58,7 @@ namespace VisionGal
 
     bool AudioPlayer::OpenAudioClip(const Ref<AudioClip>& clip)
     {
-        audioClip = clip;
+        m_AudioClip = clip;
 
         //Stop();
 
@@ -59,7 +66,7 @@ namespace VisionGal
     }
 
     // 音频流回调函数
-    static void AudioStreamCallback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
+	void AudioPlayer::AudioStreamCallback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
         AudioPlayer* player = static_cast<AudioPlayer*>(userdata);
         //player->HandleAudioStream(stream, additional_amount);
 		player->HandelAudioStream(stream, additional_amount, total_amount);
@@ -70,10 +77,13 @@ namespace VisionGal
 		//if (audioClip->audioDecoder == nullptr)
 		//	return false;
 
-        if (!audioClip || isPlaying) return false;
+        if (m_AudioClip == nullptr) 
+			return false;
 
-		audioClip->audioDecoder.StartDecode();
+		if (m_IsPlaying)
+			return true;
 
+		m_AudioClip->audioDecoder.StartDecode();
 
 		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == false) {
 			std::cerr << "音频初始化失败: " << SDL_GetError() << std::endl;
@@ -86,71 +96,84 @@ namespace VisionGal
 		spec.channels = 2;
 
 		// 1. 打开默认输出设备
-		audioDev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-		if (!audioDev) {
-			std::cerr << "Failed to open audio device: " << SDL_GetError() << std::endl;
+		m_AudioDev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+		if (!m_AudioDev) {
+			H_LOG_ERROR("Failed to open audio device: %s", SDL_GetError());
 			return false;
 		}
 
-		audioStream = SDL_OpenAudioDeviceStream(audioDev, &spec, AudioStreamCallback, this);
-		if (!audioStream) {
-			std::cerr << "Failed to create audio stream: " << SDL_GetError() << std::endl;
+		// 2. 打开音频流
+		m_AudioStream = SDL_OpenAudioDeviceStream(m_AudioDev, &spec, AudioStreamCallback, this);
+		if (!m_AudioStream) {
+			H_LOG_ERROR("Failed to create audio stream: %s", SDL_GetError());
 			return false;
 		}
 
 		// 3. 开始播放
-		SDL_ResumeAudioStreamDevice(audioStream);
+		SDL_ResumeAudioStreamDevice(m_AudioStream);
 
-        isPlaying = true;
+        m_IsPlaying = true;
         return true;
     }
 
-    void AudioPlayer::Stop()
+	bool AudioPlayer::Stop()
     {
-		if (isPlaying == false)
-			return;
+		if (m_IsPlaying == false)
+			return true;
 
-		audioClip->audioDecoder.StopDecode();
+		if (m_AudioClip == nullptr)
+			return false;
+
+		m_AudioClip->audioDecoder.StopDecode();
 
 		//SDL_PauseAudioStreamDevice(audioStream);
 		// 暂停并销毁流
-		if (audioStream != nullptr)
+		if (m_AudioStream != nullptr)
 		{
-			SDL_PauseAudioStreamDevice(audioStream);
-			SDL_DestroyAudioStream(audioStream);
-			audioStream = nullptr;
+			SDL_PauseAudioStreamDevice(m_AudioStream);
+			SDL_DestroyAudioStream(m_AudioStream);
+			m_AudioStream = nullptr;
 		}
 
-        isPlaying = false;
+        m_IsPlaying = false;
+		m_IsStop = true;
+		return true;
     }
 
-    bool AudioPlayer::IsPlayingAudio() const
-    {
-        return isPlaying;
-    }
-
-	void AudioPlayer::SetLoop(bool enable)
+	bool AudioPlayer::IsStop()
 	{
-		if (audioClip)
-		{
-			audioClip->audioDecoder.SetDecodeLoop(enable);
-		}
+		return m_IsStop;
+	}
+
+	bool AudioPlayer::IsPlaying() const
+    {
+        return m_IsPlaying;
+    }
+
+	bool AudioPlayer::SetLoop(bool enable)
+	{
+		if (m_AudioClip == nullptr)
+			return false;
+
+		m_AudioClip->audioDecoder.SetLoopDecode(enable);
+		return true;
 	}
 
     bool AudioPlayer::IsLooping() const
     {
-		if (audioClip)
+		if (m_AudioClip)
 		{
-			return audioClip->audioDecoder.IsDecodeLoop();
+			return m_AudioClip->audioDecoder.IsLoopDecode();
 		}
 
 		return false;
         //return m_EnableLoop;
     }
 
-    void AudioPlayer::SetVolume(float v)
+    bool AudioPlayer::SetVolume(float v)
     {
         m_Volume = SDL_clamp(v, 0.0f, 1.0f);
+		return true;
     }
 
     float AudioPlayer::GetVolume() const
@@ -158,16 +181,44 @@ namespace VisionGal
         return m_Volume;
     }
 
+    bool AudioPlayer::Pause()
+    {
+		if (m_AudioClip == nullptr)
+			return false;
+
+		if (m_AudioStream == nullptr)
+			return false;
+
+		SDL_PauseAudioStreamDevice(m_AudioStream);
+		m_AudioClip->audioDecoder.SetPauseDecode(true);
+		m_IsPlaying = false;
+		return true;
+    }
+
+    bool AudioPlayer::Restore()
+    {
+		if (m_AudioClip == nullptr)
+			return false;
+
+		if (m_AudioStream == nullptr)
+			return false;
+
+		SDL_ResumeAudioStreamDevice(m_AudioStream);
+		m_AudioClip->audioDecoder.SetPauseDecode(false);
+		m_IsPlaying = true;
+		return true;
+    }
+
     void AudioPlayer::FinishPlay(SDL_AudioStream* stream)
     {
 		SDL_PauseAudioStreamDevice(stream);
-		isPlaying = false;
+		m_IsPlaying = false;
     }
 
     void AudioPlayer::HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount)
     {
 		//auto* ring = static_cast<AudioRingBuffer*>(userdata);
-		auto* ring = this->audioClip->audioDecoder.GetAudioBuffer();
+		auto* ring = this->m_AudioClip->audioDecoder.GetAudioBuffer();
 		size_t frame_size = 2 * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16); // 2ch s16
 
 		while (additional_amount >= (int)frame_size && ring->Available() >= frame_size) {

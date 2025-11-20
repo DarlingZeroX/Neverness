@@ -107,14 +107,14 @@ namespace VisionGal::Editor
 			// 播放/停止场景按钮
 			if (GetSceneManager()->IsPlayMode() == false)
 			{
-				if (ImGui::Button(ICON_FA_PLAY))
+				if (ImGui::Button(ICON_FA_PLAY "##ScenePlay"))
 				{
 					GetSceneManager()->EnterPlayMode();
 				}
 			} 
 			else
 			{
-				if (ImGui::Button(ICON_FA_STOP))
+				if (ImGui::Button(ICON_FA_STOP "##SceneStop"))
 				{
 					GetSceneManager()->ExitPlayMode(); 
 				}

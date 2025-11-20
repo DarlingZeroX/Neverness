@@ -29,43 +29,40 @@ namespace VisionGal
         bool Open(const String& filePath);
 		AudioDecoder audioDecoder;
     private:
-        bool LoadAudio();
+        //bool LoadAudio();
     };
 	  
-    class AudioPlayer {
-        friend void AudioStreamCallback(void*, SDL_AudioStream*, int, int);
+    class VG_ENGINE_API AudioPlayer {
+        static void AudioStreamCallback(void*, SDL_AudioStream*, int, int);
     public:
         AudioPlayer();
         ~AudioPlayer();
 
-        // 初始化音频系统
-        bool Init();
-        // 打开音频片段
-        bool OpenAudioClip(const Ref<AudioClip>& clip);
-        // 开始播放
-        bool Play();
-        // 循环播放
-        void SetLoop(bool enable);
-        // 停止播放
-        void Stop();
-        // 是否正在播放音频
-        bool IsPlayingAudio() const;
-        // 是否循环播放
-        bool IsLooping() const;
-        // 设置音量
-        void SetVolume(float v);
-        // 获取音量
-        float GetVolume() const;
+		static Ref<AudioPlayer> CreatePlayer(const Ref<AudioClip>& clip);
+
+        bool Init();											 // 初始化音频系统
+        bool OpenAudioClip(const Ref<AudioClip>& clip);	         // 打开音频片段
+        bool Play();											 // 开始播放
+		bool SetLoop(bool enable);								 // 循环播放
+        bool Stop();											 // 停止播放
+		bool IsStop();
+        bool IsPlaying() const;			 // 是否正在播放音频
+        bool IsLooping() const;			 // 是否循环播放
+		bool SetVolume(float v);		 // 设置音量
+        float GetVolume() const;		 // 获取音量
+		bool Pause();					 // 暂停播放
+		bool Restore();					 // 恢复播放
     private:
 		void FinishPlay(SDL_AudioStream* stream);
         // 处理音频流数据
 		void HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount);
 
-        Ref<AudioClip> audioClip;
-        SDL_AudioStream* audioStream = nullptr;
-		SDL_AudioDeviceID audioDev;
+        Ref<AudioClip> m_AudioClip = nullptr;
+        SDL_AudioStream* m_AudioStream = nullptr;
+		SDL_AudioDeviceID m_AudioDev;
 
-        std::atomic<bool> isPlaying;
+		bool m_IsStop = false;
+        bool m_IsPlaying = false;
         float m_Volume = 1.0f;
     };
 }

@@ -215,7 +215,7 @@ namespace VisionGal
 
 	bool AudioSourceComponent::IsPlayingAudio() const
 	{
-		return audioPlayer->IsPlayingAudio();
+		return audioPlayer->IsPlaying();
 	}
 
 	bool AudioSourceComponent::IsLooping() const
