@@ -198,6 +198,41 @@ namespace VisionGal::GalGame
 		virtual void Update() = 0;
     };
 
+	struct ISceneSpriteLayer
+	{
+		virtual ~ISceneSpriteLayer() = default;
+
+		virtual void Clear() = 0;
+		virtual bool Add(IGalGameSprite* sprite) = 0;
+		virtual bool Remove(IGalGameSprite* sprite) = 0;
+	};
+
+	struct ISceneAudioLayer
+	{
+		virtual ~ISceneAudioLayer() = default;
+
+		virtual void SetVolume(float volume) = 0;
+		virtual float GetVolume() = 0;
+		virtual void Clear() = 0;
+		virtual void Add(IGalGameAudio* audio) = 0;
+		virtual void StopPlay() = 0;
+		virtual bool Remove(IGalGameAudio* audio) = 0;
+		virtual bool IsPlayFinished() = 0;
+	};
+
+	struct ISceneVideoLayer
+	{
+		virtual ~ISceneVideoLayer() = default;
+
+		virtual void SetVolume(float volume) = 0;
+		virtual float GetVolume() = 0;
+		virtual void Clear() = 0;
+		virtual void Add(IGalGameVideo* audio) = 0;
+		virtual void StopPlay() = 0;
+		virtual bool Remove(IGalGameVideo* audio) = 0;
+		virtual bool IsPlayFinished() = 0;
+	};
+
 	/**
 	 * @brief 用于遍历精灵层和精灵的接口。
 	 */
@@ -251,6 +286,10 @@ namespace VisionGal::GalGame
 		/// @param layer 目标图层的名称。
 		/// @return 如果移动成功，返回 true；否则返回 false。
 		virtual bool MoveSpriteToLayer(IGalGameSprite* sprite, const String& layer) = 0;
+
+		virtual void AddSpriteLayer(const String& layer) = 0;
+
+		virtual ISceneSpriteLayer* GetSpriteLayer(const String& layer) = 0;
 	};
 
 	/**
@@ -296,6 +335,10 @@ namespace VisionGal::GalGame
 		 * @return 是否移除成功
 		 */
 		virtual bool RemoveAudio(IGalGameAudio* audio) = 0;
+
+		virtual void AddAudioLayer(const String& layer) = 0;
+
+		virtual ISceneAudioLayer* GetAudioLayer(const String& layer) = 0;
 	};
 
 	/**
@@ -311,6 +354,21 @@ namespace VisionGal::GalGame
 	//	 */
 	//	virtual void TraverseScene(std::function<void(IGalGameResource* actor)> callback) = 0;
 	//};
+
+	struct ISceneVideoManager
+	{
+		virtual void AddVideo(IGalGameVideo* video) = 0;
+		virtual bool RemoveVideo(IGalGameVideo* video) = 0;
+		virtual void ClearVideoLayer(const String& layer) = 0;
+		virtual void ClearAllVideo() = 0;
+
+		virtual void TraverseVideoLayer(const String& layer, const std::function<void(IGalGameVideo* audio)>& callback) = 0;
+		virtual void TraverseVideo(const std::function<void(IGalGameVideo* audio)>& callback) = 0;
+		virtual void AddVideoLayer(const String& layer) = 0;
+		virtual ISceneVideoLayer* GetVideoLayer(const String& layer) = 0;
+
+		virtual ~ISceneVideoManager() = default;
+	};
 
 	/**
 	 * @brief 分层场景管理器接口，继承自 ILayeredSceneTraverse。
@@ -329,67 +387,8 @@ namespace VisionGal::GalGame
 		virtual ISceneSpriteManager* GetSpriteManager() = 0;
 
 		virtual ISceneAudioManager* GetAudioManager() = 0;
-	//
-	//	/**
-	//	 * @brief 清空指定图层的所有精灵。
-	//	 * @param layer 图层名称
-	//	 */
-	//	virtual void ClearSpriteLayer(const String& layer) = 0;
-	//	/**
-	//	 * @brief 清空指定音频层的所有音频对象。
-	//	 * @param layer 音频层名称
-	//	 */
-	//	virtual void ClearSoundLayer(const String& layer) = 0;
-	//	/**
-	//	 * @brief 清空所有精灵。
-	//	 */
-	//	virtual void ClearAllSprite() = 0;
-	//	/**
-	//	 * @brief 清空所有音频对象。
-	//	 */
-	//	virtual void ClearAllAudio() = 0;
-	//	/**
-	//	 * @brief 清空所有资源。
-	//	 */
-	//	virtual void ClearAll() = 0;
-	//	
-	//	/**
-	//	 * @brief 在指定图层显示精灵。
-	//	 * @param layer 图层名称
-	//	 * @param actor 精灵对象指针
-	//	 */
-	//	virtual void ShowSprite(const String& layer, GameActor* actor) = 0;
-	//	/**
-	//	 * @brief 添加精灵对象。
-	//	 * @param sprite 精灵对象指针
-	//	 */
-	//	virtual void AddSprite(IGalGameSprite* sprite) = 0;
-	//	/**
-	//	 * @brief 添加音频对象。
-	//	 * @param audio 音频对象指针
-	//	 */
-	//	virtual void AddAudio(IGalGameAudio* audio) = 0;
-	//	/**
-	//	 * @brief 移除精灵对象。
-	//	 * @param sprite 精灵对象指针
-	//	 * @return 是否移除成功
-	//	 */
-	//	virtual bool RemoveSprite(IGalGameSprite* sprite) = 0;
-	//	/**
-	//	 * @brief 移除音频对象。
-	//	 * @param audio 音频对象指针
-	//	 * @return 是否移除成功
-	//	 */
-	//	virtual bool RemoveAudio(IGalGameAudio* audio) = 0;
-	//
-	//	/// @brief 添加角色对象。
-	//	virtual void AddCharacter(IGalCharacter* character) = 0;
-	//
-	//	/// @brief 将精灵移动到指定的图层。
-	//	/// @param sprite 要移动的精灵对象指针。
-	//	/// @param layer 目标图层的名称。
-	//	/// @return 如果移动成功，返回 true；否则返回 false。
-	//	virtual bool MoveSpriteToLayer(IGalGameSprite* sprite, const String& layer) = 0;
+
+		virtual ISceneVideoManager* GetVideoManager() = 0;
 	};
 
 }

@@ -22,14 +22,14 @@ namespace VisionGal::GalGame
 	class SceneSpriteManager: public ISceneSpriteManager
 	{
 	public:
-		struct SpriteLayer
+		struct SpriteLayer : public ISceneSpriteLayer
 		{
 			String name;
 			std::vector<IGalGameSprite*> sprites;
 
-			void Clear();
-			void AddSprite(IGalGameSprite* sprite);
-			bool RemoveSprite(IGalGameSprite* sprite);
+			void Clear() override;
+			bool Add(IGalGameSprite* sprite) override;
+			bool Remove(IGalGameSprite* sprite) override;
 		};
 
 		SceneSpriteManager();
@@ -43,8 +43,8 @@ namespace VisionGal::GalGame
 
 		void TraverseSpriteLayer(const String& layer, const std::function<void(IGalGameSprite* sprite)>& callback) override;
 		void TraverseSprite(const std::function<void(IGalGameSprite* sprite)>& callback) override;
-		void AddSpriteLayer(const String& layer);
-		SpriteLayer* GetSpriteLayer(const String& layer);
+		void AddSpriteLayer(const String& layer) override;
+		ISceneSpriteLayer* GetSpriteLayer(const String& layer) override;
 	private:
 		void Initialize();
 	private:
@@ -54,18 +54,18 @@ namespace VisionGal::GalGame
 
 	struct SceneAudioManager: public ISceneAudioManager
 	{
-		struct AudioLayer
+		struct AudioLayer: public ISceneAudioLayer
 		{
 			String name;
 			std::vector<IGalGameAudio*> audios;
 
-			void SetVolume(float volume);
-			float GetVolume();
-			void Clear();
-			void AddAudio(IGalGameAudio* audio);
-			void StopPlay();
-			bool RemoveAudio(IGalGameAudio* audio);
-			bool IsPlayFinished();
+			void SetVolume(float volume) override;
+			float GetVolume() override;
+			void Clear() override;
+			void Add(IGalGameAudio* audio) override;
+			void StopPlay() override;
+			bool Remove(IGalGameAudio* audio) override;
+			bool IsPlayFinished() override;
 		private:
 			float m_Volume = 1.0f;
 		};
@@ -80,13 +80,51 @@ namespace VisionGal::GalGame
 
 		void TraverseAudioLayer(const String& layer, const std::function<void(IGalGameAudio* audio)>& callback) override;
 		void TraverseAudio(const std::function<void(IGalGameAudio* audio)>& callback) override;
-		void AddAudioLayer(const String& layer);
-		AudioLayer* GetAudioLayer(const String& layer);
+		void AddAudioLayer(const String& layer) override;
+		ISceneAudioLayer* GetAudioLayer(const String& layer) override;
 	private:
 		void Initialize();
 
 		std::vector<AudioLayer> m_AudioLayers;
 		std::unordered_map<String, int> m_AudioLayerIndexer;
+	};
+
+	class SceneVideoManager: public ISceneVideoManager
+	{
+	public:
+		struct VideoLayer : ISceneVideoLayer
+		{
+			String name;
+			std::vector<IGalGameVideo*> videos;
+
+			void SetVolume(float volume) override;
+			float GetVolume() override;
+			void Clear() override;
+			void Add(IGalGameVideo* audio) override;
+			void StopPlay() override;
+			bool Remove(IGalGameVideo* audio) override;
+			bool IsPlayFinished() override;
+		private:
+			float m_Volume = 1.0f;
+		};
+	
+		SceneVideoManager();
+		~SceneVideoManager() override = default;
+	
+		void AddVideo(IGalGameVideo* video) override;
+		bool RemoveVideo(IGalGameVideo* video) override;
+		void ClearVideoLayer(const String& layer) override;
+		void ClearAllVideo() override;
+		
+		void TraverseVideoLayer(const String& layer, const std::function<void(IGalGameVideo* audio)>& callback) override;
+		void TraverseVideo(const std::function<void(IGalGameVideo* audio)>& callback) override;
+		void AddVideoLayer(const String& layer) override;
+		ISceneVideoLayer* GetVideoLayer(const String& layer) override;
+	private:
+		void Initialize();
+	
+		std::vector<VideoLayer> m_VideoLayers;
+		std::unordered_map<String, int> m_VideoLayerIndexer;
 	};
 
 	class VG_ENGINE_API LayeredSceneManager: public ILayeredSceneManager
@@ -104,23 +142,19 @@ namespace VisionGal::GalGame
 		void ClearAllCharacter();
 		void TraverseScene(std::function<void(IGalGameResource* actor)> callback) override;
 		void TraverseCharacter(const std::function<void(IGalCharacter* character)>& callback);
-
-		//void AddSpriteLayer(const String& layer);
-		//void AddAudioLayer(const String& layer);
-
-		SceneAudioManager::AudioLayer* GetAudioLayer(const String& layer);
-		SceneSpriteManager::SpriteLayer* GetSpriteLayer(const String& layer);
+		
+		ISceneAudioLayer* GetAudioLayer(const String& layer);
+		ISceneSpriteLayer* GetSpriteLayer(const String& layer);
 
 		ISceneSpriteManager* GetSpriteManager() override { return &m_SpriteManager; }
 		ISceneAudioManager* GetAudioManager() override { return &m_AudioManager; }
+		ISceneVideoManager* GetVideoManager() override { return &m_VideoManager; }
 	public:
-		//void Initialize(Scene* scene);
-		//void OnRender();
-		//void OnUpdate();
 		void Initialize();
 	private:
 		SceneSpriteManager m_SpriteManager;
 		SceneAudioManager m_AudioManager;
+		SceneVideoManager m_VideoManager;
 
 		std::vector<IGalCharacter*> m_Characters;			// 当前游戏中的所有角色列表，存储了所有创建的 GalCharacter 实例。
 	};

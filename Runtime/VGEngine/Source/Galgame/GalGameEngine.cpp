@@ -375,16 +375,16 @@ namespace VisionGal::GalGame
 		return actor;
 	}
 
-	GalVideo* GalGameEngine::AddVideo(GameActor* video, const std::string& layer, const std::string& path)
+	GalVideo* GalGameEngine::AddVideo(GameActor* actor, const std::string& layer, const std::string& path)
 	{
-		// 创建GalGame的音频类
-		GalVideo* audio = new GalVideo(layer, path);
-		audio->m_Actor = video;
+		// 创建GalGame的视频类
+		GalVideo* video = new GalVideo(layer, path);
+		video->m_Actor = actor;
 
 		// 添加到管理器
-		//m_LayeredSceneManager->AddAudio(audio);
+		m_LayeredSceneManager->GetVideoManager()->AddVideo(video);
 
-		return audio;
+		return video;
 	}
 
 	GalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)

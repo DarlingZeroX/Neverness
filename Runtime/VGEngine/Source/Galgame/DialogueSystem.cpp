@@ -346,9 +346,9 @@ namespace VisionGal::GalGame
 
 	bool DialogueSystem::IsVoicing()
 	{
-		LayeredSceneManager* sceneManager = dynamic_cast<LayeredSceneManager*>(GameEngineCore::GetCurrentEngine()->GetLayeredSceneManager());
+		auto* sceneManager = GameEngineCore::GetCurrentEngine()->GetLayeredSceneManager();
 
-		SceneAudioManager::AudioLayer* voiceLayer = sceneManager->GetAudioLayer("Voice");
+		ISceneAudioLayer* voiceLayer = sceneManager->GetAudioManager()->GetAudioLayer("Voice");
 
 		return voiceLayer->IsPlayFinished() == false;
 	}

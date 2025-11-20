@@ -28,22 +28,23 @@ namespace VisionGal::GalGame
 		sprites.clear();
 	}
 
-	void SceneSpriteManager::SpriteLayer::AddSprite(IGalGameSprite* sprite)
+	bool SceneSpriteManager::SpriteLayer::Add(IGalGameSprite* sprite)
 	{
 		for (auto& sp : sprites)
 		{
 			if (sp == sprite)
 			{
-				return;
+				return true;
 				//delete sp;
 				//sp = nullptr;
 			}
 		}
 
 		sprites.push_back(sprite);
+		return true;
 	}
 
-	bool SceneSpriteManager::SpriteLayer::RemoveSprite(IGalGameSprite* sprite)
+	bool SceneSpriteManager::SpriteLayer::Remove(IGalGameSprite* sprite)
 	{
 		for (auto& sp : sprites)
 		{
@@ -78,7 +79,7 @@ namespace VisionGal::GalGame
 
 		auto& spriteLayer = m_SpriteLayers[m_SpriteLayerIndexer[layer]];
 
-		spriteLayer.AddSprite(sprite);
+		spriteLayer.Add(sprite);
 	}
 
 	bool SceneSpriteManager::RemoveSprite(IGalGameSprite* sprite)
@@ -88,7 +89,7 @@ namespace VisionGal::GalGame
 
 		auto& spriteLayer = m_SpriteLayers[m_SpriteLayerIndexer[sprite->GetResourceLayer()]];
 
-		return spriteLayer.RemoveSprite(sprite);
+		return spriteLayer.Remove(sprite);
 	}
 
 	void SceneSpriteManager::Initialize()
@@ -174,7 +175,7 @@ namespace VisionGal::GalGame
 		m_SpriteLayers.back().name = layer;
 	}
 
-	SceneSpriteManager::SpriteLayer* SceneSpriteManager::GetSpriteLayer(const String& layer)
+	ISceneSpriteLayer* SceneSpriteManager::GetSpriteLayer(const String& layer)
 	{
 		if (m_SpriteLayerIndexer.find(layer) != m_SpriteLayerIndexer.end())
 		{
@@ -217,7 +218,7 @@ namespace VisionGal::GalGame
 		audios.clear();
 	}
 
-	void SceneAudioManager::AudioLayer::AddAudio(IGalGameAudio* audio)
+	void SceneAudioManager::AudioLayer::Add(IGalGameAudio* audio)
 	{
 		H_ASSERT_NOT_NULL(audio);
 
@@ -239,7 +240,7 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	bool SceneAudioManager::AudioLayer::RemoveAudio(IGalGameAudio* audio)
+	bool SceneAudioManager::AudioLayer::Remove(IGalGameAudio* audio)
 	{
 		for (auto& ad : audios)
 		{
@@ -294,7 +295,7 @@ namespace VisionGal::GalGame
 			audioLayer.StopPlay();
 		}
 
-		audioLayer.AddAudio(audio);
+		audioLayer.Add(audio);
 	}
 
 	bool SceneAudioManager::RemoveAudio(IGalGameAudio* audio)
@@ -304,7 +305,7 @@ namespace VisionGal::GalGame
 
 		auto& audioLayer = m_AudioLayers[m_AudioLayerIndexer[audio->GetResourceLayer()]];
 
-		return audioLayer.RemoveAudio(audio);
+		return audioLayer.Remove(audio);
 	}
 
 	void SceneAudioManager::ClearSoundLayer(const String& layer)
@@ -353,7 +354,7 @@ namespace VisionGal::GalGame
 		m_AudioLayers.back().name = layer;
 	}
 
-	SceneAudioManager::AudioLayer* SceneAudioManager::GetAudioLayer(const String& layer)
+	ISceneAudioLayer* SceneAudioManager::GetAudioLayer(const String& layer)
 	{
 		if (m_AudioLayerIndexer.find(layer) != m_AudioLayerIndexer.end())
 		{
@@ -369,6 +370,187 @@ namespace VisionGal::GalGame
 		AddAudioLayer("Voice");
 		AddAudioLayer("Effect");
 		AddAudioLayer("System");
+	}
+
+	///////////////////////		SceneVideoManager::VideoLayer
+	void SceneVideoManager::VideoLayer::SetVolume(float volume)
+	{
+		m_Volume = volume;
+
+		for (auto& video : videos)
+		{
+			auto* galVideo = dynamic_cast<GalVideo*>(video);
+			if (galVideo != nullptr)
+			{
+				galVideo->SetVolume(m_Volume);
+			}
+		}
+	}
+
+	float SceneVideoManager::VideoLayer::GetVolume()
+	{
+		return m_Volume;
+	}
+
+	void SceneVideoManager::VideoLayer::Clear()
+	{
+		for (auto& ad : videos)
+		{
+			if (ad != nullptr)
+			{
+				delete ad;
+				ad = nullptr;
+			}
+		}
+
+		videos.clear();
+	}
+
+	void SceneVideoManager::VideoLayer::Add(IGalGameVideo* audio)
+	{
+		H_ASSERT_NOT_NULL(audio);
+
+		auto* galVideo = dynamic_cast<GalVideo*>(audio);
+		galVideo->SetVolume(m_Volume);
+
+		videos.push_back(audio);
+	}
+
+	void SceneVideoManager::VideoLayer::StopPlay()
+	{
+		for (auto& video : videos)
+		{
+			auto* galVideo = dynamic_cast<GalVideo*>(video);
+			if (galVideo != nullptr)
+			{
+				galVideo->Stop();
+			}
+		}
+	}
+
+	bool SceneVideoManager::VideoLayer::Remove(IGalGameVideo* video)
+	{
+		for (auto& vd : videos)
+		{
+			if (vd == video)
+			{
+				delete vd;
+				vd = nullptr;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool SceneVideoManager::VideoLayer::IsPlayFinished()
+	{
+		for (auto& video : videos)
+		{
+			auto* galVideo = dynamic_cast<GalVideo*>(video);
+			if (galVideo != nullptr && galVideo->IsPlaying() == false)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	///////////////////////		SceneVideoManager
+	SceneVideoManager::SceneVideoManager()
+	{
+		Initialize();
+	}
+
+	void SceneVideoManager::AddVideo(IGalGameVideo* video)
+	{
+		if (video == nullptr)
+			return;
+
+		// 如果图层不存在则创建
+		std::string layer = video->GetResourceLayer();
+		if (m_VideoLayerIndexer.find(layer) == m_VideoLayerIndexer.end())
+		{
+			AddVideoLayer(layer);
+		}
+
+		auto& videoLayer = m_VideoLayers[m_VideoLayerIndexer[layer]];
+
+		videoLayer.Add(video);
+	}
+
+	bool SceneVideoManager::RemoveVideo(IGalGameVideo* video)
+	{
+		if (video == nullptr)
+			return false;
+
+		auto& videoLayer = m_VideoLayers[m_VideoLayerIndexer[video->GetResourceLayer()]];
+
+		return videoLayer.Remove(video);
+	}
+
+	void SceneVideoManager::ClearVideoLayer(const String& layer)
+	{
+		m_VideoLayers[m_VideoLayerIndexer[layer]].Clear();
+	}
+
+	void SceneVideoManager::ClearAllVideo()
+	{
+		for (auto& audio : m_VideoLayers)
+			audio.Clear();
+	}
+
+	void SceneVideoManager::TraverseVideoLayer(const String& layer,
+		const std::function<void(IGalGameVideo* audio)>& callback)
+	{
+		auto& videoLayer = m_VideoLayers[m_VideoLayerIndexer[layer]];
+
+		for (auto* video : videoLayer.videos)
+		{
+			if (video != nullptr)
+			{
+				callback(video);
+			}
+		}
+	}
+
+	void SceneVideoManager::TraverseVideo(const std::function<void(IGalGameVideo* audio)>& callback)
+	{
+		for (auto& layer : m_VideoLayers)
+		{
+			for (auto* sound : layer.videos)
+			{
+				if (sound != nullptr)
+				{
+					callback(sound);
+				}
+			}
+		}
+	}
+
+	void SceneVideoManager::AddVideoLayer(const String& layer)
+	{
+		m_VideoLayerIndexer[layer] = m_VideoLayers.size();
+		m_VideoLayers.emplace_back();
+		m_VideoLayers.back().name = layer;
+	}
+
+	ISceneVideoLayer* SceneVideoManager::GetVideoLayer(const String& layer)
+	{
+		if (m_VideoLayerIndexer.find(layer) != m_VideoLayerIndexer.end())
+		{
+			return &m_VideoLayers[m_VideoLayerIndexer[layer]];
+		}
+
+		return nullptr;
+	}
+
+	void SceneVideoManager::Initialize()
+	{
+		AddVideoLayer("Background");
+		AddVideoLayer("Foreground");
+		AddVideoLayer("Screen");
 	}
 
 	///////////////////////		LayeredSceneManager
@@ -417,22 +599,12 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	//void LayeredSceneManager::AddSpriteLayer(const String& layer)
-	//{
-	//	m_SpriteManager.AddSpriteLayer(layer);
-	//}
-	//
-	//void LayeredSceneManager::AddAudioLayer(const String& layer)
-	//{
-	//	m_AudioManager.AddAudioLayer(layer);
-	//}
-
-	SceneAudioManager::AudioLayer* LayeredSceneManager::GetAudioLayer(const String& layer)
+	ISceneAudioLayer* LayeredSceneManager::GetAudioLayer(const String& layer)
 	{
 		return m_AudioManager.GetAudioLayer(layer);
 	}
 
-	SceneSpriteManager::SpriteLayer* LayeredSceneManager::GetSpriteLayer(const String& layer)
+	ISceneSpriteLayer* LayeredSceneManager::GetSpriteLayer(const String& layer)
 	{
 		return m_SpriteManager.GetSpriteLayer(layer);
 	}
