@@ -13,6 +13,7 @@
 #include "../../Core/Core.h"
 #include "../../EngineConfig.h"
 #include "../Common/FFmpegIOContext.h"
+#include "FContext.h"
 
 extern "C" {
 #include <libavformat/avformat.h>
@@ -46,6 +47,8 @@ namespace VisionGal {
 		//AVFrame* frame = nullptr;
 		//AVFrame* frameRGB = nullptr;
 		//struct SwsContext* swsContext = nullptr;
+
+		//Ref<FfmpegAVFormatContext> m_FormatContext;
 
 	private:
 		bool Open(const std::string& filePath);

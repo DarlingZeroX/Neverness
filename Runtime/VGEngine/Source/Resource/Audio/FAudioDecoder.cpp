@@ -1,0 +1,182 @@
+/*
+* This source file is part of VisionGal, the Visual Novel Engine
+*
+* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+* GitHub page: https://github.com/DarlingZeroX/VisionGal
+*
+* Copyright (c) 2025-present 梦旅缘心
+*
+* See the LICENSE file in the project root for details.
+*/
+
+#include "Resource/Audio/FAudioDecoder.h"
+#include "Resource/FFmpeg/FChannelLayout.h"
+
+namespace VisionGal {
+	FAudioDecoder::FAudioDecoder()
+	{
+	}
+
+	FAudioDecoder::~FAudioDecoder()
+	{
+	}
+
+	bool FAudioDecoder::Open(const VGPath& filePath)
+	{
+		m_FContext = FfmpegContext::Create(filePath);
+
+		if (m_FContext == nullptr)
+			return false;
+
+		// 查找视频流和音频流
+		m_AudioStreamIndex = m_FContext->FindAudioStreamIndex();
+		if (m_AudioStreamIndex != -1)				// 音频解码器
+		{
+			// 音频
+			m_CodecContext = CreateRef<FfmpegAVCodecContext>(*m_FContext->GetFormatContext(), m_AudioStreamIndex);
+
+			// 假设 actx 是已经 open2 的 AVCodecContext*
+			FfmpegAVChannelLayout in_ch_layout(m_CodecContext->GetCHLayout());
+			FfmpegAVChannelLayout out_ch_layout(2);
+			m_SwrContext = FfmpegSwrContext::Create(in_ch_layout, out_ch_layout, *m_CodecContext);
+
+			m_AudioRingBuffer = CreateRef<AudioRingBuffer>(2 * 1024 * 1024);
+
+			m_AudioMaxSamples = av_rescale_rnd(4096, 44100, m_CodecContext->GetSampleRate(), AV_ROUND_UP);
+			av_samples_alloc(&m_AudioBuf, nullptr, 2, m_AudioMaxSamples, AV_SAMPLE_FMT_S16, 0);
+		}
+
+		m_FfmpegAVFrame = CreateRef<FfmpegAVFrame>();
+
+		return true;
+	}
+
+	void FAudioDecoder::StartDecode()
+	{
+		m_IsRunning = true;
+		m_AudioThread = std::thread(&FAudioDecoder::AudioThread, this);
+	}
+
+	void FAudioDecoder::StopDecode()
+	{
+		m_IsRunning = false;
+		if (m_AudioThread.joinable()) 
+			m_AudioThread.join();
+	}
+
+	void FAudioDecoder::SetLoopDecode(bool enable)
+	{
+		m_EnableDecodeLoop = enable;
+	}
+
+	bool FAudioDecoder::IsLoopDecode() const
+	{
+		return m_EnableDecodeLoop;
+	}
+
+	void FAudioDecoder::SetPauseDecode(bool pause)
+	{
+		m_IsPauseDecode = pause;
+	}
+
+	bool FAudioDecoder::IsPauseDecode() const
+	{
+		return m_IsPauseDecode;
+	}
+
+	void FAudioDecoder::Close()
+	{
+	}
+
+	double FAudioDecoder::GetDuration() const
+	{
+		return 0.f;
+	}
+
+	void FAudioDecoder::AudioThread()
+	{
+		while (m_IsRunning) {
+
+			// 暂停
+			if (m_IsPauseDecode) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				continue;
+			}
+
+			// 读取帧
+			FfmpegAVPacket pkt;
+			FfmpegAVFormatContext* formatContext = m_FContext->GetFormatContext();
+			if (formatContext->ReadFrame(pkt) < 0)
+			{
+				// 到达文件结尾
+				if (m_EnableDecodeLoop && m_IsRunning)
+				{
+					// 尝试回到文件头并继续解码
+					// 对音频流使用时间戳 0，向后搜索
+					int ret = formatContext->SeekFrame(m_AudioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
+					if (ret < 0)
+					{
+						// 如果按流索引失败，尝试全局 seek
+						formatContext->SeekFrame(-1, 0, AVSEEK_FLAG_BACKWARD);
+					}
+
+					// 清空解码器内部缓冲区，避免残留帧
+					if (m_CodecContext)
+						m_CodecContext->FlushBuffers();
+
+					// 重置时钟（从头播放）
+					audioClock = 0.0;
+
+					// 继续循环读取
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					continue;
+				}
+				else
+				{
+					// 非循环：标记写入结束并退出线程
+					if (m_AudioRingBuffer)
+						m_AudioRingBuffer->WriteFinish();
+					break;
+				}
+			}
+
+			// 如果是音频流就解码
+			if (pkt.GetStreamIndex() == m_AudioStreamIndex)
+			{
+				m_CodecContext->SendPacket(pkt);
+				while (m_CodecContext->ReceiveFrame(*m_FfmpegAVFrame) >= 0) {
+					//int samples = swr_convert(swr, &m_AudioBuf, m_AudioMaxSamples, (const uint8_t**)m_FfmpegAVFrame->data, m_FfmpegAVFrame->GetNumberOfSamples());
+					int samples = swr_convert(
+						m_SwrContext->GetPtr(), 
+						&m_AudioBuf, 
+						m_AudioMaxSamples, 
+						m_FfmpegAVFrame->GetDataAddress(), 
+						m_FfmpegAVFrame->GetNumberOfSamples()
+					);
+
+					if (samples > 0) {
+						int channels = 2;
+						int bps = av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
+						int bytes = samples * channels * bps;
+						int bufSize = av_samples_get_buffer_size(
+							nullptr, channels, samples, AV_SAMPLE_FMT_S16, 1);
+
+						m_AudioRingBuffer->Write(m_AudioBuf, bufSize);
+
+						AVRational tb = formatContext->GetStream(m_AudioStreamIndex)->time_base;
+						audioClock = m_FfmpegAVFrame->GetBestEffortTimestamp() * av_q2d(tb);
+					}
+
+					// 等待音频缓冲区有空间
+					while (m_AudioRingBuffer && m_AudioRingBuffer->IsAlmostFull())
+					{
+						if (!m_IsRunning)
+							return;
+
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					}
+				}
+			}
+		}
+	}
+}

@@ -10,13 +10,11 @@
 */
 
 #pragma once
-#include "../Core/VFS.h"
+#include "../EngineConfig.h"
+#include "../Core/Core.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_audio.h>
-#include <iostream>
-#include <string>
-#include <atomic>
-#include "Audio/AudioDecoder.h"
+#include "Interface/IAudioDecoder.h"
 
 namespace VisionGal
 {
@@ -27,9 +25,10 @@ namespace VisionGal
         ~AudioClip() override;
 
         bool Open(const String& filePath);
-		AudioDecoder audioDecoder;
+
+		IAudioDecoder* GetDecoder() const;
     private:
-        //bool LoadAudio();
+		Ref<IAudioDecoder> m_AudioDecoder;
     };
 	  
     class VG_ENGINE_API AudioPlayer {
@@ -52,6 +51,7 @@ namespace VisionGal
         float GetVolume() const;		 // 获取音量
 		bool Pause();					 // 暂停播放
 		bool Restore();					 // 恢复播放
+		double GetDuration();
     private:
 		void FinishPlay(SDL_AudioStream* stream);
         // 处理音频流数据

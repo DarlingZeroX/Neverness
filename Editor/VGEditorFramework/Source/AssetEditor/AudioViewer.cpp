@@ -27,6 +27,7 @@ namespace VisionGal::Editor
 
 	AudioViewer::~AudioViewer()
 	{
+		m_AudioPlayer->Stop();
 	}
 
 	void AudioViewer::RenderUI(TaskContext& context)

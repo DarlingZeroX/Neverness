@@ -120,6 +120,6 @@
     "GalGameEngine": {
         "EntityComponentID": 4444702422606666105,
         "HasScript": true,
-        "m_ScriptPath": "/assets/引擎开发使用\\storyScript1.lua"
+        "m_ScriptPath": "/assets/剧情脚本\\Demo\\操场.lua"
     }
 }

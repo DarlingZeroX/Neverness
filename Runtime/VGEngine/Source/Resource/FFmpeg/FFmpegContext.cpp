@@ -9,7 +9,7 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "Resource/Common/FFmpegContext.h"
+#include "Resource/FFmpeg/FFmpegContext.h"
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_init.h>
@@ -102,6 +102,8 @@ namespace VisionGal
 
 		// 用ffmpeg读取视频音频
 		//AVFormatContext* fmt_ctx = avformat_alloc_context();
+		//m_FormatContext = FfmpegAVFormatContext::Create();
+
 		formatContext = avformat_alloc_context();
 		ioCtx = { file }; // file 是已打开的 vfspp::IFile 对象
 

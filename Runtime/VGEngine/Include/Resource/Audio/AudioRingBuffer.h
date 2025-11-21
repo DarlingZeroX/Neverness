@@ -12,22 +12,23 @@
 #pragma once
 #include <vector>
 #include <mutex>
+#include "../Interface/IAudioDataBuffer.h"
 
 namespace VisionGal {
 
 	// 简单线程安全环形缓冲
-	class AudioRingBuffer {
+	class AudioRingBuffer: public IAudioDataBuffer{
 	public:
 		AudioRingBuffer(size_t capacity);
 
-		size_t Write(const uint8_t* data, size_t len);
-		size_t Read(uint8_t* out, size_t len);
-		size_t Available() const;
-		bool IsAlmostFull() const;
-		void Stop();
-		bool IsFinish() const;
-		void WriteFinish();
-		bool IsWriteFinish() const;
+		size_t Write(const uint8_t* data, size_t len) override;
+		size_t Read(uint8_t* out, size_t len) override;
+		size_t Available() const override;
+		bool IsAlmostFull() const override;
+		void Stop() override;
+		bool IsFinish() const override;
+		void WriteFinish() override;
+		bool IsWriteFinish() const override;
 	private:
 		std::vector<uint8_t> buffer;
 		size_t head = 0;

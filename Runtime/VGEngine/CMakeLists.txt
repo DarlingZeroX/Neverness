@@ -96,6 +96,7 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Video/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Texture/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/FFmpeg/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"
 
