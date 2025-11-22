@@ -33,24 +33,24 @@ extern "C" {
 namespace VisionGal {
 
 	// 视频解码器类
-	class VG_ENGINE_API AudioDecoder: public IAudioDecoder {
+	class VG_ENGINE_API AudioDecoder {
 	public:
 		AudioDecoder();
 		~AudioDecoder();
 
 		bool Open(const std::string& filePath);
-		void Close() override;
-		double GetDuration() const override;
+		void Close();
+		double GetDuration() const;
 
-		IAudioDataBuffer* GetAudioBuffer() const override { return m_AudioRingBuffer.get(); }
-		double GetAudioClock() const override { return audioClock; }
+		IAudioDataBuffer* GetAudioBuffer() const { return m_AudioRingBuffer.get(); }
+		double GetAudioClock() const { return audioClock; }
 
-		void StartDecode() override;					// 开始解码
-		void StopDecode() override;						// 暂停解码
-		void SetLoopDecode(bool enable) override;		// 设置循环解码
-		bool IsLoopDecode() const override;				// 是否循环解码
-		void SetPauseDecode(bool pause) override;		// 设置暂停解码
-		bool IsPauseDecode() const override;			// 是否暂停解码
+		void StartDecode();					// 开始解码
+		void StopDecode();						// 暂停解码
+		void SetLoopDecode(bool enable);		// 设置循环解码
+		bool IsLoopDecode() const;				// 是否循环解码
+		void SetPauseDecode(bool pause);		// 设置暂停解码
+		bool IsPauseDecode() const;			// 是否暂停解码
 	private:
 		void AudioThread();
 	private:

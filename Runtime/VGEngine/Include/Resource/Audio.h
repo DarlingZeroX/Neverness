@@ -51,7 +51,10 @@ namespace VisionGal
         float GetVolume() const;		 // 获取音量
 		bool Pause();					 // 暂停播放
 		bool Restore();					 // 恢复播放
-		double GetDuration();
+		double GetDuration() const;
+		double GetAudioPlaybackTime() const;			// 获取音频设备的当前播放时间（秒）
+
+		bool Seek(double seconds);
     private:
 		void FinishPlay(SDL_AudioStream* stream);
         // 处理音频流数据
@@ -61,8 +64,11 @@ namespace VisionGal
         SDL_AudioStream* m_AudioStream = nullptr;
 		SDL_AudioDeviceID m_AudioDev;
 
-		bool m_IsStop = false;
+		bool m_IsFinished = false;
         bool m_IsPlaying = false;
         float m_Volume = 1.0f;
+
+		size_t m_PlayedBytes = 0;    // 已经被 SDL 播放的 PCM 字节数
+		int    m_BytesPerSec = 0;    // 每秒 PCM 字节数（根据 format 计算）
     };
 }

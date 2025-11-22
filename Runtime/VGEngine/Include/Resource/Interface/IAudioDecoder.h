@@ -28,7 +28,10 @@ namespace VisionGal {
 		virtual void StopDecode() = 0;					// 暂停解码
 		virtual void SetLoopDecode(bool enable) = 0;	// 设置循环解码
 		virtual bool IsLoopDecode() const = 0;			// 是否循环解码
-		virtual void SetPauseDecode(bool pause) = 0;	// 设置暂停解码
+		virtual void PauseDecode() = 0;					// 设置暂停解码
+		virtual void RestoreDecode() = 0;				// 设置恢复解码
 		virtual bool IsPauseDecode() const = 0;			// 是否暂停解码
+
+		virtual bool Seek(double seconds) = 0;
 	};
 }

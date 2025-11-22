@@ -79,4 +79,14 @@ namespace VisionGal {
 	{
 		return m_IsWriteFinish;
 	}
+
+	void AudioRingBuffer::Reset()
+	{
+		std::lock_guard<std::mutex> lock(mutex);
+		size = 0;
+		head = 0;
+		tail = 0;
+		m_IsFinish = false;
+		m_IsWriteFinish = false;
+	}
 }

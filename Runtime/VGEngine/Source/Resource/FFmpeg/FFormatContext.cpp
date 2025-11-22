@@ -36,6 +36,11 @@ namespace VisionGal {
 		m_FormatContext->pb = ioCtx.Get();
 	}
 
+	AVStream* FfmpegAVFormatContext::GetStream(uint index) const
+	{
+		return m_FormatContext->streams[index];
+	}
+
 	int FfmpegAVFormatContext::OpenInput(FfmpegAVDictionary& options)
 	{
 		return avformat_open_input(&m_FormatContext, nullptr, nullptr, options.GetAddress());

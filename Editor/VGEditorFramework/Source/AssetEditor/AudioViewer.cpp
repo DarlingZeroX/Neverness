@@ -10,8 +10,9 @@
  */
 
 #include "AssetEditor/AudioViewer.h"
-#include <VGEngine/Include/Interface/Loader.h>
 #include "EditorCore/Localization.h"
+#include <VGEngine/Include/Interface/Loader.h>
+#include <VGEngine/Include/Utils/TimeHelper.h>
 
 namespace VisionGal::Editor
 {
@@ -22,6 +23,9 @@ namespace VisionGal::Editor
 		{
 			m_AudioPlayer = AudioPlayer::CreatePlayer(audioClip);
 			m_AudioPlayer->Play();
+
+			m_AudioDuration = m_AudioPlayer->GetDuration();
+			m_AudioDurationFormat = TimeHelper::FloatToTimeFormatSprintf(m_AudioDuration);
 		}
 	}
 
@@ -46,23 +50,10 @@ namespace VisionGal::Editor
 		EditorText text(m_Path, ICON_FA_IMAGE);
 		if (ImGui::Begin(text.c_str(), &open, windowFlags))
 		{
-			
-			// 播放/停止场景按钮
-			//if (GetSceneManager()->IsPlayMode() == false)
-			if (m_AudioPlayer->IsPlaying() == false)
-			{
-				if (ImGui::Button(ICON_FA_PLAY "##AudioViewer"))
-				{
-					m_AudioPlayer->Restore();
-				}
-			}
-			else
-			{
-				if (ImGui::Button(ICON_FA_STOP "##AudioViewer"))
-				{
-					m_AudioPlayer->Pause();
-				}
-			}
+			// 进度条
+			RenderProgressBarUI();
+			RenderPlayButtonUI();
+			RenderLoopButtonUI();
 		}
 
 		ImGui::End();
@@ -71,6 +62,69 @@ namespace VisionGal::Editor
 		{
 			m_AudioPlayer->Stop();
 			context.IsFinished = true;
+		}
+	}
+
+	void AudioViewer::RenderProgressBarUI()
+	{
+		ImGui::Text(TimeHelper::FloatToTimeFormatSprintf(m_CurrentPlayTime).c_str());
+		ImGui::SameLine();
+		ImGui::SliderFloat("##AudioTimeControl", &m_CurrentPlayTime, 0.f, m_AudioDuration);
+		//std::cout << m_CurrentPlayTime << std::endl;
+		if (ImGui::IsItemDeactivatedAfterEdit()) {	// 当鼠标释放滑条时触发 Seek
+			m_AudioPlayer->Seek(m_CurrentPlayTime);
+		}
+		if (!ImGui::IsItemActive()) {	// 当用户没有拖动滑条时，同步播放进度
+			m_CurrentPlayTime = m_AudioPlayer->GetAudioPlaybackTime();
+		}
+		ImGui::SameLine();
+		ImGui::Text(m_AudioDurationFormat.c_str());
+	}
+
+	void AudioViewer::RenderPlayButtonUI()
+	{
+		// 让按钮居中
+		{
+			float windowWidth = ImGui::GetWindowSize().x;
+			float x = (windowWidth) * 0.5f;
+			ImGui::SetCursorPosX(x);
+		}
+
+		// 播放/停止场景按钮
+		if (m_AudioPlayer->IsPlaying() == false)
+		{
+			if (ImGui::Button(ICON_FA_PLAY "##AudioViewer"))
+			{
+				m_AudioPlayer->Restore();
+			}
+		}
+		else
+		{
+			if (ImGui::Button(ICON_FA_STOP "##AudioViewer"))
+			{
+				m_AudioPlayer->Pause();
+			}
+		}
+	}
+
+	void AudioViewer::RenderLoopButtonUI()
+	{
+		ImGui::SameLine();
+
+		// 播放/停止场景按钮
+		if (m_AudioPlayer->IsLooping() == false)
+		{
+			if (ImGui::Button(ICON_FA_REPEAT "##AudioViewerLoopButton"))
+			{
+				m_AudioPlayer->SetLoop(true);
+			}
+		}
+		else
+		{
+			if (ImGui::Button(ICON_FA_UNLINK "##AudioViewerLoopButton"))
+			{
+				m_AudioPlayer->SetLoop(false);
+			}
 		}
 	}
 }

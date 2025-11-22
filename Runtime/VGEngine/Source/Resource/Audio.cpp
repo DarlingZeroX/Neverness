@@ -115,6 +115,10 @@ namespace VisionGal
 		spec.format = SDL_AUDIO_S16;
 		spec.channels = 2;
 
+		// 初始化 m_BytesPerSec
+		m_BytesPerSec = spec.freq * spec.channels * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
+		m_PlayedBytes = 0;   // 播放重置
+
 		// 1. 打开默认输出设备
 		m_AudioDev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
 		if (!m_AudioDev) {
@@ -156,13 +160,13 @@ namespace VisionGal
 		}
 
         m_IsPlaying = false;
-		m_IsStop = true;
+		m_IsFinished = true;
 		return true;
     }
 
 	bool AudioPlayer::IsStop()
 	{
-		return m_IsStop;
+		return m_IsFinished;
 	}
 
 	bool AudioPlayer::IsPlaying() const
@@ -210,7 +214,7 @@ namespace VisionGal
 			return false;
 
 		SDL_PauseAudioStreamDevice(m_AudioStream);
-		m_AudioClip->GetDecoder()->SetPauseDecode(true);
+		m_AudioClip->GetDecoder()->PauseDecode();
 		m_IsPlaying = false;
 		return true;
     }
@@ -223,24 +227,72 @@ namespace VisionGal
 		if (m_AudioStream == nullptr)
 			return false;
 
+		auto* audioBuffer = m_AudioClip->GetDecoder()->GetAudioBuffer();
+		if (m_IsFinished)
+		{
+			audioBuffer->Reset();
+			m_PlayedBytes = 0.f;
+		}
+
 		SDL_ResumeAudioStreamDevice(m_AudioStream);
-		m_AudioClip->GetDecoder()->SetPauseDecode(false);
+		m_AudioClip->GetDecoder()->RestoreDecode();
 		m_IsPlaying = true;
+		m_IsFinished = false;
 		return true;
     }
 
-    double AudioPlayer::GetDuration()
+    double AudioPlayer::GetDuration() const
     {
 		if (m_AudioClip == nullptr)
 			return 0.f;
 
-
+		return m_AudioClip->GetDecoder()->GetDuration();
     }
+
+    double AudioPlayer::GetAudioPlaybackTime() const
+    {
+		if (m_BytesPerSec <= 0)
+			return 0.0;
+
+		return static_cast<double>(m_PlayedBytes) / static_cast<double>(m_BytesPerSec);
+    }
+
+    bool AudioPlayer::Seek(double seconds)
+	{
+		if (!m_AudioClip || !m_AudioClip->GetDecoder())
+			return false;
+
+		auto decoder = m_AudioClip->GetDecoder();
+
+		// 1. 暂停播放
+		if (m_IsPlaying)
+			Pause();
+
+		// 2. 告诉 decoder 跳转
+		if (!decoder->Seek(seconds)) {
+			std::cerr << "[AudioPlayer] Seek failed at " << seconds << "s\n";
+			return false;
+		}
+
+		// 3. 清空 RingBuffer
+		auto ring = decoder->GetAudioBuffer();
+		ring->Reset();
+
+		// 4. 重置已播放字节数
+		m_PlayedBytes = size_t(seconds * m_BytesPerSec);
+
+		// 5. 恢复播放
+		if (m_IsPlaying == false)
+			Restore();
+
+		return true;
+	}
 
     void AudioPlayer::FinishPlay(SDL_AudioStream* stream)
     {
 		SDL_PauseAudioStreamDevice(stream);
 		m_IsPlaying = false;
+		m_IsFinished = true;
     }
 
     void AudioPlayer::HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount)
@@ -262,6 +314,9 @@ namespace VisionGal
 
 			// 再次对齐防止 AudioRingBuffer 只返回部分
 			read = (read / frame_size) * frame_size;
+
+			// 播放的字节
+			m_PlayedBytes += read;
 
 			if (read > 0) {
 				// 音量调整
@@ -307,4 +362,5 @@ namespace VisionGal
 			}
 		}
     }
+
 }

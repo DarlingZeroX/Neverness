@@ -26,5 +26,6 @@ namespace VisionGal {
 		virtual bool IsFinish() const = 0;
 		virtual void WriteFinish() = 0;
 		virtual bool IsWriteFinish() const = 0;
+		virtual void Reset() = 0;
 	};
 }

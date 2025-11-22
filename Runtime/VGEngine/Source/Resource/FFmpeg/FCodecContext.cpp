@@ -13,11 +13,6 @@
 
 namespace VisionGal {
 
-	AVStream* FfmpegAVFormatContext::GetStream(uint index) const
-	{
-		return m_FormatContext->streams[index];
-	}
-
 	FfmpegAVCodecContext::FfmpegAVCodecContext(FfmpegAVFormatContext& context, uint index)
 	{
 		// 音频

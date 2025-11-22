@@ -74,9 +74,24 @@ namespace VisionGal {
 		return m_EnableDecodeLoop;
 	}
 
-	void FAudioDecoder::SetPauseDecode(bool pause)
+	void FAudioDecoder::PauseDecode()
 	{
-		m_IsPauseDecode = pause;
+		m_IsPauseDecode = true;
+	}
+
+	void FAudioDecoder::RestoreDecode()
+	{
+		m_IsPauseDecode = false;
+
+		if (m_IsRunning == false)
+		{
+			// 先确保旧线程 join 完成
+			if (m_AudioThread.joinable())
+				m_AudioThread.join();
+
+			Seek(0);
+			StartDecode();
+		}
 	}
 
 	bool FAudioDecoder::IsPauseDecode() const
@@ -90,7 +105,41 @@ namespace VisionGal {
 
 	double FAudioDecoder::GetDuration() const
 	{
+		auto* formatCtx = m_FContext->GetFormatContext();
+		if (formatCtx->GetDuration() != AV_NOPTS_VALUE)
+			return (double)formatCtx->GetDuration() / AV_TIME_BASE;
+
+		// fallback：使用 stream
+		AVStream* st = formatCtx->GetStream(m_AudioStreamIndex);
+		if (st->duration != AV_NOPTS_VALUE)
+			return static_cast<double>(st->duration) * st->time_base.num / st->time_base.den;
+
 		return 0.f;
+	}
+
+	bool FAudioDecoder::Seek(double seconds)
+	{
+		if (!m_FContext || m_AudioStreamIndex < 0)
+			return false;
+
+		std::unique_lock<std::mutex> lock(m_AudioControlMutex);
+		auto* formatCtx = m_FContext->GetFormatContext();
+
+		int64_t timestamp = int64_t(seconds / av_q2d(formatCtx->GetStream(m_AudioStreamIndex)->time_base));
+		int ret = formatCtx->SeekFrame(m_AudioStreamIndex, timestamp, AVSEEK_FLAG_ANY);
+		//int ret = av_seek_frame(m_FormatCtx, m_AudioStreamIndex, timestamp, AVSEEK_FLAG_ANY);
+		if (ret < 0) {
+			std::cerr << "[FAudioDecoder] av_seek_frame failed\n";
+			return false;
+		}
+
+		// 清空解码队列
+		//m_DecodedFrames.clear();
+
+		// decoder 状态重置
+		//m_CurrentPts = seconds;
+
+		return true;
 	}
 
 	void FAudioDecoder::AudioThread()
@@ -106,37 +155,42 @@ namespace VisionGal {
 			// 读取帧
 			FfmpegAVPacket pkt;
 			FfmpegAVFormatContext* formatContext = m_FContext->GetFormatContext();
-			if (formatContext->ReadFrame(pkt) < 0)
 			{
-				// 到达文件结尾
-				if (m_EnableDecodeLoop && m_IsRunning)
+				// 音频控制锁, 因为Seek会对formatContext进行操作,需要防止多线程同时访问
+				std::unique_lock<std::mutex> lock(m_AudioControlMutex);
+				if (formatContext->ReadFrame(pkt) < 0)
 				{
-					// 尝试回到文件头并继续解码
-					// 对音频流使用时间戳 0，向后搜索
-					int ret = formatContext->SeekFrame(m_AudioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
-					if (ret < 0)
+					// 到达文件结尾
+					if (m_EnableDecodeLoop && m_IsRunning)
 					{
-						// 如果按流索引失败，尝试全局 seek
-						formatContext->SeekFrame(-1, 0, AVSEEK_FLAG_BACKWARD);
+						// 尝试回到文件头并继续解码
+						// 对音频流使用时间戳 0，向后搜索
+						int ret = formatContext->SeekFrame(m_AudioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
+						if (ret < 0)
+						{
+							// 如果按流索引失败，尝试全局 seek
+							formatContext->SeekFrame(-1, 0, AVSEEK_FLAG_BACKWARD);
+						}
+
+						// 清空解码器内部缓冲区，避免残留帧
+						if (m_CodecContext)
+							m_CodecContext->FlushBuffers();
+
+						// 重置时钟（从头播放）
+						audioClock = 0.0;
+
+						// 继续循环读取
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
+						continue;
 					}
-
-					// 清空解码器内部缓冲区，避免残留帧
-					if (m_CodecContext)
-						m_CodecContext->FlushBuffers();
-
-					// 重置时钟（从头播放）
-					audioClock = 0.0;
-
-					// 继续循环读取
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
-					continue;
-				}
-				else
-				{
-					// 非循环：标记写入结束并退出线程
-					if (m_AudioRingBuffer)
-						m_AudioRingBuffer->WriteFinish();
-					break;
+					else
+					{
+						// 非循环：标记写入结束并退出线程
+						if (m_AudioRingBuffer)
+							m_AudioRingBuffer->WriteFinish();
+						m_IsRunning = false;
+						break;
+					}
 				}
 			}
 
@@ -166,13 +220,14 @@ namespace VisionGal {
 						AVRational tb = formatContext->GetStream(m_AudioStreamIndex)->time_base;
 						audioClock = m_FfmpegAVFrame->GetBestEffortTimestamp() * av_q2d(tb);
 					}
-
+					//std::cout << m_IsRunning << std::endl;
 					// 等待音频缓冲区有空间
 					while (m_AudioRingBuffer && m_AudioRingBuffer->IsAlmostFull())
 					{
+						//std::cout << m_IsRunning << std::endl;
 						if (!m_IsRunning)
 							return;
-
+						//std::cout << m_IsPauseDecode << std::endl;
 						std::this_thread::sleep_for(std::chrono::milliseconds(1));
 					}
 				}

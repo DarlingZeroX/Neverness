@@ -45,6 +45,8 @@ namespace VisionGal {
 
 		AVStream* GetStream(uint index) const;
 
+		double GetDuration() const { return m_FormatContext->duration; }
+
 		// 需要释放的指针
 		AVFormatContext* m_FormatContext = nullptr;
 	};

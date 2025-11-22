@@ -29,6 +29,7 @@ namespace VisionGal {
 		bool IsFinish() const override;
 		void WriteFinish() override;
 		bool IsWriteFinish() const override;
+		void Reset() override;
 	private:
 		std::vector<uint8_t> buffer;
 		size_t head = 0;

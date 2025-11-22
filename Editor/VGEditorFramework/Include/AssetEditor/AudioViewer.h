@@ -28,7 +28,15 @@ namespace VisionGal::Editor
 
 		void RenderUI(TaskContext& context) override;
 	private:
+		void RenderProgressBarUI();
+		void RenderPlayButtonUI();
+		void RenderLoopButtonUI();
+
 		VGPath m_Path;
 		Ref<AudioPlayer> m_AudioPlayer = nullptr;
+
+		float m_CurrentPlayTime = 0.f;
+		float m_AudioDuration = 0.f;
+		std::string m_AudioDurationFormat;
 	};
 }

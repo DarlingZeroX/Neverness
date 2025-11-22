@@ -10,8 +10,6 @@
 */
 
 #pragma once
-#include <SDL3/SDL_audio.h>
-
 #include "../Interface/IAudioDecoder.h"
 #include "../../Core/Core.h"
 #include "../../EngineConfig.h"
@@ -40,11 +38,14 @@ namespace VisionGal {
 		void StopDecode() override;						// 暂停解码
 		void SetLoopDecode(bool enable) override;		// 设置循环解码
 		bool IsLoopDecode() const override;				// 是否循环解码
-		void SetPauseDecode(bool pause) override;		// 设置暂停解码
+		void PauseDecode() override;					// 设置暂停解码
+		void RestoreDecode() override;					// 设置恢复解码
 		bool IsPauseDecode() const override;			// 是否暂停解码
 
 		void Close() override;
 		double GetDuration() const override;
+
+		bool Seek(double seconds) override;
 	private:
 		void AudioThread();
 	private:
@@ -56,7 +57,6 @@ namespace VisionGal {
 		Ref<FfmpegAVFrame> m_FfmpegAVFrame;
 
 		std::atomic<bool> m_IsRunning = false;
-
 		bool m_EnableDecodeLoop = false;
 		bool m_IsPauseDecode = false;
 
@@ -66,6 +66,8 @@ namespace VisionGal {
 		uint8_t* m_AudioBuf = nullptr;
 		std::thread m_AudioThread;
 		double audioClock = 0.0;
+
+		std::mutex m_AudioControlMutex;
 	};
 
 }
