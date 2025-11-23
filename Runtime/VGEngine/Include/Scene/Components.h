@@ -13,7 +13,7 @@
 #include "../Core/Core.h"
 #include "../Render/Sprite.h"
 //#include "../Resource/Audio.h"
-#include "../Resource/Interface/IAudioPlayer.h"
+#include "../Resource/Interface/AudioInterface.h"
 #include "../Resource/Video.h"
 #include "../Resource/UIDocument.h"
 #include "../Render/Material.h"

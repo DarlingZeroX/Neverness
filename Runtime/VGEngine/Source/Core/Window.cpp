@@ -74,6 +74,11 @@ namespace VisionGal
 		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO))
 			return false;
 
+		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == false) {
+			std::cerr << "音频子系统初始化失败: " << SDL_GetError() << std::endl;
+			return false;
+		}
+
 		// Submit click events when focusing the window.
 		SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 

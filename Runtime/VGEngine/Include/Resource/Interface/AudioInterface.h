@@ -10,10 +10,17 @@
 */
 
 #pragma once
-#include "IAudioDataBuffer.h"
-#include "IAudioClip.h"
+#include "AudioDecoderInterface.h"
 
 namespace VisionGal {
+
+	// 音频解码器接口
+	struct IAudioClip : public VGEngineResource
+	{
+		~IAudioClip() override = default;
+
+		virtual IAudioDecoder* GetDecoder() = 0;
+	};
 
 	// 音频解码器接口
 	struct IAudioPlayer {
@@ -32,7 +39,7 @@ namespace VisionGal {
 		virtual bool Pause() = 0;										// 暂停播放
 		virtual bool Restore() = 0;										// 恢复播放
 		virtual double GetDuration() const = 0;
-		virtual double GetAudioPlaybackTime() const = 0;				// 获取音频设备的当前播放时间（秒）
+		virtual double GetPlaybackTime() const = 0;				// 获取音频设备的当前播放时间（秒）
 
 		virtual bool Seek(double seconds) = 0;
 	};

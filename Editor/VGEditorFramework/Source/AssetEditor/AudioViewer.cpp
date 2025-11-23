@@ -76,7 +76,7 @@ namespace VisionGal::Editor
 			m_AudioPlayer->Seek(m_CurrentPlayTime);
 		}
 		if (!ImGui::IsItemActive()) {	// 当用户没有拖动滑条时，同步播放进度
-			m_CurrentPlayTime = m_AudioPlayer->GetAudioPlaybackTime();
+			m_CurrentPlayTime = m_AudioPlayer->GetPlaybackTime();
 		}
 		ImGui::SameLine();
 		ImGui::Text(m_AudioDurationFormat.c_str());

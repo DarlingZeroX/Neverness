@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../Interface/IAudioDecoder.h"
+#include "../Interface/AudioDecoderInterface.h"
 #include "../../Core/Core.h"
 #include "../../EngineConfig.h"
 
@@ -36,8 +36,8 @@ namespace VisionGal {
 
 		bool StartDecode() override;					// 开始解码
 		bool StopDecode() override;						// 暂停解码
-		bool SetLoopDecode(bool enable) override;		// 设置循环解码
-		bool IsLoopDecode() const override;				// 是否循环解码
+		//bool SetLoopDecode(bool enable) override;		// 设置循环解码
+		//bool IsLoopDecode() const override;				// 是否循环解码
 		bool PauseDecode(bool pause) override;			// 设置暂停解码
 		bool RestoreDecode() override;					// 设置恢复解码
 		bool IsPauseDecode() const override;			// 是否暂停解码
@@ -60,7 +60,7 @@ namespace VisionGal {
 		Ref<FfmpegAVFrame> m_FfmpegAVFrame;
 
 		std::atomic<bool> m_IsRunning = false;
-		bool m_EnableDecodeLoop = false;
+		//bool m_EnableDecodeLoop = false;
 		bool m_IsPauseDecode = false;
 
 		//音频

@@ -12,7 +12,7 @@
 #pragma once
 #include <SDL3/SDL_audio.h>
 
-#include "../Interface/IAudioDecoder.h"
+#include "../Interface/AudioDecoderInterface.h"
 #include "../../Core/Core.h"
 #include "../../EngineConfig.h"
 

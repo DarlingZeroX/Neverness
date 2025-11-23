@@ -77,17 +77,17 @@ namespace VisionGal {
 		return true;
 	}
 
-	bool FAudioDecoder::SetLoopDecode(bool enable)
-	{
-		m_EnableDecodeLoop = enable;
-
-		return RestoreDecode();
-	}
-
-	bool FAudioDecoder::IsLoopDecode() const
-	{
-		return m_EnableDecodeLoop;
-	}
+	//bool FAudioDecoder::SetLoopDecode(bool enable)
+	//{
+	//	m_EnableDecodeLoop = enable;
+	//
+	//	return RestoreDecode();
+	//}
+	//
+	//bool FAudioDecoder::IsLoopDecode() const
+	//{
+	//	return m_EnableDecodeLoop;
+	//}
 
 	bool FAudioDecoder::PauseDecode(bool pause)
 	{
@@ -101,10 +101,6 @@ namespace VisionGal {
 
 		if (IsRunningDecode() == false)
 		{
-			// 先确保旧线程 join 完成
-			if (m_AudioThread.joinable())
-				m_AudioThread.join();
-
 			return StartDecode();
 		}
 
@@ -217,37 +213,37 @@ namespace VisionGal {
 				if (readResult < 0)
 				{
 					// 到达文件结尾
-					if (m_EnableDecodeLoop && m_IsRunning)
-					{
-						Seek(0);
-						// 尝试回到文件头并继续解码
-						// 对音频流使用时间戳 0，向后搜索
-						//int ret = formatContext->SeekFrame(m_AudioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
-						//if (ret < 0)
-						//{
-						//	// 如果按流索引失败，尝试全局 seek
-						//	formatContext->SeekFrame(-1, 0, AVSEEK_FLAG_BACKWARD);
-						//}
-
-						// 清空解码器内部缓冲区，避免残留帧
-						if (m_CodecContext)
-							m_CodecContext->FlushBuffers();
-
-						// 重置时钟（从头播放）
-						audioClock = 0.0;
-
-						// 继续循环读取
-						std::this_thread::sleep_for(std::chrono::milliseconds(1));
-						continue;
-					}
-					else
-					{
+					//if (m_EnableDecodeLoop && m_IsRunning)
+					//{
+					//	Seek(0);
+					//	// 尝试回到文件头并继续解码
+					//	// 对音频流使用时间戳 0，向后搜索
+					//	//int ret = formatContext->SeekFrame(m_AudioStreamIndex, 0, AVSEEK_FLAG_BACKWARD);
+					//	//if (ret < 0)
+					//	//{
+					//	//	// 如果按流索引失败，尝试全局 seek
+					//	//	formatContext->SeekFrame(-1, 0, AVSEEK_FLAG_BACKWARD);
+					//	//}
+					//
+					//	// 清空解码器内部缓冲区，避免残留帧
+					//	if (m_CodecContext)
+					//		m_CodecContext->FlushBuffers();
+					//
+					//	// 重置时钟（从头播放）
+					//	audioClock = 0.0;
+					//
+					//	// 继续循环读取
+					//	std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					//	continue;
+					//}
+					//else
+					//{
 						// 非循环：标记写入结束并退出线程
 						if (m_AudioRingBuffer)
 							m_AudioRingBuffer->WriteFinish();
 						m_IsRunning = false;
 						break;
-					}
+					//}
 				}
 			}
 

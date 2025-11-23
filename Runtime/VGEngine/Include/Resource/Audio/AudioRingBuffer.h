@@ -12,7 +12,7 @@
 #pragma once
 #include <vector>
 #include <mutex>
-#include "../Interface/IAudioDataBuffer.h"
+#include "../Interface/AudioDecoderInterface.h"
 
 namespace VisionGal {
 
