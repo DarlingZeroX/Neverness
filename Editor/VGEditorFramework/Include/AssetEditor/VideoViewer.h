@@ -12,31 +12,35 @@
 #pragma once
 #include "../Config.h"
 #include <VGEngine/Include/Core/CoreTypes.h>
-#include <VGEngine/Include/Resource/Interface/IAudioPlayer.h>
+#include <VGEngine/Include/Resource/FVideo.h>
 
 namespace VisionGal::Editor
 {
-	class AudioViewer : public IEditorTaskPanel
+	class VideoViewer : public IEditorTaskPanel
 	{
 	public:
-		AudioViewer(const VGPath& path);
-		AudioViewer(const AudioViewer&) = default;
-		AudioViewer& operator=(const AudioViewer&) = default;
-		AudioViewer(AudioViewer&&) noexcept = default;
-		AudioViewer& operator=(AudioViewer&&) noexcept = default;
-		~AudioViewer() override;
+		VideoViewer(const VGPath& path);
+		VideoViewer(const VideoViewer&) = default;
+		~VideoViewer() override;
+		VideoViewer& operator=(const VideoViewer&) = default;
+		VideoViewer(VideoViewer&&) noexcept = default;
+		VideoViewer& operator=(VideoViewer&&) noexcept = default;
 
 		void RenderUI(TaskContext& context) override;
 	private:
+		void RenderVideoTexture();
 		void RenderProgressBarUI();
 		void RenderPlayButtonUI();
 		void RenderLoopButtonUI();
 
 		VGPath m_Path;
-		Ref<IAudioPlayer> m_AudioPlayer = nullptr;
+		Ref<FVideoPlayer> m_VideoPlayer = nullptr;
 
 		float m_CurrentPlayTime = 0.f;
-		float m_AudioDuration = 0.f;
+		float m_VideoDuration = 0.f;
 		std::string m_AudioDurationFormat;
+
+		int m_CurrentVideoUISizeX = 0;
+		int m_CurrentVideoUISizeY = 0;
 	};
 }

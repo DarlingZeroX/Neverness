@@ -18,6 +18,7 @@
 #include "Render/Camera.h"
 
 #include "Galgame/Components.h"
+#include "Resource/Audio.h"
 
 namespace VisionGal
 {

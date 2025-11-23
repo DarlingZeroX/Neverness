@@ -10,6 +10,9 @@
 */
 
 #include "Resource/FFmpeg/FFrame.h"
+extern "C" {
+#include <libavutil/imgutils.h>
+}
 
 namespace VisionGal {
 
@@ -27,5 +30,15 @@ namespace VisionGal {
 			av_frame_free(&m_AVFrame);
 			m_AVFrame = nullptr;
 		}
+	}
+
+	int FfmpegAVFrame::VideoImageFillArrays(const FfmpegBuffer& buffer, AVPixelFormat pix_fmt, int width, int height, int align)
+	{
+		return av_image_fill_arrays(
+			m_AVFrame->data, 
+			m_AVFrame->linesize, 
+			buffer.GetBufferPtr(),
+			pix_fmt, width, height, align
+		);
 	}
 }

@@ -13,6 +13,7 @@
 #include <HCore/Include/Math/GLM/ext/matrix_transform.hpp>
 #include "Engine/Manager.h"
 #include "HCore/Include/Math/GLM/gtc/quaternion.hpp"
+#include "Resource/Audio.h"
 
 namespace VisionGal
 {

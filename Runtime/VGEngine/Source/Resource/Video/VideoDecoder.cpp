@@ -388,7 +388,6 @@ namespace VisionGal
         //    std::cerr << "Failed to allocate packet" << std::endl;
         //    return false;
         //}
-
         //if (av_read_frame(formatContext, packet) >= 0) {
         //    if (packet->stream_index == videoStreamIndex) {
         //        timeBase = formatContext->streams[videoStreamIndex]->time_base;

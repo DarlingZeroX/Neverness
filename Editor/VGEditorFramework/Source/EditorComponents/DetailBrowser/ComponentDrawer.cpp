@@ -20,6 +20,7 @@
 #include <VGEngine/Include/Galgame/GameEngineCore.h>
 #include <VGEngine/Include/Interface/Loader.h>
 #include <VGEngine/Include/Lua/LuaScript.h>
+#include <VGEngine/Include/Resource/Audio.h>
 
 namespace VisionGal::Editor
 {

@@ -21,6 +21,7 @@
 #include "Scene/Scene.h"
 #include "Engine/Manager.h"
 #include "Engine/EngineResource.h"
+#include "Resource/Audio.h"
 
 namespace VisionGal::GalGame
 {

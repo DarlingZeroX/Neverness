@@ -10,22 +10,16 @@
 */
 
 #pragma once
+#include "IAudioDecoder.h"
 #include "../../Core/Core.h"
-
-extern "C" {
-#include <libavcodec/avcodec.h>
-}
 
 namespace VisionGal {
 
-	struct FfmpegAVCodecParameters
+	// 音频解码器接口
+	struct IAudioClip : public VGEngineResource
 	{
-		FfmpegAVCodecParameters(AVCodecParameters* param) 
-		: m_Parameters(param)
-		{
-		} ;
+		~IAudioClip() override = default;
 
-		AVCodecParameters* m_Parameters = nullptr;
+		virtual IAudioDecoder* GetDecoder() = 0;
 	};
-
 }

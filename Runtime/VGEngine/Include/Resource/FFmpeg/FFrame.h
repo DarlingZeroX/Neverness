@@ -11,8 +11,7 @@
 
 #pragma once
 #include "../../Core/Core.h"
-#include "FChannelLayout.h"
-#include "FContext.h"
+#include "FBuffer.h"
 
 extern "C" {
 #include <libswresample/swresample.h>
@@ -36,6 +35,8 @@ namespace VisionGal {
 		int64_t GetBestEffortTimestamp() const { return  m_AVFrame->best_effort_timestamp; }
 
 		int GetNumberOfSamples() const { return m_AVFrame->nb_samples; }
+
+		int VideoImageFillArrays(const FfmpegBuffer& buffer, AVPixelFormat pix_fmt, int width, int height, int align);
 	private:
 		//bool Initialize(FfmpegAVChannelLayout& inLayout, FfmpegAVChannelLayout& outLayout, FfmpegAVCodecContext& ctx);
 

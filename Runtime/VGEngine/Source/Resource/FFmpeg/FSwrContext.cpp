@@ -31,7 +31,7 @@ namespace VisionGal {
 	}
 
 	bool FfmpegSwrContext::Initialize(FfmpegAVChannelLayout& inLayout, FfmpegAVChannelLayout& outLayout,
-		FfmpegAVCodecContext& context)
+	                                  FfmpegAVCodecContext& context)
 	{
 		if (swr_alloc_set_opts2(
 			&m_SwrContext,

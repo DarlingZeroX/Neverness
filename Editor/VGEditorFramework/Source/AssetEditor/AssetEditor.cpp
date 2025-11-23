@@ -15,6 +15,7 @@
 #include "EditorCore/EdtiorScene.h"
 #include "AssetEditor/TextureViewer.h"
 #include "AssetEditor/AudioViewer.h"
+#include "AssetEditor/VideoViewer.h"
 #include "EditorComponents/CodeStudio/CodeStudio.h"
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGEngine/Include/Engine/Manager.h>
@@ -32,6 +33,10 @@ namespace VisionGal::Editor
 		else if (metaData.AssetType == "Sound")
 		{
 			manager.NewTask(new AudioViewer(path), "Audio Viewer");
+		}
+		else if (metaData.AssetType == "Video")
+		{
+			manager.NewTask(new VideoViewer(path), "Video Viewer");
 		}
 		else if (metaData.AssetType == "Scene")
 		{

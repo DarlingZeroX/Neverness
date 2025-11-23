@@ -34,18 +34,21 @@ namespace VisionGal {
 		IAudioDataBuffer* GetAudioBuffer() const override { return m_AudioRingBuffer.get(); }
 		double GetAudioClock() const override { return audioClock; }
 
-		void StartDecode() override;					// 开始解码
-		void StopDecode() override;						// 暂停解码
-		void SetLoopDecode(bool enable) override;		// 设置循环解码
+		bool StartDecode() override;					// 开始解码
+		bool StopDecode() override;						// 暂停解码
+		bool SetLoopDecode(bool enable) override;		// 设置循环解码
 		bool IsLoopDecode() const override;				// 是否循环解码
-		void PauseDecode() override;					// 设置暂停解码
-		void RestoreDecode() override;					// 设置恢复解码
+		bool PauseDecode(bool pause) override;			// 设置暂停解码
+		bool RestoreDecode() override;					// 设置恢复解码
 		bool IsPauseDecode() const override;			// 是否暂停解码
+		bool RestartDecode() override;					// 重新开始解码
 
 		void Close() override;
 		double GetDuration() const override;
 
 		bool Seek(double seconds) override;
+
+		bool IsRunningDecode() const override;
 	private:
 		void AudioThread();
 	private:

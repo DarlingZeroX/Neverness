@@ -39,7 +39,7 @@ namespace VisionGal
 		return result;
     }
 
-    IAudioDecoder* AudioClip::GetDecoder() const
+    IAudioDecoder* AudioClip::GetDecoder()
     {
 		if (m_AudioDecoder)
 			return m_AudioDecoder.get();
@@ -76,7 +76,7 @@ namespace VisionGal
         return true;
     }
 
-    bool AudioPlayer::OpenAudioClip(const Ref<AudioClip>& clip)
+    bool AudioPlayer::OpenAudioClip(const Ref<IAudioClip>& clip)
     {
         m_AudioClip = clip;
 
@@ -214,7 +214,7 @@ namespace VisionGal
 			return false;
 
 		SDL_PauseAudioStreamDevice(m_AudioStream);
-		m_AudioClip->GetDecoder()->PauseDecode();
+		m_AudioClip->GetDecoder()->PauseDecode(true);
 		m_IsPlaying = false;
 		return true;
     }
@@ -235,7 +235,21 @@ namespace VisionGal
 		}
 
 		SDL_ResumeAudioStreamDevice(m_AudioStream);
-		m_AudioClip->GetDecoder()->RestoreDecode();
+
+		m_AudioClip->GetDecoder()->PauseDecode(false);
+		if (m_AudioClip->GetDecoder()->IsRunningDecode() == false)
+		{
+			if (IsLooping() == true)
+			{
+				m_AudioClip->GetDecoder()->RestoreDecode();
+			}
+
+			if (m_IsFinished)
+			{
+				m_AudioClip->GetDecoder()->RestartDecode();
+			}
+		}
+
 		m_IsPlaying = true;
 		m_IsFinished = false;
 		return true;
@@ -273,10 +287,6 @@ namespace VisionGal
 			std::cerr << "[AudioPlayer] Seek failed at " << seconds << "s\n";
 			return false;
 		}
-
-		// 3. 清空 RingBuffer
-		auto ring = decoder->GetAudioBuffer();
-		ring->Reset();
 
 		// 4. 重置已播放字节数
 		m_PlayedBytes = size_t(seconds * m_BytesPerSec);

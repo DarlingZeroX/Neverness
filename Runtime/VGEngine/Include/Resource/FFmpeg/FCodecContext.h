@@ -22,7 +22,7 @@ extern "C" {
 namespace VisionGal {
 	struct FfmpegAVCodecContext
 	{
-		FfmpegAVCodecContext(FfmpegAVFormatContext& context, uint index);
+		FfmpegAVCodecContext(FfmpegAVFormatContext& context, uint index, bool isVideo = false);
 		~FfmpegAVCodecContext();
 
 		static Ref<FfmpegAVCodecContext> Create(FfmpegAVFormatContext& context, uint index);
@@ -33,7 +33,14 @@ namespace VisionGal {
 		void FlushBuffers() const;
 
 		int SendPacket(FfmpegAVPacket& packet) const;
+		int SendPacket(AVPacket* packet) const;
 		int ReceiveFrame(FfmpegAVFrame& frame) const;
+
+		bool SetPixelFormat(AVCodecParameters* param);
+		AVPixelFormat GetPixelFormat() const;
+
+		int GetVideoWidth() const;
+		int GetVideoHeight() const;
 	private:
 		int Open2() const;
 

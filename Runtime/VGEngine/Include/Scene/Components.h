@@ -12,7 +12,8 @@
 #pragma once
 #include "../Core/Core.h"
 #include "../Render/Sprite.h"
-#include "../Resource/Audio.h"
+//#include "../Resource/Audio.h"
+#include "../Resource/Interface/IAudioPlayer.h"
 #include "../Resource/Video.h"
 #include "../Resource/UIDocument.h"
 #include "../Render/Material.h"
@@ -406,11 +407,11 @@ namespace VisionGal {
 			 archive(volume);
 		 }
 
-		 Ref<AudioClip> audioClip;
+		 Ref<IAudioClip> audioClip;
 		 bool playOnAwake = true;
 		 bool loop = false;
 		 float volume = 1.0f;
-		 Ref<AudioPlayer> audioPlayer;
+		 Ref<IAudioPlayer> audioPlayer;
 
 		// 播放
 		 bool Play();
