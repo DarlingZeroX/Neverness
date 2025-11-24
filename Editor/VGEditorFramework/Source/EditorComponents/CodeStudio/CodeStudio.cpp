@@ -152,6 +152,9 @@ namespace VisionGal::Editor
 			{
 				if (!ImGui::IsPopupOpen("Save?"))
 					ImGui::OpenPopup("Save?");
+
+				// 确保弹出窗口获得焦点，防止被代码编辑器窗口覆盖
+				ImGui::SetNextWindowFocus(); 
 				if (ImGui::BeginPopupModal("Save?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 				{
 					ImGui::Text(EditorText{ "Save change to the following files?"}.c_str());

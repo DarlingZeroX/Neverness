@@ -55,6 +55,7 @@ namespace VisionGal::Editor
 			RenderProgressBarUI();
 			RenderPlayButtonUI();
 			RenderLoopButtonUI();
+			RenderVolumeButtonUI();
 		}
 
 		ImGui::End();
@@ -127,5 +128,22 @@ namespace VisionGal::Editor
 				m_AudioPlayer->SetLoop(false);
 			}
 		}
+	}
+
+	void AudioViewer::RenderVolumeButtonUI()
+	{
+		ImGui::SameLine();
+
+		if (ImGui::BeginPopupContextItem("AudioViewerVolumeControllerPopup"))
+		{
+			float volume = m_AudioPlayer->GetVolume();
+			ImGui::SliderFloat("##AudioVolumeController", &volume, 0.f, 1.0f);
+			m_AudioPlayer->SetVolume(volume);
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::Button(ICON_FA_VOLUME "##AudioVolumeButton"))
+			ImGui::OpenPopup("AudioViewerVolumeControllerPopup");
+		
 	}
 }

@@ -59,13 +59,14 @@ namespace VisionGal {
 		if (formatCtx->GetDuration() != AV_NOPTS_VALUE)
 			return (double)formatCtx->GetDuration() / AV_TIME_BASE;
 
-		// fallback：使用 stream
+		if (m_VideoStreamIndex >= 0)
 		{
 			AVStream* st = formatCtx->GetStream(m_VideoStreamIndex);
 			if (st->duration != AV_NOPTS_VALUE)
 				return static_cast<double>(st->duration) * st->time_base.num / st->time_base.den;
 		}
 
+		if (m_AudioStreamIndex >= 0)
 		{
 			AVStream* st = formatCtx->GetStream(m_AudioStreamIndex);
 			if (st->duration != AV_NOPTS_VALUE)
@@ -119,6 +120,13 @@ namespace VisionGal {
 		);
 	}
 
+	void FVideoDecoder::OnFinishedDecode()
+	{
+		m_IsRunning = false;
+		m_IsDemuxFinished = true;
+		m_IsFinishedDecode = true;
+	}
+
 	bool FVideoDecoder::Open(const std::string& filePath)
 	{
 		avformat_network_init();
@@ -144,6 +152,7 @@ namespace VisionGal {
 
 		m_IsRunning = true;
 		m_IsDemuxFinished = false;
+		m_IsFinishedDecode = false;
 
 		m_DemuxThread = std::thread(&FVideoDecoder::DemuxLoop, this);
 		if (HasAudioStream())
@@ -174,9 +183,10 @@ namespace VisionGal {
 
 	bool FVideoDecoder::Seek(double seconds)
 	{
-		if (!m_FContext || m_AudioStreamIndex < 0)
+		if (!m_FContext)
 			return false;
 
+		//bool isPause = m_IsPauseDecode;
 		PauseDecode(true);
 
 		// 先对线程进行加锁，防止与解码线程访问冲突
@@ -184,11 +194,11 @@ namespace VisionGal {
 			std::unique_lock lock(m_Mutex);
 
 			auto* formatCtx = m_FContext->GetFormatContext();
-			int64_t timestamp = static_cast<int64_t>(seconds / av_q2d(formatCtx->GetStream(m_AudioStreamIndex)->time_base));
+			int64_t timestamp = static_cast<int64_t>(seconds / av_q2d(formatCtx->GetStream(m_VideoStreamIndex)->time_base));
 
 			// 尝试回到文件头并继续解码
 			// 1. 对音频流使用时间戳 0，向后搜索
-			int ret = formatCtx->SeekFrame(m_AudioStreamIndex, timestamp, AVSEEK_FLAG_BACKWARD);
+			int ret = formatCtx->SeekFrame(m_VideoStreamIndex, timestamp, AVSEEK_FLAG_BACKWARD);
 			if (ret < 0)
 			{
 				// 如果按流索引失败，尝试全局 seek
@@ -197,8 +207,12 @@ namespace VisionGal {
 			}
 
 			// 2. 清空 RingBuffer
-			auto ring = GetAudioBuffer();
-			ring->Reset();
+			if (HasAudioStream())
+			{
+				//int ret = formatCtx->SeekFrame(m_AudioStreamIndex, timestamp, AVSEEK_FLAG_BACKWARD);
+				auto ring = GetAudioBuffer();
+				ring->Reset();
+			}
 			
 			// 刷新解码器状态，重置时钟
 			if (m_AudioCodecContext) m_AudioCodecContext->FlushBuffers();
@@ -212,8 +226,12 @@ namespace VisionGal {
 		}
 
 		PauseDecode(false); 
-
-		RestoreDecode();
+		m_VideoClock = seconds;
+		//if (isPause == false)
+		//RestoreDecode();
+		//
+		//m_IsDemuxFinished = false;
+		//m_IsFinishedDecode = false;
 
 		return true;
 	}
@@ -247,35 +265,35 @@ namespace VisionGal {
 			// 读取结束或出错
 			if (ret < 0)
 			{
-				if (m_EnableDecodeLoop && IsRunningDecode())
-				{
-					// 等待队列消化到可接受范围，避免立即清空导致竞争（带超时）
-					{
-						std::unique_lock<std::mutex> lock(m_Mutex);
-
-						// 等级队列清空
-						m_Condition.wait(lock, [&]() {
-							return (m_VideoPacketQueue.empty() && m_AudioPacketQueue.empty()) || !m_IsRunning;
-							});
-					}
-
-					// 回到文件头（优先全局 seek）
-					Seek(0);
-					m_IsDemuxFinished = false;
-
-					// 通知所有等待线程（消费或生产者都可以）
-					m_Condition.notify_all();
-
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
-					continue;
-				}
-				else
-				{
-					// 正常结束
-					m_IsDemuxFinished = true;
-					m_Condition.notify_all();
-					break;
-				}
+				//if (m_EnableDecodeLoop && IsRunningDecode())
+				//{
+				//	// 等待队列消化到可接受范围，避免立即清空导致竞争（带超时）
+				//	{
+				//		std::unique_lock<std::mutex> lock(m_Mutex);
+				//
+				//		// 等级队列清空
+				//		m_Condition.wait(lock, [&]() {
+				//			return (m_VideoPacketQueue.empty() && m_AudioPacketQueue.empty()) || !m_IsRunning;
+				//			});
+				//	}
+				//
+				//	// 回到文件头（优先全局 seek）
+				//	Seek(0);
+				//	m_IsDemuxFinished = false;
+				//
+				//	// 通知所有等待线程（消费或生产者都可以）
+				//	m_Condition.notify_all();
+				//
+				//	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				//	continue;
+				//}
+				//else
+				//{
+				// 正常结束
+				m_IsDemuxFinished = true;
+				m_Condition.notify_all();
+				break;
+				//}
 			}
 
 			// 控制队列大小（防止爆内存） - 使用 wait_for 兜底
@@ -345,7 +363,7 @@ namespace VisionGal {
 				m_AudioPacketQueue.pop();
 			}
 
-			std::cout << "m_AudioPacketQueue: " << m_AudioPacketQueue.size() << std::endl;
+			//std::cout << "m_AudioPacketQueue: " << m_AudioPacketQueue.size() << std::endl;
 
 			// 如果是音频流就解码
 			m_AudioCodecContext->SendPacket(&pktLocal);
@@ -370,7 +388,7 @@ namespace VisionGal {
 					m_AudioRingBuffer->Write(m_AudioBuf, bufSize);
 
 					AVRational tb = formatContext->GetStream(m_AudioStreamIndex)->time_base;
-					double audioClock = m_AudioFrame->GetBestEffortTimestamp() * av_q2d(tb);
+					m_AudioClock = m_AudioFrame->GetBestEffortTimestamp() * av_q2d(tb);
 				}
 
 				// 等待音频缓冲区有空间
@@ -417,7 +435,10 @@ namespace VisionGal {
 						gotPacket = true;
 					}
 					else if (m_IsDemuxFinished)
+					{
+						OnFinishedDecode();
 						return false;
+					}
 				}
 
 				// 发送 packet
@@ -466,7 +487,12 @@ namespace VisionGal {
 
 			// 接收 frame
 			while (true) {
-				std::cout << "m_VideoPacketQueue: " << m_VideoPacketQueue.size() << std::endl;
+				if (m_IsPauseDecode) {
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					continue;
+				}
+
+				//std::cout << "m_VideoPacketQueue: " << m_VideoPacketQueue.size() << std::endl;
 				int ret = m_VideoCodecContext->ReceiveFrame(*m_VideoFrame);
 
 				if (ret == AVERROR(EAGAIN)) break;
@@ -489,6 +515,7 @@ namespace VisionGal {
 
 				AVRational tb = formatContext->GetStream(m_VideoStreamIndex)->time_base;
 				pts = m_VideoFrame->GetBestEffortTimestamp() * av_q2d(tb);
+				m_VideoClock = pts;
 
 				frameData = m_VideoRGBFrame->GetPtr()->data[0];
 				lineSize = m_VideoRGBFrame->GetPtr()->linesize[0];
@@ -504,15 +531,15 @@ namespace VisionGal {
 		return false;
 	}
 
-	void FVideoDecoder::SetLoopDecode(bool enable)
-	{
-		m_EnableDecodeLoop = enable;
-	}
-
-	bool FVideoDecoder::IsLoopDecode() const
-	{
-		return m_EnableDecodeLoop;
-	}
+	//void FVideoDecoder::SetLoopDecode(bool enable)
+	//{
+	//	m_EnableDecodeLoop = enable;
+	//}
+	//
+	//bool FVideoDecoder::IsLoopDecode() const
+	//{
+	//	return m_EnableDecodeLoop;
+	//}
 
 	bool FVideoDecoder::PauseDecode(bool pause)
 	{
@@ -524,7 +551,7 @@ namespace VisionGal {
 	{
 		m_IsPauseDecode = false;
 
-		if (IsRunningDecode() == false || m_IsDemuxFinished == true)
+		if (IsRunningDecode() == false || m_IsDemuxFinished == true || m_IsFinishedDecode == true)
 		{
 			return StartDecode();
 		}
@@ -534,11 +561,38 @@ namespace VisionGal {
 
 	bool FVideoDecoder::RestartDecode()
 	{
-		return true;
+		if (Seek(0) == false)
+			return false;
+
+		if (RestoreDecode() == false)
+			return false;
 	}
 
 	bool FVideoDecoder::IsPauseDecode() const
 	{
 		return m_IsPauseDecode;
+	}
+
+	bool FVideoDecoder::IsFinishedDecode() const
+	{
+		return m_IsFinishedDecode;
+	}
+
+	double FVideoDecoder::GetPlaybackTime() const
+	{
+		// 优先使用音频时钟
+		if (HasAudioStream())
+		{
+			return m_AudioClock.load();
+		}
+
+		// 如果没有音频，则使用视频时钟
+		if (m_VideoStreamIndex != -1)
+		{
+			//std::cout << "m_VideoClock: " << m_VideoClock.load() << std::endl;
+			return m_VideoClock.load();
+		}
+
+		return 0.0;
 	}
 }

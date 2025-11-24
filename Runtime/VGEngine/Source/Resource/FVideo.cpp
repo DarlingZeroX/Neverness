@@ -12,10 +12,24 @@
 #include "Resource/FVideo.h"
 #include <SDL3/SDL_audio.h>
 #include "Graphics/OpenGL/Core.h"
+#include "Graphics/Interface/Device.h"
 #include "Graphics/OpenGL/ThrowMarco.h"
+#include "Resource/Video/FVideoDecoder.h"
 
 namespace VisionGal
 {
+	////////////////////	FVideoClip
+	uint2 FVideoClip::GetSize() const
+	{
+		return { m_VideoDecoder->GetVideoWidth(),m_VideoDecoder->GetVideoHeight() };
+	}
+
+	IVideoDecoder* FVideoClip::GetDecoder()
+	{
+		return m_VideoDecoder.get();
+	}
+
+	////////////////////	FVideoPlayer
 	bool FVideoPlayer::PlayAudio()
 	{
 		if (m_VideoClip == nullptr)
@@ -29,26 +43,21 @@ namespace VisionGal
 		spec.format = SDL_AUDIO_S16;
 		spec.channels = 2;
 
-		// 初始化 m_BytesPerSec
+		// 1. 初始化 m_BytesPerSec
 		m_BytesPerSec = spec.freq * spec.channels * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
 		m_PlayedBytes = 0;   // 播放重置
 
-		// 1. 打开默认输出设备
-		m_AudioDev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-		if (!m_AudioDev) {
-			H_LOG_ERROR("Failed to open audio device: %s", SDL_GetError());
+		// 2. 打开默认输出设备
+		if (m_AudioDevice.OpenDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, spec) == false)
 			return false;
-		}
 
-		// 2. 打开音频流
-		m_AudioStream = SDL_OpenAudioDeviceStream(m_AudioDev, &spec, AudioStreamCallback, this);
-		if (!m_AudioStream) {
-			H_LOG_ERROR("Failed to create audio stream: %s", SDL_GetError());
+		// 3. 打开音频流
+		if (m_AudioStream.OpenStream(m_AudioDevice, AudioStreamCallback, this) == false)
 			return false;
-		}
 
-		// 3. 开始播放
-		SDL_ResumeAudioStreamDevice(m_AudioStream);
+		// 4. 开始播放音频流
+		if (m_AudioStream.ResumeStream() == false)
+			return false;
 
 		m_IsPlaying = true;
 		return true;
@@ -164,22 +173,14 @@ namespace VisionGal
 		}
 	}
 
-	void FVideoPlayer::SetLoop(bool enable)
+	bool FVideoPlayer::IsLooping() const
 	{
-		if (m_VideoClip)
-		{
-			m_VideoClip->GetDecoder()->SetLoopDecode(enable);
-		}
+		return m_IsLoopPlay;
 	}
 
-	bool FVideoPlayer::IsLoop()
+	void FVideoPlayer::SetLoop(bool loop)
 	{
-		if (m_VideoClip)
-		{
-			m_VideoClip->GetDecoder()->IsLoopDecode();
-		}
-
-		return false;
+		m_IsLoopPlay = loop;
 	}
 
 	bool FVideoClip::Open(const String& filePath)
@@ -191,16 +192,6 @@ namespace VisionGal
 			m_VideoDecoder = decoder;
 
 		return result;
-	}
-
-	float2 FVideoClip::GetSize() const
-	{
-		return { m_VideoDecoder->GetWidth(),m_VideoDecoder->GetHeight() };
-	}
-
-	FVideoDecoder* FVideoClip::GetDecoder() const
-	{
-		return m_VideoDecoder.get();
 	}
 
 	void FVideoPlayer::AudioStreamCallback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount)
@@ -232,29 +223,19 @@ namespace VisionGal
 		return player;
 	}
 
-	bool FVideoPlayer::Open(const Ref<FVideoClip>& clip)
+	bool FVideoPlayer::Open(const Ref<IVideoClip>& clip)
 	{
 		Stop();
 		m_VideoClip = clip;
 
 		VGFX::TextureDesc desc;
-		desc.Width = m_VideoClip->GetDecoder()->GetWidth();
-		desc.Height = m_VideoClip->GetDecoder()->GetHeight();
+		desc.Width = m_VideoClip->GetDecoder()->GetVideoWidth();
+		desc.Height = m_VideoClip->GetDecoder()->GetVideoHeight();
 		desc.Type = GL_UNSIGNED_BYTE;
 		desc.Format = GL_RGBA;
 		desc.InternalFormat = GL_RGBA;
 		desc.Data = nullptr;
 		m_VideoTexture = VGFX::CreateTextureFromMemory(desc);
-
-		return true;
-	}
-
-	bool FVideoPlayer::Open(const std::string& filePath)
-	{
-		if (!m_VideoClip->GetDecoder()->Open(filePath)) {
-			std::cerr << "Failed to open video file" << std::endl;
-			return false;
-		}
 
 		return true;
 	}
@@ -283,31 +264,15 @@ namespace VisionGal
 		m_IsPlaying = false;
 
 		// 销毁音频
-		if (m_AudioStream != nullptr)
-		{
-			SDL_PauseAudioStreamDevice(m_AudioStream);
-			SDL_DestroyAudioStream(m_AudioStream);
-			m_AudioStream = nullptr;
-		}
+		m_AudioStream.Clear();
 
 		m_IsPlaying = false;
-		m_IsFinished = true;
+		//m_IsFinished = true;
 	}
 
 	bool FVideoPlayer::IsPlaying() const
 	{
 		return m_IsPlaying;// && !renderer->shouldClose();
-	}
-
-	bool FVideoPlayer::IsLooping() const
-	{
-		if (m_VideoClip)
-		{
-			return m_VideoClip->GetDecoder()->IsLoopDecode();
-		}
-
-		return false;
-		//return m_EnableLoop;
 	}
 
 	double FVideoPlayer::GetDuration() const
@@ -323,10 +288,11 @@ namespace VisionGal
 		if (m_VideoClip == nullptr)
 			return false;
 
-		if (m_AudioStream != nullptr)
-		{
-			SDL_PauseAudioStreamDevice(m_AudioStream);
-		}
+		m_AudioStream.PauseStream();
+		//if (m_AudioStream != nullptr)
+		//{
+		//	SDL_PauseAudioStreamDevice(m_AudioStream);
+		//}
 
 		m_VideoClip->GetDecoder()->PauseDecode(true);
 		m_IsPlaying = false;
@@ -338,34 +304,37 @@ namespace VisionGal
 		if (m_VideoClip == nullptr)
 			return false;
 
-		if (m_AudioStream == nullptr)
-			return false;
-
-		auto* audioBuffer = m_VideoClip->GetDecoder()->GetAudioBuffer();
-		if (m_IsFinished)
+		if (m_VideoClip->GetDecoder()->IsFinishedDecode())
 		{
-			audioBuffer->Reset();
-			m_PlayedBytes = 0.f;
+			m_VideoClockInitialized = false;
 		}
 
-		SDL_ResumeAudioStreamDevice(m_AudioStream);
+		if (m_VideoClip->GetDecoder()->HasAudioStream())
+		{
+			auto* audioBuffer = m_VideoClip->GetDecoder()->GetAudioBuffer();
+			if (m_VideoClip->GetDecoder()->IsFinishedDecode())
+			{
+				audioBuffer->Reset();
+				m_PlayedBytes = 0.f;
+			}
+		}
 
+		m_AudioStream.ResumeStream();
+		//if (m_AudioStream != nullptr)
+		//	SDL_ResumeAudioStreamDevice(m_AudioStream);
 		m_VideoClip->GetDecoder()->PauseDecode(false);
 		if (m_VideoClip->GetDecoder()->IsRunningDecode() == false)
 		{
-			if (IsLooping() == true)
+			if (m_VideoClip->GetDecoder()->IsFinishedDecode())
 			{
-				m_VideoClip->GetDecoder()->RestoreDecode();
-			}
-
-			if (m_IsFinished)
-			{
+				//RestartPlay();
 				m_VideoClip->GetDecoder()->RestartDecode();
 			}
 		}
 
+		m_VideoClip->GetDecoder()->RestoreDecode();
 		m_IsPlaying = true;
-		m_IsFinished = false;
+		//m_IsFinished = false;
 		return true;
 	}
 
@@ -377,36 +346,49 @@ namespace VisionGal
 		if (m_FrameData == nullptr)
 			return;
 
-		//return;
-		//std::lock_guard<std::mutex> lock(mutex);
+		if (m_VideoClip->GetDecoder()->IsFinishedDecode())
 		{
-			std::unique_lock lock(m_Mutex);
-
-			//VGFX::ITexture* tex = sprite->GetITexture();
-			int textureID = reinterpret_cast<int>(m_VideoTexture->GetShaderResourceView());
-
-			// 更新纹理
-			GL_THROW_INFO( glBindTexture(GL_TEXTURE_2D, textureID) );
-			GL_THROW_INFO( glTexImage2D(
-				GL_TEXTURE_2D, 0, GL_RGBA,
-				m_VideoTexture->GetDesc().Width,
-				m_VideoTexture->GetDesc().Height,
-				0, GL_RGBA, GL_UNSIGNED_BYTE,
-				m_FrameData
-			));
-
-			GL_THROW_INFO(glBindTexture(GL_TEXTURE_2D, 0));
+			m_IsPlaying = false;
+			if (m_IsLoopPlay)
+			{
+				RestartPlay();
+				return;
+			}
 		}
 
+		int textureID = reinterpret_cast<int>(m_VideoTexture->GetShaderResourceView());
 
+		// 更新纹理
+		GL_THROW_INFO( glBindTexture(GL_TEXTURE_2D, textureID) );
+		GL_THROW_INFO( glTexImage2D(
+			GL_TEXTURE_2D, 0, GL_RGBA,
+			m_VideoTexture->GetDesc().Width,
+			m_VideoTexture->GetDesc().Height,
+			0, GL_RGBA, GL_UNSIGNED_BYTE,
+			m_FrameData
+		));
+
+		GL_THROW_INFO(glBindTexture(GL_TEXTURE_2D, 0));
+	}
+
+	VGFX::ITexture* FVideoPlayer::GetVideoTexture() const
+	{
+		return m_VideoTexture.get();
 	}
 
 	double FVideoPlayer::GetPlaybackTime() const
 	{
-		if (m_BytesPerSec <= 0)
-			return 0.0;
+		if (m_VideoClip->GetDecoder()->HasAudioStream())
+		{
+			if (m_BytesPerSec <= 0)
+				return 0.0;
 
-		return static_cast<double>(m_PlayedBytes) / static_cast<double>(m_BytesPerSec);
+			return static_cast<double>(m_PlayedBytes) / static_cast<double>(m_BytesPerSec);
+		}
+		else
+		{
+			return m_VideoClip->GetDecoder()->GetPlaybackTime();
+		}
 	}
 
 	bool FVideoPlayer::Seek(double seconds)
@@ -418,9 +400,10 @@ namespace VisionGal
 
 		m_VideoClockInitialized = false;
 
+		bool isPlaying = IsPlaying();
 		// 1. 暂停播放
-		if (m_IsPlaying)
-			Pause();
+		//if (m_IsPlaying)
+		Pause();
 
 		// 2. 告诉 decoder 跳转
 		if (!decoder->Seek(seconds)) {
@@ -432,9 +415,35 @@ namespace VisionGal
 		m_PlayedBytes = size_t(seconds * m_BytesPerSec);
 
 		// 5. 恢复播放
-		if (m_IsPlaying == false)
+		if (isPlaying == true)
 			Restore();
 
 		return true;
+	}
+
+	bool FVideoPlayer::RestartPlay()
+	{
+		m_IsPlaying = true;
+		Seek(0);
+
+		//m_PlayedBytes = 0;
+		//Restore();
+		//m_IsPlaying = true;
+		//m_VideoClockInitialized = false;
+		////m_IsFinished = false;
+		//m_VideoClip->GetDecoder()->RestartDecode();
+
+		return true;
+	}
+
+	bool FVideoPlayer::SetVolume(float v)
+	{
+		m_Volume = std::clamp(v, 0.0f, 1.0f);
+		return true;
+	}
+
+	float FVideoPlayer::GetVolume() const
+	{
+		return m_Volume;
 	}
 }

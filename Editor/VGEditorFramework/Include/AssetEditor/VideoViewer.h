@@ -12,7 +12,7 @@
 #pragma once
 #include "../Config.h"
 #include <VGEngine/Include/Core/CoreTypes.h>
-#include <VGEngine/Include/Resource/FVideo.h>
+#include <VGEngine/Include/Resource/Interface/VideoInterface.h>
 
 namespace VisionGal::Editor
 {
@@ -32,9 +32,10 @@ namespace VisionGal::Editor
 		void RenderProgressBarUI();
 		void RenderPlayButtonUI();
 		void RenderLoopButtonUI();
+		void RenderVolumeButtonUI();
 
 		VGPath m_Path;
-		Ref<FVideoPlayer> m_VideoPlayer = nullptr;
+		Ref<IVideoPlayer> m_VideoPlayer = nullptr;
 
 		float m_CurrentPlayTime = 0.f;
 		float m_VideoDuration = 0.f;

@@ -13,6 +13,7 @@
 #include "EditorCore/Localization.h"
 #include <VGEngine/Include/Interface/Loader.h>
 #include <VGEngine/Include/Utils/TimeHelper.h>
+#include <VGEngine/Include/Resource/FVideo.h>
 
 namespace VisionGal::Editor
 {
@@ -59,6 +60,7 @@ namespace VisionGal::Editor
 			RenderProgressBarUI();
 			RenderPlayButtonUI();
 			RenderLoopButtonUI();
+			RenderVolumeButtonUI();
 		}
 
 		ImGui::End();
@@ -155,5 +157,38 @@ namespace VisionGal::Editor
 
 	void VideoViewer::RenderLoopButtonUI()
 	{
+		ImGui::SameLine();
+
+		// 播放/停止场景按钮
+		if (m_VideoPlayer->IsLooping() == false)
+		{
+			if (ImGui::Button(ICON_FA_REPEAT "##VideoViewerLoopButton"))
+			{
+				m_VideoPlayer->SetLoop(true);
+			}
+		}
+		else
+		{
+			if (ImGui::Button(ICON_FA_UNLINK "##VideoViewerLoopButton"))
+			{
+				m_VideoPlayer->SetLoop(false);
+			}
+		}
+	}
+
+	void VideoViewer::RenderVolumeButtonUI()
+	{
+		ImGui::SameLine();
+
+		if (ImGui::BeginPopupContextItem("VideoViewerVolumeControllerPopup"))
+		{
+			float volume = m_VideoPlayer->GetVolume();
+			ImGui::SliderFloat("##VideoVolumeController", &volume, 0.f, 1.0f);
+			m_VideoPlayer->SetVolume(volume);
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::Button(ICON_FA_VOLUME "##VideoVolumeButton"))
+			ImGui::OpenPopup("VideoViewerVolumeControllerPopup");
 	}
 }

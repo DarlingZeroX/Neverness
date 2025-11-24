@@ -31,6 +31,7 @@ namespace VisionGal::Editor
 		void RenderProgressBarUI();
 		void RenderPlayButtonUI();
 		void RenderLoopButtonUI();
+		void RenderVolumeButtonUI();
 
 		VGPath m_Path;
 		Ref<IAudioPlayer> m_AudioPlayer = nullptr;

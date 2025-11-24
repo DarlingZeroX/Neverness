@@ -10,7 +10,6 @@
 */
 
 #include "Resource/Audio.h"
-#include "Core/VFS.h"
 #include "Resource/Audio/FAudioDecoder.h"
 
 namespace VisionGal
@@ -49,7 +48,7 @@ namespace VisionGal
 
     AudioPlayer::AudioPlayer()
         :
-        m_AudioStream(nullptr),
+       // m_AudioStream(nullptr),
         m_IsPlaying(false)
     {
 
@@ -70,22 +69,17 @@ namespace VisionGal
     bool AudioPlayer::OpenAudioClip(const Ref<IAudioClip>& clip)
     {
         m_AudioClip = clip;
-
         return true;
     }
 
     // 音频流回调函数
 	void AudioPlayer::AudioStreamCallback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
         AudioPlayer* player = static_cast<AudioPlayer*>(userdata);
-        //player->HandleAudioStream(stream, additional_amount);
 		player->HandelAudioStream(stream, additional_amount, total_amount);
     }
 
     bool AudioPlayer::Play()
     {
-		//if (audioClip->audioDecoder == nullptr)
-		//	return false;
-
         if (m_AudioClip == nullptr) 
 			return false;
 
@@ -93,11 +87,6 @@ namespace VisionGal
 			return true;
 
 		m_AudioClip->GetDecoder()->StartDecode();
-
-		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == false) {
-			std::cerr << "音频初始化失败: " << SDL_GetError() << std::endl;
-			return false;
-		}
 
 		SDL_AudioSpec spec{};
 		spec.freq = 44100;
@@ -109,21 +98,16 @@ namespace VisionGal
 		m_PlayedBytes = 0;   // 播放重置
 
 		// 2. 打开默认输出设备
-		m_AudioDev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-		if (!m_AudioDev) {
-			H_LOG_ERROR("Failed to open audio device: %s", SDL_GetError());
+		if (m_AudioDevice.OpenDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, spec) == false)
 			return false;
-		}
 
 		// 3. 打开音频流
-		m_AudioStream = SDL_OpenAudioDeviceStream(m_AudioDev, &spec, AudioStreamCallback, this);
-		if (!m_AudioStream) {
-			H_LOG_ERROR("Failed to create audio stream: %s", SDL_GetError());
+		if (m_AudioStream.OpenStream(m_AudioDevice, AudioStreamCallback, this) == false)
 			return false;
-		}
 
 		// 4. 开始播放音频流
-		SDL_ResumeAudioStreamDevice(m_AudioStream);
+		if (m_AudioStream.ResumeStream() == false)
+			return false;
 
         m_IsPlaying = true;
         return true;
@@ -135,18 +119,7 @@ namespace VisionGal
 			return false;
 
 		m_AudioClip->GetDecoder()->StopDecode();
-
-		if (m_IsPlaying == false)
-			return true;
-
-		//SDL_PauseAudioStreamDevice(audioStream);
-		// 暂停并销毁流
-		if (m_AudioStream != nullptr)
-		{
-			SDL_PauseAudioStreamDevice(m_AudioStream);
-			SDL_DestroyAudioStream(m_AudioStream);
-			m_AudioStream = nullptr;
-		}
+		m_AudioStream.Clear();
 
         m_IsPlaying = false;
 		m_IsFinished = true;
@@ -169,7 +142,6 @@ namespace VisionGal
 			return false;
 
 		m_IsLoopPlay = enable;
-		//m_AudioClip->GetDecoder()->SetLoopDecode(enable);
 		return true;
 	}
 
@@ -183,7 +155,7 @@ namespace VisionGal
 
     bool AudioPlayer::SetVolume(float v)
     {
-        m_Volume = SDL_clamp(v, 0.0f, 1.0f);
+        m_Volume = std::clamp(v, 0.0f, 1.0f);
 		return true;
     }
 
@@ -197,10 +169,11 @@ namespace VisionGal
 		if (m_AudioClip == nullptr)
 			return false;
 
-		if (m_AudioStream == nullptr)
+		if (m_AudioStream.HasStream() == false)
 			return false;
 
-		SDL_PauseAudioStreamDevice(m_AudioStream);
+		m_AudioStream.PauseStream();
+		//SDL_PauseAudioStreamDevice(m_AudioStream);
 		m_AudioClip->GetDecoder()->PauseDecode(true);
 		m_IsPlaying = false;
 		return true;
@@ -211,7 +184,7 @@ namespace VisionGal
 		if (m_AudioClip == nullptr)
 			return false;
 
-		if (m_AudioStream == nullptr)
+		if (m_AudioStream.HasStream() == false)
 			return false;
 
 		auto* audioBuffer = m_AudioClip->GetDecoder()->GetAudioBuffer();
@@ -221,19 +194,24 @@ namespace VisionGal
 			m_PlayedBytes = 0.f;
 		}
 
-		SDL_ResumeAudioStreamDevice(m_AudioStream);
+		// 恢复音频流
+		m_AudioStream.ResumeStream();
 
+		// 先取消暂停解码
 		m_AudioClip->GetDecoder()->PauseDecode(false);
 		if (m_AudioClip->GetDecoder()->IsRunningDecode() == false)
 		{
+			// 循环就恢复解码
 			if (IsLooping() == true)
 			{
 				m_AudioClip->GetDecoder()->RestoreDecode();
 			}
 
+			// 重新开始解码
 			if (m_IsFinished)
 			{
 				m_AudioClip->GetDecoder()->RestartDecode();
+				//RestartPlay();
 			}
 		}
 
@@ -258,6 +236,19 @@ namespace VisionGal
 		return static_cast<double>(m_PlayedBytes) / static_cast<double>(m_BytesPerSec);
     }
 
+    bool AudioPlayer::RestartPlay()
+    {
+		m_PlayedBytes = 0;
+		m_IsPlaying = true;
+		m_IsFinished = false;
+		Seek(0);
+		Restore();
+		//m_AudioClip->GetDecoder()->RestartDecode();
+
+
+		return true;
+    }
+
     bool AudioPlayer::Seek(double seconds)
 	{
 		if (!m_AudioClip || !m_AudioClip->GetDecoder())
@@ -266,6 +257,7 @@ namespace VisionGal
 		auto decoder = m_AudioClip->GetDecoder();
 
 		// 1. 暂停播放
+		bool isPause = !IsPlaying();
 		if (m_IsPlaying)
 			Pause();
 
@@ -278,8 +270,8 @@ namespace VisionGal
 		// 4. 重置已播放字节数
 		m_PlayedBytes = static_cast<size_t>(seconds * m_BytesPerSec);
 
-		// 5. 恢复播放
-		if (m_IsPlaying == false)
+		// 5. 如何没有暂停恢复播放
+		if (isPause == false)
 			Restore();
 
 		return true;
@@ -290,14 +282,12 @@ namespace VisionGal
 		if (m_AudioClip == nullptr)
 			return;
 
+		// 如果开启了循环播放，就重新开始
 		if (m_IsLoopPlay)
 		{
-			m_AudioClip->GetDecoder()->RestartDecode();
-			m_PlayedBytes = 0;
-			m_IsPlaying = true;
-			m_IsFinished = false;
+			RestartPlay();
 		}
-		else
+		else  // 正常结束
 		{
 			SDL_PauseAudioStreamDevice(stream);
 			m_IsPlaying = false;
@@ -307,13 +297,12 @@ namespace VisionGal
 
     void AudioPlayer::HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount)
     {
-		//auto* ring = static_cast<AudioRingBuffer*>(userdata);
 		auto* ring = this->m_AudioClip->GetDecoder()->GetAudioBuffer();
 		size_t frame_size = 2 * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16); // 2ch s16
 
-		while (additional_amount >= (int)frame_size && ring->Available() >= frame_size) {
+		while (additional_amount >= static_cast<int>(frame_size) && ring->Available() >= frame_size) {
 			uint8_t temp[4096];
-			size_t to_read = std::min(sizeof(temp), (size_t)additional_amount);
+			size_t to_read = std::min(sizeof(temp), static_cast<size_t>(additional_amount));
 
 			// 保证读取的是完整帧数
 			to_read = (to_read / frame_size) * frame_size;
@@ -355,7 +344,6 @@ namespace VisionGal
 		if (ring->IsFinish())
 		{
 			FinishPlay(stream);
-			//SDL_PauseAudioStreamDevice(stream);
 			return;
 		}
 
@@ -363,7 +351,6 @@ namespace VisionGal
 			if (ring->IsWriteFinish())
 			{
 				FinishPlay(stream);
-				//SDL_PauseAudioStreamDevice(stream);
 				return;
 			}
 			else

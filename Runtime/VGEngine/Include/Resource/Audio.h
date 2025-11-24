@@ -15,6 +15,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_audio.h>
 #include "Interface/AudioInterface.h"
+#include "SDL/SDLAudio.h"
 
 namespace VisionGal
 {
@@ -52,7 +53,8 @@ namespace VisionGal
 		bool Pause() override;												// 暂停播放
 		bool Restore() override;											// 恢复播放
 		double GetDuration() const override;								// 获取总播放时长
-		double GetPlaybackTime() const override;							// 获取音频设备的当前播放时间（秒）
+		double GetPlaybackTime() const override;							// 获取视频设备的当前播放时间（秒）
+		bool RestartPlay();
 
 		bool Seek(double seconds) override;
     private:
@@ -61,14 +63,14 @@ namespace VisionGal
 		void HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount);
 
         Ref<IAudioClip> m_AudioClip = nullptr;
-        SDL_AudioStream* m_AudioStream = nullptr;
-		SDL_AudioDeviceID m_AudioDev;
+		SDL3AudioStream m_AudioStream;
+		SDL3AudioDevice m_AudioDevice;
 
+		// 状态
 		bool m_IsFinished = false;
         bool m_IsPlaying = false;
 		bool m_IsLoopPlay = false;
         float m_Volume = 1.0f;
-
 		size_t m_PlayedBytes = 0;    // 已经被 SDL 播放的 PCM 字节数
 		int    m_BytesPerSec = 0;    // 每秒 PCM 字节数（根据 format 计算）
     };
