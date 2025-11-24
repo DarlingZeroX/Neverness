@@ -8,11 +8,21 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
 # 为 MSVC 编译器添加 /Zc:__cplusplus 选项
 #if (MSVC)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
 #endif()
+
+# 开启utf-8编码支持
+if (MSVC)
+    add_compile_options(/utf-8)
+endif()
+ 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()
 
 # 将源代码添加到此项目的可执行文件。
 file(GLOB SRC_FILES
@@ -83,7 +93,8 @@ target_include_directories(VGLua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include")
 
 target_link_libraries(VGLua PRIVATE HCore)
 
-set_target_properties(VGLua PROPERTIES LINKER_LANGUAGE C)
+#set_target_properties(VGLua PROPERTIES LINKER_LANGUAGE C)
+set_target_properties(VGLua PROPERTIES CXX_STANDARD 17)
 
 
 

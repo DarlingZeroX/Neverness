@@ -28,7 +28,6 @@ namespace Horizon
 	 
 	class CORE_MODULE_API HLocalizationManager
 	{
-		
 	public:
 		HLocalizationManager();
 		HLocalizationManager(const HLocalizationManager&) = delete;

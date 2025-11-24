@@ -1,18 +1,40 @@
+/*
+* This source file is part of VisionGal, the Visual Novel Engine
+*
+* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+* GitHub page: https://github.com/DarlingZeroX/VisionGal
+*
+* Copyright (c) 2025-present 梦旅缘心
+*
+* See the LICENSE file in the project root for details.
+*/
+
+
 #include "VGLuaCore/LuaLocalizator.h"
+#include <string>
 #include <unordered_set>
 #include <HCore/Include/Core/HLocalization.h>
 
-//const char* VGLuaCoreLocalize(const char* msg)
-//{
-//	static std::unordered_set <std::string> s_StringCache;
-//
-//	auto* localizator = Horizon::HLocalizationManager::GetInstance();
-//	auto language = localizator->GetCurrentLanguage();
-//	auto text = localizator->Translate(msg);
-//	s_StringCache.insert(text);
-//
-//	return msg; // 找不到映射则返回原消息
-//}
+struct VGLuaCoreLocalizeImp
+{
+	VGLuaCoreLocalizeImp()
+	{
+	}
+
+	static VGLuaCoreLocalizeImp& Get()
+	{
+		static VGLuaCoreLocalizeImp imp;
+		return imp;
+	}
+
+	std::string Translate(const std::string& text)
+	{
+		auto* localizator = Horizon::HLocalizationManager::GetInstance();
+		return localizator->Translate(text);
+	}
+
+	std::unordered_set<std::string> s_StringCache;
+};
 
 const char* VGLuaCoreLocalize(const char* msg)
 {
@@ -20,27 +42,22 @@ const char* VGLuaCoreLocalize(const char* msg)
 		return msg; // 处理空指针或空字符串
 	}
 
-	auto* localizator = Horizon::HLocalizationManager::GetInstance();
-	if (!localizator) {
-		return msg; // 本地化管理器不存在
+	// 缓存翻译结果并返回
+	auto& cache = VGLuaCoreLocalizeImp::Get().s_StringCache;
+	auto found = cache.find(msg);
+	if (found != cache.end())
+	{
+		return found->c_str(); // 返回已缓存的字符串
 	}
 
-	auto language = localizator->GetCurrentLanguage();
-	auto text = localizator->Translate(msg);
+	auto text = VGLuaCoreLocalizeImp::Get().Translate(msg);
 
 	// 如果翻译失败或返回空，返回原消息
 	if (text.empty() || text == msg) {
 		return msg;
 	}
 
-	// 缓存翻译结果并返回
-	static std::unordered_set<std::string> s_StringCache;
-	auto it = s_StringCache.find(text);
-	if (it != s_StringCache.end()) {
-		return it->c_str(); // 返回已缓存的字符串
-	}
-
 	// 插入新翻译并返回
-	auto result = s_StringCache.insert(text);
+	auto result = cache.insert(text);
 	return result.first->c_str();
 }
