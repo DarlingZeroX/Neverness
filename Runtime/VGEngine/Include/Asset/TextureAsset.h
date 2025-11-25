@@ -237,6 +237,11 @@ namespace VisionGal
 
         bool NeverStream;
 
+		// 因为图片显示问题而加上的
+		int RowPitch;     // surface->pitch
+		int BytesPerPixel;
+		void* UserPtr;    // SDL_Surface*
+
         // Pointer to the texture data to process, this can be the image source or a specific MIP level
         void* Data;
 

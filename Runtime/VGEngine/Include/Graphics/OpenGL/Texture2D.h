@@ -28,6 +28,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		int Height() const noexcept { return m_Desc.Height; }
 
 		static Ref<Texture2D> CreateFromMemory(const VGFX::TextureDesc& desc);
+		static Ref<Texture2D> CreateFromMemory(const VGFX::TextureDesc& desc, int RowPitch, int BytesPerPixel);
 
 		const VGFX::TextureDesc& GetDesc() override;
 		void* GetShaderResourceView() override;
@@ -36,6 +37,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		virtual void GenMipmap() const;
 
 		bool CreateFromMemoryImp(const VGFX::TextureDesc& desc);
+		bool CreateFromMemoryImp(const VGFX::TextureDesc& desc, int RowPitch, int BytesPerPixel);
 	protected:
 		//unsigned int m_RendererID = 0;
 		//unsigned int  m_Slot = 0;

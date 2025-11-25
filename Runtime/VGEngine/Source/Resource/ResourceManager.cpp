@@ -50,6 +50,7 @@ namespace VisionGal
 		{
 			desc.InternalFormat = GL_RGB8;
 			desc.Format = GL_RGB;
+			desc.DataSize = desc.Width * desc.Height * 3;   // ✔修复
 		}
 		else if (asset.Format == ImageFormat::ARGB8888)
 		{
@@ -74,7 +75,7 @@ namespace VisionGal
 		}
 
 		//return nullptr;
-		auto tex = CreateTextureFromMemory(desc);
+		auto tex = CreateTextureFromMemory(desc, asset.RowPitch, asset.BytesPerPixel);
 
 		return CreateRef<Texture2D>(tex);
 
@@ -88,6 +89,8 @@ namespace VisionGal
 			if (m_CachedTextures.contains(path))
 				return m_CachedTextures[path];
 		}
+
+		std::filesystem::path p = path;
 
 		// 加载纹理资源
 		Ref<TextureAsset> asset = GetAssetManager()->LoadAsset<TextureAsset>(path);

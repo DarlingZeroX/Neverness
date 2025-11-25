@@ -159,63 +159,58 @@ namespace VisionGal
 
 	bool TextureAssetLoader::Read(const std::string path, Ref<VGAsset>& asset)
 	{
-        SDL_Surface* surface = nullptr;
+		SDL_Surface* surface = nullptr;
 
-        VFS::SafeReadFileFromVFS(path, [&](const VFS::DataRef& data) {
+		VFS::SafeReadFileFromVFS(path, [&](const VFS::DataRef& data) {
 
-            const size_t i_ext = path.rfind('.');
-            String extension = (i_ext == String::npos ? String() : path.substr(i_ext + 1));
+			const size_t i_ext = path.rfind('.');
+			String extension = (i_ext == String::npos ? String() : path.substr(i_ext + 1));
 
-            auto CreateSurface = [&]() { return IMG_LoadTyped_IO(SDL_IOFromMem(data->data(), data->size()), 1, extension.c_str()); };
+			auto CreateSurface = [&]() {
+				return IMG_LoadTyped_IO(SDL_IOFromMem(data->data(), data->size()), 1, extension.c_str());
+				};
+
 			surface = CreateSurface();
-
-            return 0;
-        });
+			return 0;
+			});
 
 		if (!surface) {
-            H_LOG_ERROR("The texture failed to load: %s", path.c_str());
-            return false;
+			H_LOG_ERROR("The texture failed to load: %s", path.c_str());
+			return false;
 		}
-
-        H_LOG_INFO("The texture is loaded successfully: %s [Width: %d  Height: %d]", path.c_str(), surface->w, surface->h);
 
 		auto texAsset = CreateRef<TextureAsset>();
 
-        // 转换为RGBA格式（如果需要）
-        //if (image->format == SDL_PIXELFORMAT_ABGR8888)
-        //{
-        //    SDL_Surface* rgbaSurface = SDL_ConvertSurface(image, SDL_PIXELFORMAT_ARGB8888);
-        //    if (!rgbaSurface) {
-        //        SDL_Log("无法转换图片格式: %s", SDL_GetError());
-        //        SDL_free(image);
-        //        return false;
-        //    }
-        //
-        //    SDL_free(image);  // 释放原始表面
-        //
-        //    texAsset->Width = rgbaSurface->w;
-        //    texAsset->Height = rgbaSurface->h;
-        //    texAsset->Data = rgbaSurface->pixels;
-        //    texAsset->Format = SDLImgFormat2VGImgFormat(rgbaSurface->format);
-        //
-        //    texAsset->FreeCallback = [rgbaSurface]() {
-        //        SDL_DestroySurface(rgbaSurface);
-        //        };
-        //}
-        //else
-        {
-            texAsset->Width = surface->w;
-            texAsset->Height = surface->h;
-            texAsset->Data = surface->pixels;
-            texAsset->Format = SDLImgFormat2VGImgFormat(surface->format);
+		texAsset->Width = surface->w;
+		texAsset->Height = surface->h;
+		texAsset->Data = surface->pixels;
 
-            texAsset->FreeCallback = [surface]() {
-                SDL_DestroySurface(surface);
-                };
-        }
+		// SDLFormat -> VGImageFormat
+		texAsset->Format = SDLImgFormat2VGImgFormat(surface->format);
 
-        asset = texAsset;
+		// 因为 SDL_Surface 的每行数据可能有 padding（pitch），以及 通道顺序（RGB vs BGR）可能不完全匹配
+		// 所以需要把这些数据保留下来，以创建纹理时使用
+		// ⭐ 最重要：把 pitch 和 SDL_Surface* 保存下来
+		texAsset->RowPitch = surface->pitch;        // 逐行字节数（可能 != width * channels）
+		texAsset->UserPtr = surface;               // 后续 GL 上传可以取 surface->format / pitch
+		texAsset->BytesPerPixel = SDL_BYTESPERPIXEL(surface->format);
 
+		// 释放回调
+		texAsset->FreeCallback = [surface]() {
+			SDL_DestroySurface(surface);
+			};
+
+		H_LOG_INFO(
+			"Texture loaded: %s [W=%d H=%d Format=%d SDLFormat=%d Pitch=%d]",
+			path.c_str(),
+			surface->w,
+			surface->h,
+			texAsset->Format,
+			surface->format,
+			surface->pitch
+		);
+
+		asset = texAsset;
 		return true;
 	}
 
