@@ -52,10 +52,12 @@ namespace VisionGal::Editor
 
 		bool open = true;
 		//const ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar;
-		const ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize;
 		EditorText text(m_Path, ICON_FA_IMAGE);
-		if (ImGui::Begin(text.c_str(), &open, windowFlags))
+		std::string windowName = text.GetText() + "##" + std::to_string(context.Index);
+		if (ImGui::Begin(windowName.c_str(), &open, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize))
 		{
+			ImGuiEx::ScopedID winID(context.Index);
+
 			RenderVideoTexture();
 			RenderProgressBarUI();
 			RenderPlayButtonUI();

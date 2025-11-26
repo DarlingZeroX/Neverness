@@ -135,6 +135,7 @@ namespace VisionGal::Editor {
 		m_DefaultThumbnails["CSS"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/css.png");
 		m_DefaultThumbnails["Sound"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/sound.png");
 		m_DefaultThumbnails["GalGameStoryScript"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/galStoryScript.png");
+		m_DefaultThumbnails["Video"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/video.png");
 
 		m_AssetThumbnailManagers["Texture"] = CreateRef<TextureThumbnailManager>();
 		for (auto& [type, manager] : m_AssetThumbnailManagers)

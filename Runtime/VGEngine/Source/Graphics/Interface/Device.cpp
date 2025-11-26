@@ -19,8 +19,8 @@ namespace VisionGal::VGFX
 		return OpenGL::Texture2D::CreateFromMemory(desc);
 	}
 
-	Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc, int RowPitch, int BytesPerPixel)
-	{
-		return OpenGL::Texture2D::CreateFromMemory(desc, RowPitch, BytesPerPixel);;
-	}
+	//Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc, int RowPitch, int BytesPerPixel)
+	//{
+	//	return OpenGL::Texture2D::CreateFromMemory(desc, RowPitch, BytesPerPixel);;
+	//}
 } 

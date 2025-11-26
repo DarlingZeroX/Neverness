@@ -65,12 +65,12 @@ namespace VisionGal
 				metadata.AssetType = "Font";
 				return true;
 			}
-			if (ext == ".mp3" || ext == ".wav")
+			if (ext == ".mp3" || ext == ".wav" || ext == ".flac" || ext == ".m4a" || ext == ".ogg" )
 			{
 				metadata.AssetType = "Sound";
 				return true;
 			}
-			if (ext == ".mp4")
+			if (ext == ".mp4" || ext == ".avi" || ext == ".mkv" || ext == ".mov" || ext == ".webm" || ext == ".flv")
 			{
 				metadata.AssetType = "Video";
 				return true;

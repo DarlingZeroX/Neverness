@@ -44,6 +44,8 @@ namespace VisionGal::Editor {
 		bool hasChoice = false;
 		int choiceIndex = 0;
 
+		// 确保弹出窗口获得焦点，防止被代码编辑器窗口覆盖
+		ImGui::SetNextWindowFocus();
 		if (ImGui::BeginPopupModal("New Message", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
 		{
 			ImGui::Text(EditorText{ m_Title }.c_str());

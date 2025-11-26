@@ -37,7 +37,8 @@ namespace VisionGal
 		desc.Width = asset.Width;
 		desc.Height = asset.Height;
 
-		desc.Data = asset.Data;
+		//desc.Data = asset.Data;
+		desc.Data = asset.Data.data();
 		desc.DataSize = desc.Width * desc.Height * 4;
 		desc.Type = GL_UNSIGNED_BYTE;
 
@@ -75,20 +76,20 @@ namespace VisionGal
 		}
 
 		//return nullptr;
-		auto tex = CreateTextureFromMemory(desc, asset.RowPitch, asset.BytesPerPixel);
+		//auto tex = CreateTextureFromMemory(desc, asset.RowPitch, asset.BytesPerPixel);
+		auto tex = CreateTextureFromMemory(desc);
 
 		return CreateRef<Texture2D>(tex);
-
 	}
 
 	VGObjectPtr TextureResourceManager::StaticLoadObject(const String& path)
 	{
 		// 检查文件是否过期，如果没有过期则查找缓存的纹理
-		if (GetAssetManager()->IsExpiredAsset(path) == false)
-		{
-			if (m_CachedTextures.contains(path))
-				return m_CachedTextures[path];
-		}
+		//if (GetAssetManager()->IsExpiredAsset(path) == false)
+		//{
+		//	if (m_CachedTextures.contains(path))
+		//		return m_CachedTextures[path];
+		//}
 
 		std::filesystem::path p = path;
 

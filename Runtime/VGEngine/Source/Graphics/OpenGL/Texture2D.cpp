@@ -19,67 +19,67 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return GL_TEXTURE_2D;
 	}
 
-	bool Texture2D::CreateFromMemoryImp(const VGFX::TextureDesc& desc, int RowPitch, int BytesPerPixel)
-	{
-		m_Desc = desc;
-
-		// 检查参数
-		if (!desc.Data || desc.Width <= 0 || desc.Height <= 0 || RowPitch <= 0)
-			return false;
-
-		GenTex();
-		BindTex();
-
-		TexWrapping(GL_CLAMP_TO_EDGE);
-		TexFlitering(GL_LINEAR);
-
-		/*
-		 *pitch（surface->pitch）可能 != width * channels。直接把 surface->pixels 传给 glTexImage2D 会产生错位/条纹/倾斜。
-		 即使 GL_UNPACK_ALIGNMENT = 1，如果 pitch 有额外字节，OpenGL 会按 row length 读取像素 —— 需要设置 GL_UNPACK_ROW_LENGTH 或者把像素拆行拷贝成紧凑缓冲区。
-		 通道顺序错误会导致色彩错位（变成灰或色偏），比如 SDL 上的像素可能是 BGR，或平台字节序影响 packed formats。
-		 某些 packed 32-bit 格式（ABGR/ARGB）上传时需要正确的 Type（大多数情况 GL_UNSIGNED_BYTE 就可以配合正确 Format 使用，但有些特例需要 GL_UNSIGNED_INT_8_8_8_8_REV）
-		 */
-		// ----------------------------------------------------------------------
-		// ⭐ 方案 A：行拷贝到紧凑连续 buffer			把 surface 的每行拷贝到一个 tightly-packed 的临时缓冲区，然后上传。对所有格式安全，最少出错。
-		// ----------------------------------------------------------------------
-		const int rows = desc.Height;
-		const int colsBytes = desc.Width * BytesPerPixel;
-
-		// 分配紧密 buffer
-		std::vector<uint8_t> tightBuffer(rows * colsBytes);
-
-		const uint8_t* src = static_cast<const uint8_t*>(desc.Data);
-		uint8_t* dst = tightBuffer.data();
-
-		for (int y = 0; y < rows; y++)
-		{
-			// 每一行：从 pitch 长度的行里取出实际有效数据
-			memcpy(dst + y * colsBytes,
-				src + y * RowPitch,
-				colsBytes);
-		}
-
-		// ----------------------------------------------------------------------
-		// 上传纹理
-		// ----------------------------------------------------------------------
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			desc.InternalFormat,
-			desc.Width,
-			desc.Height,
-			0,
-			desc.Format,
-			desc.Type,
-			tightBuffer.data()      // <-- 现在是紧密数据
-		);
-
-		GenMipmap();
-		UnBindTex();
-		return true;
-	}
+	//bool Texture2D::CreateFromMemoryImp(const VGFX::TextureDesc& desc, int RowPitch, int BytesPerPixel)
+	//{
+	//	m_Desc = desc;
+	//
+	//	// 检查参数
+	//	if (!desc.Data || desc.Width <= 0 || desc.Height <= 0 || RowPitch <= 0)
+	//		return false;
+	//
+	//	GenTex();
+	//	BindTex();
+	//
+	//	TexWrapping(GL_CLAMP_TO_EDGE);
+	//	TexFlitering(GL_LINEAR);
+	//
+	//	/*
+	//	 *pitch（surface->pitch）可能 != width * channels。直接把 surface->pixels 传给 glTexImage2D 会产生错位/条纹/倾斜。
+	//	 即使 GL_UNPACK_ALIGNMENT = 1，如果 pitch 有额外字节，OpenGL 会按 row length 读取像素 —— 需要设置 GL_UNPACK_ROW_LENGTH 或者把像素拆行拷贝成紧凑缓冲区。
+	//	 通道顺序错误会导致色彩错位（变成灰或色偏），比如 SDL 上的像素可能是 BGR，或平台字节序影响 packed formats。
+	//	 某些 packed 32-bit 格式（ABGR/ARGB）上传时需要正确的 Type（大多数情况 GL_UNSIGNED_BYTE 就可以配合正确 Format 使用，但有些特例需要 GL_UNSIGNED_INT_8_8_8_8_REV）
+	//	 */
+	//	// ----------------------------------------------------------------------
+	//	// ⭐ 方案 A：行拷贝到紧凑连续 buffer			把 surface 的每行拷贝到一个 tightly-packed 的临时缓冲区，然后上传。对所有格式安全，最少出错。
+	//	// ----------------------------------------------------------------------
+	//	const int rows = desc.Height;
+	//	const int colsBytes = desc.Width * BytesPerPixel;
+	//
+	//	// 分配紧密 buffer
+	//	std::vector<uint8_t> tightBuffer(rows * colsBytes);
+	//
+	//	const uint8_t* src = static_cast<const uint8_t*>(desc.Data);
+	//	uint8_t* dst = tightBuffer.data();
+	//
+	//	for (int y = 0; y < rows; y++)
+	//	{
+	//		// 每一行：从 pitch 长度的行里取出实际有效数据
+	//		memcpy(dst + y * colsBytes,
+	//			src + y * RowPitch,
+	//			colsBytes);
+	//	}
+	//
+	//	// ----------------------------------------------------------------------
+	//	// 上传纹理
+	//	// ----------------------------------------------------------------------
+	//	GL_THROW_INFO(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+	//
+	//	GL_THROW_INFO(glTexImage2D(
+	//		GL_TEXTURE_2D,
+	//		0,
+	//		desc.InternalFormat,
+	//		desc.Width,
+	//		desc.Height,
+	//		0,
+	//		desc.Format,
+	//		desc.Type,
+	//		tightBuffer.data()      // <-- 现在是紧密数据
+	//	));
+	//
+	//	GenMipmap();
+	//	UnBindTex();
+	//	return true;
+	//}
 
 
 	bool Texture2D::CreateFromMemoryImp(const VGFX::TextureDesc& desc)
@@ -114,14 +114,14 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return Tex;
 	}
 
-	Ref<Texture2D> Texture2D::CreateFromMemory(const VGFX::TextureDesc& desc, int RowPitch, int BytesPerPixel)
-	{
-		auto Tex = std::make_shared<Texture2D>();
-
-		Tex->CreateFromMemoryImp(desc, RowPitch, BytesPerPixel);
-
-		return Tex;
-	}
+	//Ref<Texture2D> Texture2D::CreateFromMemory(const VGFX::TextureDesc& desc, int RowPitch, int BytesPerPixel)
+	//{
+	//	auto Tex = std::make_shared<Texture2D>();
+	//
+	//	Tex->CreateFromMemoryImp(desc, RowPitch, BytesPerPixel);
+	//
+	//	return Tex;
+	//}
 
 	const VGFX::TextureDesc& Texture2D::GetDesc()
 	{

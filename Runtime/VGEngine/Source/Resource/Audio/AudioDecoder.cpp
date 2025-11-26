@@ -117,6 +117,10 @@ namespace VisionGal
 
 			// 暂停
 			if (m_IsPauseDecode) {
+
+				if (running == false)
+					return;
+
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				continue;
 			}

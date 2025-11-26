@@ -250,6 +250,9 @@ namespace VisionGal {
 		{
 			// 暂停
 			if (m_IsPauseDecode) {
+				if (IsRunningDecode() == false)
+					return;
+
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				continue;
 			}
@@ -343,6 +346,10 @@ namespace VisionGal {
 		while (m_IsRunning) {
 
 			if (m_IsPauseDecode) {
+
+				if (IsRunningDecode() == false)
+					return;
+
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				continue;
 			}
@@ -417,6 +424,10 @@ namespace VisionGal {
 
 		while (IsRunningDecode()) {
 			if (m_IsPauseDecode) {
+
+				if (IsRunningDecode() == false)
+					return false;
+
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				continue;
 			}
@@ -488,6 +499,10 @@ namespace VisionGal {
 			// 接收 frame
 			while (true) {
 				if (m_IsPauseDecode) {
+
+					if (IsRunningDecode() == false)
+						return false;
+
 					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					continue;
 				}

@@ -243,7 +243,8 @@ namespace VisionGal
 		void* UserPtr;    // SDL_Surface*
 
         // Pointer to the texture data to process, this can be the image source or a specific MIP level
-        void* Data;
+        //void* Data;
+		std::vector<uint8_t> Data;
 
         TextureAsset()
             : 

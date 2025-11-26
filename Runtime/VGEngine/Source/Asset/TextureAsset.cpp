@@ -181,19 +181,45 @@ namespace VisionGal
 
 		auto texAsset = CreateRef<TextureAsset>();
 
+		void* data = surface->pixels;
 		texAsset->Width = surface->w;
 		texAsset->Height = surface->h;
-		texAsset->Data = surface->pixels;
-
-		// SDLFormat -> VGImageFormat
-		texAsset->Format = SDLImgFormat2VGImgFormat(surface->format);
-
+		texAsset->Format = SDLImgFormat2VGImgFormat(surface->format);			// SDLFormat -> VGImageFormat
 		// 因为 SDL_Surface 的每行数据可能有 padding（pitch），以及 通道顺序（RGB vs BGR）可能不完全匹配
 		// 所以需要把这些数据保留下来，以创建纹理时使用
 		// ⭐ 最重要：把 pitch 和 SDL_Surface* 保存下来
 		texAsset->RowPitch = surface->pitch;        // 逐行字节数（可能 != width * channels）
 		texAsset->UserPtr = surface;               // 后续 GL 上传可以取 surface->format / pitch
 		texAsset->BytesPerPixel = SDL_BYTESPERPIXEL(surface->format);
+
+
+		/*
+		 *pitch（surface->pitch）可能 != width * channels。直接把 surface->pixels 传给 glTexImage2D 会产生错位/条纹/倾斜。
+		 即使 GL_UNPACK_ALIGNMENT = 1，如果 pitch 有额外字节，OpenGL 会按 row length 读取像素 —— 需要设置 GL_UNPACK_ROW_LENGTH 或者把像素拆行拷贝成紧凑缓冲区。
+		 通道顺序错误会导致色彩错位（变成灰或色偏），比如 SDL 上的像素可能是 BGR，或平台字节序影响 packed formats。
+		 某些 packed 32-bit 格式（ABGR/ARGB）上传时需要正确的 Type（大多数情况 GL_UNSIGNED_BYTE 就可以配合正确 Format 使用，但有些特例需要 GL_UNSIGNED_INT_8_8_8_8_REV）
+		 */
+		 // ----------------------------------------------------------------------
+		 // ⭐ 方案 A：行拷贝到紧凑连续 buffer			把 surface 的每行拷贝到一个 tightly-packed 的临时缓冲区，然后上传。对所有格式安全，最少出错。
+		 // ----------------------------------------------------------------------
+		const int rows = texAsset->Height;
+		const int colsBytes = texAsset->Width * texAsset->BytesPerPixel;
+
+		// 分配紧密 buffer
+		//std::vector<uint8_t> tightBuffer(rows * colsBytes);
+		texAsset->Data.resize(rows * colsBytes);
+
+		const uint8_t* src = static_cast<const uint8_t*>(data);
+		uint8_t* dst = texAsset->Data.data();
+
+		for (int y = 0; y < rows; y++)
+		{
+			// 每一行：从 pitch 长度的行里取出实际有效数据
+			memcpy(dst + y * colsBytes,
+				src + y * texAsset->RowPitch,
+				colsBytes);
+		}
+
 
 		// 释放回调
 		texAsset->FreeCallback = [surface]() {

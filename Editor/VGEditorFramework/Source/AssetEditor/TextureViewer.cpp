@@ -67,10 +67,13 @@ namespace VisionGal::Editor
 		ImGui::SetNextWindowSize(ImVec2(1024, 768), ImGuiCond_FirstUseEver);
 
 		bool open = true;
-		const ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar;
+		// 让每个窗口都有独立的窗口ID
 		EditorText text(m_Path, ICON_FA_IMAGE);
-		if (ImGui::Begin(text.c_str(), &open, windowFlags))
+		std::string windowName = text.GetText() + "##" + std::to_string(context.Index);
+		if (ImGui::Begin(windowName.c_str(), &open, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar))
 		{
+			ImGuiEx::ScopedID winID(context.Index);
+
 			m_WindowData.DrawList = ImGui::GetWindowDrawList();
 			m_WindowData.WindowSize = ImGui::GetWindowSize();
 			m_WindowData.WindowPos = ImGui::GetWindowPos();

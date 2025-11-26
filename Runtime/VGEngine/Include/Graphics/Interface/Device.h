@@ -17,5 +17,5 @@
 namespace VisionGal::VGFX
 {
 	VG_ENGINE_API Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc);
-	VG_ENGINE_API Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc, int RowPitch, int BytesPerPixel);
+	//VG_ENGINE_API Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc, int RowPitch, int BytesPerPixel);
 } 

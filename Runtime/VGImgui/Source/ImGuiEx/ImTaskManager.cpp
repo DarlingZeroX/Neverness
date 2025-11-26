@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "ImGuiEx/ImTaskManager.h"
 
 namespace ImGuiEx {
@@ -20,10 +20,13 @@ namespace ImGuiEx {
 
 	void ImTaskManager::RenderUITask()
 	{
+		size_t index = 0;
+
 		for(auto begin = m_currentUITasks.begin(), end = m_currentUITasks.end(); begin != end; )
 		{
 			auto& task = *begin;
 
+			task->Context.Index = index;
 			task->TaskInstance->RenderUI(task->Context);
 
 			if (task->Context.IsFinished == true)
@@ -34,6 +37,7 @@ namespace ImGuiEx {
 			}
 
 			++begin;
+			++index;
 		}
 	}
 
