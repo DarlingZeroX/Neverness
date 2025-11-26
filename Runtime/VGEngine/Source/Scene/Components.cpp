@@ -14,6 +14,7 @@
 #include "Engine/Manager.h"
 #include "HCore/Include/Math/GLM/gtc/quaternion.hpp"
 #include "Resource/Audio.h"
+#include "Resource/FVideo.h"
 
 namespace VisionGal
 {
@@ -95,7 +96,7 @@ namespace VisionGal
 
 	VideoPlayerComponent::VideoPlayerComponent()
 	{
-		videoPlayer = CreateRef<VideoPlayer>();
+		videoPlayer = CreateRef<FVideoPlayer>();
 		pipelineIndex = static_cast<uint>(RenderPipelineIndex::CoreRenderPipeline);
 	}
 
@@ -111,6 +112,11 @@ namespace VisionGal
 			videoPlayer->Open(videoClip);
 			videoPlayer->Play();
 			videoPlayer->SetLoop(loop);
+
+			auto tex2D = CreateRef<Texture2D>();
+			tex2D->SetTexture(videoPlayer->GetVideoTextureRef());
+			videoSprite = Sprite::Create(tex2D, { videoPlayer->GetVideoWidth(), videoPlayer->GetVideoHeight() });
+
 			return true;
 		}
 
@@ -145,7 +151,7 @@ namespace VisionGal
 	{
 		if (videoClip)
 		{
-			return videoPlayer->IsRunning();
+			return videoPlayer->IsPlaying();
 		}
 
 		return false;
@@ -155,10 +161,20 @@ namespace VisionGal
 	{
 		if (videoClip)
 		{
-			return videoPlayer->IsLoop();
+			return videoPlayer->IsLooping();
 		}
 
 		return false;
+	}
+
+	Sprite* VideoPlayerComponent::GetSprite() const
+	{
+		if (videoSprite)
+		{
+			return videoSprite.get();
+		}
+
+		return nullptr;
 	}
 
 	AudioSourceComponent::AudioSourceComponent()

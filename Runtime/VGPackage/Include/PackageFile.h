@@ -76,6 +76,16 @@ namespace vfspp
 		{
 		}
 
+		VGPackageFile(const VGPackageFile& other)
+			: m_FileInfo(other.m_FileInfo)
+			, m_Entry(other.m_Entry)
+			, m_PakAbsPath(other.m_PakAbsPath)
+			, m_IsOpened(other.m_IsOpened)
+			, m_SeekPos(other.m_SeekPos)
+		{
+
+		}
+
 		~VGPackageFile() override
 		{
 			Close();

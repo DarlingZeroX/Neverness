@@ -282,6 +282,9 @@ private:
 
         IFilePtr file = FindFile(filePath, m_FileList);
         if (file) {
+			// 修复重复打开一个文件指针的错误
+			file.reset(new VGPackageFile(*dynamic_cast<VGPackageFile*>(file.get())));
+
             file->Open(mode);
         }
         

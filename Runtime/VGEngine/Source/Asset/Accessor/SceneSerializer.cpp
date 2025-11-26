@@ -19,6 +19,7 @@
 
 #include "Galgame/Components.h"
 #include "Resource/Audio.h"
+#include "Resource/FVideo.h"
 
 namespace VisionGal
 {
@@ -206,7 +207,7 @@ namespace VisionGal
 		com = deserializeComponent;
 		if (deserializeComponent.__DeserializeData.HasVideo)
 		{
-			auto tex = LoadObject<VideoClip>(deserializeComponent.__DeserializeData.m_VideoPath);
+			auto tex = LoadObject<FVideoClip>(deserializeComponent.__DeserializeData.m_VideoPath);
 			com.videoClip = tex;
 		}
 

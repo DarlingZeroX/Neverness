@@ -24,6 +24,18 @@ namespace vfspp
 		{
 		}
 
+		ZipFile(const ZipFile& other)
+			: m_FileInfo(other.m_FileInfo)
+			, m_EntryID(other.m_EntryID)
+			, m_Size(other.m_Size)
+			, m_ZipArchive(other.m_ZipArchive)
+			, m_IsOpened(other.m_IsOpened)
+			, m_SeekPos(other.m_SeekPos)
+		{
+			
+		}
+		ZipFile& operator=(const ZipFile&) = delete;
+
 		~ZipFile()
 		{
 			Close();

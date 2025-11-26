@@ -27,7 +27,7 @@ namespace VisionGal {
 		FVideoClip& operator=(FVideoClip&&) noexcept = default;
 
 		bool Open(const String& filePath);
-		uint2 GetSize() const;
+		uint2 GetSize() const override;
 
 		IVideoDecoder* GetDecoder() override;
 	private:
@@ -58,9 +58,12 @@ namespace VisionGal {
 		bool RestartPlay();
 		bool SetVolume(float v) override;									// 设置音量
 		float GetVolume() const override;									// 获取音量
+		float GetVideoWidth() const override;
+		float GetVideoHeight() const override;
 
 		void Update() override;											// 更新
 		VGFX::ITexture* GetVideoTexture() const override;				// 获取视频纹理
+		Ref<VGFX::ITexture> GetVideoTextureRef() const override;				// 获取视频纹理
 	protected:
 		bool PlayAudio();
 		void ProcessVideoUpdate(uint8_t* frameData, int& linesize, int width, int height, double pts);

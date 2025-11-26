@@ -15,6 +15,7 @@
 #include "Asset/TextureAsset.h"
 #include "Asset/VideoAsset.h"
 #include "Asset/AudioAsset.h"
+#include "Resource/FVideo.h"
 
 namespace VisionGal
 {
@@ -111,7 +112,7 @@ namespace VisionGal
 
 	VideoResourceManager::VideoResourceManager()
 	{
-		RegisterObjectLoader(typeid(VideoClip), this);
+		RegisterObjectLoader(typeid(FVideoClip), this);
 	}
 
 	void VideoResourceManager::CreateManager()

@@ -21,6 +21,7 @@
 #include <VGEngine/Include/Interface/Loader.h>
 #include <VGEngine/Include/Lua/LuaScript.h>
 #include <VGEngine/Include/Resource/Audio.h>
+#include <VGEngine/Include/Resource/FVideo.h>
 
 namespace VisionGal::Editor
 {
@@ -587,12 +588,18 @@ namespace VisionGal::Editor
 			if (com->videoPlayer == nullptr)
 				return;
 
-			if (com->videoPlayer->GetSprite() == nullptr)
-				return;
+			//if (com->videoPlayer->GetSprite() == nullptr)
+			//	return;
+			//
+			//if (com->videoPlayer->GetSprite()->GetITexture() != nullptr)
+			//{
+			//	auto* tex = com->videoPlayer->GetSprite()->GetITexture();
+			//	ImGuiEx::ImageGL(tex->GetShaderResourceView(), 100, 100);
+			//}
 
-			if (com->videoPlayer->GetSprite()->GetITexture() != nullptr)
+			if (com->videoPlayer->GetVideoTexture() != nullptr)
 			{
-				auto* tex = com->videoPlayer->GetSprite()->GetITexture();
+				auto* tex = com->videoPlayer->GetVideoTexture();
 				ImGuiEx::ImageGL(tex->GetShaderResourceView(), 100, 100);
 			}
 		}
@@ -611,7 +618,7 @@ namespace VisionGal::Editor
 			{
 				std::string path = static_cast<char*>(payload->Data);
 
-				if (auto video = LoadObject<VideoClip>(path))
+				if (auto video = LoadObject<FVideoClip>(path))
 				{
 					com->videoClip = video;
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置视频成功!" });

@@ -134,13 +134,15 @@ namespace VisionGal
 			if (videoPlayer.videoPlayer == nullptr)
 				return;
 			// 视频没有精灵则不渲染
-			if (videoPlayer.videoPlayer->GetSprite() == nullptr)
+			//if (videoPlayer.videoPlayer->GetSprite() == nullptr)
+			if (videoPlayer.GetSprite() == nullptr)
 				return;
 
 			// 更新视频
 			videoPlayer.Update();
 
-			auto* tex = videoPlayer.videoPlayer->GetSprite()->GetITexture();
+			//auto* tex = videoPlayer.videoPlayer->GetSprite()->GetITexture();
+			auto* tex = videoPlayer.GetSprite()->GetITexture();
 			auto* program = ShaderManager::Get()->GetBuiltinProgram("SpriteDefault");
 
 			VGFX::UseProgram(program);
@@ -149,7 +151,8 @@ namespace VisionGal
 			VGFX::SetUniformInt2("flip", int2(0, 0));
 			VGFX::SetUniformMatrix4("model", transform.model);
 			VGFX::SetUniformMatrix4("projection", camera->GetMatrix());
-			VGFX::RenderMesh(videoPlayer.videoPlayer->GetSprite()->GetMesh());
+			//VGFX::RenderMesh(videoPlayer.videoPlayer->GetSprite()->GetMesh());
+			VGFX::RenderMesh(videoPlayer.GetSprite()->GetMesh());
 
 			});
 	}

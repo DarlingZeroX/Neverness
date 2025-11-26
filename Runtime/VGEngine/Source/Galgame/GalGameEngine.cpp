@@ -22,6 +22,7 @@
 #include "Engine/Manager.h"
 #include "Engine/EngineResource.h"
 #include "Resource/Audio.h"
+#include "Resource/FVideo.h"
 
 namespace VisionGal::GalGame
 {
@@ -358,7 +359,7 @@ namespace VisionGal::GalGame
 	GameActor* GalGameEngine::CreateVideoImp(const std::string& resPath)
 	{
 		// 读取视频资产
-		auto videoClip = LoadObject<VideoClip>(resPath);
+		auto videoClip = LoadObject<FVideoClip>(resPath);
 		if (videoClip == nullptr)
 		{
 			H_LOG_WARN("加载视频失败: %s", resPath.c_str());

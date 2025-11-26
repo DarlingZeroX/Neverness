@@ -273,6 +273,9 @@ private:
         }
 
         if (file) {
+			// 修复重复打开一个文件指针的错误
+			file.reset(new MemoryFile(filePath));
+
             file->Open(mode);
             
             if (!isExists && file->IsOpened()) {

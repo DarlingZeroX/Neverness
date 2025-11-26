@@ -15,6 +15,7 @@
 #include "VGEngine/Include/Galgame/GalGameEngine.h"
 #include "VGEngine/Include/Galgame/GameEngineCore.h"
 #include "VGEngine/Include/UI/UISystem.h"
+#include "VGEngine/Include/Core/VFS.h"
 
 namespace VisionGal::Editor
 {

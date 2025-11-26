@@ -14,7 +14,8 @@
 #include "../Render/Sprite.h"
 //#include "../Resource/Audio.h"
 #include "../Resource/Interface/AudioInterface.h"
-#include "../Resource/Video.h"
+#include "../Resource/Interface/VideoInterface.h"
+//#include "../Resource/Video.h"
 #include "../Resource/UIDocument.h"
 #include "../Render/Material.h"
 #include "../Render/Transition.h"
@@ -333,11 +334,13 @@ namespace VisionGal {
 		 }
 
 		 uint pipelineIndex;
-		 Ref<VideoClip> videoClip;
 		 bool playOnAwake = true;
 		 bool waitForFirstFrame = true;
 		 bool loop = false;
-		 Ref<VideoPlayer> videoPlayer;
+
+		 Ref<IVideoClip> videoClip = nullptr;
+		 Ref<IVideoPlayer> videoPlayer = nullptr;
+		 Ref<Sprite> videoSprite = nullptr;
 
 		 bool Play();
 		 void Stop();
@@ -349,6 +352,8 @@ namespace VisionGal {
 		 bool IsPlaying() const;
 		 // 是否循环播放
 		 bool IsLooping() const;
+
+		 Sprite* GetSprite() const;
 	 };
 
 	 struct VG_ENGINE_API AudioSourceComponent : public IComponent

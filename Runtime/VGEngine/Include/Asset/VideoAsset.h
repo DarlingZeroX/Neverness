@@ -12,7 +12,7 @@
 #pragma once
 #include "Asset.h"
 #include "../Core/Core.h"
-#include "../Resource/Video.h"
+#include "../Resource/FVideo.h"
 
 namespace VisionGal
 {
@@ -23,7 +23,7 @@ namespace VisionGal
 		{
 		}
 
-		Ref<VideoClip> videoClip;
+		Ref<FVideoClip> videoClip;
 	};
 
 	class VG_ENGINE_API VideoAssetLoader : public IAssetLoader

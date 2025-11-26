@@ -17,6 +17,24 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
+
+# 设置 C++ 标准为 C++17
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+
+# 开启utf-8编码支持
+if (MSVC)
+    add_compile_options(/utf-8)
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()
+
+
 file(GLOB HCORE_GEN_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/.Generated/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/.Generated/*.cpp"

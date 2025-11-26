@@ -21,6 +21,7 @@ namespace VisionGal {
 		~IVideoClip() override = default;
 
 		virtual IVideoDecoder* GetDecoder() = 0;
+		virtual uint2 GetSize() const = 0;
 	};
 
 	// 音频解码器接口
@@ -40,8 +41,11 @@ namespace VisionGal {
 		virtual bool Seek(double seconds) = 0;								// 视频跳转
 		virtual bool SetVolume(float v) = 0;								// 设置音量
 		virtual float GetVolume() const = 0;
+		virtual float GetVideoWidth() const = 0;
+		virtual float GetVideoHeight() const = 0;
 
 		virtual void Update() = 0;											// 更新
 		virtual VGFX::ITexture* GetVideoTexture() const = 0;				// 获取视频纹理
+		virtual Ref<VGFX::ITexture>GetVideoTextureRef() const = 0;				// 获取视频纹理
 	};
 }

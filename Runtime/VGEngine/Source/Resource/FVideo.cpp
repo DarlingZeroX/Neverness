@@ -376,6 +376,11 @@ namespace VisionGal
 		return m_VideoTexture.get();
 	}
 
+	Ref<VGFX::ITexture> FVideoPlayer::GetVideoTextureRef() const
+	{
+		return m_VideoTexture;
+	}
+
 	double FVideoPlayer::GetPlaybackTime() const
 	{
 		if (m_VideoClip->GetDecoder()->HasAudioStream())
@@ -445,5 +450,15 @@ namespace VisionGal
 	float FVideoPlayer::GetVolume() const
 	{
 		return m_Volume;
+	}
+
+	float FVideoPlayer::GetVideoWidth() const
+	{
+		return m_VideoClip->GetSize().x;
+	}
+
+	float FVideoPlayer::GetVideoHeight() const
+	{
+		return m_VideoClip->GetSize().y;
 	}
 }

@@ -36,6 +36,7 @@ add_subdirectory ("Runtime/VGLua")
 add_subdirectory ("Runtime/HCore")
 add_subdirectory ("Runtime/VGPackage")
 add_subdirectory ("Runtime/VGImgui")
+add_subdirectory ("Runtime/HMedia")
 add_subdirectory ("Runtime/VGEngine")
 # 编辑器
 add_subdirectory ("Editor/VGEditorFramework")

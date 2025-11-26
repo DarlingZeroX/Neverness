@@ -10,6 +10,7 @@
 */
 
 #include "Asset/VideoAsset.h"
+#include "Resource/Video/FVideoDecoder.h"
 
 namespace VisionGal
 {
@@ -29,10 +30,11 @@ namespace VisionGal
 	bool VideoAssetLoader::Read(const std::string path, Ref<VGAsset>& asset)
 	{
 		auto videoAsset = CreateRef<VideoAsset>();
-		videoAsset->videoClip = CreateRef<VideoClip>();
-		videoAsset->videoClip->decoder = CreateRef<VideoDecoder>();
+		videoAsset->videoClip = CreateRef<FVideoClip>();
+		//videoAsset->videoClip->decoder = CreateRef<FVideoDecoder>();
 
-		if ( videoAsset->videoClip->decoder->Open(path))
+		if ( videoAsset->videoClip->Open(path))
+		//if ( videoAsset->videoClip->decoder->Open(path))
 		{
 			asset = videoAsset;
 			return true;
