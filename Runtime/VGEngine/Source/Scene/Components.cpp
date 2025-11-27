@@ -179,7 +179,7 @@ namespace VisionGal
 
 	AudioSourceComponent::AudioSourceComponent()
 	{
-		audioPlayer = CreateRef<AudioPlayer>();
+		audioPlayer = CreateRef<VGAudioPlayer>();
 	}
 
 	std::string AudioSourceComponent::GetComponentType() const

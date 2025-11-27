@@ -10,7 +10,8 @@
 */
 
 #include "Render/Sprite.h"
-#include "Graphics/OpenGL/Core.h"
+//#include "Graphics/OpenGL/Core.h"
+#include <VGRHI/Include/OpenGL/Core.h>
 
 namespace VisionGal
 {

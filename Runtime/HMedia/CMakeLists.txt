@@ -30,6 +30,7 @@ file(GLOB H_MEDIA_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Audio/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Video/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Common/*.cpp" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/SDL/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/FFmpeg/*.cpp"
@@ -38,6 +39,7 @@ file(GLOB H_MEDIA_SRC_FILES
 file(GLOB H_MEDIA_HEADER_FILES 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Audio/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Video/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Common/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/SDL/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/FFmpeg/*.h"

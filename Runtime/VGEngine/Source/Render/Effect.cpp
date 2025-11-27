@@ -10,7 +10,8 @@
 */
 
 #include "Render/Effect.h"
-#include "Graphics/OpenGL/Texture2D.h"
+//#include "OpenGL/Texture2D.h"
+#include <VGRHI/Include/OpenGL/Texture2D.h>
 
 namespace VisionGal
 {

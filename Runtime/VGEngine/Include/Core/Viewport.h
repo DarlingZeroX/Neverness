@@ -13,7 +13,8 @@
 #include "Events.h"
 #include "Core.h"
 #include "../Interface/GameInterface.h"
-#include "../Graphics/Interface/Texture.h"
+//#include "../Graphics/Interface/Texture.h"
+#include <VGRHI/Interface/Texture.h>
 #include <HCore/Include/Platform/WindowInterface.h>
 #include <HCore/Include/Event/HEventDelegate.h>
 

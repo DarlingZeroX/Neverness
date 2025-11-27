@@ -12,66 +12,27 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "../Core/Core.h"
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_audio.h>
 #include "Interface/AudioInterface.h"
-#include "SDL/SDLAudio.h"
+#include <HMedia/Include/Audio.h>
 
 namespace VisionGal
 {
-    class VG_ENGINE_API AudioClip : public IAudioClip
-    {
-    public:
-        AudioClip();
-        ~AudioClip() override;
 
-        bool Open(const String& filePath);
-
-		IAudioDecoder* GetDecoder() override;
-    private:
-		Ref<IAudioDecoder> m_AudioDecoder;
-    };
-	  
-    class VG_ENGINE_API AudioPlayer : public IAudioPlayer
+	struct VG_ENGINE_API VGAudioClip: public IAudioClip
 	{
-        static void AudioStreamCallback(void*, SDL_AudioStream*, int, int);
-    public:
-        AudioPlayer();
-        ~AudioPlayer() override;
+		VGAudioClip() = default;
+		~VGAudioClip() override = default;
 
-		static Ref<AudioPlayer> CreatePlayer(const Ref<AudioClip>& clip);
+		bool Open(const std::string& filePath);
 
-        bool OpenAudioClip(const Ref<IAudioClip>& clip) override;	        // 打开音频片段
-        bool Play() override;												// 开始播放
-		bool SetLoop(bool enable) override;									// 循环播放
-        bool Stop() override;												// 停止播放
-		bool IsStop() override;												// 是否停止播放了
-        bool IsPlaying() const override;									// 是否正在播放音频
-        bool IsLooping() const override;									// 是否循环播放
-		bool SetVolume(float v) override;									// 设置音量
-        float GetVolume() const override;									// 获取音量
-		bool Pause() override;												// 暂停播放
-		bool Restore() override;											// 恢复播放
-		double GetDuration() const override;								// 获取总播放时长
-		double GetPlaybackTime() const override;							// 获取视频设备的当前播放时间（秒）
-		bool RestartPlay();
+		Horizon::IAudioDecoder* GetDecoder() override;
+	private:
+		Horizon::AudioClip m_AudioClip;
+	};
 
-		bool Seek(double seconds) override;
-    private:
-		void FinishPlay(SDL_AudioStream* stream);
-        // 处理音频流数据
-		void HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount);
-
-        Ref<IAudioClip> m_AudioClip = nullptr;
-		SDL3AudioStream m_AudioStream;
-		SDL3AudioDevice m_AudioDevice;
-
-		// 状态
-		bool m_IsFinished = false;
-        bool m_IsPlaying = false;
-		bool m_IsLoopPlay = false;
-        float m_Volume = 1.0f;
-		size_t m_PlayedBytes = 0;    // 已经被 SDL 播放的 PCM 字节数
-		int    m_BytesPerSec = 0;    // 每秒 PCM 字节数（根据 format 计算）
-    };
+	struct VG_ENGINE_API VGAudioPlayer: public Horizon::AudioPlayer
+	{
+		VGAudioPlayer() = default;
+		~VGAudioPlayer() override = default;
+	};
 }

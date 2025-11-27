@@ -12,7 +12,8 @@
 #include "Render/Transition.h"
 #include "Engine/Manager.h"
 #include "Render/Renderer.h"
-#include "Graphics/Interface/VGFX.h"
+//#include "Graphics/Interface/VGFX.h"
+#include <VGRHI/Interface/VGFX.h>
 
 namespace VisionGal
 {

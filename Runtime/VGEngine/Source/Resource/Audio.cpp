@@ -10,10 +10,12 @@
 */
 
 #include "Resource/Audio.h"
-#include "Resource/Audio/FAudioDecoder.h"
+//#include "Resource/Audio/FAudioDecoder.h"
+#include "Core/VFS.h"
 
 namespace VisionGal
 {
+	/*
 	AudioClip::AudioClip()
 		:m_AudioDecoder(nullptr)
 	{
@@ -359,5 +361,16 @@ namespace VisionGal
 			}
 		}
     }
+	*/
+	bool VGAudioClip::Open(const std::string& filePath)
+	{
+		return m_AudioClip.Open(VFS::GetInstance(), filePath);
 
+		return true;
+	}
+
+	Horizon::IAudioDecoder* VGAudioClip::GetDecoder()
+	{
+		return m_AudioClip.GetDecoder();
+	}
 }

@@ -11,10 +11,12 @@
 
 #include "Resource/ResourceManager.h"
 #include "Engine/Manager.h"
-#include "Graphics/OpenGL/OpenGL.h"
+//#include "Graphics/OpenGL/OpenGL.h"
+#include <VGRHI/Include/OpenGL/OpenGL.h>
 #include "Asset/TextureAsset.h"
 #include "Asset/VideoAsset.h"
 #include "Asset/AudioAsset.h"
+#include "Resource/Audio.h"
 #include "Resource/FVideo.h"
 
 namespace VisionGal
@@ -137,7 +139,7 @@ namespace VisionGal
 
 	AudioResourceManager::AudioResourceManager()
 	{
-		RegisterObjectLoader(typeid(AudioClip), this);
+		RegisterObjectLoader(typeid(VGAudioClip), this);
 	}
 
 	void AudioResourceManager::CreateManager()

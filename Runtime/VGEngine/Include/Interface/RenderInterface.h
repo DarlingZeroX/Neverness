@@ -13,7 +13,8 @@
 //#include "../Graphics/OpenGL/Sprite.h"
 #include "../Resource/Texture2D.h"
 #include "../Core/Core.h"
-#include "../Graphics/Interface/Mesh.h"
+//#include "../Graphics/Interface/Mesh.h"
+#include <VGRHI/Interface/Mesh.h>
 
 namespace VisionGal
 {

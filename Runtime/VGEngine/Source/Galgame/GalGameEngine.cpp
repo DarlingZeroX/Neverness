@@ -326,7 +326,7 @@ namespace VisionGal::GalGame
 	GameActor* GalGameEngine::CreateAudioImp(const std::string& resPath)
 	{
 		// 读取音频资产
-		auto audioClip = LoadObject<AudioClip>(resPath);
+		auto audioClip = LoadObject<VGAudioClip>(resPath);
 		if (audioClip == nullptr)
 		{
 			H_LOG_WARN("加载音频失败: %s", resPath.c_str());

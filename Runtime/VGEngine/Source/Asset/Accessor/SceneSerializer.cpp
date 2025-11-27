@@ -191,7 +191,7 @@ namespace VisionGal
 		com = deserializeComponent;
 		if (deserializeComponent.__DeserializeData.HasAudio)
 		{
-			auto tex = LoadObject<AudioClip>(deserializeComponent.__DeserializeData.m_AudioPath);
+			auto tex = LoadObject<VGAudioClip>(deserializeComponent.__DeserializeData.m_AudioPath);
 			com.audioClip = tex;
 		}
 

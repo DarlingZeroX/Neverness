@@ -10,16 +10,21 @@
 */
 
 #include "Asset/AudioAsset.h"
+//#include <HMedia/Include/>
+#include "Resource/Audio.h"
 
 namespace VisionGal
 {
 	bool AudioAssetLoader::Read(const std::string path, Ref<VGAsset>& asset)
 	{
 		auto videoAsset = CreateRef<AudioAsset>();
-		videoAsset->audioClip = CreateRef<AudioClip>();
+		//videoAsset->audioClip = CreateRef<AudioClip>();
+		auto audioClip = CreateRef<VGAudioClip>();
 
-		if (videoAsset->audioClip->Open(path))
+		//if (videoAsset->audioClip->Open(path))
+		if (audioClip->Open(path))
 		{
+			videoAsset->audioClip = audioClip;
 			asset = videoAsset;
 			return true;
 		}

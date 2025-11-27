@@ -15,7 +15,8 @@
 #include "../Core/Core.h"
 #include "../Core/Viewport.h"
 #include <HCore/Include/Platform/SDL3/SDL3Window.h>
-#include "../Graphics/OpenGL/RenderTarget.h"
+//#include "../Graphics/OpenGL/RenderTarget.h"
+#include <VGRHI/Include/OpenGL/RenderTarget.h>
 
 namespace VisionGal
 {

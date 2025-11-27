@@ -11,7 +11,8 @@
 
 #pragma once
 #include "../../Core/Core.h"
-#include "../../Graphics/Interface/VGFX.h"
+//#include "../../Graphics/Interface/VGFX.h"
+#include <VGRHI/Interface/VGFX.h>
 
 namespace VisionGal
 {

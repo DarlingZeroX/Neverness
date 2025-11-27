@@ -12,7 +12,8 @@
 #include "Core/Window.h"
 #include <SDL3_image/SDL_image.h>
 #include "Core/VFS.h"
-#include "Graphics/OpenGL/OpenGL.h"
+//#include "Graphics/OpenGL/OpenGL.h"
+#include <VGRHI/Include/OpenGL/OpenGL.h>
 
 namespace VisionGal
 {

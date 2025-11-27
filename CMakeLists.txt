@@ -34,6 +34,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ########## 包含子项目 
 add_subdirectory ("Runtime/VGLua")
 add_subdirectory ("Runtime/HCore")
+add_subdirectory ("Runtime/VGRHI")
 add_subdirectory ("Runtime/VGPackage")
 add_subdirectory ("Runtime/VGImgui")
 add_subdirectory ("Runtime/HMedia")

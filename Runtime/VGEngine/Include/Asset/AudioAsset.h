@@ -12,7 +12,9 @@
 #pragma once
 #include "Asset.h"
 #include "../Core/Core.h"
-#include "../Resource/Audio.h"
+//#include "../Resource/Audio.h"
+//#include <HMedia/Interface/AudioInterface.h>
+#include "../Resource/Interface/AudioInterface.h"
 
 namespace VisionGal
 {
@@ -23,7 +25,7 @@ namespace VisionGal
 		{
 		}
 
-		Ref<AudioClip> audioClip;
+		Ref<IAudioClip> audioClip;
 	};
 
 	class VG_ENGINE_API AudioAssetLoader : public IAssetLoader

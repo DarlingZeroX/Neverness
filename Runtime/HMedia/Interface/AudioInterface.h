@@ -11,13 +11,14 @@
 
 #pragma once
 #include "AudioDecoderInterface.h"
+#include <HCore/Include/Core/HCore.h>
 
 namespace Horizon {
 
 	// 音频解码器接口
-	struct IAudioClip : public VGEngineResource
+	struct IAudioClip
 	{
-		~IAudioClip() override = default;
+		virtual ~IAudioClip() = default;
 
 		virtual IAudioDecoder* GetDecoder() = 0;
 	};

@@ -12,7 +12,8 @@
 #pragma once
 #include "../Config.h"
 #include <VGEngine/Include/Core/CoreTypes.h>
-#include <VGEngine/Include/Resource/Interface/AudioInterface.h>
+//#include <VGEngine/Include/Resource/Interface/AudioInterface.h>
+#include <HMedia/Interface/AudioInterface.h>
 
 namespace VisionGal::Editor
 {
@@ -34,7 +35,7 @@ namespace VisionGal::Editor
 		void RenderVolumeButtonUI();
 
 		VGPath m_Path;
-		Ref<IAudioPlayer> m_AudioPlayer = nullptr;
+		Ref<Horizon::IAudioPlayer> m_AudioPlayer = nullptr;
 
 		float m_CurrentPlayTime = 0.f;
 		float m_AudioDuration = 0.f;

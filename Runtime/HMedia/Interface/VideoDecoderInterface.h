@@ -11,7 +11,8 @@
 
 #pragma once
 #include "AudioDecoderInterface.h"
-#include "../../Core/Core.h"
+#include <functional>
+//#include "../../Core/Core.h"
 
 namespace Horizon {
 

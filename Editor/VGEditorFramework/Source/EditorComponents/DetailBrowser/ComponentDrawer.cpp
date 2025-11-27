@@ -508,7 +508,7 @@ namespace VisionGal::Editor
 			{
 				std::string path = static_cast<char*>(payload->Data);
 
-				if (auto audioClip = LoadObject<AudioClip>(path))
+				if (auto audioClip = LoadObject<VGAudioClip>(path))
 				{
 					com->audioClip = audioClip;
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置音频成功!" });

@@ -20,9 +20,9 @@ namespace VisionGal::Editor
 	AudioViewer::AudioViewer(const VGPath& path)
 	{
 		m_Path = path;
-		if (auto audioClip = LoadObject<AudioClip>(path))
+		if (auto audioClip = LoadObject<VGAudioClip>(path))
 		{
-			m_AudioPlayer = AudioPlayer::CreatePlayer(audioClip);
+			m_AudioPlayer = VGAudioPlayer::CreatePlayer(audioClip);
 			m_AudioPlayer->Play();
 
 			m_AudioDuration = m_AudioPlayer->GetDuration();

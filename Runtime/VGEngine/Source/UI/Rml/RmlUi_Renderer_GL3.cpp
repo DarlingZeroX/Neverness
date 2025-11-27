@@ -56,7 +56,8 @@
 	#define RMLUI_SHADER_HEADER_VERSION "#version 330\n"
 	#define GLAD_GL_IMPLEMENTATION
 	//#include "../include/RmlUi_Include_GL3.h"
-	#include "Graphics/OpenGL/OpenGL.h"
+	//#include "Graphics/OpenGL/OpenGL.h"
+	#include <VGRHI/Include/OpenGL/OpenGL.h>
 	//#include <glad\glad.h>
 #endif
 

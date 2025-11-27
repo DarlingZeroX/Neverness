@@ -68,5 +68,6 @@ find_package(SDL3 CONFIG REQUIRED)
 
 target_link_libraries(VGEditorFramework PRIVATE SDL3::SDL3)
 target_link_libraries(VGEditorFramework PRIVATE HCore)
+target_link_libraries(VGEditorFramework PRIVATE HMedia)
 target_link_libraries(VGEditorFramework PRIVATE VGImgui)
 target_link_libraries(VGEditorFramework PRIVATE VGEngine)

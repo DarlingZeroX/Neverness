@@ -11,7 +11,7 @@
 
 #include "Game/RenderPipeline.h"
 #include "Engine/Manager/ShaderManager.h"
-#include "Graphics/Interface/VGFX.h"
+#include <VGRHI/Interface/VGFX.h>
 #include "Scene/Components.h"
 
 namespace VisionGal

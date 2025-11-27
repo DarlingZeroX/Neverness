@@ -14,7 +14,8 @@
 #include "Render/Material.h"
 #include "Render/Sprite.h"
 #include "Scene/Components.h"
-#include "Graphics/OpenGL/Core.h"
+//#include "Graphics/OpenGL/Core.h"
+#include <VGRHI/Include/OpenGL/Core.h>
 
 namespace VisionGal
 {

@@ -14,7 +14,8 @@
 #include "../Core/Core.h"
 #include "../EngineConfig.h"
 #include "../Interface/RenderInterface.h"
-#include "../Graphics/Interface/VGFX.h"
+//#include "../Graphics/Interface/VGFX.h"
+#include <VGRHI/Interface/VGFX.h>
 
 namespace VisionGal {
 

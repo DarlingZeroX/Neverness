@@ -23,6 +23,7 @@
 #include "../Interface/GameInterface.h"
 #include <VGEngine/Include/EngineConfig.h>
 #include <HCore/Include/Core/HSerialization.h>
+//#include <HMedia/Interface/AudioInterface.h>
 
 namespace VisionGal {
 
@@ -416,7 +417,7 @@ namespace VisionGal {
 		 bool playOnAwake = true;
 		 bool loop = false;
 		 float volume = 1.0f;
-		 Ref<IAudioPlayer> audioPlayer;
+		 Ref<Horizon::IAudioPlayer> audioPlayer;
 
 		// 播放
 		 bool Play();

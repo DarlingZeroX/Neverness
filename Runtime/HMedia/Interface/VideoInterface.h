@@ -11,14 +11,16 @@
 
 #pragma once
 #include "VideoDecoderInterface.h"
+#include <HCore/Include/HConfig.h>
+#include <HCore/Include/Core/HCoreTypes.h>
 //#include "../../Graphics/Interface/Texture.h"
 
 namespace Horizon {
 
 	// 视频解码器接口
-	struct IVideoClip : public VGEngineResource
+	struct IVideoClip
 	{
-		~IVideoClip() override = default;
+		virtual ~IVideoClip() = default;
 
 		virtual IVideoDecoder* GetDecoder() = 0;
 		virtual uint2 GetSize() const = 0;
@@ -28,7 +30,7 @@ namespace Horizon {
 	struct IVideoPlayer {
 		virtual ~IVideoPlayer() = default;
 
-		virtual bool Open(const Ref<IVideoClip>& clip) = 0;					// 打开音频片段
+		virtual bool Open(const Ref<IVideoClip>& clip) { return false; };	// 打开音频片段
 		virtual void Play() = 0;											// 播放视频
 		virtual void Stop() = 0;											// 暂停播放
 		virtual bool IsPlaying() const = 0;									// 是否正在播放视频
@@ -43,6 +45,8 @@ namespace Horizon {
 		virtual float GetVolume() const = 0;
 		virtual float GetVideoWidth() const = 0;
 		virtual float GetVideoHeight() const = 0;
+		virtual bool RestartPlay() = 0;
+		virtual uint8_t* GetFrameData() = 0;
 
 		virtual void Update() = 0;											// 更新
 		//virtual VGFX::ITexture* GetVideoTexture() const = 0;				// 获取视频纹理

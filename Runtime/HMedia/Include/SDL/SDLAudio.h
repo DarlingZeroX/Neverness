@@ -10,11 +10,10 @@
 */
 
 #pragma once
-#include "../../Core/Core.h"
-#include "../../EngineConfig.h"
+#include <HCore/Include/Core/HCore.h>
 #include <SDL3/SDL_audio.h>
 
-namespace VisionGal {
+namespace Horizon {
 
 	struct SDL3AudioDevice
 	{

@@ -15,7 +15,8 @@
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
 #include "../Render/RenderCore.h"
-#include "../Graphics/OpenGL/RenderTarget.h"
+//#include "../Graphics/OpenGL/RenderTarget.h"
+#include <VGRHI/Include/OpenGL/RenderTarget.h>
 
 namespace VisionGal::GalGame
 {

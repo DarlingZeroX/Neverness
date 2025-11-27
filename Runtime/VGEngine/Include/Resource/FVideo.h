@@ -13,7 +13,7 @@
 #include "Interface/VideoInterface.h"
 #include "../Core/Core.h"
 #include "../EngineConfig.h"
-#include "SDL/SDLAudio.h"
+#include <HMedia/Include/FVideo.h>
 
 namespace VisionGal {
 	class VG_ENGINE_API FVideoClip : public IVideoClip
@@ -21,28 +21,23 @@ namespace VisionGal {
 	public:
 		FVideoClip() = default;
 		~FVideoClip() override = default;
-		FVideoClip(const FVideoClip&) = delete;
-		FVideoClip& operator=(const FVideoClip&) = delete;
-		FVideoClip(FVideoClip&&) noexcept = default;
-		FVideoClip& operator=(FVideoClip&&) noexcept = default;
 
 		bool Open(const String& filePath);
 		uint2 GetSize() const override;
-
-		IVideoDecoder* GetDecoder() override;
+		
+		Horizon::IVideoDecoder* GetDecoder() override;
 	private:
-		Ref<IVideoDecoder> m_VideoDecoder;
+		Horizon::FVideoClip m_VideoClip;
 	};
 
 	// 视频播放器类 - 封装解码和渲染
 	class VG_ENGINE_API FVideoPlayer : public IVideoPlayer
 	{
-		static void AudioStreamCallback(void*, SDL_AudioStream*, int, int);
 	public:
 		FVideoPlayer();
 		~FVideoPlayer() override;
 
-		static Ref<FVideoPlayer> CreatePlayer(const Ref<FVideoClip>& clip);
+		static Ref<FVideoPlayer> CreatePlayer(const Ref<IVideoClip>& clip);
 
 		bool Open(const Ref<IVideoClip>& clip) override;				// 打开音频片段
 		void Play() override;											// 播放视频
@@ -55,7 +50,7 @@ namespace VisionGal {
 		void SetLoop(bool loop) override;								// 设置循环播放
 		double GetPlaybackTime() const override;						// 获取当前播放时间（秒）
 		bool Seek(double seconds) override;								// 视频跳转
-		bool RestartPlay();
+		bool RestartPlay() override;
 		bool SetVolume(float v) override;									// 设置音量
 		float GetVolume() const override;									// 获取音量
 		float GetVideoWidth() const override;
@@ -64,33 +59,11 @@ namespace VisionGal {
 		void Update() override;											// 更新
 		VGFX::ITexture* GetVideoTexture() const override;				// 获取视频纹理
 		Ref<VGFX::ITexture> GetVideoTextureRef() const override;				// 获取视频纹理
-	protected:
-		bool PlayAudio();
-		void ProcessVideoUpdate(uint8_t* frameData, int& linesize, int width, int height, double pts);
-		void FinishPlayAudio(SDL_AudioStream* stream);
-		void HandelAudioStream(SDL_AudioStream* stream, int additional_amount, int total_amount);				// 处理音频流数据
+		uint8_t* GetFrameData() override;
+
 	private:
-		// 状态
-		//bool m_IsFinished = false;
-		bool m_IsPlaying = false;
-		bool m_IsLoopPlay = false;
-		std::mutex m_Mutex;
-
-		// 视频
-		Ref<IVideoClip> m_VideoClip;
+		Ref<Horizon::IVideoPlayer> m_VideoPlayer;
 		Ref<VGFX::ITexture> m_VideoTexture;
-		uint8_t* m_FrameData = nullptr;
-		bool m_VideoClockInitialized = false;
-		double m_VideoStartPTS = 0.f;
-		std::chrono::time_point<std::chrono::steady_clock>  m_SystemStartTime;
-
-		// 音频
-		SDL3AudioStream m_AudioStream;
-		SDL3AudioDevice m_AudioDevice;
-		float m_Volume = 1.0f;
-		size_t m_PlayedBytes = 0;    // 已经被 SDL 播放的 PCM 字节数
-		int    m_BytesPerSec = 0;    // 每秒 PCM 字节数（根据 format 计算）
 	};
-
 
 }

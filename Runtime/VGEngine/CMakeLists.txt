@@ -42,9 +42,9 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/Manager/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Game/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Graphics/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Graphics/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Graphics/OpenGL/*.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Graphics/*.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Graphics/Interface/*.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Graphics/OpenGL/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Project/*.cpp"
@@ -52,12 +52,12 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/Interface/*.cpp" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Render/*.cpp" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Audio/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Common/*.cpp" 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Video/*.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Audio/*.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Common/*.cpp" 
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Video/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Texture/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/SDL/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/FFmpeg/*.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/SDL/*.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/FFmpeg/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Scene/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Utils/*.cpp"
 
@@ -82,9 +82,9 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Engine/Manager/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Game/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Graphics/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Graphics/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Graphics/OpenGL/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Graphics/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Graphics/Interface/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Graphics/OpenGL/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Project/*.h"
@@ -92,12 +92,12 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Render/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Audio/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Common/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Video/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Audio/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Common/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Video/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Texture/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/SDL/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/FFmpeg/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/SDL/*.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/FFmpeg/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"
@@ -142,6 +142,8 @@ target_link_libraries(VGEngine PRIVATE VGLua)
 target_link_libraries(VGEngine PRIVATE SDL3::SDL3)
 target_link_libraries(VGEngine PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
 target_link_libraries(VGEngine PRIVATE HCore)
+target_link_libraries(VGEngine PRIVATE HMedia)
+target_link_libraries(VGEngine PRIVATE VGRHI)
 target_link_libraries(VGEngine PRIVATE VGPackage)
 target_link_libraries(VGEngine PRIVATE VGImgui)
 target_link_libraries(VGEngine PRIVATE RmlUi::RmlUi)
