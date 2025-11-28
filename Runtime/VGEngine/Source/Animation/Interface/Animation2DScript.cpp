@@ -104,6 +104,12 @@ namespace VisionGal
 		m_CurrentDirection = 1;
 
 		AddAnimationKey(targetProperty);
+
+		// 如果是瞬时完成的情况
+		while (targetProperty.duration == 0.f && m_CurrentIteration < m_NumIterations && m_CurrentIteration < 100)
+		{
+			OnUpdate(m_Entity);
+		}
 		return true;
 	}
 

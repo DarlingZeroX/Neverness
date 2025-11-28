@@ -45,6 +45,7 @@ namespace VisionGal::GalGame
 	void DialogueSystem::CharacterSay(const String& character, const String& text)
 	{
 		m_DialogName = character;
+		m_GalGameContext->runtimeState.currentDialogCharacter = character;
 
 		if (m_GalGameContext->runtimeState.enableTyping)
 		{
@@ -55,6 +56,8 @@ namespace VisionGal::GalGame
 			m_DialogText = text;
 		}
 
+		m_GalGameContext->runtimeState.currentDialogText = text;
+
 		//m_CurrentDialogLine += 1;
 		m_GalGameContext->runtimeState.currentDialogLine += 1;
 		m_DialogList.push_back({ character, text });
@@ -64,7 +67,6 @@ namespace VisionGal::GalGame
 
 	void DialogueSystem::EnableTyping(bool enable)
 	{
-		//m_EnableTyping = enable;
 		m_GalGameContext->runtimeState.enableTyping = enable;
 	}
 
@@ -75,7 +77,6 @@ namespace VisionGal::GalGame
 
 	bool DialogueSystem::IsTypingText()
 	{
-		//if (!m_EnableTyping)
 		if (!m_GalGameContext->runtimeState.enableTyping)
 			return false;
 
@@ -133,12 +134,12 @@ namespace VisionGal::GalGame
 
 	String DialogueSystem::GetCurrentCharacter()
 	{
-		return m_DialogName;
+		return m_GalGameContext->runtimeState.currentDialogCharacter;
 	}
 
 	String DialogueSystem::GetCurrentDialogText()
 	{
-		return m_DialogText;
+		return m_GalGameContext->runtimeState.currentDialogText;
 	}
 
 	void DialogueSystem::AutoDialogue(bool enable)
@@ -241,8 +242,6 @@ namespace VisionGal::GalGame
 	void DialogueSystem::ClearDialogList()
 	{
 		m_DialogList.clear();
-		m_DialogName.clear();
-		m_DialogText.clear();
 		m_TypingEffect.FinishTyping();
 		m_WaitingForNextAuto = false;
 		m_FastForwardWaitingForNextAuto = false;

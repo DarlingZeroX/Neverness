@@ -27,7 +27,7 @@ namespace VisionGal::GalGame
 		ResourceSystem(ResourceSystem&&) noexcept = default;
 		ResourceSystem& operator=(ResourceSystem&&) noexcept = default;
 
-		void Initialize(const Ref<LayeredSceneSystem>& sceneSystem);
+		void Initialize(const Ref<GalGameContext>& galCtx, const Ref<LayeredSceneSystem>& sceneSystem);
 
 		/// 预加载指定路径的资源。
 		bool PreLoadResource(const String& path);

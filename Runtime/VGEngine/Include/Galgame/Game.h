@@ -11,6 +11,7 @@
 
 #pragma once
 #include "Interface/GalgameInterface.h"
+#include "Core/GalGameRuntimeState.h"
 #include "../Animation/Interface/Animation2DScript.h"
 #include "../Scene/Components.h"
 #include <sol/function.hpp>
@@ -70,6 +71,7 @@ namespace VisionGal::GalGame
 		std::string m_Path;
 		std::string m_Layer;
 		GameActor* m_Actor = nullptr;
+		GalGameRuntimeState* m_GalState = nullptr;
 	};
 
 	class GalAudio: public IGalGameAudio

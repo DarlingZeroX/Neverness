@@ -14,6 +14,7 @@
 #include "../EngineConfig.h"
 #include "../Core/Core.h"
 #include "Core/SaveArchive.h"
+#include "Core/GalGameContext.h"
 #include <HCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
@@ -28,9 +29,9 @@ namespace VisionGal::GalGame
 		ArchiveSystem& operator=(ArchiveSystem&&) noexcept = default;
 		~ArchiveSystem() override;
 
-		void UpdateSaveArchive(const SaveArchive& archive);
+		//void UpdateSaveArchive(const SaveArchive& archive);
 
-		bool Initialise();
+		bool Initialise(const Ref<GalGameContext>& ctx);
 
 		SaveArchive SaveArchiveByNumber(const String& number);
 		SaveArchive GetArchiveByNumber(const String& number);
@@ -42,11 +43,13 @@ namespace VisionGal::GalGame
 		void ReadArchives();
 		void ReadArchive(const String& saveNumber, nlohmann::json& json);
 	private:
+		Ref<GalGameContext> m_GalGameContext;
+
 		std::string m_ArchiveExt = ".save";
 		std::filesystem::path m_BasePath;
 		std::filesystem::path m_SaveDirectoryPath;
 
-		SaveArchive m_CurrentSaveArchiveState;
+		//SaveArchive m_CurrentSaveArchiveState;
 
 		std::unordered_map<String, SaveArchive> m_Archives;
 	};

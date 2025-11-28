@@ -48,6 +48,7 @@ namespace VisionGal::GalGame
 		if (storyScript == nullptr)
 			return false;
 
+		// 初始化当前对话行
 		m_GalGameContext->runtimeState.currentDialogLine = 0;
 
 		// 脚本开始加载事件
@@ -71,6 +72,9 @@ namespace VisionGal::GalGame
 			});
 
 		m_StoryScript = storyScript;
+
+		// 设置脚本路径
+		m_GalGameContext->runtimeState.currentScriptPath = path;
 
 		// 脚本完成加载事件
 		{
@@ -128,6 +132,24 @@ namespace VisionGal::GalGame
 		m_Wait.IsWait = true;
 	}
 
+	bool StoryScriptSystem::LoadArchive(const SaveArchive& archive)
+	{
+		m_GalGameContext->runtimeState.enableFastForward = true;
+
+		if (!LoadStoryScript(archive.scriptPath))
+		{
+			m_GalGameContext->runtimeState.enableFastForward = false;
+			return false;
+		}
+
+		while (archive.line > m_GalGameContext->runtimeState.currentDialogLine)
+		{
+			ContinueDialogue();
+		}
+
+		m_GalGameContext->runtimeState.enableFastForward = false;
+	}
+
 	void StoryScriptSystem::Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context)
 	{
 		m_GalGameContext = galCtx;
@@ -148,7 +170,7 @@ namespace VisionGal::GalGame
 				switch (evt.EventType)
 				{
 				case GalGameScriptExecuteEventType::ContinueExecute:
-					StoryScriptLuaInterface::Continue();
+					ContinueDialogue();
 					break;
 				}
 			});
@@ -166,6 +188,11 @@ namespace VisionGal::GalGame
 	void StoryScriptSystem::SetEngine(IGalGameEngine* engine)
 	{
 		m_GalGameEngine = engine;
+	}
+
+	void StoryScriptSystem::ContinueDialogue()
+	{
+		StoryScriptLuaInterface::Continue();
 	}
 
 	void StoryScriptSystem::AddUpdateCallback(const std::function<void()>& callback)

@@ -77,6 +77,12 @@ namespace VisionGal::GalGame
 	{
 		auto script = CreateRef<Animation2DScript>(m_Actor);
 
+		if (m_GalState != nullptr)
+		{
+			if (m_GalState->enableFastForward)
+				duration = 0.f;
+		}
+
 		if (script->AnimateLua(targetValue, duration, tween, numIterations, alternateDirection))
 		{
 			AnimationScriptManager::AddActorAnimationScript(m_Actor, script);

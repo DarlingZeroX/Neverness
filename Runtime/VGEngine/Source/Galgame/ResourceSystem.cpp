@@ -24,8 +24,9 @@ namespace VisionGal::GalGame
 	{
 	}
 
-	void ResourceSystem::Initialize(const Ref<LayeredSceneSystem>& sceneSystem)
+	void ResourceSystem::Initialize(const Ref<GalGameContext>& galCtx, const Ref<LayeredSceneSystem>& sceneSystem)
 	{
+		m_GalGameContext = galCtx;
 		m_LayeredSceneManager = sceneSystem;
 
 		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
@@ -84,6 +85,7 @@ namespace VisionGal::GalGame
 		// 创建GalGame的图片类
 		GalSprite* sprite = new GalSprite(layer, path);
 		sprite->m_Actor = actor;
+		sprite->m_GalState = &m_GalGameContext->runtimeState;
 
 		// 设置渲染管线
 		auto* spriteCom = actor->GetComponent<SpriteRendererComponent>();

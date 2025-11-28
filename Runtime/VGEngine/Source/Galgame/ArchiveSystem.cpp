@@ -27,13 +27,15 @@ namespace VisionGal::GalGame
 	{
 	}
 
-	void ArchiveSystem::UpdateSaveArchive(const SaveArchive& archive)
-	{
-		m_CurrentSaveArchiveState = archive;
-	}
+	//void ArchiveSystem::UpdateSaveArchive(const SaveArchive& archive)
+	//{
+	//	m_CurrentSaveArchiveState = archive;
+	//}
 
-	bool ArchiveSystem::Initialise()
+	bool ArchiveSystem::Initialise(const Ref<GalGameContext>& ctx)
 	{
+		m_GalGameContext = ctx;
+
 		// 如果不存在
 		if (!Horizon::HFileSystem::ExistsDirectory(m_SaveDirectoryPath))
 		{
@@ -45,7 +47,7 @@ namespace VisionGal::GalGame
 
 	void ArchiveSystem::ReadArchives()
 	{
-		for (int i = 1; i <= 99; ++i) {
+		for (int i = 1; i <= 200; ++i) {
 			std::ostringstream oss;
 			oss << std::setw(2) << std::setfill('0') << i;
 			std::string saveNumber = oss.str();
@@ -137,18 +139,26 @@ namespace VisionGal::GalGame
 		std::filesystem::path screenshotPath = m_SaveDirectoryPath / (number + ".jpg");
 
 		// 保存截图
-		if (m_CurrentSaveArchiveState.screenshotPixels)
+		//if (m_CurrentSaveArchiveState.screenshotPixels)
+		//{
+		//	TextureConverter::SaveAsJPG(*m_CurrentSaveArchiveState.screenshotPixels, screenshotPath.string().c_str());
+		//}
+		if (m_GalGameContext->runtimeState.screenshotPixels)
 		{
-			TextureConverter::SaveAsJPG(*m_CurrentSaveArchiveState.screenshotPixels, screenshotPath.string().c_str());
+			TextureConverter::SaveAsJPG(*m_GalGameContext->runtimeState.screenshotPixels, screenshotPath.string().c_str());
 		}
 
 		// 设置存档的一些参数
-		SaveArchive archive = m_CurrentSaveArchiveState;
+		SaveArchive archive;
 		archive.date = GetCurrentDateFormat();
 		archive.time = GetCurrentTimeFormat();
 		archive.dateTime = archive.date + " " + archive.time;
 		archive.isValid = true;
 		archive.screenshotPath = screenshotPath.string();
+
+		archive.scriptPath = m_GalGameContext->runtimeState.currentScriptPath;	//脚本路径
+		archive.line = m_GalGameContext->runtimeState.currentDialogLine;	//对话当前行
+		archive.description = m_GalGameContext->runtimeState.currentDialogText; //对话描述
 
 		// 序列化到json
 		nlohmann::json json;

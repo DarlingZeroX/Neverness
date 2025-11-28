@@ -34,10 +34,13 @@ namespace VisionGal::GalGame
 
 		void Wait(float duration);	/// 等待指定的时间长度。
 
+		bool LoadArchive(const SaveArchive& archive);
+
 		void Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context);
 		void Update();
 		void SetEngine(IGalGameEngine* engine);
 	private:
+		void ContinueDialogue();
 		void AddUpdateCallback(const std::function<void()>& callback);	/// 添加更新回调函数。
 		void UpdateWaitState();		/// 更新等待状态。
 	private:

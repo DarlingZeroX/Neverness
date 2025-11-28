@@ -75,17 +75,14 @@ namespace VisionGal::GalGame
 		// 场景图像捕获接口
 		void CaptureSceneImage();
 	private:
-		void OnMainSceneChanged(const EngineEvent& evt);			/// 处理主场景更改事件的回调函数。
 		void CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext);		/// 创建引擎的核心子系统。
-
+		void OnMainSceneChanged(const EngineEvent& evt);			/// 处理主场景更改事件的回调函数。
 		void OneRenderSceneCallback(OpenGL::RenderTarget2D* rt);		/// 引擎渲染回调函数。
-		void UpdateArchiveSystem();		/// 更新存档系统的状态。
 	private:
 		IGameEngineContext* m_EngineContext;					// 引擎上下文，包含了引擎的各种系统和状态。
-		Ref<VGFX::TexturePixels> m_CapturedSceneImage;			// 捕获的场景图像数据，用于存储当前场景的截图。
-
-		// 引擎上下文
-		Ref<GalGameContext> m_GalGameContext;
+		Ref<GalGameContext> m_GalGameContext;				// 引擎上下文
+		Scene* m_Scene;											// 当前的场景对象，表示游戏中的一个具体场景。
+		bool m_IsEngineEnable = true;							// 引擎是否启用的标志，指示引擎是否处于活动状态。
 
 		// 引擎核心子系统
 		Ref<ArchiveSystem> m_ArchiveSystem;						// 存档系统，用于管理游戏存档。
@@ -93,11 +90,7 @@ namespace VisionGal::GalGame
 		Ref<LayeredSceneSystem> m_LayeredSceneManager;			// 分层场景管理器，用于管理游戏中的场景和精灵。
 		Ref<RenderPipeline> m_RenderPipeline;					// 渲染管线，用于处理游戏的渲染流程。
 		Ref<StoryScriptSystem> m_StoryScriptSystem;				// 剧情脚本系统
-
 		Ref<ResourceSystem> m_ResourceSystem;
-
-		Scene* m_Scene;											// 当前的场景对象，表示游戏中的一个具体场景。
-		bool m_IsEngineEnable = true;							// 引擎是否启用的标志，指示引擎是否处于活动状态。
 	};
 
 

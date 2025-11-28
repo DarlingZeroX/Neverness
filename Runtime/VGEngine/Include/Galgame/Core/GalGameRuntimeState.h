@@ -17,20 +17,13 @@ namespace VisionGal::GalGame
 {
 	struct GalGameRuntimeState
 	{
-		//std::string currentDialogName;
-		//std::string currentDialogText;
-		//uint currentDialogLine = 0;
+		std::string currentScriptPath;
 
-		// 对话
-		//struct Dialog
-		//{
-		//	String character;
-		//	String text;
-		//};
-		//std::vector<Dialog> dialogList;
+		std::string currentDialogCharacter;
+		std::string currentDialogText;
+		uint32_t currentDialogLine = 0;			// 当前对话行（script engine 决定的）
 
-		// 当前对话行（script engine 决定的）
-		uint32_t currentDialogLine = 0;
+		Ref<VGFX::TexturePixels> screenshotPixels = nullptr;
 
 		// 文本显示状态（UI 决定）
 		float textShownProgress = 0.0f; // 0~1

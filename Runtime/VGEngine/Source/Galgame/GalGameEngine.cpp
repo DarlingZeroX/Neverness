@@ -51,43 +51,11 @@ namespace VisionGal::GalGame
 
 	bool GalGameEngine::LoadArchive(const SaveArchive& archive)
 	{
-		//Reset();
-		m_LayeredSceneManager->ClearAll();
-
-		m_DialogueSystem->FastForward(true);
-
-		if (!LoadStoryScript(archive.scriptPath))
-		{
-			m_DialogueSystem->FastForward(false);
-			return false;
-		}
-
-		while (archive.line > m_DialogueSystem->GetCurrentDialogLine())
-		{
-			m_DialogueSystem->ContinueDialogue();
-		}
-
-		m_DialogueSystem->FastForward(false);
-
-		return true;
+		return m_StoryScriptSystem->LoadArchive(archive);
 	}
 
 	void GalGameEngine::Reset()
 	{
-		//StoryScriptLuaInterface::ResetStoryScript();
-		//m_LayeredSceneManager->ClearAllCharacter();
-		//
-		//// 这里要放在m_Characters.clear();后面，因为m_Characters清除时候会删除Lua脚本的回调
-		//// 如果放在前面，Lua脚本的回调析构会出现异常，因为lua_state已经被清除
-		////m_StoryScript = nullptr;
-		//
-		//// 清除场景
-		//if (m_Scene)
-		//{
-		//	m_LayeredSceneManager->ClearAll();
-		//}
-		//
-		//m_DialogueSystem->Reset();
 	}
 
 	void GalGameEngine::Wait(float duration)
@@ -97,8 +65,8 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::CaptureSceneImage()
 	{
-		m_CapturedSceneImage = CreateRef<VGFX::TexturePixels>();
-		m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_CapturedSceneImage);
+		m_GalGameContext->runtimeState.screenshotPixels = CreateRef<VGFX::TexturePixels>();
+		m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_GalGameContext->runtimeState.screenshotPixels);
 	}
 
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)
@@ -144,7 +112,7 @@ namespace VisionGal::GalGame
 
 		// 初始化存档系统
 		m_ArchiveSystem = CreateRef<ArchiveSystem>();
-		m_ArchiveSystem->Initialise();
+		m_ArchiveSystem->Initialise(m_GalGameContext);
 
 		// 初始剧情脚本系统
 		m_StoryScriptSystem = CreateRef<StoryScriptSystem>();
@@ -153,7 +121,7 @@ namespace VisionGal::GalGame
 
 		// 初始资源系统
 		m_ResourceSystem = CreateRef<ResourceSystem>();
-		m_ResourceSystem->Initialize(m_LayeredSceneManager);
+		m_ResourceSystem->Initialize(m_GalGameContext, m_LayeredSceneManager);
 	}
 
 	void GalGameEngine::Initialize(IGameEngineContext* context)
@@ -283,19 +251,6 @@ namespace VisionGal::GalGame
 		m_RenderPipeline->Render(m_LayeredSceneManager.get(), camera, rt);
 	}
 
-	void GalGameEngine::UpdateArchiveSystem()
-	{
-		SaveArchive archive;
-		//if (m_StoryScript)
-			//archive.scriptPath = m_StoryScript->GetResourcePath();	//脚本路径
-		archive.scriptPath = m_StoryScriptSystem->GetCurrentStoryScriptPath();	//脚本路径
-		if (m_CapturedSceneImage)
-			archive.screenshotPixels = m_CapturedSceneImage;		//截图像素
-		archive.line = m_DialogueSystem->GetCurrentDialogLine();	//对话当前行
-		archive.description = m_DialogueSystem->GetCurrentDialogText(); //对话描述
-		m_ArchiveSystem->UpdateSaveArchive(archive);
-	}
-
 	void GalGameEngine::OnUpdate(float deltaTime)
 	{
 		if (m_IsEngineEnable == false)
@@ -306,7 +261,5 @@ namespace VisionGal::GalGame
 		GetDialogueSystem()->Update();
 		// 更新脚本系统
 		m_StoryScriptSystem->Update();
-		// 更新存档系统
-		UpdateArchiveSystem();
 	}
 }
