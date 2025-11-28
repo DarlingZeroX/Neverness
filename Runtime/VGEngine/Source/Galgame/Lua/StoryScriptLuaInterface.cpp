@@ -9,10 +9,10 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "Galgame/StoryScriptLuaInterface.h"
+#include "Galgame/Lua/StoryScriptLuaInterface.h"
 #include "Galgame/Game.h"
 #include "Galgame/ArchiveSystem.h"
-#include "Galgame/GameLua.h"
+#include "Galgame/Lua/GameLua.h"
 #include "Lua/LuaInterface.h"
 #include "Animation/Interface/Animation2DScript.h"
 #include <sol/sol.hpp>

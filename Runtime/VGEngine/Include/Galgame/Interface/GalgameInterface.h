@@ -10,9 +10,10 @@
  */
 
 #pragma once
-#include "../Interface/EngineInterface.h"
-#include "../Interface/RenderInterface.h"
-#include "../Interface/GameEngineInterface.h"
+#include "../../EngineConfig.h"
+#include "../../Interface/EngineInterface.h"
+#include "../../Interface/RenderInterface.h"
+#include "../../Interface/GameEngineInterface.h"
 
 namespace VisionGal::GalGame
 {

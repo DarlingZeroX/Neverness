@@ -9,7 +9,7 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "Galgame/GameLua.h"
+#include "Galgame/Lua/GameLua.h"
 #include <string>
 #include "Galgame/GalGameEngine.h"
 #include "Galgame/Game.h"
@@ -83,17 +83,17 @@ namespace VisionGal::GalGame
 		);
 
 		// 注册场景管理系统
-		galgame.new_usertype<SceneAudioManager::AudioLayer>("GalGameSceneAudioManagerAudioLayer",
+		galgame.new_usertype<ISceneAudioLayer>("GalGameSceneAudioManagerAudioLayer",
 			"音量", sol::property(
-				[](SceneAudioManager::AudioLayer& self) -> float { return self.GetVolume(); },
-				[](SceneAudioManager::AudioLayer& self, float value) { self.SetVolume(value); }
+				[](ISceneAudioLayer& self) -> float { return self.GetVolume(); },
+				[](ISceneAudioLayer& self, float value) { self.SetVolume(value); }
 			)
 			);
-		galgame.new_usertype<SceneSpriteManager::SpriteLayer>("GalGameSceneSpriteManagerSpriteLayer");
+		galgame.new_usertype<ISceneSpriteLayer>("GalGameSceneSpriteManagerSpriteLayer");
 
-		galgame.new_usertype<LayeredSceneManager>("GalGameLayeredSceneManager",
-			"获取音频层", &LayeredSceneManager::GetAudioLayer,
-			"获取精灵层", &LayeredSceneManager::GetSpriteLayer
+		galgame.new_usertype<LayeredSceneSystem>("GalGameLayeredSceneManager",
+			"获取音频层", &LayeredSceneSystem::GetAudioLayer,
+			"获取精灵层", &LayeredSceneSystem::GetSpriteLayer
 		);
 
 		// 注册引擎类
@@ -142,7 +142,7 @@ namespace VisionGal::GalGame
 				[](GalGameEngine& self) -> ArchiveSystem* { return dynamic_cast<ArchiveSystem*>(self.GetArchiveSystem()); }
 			),
 			"场景系统", sol::property(
-				[](GalGameEngine& self) -> LayeredSceneManager* { return dynamic_cast<LayeredSceneManager*>(self.GetLayeredSceneManager()); }
+				[](GalGameEngine& self) -> LayeredSceneSystem* { return dynamic_cast<LayeredSceneSystem*>(self.GetLayeredSceneManager()); }
 			)
 		);
 

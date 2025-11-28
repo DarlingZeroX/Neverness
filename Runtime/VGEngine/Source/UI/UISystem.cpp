@@ -12,7 +12,7 @@
 #include "UI/UISystem.h"
 #include <RmlUi/Debugger.h>
 #include "Engine/Manager.h"
-#include "Galgame/GameLua.h"
+#include "Galgame/Lua/GameLua.h"
 #include "UI/Rml/Shell.h"
 #include "UI/Rml/RmlUi_Platform_SDL.h"
 #include "UI/Rml/RmlUi_Renderer_GL3.h"

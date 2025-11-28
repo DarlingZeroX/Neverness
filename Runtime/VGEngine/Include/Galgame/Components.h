@@ -11,7 +11,6 @@
 
 #pragma once
 #include "../Interface/SceneInterface.h"
-#include "StoryScript.h"
 #include "../Asset/Accessor/ISceneSerializer.h"
 
 namespace VisionGal::GalGame
@@ -31,7 +30,6 @@ namespace VisionGal::GalGame
 
 		struct DeserializeData
 		{
-			bool HasScript = false;
 			String m_ScriptPath;
 		};
 
@@ -41,31 +39,27 @@ namespace VisionGal::GalGame
 		void save(Archive& archive) const
 		{
 			saveIComponent(archive);
-			if (script != nullptr)
-			{
-				archive(cereal::make_nvp("HasScript", true));
-				archive(cereal::make_nvp("m_ScriptPath", script->GetResourcePath()));
-			}
-			else
-			{
-				archive(cereal::make_nvp("HasScript", false));
-			}
+			//if (script != nullptr)
+			//{
+			//	archive(cereal::make_nvp("HasScript", true));
+			//	archive(cereal::make_nvp("m_ScriptPath", scriptPath));
+			//}
+			//else
+			//{
+			//	archive(cereal::make_nvp("HasScript", false));
+			//}
+
+			archive(cereal::make_nvp("m_ScriptPath", scriptPath));
 		}
 
 		template<class Archive>
 		void load(Archive& archive) {
 			loadIComponent(archive);
-			archive(__DeserializeData.HasScript);
-
-			if (__DeserializeData.HasScript) {
-				archive(__DeserializeData.m_ScriptPath);
-			}
-			else {
-				script = nullptr;
-			}
+			archive(__DeserializeData.m_ScriptPath);
 		}
 
-		Ref<LuaStoryScript> script;
+		std::string scriptPath;
+		//Ref<LuaStoryScript> script;
 	};
 
 	struct GalGameEngineComponentSerializer : public IEntityComponentSerializer<GalGameEngineComponent>

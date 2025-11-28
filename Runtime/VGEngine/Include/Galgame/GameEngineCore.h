@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "GalGameEngineInterface.h"
+#include "Interface/IGalGameEngine.h"
 #include "../Core/Core.h"
 
 namespace VisionGal::GalGame

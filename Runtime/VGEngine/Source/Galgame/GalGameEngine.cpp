@@ -12,17 +12,11 @@
 #include "Galgame/GalGameEngine.h"
 #include "Galgame/GameEngineCore.h"
 #include "Galgame/Components.h"
-#include "Galgame/GameLua.h"
-#include "Galgame/StoryScriptLuaInterface.h"
 #include "Galgame/SpriteAnimationScriptManager.h"
-#include "Interface/Loader.h"
 #include "Core/EventBus.h"
 #include "Render/TransitionManager.h"
 #include "Scene/Scene.h"
 #include "Engine/Manager.h"
-#include "Engine/EngineResource.h"
-#include "Resource/Audio.h"
-#include "Resource/FVideo.h"
 
 namespace VisionGal::GalGame
 {
@@ -41,67 +35,24 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::ReloadStoryScript()
 	{
-		AddUpdateCallback([this]()
-			{
-				Reset();
-
-				// 加载脚本
-				auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
-				view.each([this](GalGameEngineComponent& com) { // flecs::entity argument is optional
-
-					if (com.script)
-					{
-						com.script = LuaStoryScript::LoadFromFile(com.script->GetResourcePath());
-						m_StoryScript = com.script;
-					}
-					});
-
-				if (m_StoryScript)
-				{
-					m_StoryScript->Run(this);
-				}
-			});
-
+		m_StoryScriptSystem->ReloadStoryScript();
 	}
 
 	bool GalGameEngine::LoadStoryScript(const String& path)
 	{
-		Reset();
-
-		// 加载脚本
-		auto storyScript = LuaStoryScript::LoadFromFile(path);
-
-		if (storyScript == nullptr)
-			return false;
-
-		// 运行剧情脚本
-		bool result = storyScript->Run(this);
-
-		if (result == false)
-			return false;
-
-		m_StoryScript = storyScript;
-
-		// 把脚本设置到引擎组件
-		auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
-		view.each([this](GalGameEngineComponent& com) { // flecs::entity argument is optional
-			com.script = m_StoryScript;
-			});
-
+		m_StoryScriptSystem->LoadStoryScript(path);
 		return true;
 	}
 
 	void GalGameEngine::LoadStoryScriptOnUpdate(const String& path)
 	{
-		AddUpdateCallback([this, path]()
-			{
-				LoadStoryScript(path);
-			});
+		m_StoryScriptSystem->LoadStoryScriptOnUpdate(path);
 	}
 
 	bool GalGameEngine::LoadArchive(const SaveArchive& archive)
 	{
-		Reset();
+		//Reset();
+		m_LayeredSceneManager->ClearAll();
 
 		m_DialogueSystem->FastForward(true);
 
@@ -111,9 +62,8 @@ namespace VisionGal::GalGame
 			return false;
 		}
 
-		while (archive.line != m_DialogueSystem->GetCurrentDialogLine())
+		while (archive.line > m_DialogueSystem->GetCurrentDialogLine())
 		{
-			//DialogSystemLuaInterface::Continue();
 			m_DialogueSystem->ContinueDialogue();
 		}
 
@@ -124,30 +74,25 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::Reset()
 	{
-		StoryScriptLuaInterface::ResetStoryScript();
-		m_LayeredSceneManager->ClearAllCharacter();
-
-		// 这里要放在m_Characters.clear();后面，因为m_Characters清除时候会删除Lua脚本的回调
-		// 如果放在前面，Lua脚本的回调析构会出现异常，因为lua_state已经被清除
-		m_StoryScript = nullptr;
-
-		// 清除场景
-		if (m_Scene)
-		{
-			m_LayeredSceneManager->ClearAll();
-		}
-
-		m_DialogueSystem->Reset();
+		//StoryScriptLuaInterface::ResetStoryScript();
+		//m_LayeredSceneManager->ClearAllCharacter();
+		//
+		//// 这里要放在m_Characters.clear();后面，因为m_Characters清除时候会删除Lua脚本的回调
+		//// 如果放在前面，Lua脚本的回调析构会出现异常，因为lua_state已经被清除
+		////m_StoryScript = nullptr;
+		//
+		//// 清除场景
+		//if (m_Scene)
+		//{
+		//	m_LayeredSceneManager->ClearAll();
+		//}
+		//
+		//m_DialogueSystem->Reset();
 	}
 
 	void GalGameEngine::Wait(float duration)
 	{
-		if (m_DialogueSystem->IsFastForward())
-			return;
-
-		m_Wait.Timer.SetDuration(std::max(duration, 0.f));
-		m_Wait.Timer.Reset();
-		m_Wait.IsWait = true;
+		m_StoryScriptSystem->Wait(duration);
 	}
 
 	void GalGameEngine::CaptureSceneImage()
@@ -156,61 +101,42 @@ namespace VisionGal::GalGame
 		m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_CapturedSceneImage);
 	}
 
-	LuaStoryScript* GalGameEngine::GetCurrentStoryScript() const
-	{
-		if (m_StoryScript == nullptr)
-			return nullptr;
-
-		return m_StoryScript.get();
-	}
-
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)
 	{
-		Reset();
-		m_DialogueSystem->ClearDialogList();
+		//Reset();
+		m_LayeredSceneManager->ClearAll();
+
+		//m_DialogueSystem->ClearDialogList();
 		// 必须在更换场景时清除回调，因为回调是属于上一个场景，遗留调用会出错
 		//m_DialogueSystem->ClearAllTypingCallbacks();		
+		//m_DialogueSystem->FastForward(false);
+		//m_DialogueSystem->AutoDialogue(false);
 
 		// 先设置场景
 		m_Scene = dynamic_cast<Scene*>(evt.Scene);
 		m_RenderPipeline->SetScene(m_Scene);
-
-		m_DialogueSystem->FastForward(false);
-		m_DialogueSystem->AutoDialogue(false);
+		// 对话系统
+		m_DialogueSystem->Clear();
 
 		// 加载脚本
 		if (GetSceneManager()->IsPlayMode())
 		{
-			auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
-
-			view.each([this](GalGameEngineComponent& com) { // flecs::entity argument is optional
-				m_StoryScript = com.script;
-				});
-
-			if (m_StoryScript)
-			{
-				m_StoryScript->Run(this);
-			}
-		}
-
-		if (m_StoryScript == nullptr)
-		{
-			m_IsEngineEnable = false;
-		}
-		else
-		{
-			m_IsEngineEnable = true;
+			m_IsEngineEnable = m_StoryScriptSystem->LoadSceneStoryScript(evt.Scene);
 		}
 	}
 
 	void GalGameEngine::CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext)
 	{
+		m_GalGameContext = CreateRef<GalGameContext>();
+
 		// 初始化对话系统
 		m_DialogueSystem = CreateRef<DialogueSystem>();
 		m_DialogueSystem->InitialiseDataModel(uiContext);
+		m_DialogueSystem->Initialize(m_GalGameContext);
 
 		// 初始化分层场景管理器
-		m_LayeredSceneManager = CreateRef<LayeredSceneManager>();
+		m_LayeredSceneManager = CreateRef<LayeredSceneSystem>();
+		m_LayeredSceneManager->Initialize(m_GalGameContext);
 
 		// 初始化渲染管线
 		m_RenderPipeline = CreateRef<RenderPipeline>();
@@ -219,6 +145,15 @@ namespace VisionGal::GalGame
 		// 初始化存档系统
 		m_ArchiveSystem = CreateRef<ArchiveSystem>();
 		m_ArchiveSystem->Initialise();
+
+		// 初始剧情脚本系统
+		m_StoryScriptSystem = CreateRef<StoryScriptSystem>();
+		m_StoryScriptSystem->SetEngine(this);
+		m_StoryScriptSystem->Initialise(m_GalGameContext, context);
+
+		// 初始资源系统
+		m_ResourceSystem = CreateRef<ResourceSystem>();
+		m_ResourceSystem->Initialize(m_LayeredSceneManager);
 	}
 
 	void GalGameEngine::Initialize(IGameEngineContext* context)
@@ -258,191 +193,27 @@ namespace VisionGal::GalGame
 
 	bool GalGameEngine::PreLoadResource(const String& path)
 	{
-		if (path.ends_with(".png") || path.ends_with(".jpg") || path.ends_with(".bmp") || path.ends_with(".tga"))
-		{
-			std::thread thread([path, this]()
-				{
-					String resPath = Core::GetAssetsPathVFS() + path;
-					AssetManager::GetInstance()->LoadAsset<TextureAsset>(resPath);
-				});
-
-			thread.detach();
-		}
-
-		return true;
-	}
-
-	GameActor* GalGameEngine::CreateSpriteImp(const std::string& path)
-	{
-		// 读取纹理资产
-		auto tex = LoadObject<Texture2D>(path);
-		if (tex == nullptr)
-		{
-			H_LOG_WARN("加载图片失败: %s", path.c_str());
-			return nullptr;
-		}
-
-		// 创建精灵角色
-		auto* actor = m_Scene->CreateActor();
-		actor->SetLabel(path);
-
-		// 添加必要组件
-		actor->AddComponent<AnimationScriptComponent>();
-		actor->AddComponent<SpriteRendererComponent>()->sprite = Sprite::Create(tex, tex->Size());
-
-		return actor;
-	}
-
-	GalSprite* GalGameEngine::AddSprite(GameActor* actor, const std::string& layer, const std::string& path)
-	{
-		if (actor == nullptr)
-			return nullptr;
-
-		// 创建GalGame的图片类
-		GalSprite* sprite = new GalSprite(layer, path);
-		sprite->m_Actor = actor;
-
-		// 设置渲染管线
-		auto* spriteCom = actor->GetComponent<SpriteRendererComponent>();
-		if (spriteCom){
-			spriteCom->pipelineIndex = static_cast<uint>(RenderPipelineIndex::GalGamePipeline);
-
-			// 设置屏幕专属渲染管线
-			if (layer == "Screen")
-			{
-				spriteCom->pipelineIndex = static_cast<uint>(RenderPipelineIndex::ScreenPipeline);
-			}
-		}
-
-		// 对齐底部
-		sprite->AlignBottom();
-
-		// 添加到管理器
-		m_LayeredSceneManager->GetSpriteManager()->AddSprite(sprite);
-
-		return sprite;
-	}
-
-	GameActor* GalGameEngine::CreateAudioImp(const std::string& resPath)
-	{
-		// 读取音频资产
-		auto audioClip = LoadObject<VGAudioClip>(resPath);
-		if (audioClip == nullptr)
-		{
-			H_LOG_WARN("加载音频失败: %s", resPath.c_str());
-			return nullptr;
-		}
-
-		// 创建音频角色
-		auto* actor = m_Scene->CreateActor();
-		actor->SetLabel(resPath);
-
-		// 添加音频源组件
-		auto* audioSource = actor->AddComponent<AudioSourceComponent>();
-		audioSource->audioClip = audioClip;
-
-		return actor;
-	}
-
-	GalAudio* GalGameEngine::AddAudio(GameActor* actor, const std::string& layer, const std::string& path)
-	{
-		// 创建GalGame的音频类
-		GalAudio* audio = new GalAudio(layer, path);
-		audio->m_Actor = actor;
-
-		// 添加到管理器
-		m_LayeredSceneManager->GetAudioManager()->AddAudio(audio);
-
-		return audio;
-	}
-
-	GameActor* GalGameEngine::CreateVideoImp(const std::string& resPath)
-	{
-		// 读取视频资产
-		auto videoClip = LoadObject<FVideoClip>(resPath);
-		if (videoClip == nullptr)
-		{
-			H_LOG_WARN("加载视频失败: %s", resPath.c_str());
-			return nullptr;
-		}
-
-		// 创建音频角色
-		auto* actor = m_Scene->CreateActor();
-		actor->SetLabel(resPath);
-
-		// 添加视频源组件
-		auto* audioSource = actor->AddComponent<VideoPlayerComponent>();
-		audioSource->videoClip = videoClip;
-
-		return actor;
-	}
-
-	GalVideo* GalGameEngine::AddVideo(GameActor* actor, const std::string& layer, const std::string& path)
-	{
-		// 创建GalGame的视频类
-		GalVideo* video = new GalVideo(layer, path);
-		video->m_Actor = actor;
-
-		// 添加到管理器
-		m_LayeredSceneManager->GetVideoManager()->AddVideo(video);
-
-		return video;
+		return m_ResourceSystem->PreLoadResource(path);
 	}
 
 	GalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)
 	{
-		String resPath = Core::GetAssetsPathVFS() + path;
-		GameActor* actor = CreateSpriteImp(resPath);
-
-		if (actor == nullptr)
-			return nullptr;
-
-		return AddSprite(actor, layer, resPath);
+		return m_ResourceSystem->ShowSprite(layer, path);
 	}
 
 	GalSprite* GalGameEngine::ShowColor(const std::string& layer, const float4& color)
 	{
-		String resPath = EngineResource::GetDefaultSpriteTexturePath();
-		GameActor* actor = CreateSpriteImp(resPath);
-
-		if (actor == nullptr)
-			return nullptr;
-
-		GalSprite* sprite = AddSprite(actor, layer, resPath);
-
-		// 设置全屏颜色
-		actor->GetComponent<TransformComponent>()->scale = float3(999999, 999999, 1);
-		actor->GetComponent<SpriteRendererComponent>()->color = color;
-
-		return sprite;
+		return m_ResourceSystem->ShowColor(layer, color);
 	}
 
 	GalAudio* GalGameEngine::PlayAudio(const std::string& layer, const std::string& path)
 	{
-		String resPath = Core::GetAssetsPathVFS() + path;
-		GameActor* actor = CreateAudioImp(resPath);
-
-		if (actor == nullptr)
-			return nullptr;
-
-		// 播放
-		actor->GetComponent<AudioSourceComponent>()->Play();
-
-		return AddAudio(actor, layer, resPath);
+		return m_ResourceSystem->PlayAudio(layer, path);
 	}
 
 	GalVideo* GalGameEngine::PlayVideo(const std::string& layer, const std::string& path)
 	{
-		String resPath = Core::GetAssetsPathVFS() + path;
-		GameActor* actor = CreateVideoImp(resPath);
-
-		if (actor == nullptr)
-			return nullptr;
-
-		// 播放
-		actor->GetComponent<VideoPlayerComponent>()->Play();
-
-		return AddVideo(actor, layer, resPath);
+		return m_ResourceSystem->PlayVideo(layer, path);
 	}
 
 	GalCharacter* GalGameEngine::CreateCharacter(const String& name)
@@ -488,10 +259,13 @@ namespace VisionGal::GalGame
 		return m_LayeredSceneManager.get();
 	}
 
-	void GalGameEngine::OnRender()
+	IStoryScriptSystem* GalGameEngine::GetStoryScriptSystem()
 	{
-
+		return m_StoryScriptSystem.get();
 	}
+
+	void GalGameEngine::OnRender()
+	{}
 
 	void GalGameEngine::OneRenderSceneCallback(OpenGL::RenderTarget2D* rt)
 	{
@@ -509,16 +283,12 @@ namespace VisionGal::GalGame
 		m_RenderPipeline->Render(m_LayeredSceneManager.get(), camera, rt);
 	}
 
-	void GalGameEngine::AddUpdateCallback(const std::function<void()>& callback)
-	{
-		m_UpdateCallback.push_back(callback);
-	}
-
 	void GalGameEngine::UpdateArchiveSystem()
 	{
 		SaveArchive archive;
-		if (m_StoryScript)
-			archive.scriptPath = m_StoryScript->GetResourcePath();	//脚本路径
+		//if (m_StoryScript)
+			//archive.scriptPath = m_StoryScript->GetResourcePath();	//脚本路径
+		archive.scriptPath = m_StoryScriptSystem->GetCurrentStoryScriptPath();	//脚本路径
 		if (m_CapturedSceneImage)
 			archive.screenshotPixels = m_CapturedSceneImage;		//截图像素
 		archive.line = m_DialogueSystem->GetCurrentDialogLine();	//对话当前行
@@ -526,34 +296,17 @@ namespace VisionGal::GalGame
 		m_ArchiveSystem->UpdateSaveArchive(archive);
 	}
 
-	void GalGameEngine::UpdateWaitState()
-	{
-		if (m_Wait.IsWait)
-		{
-			m_Wait.Timer.Update();
-			if (m_Wait.Timer.IsFinished())
-			{
-				m_Wait.IsWait = false;
-				StoryScriptLuaInterface::Continue();
-			}
-		}
-	}
-
 	void GalGameEngine::OnUpdate(float deltaTime)
 	{
 		if (m_IsEngineEnable == false)
 			return;
 
-		// 回调
-		for (auto& callback : m_UpdateCallback)
-			callback();
-		m_UpdateCallback.clear();
-
+		m_LayeredSceneManager->OnUpdate();
 		// 更新对话系统
 		GetDialogueSystem()->Update();
+		// 更新脚本系统
+		m_StoryScriptSystem->Update();
 		// 更新存档系统
 		UpdateArchiveSystem();
-		// 更新等待状态
-		UpdateWaitState();
 	}
 }

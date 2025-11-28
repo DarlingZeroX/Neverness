@@ -10,13 +10,14 @@
  */
 
 #pragma once
-#include "GalGameEngineInterface.h"
-#include "RenderPipeline.h"
-#include "StoryScript.h"
-#include "ArchiveSystem.h"
-#include "DialogueSystem.h"
-#include "LayeredSceneManager.h"
 #include "../EngineConfig.h"
+#include "Interface/IGalGameEngine.h"
+#include "RenderPipeline.h"
+#include "ArchiveSystem.h"
+#include "DialogueSystem/DialogueSystem.h"
+#include "SceneSystem/LayeredSceneSystem.h"
+#include "ScriptSystem/StoryScriptSystem.h"
+#include "ResourceSystem.h"
 #include "../Scene/Scene.h"
 #include "../Render/RenderCore.h"
 #include "../Utils/TransitionHelper.h"
@@ -57,6 +58,7 @@ namespace VisionGal::GalGame
 		IArchiveSystem* GetArchiveSystem() override;	/// 获取存档系统的指针
 		IDialogueSystem* GetDialogueSystem() override;	/// 获取对话系统的指针
 		ILayeredSceneManager* GetLayeredSceneManager() override;	/// 获取分层场景管理器的指针
+		IStoryScriptSystem* GetStoryScriptSystem();
 
 		// 剧情脚本相关接口
 		void ReloadStoryScript() override;	/// 重新加载剧情脚本
@@ -72,45 +74,30 @@ namespace VisionGal::GalGame
 
 		// 场景图像捕获接口
 		void CaptureSceneImage();
-
-		LuaStoryScript* GetCurrentStoryScript() const;	/// 获取当前加载的剧情脚本对象。
 	private:
-		GameActor* CreateSpriteImp(const std::string& path);
-		GalSprite* AddSprite(GameActor* sprite,const std::string& layer, const std::string& path);
-		GameActor* CreateAudioImp(const std::string& path);
-		GalAudio* AddAudio(GameActor* audio, const std::string& layer, const std::string& path);
-		GameActor* CreateVideoImp(const std::string& path);
-		GalVideo* AddVideo(GameActor* audio, const std::string& layer, const std::string& path);
-
 		void OnMainSceneChanged(const EngineEvent& evt);			/// 处理主场景更改事件的回调函数。
 		void CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext);		/// 创建引擎的核心子系统。
 
 		void OneRenderSceneCallback(OpenGL::RenderTarget2D* rt);		/// 引擎渲染回调函数。
-		void AddUpdateCallback(const std::function<void()>& callback);	/// 添加更新回调函数。
 		void UpdateArchiveSystem();		/// 更新存档系统的状态。
-		void UpdateWaitState();		/// 更新等待状态。
 	private:
-		struct WaitStruct
-		{
-			bool IsWait = false;
-			TransitionHelper Timer;
-		};
-
 		IGameEngineContext* m_EngineContext;					// 引擎上下文，包含了引擎的各种系统和状态。
 		Ref<VGFX::TexturePixels> m_CapturedSceneImage;			// 捕获的场景图像数据，用于存储当前场景的截图。
+
+		// 引擎上下文
+		Ref<GalGameContext> m_GalGameContext;
 
 		// 引擎核心子系统
 		Ref<ArchiveSystem> m_ArchiveSystem;						// 存档系统，用于管理游戏存档。
 		Ref<DialogueSystem> m_DialogueSystem;					// 对话系统，用于处理游戏中的对话和文本显示。
-		Ref<LayeredSceneManager> m_LayeredSceneManager;			// 分层场景管理器，用于管理游戏中的场景和精灵。
+		Ref<LayeredSceneSystem> m_LayeredSceneManager;			// 分层场景管理器，用于管理游戏中的场景和精灵。
 		Ref<RenderPipeline> m_RenderPipeline;					// 渲染管线，用于处理游戏的渲染流程。
+		Ref<StoryScriptSystem> m_StoryScriptSystem;				// 剧情脚本系统
+
+		Ref<ResourceSystem> m_ResourceSystem;
 
 		Scene* m_Scene;											// 当前的场景对象，表示游戏中的一个具体场景。
-		Ref<LuaStoryScript> m_StoryScript = nullptr;			// 当前加载的剧情脚本对象，使用 Lua 脚本语言编写。
-
-		std::vector<std::function<void()>> m_UpdateCallback;	// 更新回调函数列表，用于在每帧更新时执行特定的操作。
-		WaitStruct m_Wait;										// 等待结构体，用于处理等待状态和相关的时间管理。
-		bool m_IsEngineEnable = false;							// 引擎是否启用的标志，指示引擎是否处于活动状态。
+		bool m_IsEngineEnable = true;							// 引擎是否启用的标志，指示引擎是否处于活动状态。
 	};
 
 

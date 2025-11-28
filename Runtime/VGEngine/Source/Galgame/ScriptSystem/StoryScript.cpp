@@ -9,9 +9,9 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "Galgame/StoryScript.h"
+#include "Galgame/ScriptSystem/StoryScript.h"
 #include "Core/Core.h"
-#include "Galgame/StoryScriptLuaInterface.h"
+#include "Galgame/Lua/StoryScriptLuaInterface.h"
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -22,6 +22,7 @@
 #include <sol/state.hpp>
 
 #include "Core/EventBus.h"
+#include "HCore/Include/System/HFileSystem.h"
 #include "Lua/LuaInterface.h"
 #include "VGLuaCore/LuaErrorManager.h"
 

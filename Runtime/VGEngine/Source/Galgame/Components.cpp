@@ -29,10 +29,11 @@ namespace VisionGal::GalGame
 		GalGameEngineComponent& deserializeComponent = m_ComponentMap[id];
 
 		com = deserializeComponent;
-		if (deserializeComponent.__DeserializeData.HasScript)
-		{
-			com.script = GalGame::LuaStoryScript::LoadFromFile(deserializeComponent.__DeserializeData.m_ScriptPath);
-		}
+		//if (deserializeComponent.__DeserializeData.HasScript)
+		//{
+		//	com.script = GalGame::LuaStoryScript::LoadFromFile(deserializeComponent.__DeserializeData.m_ScriptPath);
+		//}
+		com.scriptPath = deserializeComponent.__DeserializeData.m_ScriptPath;
 
 		scene->UpdateDeserializeComponent(actor, &com);
 	}

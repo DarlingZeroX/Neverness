@@ -642,8 +642,9 @@ namespace VisionGal::Editor
 			return;
 
 		std::string scriptPath;
-		if (com->script != nullptr)
-			scriptPath = com->script->GetResourcePath();
+		//if (com->script != nullptr)
+			//scriptPath = com->script->GetResourcePath();
+		scriptPath = com->scriptPath;
 
 		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 
@@ -661,7 +662,8 @@ namespace VisionGal::Editor
 				ImGui::SameLine();
 				if (ImGui::Button(ICON_FA_TIMES "##RemoveStoryScript"))
 				{
-					com->script = nullptr;
+					//com->script = nullptr;
+					com->scriptPath = {};
 				}
 			}
 
@@ -704,7 +706,8 @@ namespace VisionGal::Editor
 				}
 
 				// 设置剧情脚本
-				com->script = GalGame::LuaStoryScript::LoadFromFile(path);
+				//com->script = GalGame::LuaStoryScript::LoadFromFile(path);
+				com->scriptPath = path;
 
 				ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置剧情脚本成功!" });
 			}

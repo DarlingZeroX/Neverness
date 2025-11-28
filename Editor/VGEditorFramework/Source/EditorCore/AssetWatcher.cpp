@@ -61,16 +61,19 @@ namespace VisionGal::Editor
 		if (galEngine == nullptr)
 			return;
 
-		auto* storyScript = galEngine->GetCurrentStoryScript();
+		//auto* storyScript = galEngine->GetCurrentStoryScript();
+		//
+		//if (storyScript == nullptr)
+		//	return;
+		auto storyScriptPath = galEngine->GetStoryScriptSystem()->GetCurrentStoryScriptPath();
 
-		if (storyScript == nullptr)
-			return;
-
-		auto absPath = VFS::GetInstance()->AbsolutePath(storyScript->GetResourcePath());
+		//auto absPath = VFS::GetInstance()->AbsolutePath(storyScript->GetResourcePath());
+		auto absPath = VFS::GetInstance()->AbsolutePath(storyScriptPath);
 		if (Horizon::HFileSystem::ExistsFile(absPath) == false)
 			return;
 
-		if (storyScript->GetScriptLastWriteTime() != std::filesystem::last_write_time(absPath))
+		if (galEngine->GetStoryScriptSystem()->GetScriptLastWriteTime() != std::filesystem::last_write_time(absPath))
+		//if (storyScript->GetScriptLastWriteTime() != std::filesystem::last_write_time(absPath))
 		{
 			galEngine->ReloadStoryScript();
 		}

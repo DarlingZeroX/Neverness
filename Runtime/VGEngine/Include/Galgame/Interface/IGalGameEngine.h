@@ -10,9 +10,10 @@
  */
 
 #pragma once
-#include "Interface.h"
-#include "Game.h"
-#include "ArchiveSystem.h"
+#include "GalgameInterface.h"
+#include "../Core/SaveArchive.h"
+#include "../Game.h"
+//#include "ArchiveSystem.h"
 
 namespace VisionGal::GalGame
 {

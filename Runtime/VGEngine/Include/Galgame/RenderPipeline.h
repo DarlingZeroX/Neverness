@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "Interface.h"
+#include "Interface/GalgameInterface.h"
 #include "../Interface/AppInterface.h"
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"

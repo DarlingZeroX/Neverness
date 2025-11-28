@@ -12,7 +12,7 @@
 #include "Core/CoreLua.h"
 
 #include "Core/EventBus.h"
-#include "Galgame/GameLua.h"
+#include "Galgame/Lua/GameLua.h"
 #include "Lua/LuaInterface.h"
 #include "UI/Sol/Sol.h"
 #include "VGEngine/Source/UI/Sol/SolPlugin.h"

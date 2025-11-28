@@ -10,8 +10,8 @@
  */ 
 
 #pragma once
-#include "GalGameEngineInterface.h"
-#include "../Core/Core.h"
+#include "../Interface/IGalGameEngine.h"
+#include "../../Core/Core.h"
 #include <sol/state.hpp>
 #include <sol/coroutine.hpp>
 

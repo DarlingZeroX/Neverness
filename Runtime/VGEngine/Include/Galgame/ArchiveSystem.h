@@ -10,32 +10,14 @@
  */ 
 
 #pragma once
-#include "Interface.h"
+#include "Interface/GalgameInterface.h"
 #include "../EngineConfig.h"
 #include "../Core/Core.h"
-#include <HCore/Include/System/HFileSystem.h>
-#include "HCore/Include/File/nlohmann/json.hpp"
+#include "Core/SaveArchive.h"
+#include <HCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
 {
-	struct SaveArchive
-	{
-		bool isGalGameArchive = true;
-		bool isValid = true;
-		String version = "0.1";
-		String scriptPath;
-		uint line;
-
-		String saveNumberString;
-		String date;
-		String time;
-		String dateTime;
-		String description;
-		String screenshotPath;
-
-		Ref<VGFX::TexturePixels> screenshotPixels = nullptr;
-	};
-
 	class VG_ENGINE_API ArchiveSystem: public IArchiveSystem
 	{
 	public:

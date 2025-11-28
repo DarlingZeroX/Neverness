@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "Interface.h"
+#include "Interface/GalgameInterface.h"
 #include "../Animation/Interface/Animation2DScript.h"
 #include "../Scene/Components.h"
 #include <sol/function.hpp>
