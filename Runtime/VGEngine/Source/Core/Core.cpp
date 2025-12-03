@@ -94,12 +94,41 @@ namespace VisionGal
 #include <unistd.h>
 #endif
 
+//	std::filesystem::path Core::GetExecutableDirectory()
+//	{
+//#ifdef _WIN32
+//		char path[MAX_PATH];
+//		GetModuleFileNameA(NULL, path, MAX_PATH);
+//		return std::filesystem::path(path).parent_path();
+//#elif __APPLE__
+//		char path[1024];
+//		uint32_t size = sizeof(path);
+//		if (_NSGetExecutablePath(path, &size) == 0) {
+//			return std::filesystem::path(path).parent_path();
+//		}
+//		return {};
+//#else // Linux
+//		char path[1024];
+//		ssize_t count = readlink("/proc/self/exe", path, sizeof(path));
+//		if (count != -1) {
+//			path[count] = '\0';
+//			return std::filesystem::path(path).parent_path();
+//		}
+//		return {};
+//#endif
+//	}
+
 	std::filesystem::path Core::GetExecutableDirectory()
 	{
 #ifdef _WIN32
-		char path[MAX_PATH];
-		GetModuleFileNameA(NULL, path, MAX_PATH);
-		return std::filesystem::path(path).parent_path();
+		wchar_t path[MAX_PATH];
+		DWORD len = GetModuleFileNameW(NULL, path, MAX_PATH);
+		if (len > 0 && len < MAX_PATH)
+		{
+			return std::filesystem::path(path).parent_path();
+		}
+		return {};
+
 #elif __APPLE__
 		char path[1024];
 		uint32_t size = sizeof(path);
@@ -107,9 +136,10 @@ namespace VisionGal
 			return std::filesystem::path(path).parent_path();
 		}
 		return {};
+
 #else // Linux
 		char path[1024];
-		ssize_t count = readlink("/proc/self/exe", path, sizeof(path));
+		ssize_t count = readlink("/proc/self/exe", path, sizeof(path) - 1);
 		if (count != -1) {
 			path[count] = '\0';
 			return std::filesystem::path(path).parent_path();
@@ -117,4 +147,5 @@ namespace VisionGal
 		return {};
 #endif
 	}
+
 }

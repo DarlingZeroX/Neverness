@@ -89,7 +89,8 @@ namespace VisionGal::GalGame
 		// 加载脚本
 		if (GetSceneManager()->IsPlayMode())
 		{
-			m_IsEngineEnable = m_StoryScriptSystem->LoadSceneStoryScript(evt.Scene);
+			// 这里需要在更新时加载脚本，因为场景更换可能会有上一个场景残留在资源系统，避免切换场景时脚本加载过快导致的问题
+			m_IsEngineEnable = m_StoryScriptSystem->LoadSceneStoryScriptOnUpdate(evt.Scene);
 		}
 	}
 

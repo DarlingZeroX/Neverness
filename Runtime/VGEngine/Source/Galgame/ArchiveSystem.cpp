@@ -10,10 +10,9 @@
  */
 
 #include "Galgame/ArchiveSystem.h"
+#include "Resource/Texture/TextureConverter.h"
 #include <HCore/Include/System/HFileSystem.h>
 #include <HCore/Include/File/nlohmann/json.hpp>
-
-#include "Resource/Texture/TextureConverter.h"
 
 namespace VisionGal::GalGame
 {
@@ -26,11 +25,6 @@ namespace VisionGal::GalGame
 	ArchiveSystem::~ArchiveSystem()
 	{
 	}
-
-	//void ArchiveSystem::UpdateSaveArchive(const SaveArchive& archive)
-	//{
-	//	m_CurrentSaveArchiveState = archive;
-	//}
 
 	bool ArchiveSystem::Initialise(const Ref<GalGameContext>& ctx)
 	{

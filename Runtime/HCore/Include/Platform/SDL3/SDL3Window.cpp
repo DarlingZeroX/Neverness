@@ -250,6 +250,7 @@ namespace Horizon::SDL3
 	void Window::MaximizeWindow()
 	{
 		SDL_MaximizeWindow(m_pWindow);
+		
 	}
 
 	void Window::RestoreWindow()

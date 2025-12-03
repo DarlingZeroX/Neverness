@@ -122,6 +122,15 @@ namespace VisionGal::GalGame
 		return LoadStoryScript(scriptPath);
 	}
 
+	bool StoryScriptSystem::LoadSceneStoryScriptOnUpdate(IScene* scene)
+	{
+		AddUpdateCallback([this, scene]()
+			{
+				LoadSceneStoryScript(scene);
+			});
+		return true;
+	}
+
 	void StoryScriptSystem::Wait(float duration)
 	{
 		//if (m_DialogueSystem->IsFastForward())

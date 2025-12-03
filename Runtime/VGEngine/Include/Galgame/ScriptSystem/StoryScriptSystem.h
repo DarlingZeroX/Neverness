@@ -31,6 +31,7 @@ namespace VisionGal::GalGame
 		std::filesystem::file_time_type GetScriptLastWriteTime() const override;
 
 		bool LoadSceneStoryScript(IScene* scene);
+		bool LoadSceneStoryScriptOnUpdate(IScene* scene);
 
 		void Wait(float duration);	/// 等待指定的时间长度。
 

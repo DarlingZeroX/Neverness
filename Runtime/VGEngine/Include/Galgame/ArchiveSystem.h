@@ -29,8 +29,6 @@ namespace VisionGal::GalGame
 		ArchiveSystem& operator=(ArchiveSystem&&) noexcept = default;
 		~ArchiveSystem() override;
 
-		//void UpdateSaveArchive(const SaveArchive& archive);
-
 		bool Initialise(const Ref<GalGameContext>& ctx);
 
 		SaveArchive SaveArchiveByNumber(const String& number);

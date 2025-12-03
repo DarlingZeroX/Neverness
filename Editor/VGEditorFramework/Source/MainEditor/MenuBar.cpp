@@ -222,12 +222,15 @@ namespace VisionGal::Editor
 		}
 
 		m_bDragging = true;
-		if (m_EditorWindow)
+		if (m_EditorWindow && m_EditorMaximized == false)
 		{
 			auto dragDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
 			//std::cout << "Drag Delta: " << dragDelta.x << ", " << dragDelta.y << std::endl;
 			//std::cout << "position: " << position.x << ", " << position.y << std::endl;
-			m_EditorWindow->SetWindowPos(position.x + dragDelta.x, position.y + dragDelta.y);
+			int x = position.x + dragDelta.x;
+			int y = position.y + dragDelta.y;
+			y = std::max(y, 0); // 不允许拖出屏幕顶部
+			m_EditorWindow->SetWindowPos(x, y);
 		}
 	}
 
@@ -266,6 +269,14 @@ namespace VisionGal::Editor
 			{
 				m_EditorWindow->MaximizeWindow();
 				m_EditorMaximized = true;
+
+				//int w = m_EditorWindow->WindowWidth(); 
+				//int h = m_EditorWindow->WindowHeight(); 
+				//ImGui::GetIO().DisplaySize = ImVec2((float)w, (float)h);
+				//
+				//ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+				//main_viewport->WorkSize = ImVec2((float)w, (float)h);
+				//main_viewport->Size = ImVec2((float)w, (float)h);
 			}//ImGui::SameLine();
 		}
 
