@@ -119,6 +119,11 @@ namespace VisionGal
 
 	Ref<IScene> SceneManager::LoadScene(const String& path)
 	{
+		if (path.empty())
+		{
+			H_LOG_ERROR("Failed to load the empty path scene");
+		}
+
 		if (m_CurrentScene && m_CurrentScene->GetResourcePath() == path)
 		{
 			return m_Scenes[path];

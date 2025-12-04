@@ -242,6 +242,18 @@ namespace Horizon::SDL3
 		return { x, y };
 	}
 
+	int2 Window::GetWindowSize() const
+	{
+		int w, h;
+		SDL_GetWindowSize(m_pWindow, &w, &h);
+		return { w, h };
+	}
+
+	void Window::SetWindowSize(int w, int h)
+	{
+		SDL_SetWindowSize(m_pWindow, w, h);
+	}
+
 	void Window::MinimizeWindow()
 	{
 		SDL_MinimizeWindow(m_pWindow);
@@ -349,7 +361,15 @@ namespace Horizon::SDL3
 		//	break;
 		//default: break;
 		//}
-			break;
+		//	break;
+		//case SDL_EVENT_WINDOW_MAXIMIZED:
+		//{
+		//	SDL_RestoreWindow(m_pWindow); // 禁止系统最大化
+		//	SDL_Rect usable;
+		//	SDL_GetDisplayUsableBounds(SDL_GetPrimaryDisplay(), &usable);
+		//	SDL_SetWindowPosition(m_pWindow, usable.x, usable.y);
+		//	SDL_SetWindowSize(m_pWindow, usable.w, usable.h);
+		//}
 		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 			return false;
 			break;

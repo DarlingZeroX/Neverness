@@ -255,11 +255,15 @@ namespace VisionGal::Editor
 			m_EditorWindow->MinimizeWindow();
 		}//ImGui::SameLine();
 
+		static int2 windowSize;
+		static int2 windowPos;
 		if (m_EditorMaximized)
 		{
 			if (ImGui::Button(ICON_FA_WINDOW_RESTORE"##WindowMax", size))
 			{
-				m_EditorWindow->RestoreWindow();
+				//m_EditorWindow->RestoreWindow();
+				m_EditorWindow->SetWindowPos(windowPos.x, windowPos.y);
+				m_EditorWindow->SetWindowSize(windowSize.x, windowSize.y);
 				m_EditorMaximized = false;
 			}//ImGui::SameLine();
 		}
@@ -267,16 +271,14 @@ namespace VisionGal::Editor
 		{
 			if (ImGui::Button(ICON_FA_WINDOW_MAXIMIZE"##WindowMax", size))
 			{
-				m_EditorWindow->MaximizeWindow();
+				windowPos = m_EditorWindow->GetWindowPos();
+				windowSize = m_EditorWindow->GetWindowSize();
+				//m_EditorWindow->MaximizeWindow();
+				SDL_Rect usable;
+				SDL_GetDisplayUsableBounds(SDL_GetPrimaryDisplay(), &usable);
+				m_EditorWindow->SetWindowPos(usable.x, usable.y);
+				m_EditorWindow->SetWindowSize(usable.w, usable.h);
 				m_EditorMaximized = true;
-
-				//int w = m_EditorWindow->WindowWidth(); 
-				//int h = m_EditorWindow->WindowHeight(); 
-				//ImGui::GetIO().DisplaySize = ImVec2((float)w, (float)h);
-				//
-				//ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-				//main_viewport->WorkSize = ImVec2((float)w, (float)h);
-				//main_viewport->Size = ImVec2((float)w, (float)h);
 			}//ImGui::SameLine();
 		}
 

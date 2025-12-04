@@ -108,8 +108,8 @@ namespace VisionGal
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
 
 		// 无边框
-		if (m_Borderless)
-			SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN, true);
+		//if (m_Borderless)
+		//	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN, true);
 
 		// 创建窗口
 		SDL_Window* window = SDL_CreateWindowWithProperties(props);
@@ -171,9 +171,12 @@ namespace VisionGal
 		// 设置无边框可调整大小
 		if (m_Borderless)
 		{
+			SDL_SetWindowBordered(window, !m_Borderless);
 			SDL_GetWindowID(GetSDLWindow());
 			SDL_SetWindowResizable(GetSDLWindow(), true);
 			SDL_SetWindowHitTest(GetSDLWindow(), VGHitTestCallback, &m_OnResizeWindowMode);
+
+			//HideTilteBar::HideTitleBar(window);
 		}
 
 		// 设置窗口获得焦点

@@ -152,6 +152,10 @@ namespace VisionGal::Editor
 		static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 		if (ImGui::BeginTable("SpriteRendererComponentDrawerTable", 2, flags))
 		{
+			// 修复SetNextItemWidth逐渐变宽的问题
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
 			// 设置精灵纹理
 			{
 				ImGui::TableNextRow();
@@ -362,6 +366,10 @@ namespace VisionGal::Editor
 
 		if (ImGui::BeginTable("VideoPlayerComponentDrawerTable", 2, flags))
 		{
+			// 修复SetNextItemWidth逐渐变宽的问题
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
@@ -446,6 +454,10 @@ namespace VisionGal::Editor
 		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 		if (ImGui::BeginTable("AudioSourceComponentDrawerTable", 2, flags))
 		{
+			// 修复SetNextItemWidth逐渐变宽的问题
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
 			// 音频剪辑设置
 			{
 				ImGui::TableNextRow();
@@ -538,6 +550,10 @@ namespace VisionGal::Editor
 		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Hideable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV;
 		if (ImGui::BeginTable("VideoPlayerComponentDrawerTable", 2, flags))
 		{
+			// 修复SetNextItemWidth逐渐变宽的问题
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
 			// 视频剪辑设置
 			{
 				ImGui::TableNextRow();
@@ -650,6 +666,10 @@ namespace VisionGal::Editor
 
 		if (ImGui::BeginTable("GalGameEngineComponentDrawerTable", 2, flags))
 		{
+			// 修复SetNextItemWidth逐渐变宽的问题
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
 			// 剧情脚本设置
 			{
 				ImGui::TableNextRow();

@@ -37,6 +37,8 @@ int main(int argc, char* argv[])
 	if (Horizon::HFileSystem::ReadTextFromFile("Data/EditorStartupData.txt", projectPath))
 		projectRootDir = projectPath;
 
+	H_LOG_INFO("Project path: %s", projectPath.c_str());
+
 	// 检查项目目录是否存在
 	if (!EditorInitializer::CheckProjectRootDir(projectRootDir))
 		return -1;

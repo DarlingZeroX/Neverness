@@ -93,6 +93,15 @@ namespace VisionGal
 	void VGEngine::LoadEditorMainScene()
 	{
 		auto& setting = ProjectSettings::GetProjectSettings().Editor;
+
+		if (setting.MainScene.empty())
+		{
+			H_LOG_INFO("Editor default scene no exist!");
+			m_Scene = CreateRef<Scene>();
+			GetSceneManager()->SetCurrentScene(m_Scene);
+			return;
+		}
+
 		m_Scene = GetSceneManager()->LoadScene(setting.MainScene);
 
 		if (m_Scene == nullptr)
