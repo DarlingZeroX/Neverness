@@ -264,6 +264,7 @@ namespace VisionGal::Editor
 				//m_EditorWindow->RestoreWindow();
 				m_EditorWindow->SetWindowPos(windowPos.x, windowPos.y);
 				m_EditorWindow->SetWindowSize(windowSize.x, windowSize.y);
+				m_EditorWindow->SetWindowResizable(true);
 				m_EditorMaximized = false;
 			}//ImGui::SameLine();
 		}
@@ -278,6 +279,7 @@ namespace VisionGal::Editor
 				SDL_GetDisplayUsableBounds(SDL_GetPrimaryDisplay(), &usable);
 				m_EditorWindow->SetWindowPos(usable.x, usable.y);
 				m_EditorWindow->SetWindowSize(usable.w, usable.h);
+				m_EditorWindow->SetWindowResizable(false);
 				m_EditorMaximized = true;
 			}//ImGui::SameLine();
 		}

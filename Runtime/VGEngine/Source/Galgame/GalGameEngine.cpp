@@ -123,6 +123,10 @@ namespace VisionGal::GalGame
 		// 初始资源系统
 		m_ResourceSystem = CreateRef<ResourceSystem>();
 		m_ResourceSystem->Initialize(m_GalGameContext, m_LayeredSceneManager);
+
+		// 初始界面系统
+		m_GalGameUISystem = CreateRef<GalGameUISystem>();
+		m_GalGameUISystem->Initialize(m_GalGameContext, context);
 	}
 
 	void GalGameEngine::Initialize(IGameEngineContext* context)
@@ -231,6 +235,11 @@ namespace VisionGal::GalGame
 	IStoryScriptSystem* GalGameEngine::GetStoryScriptSystem()
 	{
 		return m_StoryScriptSystem.get();
+	}
+
+	GalGameUISystem* GalGameEngine::GetGalGameUISystem()
+	{
+		return m_GalGameUISystem.get();
 	}
 
 	void GalGameEngine::OnRender()

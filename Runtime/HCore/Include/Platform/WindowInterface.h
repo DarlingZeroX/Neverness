@@ -33,6 +33,7 @@ H_BEGIN_ROOT_NAMESPACE
 	virtual int2 GetWindowPos() const = 0;
 	virtual int2 GetWindowSize() const = 0;
 	virtual void SetWindowSize(int w, int h) = 0;
+	virtual void SetWindowResizable(bool resizeable) = 0;
 
 	virtual void MinimizeWindow() = 0;
 	virtual void MaximizeWindow() = 0;

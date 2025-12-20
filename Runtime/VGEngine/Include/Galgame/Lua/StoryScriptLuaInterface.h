@@ -16,7 +16,14 @@ namespace VisionGal::GalGame
 {
 	struct StoryScriptLuaInterface
 	{
-		static int Continue();
+		enum class ContinueType
+		{
+			None = 0,
+			Number = 1,
+			String = 2,
+		};
+
+		static int Continue(ContinueType type = ContinueType::None, int number = 0, const std::string& str = "");
 		static void ResetStoryScript();
 
 		static void SetStoryScriptCoroutine(sol::coroutine* co);

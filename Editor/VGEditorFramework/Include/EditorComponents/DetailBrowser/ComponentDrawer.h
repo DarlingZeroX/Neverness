@@ -90,5 +90,7 @@ namespace VisionGal::Editor
 		const String GetBindType() const override;
 
 		void ScriptBeginDropTarget(GalGame::GalGameEngineComponent* com);
+
+		void UIFileBeginDropTarget(std::string& path);
 	};
 }

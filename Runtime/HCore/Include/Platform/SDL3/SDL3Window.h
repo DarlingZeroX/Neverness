@@ -73,6 +73,8 @@ namespace Horizon::SDL3
 		int2 GetWindowPos() const override;
 		int2 GetWindowSize() const override;
 		void SetWindowSize(int w, int h) override;
+		void SetWindowResizable(bool resizeable) override;
+		void ResizeOnBorderless(int w, int h);
 
 		void MinimizeWindow() override;
 		void MaximizeWindow() override;
@@ -111,6 +113,7 @@ namespace Horizon::SDL3
 		bool m_OnResizeWindowMode = false;
 		int2 m_RestorePos = { 0, 0 };
 		int2 m_RestoreSize = { 0, 0}; 
+		int2 m_LastWindowSize = {0,0};
 	};
 
 	struct CROSS_PLATFORM_API OpenGLWindow: public Window

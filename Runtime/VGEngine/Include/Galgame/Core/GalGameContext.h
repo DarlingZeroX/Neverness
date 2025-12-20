@@ -18,6 +18,8 @@ namespace VisionGal::GalGame
 	struct GalGameContext
 	{
 		GalEngineEventBus engineEventBus;
+		GalGameUIEventBus uiEventBus;
+
 		GalGameRuntimeState runtimeState;
 	};
 }

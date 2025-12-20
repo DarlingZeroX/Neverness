@@ -19,6 +19,20 @@
 
 namespace VisionGal::GalGame
 {
+	struct GalGameLuaInterfaceImp
+	{
+		static void Choice(GalGameEngine& self, const std::string& name,sol::table choices)
+		{
+			// 将选择转换为C++数据结构
+			std::vector<std::string> options;
+			choices.for_each([&options](sol::object key, sol::object value) {
+				options.push_back(value.as<std::string>());
+				});
+
+			dynamic_cast<StoryScriptSystem*>(self.GetStoryScriptSystem())->DoChoice(name, options);
+		}
+	};
+
 	void GalGameLuaInterface::Initialise(sol::table& galgame)
 	{
 		// 引擎
@@ -74,6 +88,14 @@ namespace VisionGal::GalGame
 			//"跳到对话", & DialogueSystem::JumpToDialog
 		);
 
+		// 注册UI系统
+		galgame.new_usertype<GalGameUISystem>("GalGameUISystem",
+			//中文
+			"获取当前剧情选项文本", &GalGameUISystem::GetChoiceOptionByIndex,
+			"获取当前剧情选项数量", &GalGameUISystem::GetChoiceOptionSize,
+			"选择当前剧情选项", &GalGameUISystem::SelectCurrentChoice
+			);
+
 		// 注册存档系统
 		galgame.new_usertype<ArchiveSystem>("GalGameArchiveSystem",
 			//中文
@@ -107,6 +129,10 @@ namespace VisionGal::GalGame
 			),
 
 			//中文
+			"剧情选择", sol::yielding([](GalGameEngine& self, const std::string& name, sol::table choices) -> void
+			{
+					GalGameLuaInterfaceImp::Choice(self, name, choices);
+			}),
 			"等待", sol::yielding(&GalGameEngine::Wait),
 			"转场命令", &GalGameEngine::TransitionCommand,
 			"图片转场命令", &GalGameEngine::TransitionCommandWithCustomImage,
@@ -143,6 +169,9 @@ namespace VisionGal::GalGame
 			),
 			"场景系统", sol::property(
 				[](GalGameEngine& self) -> LayeredSceneSystem* { return dynamic_cast<LayeredSceneSystem*>(self.GetLayeredSceneManager()); }
+			),
+			"UI系统", sol::property(
+				[](GalGameEngine& self) -> GalGameUISystem* { return dynamic_cast<GalGameUISystem*>(self.GetGalGameUISystem()); }
 			)
 		);
 

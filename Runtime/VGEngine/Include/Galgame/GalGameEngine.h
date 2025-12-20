@@ -17,6 +17,7 @@
 #include "DialogueSystem/DialogueSystem.h"
 #include "SceneSystem/LayeredSceneSystem.h"
 #include "ScriptSystem/StoryScriptSystem.h"
+#include "UISystem/GalUISystem.h"
 #include "ResourceSystem.h"
 #include "../Scene/Scene.h"
 #include "../Render/RenderCore.h"
@@ -59,6 +60,7 @@ namespace VisionGal::GalGame
 		IDialogueSystem* GetDialogueSystem() override;	/// 获取对话系统的指针
 		ILayeredSceneManager* GetLayeredSceneManager() override;	/// 获取分层场景管理器的指针
 		IStoryScriptSystem* GetStoryScriptSystem();
+		GalGameUISystem* GetGalGameUISystem();
 
 		// 剧情脚本相关接口
 		void ReloadStoryScript() override;	/// 重新加载剧情脚本
@@ -90,7 +92,8 @@ namespace VisionGal::GalGame
 		Ref<LayeredSceneSystem> m_LayeredSceneManager;			// 分层场景管理器，用于管理游戏中的场景和精灵。
 		Ref<RenderPipeline> m_RenderPipeline;					// 渲染管线，用于处理游戏的渲染流程。
 		Ref<StoryScriptSystem> m_StoryScriptSystem;				// 剧情脚本系统
-		Ref<ResourceSystem> m_ResourceSystem;
+		Ref<ResourceSystem> m_ResourceSystem;					// 资源系统
+		Ref<GalGameUISystem> m_GalGameUISystem;					// 界面系统
 	};
 
 

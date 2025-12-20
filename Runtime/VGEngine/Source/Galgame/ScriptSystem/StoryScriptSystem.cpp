@@ -110,6 +110,15 @@ namespace VisionGal::GalGame
 		return m_StoryScript->GetScriptLastWriteTime();
 	}
 
+	void StoryScriptSystem::DoChoice(const std::string& name, const std::vector<std::string>& options)
+	{
+		GalGameUIEvent evt;
+		evt.ChoiceName = name;
+		evt.ChoiceOptions = options;
+		evt.EventType = GalGameUIEvent::Type::ShowChoiceUI;
+		m_GalGameContext->uiEventBus.OnUIEvent.Invoke(evt);
+	}
+
 	bool StoryScriptSystem::LoadSceneStoryScript(IScene* scene)
 	{
 		auto view = scene->GetWorld()->view<GalGameEngineComponent>();
@@ -183,6 +192,16 @@ namespace VisionGal::GalGame
 					break;
 				}
 			});
+
+		m_GalGameContext->uiEventBus.OnUIEvent.Subscribe([this](const GalGameUIEvent& evt)
+			{
+				switch (evt.EventType)
+				{
+				case GalGameUIEvent::Type::ChoiceSelected:
+					OnChoiceSelected("choice", evt.ChoiceOptions, evt.CurrentChoiceIndex);
+					break;
+				}
+			});
 	}
 
 	void StoryScriptSystem::Update()
@@ -197,6 +216,12 @@ namespace VisionGal::GalGame
 	void StoryScriptSystem::SetEngine(IGalGameEngine* engine)
 	{
 		m_GalGameEngine = engine;
+	}
+
+	void StoryScriptSystem::OnChoiceSelected(const std::string& name, const std::vector<std::string>& options,
+		int currentChoice)
+	{
+		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, options[currentChoice]);
 	}
 
 	void StoryScriptSystem::ContinueDialogue()

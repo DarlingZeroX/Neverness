@@ -33,7 +33,7 @@ namespace VisionGal::GalGame
 		//{
 		//	com.script = GalGame::LuaStoryScript::LoadFromFile(deserializeComponent.__DeserializeData.m_ScriptPath);
 		//}
-		com.scriptPath = deserializeComponent.__DeserializeData.m_ScriptPath;
+		//com.scriptPath = deserializeComponent.__DeserializeData.m_ScriptPath;
 
 		scene->UpdateDeserializeComponent(actor, &com);
 	}

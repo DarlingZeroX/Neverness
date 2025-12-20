@@ -28,13 +28,15 @@ namespace VisionGal
 	SDL_HitTestResult VGHitTestCallback(SDL_Window* win, const SDL_Point* pt, void* data)
 	{
 //#define REPORT_RESIZE_HIT(name) { std::cout << "HIT-TEST: RESIZE_" #name "\n" << std::endl;OnResizeWindowMode = true; return SDL_HITTEST_RESIZE_##name;  }
-#define REPORT_RESIZE_HIT(name) { OnResizeWindowMode = true; return SDL_HITTEST_RESIZE_##name;  }
+#define REPORT_RESIZE_HIT(name) { return SDL_HITTEST_RESIZE_##name;  }
 
 		static constexpr int RESIZE_BORDER = 5;
-		bool& OnResizeWindowMode = *reinterpret_cast<bool*>(data);
+		//bool& OnResizeWindowMode = *reinterpret_cast<bool*>(data);
+		VGWindow* window = reinterpret_cast<VGWindow*>(data);
 
 		int w, h;
 		SDL_GetWindowSize(win, &w, &h);
+		//window->ResizeOnBorderless(pt->x, pt->y);
 
 		if (pt->x < RESIZE_BORDER && pt->y < RESIZE_BORDER) {
 			REPORT_RESIZE_HIT(TOPLEFT);
@@ -174,7 +176,7 @@ namespace VisionGal
 			SDL_SetWindowBordered(window, !m_Borderless);
 			SDL_GetWindowID(GetSDLWindow());
 			SDL_SetWindowResizable(GetSDLWindow(), true);
-			SDL_SetWindowHitTest(GetSDLWindow(), VGHitTestCallback, &m_OnResizeWindowMode);
+			SDL_SetWindowHitTest(GetSDLWindow(), VGHitTestCallback, this);
 
 			//HideTilteBar::HideTitleBar(window);
 		}

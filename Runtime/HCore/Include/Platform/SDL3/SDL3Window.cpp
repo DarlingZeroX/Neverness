@@ -254,6 +254,27 @@ namespace Horizon::SDL3
 		SDL_SetWindowSize(m_pWindow, w, h);
 	}
 
+	void Window::SetWindowResizable(bool resizeable)
+	{
+		SDL_SetWindowResizable(m_pWindow, resizeable);
+	}
+
+	void Window::ResizeOnBorderless(int w, int h)
+	{
+		Events::HWindowEvent windowEvent;
+
+		windowEvent.eventType = Events::HWindowEventType::SIZE_CHANGED;
+		windowEvent.data1 = w;
+		windowEvent.data2 = h;
+		std::cout << "W: " << w << " H: " << h << std::endl;
+		windowEvent.windowID = SDL_GetWindowID(m_pWindow);
+
+		for (auto& listener : m_WindowEventListeners)
+		{
+			listener(windowEvent);
+		}
+	}
+
 	void Window::MinimizeWindow()
 	{
 		SDL_MinimizeWindow(m_pWindow);
@@ -295,6 +316,10 @@ namespace Horizon::SDL3
 	{
 		Events::HWindowEvent windowEvent;
 
+		//int w, h;
+		//SDL_GetWindowSize(m_pWindow, &w, &h);
+		//std::cout << "W: " << w << " H: " << h << std::endl;
+
 		for (auto& layer : m_Layers)
 		{
 			if (layer->ProcessEvent(event) == WINDOW_LAYER_RESULT_NO_PROPAGATE && event.type != SDL_EVENT_WINDOW_RESIZED)
@@ -316,6 +341,7 @@ namespace Horizon::SDL3
 
 		if (m_Keyboard)
 			m_Keyboard->ProcessEvent(event);
+
 		//
 		switch (event.type)
 		{

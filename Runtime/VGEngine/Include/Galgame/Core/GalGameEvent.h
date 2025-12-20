@@ -43,4 +43,24 @@ namespace VisionGal::GalGame
 		Horizon::HEventDelegate<const GalGameScriptEvent&> OnStoryScriptEvent;
 		Horizon::HEventDelegate<const GalGameScriptExecuteEvent&> OnStoryScriptExecuteEvent;
 	};
+
+	struct GalGameUIEvent
+	{
+		enum class Type
+		{
+			None = 0,
+			ShowChoiceUI,
+			ChoiceSelected,
+		};
+
+		Type EventType = Type::None;
+		std::vector<std::string> ChoiceOptions;
+		std::string ChoiceName;
+		int CurrentChoiceIndex;
+	};
+
+	struct GalGameUIEventBus
+	{
+		Horizon::HEventDelegate<const GalGameUIEvent&> OnUIEvent;
+	};
 }

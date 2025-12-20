@@ -151,6 +151,9 @@ namespace VisionGal::Editor
 	{
 		m_GameEngine->OnUpdate(deltaTime);
 		PanelManager::GetInstance()->OnUpdate(deltaTime);
+
+		//auto size =m_EditorWindow->GetWindowSize();
+		//std::cout << "W: " << size.x << " H: " << size.y << std::endl;
 	}
 
 	void VGEditorApplication::OnFixedUpdate()

@@ -28,12 +28,12 @@ namespace VisionGal::GalGame
 		// 通过 IComponent 继承 
 		std::string GetComponentType() const override;
 
-		struct DeserializeData
-		{
-			String m_ScriptPath;
-		};
-
-		DeserializeData __DeserializeData;
+		//struct DeserializeData
+		//{
+		//	String m_ScriptPath;
+		//};
+		//
+		//DeserializeData __DeserializeData;
 
 		template <class Archive>
 		void save(Archive& archive) const
@@ -50,15 +50,25 @@ namespace VisionGal::GalGame
 			//}
 
 			archive(cereal::make_nvp("m_ScriptPath", scriptPath));
+			archive(cereal::make_nvp("m_ChoiceUIPath", choiceUIPath));
+			archive(cereal::make_nvp("m_FullScreenTextUIPath", fullScreenTextUIPath));
+			archive(cereal::make_nvp("m_InputUIPath", inputUIPath));
 		}
 
 		template<class Archive>
 		void load(Archive& archive) {
 			loadIComponent(archive);
-			archive(__DeserializeData.m_ScriptPath);
+			archive(scriptPath);
+			archive(choiceUIPath);
+			archive(fullScreenTextUIPath);
+			archive(inputUIPath);
 		}
 
 		std::string scriptPath;
+
+		std::string choiceUIPath;
+		std::string fullScreenTextUIPath;
+		std::string inputUIPath;
 		//Ref<LuaStoryScript> script;
 	};
 

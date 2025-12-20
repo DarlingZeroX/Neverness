@@ -25,7 +25,7 @@ namespace VisionGal::GalGame
 	static sol::coroutine* s_StoryScriptCoroutine = nullptr;
 	static std::string s_StoryScriptPath = "";
 
-	int StoryScriptLuaInterface::Continue()
+	int StoryScriptLuaInterface::Continue(ContinueType type, int number, const std::string& str)
 	{
 		if (s_StoryScriptCoroutine == nullptr)
 			return 0;
@@ -40,7 +40,21 @@ namespace VisionGal::GalGame
 		try
 		{
 			if (s_StoryScriptCoroutine && s_StoryScriptCoroutine->lua_state()) {
-				auto result = (*s_StoryScriptCoroutine)();
+
+				// 调用协程
+				sol::protected_function_result result;
+				switch (type)
+				{
+				case ContinueType::None:
+					result = (*s_StoryScriptCoroutine)();
+					break;
+				case ContinueType::Number:
+					result = (*s_StoryScriptCoroutine)(number);
+					break;
+				case ContinueType::String:
+					result = (*s_StoryScriptCoroutine)(str);
+					break;
+				}
 
 				if (s_StoryScriptCoroutine->error())
 				{
