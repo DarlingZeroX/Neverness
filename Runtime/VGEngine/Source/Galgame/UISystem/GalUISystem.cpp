@@ -63,6 +63,37 @@ namespace VisionGal::GalGame
 		}
 	}
 
+	void GalGameUISystem::ShowFullScreenTextUI(const std::vector<std::string>& texts)
+	{
+		m_CurrentFullScreenTexts = texts;
+
+		auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
+
+		std::string fullScreenTextUIPath;
+		view.each([this, &fullScreenTextUIPath](GalGameEngineComponent& com) { // flecs::entity argument is optional
+			fullScreenTextUIPath = com.fullScreenTextUIPath;
+			});
+
+		if (fullScreenTextUIPath.empty() == false)
+		{
+			auto doc = UISystem::Get()->LoadUIDocument(fullScreenTextUIPath);
+			UISystem::Get()->ShowUIDocument(doc.get());
+		}
+	}
+
+	std::string GalGameUISystem::GetFullScreenTextItem(int index)
+	{
+		if (index < m_CurrentFullScreenTexts.size())
+			return m_CurrentFullScreenTexts[index];
+
+		return {};
+	}
+
+	int GalGameUISystem::GetFullScreenTextSize() const
+	{
+		return m_CurrentFullScreenTexts.size();
+	}
+
 	std::string GalGameUISystem::GetChoiceOptionByIndex(int index)
 	{
 		if (index < m_CurrentChoiceOptions.size())

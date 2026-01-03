@@ -28,11 +28,16 @@ namespace VisionGal::GalGame
 
 		void Initialize(const Ref<GalGameContext>& galCtx, IGameEngineContext* context);
 
+		// 剧情选择UI
 		void ShowChoiceUI(const std::string& name, const std::vector<std::string>& options);
-
 		std::string GetChoiceOptionByIndex(int index);
 		int GetChoiceOptionSize() const;
 		void SelectCurrentChoice(int index);
+
+		// 全屏文字UI
+		void ShowFullScreenTextUI(const std::vector<std::string>& texts);
+		std::string GetFullScreenTextItem(int index);
+		int GetFullScreenTextSize() const;
 	private:
 		IScene* m_Scene = nullptr;
 
@@ -40,6 +45,7 @@ namespace VisionGal::GalGame
 		IGameEngineContext* m_GECtx;
 
 		std::vector<std::string> m_CurrentChoiceOptions;
+		std::vector<std::string> m_CurrentFullScreenTexts;
 	};
 
 

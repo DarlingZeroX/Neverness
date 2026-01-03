@@ -75,6 +75,8 @@ namespace VisionGal
 		std::function<int(Rml::Context*, const SDL_Event&)> m_ProcessContextEventFunction;
 		std::vector<Ref<RmlUIDocument>> m_Documents;
 		//std::vector<Rml::ElementDocument*> m_NativeDocument;
+
+		std::vector<std::function<void()>> m_CloseCallbacks;
 	};
 
 

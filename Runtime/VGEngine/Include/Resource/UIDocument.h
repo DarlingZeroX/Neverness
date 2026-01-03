@@ -12,6 +12,7 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "../Core/Core.h"
+#include "../Utils/TransitionHelper.h"
 #include <RmlUi/Core.h>
 #include <sol/function.hpp>
 
@@ -25,11 +26,22 @@ namespace VisionGal
 
 		void Close();
 		void AddUpdateCallback(const sol::function& callback);
+		void AddTimerCallback(float interval, const sol::function& callback);
 		void Update();
 
 		Rml::ElementDocument* document = nullptr;
 		bool isClosed = false;
 		std::vector<sol::function> m_LuaUpdateCallbacks;
+
+		struct TimerCallback
+		{
+			Ref<TransitionHelper> timer;
+			sol::function callback;
+			float interval = 0.0f;
+			float elapsed = 0.0f;
+		};
+		std::vector<TimerCallback> m_LuaTimerCallbacks;
+		std::vector<TimerCallback> m_LuaTimerUpdateAddedCallbacks;
 	};
 }
 

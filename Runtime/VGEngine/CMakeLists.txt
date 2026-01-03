@@ -11,9 +11,9 @@ cmake_host_system_information(RESULT CPU_NUMBER_OF_LOGICAL_CORES QUERY NUMBER_OF
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_NUMBER_OF_LOGICAL_CORES}>)
 
 # 大对象模版文件需要开启
-#if (MSVC)
-#    add_compile_options(/bigobj)
-#endif()
+if (MSVC)
+    add_compile_options(/bigobj)
+endif()
 
 # 开启utf-8编码支持
 if (MSVC)

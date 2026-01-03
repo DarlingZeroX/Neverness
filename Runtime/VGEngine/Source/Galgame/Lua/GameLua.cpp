@@ -21,7 +21,7 @@ namespace VisionGal::GalGame
 {
 	struct GalGameLuaInterfaceImp
 	{
-		static void Choice(GalGameEngine& self, const std::string& name,sol::table choices)
+		static void Choice(GalGameEngine& self, const std::string& name, const sol::table& choices)
 		{
 			// 将选择转换为C++数据结构
 			std::vector<std::string> options;
@@ -30,6 +30,17 @@ namespace VisionGal::GalGame
 				});
 
 			dynamic_cast<StoryScriptSystem*>(self.GetStoryScriptSystem())->DoChoice(name, options);
+		}
+
+		static void FullScreenText(GalGameEngine& self, const sol::table& texts)
+		{
+			// 将选择转换为C++数据结构
+			std::vector<std::string> textV;
+			texts.for_each([&textV](sol::object key, sol::object value) {
+				textV.push_back(value.as<std::string>());
+				});
+
+			self.GetGalGameUISystem()->ShowFullScreenTextUI(textV);
 		}
 	};
 
@@ -93,7 +104,10 @@ namespace VisionGal::GalGame
 			//中文
 			"获取当前剧情选项文本", &GalGameUISystem::GetChoiceOptionByIndex,
 			"获取当前剧情选项数量", &GalGameUISystem::GetChoiceOptionSize,
-			"选择当前剧情选项", &GalGameUISystem::SelectCurrentChoice
+			"选择当前剧情选项", &GalGameUISystem::SelectCurrentChoice,
+
+			"获取当前全屏文本项", & GalGameUISystem::GetFullScreenTextItem,
+			"获取当前全屏文本项数量", & GalGameUISystem::GetFullScreenTextSize
 			);
 
 		// 注册存档系统
@@ -129,10 +143,18 @@ namespace VisionGal::GalGame
 			),
 
 			//中文
-			"剧情选择", sol::yielding([](GalGameEngine& self, const std::string& name, sol::table choices) -> void
+			"剧情选择", sol::yielding([](GalGameEngine& self, const std::string& name, const sol::table& choices) -> void
 			{
-					GalGameLuaInterfaceImp::Choice(self, name, choices);
+				GalGameLuaInterfaceImp::Choice(self, name, choices);
 			}),
+			"全屏文字", [](GalGameEngine& self, const sol::table& text) -> void
+			{
+				GalGameLuaInterfaceImp::FullScreenText(self, text);
+			},
+			"获取输入", [](GalGameEngine& self, const std::string& title, const std::string button) -> void
+			{
+
+			},
 			"等待", sol::yielding(&GalGameEngine::Wait),
 			"转场命令", &GalGameEngine::TransitionCommand,
 			"图片转场命令", &GalGameEngine::TransitionCommandWithCustomImage,

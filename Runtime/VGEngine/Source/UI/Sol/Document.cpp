@@ -29,7 +29,7 @@ namespace RmlSol {
 			},
 			"Hide", &Rml::ElementDocument::Hide,
 			"Close", [](Rml::ElementDocument& self) {
-				self.Close();
+				//self.Close();
 				VisionGal::UISystem::Get()->OnScriptCloseDocument(&self);
 			},
 			"CreateElement", [](Rml::ElementDocument& self, const Rml::String& name) {
@@ -44,6 +44,14 @@ namespace RmlSol {
 				}
 				uiDocument->AddUpdateCallback(callback);
 			},
+			"AddTimerCallback", [](Rml::ElementDocument& self, float interval, const sol::function& callback) {
+				auto uiDocument = VisionGal::UISystem::Get()->FindDocumentByElementDocument(&self);
+				if (uiDocument == nullptr)
+				{
+					uiDocument = VisionGal::UISystem::Get()->OnScriptOpenDocument(&self);
+				}
+				uiDocument->AddTimerCallback(interval, callback);
+			}, 
 			// 属性
 			"title", sol::property(
 				[](Rml::ElementDocument& self) -> const std::string& { return self.GetTitle(); },

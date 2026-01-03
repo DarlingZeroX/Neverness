@@ -195,26 +195,30 @@ namespace VisionGal
 	void UISystem::OnScriptCloseDocument(const Rml::ElementDocument* document)
 	{
 		// 移除与 document 匹配的文档，同时调用 Close 以释放资源
-		m_Documents.erase(std::remove_if(m_Documents.begin(), m_Documents.end(),
-			[document](const Ref<RmlUIDocument>& doc) -> bool
-			{
-				// 移除空引用
-				if (!doc)
-					return true;
-
-				// 如果匹配到脚本关闭的原生文档，先关闭再移除
-				if (doc->document == document)
+		m_CloseCallbacks.push_back([this, document]()
+		{
+			m_Documents.erase(std::remove_if(m_Documents.begin(), m_Documents.end(),
+				[document](const Ref<RmlUIDocument>& doc) -> bool
 				{
-					if (doc->document)
-					{
-						// 保护性调用 Close（原实现中 CloseAllDocuments 会调用 Close）
-						doc->Close();
-					}
-					return true;
-				}
+					// 移除空引用
+					if (!doc)
+						return true;
 
-				return false;
-			}), m_Documents.end());
+					// 如果匹配到脚本关闭的原生文档，先关闭再移除
+					if (doc->document == document)
+					{
+						if (doc->document)
+						{
+							// 保护性调用 Close（原实现中 CloseAllDocuments 会调用 Close）
+							doc->Close();
+						}
+						return true;
+					}
+
+					return false;
+				}), m_Documents.end());
+		});
+
 	}
 
 	Rml::SystemInterface* UISystem::GetSystemInterface() const
@@ -270,6 +274,13 @@ namespace VisionGal
 
 		// 更新UI上下文
 		m_pContext->Update();
+
+		// 处理关闭回调
+		for (auto& callback : m_CloseCallbacks)
+		{
+			callback();
+		}
+		m_CloseCallbacks.clear();
 	}
 
 	bool UISystem::InitializeUISystem(Horizon::SDL3::OpenGLWindow* window)
