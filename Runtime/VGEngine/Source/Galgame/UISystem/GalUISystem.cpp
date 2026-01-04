@@ -41,6 +41,10 @@ namespace VisionGal::GalGame
 				{
 				case GalGameUIEvent::Type::ShowChoiceUI:
 					ShowChoiceUI(evt.ChoiceName, evt.ChoiceOptions);
+					break;
+				case GalGameUIEvent::Type::ShowInputUI:
+					ShowInputUI(evt.InputID, evt.InputTitle, evt.InputButtonText);
+					break;
 				}
 			});
 	}
@@ -92,6 +96,44 @@ namespace VisionGal::GalGame
 	int GalGameUISystem::GetFullScreenTextSize() const
 	{
 		return m_CurrentFullScreenTexts.size();
+	}
+
+	void GalGameUISystem::ShowInputUI(const std::string& id, const std::string& title, const std::string& button)
+	{
+		m_InputID = id;
+		m_InputTitle = title;
+		m_InputButtonText = button;
+
+		auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
+
+		std::string inputUIPath;
+		view.each([this, &inputUIPath](GalGameEngineComponent& com) { // flecs::entity argument is optional
+			inputUIPath = com.inputUIPath;
+			});
+
+		if (inputUIPath.empty() == false)
+		{
+			auto doc = UISystem::Get()->LoadUIDocument(inputUIPath);
+			UISystem::Get()->ShowUIDocument(doc.get());
+		}
+	}
+
+	std::string GalGameUISystem::GetInputTitle()
+	{
+		return  m_InputTitle;
+	}
+
+	std::string GalGameUISystem::GetInputButtonText()
+	{
+		return m_InputButtonText;
+	}
+
+	void GalGameUISystem::InputSubmitted(const std::string& text)
+	{
+		GalGameUIEvent evt;
+		evt.CurrentInputText = text;
+		evt.EventType = GalGameUIEvent::Type::InputSubmitted;
+		m_GalCtx->uiEventBus.OnUIEvent.Invoke(evt);
 	}
 
 	std::string GalGameUISystem::GetChoiceOptionByIndex(int index)

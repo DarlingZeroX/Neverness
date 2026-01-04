@@ -42,6 +42,11 @@ namespace VisionGal::GalGame
 
 			self.GetGalGameUISystem()->ShowFullScreenTextUI(textV);
 		}
+
+		static void InputText(GalGameEngine& self, const std::string& id, const std::string& title, const std::string& button)
+		{
+			dynamic_cast<StoryScriptSystem*>(self.GetStoryScriptSystem())->DoInput(id, title, button);
+		}
 	};
 
 	void GalGameLuaInterface::Initialise(sol::table& galgame)
@@ -101,13 +106,17 @@ namespace VisionGal::GalGame
 
 		// 注册UI系统
 		galgame.new_usertype<GalGameUISystem>("GalGameUISystem",
-			//中文
+			// 剧情选择
 			"获取当前剧情选项文本", &GalGameUISystem::GetChoiceOptionByIndex,
 			"获取当前剧情选项数量", &GalGameUISystem::GetChoiceOptionSize,
 			"选择当前剧情选项", &GalGameUISystem::SelectCurrentChoice,
-
+			// 全屏文本
 			"获取当前全屏文本项", & GalGameUISystem::GetFullScreenTextItem,
-			"获取当前全屏文本项数量", & GalGameUISystem::GetFullScreenTextSize
+			"获取当前全屏文本项数量", & GalGameUISystem::GetFullScreenTextSize,
+			// 玩家输入
+			"获取当前玩家输入标题", &GalGameUISystem::GetInputTitle,
+			"获取当前玩家输入按键文本", &GalGameUISystem::GetInputButtonText,
+			"确定当前输入",&GalGameUISystem::InputSubmitted
 			);
 
 		// 注册存档系统
@@ -151,10 +160,10 @@ namespace VisionGal::GalGame
 			{
 				GalGameLuaInterfaceImp::FullScreenText(self, text);
 			},
-			"获取输入", [](GalGameEngine& self, const std::string& title, const std::string button) -> void
+			"获取输入", sol::yielding([](GalGameEngine& self, const std::string& id, const std::string& title, const std::string button) -> void
 			{
-
-			},
+				GalGameLuaInterfaceImp::InputText(self, id, title, button);
+			}),
 			"等待", sol::yielding(&GalGameEngine::Wait),
 			"转场命令", &GalGameEngine::TransitionCommand,
 			"图片转场命令", &GalGameEngine::TransitionCommandWithCustomImage,

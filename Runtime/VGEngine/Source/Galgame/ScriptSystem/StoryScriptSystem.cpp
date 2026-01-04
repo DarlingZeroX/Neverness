@@ -119,6 +119,16 @@ namespace VisionGal::GalGame
 		m_GalGameContext->uiEventBus.OnUIEvent.Invoke(evt);
 	}
 
+	void StoryScriptSystem::DoInput(const std::string& id, const std::string& title, const std::string& button)
+	{
+		GalGameUIEvent evt;
+		evt.InputID = id;
+		evt.InputTitle = title;
+		evt.InputButtonText = button;
+		evt.EventType = GalGameUIEvent::Type::ShowInputUI;
+		m_GalGameContext->uiEventBus.OnUIEvent.Invoke(evt);
+	}
+
 	bool StoryScriptSystem::LoadSceneStoryScript(IScene* scene)
 	{
 		auto view = scene->GetWorld()->view<GalGameEngineComponent>();
@@ -200,6 +210,8 @@ namespace VisionGal::GalGame
 				case GalGameUIEvent::Type::ChoiceSelected:
 					OnChoiceSelected("choice", evt.ChoiceOptions, evt.CurrentChoiceIndex);
 					break;
+				case GalGameUIEvent::Type::InputSubmitted:
+					OnInputSubmitted("input", evt.CurrentInputText);
 				}
 			});
 	}
@@ -222,6 +234,11 @@ namespace VisionGal::GalGame
 		int currentChoice)
 	{
 		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, options[currentChoice]);
+	}
+
+	void StoryScriptSystem::OnInputSubmitted(const std::string& id, const std::string& text)
+	{
+		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, text);
 	}
 
 	void StoryScriptSystem::ContinueDialogue()

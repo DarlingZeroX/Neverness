@@ -31,7 +31,7 @@ namespace VisionGal::GalGame
 		std::filesystem::file_time_type GetScriptLastWriteTime() const override;
 
 		void DoChoice(const std::string& name, const std::vector<std::string>& options);	/// 处理剧情选择事件。
-
+		void DoInput(const std::string& id, const std::string& title, const std::string& button);	/// 处理输入事件。
 
 		bool LoadSceneStoryScript(IScene* scene);
 		bool LoadSceneStoryScriptOnUpdate(IScene* scene);
@@ -45,6 +45,7 @@ namespace VisionGal::GalGame
 		void SetEngine(IGalGameEngine* engine);
 	private:
 		void OnChoiceSelected(const std::string& name, const std::vector<std::string>& options, int currentChoice);	/// 处理剧情选择事件。
+		void OnInputSubmitted(const std::string& id, const std::string& text);	/// 处理输入提交事件。
 		void ContinueDialogue();
 
 		void AddUpdateCallback(const std::function<void()>& callback);	/// 添加更新回调函数。

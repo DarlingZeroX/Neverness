@@ -38,6 +38,12 @@ namespace VisionGal::GalGame
 		void ShowFullScreenTextUI(const std::vector<std::string>& texts);
 		std::string GetFullScreenTextItem(int index);
 		int GetFullScreenTextSize() const;
+
+		// 玩家输入UI
+		void ShowInputUI(const std::string& id, const std::string& title, const std::string& button);
+		void InputSubmitted(const std::string& text);
+		std::string GetInputTitle();
+		std::string GetInputButtonText();
 	private:
 		IScene* m_Scene = nullptr;
 
@@ -46,7 +52,9 @@ namespace VisionGal::GalGame
 
 		std::vector<std::string> m_CurrentChoiceOptions;
 		std::vector<std::string> m_CurrentFullScreenTexts;
+
+		std::string m_InputID;
+		std::string m_InputTitle;
+		std::string m_InputButtonText;
 	};
-
-
 }

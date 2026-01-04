@@ -51,12 +51,20 @@ namespace VisionGal::GalGame
 			None = 0,
 			ShowChoiceUI,
 			ChoiceSelected,
+			ShowInputUI,
+			InputSubmitted,
 		};
 
 		Type EventType = Type::None;
+		// 选择
 		std::vector<std::string> ChoiceOptions;
 		std::string ChoiceName;
 		int CurrentChoiceIndex;
+		// 输入
+		std::string InputID;
+		std::string InputTitle;
+		std::string InputButtonText;
+		std::string CurrentInputText;
 	};
 
 	struct GalGameUIEventBus

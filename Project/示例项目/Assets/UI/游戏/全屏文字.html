@@ -92,7 +92,7 @@
                 local 文本项 = HTML全屏文字.全屏文字文档:CreateElement('span')
                 文本项:SetAttribute('class', 'menu-item')
                 文本项.innerRml = '<span>' .. 文本 .. '</span>'
-                文本项:SetAttribute('onclick', 'HTML全屏文字.选择当前全屏文本项(document, 0)')
+                --文本项:SetAttribute('onclick', 'HTML全屏文字.选择当前全屏文本项(document, 0)')
                 文本框:AppendChild(文本项)
 
                 HTML全屏文字.全屏文字文档:AddTimerCallback(2.0, HTML全屏文字.定时器回调)
@@ -113,7 +113,7 @@
             local 文本项 = document:CreateElement('span')
             文本项:SetAttribute('class', 'menu-item')
             文本项.innerRml = '<span>' .. 文本 .. '</span>'
-            文本项:SetAttribute('onclick', 'HTML全屏文字.选择当前全屏文本项(document, 0)')
+            --文本项:SetAttribute('onclick', 'HTML全屏文字.选择当前全屏文本项(document, 0)')
             文本框:AppendChild(文本项)
 
             document:AddTimerCallback(2.0, HTML全屏文字.定时器回调)
