@@ -110,10 +110,23 @@ namespace VisionGal::GalGame
 		return m_StoryScript->GetScriptLastWriteTime();
 	}
 
-	void StoryScriptSystem::DoChoice(const std::string& name, const std::vector<std::string>& options)
+	void StoryScriptSystem::DoChoice(const std::string& id, const std::vector<std::string>& options)
 	{
+		// 如果正在加载存档，则直接从存档数据中获取选择结果
+		if (m_GalGameContext->runtimeState.isCurrentLoadingArchive)
+		{
+			int choiceIndex = m_GalGameContext->archiveData->GetNamespace("__Choices__")->GetVariable<int>(id);
+			// 延迟到存档读取循环中执行,因为这里还在调用协程中，直接继续协程会出现不需要继续协程
+			m_ArchiveLuaReadCallback.push_back([this,id,options,choiceIndex] ()
+				{
+					OnChoiceSelected(id, options, choiceIndex);
+				});
+
+			return;
+		}
+
 		GalGameUIEvent evt;
-		evt.ChoiceName = name;
+		evt.ChoiceID = id;
 		evt.ChoiceOptions = options;
 		evt.EventType = GalGameUIEvent::Type::ShowChoiceUI;
 		m_GalGameContext->uiEventBus.OnUIEvent.Invoke(evt);
@@ -121,6 +134,19 @@ namespace VisionGal::GalGame
 
 	void StoryScriptSystem::DoInput(const std::string& id, const std::string& title, const std::string& button)
 	{
+		// 如果正在加载存档，则直接从存档数据中获取选择结果
+		if (m_GalGameContext->runtimeState.isCurrentLoadingArchive)
+		{
+			std::string text = m_GalGameContext->archiveData->GetNamespace("__Inputs__")->GetVariable<std::string>(id);
+			//OnInputSubmitted(id, text);
+			// 延迟到存档读取循环中执行,因为这里还在协程中，直接继续协程会出现不需要继续协程
+			m_ArchiveLuaReadCallback.push_back([this, id, text]()
+				{
+					OnInputSubmitted(id, text);
+				});
+			return;
+		}
+
 		GalGameUIEvent evt;
 		evt.InputID = id;
 		evt.InputTitle = title;
@@ -162,20 +188,31 @@ namespace VisionGal::GalGame
 
 	bool StoryScriptSystem::LoadArchive(const SaveArchive& archive)
 	{
+		// 设置状态
 		m_GalGameContext->runtimeState.enableFastForward = true;
+		m_GalGameContext->runtimeState.isCurrentLoadingArchive = true;
+		// 读取存档数据
+		m_GalGameContext->archiveData = archive.archiveData;
 
 		if (!LoadStoryScript(archive.scriptPath))
 		{
 			m_GalGameContext->runtimeState.enableFastForward = false;
+			m_GalGameContext->runtimeState.isCurrentLoadingArchive = false;
 			return false;
 		}
 
 		while (archive.line > m_GalGameContext->runtimeState.currentDialogLine)
 		{
 			ContinueDialogue();
+
+			// 执行存档读取时的Lua回调
+			for (auto& callback : m_ArchiveLuaReadCallback)
+				callback();
+			m_ArchiveLuaReadCallback.clear();
 		}
 
 		m_GalGameContext->runtimeState.enableFastForward = false;
+		m_GalGameContext->runtimeState.isCurrentLoadingArchive = false;
 	}
 
 	void StoryScriptSystem::Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context)
@@ -208,10 +245,10 @@ namespace VisionGal::GalGame
 				switch (evt.EventType)
 				{
 				case GalGameUIEvent::Type::ChoiceSelected:
-					OnChoiceSelected("choice", evt.ChoiceOptions, evt.CurrentChoiceIndex);
+					OnChoiceSelected(evt.ChoiceID, evt.ChoiceOptions, evt.CurrentChoiceIndex);
 					break;
 				case GalGameUIEvent::Type::InputSubmitted:
-					OnInputSubmitted("input", evt.CurrentInputText);
+					OnInputSubmitted(evt.InputID, evt.CurrentInputText);
 				}
 			});
 	}
@@ -230,14 +267,23 @@ namespace VisionGal::GalGame
 		m_GalGameEngine = engine;
 	}
 
-	void StoryScriptSystem::OnChoiceSelected(const std::string& name, const std::vector<std::string>& options,
-		int currentChoice)
+	void StoryScriptSystem::OnChoiceSelected(
+		const std::string& id,
+		const std::vector<std::string>& options,
+		int currentChoice
+	)
 	{
+		// 保存选择结果到存档数据
+		m_GalGameContext->archiveData->GetNamespace("__Choices__")->SetVariable(id, currentChoice);
+
 		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, options[currentChoice]);
 	}
 
 	void StoryScriptSystem::OnInputSubmitted(const std::string& id, const std::string& text)
 	{
+		// 保存输入结果到存档数据
+		m_GalGameContext->archiveData->GetNamespace("__Inputs__")->SetVariable(id, text);
+
 		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, text);
 	}
 

@@ -40,7 +40,7 @@ namespace VisionGal::GalGame
 				switch (evt.EventType)
 				{
 				case GalGameUIEvent::Type::ShowChoiceUI:
-					ShowChoiceUI(evt.ChoiceName, evt.ChoiceOptions);
+					ShowChoiceUI(evt.ChoiceID, evt.ChoiceOptions);
 					break;
 				case GalGameUIEvent::Type::ShowInputUI:
 					ShowInputUI(evt.InputID, evt.InputTitle, evt.InputButtonText);
@@ -49,8 +49,9 @@ namespace VisionGal::GalGame
 			});
 	}
 
-	void GalGameUISystem::ShowChoiceUI(const std::string& name, const std::vector<std::string>& options)
+	void GalGameUISystem::ShowChoiceUI(const std::string& id, const std::vector<std::string>& options)
 	{
+		m_CurrentChoiceID = id;
 		m_CurrentChoiceOptions = options;
 
 		auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
@@ -65,6 +66,29 @@ namespace VisionGal::GalGame
 			auto doc = UISystem::Get()->LoadUIDocument(choiceUIPath);
 			UISystem::Get()->ShowUIDocument(doc.get());
 		}
+	}
+
+	std::string GalGameUISystem::GetChoiceOptionByIndex(int index)
+	{
+		if (index < m_CurrentChoiceOptions.size())
+			return m_CurrentChoiceOptions[index];
+
+		return {};
+	}
+
+	int GalGameUISystem::GetChoiceOptionSize() const
+	{
+		return m_CurrentChoiceOptions.size();
+	}
+
+	void GalGameUISystem::SelectCurrentChoice(int index)
+	{
+		GalGameUIEvent evt;
+		evt.ChoiceID = m_CurrentChoiceID;
+		evt.CurrentChoiceIndex = index;
+		evt.ChoiceOptions = m_CurrentChoiceOptions;
+		evt.EventType = GalGameUIEvent::Type::ChoiceSelected;
+		m_GalCtx->uiEventBus.OnUIEvent.Invoke(evt);
 	}
 
 	void GalGameUISystem::ShowFullScreenTextUI(const std::vector<std::string>& texts)
@@ -100,9 +124,9 @@ namespace VisionGal::GalGame
 
 	void GalGameUISystem::ShowInputUI(const std::string& id, const std::string& title, const std::string& button)
 	{
-		m_InputID = id;
-		m_InputTitle = title;
-		m_InputButtonText = button;
+		m_CurrentInputID = id;
+		m_CurrentInputTitle = title;
+		m_CurrentInputButtonText = button;
 
 		auto view = m_Scene->GetWorld()->view<GalGameEngineComponent>();
 
@@ -120,41 +144,21 @@ namespace VisionGal::GalGame
 
 	std::string GalGameUISystem::GetInputTitle()
 	{
-		return  m_InputTitle;
+		return  m_CurrentInputTitle;
 	}
 
 	std::string GalGameUISystem::GetInputButtonText()
 	{
-		return m_InputButtonText;
+		return m_CurrentInputButtonText;
 	}
 
 	void GalGameUISystem::InputSubmitted(const std::string& text)
 	{
 		GalGameUIEvent evt;
 		evt.CurrentInputText = text;
+		evt.InputID = m_CurrentInputID;
 		evt.EventType = GalGameUIEvent::Type::InputSubmitted;
 		m_GalCtx->uiEventBus.OnUIEvent.Invoke(evt);
 	}
 
-	std::string GalGameUISystem::GetChoiceOptionByIndex(int index)
-	{
-		if (index < m_CurrentChoiceOptions.size())
-			return m_CurrentChoiceOptions[index];
-
-		return {};
-	}
-
-	int GalGameUISystem::GetChoiceOptionSize() const
-	{
-		return m_CurrentChoiceOptions.size();
-	}
-
-	void GalGameUISystem::SelectCurrentChoice(int index)
-	{
-		GalGameUIEvent evt;
-		evt.CurrentChoiceIndex = index;
-		evt.ChoiceOptions = m_CurrentChoiceOptions;
-		evt.EventType = GalGameUIEvent::Type::ChoiceSelected;
-		m_GalCtx->uiEventBus.OnUIEvent.Invoke(evt);
-	}
 }

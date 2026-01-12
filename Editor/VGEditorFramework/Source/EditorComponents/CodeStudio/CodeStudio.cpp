@@ -99,7 +99,11 @@ namespace VisionGal::Editor
 			if (doc->NeedFocus)
 			{
 				ImGui::SetWindowFocus();
-				doc->NeedFocus = false;
+				//ImGui::SetKeyboardFocusHere();
+				if (ImGui::IsWindowFocused())
+				{
+					doc->NeedFocus = false;
+				}
 			}
 
 			// Cancel attempt to close when unsaved add to save queue so we can display a popup.

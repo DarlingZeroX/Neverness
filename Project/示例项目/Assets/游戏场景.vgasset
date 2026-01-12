@@ -8,12 +8,12 @@
     "ComponentNumber": 0,
     "SegmentType": "Entity",
     "EntityNumber": 4,
-    "Label": "UI文档",
-    "ID": 1121397486019454353,
+    "Label": "相机",
+    "ID": 3461299980892358326,
     "Parent": 0,
     "ComponentIDs": [
-        1121397486019454353,
-        669284186378080398
+        16414287039044744827,
+        6160332589096119729
     ],
     "Label": "GalGame引擎",
     "ID": 13669168056528829473,
@@ -22,12 +22,12 @@
         13669168056528829473,
         5300828898657221247
     ],
-    "Label": "相机",
-    "ID": 3461299980892358326,
+    "Label": "UI文档",
+    "ID": 1121397486019454353,
     "Parent": 0,
     "ComponentIDs": [
-        16414287039044744827,
-        6160332589096119729
+        1121397486019454353,
+        669284186378080398
     ],
     "Label": "Scene",
     "ID": 0,
@@ -38,7 +38,7 @@
     "SegmentType": "Transform",
     "ComponentNumber": 3,
     "Transform": {
-        "EntityComponentID": 1121397486019454353,
+        "EntityComponentID": 16414287039044744827,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -78,7 +78,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 16414287039044744827,
+        "EntityComponentID": 1121397486019454353,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -119,7 +119,7 @@
     "ComponentNumber": 1,
     "GalGameEngine": {
         "EntityComponentID": 5300828898657221247,
-        "m_ScriptPath": "/assets/剧情脚本\\获取用户输入.lua",
+        "m_ScriptPath": "/assets/剧情脚本\\剧情选择.lua",
         "m_ChoiceUIPath": "/assets/UI\\游戏\\剧情选择.html",
         "m_FullScreenTextUIPath": "/assets/UI\\游戏\\全屏文字.html",
         "m_InputUIPath": "/assets/UI\\游戏\\获取输入.html"

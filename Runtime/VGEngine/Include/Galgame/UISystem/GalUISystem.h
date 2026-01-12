@@ -29,7 +29,7 @@ namespace VisionGal::GalGame
 		void Initialize(const Ref<GalGameContext>& galCtx, IGameEngineContext* context);
 
 		// 剧情选择UI
-		void ShowChoiceUI(const std::string& name, const std::vector<std::string>& options);
+		void ShowChoiceUI(const std::string& id, const std::vector<std::string>& options);
 		std::string GetChoiceOptionByIndex(int index);
 		int GetChoiceOptionSize() const;
 		void SelectCurrentChoice(int index);
@@ -50,11 +50,12 @@ namespace VisionGal::GalGame
 		Ref<GalGameContext> m_GalCtx;
 		IGameEngineContext* m_GECtx;
 
+		std::string m_CurrentChoiceID;
 		std::vector<std::string> m_CurrentChoiceOptions;
 		std::vector<std::string> m_CurrentFullScreenTexts;
 
-		std::string m_InputID;
-		std::string m_InputTitle;
-		std::string m_InputButtonText;
+		std::string m_CurrentInputID;
+		std::string m_CurrentInputTitle;
+		std::string m_CurrentInputButtonText;
 	};
 }

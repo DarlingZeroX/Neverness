@@ -36,6 +36,9 @@ namespace VisionGal::GalGame
 		bool enableFastForward = false;
 		float fastForwardDelay = 0.f;
 
+		// 当前正在加载存档
+		bool isCurrentLoadingArchive = false;
+
 		// 自动模式（UI 控制）
 		bool enableAutoDialogue = false;
 		float autoDialogueDelay = 2.0f;

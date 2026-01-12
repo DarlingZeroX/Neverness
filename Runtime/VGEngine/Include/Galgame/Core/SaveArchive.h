@@ -12,6 +12,8 @@
 #pragma once
 #include "../Interface/GalgameInterface.h"
 #include <VGRHI/Interface/Texture.h>
+#include <HCore/Include/File/nlohmann/json.hpp>
+#include "ArchiveDataContainer.h"
 
 namespace VisionGal::GalGame
 {
@@ -31,5 +33,9 @@ namespace VisionGal::GalGame
 		String screenshotPath;
 
 		Ref<VGFX::TexturePixels> screenshotPixels = nullptr;
+		Ref<ArchiveDataContainer> archiveData = nullptr;
+
+		void WriteToJson(nlohmann::json& json);
+		void ReadFromJson(nlohmann::json& json);
 	};
 }

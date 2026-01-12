@@ -30,7 +30,7 @@ namespace VisionGal::GalGame
 		std::string GetCurrentStoryScriptPath() override;
 		std::filesystem::file_time_type GetScriptLastWriteTime() const override;
 
-		void DoChoice(const std::string& name, const std::vector<std::string>& options);	/// 处理剧情选择事件。
+		void DoChoice(const std::string& id, const std::vector<std::string>& options);	/// 处理剧情选择事件。
 		void DoInput(const std::string& id, const std::string& title, const std::string& button);	/// 处理输入事件。
 
 		bool LoadSceneStoryScript(IScene* scene);
@@ -44,7 +44,7 @@ namespace VisionGal::GalGame
 		void Update();
 		void SetEngine(IGalGameEngine* engine);
 	private:
-		void OnChoiceSelected(const std::string& name, const std::vector<std::string>& options, int currentChoice);	/// 处理剧情选择事件。
+		void OnChoiceSelected(const std::string& id, const std::vector<std::string>& options, int currentChoice);	/// 处理剧情选择事件。
 		void OnInputSubmitted(const std::string& id, const std::string& text);	/// 处理输入提交事件。
 		void ContinueDialogue();
 
@@ -67,5 +67,6 @@ namespace VisionGal::GalGame
 		WaitStruct m_Wait;										// 等待结构体，用于处理等待状态和相关的时间管理。
 
 		std::vector<std::function<void()>> m_UpdateCallback;	// 更新回调函数列表，用于在每帧更新时执行特定的操作。
+		std::vector<std::function<void()>> m_ArchiveLuaReadCallback;
 	};
 }

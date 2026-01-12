@@ -78,24 +78,11 @@ namespace VisionGal::GalGame
 
 	void ArchiveSystem::ReadArchive(const String& saveNumber, nlohmann::json& json)
 	{
-		auto save = json.value("Save", nlohmann::json({}));
+		auto save = json.value("Base", nlohmann::json({}));
 
 		// 反序列化本地数据到存档
 		SaveArchive archive;
-		archive.isValid = false;
-		archive.isGalGameArchive = save.value("IsGalGameArchive", false);
-		archive.version = save.value("Version", "");
-		archive.scriptPath = save.value("ScriptPath", "");
-		archive.line = save.value("Line", 0);
-
-		archive.saveNumberString = save.value("SaveNumberString", "");
-		archive.date = save.value("Date", "");
-		archive.time = save.value("Time", "");
-		archive.dateTime = save.value("DateTime", "");
-		archive.description = save.value("Description", "");
-		archive.screenshotPath = save.value("ScreenshotPath", "");
-
-		archive.isValid = archive.isGalGameArchive;
+		archive.ReadFromJson(json);
 		m_Archives[saveNumber] = archive;
 	}
 
@@ -133,10 +120,6 @@ namespace VisionGal::GalGame
 		std::filesystem::path screenshotPath = m_SaveDirectoryPath / (number + ".jpg");
 
 		// 保存截图
-		//if (m_CurrentSaveArchiveState.screenshotPixels)
-		//{
-		//	TextureConverter::SaveAsJPG(*m_CurrentSaveArchiveState.screenshotPixels, screenshotPath.string().c_str());
-		//}
 		if (m_GalGameContext->runtimeState.screenshotPixels)
 		{
 			TextureConverter::SaveAsJPG(*m_GalGameContext->runtimeState.screenshotPixels, screenshotPath.string().c_str());
@@ -155,19 +138,9 @@ namespace VisionGal::GalGame
 		archive.description = m_GalGameContext->runtimeState.currentDialogText; //对话描述
 
 		// 序列化到json
+		archive.archiveData = m_GalGameContext->archiveData;
 		nlohmann::json json;
-		json["Save"]["IsGalGameArchive"] = archive.isGalGameArchive;
-		json["Save"]["Version"] = archive.version;
-		json["Save"]["ScriptPath"] = archive.scriptPath;
-		json["Save"]["Line"] = archive.line;
-
-		json["Save"]["SaveNumberString"] = archive.saveNumberString;
-		json["Save"]["Date"] = archive.date;
-		json["Save"]["Time"] = archive.time;
-		json["Save"]["DateTime"] = archive.dateTime;
-		json["Save"]["Description"] = archive.description;
-		json["Save"]["ScreenshotPath"] = archive.screenshotPath;
-
+		archive.WriteToJson(json);
 		std::string jsonStr = json.dump(2);
 
 		// 写入JSON到文件
@@ -177,6 +150,9 @@ namespace VisionGal::GalGame
 				file << jsonStr;
 				file.close();
 				H_LOG_INFO("The galgame archive has been saved successfully: %s", savePath.string().c_str());
+
+				// 存档缓存到存档系统
+				m_Archives[number] = archive;
 			}
 			else {
 				H_LOG_WARN("Unable to open the galgame file: %s", savePath.string().c_str());
@@ -185,9 +161,6 @@ namespace VisionGal::GalGame
 		catch (const std::exception& e) {
 			H_LOG_WARN("The galgame archive saving failed: %s", e.what());
 		}
-
-		// 存档缓存到存档系统
-		m_Archives[number] = archive;
 
 		return archive;
 	}

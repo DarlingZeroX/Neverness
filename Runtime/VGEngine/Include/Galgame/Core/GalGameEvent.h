@@ -58,7 +58,7 @@ namespace VisionGal::GalGame
 		Type EventType = Type::None;
 		// 选择
 		std::vector<std::string> ChoiceOptions;
-		std::string ChoiceName;
+		std::string ChoiceID;
 		int CurrentChoiceIndex;
 		// 输入
 		std::string InputID;

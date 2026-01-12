@@ -12,14 +12,21 @@
 #pragma once
 #include "GalGameRuntimeState.h"
 #include "GalGameEvent.h"
+#include "ArchiveDataContainer.h"
 
 namespace VisionGal::GalGame
 {
 	struct GalGameContext
 	{
+		GalGameContext()
+		{
+			archiveData = CreateRef<ArchiveDataContainer>();
+		}
+
 		GalEngineEventBus engineEventBus;
 		GalGameUIEventBus uiEventBus;
 
 		GalGameRuntimeState runtimeState;
+		Ref<ArchiveDataContainer> archiveData = nullptr;
 	};
 }
