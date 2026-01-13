@@ -5,96 +5,40 @@
     "VGSCENE_Loader": "DEFAULT;",
     "SegmentNumber": 9,
     "SegmentType": "Script",
-    "ComponentNumber": 1,
-    "Script": {
-        "EntityComponentID": 248188668410156750,
-        "ScriptsData": [
-            {
-                "Type": "LuaScript",
-                "Path": "/assets/启动场景\\启动脚本.lua",
-                "VariableSize": 2,
-                "Variables": [
-                    {
-                        "key": "mGameSprite",
-                        "value": {
-                            "NativeType": 3,
-                            "VariableType": "GameActor",
-                            "VariableName": "mGameSprite",
-                            "Changed": true,
-                            "ValueEntityID": 15724790527033106358,
-                            "ValuePath": "",
-                            "ValueString": "",
-                            "ValueBoolean": true,
-                            "ValueDouble": 0.0
-                        }
-                    },
-                    {
-                        "key": "mLevel",
-                        "value": {
-                            "NativeType": 3,
-                            "VariableType": "Number",
-                            "VariableName": "mLevel",
-                            "Changed": true,
-                            "ValueEntityID": 14757395258967641292,
-                            "ValuePath": "",
-                            "ValueString": "",
-                            "ValueBoolean": true,
-                            "ValueDouble": 0.0
-                        }
-                    }
-                ]
-            }
-        ]
-    },
+    "ComponentNumber": 0,
     "SegmentType": "Entity",
-    "EntityNumber": 5,
-    "Label": "音频源",
-    "ID": 17932482929868524060,
+    "EntityNumber": 4,
+    "Label": "UI文档",
+    "ID": 1121397486019454353,
     "Parent": 0,
     "ComponentIDs": [
-        17932482929868524060,
-        15511477778250133715
+        1121397486019454353,
+        669284186378080398
     ],
-    "Label": "游戏图片",
-    "ID": 15724790527033106358,
+    "Label": "GalGame引擎",
+    "ID": 13669168056528829473,
     "Parent": 0,
     "ComponentIDs": [
-        15724790527033106358,
-        15226218329313936485
+        13669168056528829473,
+        5300828898657221247
     ],
     "Label": "相机",
-    "ID": 13926317088765942365,
+    "ID": 3461299980892358326,
     "Parent": 0,
     "ComponentIDs": [
-        13926317088765942365,
-        12449631379230503017
-    ],
-    "Label": "引擎图片",
-    "ID": 12449631379230503017,
-    "Parent": 0,
-    "ComponentIDs": [
-        13637038770057834674,
-        11877835154696708148,
-        248188668410156750
+        16414287039044744827,
+        6160332589096119729
     ],
     "Label": "Scene",
     "ID": 0,
     "Parent": 0,
     "ComponentIDs": [],
     "SegmentType": "AudioSourceComponent",
-    "ComponentNumber": 1,
-    "AudioSourceComponent": {
-        "EntityComponentID": 15511477778250133715,
-        "HasAudio": true,
-        "m_AudioPath": "/assets/启动场景\\VisionGal.mp3",
-        "playOnAwake": true,
-        "loop": false,
-        "volume": 1.0
-    },
+    "ComponentNumber": 0,
     "SegmentType": "Transform",
-    "ComponentNumber": 4,
+    "ComponentNumber": 3,
     "Transform": {
-        "EntityComponentID": 17932482929868524060,
+        "EntityComponentID": 1121397486019454353,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -114,27 +58,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 15724790527033106358,
-        "location": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
-        "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "w": 1.0
-        },
-        "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-        },
-        "visible": false
-    },
-    "Transform": {
-        "EntityComponentID": 13926317088765942365,
+        "EntityComponentID": 13669168056528829473,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -154,7 +78,7 @@
         "visible": true
     },
     "Transform": {
-        "EntityComponentID": 13637038770057834674,
+        "EntityComponentID": 16414287039044744827,
         "location": {
             "x": 0.0,
             "y": 0.0,
@@ -174,64 +98,30 @@
         "visible": true
     },
     "SegmentType": "SpriteRenderer",
-    "ComponentNumber": 2,
-    "SpriteRenderer": {
-        "EntityComponentID": 15226218329313936485,
-        "HasSprite": true,
-        "m_SpriteSize": {
-            "x": 1921.0,
-            "y": 1080.0
-        },
-        "m_SpritePosition": {
-            "x": 0.0,
-            "y": 0.0
-        },
-        "m_SpriteTexturePath": "/assets/UI\\主菜单\\主菜单背景.png",
-        "Color": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0,
-            "w": 1.0
-        },
-        "Flip": {
-            "x": 0,
-            "y": 0
-        }
-    },
-    "SpriteRenderer": {
-        "EntityComponentID": 11877835154696708148,
-        "HasSprite": true,
-        "m_SpriteSize": {
-            "x": 1920.0,
-            "y": 1081.0
-        },
-        "m_SpritePosition": {
-            "x": 0.0,
-            "y": 0.0
-        },
-        "m_SpriteTexturePath": "/assets/启动场景\\引擎.png",
-        "Color": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0,
-            "w": 1.0
-        },
-        "Flip": {
-            "x": 0,
-            "y": 0
-        }
-    },
-    "SegmentType": "RmlUIDocumentComponent",
     "ComponentNumber": 0,
+    "SegmentType": "RmlUIDocumentComponent",
+    "ComponentNumber": 1,
+    "RmlUIDocumentComponent": {
+        "EntityComponentID": 669284186378080398,
+        "HasDocument": true,
+        "m_DocumentPath": "/assets/UI\\游戏\\游戏自定义对话效果.html"
+    },
     "SegmentType": "Camera",
     "ComponentNumber": 1,
     "Camera": {
-        "EntityComponentID": 12449631379230503017,
+        "EntityComponentID": 6160332589096119729,
         "HasCamera": true,
         "m_CameraType": "Letterbox2D"
     },
     "SegmentType": "VideoPlayer",
     "ComponentNumber": 0,
     "SegmentType": "GalGameEngine",
-    "ComponentNumber": 0
+    "ComponentNumber": 1,
+    "GalGameEngine": {
+        "EntityComponentID": 5300828898657221247,
+        "m_ScriptPath": "/assets/剧情脚本\\剧情选择.lua",
+        "m_ChoiceUIPath": "/assets/UI\\游戏\\剧情选择.html",
+        "m_FullScreenTextUIPath": "/assets/UI\\游戏\\全屏文字.html",
+        "m_InputUIPath": "/assets/UI\\游戏\\获取输入.html"
+    }
 }

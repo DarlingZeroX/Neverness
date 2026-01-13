@@ -190,6 +190,9 @@ Reload=重新加载
 
 Story Script=剧情脚本
 Reload Story Script=重新加载剧情脚本
+Choice UI=剧情选择UI
+Full screen text UI=全屏文字UI
+Input UI=玩家输入UI
 
 The texture is loaded successfully: %s [Width: %d  Height: %d]=成功加载纹理：%s [宽度：%d 高度：%d]
 The texture failed to load: %s=纹理加载失败：%s

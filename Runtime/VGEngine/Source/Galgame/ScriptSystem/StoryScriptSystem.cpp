@@ -115,7 +115,16 @@ namespace VisionGal::GalGame
 		// 如果正在加载存档，则直接从存档数据中获取选择结果
 		if (m_GalGameContext->runtimeState.isCurrentLoadingArchive)
 		{
-			int choiceIndex = m_GalGameContext->archiveData->GetNamespace("__Choices__")->GetVariable<int>(id);
+			std::string choice = m_GalGameContext->archiveData->GetChoicesNamespace()->GetVariable<std::string>(id);
+
+			// 获取索引
+			int choiceIndex = 0;
+			for (;choiceIndex < options.size(); choiceIndex++)
+			{
+				if (options[choiceIndex] == choice)
+					break;
+			}
+
 			// 延迟到存档读取循环中执行,因为这里还在调用协程中，直接继续协程会出现不需要继续协程
 			m_ArchiveLuaReadCallback.push_back([this,id,options,choiceIndex] ()
 				{
@@ -137,7 +146,7 @@ namespace VisionGal::GalGame
 		// 如果正在加载存档，则直接从存档数据中获取选择结果
 		if (m_GalGameContext->runtimeState.isCurrentLoadingArchive)
 		{
-			std::string text = m_GalGameContext->archiveData->GetNamespace("__Inputs__")->GetVariable<std::string>(id);
+			std::string text = m_GalGameContext->archiveData->GetInputNamespace()->GetVariable<std::string>(id);
 			//OnInputSubmitted(id, text);
 			// 延迟到存档读取循环中执行,因为这里还在协程中，直接继续协程会出现不需要继续协程
 			m_ArchiveLuaReadCallback.push_back([this, id, text]()
@@ -274,7 +283,7 @@ namespace VisionGal::GalGame
 	)
 	{
 		// 保存选择结果到存档数据
-		m_GalGameContext->archiveData->GetNamespace("__Choices__")->SetVariable(id, currentChoice);
+		m_GalGameContext->archiveData->GetChoicesNamespace()->SetVariable(id, options[currentChoice]);
 
 		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, options[currentChoice]);
 	}
@@ -282,7 +291,7 @@ namespace VisionGal::GalGame
 	void StoryScriptSystem::OnInputSubmitted(const std::string& id, const std::string& text)
 	{
 		// 保存输入结果到存档数据
-		m_GalGameContext->archiveData->GetNamespace("__Inputs__")->SetVariable(id, text);
+		m_GalGameContext->archiveData->GetInputNamespace()->SetVariable(id, text);
 
 		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, text);
 	}

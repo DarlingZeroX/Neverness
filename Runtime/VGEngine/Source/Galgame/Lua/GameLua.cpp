@@ -141,6 +141,8 @@ namespace VisionGal::GalGame
 			"获取精灵层", &LayeredSceneSystem::GetSpriteLayer
 		);
 
+		ArchiveDataContainer::InitializeLuaBinding(galgame);
+
 		// 注册引擎类
 		galgame.new_usertype<GalGameEngine>("GalGameEngine",
 			"LoadArchive", &GalGameEngine::LoadArchive,
@@ -160,7 +162,7 @@ namespace VisionGal::GalGame
 			{
 				GalGameLuaInterfaceImp::FullScreenText(self, text);
 			},
-			"获取输入", sol::yielding([](GalGameEngine& self, const std::string& id, const std::string& title, const std::string button) -> void
+			"文本输入", sol::yielding([](GalGameEngine& self, const std::string& id, const std::string& title, const std::string button) -> void
 			{
 				GalGameLuaInterfaceImp::InputText(self, id, title, button);
 			}),
@@ -203,6 +205,9 @@ namespace VisionGal::GalGame
 			),
 			"UI系统", sol::property(
 				[](GalGameEngine& self) -> GalGameUISystem* { return dynamic_cast<GalGameUISystem*>(self.GetGalGameUISystem()); }
+			),
+			"存档数据", sol::property(
+				[](GalGameEngine& self) -> ArchiveDataContainer* { return self.GetArchiveDataContainer(); }
 			)
 		);
 

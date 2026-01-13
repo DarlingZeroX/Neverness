@@ -131,7 +131,7 @@ namespace VisionGal::Editor
 
 	bool BuildSettingsPanel::BuildOutputDirectoryUI()
 	{
-		ImVec4 invalidTextColor = ImVec4(0.7f, 0.7f, 0.7f, 1.0f);
+		ImVec4 invalidTextColor = ImVec4(1.0f, 0.1f, 0.1f, 1.0f);
 
 		// 生成目录
 		ImGui::Text(EditorText{ "Build output directory" }.c_str());
@@ -180,7 +180,7 @@ namespace VisionGal::Editor
 
 			// 构建平台
 			ImGui::Text(EditorText{ "Target Platform" }.c_str());
-			if (ImGui::BeginCombo("##Editor Theme", "Windows", ImGuiComboFlags_PopupAlignLeft))
+			if (ImGui::BeginCombo("##Target Platform", "Windows", ImGuiComboFlags_PopupAlignLeft))
 			{
 				for (int i = 0; i < m_TargetPlatforms.size(); i++)
 				{

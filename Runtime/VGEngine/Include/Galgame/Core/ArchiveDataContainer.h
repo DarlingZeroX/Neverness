@@ -19,5 +19,10 @@ namespace VisionGal::GalGame
 	public:
 		ArchiveDataContainer() = default;
 		~ArchiveDataContainer() = default;
+
+		VGDataNamespace* GetChoicesNamespace();
+		VGDataNamespace* GetInputNamespace();
+
+		static void InitializeLuaBinding(sol::table& L);
 	};
 }

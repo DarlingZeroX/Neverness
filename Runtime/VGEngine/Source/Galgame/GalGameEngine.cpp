@@ -69,6 +69,11 @@ namespace VisionGal::GalGame
 		m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_GalGameContext->runtimeState.screenshotPixels);
 	}
 
+	ArchiveDataContainer* GalGameEngine::GetArchiveDataContainer() const
+	{
+		return m_GalGameContext->archiveData.get();
+	}
+
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)
 	{
 		//Reset();

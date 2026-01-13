@@ -76,6 +76,9 @@ namespace VisionGal::GalGame
 
 		// 场景图像捕获接口
 		void CaptureSceneImage();
+
+		// 引擎上下文获取接口
+		ArchiveDataContainer* GetArchiveDataContainer() const;
 	private:
 		void CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext);		/// 创建引擎的核心子系统。
 		void OnMainSceneChanged(const EngineEvent& evt);			/// 处理主场景更改事件的回调函数。
