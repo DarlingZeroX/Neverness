@@ -137,11 +137,16 @@ namespace VisionGal::GalGame
 		archive.line = m_GalGameContext->runtimeState.currentDialogLine;	//对话当前行
 		archive.description = m_GalGameContext->runtimeState.currentDialogText; //对话描述
 
-		// 序列化到json
+		// 先引用
 		archive.archiveData = m_GalGameContext->archiveData;
+
+		// 序列化到json
 		nlohmann::json json;
 		archive.WriteToJson(json);
 		std::string jsonStr = json.dump(2);
+
+		//archive.archiveData = CreateRef<ArchiveDataContainer>();
+		//archive.archiveData->Deserialize()
 
 		// 写入JSON到文件
 		try {
@@ -153,6 +158,8 @@ namespace VisionGal::GalGame
 
 				// 存档缓存到存档系统
 				m_Archives[number] = archive;
+				// 深拷贝，修复存档数据浅拷贝问题
+				m_Archives[number].ReadFromJson(json);
 			}
 			else {
 				H_LOG_WARN("Unable to open the galgame file: %s", savePath.string().c_str());
