@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Exception.h"
-#include <HCore/Include/Core/HAssert.h>
+#include <HCore/Interface/HAssert.h>
 
 #ifdef _DEBUG
 #define GL_CLEAR_ERROR() VISIONGAL_OPENGL_NAMESPACE::Exception::ClearError()

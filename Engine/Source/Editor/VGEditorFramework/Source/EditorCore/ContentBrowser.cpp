@@ -13,9 +13,9 @@
 #include <VGEngine/Include/Asset/Package.h>
 #include <VGImgui/IncludeImGui.h>
 #include <VGImgui/IncludeImGuiEx.h>
-#include <HCore/Include/Core/HStringTools.h>
+#include <HCore/Interface/HStringTools.h>
 #include <HCorePlatform/Interface/HClipboard.h>
-#include <HCorePlatform/Interface/HFileSystemGenerator.h>
+#include <HFileSystem/Interface/HFileSystemGenerator.h>
 #include <VGAsset/Include/HPackage.h>
 //#include "Core/VFS.h"
 //#include "Engine/Manager/AssetManager.h"

@@ -10,7 +10,7 @@
  */
 
 #include "pch.h"
-#include "Core/HLocalization.h"
+#include "HLocalization.h"
 
 namespace Horizon
 {

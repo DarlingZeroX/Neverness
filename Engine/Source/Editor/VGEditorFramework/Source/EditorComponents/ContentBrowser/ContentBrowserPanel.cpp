@@ -15,8 +15,8 @@
 #include "EditorComponents/ContentBrowser/ThumbnialManager.h"
 
 #include <VGImgui/IncludeImGuiEx.h>
-#include <HCore//Include/Core/HStringTools.h>
-#include <HCorePlatform/Interface/HFileSystemGenerator.h>
+#include <HCore/Interface/HStringTools.h>
+#include <HFileSystem/Interface/HFileSystemGenerator.h>
 #include <HCorePlatform/Interface/HClipboard.h>
 
 #include "AssetEditor/AssetEditor.h"

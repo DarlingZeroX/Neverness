@@ -11,7 +11,7 @@
 
 #pragma once
 //#include "../../Core/Core.h"
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 extern "C" {
 #include <libswscale/swscale.h>
 }

@@ -10,7 +10,7 @@
  */
 
 #include "Input/HNativeMouse.h"
-#include <HCore/Include/Core/HLog.h>
+#include <HCore/Interface/HLog.h>
 
 namespace Horizon
 {

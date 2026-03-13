@@ -14,7 +14,7 @@
 #include "Asset/TextureAsset.h"
 #include "Asset/VideoAsset.h"
 #include "Asset/AudioAsset.h"
-#include <HCorePlatform/Interface/HFileSystem.h>
+#include <HFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal
 {

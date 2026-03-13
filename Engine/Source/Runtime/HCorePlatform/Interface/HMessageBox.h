@@ -12,7 +12,7 @@
 #pragma once
 #include "../HCorePlatformConfig.h"
 #include <string>
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HCoreTypes.h>
 
 /**
  * SDL_MessageBox flags. If supported will display warning icon, etc.

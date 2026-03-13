@@ -11,7 +11,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "../Core/HCoreTypes.h"
+#include "../../Interface/HCoreTypes.h"
 #include "HEntityInterface.h"
 
 namespace Horizon

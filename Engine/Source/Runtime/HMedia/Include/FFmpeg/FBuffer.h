@@ -12,7 +12,7 @@
 #pragma once
 //#include "../../Core/Core.h"
 #include "../HMediaConfig.h"
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 
 namespace Horizon {
 

@@ -11,7 +11,7 @@
 
 #include "PakReader.h"
 #include "PakCrc32.h"
-#include "HCore/Include/Core/HLog.h" // 添加日志头文件
+#include "HCore/Interface/HLog.h" // 添加日志头文件
 #include <iostream>
 #include <filesystem>
 

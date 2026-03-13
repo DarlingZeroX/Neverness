@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
-#include "../HConfig.h"
-#include "../Math/HVector.h"
+#include "HConfig.h"
+#include "../Include/Math/HVector.h"
 
 namespace Horizon
 {

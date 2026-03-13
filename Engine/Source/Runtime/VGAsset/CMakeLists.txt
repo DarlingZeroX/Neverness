@@ -63,3 +63,4 @@ target_link_libraries(VGAsset PRIVATE SDL3::SDL3)
 
 target_link_libraries(VGAsset PRIVATE HCore)
 target_link_libraries(VGAsset PRIVATE HCorePlatform)
+target_link_libraries(VGAsset PRIVATE HFileSystem)

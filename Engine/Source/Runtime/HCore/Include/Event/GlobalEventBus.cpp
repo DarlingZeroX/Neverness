@@ -4,7 +4,7 @@
 
 #include "pch.h"
 #include "GlobalEventBus.h"
-#include "Core/HLog.h"
+#include "HLog.h"
 
 namespace Horizon::Events {
 	static 	std::vector<std::unique_ptr<HEvent>> m_EventCache;

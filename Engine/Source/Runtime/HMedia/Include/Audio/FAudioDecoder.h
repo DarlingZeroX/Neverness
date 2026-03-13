@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include <HCore/Include/Core/HCore.h>
+#include <HCore/Interface/HCore.h>
 #include "../Interface/AudioDecoderInterface.h"
 
 #include "../FFmpeg/FContext.h"

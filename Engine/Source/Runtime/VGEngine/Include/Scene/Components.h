@@ -22,7 +22,7 @@
 #include "../Interface/SceneInterface.h"
 #include "../Interface/GameInterface.h"
 #include <VGEngine/Include/EngineConfig.h>
-#include <HCore/Include/Core/HSerialization.h>
+#include <HCore/Interface/HSerialization.h>
 //#include <HMedia/Interface/AudioInterface.h>
 
 namespace VisionGal {

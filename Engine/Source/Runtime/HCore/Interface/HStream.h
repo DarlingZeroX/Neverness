@@ -10,10 +10,10 @@
 
 #pragma once
 #include <stdarg.h>
-#include "../Core/HCore.h"
-#include "../Core/HSTL.h"
-#include "../Math/HMath.h"
-#include "../Core/HStringTools.h"
+#include "HCore.h"
+#include "HSTL.h"
+#include "../Include/Math/HMath.h"
+#include "HStringTools.h"
 //#include "Source/Core/HStringTools.h"
 
 namespace Horizon

@@ -11,7 +11,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include "../Core/HTypeInfo.h"
+#include "../../Interface/HTypeInfo.h"
 
 BEGIN_META_NAMESPACE
 

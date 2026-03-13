@@ -13,7 +13,7 @@
 #include "EditorCore/Localization.h"
 #include <VGImgui/IncludeImGuiEx.h>
 #include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
-#include "HCorePlatform/Interface/HFileSystem.h"
+#include "HFileSystem/Interface/HFileSystem.h"
 #include "VGEngine/Include/Asset/Package.h"
 #include "VGEngine/Include/Project/ProjectSettings.h"
 #include "VGEngine/Include/Project/ProjectBuilder.h"

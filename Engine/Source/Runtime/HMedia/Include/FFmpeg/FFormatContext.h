@@ -11,7 +11,7 @@
 
 #pragma once
 //#include "../../Core/Core.h"
-#include <HCore/Include/Core/HCore.h>
+#include <HCore/Interface/HCore.h>
 #include "FDictionary.h"
 #include "FIOContext.h"
 #include "FPacket.h"

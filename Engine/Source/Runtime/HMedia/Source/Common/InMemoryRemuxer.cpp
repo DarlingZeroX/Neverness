@@ -10,7 +10,7 @@
 */
 
 #include "Common/InMemoryRemuxer.h"
-#include <HCore/Include/Core/HVirtualFileSystem.h>
+#include <HFileSystem/Interface/HVirtualFileSystem.h>
 
 namespace Horizon
 {

@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "../HCorePlatformConfig.h"
+#include "../HFileSystemConfig.h"
 
 //#include "../Core/HCore.h"
 //#include "HStream.h"
@@ -17,10 +17,10 @@
 //#include "HMemoryStream.h"
 //#include "../Core/HStringTools.h"
 
-#include <HCore/Include/Core/HCore.h>
-#include <HCore/Include/Core/HStringTools.h>
-#include <HCore/Include/System//HStream.h>
-#include <HCore/Include/System//HMemoryStream.h>
+#include <HCore/Interface/HCore.h>
+#include <HCore/Interface/HStringTools.h>
+#include <HCore/Interface/HStream.h>
+#include <HCore/Interface/HMemoryStream.h>
 
 #include <filesystem>
 
@@ -56,7 +56,7 @@ namespace Horizon
 		std::wstring Spec;
 	};
 
-	//H_CORE_PLATFORM_API
+	//H_FILE_SYSTEM_API
 	namespace  HFileSystem
 	{
 		//public:
@@ -159,9 +159,9 @@ namespace Horizon
 			return std::filesystem::current_path(path);
 		}
 
-		H_CORE_PLATFORM_API fsPath RelativePath(const fsPath& path, const fsPath& base);
+		H_FILE_SYSTEM_API fsPath RelativePath(const fsPath& path, const fsPath& base);
 
-		H_CORE_PLATFORM_API inline bool	CreateNullFile(const fsPath& path);
+		H_FILE_SYSTEM_API inline bool	CreateNullFile(const fsPath& path);
 
 		//private:
 		//static std::map<string, EmbeddedFileData> s_EmbeddedFiles;
@@ -169,14 +169,14 @@ namespace Horizon
 		// Converts to lowercase, removes all duplicated "\\" or "//" and converts all '/' to '\'
 		// (used to enable simple string-based path comparison, etc)
 		// Note: it ignores first double "\\\\" because it could be a network path
-		H_CORE_PLATFORM_API fsPath                            CleanupPath(const fsPath& inputPath, bool convertToLowercase, bool useBackslash = true);
+		H_FILE_SYSTEM_API fsPath                            CleanupPath(const fsPath& inputPath, bool convertToLowercase, bool useBackslash = true);
 		//static string                             CleanupPath(const string& inputPath, bool convertToLowercase, bool useBackslash = true)
 		//{
 		//	return HStringTools::SimpleNarrow(CleanupPath(HStringTools::SimpleWiden(inputPath), convertToLowercase, useBackslash));
 		//}
 
 		// tries to find the file using GetWorkingDirectory as root, then GetExecutableDirectory and then finally using system default; if file is found, returns full path; if not, returns empty string
-		H_CORE_PLATFORM_API wstring                            FindLocalFile(const wstring& fileName);
+		H_FILE_SYSTEM_API wstring                            FindLocalFile(const wstring& fileName);
 
 		// SplitPath is in vaFileTools::SplitPath
 
@@ -190,48 +190,48 @@ namespace Horizon
 		//      static std::shared_ptr<vaMemoryBuffer> LoadFileToMemoryBuffer( const wchar_t * fileName );
 
 			  // Just loads the whole file into a buffer; TODO: rename and unify naming with ReadBuffer to ReadBinary/WriteBinary
-		//H_CORE_PLATFORM_API std::shared_ptr<HMemoryStream>    LoadMemoryStream(const pfsPath& fileName);
+		//H_FILE_SYSTEM_API std::shared_ptr<HMemoryStream>    LoadMemoryStream(const pfsPath& fileName);
 
-		//H_CORE_PLATFORM_API string                             ReadText(const pfsPath& fileName);
+		//H_FILE_SYSTEM_API string                             ReadText(const pfsPath& fileName);
 
-		//H_CORE_PLATFORM_API wstring                            GetAbsolutePath(const wstring& path);
-		//H_CORE_PLATFORM_API string                             GetAbsolutePath(const string& path) { return HStringTools::SimpleNarrow(GetAbsolutePath(HStringTools::SimpleWiden(path))); }
+		//H_FILE_SYSTEM_API wstring                            GetAbsolutePath(const wstring& path);
+		//H_FILE_SYSTEM_API string                             GetAbsolutePath(const string& path) { return HStringTools::SimpleNarrow(GetAbsolutePath(HStringTools::SimpleWiden(path))); }
 
-		H_CORE_PLATFORM_API std::vector<fsPath>               FindExtension(const fsPath& startDirectory, const std::string& extName, bool recursive);
+		H_FILE_SYSTEM_API std::vector<fsPath>               FindExtension(const fsPath& startDirectory, const std::string& extName, bool recursive);
 
 		// Wildcards allowed!
-		//H_CORE_PLATFORM_API std::vector<wstring>               FindFiles(const wstring& startDirectory, const wstring& searchName, bool recursive);
-		//H_CORE_PLATFORM_API std::vector<wstring>               FindDirectories(const wstring& startDirectory);
+		//H_FILE_SYSTEM_API std::vector<wstring>               FindFiles(const wstring& startDirectory, const wstring& searchName, bool recursive);
+		//H_FILE_SYSTEM_API std::vector<wstring>               FindDirectories(const wstring& startDirectory);
 
-		//H_CORE_PLATFORM_API std::vector<string>                FindFiles(const string& startDirectory, const string& searchName, bool recursive);
-		//H_CORE_PLATFORM_API std::vector<string>                FindDirectories(const string& startDirectory);
+		//H_FILE_SYSTEM_API std::vector<string>                FindFiles(const string& startDirectory, const string& searchName, bool recursive);
+		//H_FILE_SYSTEM_API std::vector<string>                FindDirectories(const string& startDirectory);
 
-		H_CORE_PLATFORM_API fsPath							   OpenFileDialog(const fsPath& defaultPath, std::vector<HFileFilterItem> filter);
-		H_CORE_PLATFORM_API fsPath							   SaveFileDialog(const fsPath& defaultName, const fsPath& defaultPath, std::vector<HFileFilterItem> filters = {});
-		H_CORE_PLATFORM_API fsPath							   SelectFolderDialog(const fsPath& defaultPath);
+		H_FILE_SYSTEM_API fsPath							   OpenFileDialog(const fsPath& defaultPath, std::vector<HFileFilterItem> filter);
+		H_FILE_SYSTEM_API fsPath							   SaveFileDialog(const fsPath& defaultName, const fsPath& defaultPath, std::vector<HFileFilterItem> filters = {});
+		H_FILE_SYSTEM_API fsPath							   SelectFolderDialog(const fsPath& defaultPath);
 
-		H_CORE_PLATFORM_API void							   OpenSystemExplorerFolder(const fsPath& folderPath);
+		H_FILE_SYSTEM_API void							   OpenSystemExplorerFolder(const fsPath& folderPath);
 
-		H_CORE_PLATFORM_API bool							   ReadTextFromFile(const fsPath& path, std::string& text);
-		H_CORE_PLATFORM_API bool							   WriteTextToFile(const fsPath& path, const std::string& text);
+		H_FILE_SYSTEM_API bool							   ReadTextFromFile(const fsPath& path, std::string& text);
+		H_FILE_SYSTEM_API bool							   WriteTextToFile(const fsPath& path, const std::string& text);
 
-		H_CORE_PLATFORM_API void                               SplitPath(const fsPath& inFullPath, string* outDirectory, string* outFileName, string* outFileExt);
-		H_CORE_PLATFORM_API void                               SplitPath(const fsPath& inFullPath, wstring* outDirectory, wstring* outFileName, wstring* outFileExt);
-		H_CORE_PLATFORM_API void                               SplitPath(const fsPath& inFullPath, string& outDirectory, string& outFileName, string& outFileExt);
-		H_CORE_PLATFORM_API void                               SplitPath(const fsPath& inFullPath, wstring& outDirectory, wstring& outFileName, wstring& outFileExt);
+		H_FILE_SYSTEM_API void                               SplitPath(const fsPath& inFullPath, string* outDirectory, string* outFileName, string* outFileExt);
+		H_FILE_SYSTEM_API void                               SplitPath(const fsPath& inFullPath, wstring* outDirectory, wstring* outFileName, wstring* outFileExt);
+		H_FILE_SYSTEM_API void                               SplitPath(const fsPath& inFullPath, string& outDirectory, string& outFileName, string& outFileExt);
+		H_FILE_SYSTEM_API void                               SplitPath(const fsPath& inFullPath, wstring& outDirectory, wstring& outFileName, wstring& outFileExt);
 
-		H_CORE_PLATFORM_API bool                               PathHasDirectory(const string& inFullPath);
+		H_FILE_SYSTEM_API bool                               PathHasDirectory(const string& inFullPath);
 
-		//H_CORE_PLATFORM_API wstring                            FixExtension(const wstring& path, const wstring& ext);
-		H_CORE_PLATFORM_API string                             FixExtension(const string& path, const string& ext);
+		//H_FILE_SYSTEM_API wstring                            FixExtension(const wstring& path, const wstring& ext);
+		H_FILE_SYSTEM_API string                             FixExtension(const string& path, const string& ext);
 
-		H_CORE_PLATFORM_API string                             SplitPathExt(const fsPath& inFullPath);
+		H_FILE_SYSTEM_API string                             SplitPathExt(const fsPath& inFullPath);
 
-		H_CORE_PLATFORM_API std::string						   ToWindowsPath(const std::string& path);
-		H_CORE_PLATFORM_API	std::string						   ToUnixPath(const std::string& path);
+		H_FILE_SYSTEM_API std::string						   ToWindowsPath(const std::string& path);
+		H_FILE_SYSTEM_API	std::string						   ToUnixPath(const std::string& path);
 
-		H_CORE_PLATFORM_API	bool							   IsSubPath(const fsPath& base, const fsPath& target);
+		H_FILE_SYSTEM_API	bool							   IsSubPath(const fsPath& base, const fsPath& target);
 
-		H_CORE_PLATFORM_API std::string						   GetFileNameFromPath(const fsPath& path);
+		H_FILE_SYSTEM_API std::string						   GetFileNameFromPath(const fsPath& path);
 	};
 }

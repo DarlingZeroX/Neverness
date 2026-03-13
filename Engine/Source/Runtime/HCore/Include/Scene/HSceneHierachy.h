@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../CoreModuleDefinitions.h"
+#include "../../CoreModuleDefinitions.h"
 #include "HSceneInterface.h"
 #include "HBaseComponent.h"
 

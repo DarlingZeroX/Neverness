@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 
 namespace Horizon
 {

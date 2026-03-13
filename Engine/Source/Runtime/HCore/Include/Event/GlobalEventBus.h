@@ -7,8 +7,8 @@
 #include <sstream>
 
 #include "HEventBase.h"
-#include "../CoreModuleDefinitions.h"
-#include "../HConfig.h"
+#include "../../CoreModuleDefinitions.h"
+#include "../../Interface/HConfig.h"
 #include "Eventpp/eventqueue.h"
 #include <vector>
 

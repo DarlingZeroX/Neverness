@@ -5,7 +5,7 @@
 
 namespace Horizon
 {
-	struct H_CORE_PLATFORM_API HSequenceGenerator
+	struct H_FILE_SYSTEM_API HSequenceGenerator
 	{
 		static fsPath GenerateDirectory(const fsPath& path);
 		static fsPath GenerateAsset(const fsPath& path, const std::wstring& name);

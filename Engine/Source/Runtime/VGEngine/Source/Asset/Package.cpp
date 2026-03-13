@@ -12,8 +12,8 @@
 #include "Asset/Package.h"
 
 #include "Core/VFS.h"
-#include "HCore/Include/Core/HStringTools.h"
-#include "HCorePlatform/Interface/HFileSystem.h"
+#include "HCore/Interface/HStringTools.h"
+#include "HFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal
 {

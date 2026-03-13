@@ -12,7 +12,7 @@
 #include "Core/Input.h"
 #include <HCorePlatform/Interface/HInput.h>
 
-#include "HCore/Include/Core/HStringTools.h"
+#include "HCore/Interface/HStringTools.h"
 
 namespace VisionGal
 {

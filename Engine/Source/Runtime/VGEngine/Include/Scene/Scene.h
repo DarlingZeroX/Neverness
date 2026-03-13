@@ -13,7 +13,7 @@
 #include "../Interface/SceneInterface.h"
 #include <memory>
 #include <unordered_map>
-#include <HCore/Include/Core/HRandom.h>
+#include <HCore/Interface/HRandom.h>
 #include <HCore/Include/Scene/HBaseComponent.h>
 #include <HCore/Include/Event/HEventDelegate.h>
 

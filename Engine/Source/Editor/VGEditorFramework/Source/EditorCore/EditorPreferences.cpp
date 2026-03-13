@@ -13,7 +13,7 @@
 #include "PanelManager.h"
 #include "Setting/Style.h"
 #include "EditorCore/Localization.h"
-#include "HCorePlatform/Interface/HFileSystem.h"
+#include "HFileSystem/Interface/HFileSystem.h"
 #include "MainEditor/MainPanel.h"
 #include "VGEngine/Include/Core/VFS.h"
 #include "VGImgui/IncludeImGuiEx.h"

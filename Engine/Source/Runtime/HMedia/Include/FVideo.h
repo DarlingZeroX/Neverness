@@ -12,8 +12,8 @@
 #pragma once
 #include "HMediaConfig.h"
 #include "../Interface/VideoInterface.h"
-#include <HCore/Include/Core/HCore.h>
-#include <HCore/Include/VFS/VirtualFileSystem.hpp>
+#include <HCore/Interface/HCore.h>
+#include <HFileSystem/Include/VFS/VirtualFileSystem.hpp>
 #include "SDL/SDLAudio.h"
 
 namespace Horizon {

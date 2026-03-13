@@ -14,7 +14,7 @@
 //#include "Video.h"
 #include "../Interface/Loader.h"
 #include "../Asset/TextureAsset.h"
-#include <HCore/Include/Core/HSingleton.h>
+#include <HCore/Interface/HSingleton.h>
 
 namespace VisionGal {
 

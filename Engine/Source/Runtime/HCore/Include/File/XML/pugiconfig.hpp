@@ -14,7 +14,7 @@
 #ifndef HEADER_PUGICONFIG_HPP
 #define HEADER_PUGICONFIG_HPP
 
-#include "../../CoreModuleDefinitions.h"
+#include "../../../CoreModuleDefinitions.h"
 
 #ifndef PUGIXML_API
 #	define PUGIXML_API CORE_MODULE_API

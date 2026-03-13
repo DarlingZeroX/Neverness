@@ -12,7 +12,7 @@
 #pragma once
 #include "../../HCorePlatformConfig.h"
 #include "HKeyboardBase.h"
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 #include <bitset>
 #include <queue>
 #include <optional>

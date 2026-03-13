@@ -31,16 +31,18 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # 可执行文件目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-########## 包含子项目 
-add_subdirectory ("Engine/Source/Runtime/VGLua")
+# 基础框架
 add_subdirectory ("Engine/Source/Runtime/HCore")
 add_subdirectory ("Engine/Source/Runtime/HCorePlatform")
+add_subdirectory ("Engine/Source/Runtime/HFileSystem")
 add_subdirectory ("Engine/Source/Runtime/HNodeGraph")
+add_subdirectory ("Engine/Source/Runtime/HMedia")
+# 引擎
+add_subdirectory ("Engine/Source/Runtime/VGLua")
 add_subdirectory ("Engine/Source/Runtime/VGRHI")
 add_subdirectory ("Engine/Source/Runtime/VGAsset")
 add_subdirectory ("Engine/Source/Runtime/VGPackage")
 add_subdirectory ("Engine/Source/Runtime/VGImgui")
-add_subdirectory ("Engine/Source/Runtime/HMedia")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNodeGraphEditor")

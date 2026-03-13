@@ -11,7 +11,7 @@
 
 #include "Galgame/ArchiveSystem.h"
 #include "Resource/Texture/TextureConverter.h"
-#include <HCorePlatform/Interface/HFileSystem.h>
+#include <HFileSystem/Interface/HFileSystem.h>
 #include <HCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame

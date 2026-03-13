@@ -8,7 +8,7 @@
 
 
 #include "HCore/.Generated\HConfig.Generated.h"
-#include "HCore/Include/HConfig.h"
+#include "HCore/Interface/HConfig.h"
 
 #include <HCore/Include/Meta/ReflectionDatabase.h>
 

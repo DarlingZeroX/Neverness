@@ -18,7 +18,7 @@
 #include "Scene/GameActorFactory.h"
 #include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 
-#include "HCore/Include/Core/HStringTools.h"
+#include "HCore/Interface/HStringTools.h"
 
 #include <exception>
 #include <iostream>

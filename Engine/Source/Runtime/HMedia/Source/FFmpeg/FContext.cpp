@@ -10,7 +10,7 @@
 */
 
 #include "FFmpeg/FContext.h"
-#include <HCore/Include/Core/HVirtualFileSystem.h>
+#include <HFileSystem/Interface/HVirtualFileSystem.h>
 
 namespace Horizon {
 

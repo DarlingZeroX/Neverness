@@ -10,9 +10,9 @@
  */
 
 #pragma once
-#include "../Core/HCore.h"
+#include "../../Interface/HCore.h"
 #include "HSceneInterface.h"
-#include "../CoreModuleDefinitions.h"
+#include "../../CoreModuleDefinitions.h"
 
 #pragma warning(push)
 #pragma warning(disable : 26439)

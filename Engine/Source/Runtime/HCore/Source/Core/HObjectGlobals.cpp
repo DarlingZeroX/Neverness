@@ -10,8 +10,8 @@
  */
 
 #include "pch.h"
-#include "Core/HObjectGlobals.h"
-#include "Core/HTypeInfo.h"
+#include "HObjectGlobals.h"
+#include "HTypeInfo.h"
 
 namespace Horizon
 {

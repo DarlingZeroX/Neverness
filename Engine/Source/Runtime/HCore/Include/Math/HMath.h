@@ -8,6 +8,6 @@
 #include "GLM/gtc/random.hpp"			// glm::random
 #include "GLM/gtc/quaternion.hpp"		// glm::qua
 
-#include "../Core/HCoreTypes.h"
+#include "../../Interface/HCoreTypes.h"
 
 

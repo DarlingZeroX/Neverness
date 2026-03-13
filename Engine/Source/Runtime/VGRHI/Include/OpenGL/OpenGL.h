@@ -14,7 +14,7 @@
 #include "../VGRHICore.h"
 #include "IncludeGladGL3.h"
 //#include "gl.h"
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 
 #ifndef VISIONGAL_OPENGL_NAMESPACE_BEGIN
 #define VISIONGAL_OPENGL_NAMESPACE_BEGIN namespace VisionGal { namespace OpenGL {

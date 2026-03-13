@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include <HCore/Include/Core/HCore.h>
+#include <HCore/Interface/HCore.h>
 #include <SDL3/SDL_audio.h>
 
 namespace Horizon {

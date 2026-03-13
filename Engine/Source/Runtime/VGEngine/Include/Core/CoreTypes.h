@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HCoreTypes.h>
 #include <HCore/Include/Scene/HEntityInterface.h>
 #include <string>
 #include <SDL3/SDL.h>

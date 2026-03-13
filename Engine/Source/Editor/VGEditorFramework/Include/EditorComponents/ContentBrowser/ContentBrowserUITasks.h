@@ -11,7 +11,7 @@
 
 #pragma once
 #include <VGImgui/IncludeImGuiEx.h>
-#include <HCorePlatform/Interface/HFileSystem.h>
+#include <HFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal::Editor {
 	class NewDirectoryUITask : public ImGuiEx::ImTaskInterface

@@ -3,7 +3,7 @@
 #include "ImGuiEx/ImNotify.h"
 #include <HCorePlatform/Interface/HSystemTimer.h>
 
-#include "HCore/Include/Core/HLocalization.h"
+#include "HCore/Interface/HLocalization.h"
 #include "ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 
 #define NOTIFY_OPACITY					1.0f		// 0-1 Toast opacity

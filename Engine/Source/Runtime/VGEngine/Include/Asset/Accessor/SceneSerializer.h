@@ -13,7 +13,7 @@
 #include "ISceneSerializer.h"
 #include "../../Core/Core.h"
 #include "../../Scene/Components.h"
-#include <HCore/Include/Core/HSerialization.h>
+#include <HCore/Interface/HSerialization.h>
 
 namespace VisionGal
 {

@@ -10,7 +10,7 @@
  */
 
 #include "pch.h"
-#include "Core/HException.h"
+#include "HException.h"
 #include <sstream>
 
 namespace Horizon

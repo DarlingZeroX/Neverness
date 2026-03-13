@@ -259,7 +259,7 @@
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -1585,7 +1585,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -1784,7 +1784,7 @@ private:
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -2070,7 +2070,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -4062,11 +4062,11 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "fwd.hpp"
 
@@ -5338,7 +5338,7 @@ struct radix_sort {
 
 #endif
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -5473,7 +5473,7 @@ using any = basic_any<>;
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 #ifndef ENTT_CORE_ATTRIBUTE_H
 #define ENTT_CORE_ATTRIBUTE_H
 
@@ -8980,7 +8980,7 @@ forward_apply(Func) -> forward_apply<std::remove_reference_t<std::remove_cv_t<Fu
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 
 // #include "fwd.hpp"
 
@@ -10394,7 +10394,7 @@ private:
 #include <cstdint>
 #include <memory>
 #include <type_traits>
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 #ifndef ENTT_CORE_FWD_HPP
 #define ENTT_CORE_FWD_HPP
 
@@ -10525,7 +10525,7 @@ using any = basic_any<>;
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -12169,9 +12169,9 @@ inline constexpr tombstone_t tombstone{};
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -12370,7 +12370,7 @@ private:
 
 #endif
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 #ifndef ENTT_CORE_TYPE_INFO_HPP
 #define ENTT_CORE_TYPE_INFO_HPP
 
@@ -12379,7 +12379,7 @@ private:
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 #ifndef ENTT_CORE_ATTRIBUTE_H
 #define ENTT_CORE_ATTRIBUTE_H
 
@@ -12999,7 +12999,7 @@ template<typename Type>
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "entity.hpp"
 #ifndef ENTT_ENTITY_ENTITY_HPP
@@ -13395,7 +13395,7 @@ inline constexpr tombstone_t tombstone{};
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/algorithm.hpp"
+// #include "../Core/algorithm.hpp"
 #ifndef ENTT_CORE_ALGORITHM_HPP
 #define ENTT_CORE_ALGORITHM_HPP
 
@@ -13637,7 +13637,7 @@ struct radix_sort {
 
 #endif
 
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 #ifndef ENTT_CORE_ANY_HPP
 #define ENTT_CORE_ANY_HPP
 
@@ -13647,7 +13647,7 @@ struct radix_sort {
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -13761,7 +13761,7 @@ private:
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 
 // #include "fwd.hpp"
 
@@ -15451,7 +15451,7 @@ template<std::size_t Len = basic_any<>::length, std::size_t Align = basic_any<Le
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -15737,7 +15737,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
 // #include "entity.hpp"
 
@@ -16847,11 +16847,11 @@ private:
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
 // #include "component.hpp"
 #ifndef ENTT_ENTITY_COMPONENT_HPP
@@ -19151,9 +19151,9 @@ private:
 #include <tuple>
 #include <type_traits>
 #include <utility>
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "entity.hpp"
 
@@ -19533,9 +19533,9 @@ template<typename... Args, typename... Other>
 #include <memory>
 #include <type_traits>
 #include <utility>
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "../signal/delegate.hpp"
 #ifndef ENTT_SIGNAL_DELEGATE_HPP
@@ -19656,7 +19656,7 @@ template<typename... Args, typename... Other>
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -21099,13 +21099,13 @@ delegate(Ret (*)(const void *, Args...), const void * = nullptr) -> delegate<Ret
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "entity.hpp"
 
@@ -22179,9 +22179,9 @@ private:
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "entity.hpp"
 
@@ -23418,7 +23418,7 @@ sigh_helper(Registry &) -> sigh_helper<Registry>;
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 
 // #include "../signal/sigh.hpp"
 #ifndef ENTT_SIGNAL_SIGH_HPP
@@ -23440,7 +23440,7 @@ sigh_helper(Registry &) -> sigh_helper<Registry>;
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "fwd.hpp"
 
@@ -24543,7 +24543,7 @@ private:
 #include <limits>
 #include <type_traits>
 #include <utility>
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "../signal/delegate.hpp"
 
@@ -24984,11 +24984,11 @@ private:
 #include <type_traits>
 #include <utility>
 #include <vector>
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -25211,7 +25211,7 @@ private:
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -25416,7 +25416,7 @@ private:
 
 #include <cstddef>
 #include <memory>
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 #ifndef ENTT_CORE_FWD_HPP
 #define ENTT_CORE_FWD_HPP
 
@@ -26037,7 +26037,7 @@ private:
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -27363,7 +27363,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -27562,7 +27562,7 @@ private:
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -27848,7 +27848,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -29840,11 +29840,11 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "fwd.hpp"
 
@@ -30756,7 +30756,7 @@ private:
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -31974,11 +31974,11 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -32093,7 +32093,7 @@ private:
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
 // #include "fwd.hpp"
 
@@ -32760,9 +32760,9 @@ private:
 #include <memory>
 #include <type_traits>
 #include <utility>
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "../signal/delegate.hpp"
 
@@ -33565,7 +33565,7 @@ private:
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -34891,7 +34891,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -35090,7 +35090,7 @@ private:
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -35376,7 +35376,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -37352,21 +37352,21 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 
 #endif
 
-// #include "../core/algorithm.hpp"
+// #include "../Core/algorithm.hpp"
 
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 
 // #include "entity.hpp"
 
@@ -37382,7 +37382,7 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 
 // #include "../signal/sigh.hpp"
 
@@ -39187,7 +39187,7 @@ private:
 
 // #include "../container/dense_map.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "entity.hpp"
 
@@ -39657,13 +39657,13 @@ private:
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/algorithm.hpp"
+// #include "../Core/algorithm.hpp"
 
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
 // #include "entity.hpp"
 
@@ -40773,11 +40773,11 @@ private:
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
 // #include "component.hpp"
 
@@ -41971,9 +41971,9 @@ public:
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "entity.hpp"
 
@@ -43061,7 +43061,7 @@ basic_view(std::tuple<Get &...>, std::tuple<Exclude &...> = {}) -> basic_view<ge
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -43266,7 +43266,7 @@ private:
 
 #include <cstddef>
 #include <memory>
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 #ifndef ENTT_CORE_FWD_HPP
 #define ENTT_CORE_FWD_HPP
 
@@ -43948,7 +43948,7 @@ void dot(std::ostream &out, const Graph &graph) {
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -45274,7 +45274,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -45473,7 +45473,7 @@ private:
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -45759,7 +45759,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -47751,11 +47751,11 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "fwd.hpp"
 
@@ -48667,7 +48667,7 @@ private:
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -49885,11 +49885,11 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -50004,7 +50004,7 @@ private:
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
 // #include "fwd.hpp"
 
@@ -51095,7 +51095,7 @@ struct adl_meta_pointer_like {
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -52421,7 +52421,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -52620,7 +52620,7 @@ private:
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -52906,7 +52906,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -54898,11 +54898,11 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 #include <vector>
 // #include "../config/config.h"
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "fwd.hpp"
 
@@ -55820,7 +55820,7 @@ private:
 
 // #include "../container/dense_map.hpp"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 #ifndef ENTT_CORE_FWD_HPP
 #define ENTT_CORE_FWD_HPP
 
@@ -55951,7 +55951,7 @@ using any = basic_any<>;
 
 #endif
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -56219,7 +56219,7 @@ class meta_ctx: private internal::meta_context {
 
 #endif
 
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 #ifndef ENTT_CORE_ANY_HPP
 #define ENTT_CORE_ANY_HPP
 
@@ -56229,7 +56229,7 @@ class meta_ctx: private internal::meta_context {
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -56364,7 +56364,7 @@ using any = basic_any<>;
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 #ifndef ENTT_CORE_ATTRIBUTE_H
 #define ENTT_CORE_ATTRIBUTE_H
 
@@ -58411,9 +58411,9 @@ template<std::size_t Len = basic_any<>::length, std::size_t Align = basic_any<Le
 
 #endif
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -58612,7 +58612,7 @@ private:
 
 #endif
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 #ifndef ENTT_CORE_TYPE_INFO_HPP
 #define ENTT_CORE_TYPE_INFO_HPP
 
@@ -58621,7 +58621,7 @@ private:
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 
 // #include "fwd.hpp"
 
@@ -58884,7 +58884,7 @@ template<typename Type>
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -59809,7 +59809,7 @@ struct std::tuple_element<Index, entt::value_list<Value...>>: entt::value_list_e
 
 #endif
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 
 // #include "../locator/locator.hpp"
 #ifndef ENTT_LOCATOR_LOCATOR_HPP
@@ -60146,7 +60146,7 @@ class meta_type;
 
 // #include "../container/dense_map.hpp"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 #ifndef ENTT_CORE_ATTRIBUTE_H
 #define ENTT_CORE_ATTRIBUTE_H
 
@@ -60178,7 +60178,7 @@ class meta_type;
 
 #endif
 
-// #include "../core/enum.hpp"
+// #include "../Core/enum.hpp"
 #ifndef ENTT_CORE_ENUM_HPP
 #define ENTT_CORE_ENUM_HPP
 
@@ -60277,13 +60277,13 @@ operator^=(Type &lhs, const Type rhs) noexcept {
 
 #endif
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 
 // #include "context.hpp"
 
@@ -60604,9 +60604,9 @@ template<typename Type>
 #include <cstddef>
 #include <iterator>
 #include <utility>
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
 // #include "context.hpp"
 
@@ -63090,9 +63090,9 @@ struct meta_associative_container_traits<dense_set<Args...>>
 
 // #include "../container/dense_map.hpp"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 
 
 namespace entt {
@@ -63152,11 +63152,11 @@ class meta_ctx: private internal::meta_context {
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "../locator/locator.hpp"
 
@@ -63233,7 +63233,7 @@ inline constexpr bool is_meta_policy_v = is_meta_policy<Type>::value;
 #define ENTT_META_RESOLVE_HPP
 
 #include <type_traits>
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
 // #include "../locator/locator.hpp"
 
@@ -63346,7 +63346,7 @@ template<typename Type>
 #include <functional>
 #include <type_traits>
 #include <utility>
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "../locator/locator.hpp"
 
@@ -64444,17 +64444,17 @@ inline void meta_reset() noexcept {
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 
 // #include "../locator/locator.hpp"
 
@@ -66448,17 +66448,17 @@ inline meta_associative_container::size_type meta_associative_container::erase(m
 
 // #include "../container/dense_map.hpp"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 
-// #include "../core/enum.hpp"
+// #include "../Core/enum.hpp"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 
 // #include "context.hpp"
 
@@ -66836,9 +66836,9 @@ inline constexpr bool is_meta_policy_v = is_meta_policy<Type>::value;
 #include <cstddef>
 #include <iterator>
 #include <utility>
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 
 // #include "context.hpp"
 
@@ -66982,7 +66982,7 @@ using meta_range = iterable_adaptor<internal::meta_range_iterator<Type, It>>;
 #define ENTT_META_RESOLVE_HPP
 
 #include <type_traits>
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
 // #include "../locator/locator.hpp"
 
@@ -67091,7 +67091,7 @@ template<typename Type>
 #ifndef ENTT_META_TEMPLATE_HPP
 #define ENTT_META_TEMPLATE_HPP
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 
 namespace entt {
@@ -67181,7 +67181,7 @@ inline constexpr auto is_meta_pointer_like_v = is_meta_pointer_like<Type>::value
 #include <functional>
 #include <type_traits>
 #include <utility>
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "../locator/locator.hpp"
 
@@ -67784,7 +67784,7 @@ using invoke_result_t = typename std::invoke_result<Func, Args...>::type;
 #include <tuple>
 #include <type_traits>
 #include <utility>
-// #include "../core/any.hpp"
+// #include "../Core/any.hpp"
 #ifndef ENTT_CORE_ANY_HPP
 #define ENTT_CORE_ANY_HPP
 
@@ -67902,7 +67902,7 @@ using invoke_result_t = typename std::invoke_result<Func, Args...>::type;
 
 #endif
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -68037,7 +68037,7 @@ using any = basic_any<>;
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 #ifndef ENTT_CORE_ATTRIBUTE_H
 #define ENTT_CORE_ATTRIBUTE_H
 
@@ -70084,7 +70084,7 @@ template<std::size_t Len = basic_any<>::length, std::size_t Align = basic_any<Le
 
 #endif
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 #ifndef ENTT_CORE_TYPE_INFO_HPP
 #define ENTT_CORE_TYPE_INFO_HPP
 
@@ -70093,7 +70093,7 @@ template<std::size_t Len = basic_any<>::length, std::size_t Align = basic_any<Le
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 
 // #include "fwd.hpp"
 
@@ -70356,7 +70356,7 @@ template<typename Type>
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -72078,7 +72078,7 @@ struct process_adaptor: process<process_adaptor<Func, Delta>, Delta>, private Fu
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -74217,7 +74217,7 @@ private:
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -75543,7 +75543,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -75742,7 +75742,7 @@ private:
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -76028,7 +76028,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -78004,7 +78004,7 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -79330,7 +79330,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 #ifndef ENTT_CORE_FWD_HPP
 #define ENTT_CORE_FWD_HPP
 
@@ -79353,7 +79353,7 @@ using any = basic_any<>;
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -79552,7 +79552,7 @@ private:
 
 #endif
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -80756,7 +80756,7 @@ template<typename Lhs, typename Rhs>
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -82322,7 +82322,7 @@ delegate(Ret (*)(const void *, Args...), const void * = nullptr) -> delegate<Ret
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -83648,7 +83648,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/iterator.hpp"
+// #include "../Core/iterator.hpp"
 #ifndef ENTT_CORE_ITERATOR_HPP
 #define ENTT_CORE_ITERATOR_HPP
 
@@ -83847,7 +83847,7 @@ private:
 
 #endif
 
-// #include "../core/memory.hpp"
+// #include "../Core/memory.hpp"
 #ifndef ENTT_CORE_MEMORY_HPP
 #define ENTT_CORE_MEMORY_HPP
 
@@ -84133,7 +84133,7 @@ constexpr Type *uninitialized_construct_using_allocator(Type *value, const Alloc
 
 #endif
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 #ifndef ENTT_CORE_TYPE_TRAITS_HPP
 #define ENTT_CORE_TYPE_TRAITS_HPP
 
@@ -86109,7 +86109,7 @@ struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
 
 #endif
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 #ifndef ENTT_CORE_COMPRESSED_PAIR_HPP
 #define ENTT_CORE_COMPRESSED_PAIR_HPP
 
@@ -87306,7 +87306,7 @@ struct tuple_element<Index, entt::compressed_pair<First, Second>>: conditional<I
 
 #endif
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 #ifndef ENTT_CORE_FWD_HPP
 #define ENTT_CORE_FWD_HPP
 
@@ -87329,7 +87329,7 @@ using any = basic_any<>;
 
 #endif
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 #ifndef ENTT_CORE_TYPE_INFO_HPP
 #define ENTT_CORE_TYPE_INFO_HPP
 
@@ -87338,7 +87338,7 @@ using any = basic_any<>;
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/attribute.h"
+// #include "../Core/attribute.h"
 #ifndef ENTT_CORE_ATTRIBUTE_H
 #define ENTT_CORE_ATTRIBUTE_H
 
@@ -87958,7 +87958,7 @@ template<typename Type>
 
 #endif
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 #ifndef ENTT_CORE_UTILITY_HPP
 #define ENTT_CORE_UTILITY_HPP
 
@@ -88083,7 +88083,7 @@ private:
 #include <utility>
 // #include "../config/config.h"
 
-// #include "../core/type_traits.hpp"
+// #include "../Core/type_traits.hpp"
 
 // #include "fwd.hpp"
 
@@ -89258,13 +89258,13 @@ private:
 #include <utility>
 // #include "../container/dense_map.hpp"
 
-// #include "../core/compressed_pair.hpp"
+// #include "../Core/compressed_pair.hpp"
 
-// #include "../core/fwd.hpp"
+// #include "../Core/fwd.hpp"
 
-// #include "../core/type_info.hpp"
+// #include "../Core/type_info.hpp"
 
-// #include "../core/utility.hpp"
+// #include "../Core/utility.hpp"
 
 // #include "fwd.hpp"
 

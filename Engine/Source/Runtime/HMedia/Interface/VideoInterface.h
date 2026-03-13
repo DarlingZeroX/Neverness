@@ -11,8 +11,8 @@
 
 #pragma once
 #include "VideoDecoderInterface.h"
-#include <HCore/Include/HConfig.h>
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HConfig.h>
+#include <HCore/Interface/HCoreTypes.h>
 //#include "../../Graphics/Interface/Texture.h"
 
 namespace Horizon {

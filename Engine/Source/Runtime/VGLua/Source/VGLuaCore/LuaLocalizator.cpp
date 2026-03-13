@@ -13,7 +13,7 @@
 #include "VGLuaCore/LuaLocalizator.h"
 #include <string>
 #include <unordered_set>
-#include <HCore/Include/Core/HLocalization.h>
+#include <HCore/Interface/HLocalization.h>
 
 struct VGLuaCoreLocalizeImp
 {

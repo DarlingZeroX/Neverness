@@ -14,7 +14,7 @@
 #include "../Config.h"
 #include <vector>
 #include <unordered_map>
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
 
 namespace VisionGal::Editor

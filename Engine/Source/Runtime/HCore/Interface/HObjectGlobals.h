@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
-#include "../HConfig.h"
+#include "HConfig.h"
 #include "HUUID.h"
 
 namespace Horizon

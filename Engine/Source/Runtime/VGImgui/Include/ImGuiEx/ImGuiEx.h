@@ -5,7 +5,7 @@
 #include "IconFont/IconsFontAwesome5Pro.h"
 #include "ImGuiExDrawList.h"
 #include <functional>
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HCoreTypes.h>
 
 #include "ImScoped.h"
 #include "ImWindow.h"

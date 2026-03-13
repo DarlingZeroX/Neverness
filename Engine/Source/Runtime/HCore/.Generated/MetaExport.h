@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "../Include/CoreModuleDefinitions.h"
+#pragma once
+#include "../CoreModuleDefinitions.h"
 
 namespace Horizon
 {

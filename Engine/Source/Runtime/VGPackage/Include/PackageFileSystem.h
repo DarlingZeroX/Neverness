@@ -12,9 +12,9 @@
 #pragma once
 #include "PackageFile.h"
 #include "PakReader.h"
-#include <HCore/Include/VFS/IFileSystem.h>
-//#include <HCore/Include/VFS/Global.h>
-#include <HCore/Include/VFS/StringUtils.hpp>
+#include <HFileSystem/Include/VFS/IFileSystem.h>
+//#include <HFileSystem/Include/VFS/Global.h>
+#include <HFileSystem/Include/VFS/StringUtils.hpp>
 //#include "ZipFile.hpp"
 //#include "zip_file.hpp"
 

@@ -50,16 +50,12 @@ file(GLOB HCORE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/File/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/File/XML/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/GI/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Scene/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/System/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/System/Input/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Utils/*.cpp"
 )
 
 file(GLOB HCORE_HEADER_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Core/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Event/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Event/*.cpp"
@@ -67,8 +63,6 @@ file(GLOB HCORE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/File/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/File/nlohmann/*.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/File/XML/*.hpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/GI/*.h"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Math/GLM/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Math/GLM/*.cpp"
@@ -118,8 +112,6 @@ file(GLOB HCORE_HEADER_FILES
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Stb/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/System/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/System/Input/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/VFS/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/VFS/*.hpp"
@@ -139,6 +131,7 @@ target_compile_definitions(HCore PRIVATE CORE_MODULE_EXPORT)
 # 添加头文件搜索路径
 target_include_directories(HCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(HCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(HCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 find_package(SDL3 CONFIG REQUIRED)
 target_link_libraries(HCore PRIVATE SDL3::SDL3)

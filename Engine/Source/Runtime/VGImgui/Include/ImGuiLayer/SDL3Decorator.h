@@ -1,7 +1,7 @@
 #pragma once
 //#include "../include/CrossPlatformDefinitions.h"
 #include "../imconfig.h"
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 
 #ifdef SDL3_WINDOW_SUPPORTED
 #include <HCorePlatform/Include/SDL3/SDL3Window.h>

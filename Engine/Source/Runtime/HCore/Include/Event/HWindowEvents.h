@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
-#include "../Core/HCoreTypes.h"
+#include "../../Interface/HCoreTypes.h"
 #include "HEventBase.h"
 #include <HCore/Include/Meta/Macros.h>
 

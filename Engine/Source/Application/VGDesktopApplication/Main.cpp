@@ -12,7 +12,7 @@
 #include "ApplicationInitializer.h"
 #include "Include/VGDesktopApplication.h"
 #include <VGEngine/Include/Engine/VGEngine.h>
-#include "HCorePlatform/Interface/HFileSystem.h"
+#include "HFileSystem/Interface/HFileSystem.h"
 
  /// @brief 程序入口点。Windows平台使用WinMain，其他平台使用main。
 #ifdef _WIN32

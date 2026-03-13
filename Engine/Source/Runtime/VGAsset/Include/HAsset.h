@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HCoreTypes.h>
 #include <HCore/Include/Meta/Macros.h>
-#include <HCore/Include/Core/HCore.h>
-#include <HCore/Include/Core/HUUID.h>
+#include <HCore/Interface/HCore.h>
+#include <HCore/Interface/HUUID.h>
 
 #include <filesystem>
 

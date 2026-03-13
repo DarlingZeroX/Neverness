@@ -12,7 +12,7 @@
 #include "VGLauncherData.h"
 #include "VGLauncher.h"
 #include "MainWindow.h"
-#include <HCorePlatform/Interface/HFileSystem.h>
+#include <HFileSystem/Interface/HFileSystem.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <VGEngine/Include/Core/VFS.h>

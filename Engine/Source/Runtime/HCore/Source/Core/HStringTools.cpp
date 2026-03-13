@@ -11,10 +11,10 @@
 
 #pragma warning ( push )
 #pragma warning ( disable : 4244 )
-#include "Core/HStringTools.h"
+#include "HStringTools.h"
 #pragma warning ( pop )
 
-#include "System/HMemoryStream.h"
+#include "HMemoryStream.h"
 
 #include <locale>
 // #include <ctype.h>

@@ -13,8 +13,8 @@
 #include "../Interface/AudioInterface.h"
 #include "SDL/SDLAudio.h"
 #include "HMediaConfig.h"
-#include <HCore/Include/Core/HCore.h>
-#include <HCore/Include/VFS/VirtualFileSystem.hpp>
+#include <HCore/Interface/HCore.h>
+#include <HFileSystem/Include/VFS/VirtualFileSystem.hpp>
 
 namespace Horizon
 {

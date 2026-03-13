@@ -1,5 +1,5 @@
-﻿#include "pch.h"
-#include "Core/HCore.h"
+#include "pch.h"
+#include "HCore.h"
 
 namespace Horizon
 {

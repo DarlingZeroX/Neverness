@@ -14,7 +14,7 @@
 
 #include "VGLauncherData.h"
 #include "HCore/Include/Math/HVector.h"
-#include "HCorePlatform/Interface/HFileSystem.h"
+#include "HFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal::Editor
 {

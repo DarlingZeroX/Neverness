@@ -30,7 +30,7 @@
 
 #include "../VGLuaCore/LuaLocalizator.h"
 
-//#include <HCore/Include/Core/HLocalization.h>
+//#include <HCore/Interface/HLocalization.h>
 
 /* maximum number of local variables per function (must be smaller
    than 250, due to the bytecode format) */

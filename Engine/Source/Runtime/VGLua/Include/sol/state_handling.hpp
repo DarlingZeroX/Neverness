@@ -31,7 +31,7 @@
 #include <sol/object.hpp>
 #include <sol/lua_value.hpp>
 
-#include <HCore/Include/Core/HLocalization.h>
+#include <HCore/Interface/HLocalization.h>
 
 #if SOL_IS_ON(SOL_PRINT_ERRORS)
 #include <iostream>

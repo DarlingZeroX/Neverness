@@ -1,4 +1,4 @@
-﻿#ifndef PCH_H
+#ifndef PCH_H
 #define PCH_H
 
 // 添加要在此处预编译的标头
@@ -10,6 +10,6 @@
 #include <stddef.h>                 // ptrdiff_t, NULL
 #include <string.h>                 // memset, memmove, memcpy, strlen, strchr, strcpy, strcmp
 #include <malloc.h>
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 
 #endif //PCH_H

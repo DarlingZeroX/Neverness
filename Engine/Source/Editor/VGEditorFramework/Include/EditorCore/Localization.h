@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../Config.h"
-#include <HCore/Include/Core/HLocalization.h>
+#include <HCore/Interface/HLocalization.h>
 
 namespace VisionGal::Editor
 {

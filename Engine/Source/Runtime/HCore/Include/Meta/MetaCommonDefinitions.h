@@ -1,5 +1,5 @@
 #pragma once
-#include "../CoreModuleDefinitions.h"
+#include "../../CoreModuleDefinitions.h"
 
 #define META_NAMESPACE Horizon::Meta
 #define META_ATTRIBUTE META_NAMESPACE::Attribute

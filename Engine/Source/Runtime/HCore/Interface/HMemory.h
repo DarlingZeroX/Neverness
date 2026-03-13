@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../CoreModuleDefinitions.h"
-#include "../Core/HCoreTypes.h"
+#include "HCoreTypes.h"
 
 namespace Horizon
 {

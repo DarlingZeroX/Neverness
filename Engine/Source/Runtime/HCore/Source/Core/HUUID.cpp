@@ -10,8 +10,8 @@
  */
 
 #include "pch.h"
-#include "Core/HUUID.h"
-#include "Core/HRandom.h"
+#include "HUUID.h"
+#include "HRandom.h"
 
 namespace Horizon
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../HCoreTypes.h"
+#include "../Interface/HCoreTypes.h"
 #include <string>
 #include <assert.h>
 

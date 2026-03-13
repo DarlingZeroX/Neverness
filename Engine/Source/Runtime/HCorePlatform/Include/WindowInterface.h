@@ -10,8 +10,8 @@
  */
 
 #pragma once
-#include <HCore/Include/HConfig.h>
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HConfig.h>
+#include <HCore/Interface/HCoreTypes.h>
 #include <HCore/Include/Event/HEventDelegate.h>
 #include <HCore/Include/Event/HWindowEvents.h>
 

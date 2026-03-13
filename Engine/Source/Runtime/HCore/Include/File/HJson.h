@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
-#include "../CoreModuleDefinitions.h"
+#include "../../CoreModuleDefinitions.h"
 #include <filesystem>
 //#ifndef RAPIDJSON_SSE2
 //#define RAPIDJSON_SSE2

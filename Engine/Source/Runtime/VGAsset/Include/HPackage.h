@@ -7,8 +7,8 @@
 #include "../VGAssetConfig.h"
 //#include "../File/HJson.h"
 #include <HCore/Include/File/HJson.h>
-#include "HCore/Include/HConfig.h"
-#include "HCore/Include/Core/HCoreTypes.h"
+#include "HCore/Interface/HConfig.h"
+#include "HCore/Interface/HCoreTypes.h"
 
 namespace Horizon
 {

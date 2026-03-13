@@ -10,14 +10,14 @@
  */
 
 #include "pch.h"
-#include "Core/HLog.h"
-#include "Core/HStringTools.h"
+#include "HLog.h"
+#include "HStringTools.h"
 #include <SDL3/SDL_log.h>
 #include <sstream>
 #include <string>
 #include <iostream>
 
-#include "Core/HLocalization.h"
+#include "HLocalization.h"
 
 namespace Horizon
 {

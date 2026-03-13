@@ -11,7 +11,7 @@
 
 #pragma once
 #include "HJson.h"
-#include "../Core/HTypeInfo.h"
+#include "../../Interface/HTypeInfo.h"
 #include "../Meta/Meta.h"
 
 namespace Horizon

@@ -15,8 +15,8 @@
 //#include "Core/HLog.h"
 //#include "Core/HStringTools.h"
 
-#include <HCore/Include/Core/HLog.h>
-#include <HCore/Include/Core/HStringTools.h>
+#include <HCore/Interface/HLog.h>
+#include <HCore/Interface/HStringTools.h>
 //#include "Platform/NativeFileDialog/nfd.hpp"
 
 #include <stdio.h>

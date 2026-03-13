@@ -1,7 +1,7 @@
 #pragma once
 //#include "../include/CrossPlatformDefinitions.h"
 #include "../imconfig.h"
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 
 #ifdef WIN32_NATIVE_WINDOW_SUPPORTED
 #include "Win32Native/Win32Window.h"

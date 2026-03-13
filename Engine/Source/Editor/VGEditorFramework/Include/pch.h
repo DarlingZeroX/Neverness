@@ -11,7 +11,7 @@
 
 
 #pragma once
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HCoreTypes.h>
 
 #include <VGImgui/Include/Imgui/imgui.h>
 #include <VGImgui/Include/Imgui/imgui_internal.h>

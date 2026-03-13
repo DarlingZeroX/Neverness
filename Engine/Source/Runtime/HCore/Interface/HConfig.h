@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 // reverting back to 'unsecure' for cross-platform compatibility
 #ifdef _MSC_VER
@@ -81,7 +81,7 @@
 #    define VULKAN_SUPPORTED 1
 #endif
 
-#include "Meta/Macros.h"
+#include "../Include/Meta/Macros.h"
 
 enum class HMetaEnable() PlatformType
 {

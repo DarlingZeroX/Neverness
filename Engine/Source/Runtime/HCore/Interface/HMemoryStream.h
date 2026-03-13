@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "../Core/HCore.h"
-#include "../Core/HMemory.h"
+#include "HCore.h"
+#include "HMemory.h"
 
 #include "HStream.h"
 

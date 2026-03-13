@@ -11,8 +11,8 @@
 
 //#include "pch.h"
 #include "HPackage.h"
-#include "HCore/Include/Core/HCoreTypes.h"
-#include "HCorePlatform/Interface/HFileSystem.h"
+#include "HCore/Interface/HCoreTypes.h"
+#include "HFileSystem/Interface/HFileSystem.h"
 //#include "System/HFileSystem.h"
 
 namespace Horizon

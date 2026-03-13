@@ -11,7 +11,7 @@
 
 #pragma once
 #include "PakReader.h"
-#include <HCore/Include/VFS/IFile.h>
+#include <HFileSystem/Include/VFS/IFile.h>
 #include <filesystem>
 #include <sstream>
 

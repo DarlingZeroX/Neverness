@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <unordered_map>
 #include <functional>
-#include "../Core/HCoreTypes.h"
-#include "../Core/HSTL.h"
+#include "../../Interface/HCoreTypes.h"
+#include "../../Interface/HSTL.h"
 
 namespace Horizon
 {

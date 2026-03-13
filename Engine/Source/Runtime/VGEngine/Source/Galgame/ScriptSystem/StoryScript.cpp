@@ -15,14 +15,14 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
-#include <HCore/Include/Core/HLog.h>
+#include <HCore/Interface/HLog.h>
 #include "Core/VFS.h"
 #include "Galgame/GalGameEngine.h"
 #include "Galgame/GameEngineCore.h"
 #include <sol/state.hpp>
 
 #include "Core/EventBus.h"
-#include "HCorePlatform/Interface/HFileSystem.h"
+#include "HFileSystem/Interface/HFileSystem.h"
 #include "Lua/LuaInterface.h"
 #include "VGLuaCore/LuaErrorManager.h"
 

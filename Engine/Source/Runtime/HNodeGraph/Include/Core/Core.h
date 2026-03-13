@@ -12,8 +12,8 @@
 #pragma once
 #include "../Config.h"
 #include "Types.h"
-#include <HCore/Include/HConfig.h>
-#include <HCore/Include/Core/HCoreTypes.h>
+#include <HCore/Interface/HConfig.h>
+#include <HCore/Interface/HCoreTypes.h>
 
 namespace Horizon::NodeGraph
 {

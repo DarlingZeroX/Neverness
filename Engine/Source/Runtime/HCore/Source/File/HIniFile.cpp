@@ -2,7 +2,7 @@
 #include "File/HIniFile.h"
 #include <string>
 #include "File/include/SimpleIni.h"
-#include "Core/HCoreTypes.h"
+#include "HCoreTypes.h"
 
 namespace Horizon
 {

@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
-#include "../CoreModuleDefinitions.h"
+#include "../../CoreModuleDefinitions.h"
 //#include "../System/HFileSystem.h"
 #include <filesystem>
 #include "../Meta/Type.h"
-#include "../Core/HTypeInfo.h"
+#include "../../Interface/HTypeInfo.h"
 
 namespace Horizon
 {

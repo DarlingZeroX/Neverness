@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
+#include "../HFileSystemConfig.h"
+#include "HFileSystem.h"
+#include "../Include/VFS/VFS.h"
 
-#include "../System/HFileWatcher.h"
-#include "../System/HClipboard.h"
-#include "../System/HFileSystem.h"
-#include "../System/HFileWatcher.h"
-#include "../System/HTimer.h"
+namespace Horizon
+{
+
+}

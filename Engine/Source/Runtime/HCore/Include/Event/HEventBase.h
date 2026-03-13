@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
-#include "../CoreModuleDefinitions.h"
+#include "../../CoreModuleDefinitions.h"
 #include <string>
 #include <functional>
 

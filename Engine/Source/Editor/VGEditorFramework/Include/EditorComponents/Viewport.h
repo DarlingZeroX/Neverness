@@ -12,7 +12,7 @@
 #pragma once
 #include "../Config.h"
 #include <vector>
-#include <HCore/Include/HConfig.h>
+#include <HCore/Interface/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
 #include <VGEngine/Include/Core/Viewport.h>
 

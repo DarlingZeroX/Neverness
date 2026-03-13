@@ -10,7 +10,7 @@
  */
 
 #include "ApplicationInitializer.h"
-#include <HCorePlatform/Interface/HFileSystem.h>
+#include <HFileSystem/Interface/HFileSystem.h>
 #include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <VGPackage/Include/PakWriter.h>
 #include <VGEngine/Include/Core/Core.h>

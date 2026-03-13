@@ -12,7 +12,7 @@
 #include "pch.h"
 #include "EditorComponents/ConsolePanel.h"
 #include "EditorCore/Localization.h"
-#include "HCore/Include/Core/HStringTools.h"
+#include "HCore/Interface/HStringTools.h"
 #include "VGImgui/Include/ImGuiEx/ImNotify.h"
 
 namespace VisionGal::Editor {

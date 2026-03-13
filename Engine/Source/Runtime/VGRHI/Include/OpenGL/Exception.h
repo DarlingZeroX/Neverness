@@ -14,7 +14,7 @@
 #include<deque>
 #include<sstream>
 
-#include <HCore/Include/Core/HException.h>
+#include <HCore/Interface/HException.h>
 #include "OpenGL.h"
 
 VISIONGAL_OPENGL_NAMESPACE_BEGIN

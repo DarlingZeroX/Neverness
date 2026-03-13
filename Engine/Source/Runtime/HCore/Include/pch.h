@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef __CORE_MODULE_PCH_H__
 #define __CORE_MODULE_PCH_H__
 
@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <cassert>
 
-#include "Core/HAssert.h"
+#include "HAssert.h"
 
 #include <memory>
 #include <algorithm>

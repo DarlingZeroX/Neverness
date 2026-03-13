@@ -3,14 +3,14 @@
 // See the LICENSE file in the project root for details.
 
 #pragma once
-#include "../HConfig.h"
+#include "HConfig.h"
 #include "../CoreModuleDefinitions.h"
 #include "HLog.h"
 #include "HAssert.h"
 #include "HSTL.h"
 #include "HCoreTypes.h"
 #include "HObjectGlobals.h"
-#include "../Math/HVector.h"
+#include "../Include/Math/HVector.h"
 #include <stdlib.h>
 #include <functional>
 

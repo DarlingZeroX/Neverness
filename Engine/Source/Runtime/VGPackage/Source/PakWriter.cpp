@@ -12,7 +12,7 @@
 #include "PakWriter.h"
 #include <filesystem>
 #include "PakCrc32.h"
-#include "HCore/Include/Core/HLog.h"
+#include "HCore/Interface/HLog.h"
 
 namespace VisionGal {
 
