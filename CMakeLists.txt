@@ -32,28 +32,25 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 ########## 包含子项目 
-add_subdirectory ("Runtime/VGLua")
-add_subdirectory ("Runtime/HCore")
-add_subdirectory ("Runtime/HCorePlatform")
-add_subdirectory ("Runtime/HNodeGraph")
-add_subdirectory ("Runtime/VGRHI")
-add_subdirectory ("Runtime/VGAsset")
-add_subdirectory ("Runtime/VGPackage")
-add_subdirectory ("Runtime/VGImgui")
-add_subdirectory ("Runtime/HMedia")
-add_subdirectory ("Runtime/VGEngine")
+add_subdirectory ("Engine/Source/Runtime/VGLua")
+add_subdirectory ("Engine/Source/Runtime/HCore")
+add_subdirectory ("Engine/Source/Runtime/HCorePlatform")
+add_subdirectory ("Engine/Source/Runtime/HNodeGraph")
+add_subdirectory ("Engine/Source/Runtime/VGRHI")
+add_subdirectory ("Engine/Source/Runtime/VGAsset")
+add_subdirectory ("Engine/Source/Runtime/VGPackage")
+add_subdirectory ("Engine/Source/Runtime/VGImgui")
+add_subdirectory ("Engine/Source/Runtime/HMedia")
+add_subdirectory ("Engine/Source/Runtime/VGEngine")
 # 编辑器
-add_subdirectory ("Editor/HNodeGraphEditor")
-add_subdirectory ("Editor/VGEditorFramework")
-add_subdirectory ("Editor/VGEditor")
-# 启动器
-add_subdirectory ("Application/VGLauncher")
-# 桌面应用程序
-add_subdirectory ("Application/VGDesktopApplication")
-# 打包工具
-add_subdirectory ("Application/VGPackageTool")
-# 节点图应用程序
-add_subdirectory ("Application/VGNodeGraphApp")
+add_subdirectory ("Engine/Source/Editor/HNodeGraphEditor")
+add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
+add_subdirectory ("Engine/Source/Editor/VGEditor")
+
+add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器
+add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
+add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
+add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序
 
 
 ########## 加载 Tests 目录下所有子测试项目
