@@ -91,31 +91,43 @@ namespace VisionGal::Editor {
 			// 菜单栏 Menu bar
 			if (ImGui::BeginMenuBar())
 			{
-				// Top shadow
-				ImGuiEx::RectFilledMultiColor bg;
-				const ImVec2 region = ImGui::GetContentRegionAvail();
-				//bg.SetRegionAutoOffest(region, 0.0f, 0.0f, 0, region.y);
-				bg.SetRegionAutoOffest(region, 0.0f, region.x, 0, 0);
-				bg.SetColTop(Horizon::float4(.0f, .0f, .0f, 0.431f));
-				bg.WindowDraw();
+				// 割阴影
+				//ImGuiEx::RectFilledMultiColor bg;
+				//const ImVec2 region = ImGui::GetContentRegionAvail();
+				////bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -3.0f, -region.y);
+				//bg.SetRegionAutoOffest(region, 0.0f, 0.0f);
+				//bg.SetColRight(Horizon::float4(.0f, .0f, .0f, 0.431f));
+				//bg.WindowDraw();
 
 				DrawBrowserHeader();
 
 				ImGui::EndMenuBar();
 			}
 
+			// Top shadow
+			ImGuiEx::RectFilledMultiColor bg;
+			const ImVec2 region = ImGui::GetContentRegionAvail();
+			//bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -3.0f, -region.y);
+			bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -0.0f, -region.y + 6);
+			bg.SetColTop(Horizon::float4(.0f, .0f, .0f, 0.731f));
+			bg.ForegroundDraw();
+
 			// 左侧目录树
-			ImGui::BeginChild("Content Browser Left", ImVec2(200, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
-			DrawRootDirectoryTree();
-			ImGui::EndChild();
+			{
+				ImGui::BeginChild("Content Browser Left", ImVec2(200, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
+				DrawRootDirectoryTree();
+				ImGui::EndChild();
+			}
 
 			ImGui::SameLine();
 
 			// 右侧内容浏览器
-			ImGui::BeginChild("Content Browser Right",ImVec2(0, 0), ImGuiChildFlags_Borders);
-			DrawContentBrowser();
-			ContentBrowserContextMenu(m_pContentBrowser->GetCurrentBrowserDirectory());
-			ImGui::EndChild();
+			{
+				ImGui::BeginChild("Content Browser Right",ImVec2(0, 0), ImGuiChildFlags_Borders);
+				DrawContentBrowser();
+				ContentBrowserContextMenu(m_pContentBrowser->GetCurrentBrowserDirectory());
+				ImGui::EndChild();
+			}
 		}
 		ImGui::End();
 	}
@@ -151,15 +163,15 @@ namespace VisionGal::Editor {
 		//目录右边的分割阴影 Right shadow
 		ImGuiEx::RectFilledMultiColor shadow;
 		ImVec2 region = ImGui::GetContentRegionAvail();
-		shadow.SetRegionAutoOffest(region, region.x - 10.0f, 10.0f);
+		shadow.SetRegionAutoOffest(region, region.x - 20.0f, 10.0f);
 		shadow.SetColRight(Horizon::float4(.0f, .0f, .0f, 0.431f));
 		shadow.WindowDraw();
 
 		// 背景 Background
-		ImGuiEx::RectFilled bg;
-		bg.SetRegionAutoOffest(region);
-		bg.SetCol(Horizon::float4(.0f, .0f, .0f, 0.800f));
-		bg.WindowDraw();
+		//ImGuiEx::RectFilled bg;
+		//bg.SetRegionAutoOffest(region);
+		//bg.SetCol(Horizon::float4(.0f, .0f, .0f, 0.800f));
+		//bg.WindowDraw();
 
 		//总Assets目录
 		if (ImGui::CollapsingHeader("Assets##ContentBrowserPanel", ImGuiTreeNodeFlags_DefaultOpen))

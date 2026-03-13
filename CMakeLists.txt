@@ -34,12 +34,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ########## 包含子项目 
 add_subdirectory ("Runtime/VGLua")
 add_subdirectory ("Runtime/HCore")
+add_subdirectory ("Runtime/HNodeGraph")
 add_subdirectory ("Runtime/VGRHI")
 add_subdirectory ("Runtime/VGPackage")
 add_subdirectory ("Runtime/VGImgui")
 add_subdirectory ("Runtime/HMedia")
 add_subdirectory ("Runtime/VGEngine")
 # 编辑器
+add_subdirectory ("Editor/HNodeGraphEditor")
 add_subdirectory ("Editor/VGEditorFramework")
 add_subdirectory ("Editor/VGEditor")
 # 启动器
@@ -48,6 +50,9 @@ add_subdirectory ("Application/VGLauncher")
 add_subdirectory ("Application/VGDesktopApplication")
 # 打包工具
 add_subdirectory ("Application/VGPackageTool")
+# 节点图应用程序
+add_subdirectory ("Application/VGNodeGraphApp")
+
 
 ########## 加载 Tests 目录下所有子测试项目
 if (ENABLE_TESTS)
