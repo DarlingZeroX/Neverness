@@ -13,7 +13,7 @@
 #include "VGLauncherData.h"
 #include "NewProjectUITask.h"
 #include <filesystem>
-#include <HCore/Include/Platform/NativeFileDialog/portable-file-dialogs.h>
+#include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 #include <VGEngine/Include/Engine/VGEngine.h>
 #include <VGEditorFramework/Include/EditorCore/Localization.h>

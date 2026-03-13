@@ -4,14 +4,19 @@
 
 #pragma once
 #include <SDL3/SDL_assert.h>
-#include "../System/HMessageBox.h"
+//#include "../System/HMessageBox.h"
 
 #ifdef _DEBUG
 
-#define H_ASSERT(v,msg) if(!(v)) { Horizon::HMessageBox::ShowSimple(0, "Assert", msg); SDL_TriggerBreakpoint();}
-#define H_ASSERT_W(v,msg) if(!(v)) {Horizon::HMessageBox::ShowSimple(0, "Assert", msg); SDL_TriggerBreakpoint();}
-#define H_ASSERT_ALWAYS_W(msg)  { Horizon::HMessageBox::ShowSimple(0, "Assert", msg);SDL_TriggerBreakpoint();}
-#define H_ASSERT_ALWAYS(msg)  { Horizon::HMessageBox::ShowSimple(0, "Assert", msg);SDL_TriggerBreakpoint();}
+//#define H_ASSERT(v,msg) if(!(v)) { Horizon::HMessageBox::ShowSimple(0, "Assert", msg); SDL_TriggerBreakpoint();}
+//#define H_ASSERT_W(v,msg) if(!(v)) {Horizon::HMessageBox::ShowSimple(0, "Assert", msg); SDL_TriggerBreakpoint();}
+//#define H_ASSERT_ALWAYS_W(msg)  { Horizon::HMessageBox::ShowSimple(0, "Assert", msg);SDL_TriggerBreakpoint();}
+//#define H_ASSERT_ALWAYS(msg)  { Horizon::HMessageBox::ShowSimple(0, "Assert", msg);SDL_TriggerBreakpoint();}
+
+#define H_ASSERT(v,msg) if(!(v)) {  SDL_TriggerBreakpoint();}
+#define H_ASSERT_W(v,msg) if(!(v)) { SDL_TriggerBreakpoint();}
+#define H_ASSERT_ALWAYS_W(msg)  { SDL_TriggerBreakpoint();}
+#define H_ASSERT_ALWAYS(msg)  { SDL_TriggerBreakpoint();}
 
 #define H_ASSERT_EQ(a,b) if((a) != (b)) SDL_TriggerBreakpoint();
 #define H_ASSERT_NULL(x) if((x) != NULL) SDL_TriggerBreakpoint();

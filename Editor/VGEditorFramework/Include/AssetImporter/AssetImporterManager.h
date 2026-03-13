@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../Config.h"
-#include <HCore/Include/Asset/HAsset.h>
-#include <HCore/Include/System/HFileSystem.h>
+#include <VGAsset/Include/HAsset.h>
+#include <HCorePlatform/Interface/HFileSystem.h>
 #include <VGEngine/Include/Core/Core.h>
 #include <VGEngine/Include/Core/Window.h>
 #include <VGEngine/Include/Asset/Package.h>

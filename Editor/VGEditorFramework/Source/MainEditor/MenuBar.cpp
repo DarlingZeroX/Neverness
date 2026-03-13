@@ -16,7 +16,7 @@
 #include "EditorCore/EditorCore.h"
 #include "EditorCore/Localization.h"
 #include "EditorCore/EdtiorScene.h"
-#include "HCore/Include/System/HSystemMisc.h"
+#include "HCorePlatform/Interface/HSystemMisc.h"
 #include "MainEditor/MainPanel.h"
 #include "VGEngine/Include/Core/Input.h"
 #include "VGEngine/Include/Engine/Manager.h"

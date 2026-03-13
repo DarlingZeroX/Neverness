@@ -38,6 +38,7 @@ find_package(SDL3 CONFIG REQUIRED)
 # 链接库
 target_link_libraries(VGNodeGraphApp PRIVATE SDL3::SDL3)
 target_link_libraries(VGNodeGraphApp PRIVATE HCore)
+target_link_libraries(VGNodeGraphApp PRIVATE HCorePlatform)
 target_link_libraries(VGNodeGraphApp PRIVATE VGImgui)
 target_link_libraries(VGNodeGraphApp PRIVATE VGEngine)
 target_link_libraries(VGNodeGraphApp PRIVATE VGEditorFramework)

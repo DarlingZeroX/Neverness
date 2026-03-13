@@ -55,6 +55,7 @@ find_package(Freetype REQUIRED)
 target_link_libraries(VGImgui PRIVATE Freetype::Freetype)
 target_link_libraries(VGImgui PRIVATE SDL3::SDL3)
 target_link_libraries(VGImgui PRIVATE HCore)
+target_link_libraries(VGImgui PRIVATE HCorePlatform)
 
 # 链接OpenGL库
 if (APPLE)

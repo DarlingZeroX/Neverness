@@ -12,7 +12,7 @@
 #include "NewProjectUITask.h"
 #include "VGLauncherData.h"
 #include "ProjectCreator.h"
-#include <HCore/Include/Platform/NativeFileDialog/portable-file-dialogs.h>
+#include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <VGEditorFramework/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor

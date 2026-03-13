@@ -16,7 +16,7 @@
 #include "Core/VFS.h"
 #include "Engine/Manager.h"
 #include "Scene/GameActorFactory.h"
-#include <HCore/Include/Platform/NativeFileDialog/portable-file-dialogs.h>
+#include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 
 #include "HCore/Include/Core/HStringTools.h"
 

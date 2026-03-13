@@ -15,7 +15,7 @@
 #include "../../Asset/TextureAsset.h"
 #include <unordered_set>
 #include <HCore/Include/Core/HTypeInfo.h>
-#include <HCore/Include/System/HFileSystem.h>
+#include <HCorePlatform/Interface/HFileSystem.h>
 
 namespace VisionGal
 {

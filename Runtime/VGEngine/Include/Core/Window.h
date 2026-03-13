@@ -12,7 +12,7 @@
 #pragma once
 #include "../EngineConfig.h"
 #include <SDL3/SDL.h>
-#include <HCore/Include/Platform/SDL3/SDL3Window.h>
+#include <HCorePlatform/Include/SDL3/SDL3Window.h>
 
 #include <HCore/Include/Event/HEventDelegate.h>
 #include <HCore/Include/Event/HWindowEvents.h>

@@ -29,7 +29,7 @@ namespace Horizon
 {
 	static HJsonTypeHandlerManager m_Handlers;
 
-	bool HJson::LoadJson(const fsPath& path)
+	bool HJson::LoadJson(const std::filesystem::path& path)
 	{
 		std::ifstream ifs(path);
 		if (!ifs.is_open())
@@ -54,7 +54,7 @@ namespace Horizon
 		return true;
 	}
 
-	bool HJson::SaveJson(const fsPath& path)
+	bool HJson::SaveJson(const std::filesystem::path& path)
 	{
 		rjson::StringBuffer buffer;
 		//rjson::Writer<rjson::StringBuffer> writer(buffer);

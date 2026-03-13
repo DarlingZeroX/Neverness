@@ -10,7 +10,7 @@
  */
 
 #include "VGDesktopApplication.h"
-#include <HCore/Include/System/HFileSystem.h>
+#include <HCorePlatform/Interface/HFileSystem.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <VGImgui/Include/Imgui/imgui_impl_opengl3.h>

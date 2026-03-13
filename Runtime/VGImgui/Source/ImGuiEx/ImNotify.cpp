@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <vector>
 #include "ImGuiEx/ImNotify.h"
-#include <HCore/Include/System/HSystemTimer.h>
+#include <HCorePlatform/Interface/HSystemTimer.h>
 
 #include "HCore/Include/Core/HLocalization.h"
 #include "ImGuiEx/IconFont/IconsFontAwesome5Pro.h"

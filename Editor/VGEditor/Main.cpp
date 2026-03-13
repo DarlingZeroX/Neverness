@@ -11,7 +11,7 @@
 
 #include "Include/EngineEditor.h"
 #include "Include/EditorInitializer.h"
-#include <HCore/Include/System/HFileSystem.h>
+#include <HCorePlatform/Interface/HFileSystem.h>
 #include <VGEngine/Include/Engine/VGEngine.h>
 
 int main(int argc, char* argv[])

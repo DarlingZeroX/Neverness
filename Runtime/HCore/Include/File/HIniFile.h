@@ -4,8 +4,8 @@
 
 #pragma once
 #include "../CoreModuleDefinitions.h"
-#include "../System/HFileSystem.h"
-
+//#include "../System/HFileSystem.h"
+#include <filesystem>
 #include "../Meta/Type.h"
 #include "../Core/HTypeInfo.h"
 
@@ -21,9 +21,9 @@ namespace Horizon
 		HIniFile(void);
 		HIniFile(Ref<Internal> impl);
 
-		int SaveFileInPath(const fsPath& path);
+		int SaveFileInPath(const std::filesystem::path& path);
 
-		static Ref<HIniFile> LoadFromFile(const fsPath& path);
+		static Ref<HIniFile> LoadFromFile(const std::filesystem::path& path);
 
 		template<typename T>
 		static Ref<HIniFile> CreateFromStruct(const T& data)

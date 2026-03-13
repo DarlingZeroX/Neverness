@@ -1,7 +1,8 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "File/HIniFile.h"
 #include <string>
 #include "File/include/SimpleIni.h"
+#include "Core/HCoreTypes.h"
 
 namespace Horizon
 {
@@ -140,12 +141,12 @@ namespace Horizon
 			
 		}
 
-		int SaveFileInPath(const fsPath& path)
+		int SaveFileInPath(const std::filesystem::path& path)
 		{
 			return SaveFile(path.c_str());
 		}
 
-		static Ref<Internal> LoadFromFile(const fsPath& path)
+		static Ref<Internal> LoadFromFile(const std::filesystem::path& path)
 		{
 			auto file = CreateRef<Internal>();
 
@@ -269,12 +270,12 @@ namespace Horizon
 	{
 	}
 
-	int HIniFile::SaveFileInPath(const fsPath& path)
+	int HIniFile::SaveFileInPath(const std::filesystem::path& path)
 	{
 		return m_Impl->SaveFile(path.c_str());
 	}
 
-	Ref<HIniFile> HIniFile::LoadFromFile(const fsPath& path)
+	Ref<HIniFile> HIniFile::LoadFromFile(const std::filesystem::path& path)
 	{
 		auto file = CreateRef<HIniFile>();
 

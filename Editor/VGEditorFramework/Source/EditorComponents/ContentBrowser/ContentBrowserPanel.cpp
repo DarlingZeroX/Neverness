@@ -16,8 +16,8 @@
 
 #include <VGImgui/IncludeImGuiEx.h>
 #include <HCore//Include/Core/HStringTools.h>
-#include <HCore/Include/Utils/HFileSystemGenerator.h>
-#include <HCore/Include/System/HClipboard.h>
+#include <HCorePlatform/Interface/HFileSystemGenerator.h>
+#include <HCorePlatform/Interface/HClipboard.h>
 
 #include "AssetEditor/AssetEditor.h"
 #include "EditorCore/AssetWatcher.h"

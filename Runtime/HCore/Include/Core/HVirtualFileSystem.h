@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../CoreModuleDefinitions.h"
-#include "../System/HFileSystem.h"
+//#include "../System/HFileSystem.h"
 #include "../VFS/VFS.h"
 
 namespace Horizon

@@ -15,7 +15,7 @@
 //#include "../Core/Viewport.h"
 //#include "../Render/Sprite.h"
 #include "../Interface/GameEngineInterface.h"
-#include <HCore/Include/Platform/SDL3/SDL3Window.h>
+#include <HCorePlatform/Include/SDL3/SDL3Window.h>
 #include "RenderEngine.h"
 
 namespace VisionGal

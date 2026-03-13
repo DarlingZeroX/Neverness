@@ -10,7 +10,7 @@
 */
 
 #include "Core/VFS.h"
-#include "HCore/Include/System/HFileSystem.h"
+#include "HCorePlatform/Interface/HFileSystem.h"
 #include "VGPackage/Include/PackageFileSystem.h"
 
 namespace VisionGal

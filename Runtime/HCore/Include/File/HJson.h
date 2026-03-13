@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../CoreModuleDefinitions.h"
-
+#include <filesystem>
 //#ifndef RAPIDJSON_SSE2
 //#define RAPIDJSON_SSE2
 //#endif // !RAPIDJSON_SSE2
@@ -23,7 +23,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "../System/HFileSystem.h"
+//#include "../System/HFileSystem.h"
 #include <HCore/Include/Meta/Meta.h>
 
 namespace rjson = rapidjson;
@@ -44,11 +44,11 @@ namespace Horizon
 			m_Doc = other.m_Doc;
 		}
 
-		bool LoadJson(const fsPath& path);
+		bool LoadJson(const std::filesystem::path& path);
 
 		bool LoadJson(std::fstream& stream);
 
-		bool SaveJson(const fsPath& path);
+		bool SaveJson(const std::filesystem::path& path);
 
 		void SaveJson(std::fstream& stream);
 
@@ -473,44 +473,44 @@ namespace Horizon
 		///	String key
 		///////////////////
 		template<typename T>
-		inline auto& AddMember(rjson::Value& container, const string& keyStr, T data)
+		inline auto& AddMember(rjson::Value& container, const std::string& keyStr, T data)
 		{
 			rjson::Value key(keyStr.c_str(), allocator()); // copy string name
 			return AddMember(container, key, data); // copy string name)
 		}
 
 		template<typename T>
-		inline auto& AddMemberRef(rjson::Value& container, const string& keyStr, T& data)
+		inline auto& AddMemberRef(rjson::Value& container, const std::string& keyStr, T& data)
 		{
 			rjson::Value key(keyStr.c_str(), allocator()); // copy string name
 			return AddMemberRef(container, key, data); // copy string name)
 		}
 
-		auto& AddMember(rjson::Value& container, const string& keyStr, const std::string& data)
+		auto& AddMember(rjson::Value& container, const std::string& keyStr, const std::string& data)
 		{
 			rjson::Value key(keyStr.c_str(), allocator()); // copy string name
 			return AddMember(container, key, data); // copy string name)
 		}
 
-		auto& AddMember(rjson::Value& container, const string& keyStr, const char* data)
+		auto& AddMember(rjson::Value& container, const std::string& keyStr, const char* data)
 		{
 			rjson::Value key(keyStr.c_str(), allocator()); // copy string name
 			return AddMember(container, key, data); // copy string name)
 		}
 
-		auto& AddMember(rjson::Value& container, const string& keyStr, const float2& data)
+		auto& AddMember(rjson::Value& container, const std::string& keyStr, const float2& data)
 		{
 			rjson::Value key(keyStr.c_str(), allocator()); // copy string name
 			return AddMember(container, key, data); // copy string name)
 		}
 
-		auto& AddMember(rjson::Value& container, const string& keyStr, const float3& data)
+		auto& AddMember(rjson::Value& container, const std::string& keyStr, const float3& data)
 		{
 			rjson::Value key(keyStr.c_str(), allocator()); // copy string name
 			return AddMember(container, key, data); // copy string name)
 		}
 
-		auto& AddMember(rjson::Value& container, const string& keyStr, const float4& data)
+		auto& AddMember(rjson::Value& container, const std::string& keyStr, const float4& data)
 		{
 			rjson::Value key(keyStr.c_str(), allocator()); // copy string name
 			return AddMember(container, key, data); // copy string name)

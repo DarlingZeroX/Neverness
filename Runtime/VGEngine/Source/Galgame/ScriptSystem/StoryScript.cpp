@@ -22,7 +22,7 @@
 #include <sol/state.hpp>
 
 #include "Core/EventBus.h"
-#include "HCore/Include/System/HFileSystem.h"
+#include "HCorePlatform/Interface/HFileSystem.h"
 #include "Lua/LuaInterface.h"
 #include "VGLuaCore/LuaErrorManager.h"
 

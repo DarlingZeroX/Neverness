@@ -4,10 +4,10 @@
 #include <HCore/Include/HConfig.h>
 
 #ifdef SDL3_WINDOW_SUPPORTED
-#include <HCore/Include/Platform/SDL3/SDL3Window.h>
+#include <HCorePlatform/Include/SDL3/SDL3Window.h>
 #endif
 
-#include <HCore/Include/System/HWindow.h>
+#include <HCorePlatform/Interface/HWindow.h>
 
 namespace ImGuiEx
 {

@@ -12,7 +12,7 @@
 #include "Project/ProjectBuilder.h"
 #include "Asset/Package.h"
 #include "Core/Core.h"
-#include "HCore/Include/System/HFileSystem.h"
+#include "HCorePlatform/Interface/HFileSystem.h"
 #include "Project/ProjectSettings.h"
 #include <VGPackage/Include/PakWriter.h>
 

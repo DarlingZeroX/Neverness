@@ -40,6 +40,7 @@ find_package(SDL3 CONFIG REQUIRED)
 # 链接库
 target_link_libraries(VGPackageTool PRIVATE SDL3::SDL3)
 target_link_libraries(VGPackageTool PRIVATE HCore)
+target_link_libraries(VGPackageTool PRIVATE HCorePlatform)
 target_link_libraries(VGPackageTool PRIVATE VGPackage)
 target_link_libraries(VGPackageTool PRIVATE VGImgui)
 target_link_libraries(VGPackageTool PRIVATE VGEngine)

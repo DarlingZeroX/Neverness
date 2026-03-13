@@ -8,7 +8,7 @@
 
 
 #include "HCore/.Generated\System\HFileWatcher.Generated.h"
-#include "HCore/Include/System/HFileWatcher.h"
+//#include "HCore/Include/System/HFileWatcher.h"
 
 #include <HCore/Include/Meta/ReflectionDatabase.h>
 
@@ -24,7 +24,7 @@ void MetaGenerated::AllocateModuleFileHCoreMetaSystem_HFileWatcher(m::Reflection
     // Enum Allocation
     ///////////////////////////////////////////////////////////////////////////
     
-    m::ReflectTypeRegister<Horizon::HFileActionType>(db, "", "Horizon::HFileActionType", true);
+    //m::ReflectTypeRegister<Horizon::HFileActionType>(db, "", "Horizon::HFileActionType", true);
     
     
     
@@ -44,27 +44,27 @@ void MetaGenerated::DefineModuleFileHCoreMetaSystem_HFileWatcher(m::ReflectionDa
     // Enum Definitions
     ///////////////////////////////////////////////////////////////////////////
     
-    m::DefineReflectType<Horizon::HFileActionType>(db,[](auto& db, auto& type, auto& typeID)
-    {
-        type.meta = {
-            
-        };
-
-        type.SetEnum<Horizon::HFileActionType>( "Horizon::HFileActionType", {
-             
-                { "Add", Horizon::HFileActionType::Add ,{  } }, 
-             
-                { "Delete", Horizon::HFileActionType::Delete ,{  } }, 
-             
-                { "Modified", Horizon::HFileActionType::Modified ,{  } }, 
-             
-                { "Moved", Horizon::HFileActionType::Moved ,{  } } 
-            
-        } );
-     });
-    
-    ///////////////////////////////////////////////////////////////////////////
-    // Class Definitions
-    ///////////////////////////////////////////////////////////////////////////
+    //m::DefineReflectType<Horizon::HFileActionType>(db,[](auto& db, auto& type, auto& typeID)
+    //{
+    //    type.meta = {
+    //        
+    //    };
+	//
+    //    type.SetEnum<Horizon::HFileActionType>( "Horizon::HFileActionType", {
+    //         
+    //            { "Add", Horizon::HFileActionType::Add ,{  } }, 
+    //         
+    //            { "Delete", Horizon::HFileActionType::Delete ,{  } }, 
+    //         
+    //            { "Modified", Horizon::HFileActionType::Modified ,{  } }, 
+    //         
+    //            { "Moved", Horizon::HFileActionType::Moved ,{  } } 
+    //        
+    //    } );
+    // });
+    //
+    /////////////////////////////////////////////////////////////////////////////
+    //// Class Definitions
+    /////////////////////////////////////////////////////////////////////////////
     
 }

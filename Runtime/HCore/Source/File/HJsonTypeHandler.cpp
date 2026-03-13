@@ -11,6 +11,7 @@
 
 #include "pch.h"
 #include "File/HJsonTypeHandler.h"
+#include "Core/HCoreTypes.h"
 
 namespace Horizon
 {

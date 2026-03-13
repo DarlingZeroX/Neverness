@@ -13,7 +13,7 @@
 
 #include "Core/VFS.h"
 #include "HCore/Include/Core/HStringTools.h"
-#include "HCore/Include/System/HFileSystem.h"
+#include "HCorePlatform/Interface/HFileSystem.h"
 
 namespace VisionGal
 {

@@ -12,7 +12,7 @@
 #pragma once
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGEngine/Include/Core/Core.h>
-#include <HCore/Include/System/HFileSystem.h>
+#include <HCorePlatform/Interface/HFileSystem.h>
 
 namespace VisionGal::Editor
 {

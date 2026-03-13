@@ -18,7 +18,7 @@
 #include "Asset/Accessor/SceneAccessor.h"
 #include "Core/VFS.h"
 #include "Engine/Manager.h"
-#include "HCore/Include/System/HFileSystem.h"
+#include "HCorePlatform/Interface/HFileSystem.h"
 #include "HCore/Include/Utils/HStringGenerator.h"
 #include "Scene/GameActorFactory.h"
 

@@ -11,7 +11,7 @@
 
 #include "VGLauncherData.h"
 #include <HCore/Include/File/nlohmann/json.hpp>
-#include <HCore/Include/System/HFileSystem.h>
+#include <HCorePlatform/Interface/HFileSystem.h>
 
 namespace VisionGal::Editor
 {

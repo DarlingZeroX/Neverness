@@ -10,7 +10,7 @@
 */
 
 #include "Core/Input.h"
-#include <HCore/Include/System/HInput.h>
+#include <HCorePlatform/Interface/HInput.h>
 
 #include "HCore/Include/Core/HStringTools.h"
 
