@@ -11,7 +11,7 @@
 
 #include "Galgame/ScriptSystem/StoryScriptSystem.h"
 #include "Galgame/Components.h"
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "Galgame/Lua/StoryScriptLuaInterface.h"
 
 namespace VisionGal::GalGame

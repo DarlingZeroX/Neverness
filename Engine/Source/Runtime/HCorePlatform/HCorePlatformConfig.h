@@ -11,6 +11,7 @@
 
 #pragma once
 
+#ifdef HCORE_PLATFORM_DYNAMIC
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
 #ifdef H_CORE_PLATFORM_EXPORT
@@ -27,4 +28,7 @@
 #define H_CORE_PLATFORM_API
 #endif
 
+#endif
+#else
+#define H_CORE_PLATFORM_API
 #endif

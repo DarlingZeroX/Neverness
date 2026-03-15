@@ -11,12 +11,12 @@
 
 #include "Project/ProjectBuilder.h"
 #include "Asset/Package.h"
-#include "Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "Project/ProjectSettings.h"
 #include <VGPackage/Include/PakWriter.h>
 
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal
 {

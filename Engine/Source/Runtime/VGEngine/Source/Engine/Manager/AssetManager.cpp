@@ -9,7 +9,7 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "Engine/Manager/AssetManager.h"
 #include "Asset/TextureAsset.h"
 #include "Asset/VideoAsset.h"

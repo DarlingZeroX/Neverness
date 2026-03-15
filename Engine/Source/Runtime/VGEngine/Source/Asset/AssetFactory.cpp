@@ -16,7 +16,7 @@
 #include "Asset/SceneAsset.h"
 #include "Asset/UIAsset.h"
 #include "Asset/Accessor/SceneAccessor.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "Engine/Manager.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "HCore/Include/Utils/HStringGenerator.h"

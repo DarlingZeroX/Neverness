@@ -10,7 +10,8 @@
 */
 
 #pragma once
-#include "../../Core/Viewport.h"
+#include "../../EngineConfig.h"
+#include "VGCore/Include/Core/Viewport.h"
 
 namespace VisionGal
 {

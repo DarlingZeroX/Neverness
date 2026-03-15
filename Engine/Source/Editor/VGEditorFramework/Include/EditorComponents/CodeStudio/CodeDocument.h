@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../../Config.h"
-#include "VGEngine/Include/Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "VGImgui/Include/Imgui/imgui.h"
 #include <VGImgui/Include/ImGuiColorTextEdit/TextEditor.h>
 

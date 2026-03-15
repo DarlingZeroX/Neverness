@@ -43,6 +43,7 @@ add_subdirectory ("Engine/Source/Runtime/VGRHI")
 add_subdirectory ("Engine/Source/Runtime/VGAsset")
 add_subdirectory ("Engine/Source/Runtime/VGPackage")
 add_subdirectory ("Engine/Source/Runtime/VGImgui")
+add_subdirectory ("Engine/Source/Runtime/VGCore")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNodeGraphEditor")

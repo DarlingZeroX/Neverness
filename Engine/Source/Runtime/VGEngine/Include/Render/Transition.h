@@ -10,11 +10,11 @@
 */
 
 #pragma once
-#include "../Utils/TransitionHelper.h"
+#include "VGCore/Include/Utils/TransitionHelper.h"
 //#include "../Graphics/OpenGL/RenderTarget.h"
 #include <VGRHI/Include/OpenGL/RenderTarget.h>
 #include "../Scene/Components.h"
-#include "../Interface/RenderInterface.h"
+#include "VGCore/Interface/RenderInterface.h"
 
 namespace VisionGal
 {

@@ -10,7 +10,7 @@
 */
 
 #include "Project/ProjectSettings.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "Engine/Manager.h"
 
 namespace VisionGal

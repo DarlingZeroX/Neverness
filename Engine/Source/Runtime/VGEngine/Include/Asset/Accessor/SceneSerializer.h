@@ -11,7 +11,7 @@
 
 #pragma once
 #include "ISceneSerializer.h"
-#include "../../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "../../Scene/Components.h"
 #include <HCore/Interface/HSerialization.h>
 

@@ -14,7 +14,6 @@
 #include <memory>
 #include <functional>
 #include "../HCorePlatformConfig.h"
-#include <HCore/Include/Meta/Macros.h>
 
 namespace Horizon
 {
@@ -30,7 +29,7 @@ namespace Horizon
 		Modified = 3,
 		/// Sent when a file is moved
 		Moved = 4
-	} HMetaEnable();
+	};
 
 	struct HFileActionData
 	{

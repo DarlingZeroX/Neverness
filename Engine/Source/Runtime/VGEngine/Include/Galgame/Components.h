@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Interface/SceneInterface.h"
+#include "VGCore/Interface/SceneInterface.h"
 #include "../Asset/Accessor/ISceneSerializer.h"
 
 namespace VisionGal::GalGame

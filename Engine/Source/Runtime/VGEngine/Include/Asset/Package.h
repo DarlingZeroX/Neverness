@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../EngineConfig.h"
-#include "../Core/Core.h"
-#include "Asset.h"
+#include "VGCore/Include/Core/Core.h"
+#include "VGCore/Interface/VGAsset.h"
 #include <fstream>
 
 namespace VisionGal

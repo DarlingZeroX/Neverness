@@ -12,7 +12,7 @@
 #include "EditorCore/Localization.h"
 
 #include "EditorCore/EditorCore.h"
-#include "VGEngine/Include/Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal::Editor
 {

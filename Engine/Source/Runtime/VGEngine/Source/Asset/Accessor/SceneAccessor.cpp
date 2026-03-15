@@ -13,7 +13,7 @@
 #include "Asset/Accessor/SceneSerializer.h"
 #include "Asset/Accessor/SceneSerializeFormat.h"
 #include <HCore/Interface/HSerialization.h>
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "Asset/Package.h"
 #include "Scene/Components.h"
 

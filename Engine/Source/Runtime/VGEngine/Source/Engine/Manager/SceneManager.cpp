@@ -13,7 +13,7 @@
 
 #include "Asset/Package.h"
 #include "Asset/Accessor/SceneAccessor.h"
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "Scene/GameActorFactory.h"
 
 namespace VisionGal

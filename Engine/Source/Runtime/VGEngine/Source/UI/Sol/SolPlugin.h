@@ -14,6 +14,7 @@
 #include "IncludeHeader.h"
 #include "LuaDocumentElementInstancer.h"
 #include "LuaEventListenerInstancer.h"
+#include "HCore/Interface/HConfig.h"
 
 namespace RmlSol {
 

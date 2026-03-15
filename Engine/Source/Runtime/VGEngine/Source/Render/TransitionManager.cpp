@@ -11,7 +11,7 @@
 
 #include "Render/TransitionManager.h"
 
-#include "Interface/Loader.h"
+#include "VGCore/Interface/Loader.h"
 #include "Render/Transition.h"
 
 namespace VisionGal {

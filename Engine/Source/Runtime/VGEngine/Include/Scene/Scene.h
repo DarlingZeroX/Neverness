@@ -10,7 +10,8 @@
 */
 
 #pragma once
-#include "../Interface/SceneInterface.h"
+#include "../EngineConfig.h"
+#include "VGCore/Interface/SceneInterface.h"
 #include <memory>
 #include <unordered_map>
 #include <HCore/Interface/HRandom.h>

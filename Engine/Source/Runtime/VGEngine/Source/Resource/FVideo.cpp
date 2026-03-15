@@ -12,7 +12,7 @@
 #include "Resource/FVideo.h"
 #include <SDL3/SDL_audio.h>
 
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 //#include "Graphics/OpenGL/Core.h"
 //#include "Graphics/Interface/Device.h"
 //#include "Graphics/OpenGL/ThrowMarco.h"

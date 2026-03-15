@@ -13,7 +13,7 @@
 #include "../Project/ProjectSettings.h"
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
-#include "../Interface/EngineInterface.h"
+#include "VGCore/Interface/EngineInterface.h"
 #include <HCore/Interface/HCore.h>
 
 namespace VisionGal

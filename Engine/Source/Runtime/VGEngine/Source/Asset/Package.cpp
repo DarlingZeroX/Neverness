@@ -11,7 +11,7 @@
 
 #include "Asset/Package.h"
 
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "HCore/Interface/HStringTools.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 

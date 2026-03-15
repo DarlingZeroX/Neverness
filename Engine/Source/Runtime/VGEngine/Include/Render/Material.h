@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../EngineConfig.h"
-#include "../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 //#include "../Graphics/OpenGL/ShaderProgram.h"
 #include <VGRHI/Include/OpenGL/ShaderProgram.h>
 

@@ -11,8 +11,8 @@
 
 #include "Asset/TextureAsset.h"
 #include <SDL3_image/SDL_image.h>
-#include "Core/Core.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/Core.h"
+#include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal
 {

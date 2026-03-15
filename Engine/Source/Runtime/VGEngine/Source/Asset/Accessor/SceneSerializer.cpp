@@ -13,7 +13,7 @@
 
 #include "Engine/Manager.h"
 #include "UI/UISystem.h"
-#include "Interface/Loader.h"
+#include "VGCore/Interface/Loader.h"
 #include "Lua/LuaScript.h"
 #include "Render/Camera.h"
 

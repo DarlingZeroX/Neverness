@@ -10,8 +10,8 @@
 */
 
 #include "Lua/CoreLuaInterface.h"
-#include "Core/Application.h"
-#include "Core/Input.h"
+#include "VGCore/Include/Core/Application.h"
+#include "VGCore/Include/Core/Input.h"
 
 namespace VisionGal
 {

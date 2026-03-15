@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "../Interface/GalgameInterface.h"
 
 namespace VisionGal::GalGame

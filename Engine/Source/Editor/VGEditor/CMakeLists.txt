@@ -50,6 +50,7 @@ target_link_libraries(VGEditor PRIVATE HCorePlatform)
 target_link_libraries(VGEditor PRIVATE HFileSystem)
 target_link_libraries(VGEditor PRIVATE VGPackage)
 target_link_libraries(VGEditor PRIVATE VGImgui)
+target_link_libraries(VGEditor PRIVATE VGCore)
 target_link_libraries(VGEditor PRIVATE VGEngine)
 target_link_libraries(VGEditor PRIVATE VGEditorFramework)
 

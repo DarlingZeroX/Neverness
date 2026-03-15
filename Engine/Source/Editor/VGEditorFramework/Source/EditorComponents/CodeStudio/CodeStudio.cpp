@@ -13,8 +13,8 @@
 #include "EditorCore/Localization.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "VGEngine/Include/Asset/Package.h"
-#include "VGEngine/Include/Core/EventBus.h"
-#include "VGEngine/Include/Core/VFS.h"
+#include "VGCore/Include/Core/EventBus.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 
 namespace VisionGal::Editor

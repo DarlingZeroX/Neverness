@@ -14,7 +14,7 @@
 #include <vector>
 #include <HCore/Interface/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
-#include <VGEngine/Include/Core/Viewport.h>
+#include <VGCore/Include/Core/Viewport.h>
 
 namespace VisionGal::Editor
 {

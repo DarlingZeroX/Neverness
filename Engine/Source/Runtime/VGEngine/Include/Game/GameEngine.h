@@ -12,9 +12,9 @@
 #pragma once
 //#include "RenderPipeline.h"
 //#include "../EngineConfig.h"
-//#include "../Core/Viewport.h"
+//#include "VGCore/Include/Core/Viewport.h"
 //#include "../Render/Sprite.h"
-#include "../Interface/GameEngineInterface.h"
+#include "VGCore/Interface/GameEngineInterface.h"
 #include <HCorePlatform/Include/SDL3/SDL3Window.h>
 #include "RenderEngine.h"
 

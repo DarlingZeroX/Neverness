@@ -55,6 +55,7 @@ target_link_libraries(VGLauncher PRIVATE HCorePlatform)
 target_link_libraries(VGLauncher PRIVATE HFileSystem)
 target_link_libraries(VGLauncher PRIVATE VGPackage)
 target_link_libraries(VGLauncher PRIVATE VGImgui)
+target_link_libraries(VGLauncher PRIVATE VGCore)
 target_link_libraries(VGLauncher PRIVATE VGEngine)
 target_link_libraries(VGLauncher PRIVATE VGEditorFramework)
 

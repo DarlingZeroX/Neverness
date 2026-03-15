@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../../Interface/GameInterface.h"
+#include "VGCore/Interface/GameInterface.h"
 #include "../../Scene/Scene.h"
 
 namespace VisionGal

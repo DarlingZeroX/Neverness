@@ -34,6 +34,7 @@
 #include <RmlUi/Core/ElementDocument.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Debugger.h>
+#include "VGCore/Include/Core/Core.h"
 
 //static Rml::UniquePtr<ShellFileInterface> file_interface;
 static Rml::UniquePtr<UIFileInterfaceVFS> file_interface;

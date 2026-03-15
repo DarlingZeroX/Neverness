@@ -13,6 +13,7 @@
 #include <sol/object.hpp>
 #include <unordered_map>
 #include "LuaVariant.h"
+#include <VGCore/Include/Core/Core.h>
 
 namespace VisionGal
 {

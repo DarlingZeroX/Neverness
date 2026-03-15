@@ -11,7 +11,7 @@
 
 #include "Resource/Audio.h"
 //#include "Resource/Audio/FAudioDecoder.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal
 {

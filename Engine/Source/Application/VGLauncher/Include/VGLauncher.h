@@ -11,10 +11,10 @@
 
 
 #pragma once
-#include <VGEngine/Include/Core/Window.h>
+#include <VGCore/Include/Core/Window.h>
 #include <VGEngine/Include/Game/GameEngine.h>
 #include <VGEngine/Include/Engine/ImGuiLayer.h>
-#include <VGEngine/Include/Interface/EngineInterface.h>
+#include <VGCore/Interface/EngineInterface.h>
 
 namespace VisionGal::Editor
 {

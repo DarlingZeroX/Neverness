@@ -12,9 +12,9 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
-#include "../Core/Window.h"
-#include "../Interface/EngineInterface.h"
-#include "../Core/Viewport.h"
+#include "VGCore/Include/Core/Window.h"
+#include "VGCore/Interface/EngineInterface.h"
+#include "VGCore/Include/Core/Viewport.h"
 #include "../Resource/UIDocument.h"
 #include <string>
 #include <RmlUi/Core.h>

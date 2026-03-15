@@ -10,8 +10,8 @@
  */
 
 #include "UI/Rml/ShellFileInterface.h"
-#include "Core/VFS.h"
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/VFS.h"
+#include "VGCore/Include/Core/EventBus.h"
 
 ShellFileInterface::ShellFileInterface(const Rml::String& root) : root(root) {}
 

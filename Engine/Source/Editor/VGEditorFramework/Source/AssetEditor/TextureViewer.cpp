@@ -11,7 +11,7 @@
 
 #include "AssetEditor/TextureViewer.h"
 #include <VGImgui/IncludeImGuiEx.h>
-#include <VGEngine/Include/Interface/Loader.h>
+#include <VGCore/Interface/Loader.h>
 
 #include "EditorCore/Localization.h"
 

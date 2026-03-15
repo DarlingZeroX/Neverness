@@ -12,7 +12,7 @@
 #pragma once
 #include "Texture2D.h"
 //#include "Video.h"
-#include "../Interface/Loader.h"
+#include "VGCore/Interface/Loader.h"
 #include "../Asset/TextureAsset.h"
 #include <HCore/Interface/HSingleton.h>
 

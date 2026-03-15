@@ -11,8 +11,8 @@
 
 #include "Galgame/ResourceSystem.h"
 #include "Galgame/GameEngineCore.h"
-#include "Interface/Loader.h"
-#include "Core/EventBus.h"
+#include "VGCore/Interface/Loader.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "Engine/Manager.h"
 #include "Engine/EngineResource.h"
 #include "Resource/Audio.h"

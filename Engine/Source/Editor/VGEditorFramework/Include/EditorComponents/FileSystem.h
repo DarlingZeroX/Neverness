@@ -12,7 +12,7 @@
 #pragma once
 #include "../Config.h"
 #include "../EditorCore/ContentBrowser.h"
-#include <VGEngine\Include\Core\Core.h>
+#include <VGCore/Include/Core\Core.h>
 #include "VGAsset/Include/HAsset.h"
 
 namespace VisionGal::Editor {

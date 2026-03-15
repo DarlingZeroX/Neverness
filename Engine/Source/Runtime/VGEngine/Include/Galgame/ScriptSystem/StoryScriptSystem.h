@@ -13,8 +13,8 @@
 #include "StoryScript.h"
 #include "../Interface/IStoryScriptSystem.h"
 #include "../Interface/IGalGameEngine.h"
-#include "../../Core/Core.h"
-#include "../../Utils/TransitionHelper.h"
+#include "VGCore/Include/Core/Core.h"
+#include "VGCore/Include/Utils/TransitionHelper.h"
 #include "../Core/GalGameContext.h"
 
 namespace VisionGal::GalGame

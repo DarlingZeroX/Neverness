@@ -10,8 +10,9 @@
 */
 
 #pragma once
-#include "Asset.h"
-#include "../Core/Core.h"
+#include "../EngineConfig.h"
+#include "VGCore/Interface/VGAsset.h"
+#include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal
 {

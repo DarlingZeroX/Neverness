@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Interface/GalgameInterface.h"
-#include "../Interface/AppInterface.h"
+#include "VGCore/Interface/AppInterface.h"
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
 #include "../Render/RenderCore.h"

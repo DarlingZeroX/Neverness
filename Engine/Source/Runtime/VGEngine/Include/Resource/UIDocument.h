@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../EngineConfig.h"
-#include "../Core/Core.h"
-#include "../Utils/TransitionHelper.h"
+#include "VGCore/Include/Core/Core.h"
+#include "VGCore/Include/Utils/TransitionHelper.h"
 #include <RmlUi/Core.h>
 #include <sol/function.hpp>
 

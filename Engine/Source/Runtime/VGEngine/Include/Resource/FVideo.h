@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Interface/VideoInterface.h"
-#include "../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "../EngineConfig.h"
 #include <HMedia/Include/FVideo.h>
 

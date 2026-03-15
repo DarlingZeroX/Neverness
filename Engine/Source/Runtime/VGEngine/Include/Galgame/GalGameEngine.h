@@ -21,7 +21,7 @@
 #include "ResourceSystem.h"
 #include "../Scene/Scene.h"
 #include "../Render/RenderCore.h"
-#include "../Utils/TransitionHelper.h"
+#include "VGCore/Include/Utils/TransitionHelper.h"
 
 namespace VisionGal::GalGame
 {

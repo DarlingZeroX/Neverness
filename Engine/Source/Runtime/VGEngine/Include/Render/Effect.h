@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../Interface/RenderInterface.h"
+#include "VGCore/Interface/RenderInterface.h"
 
 namespace VisionGal
 {

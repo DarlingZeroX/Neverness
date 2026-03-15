@@ -123,10 +123,10 @@ file(GLOB HCORE_HEADER_FILES
 )
 
 # 库
-add_library (HCore SHARED ${HCORE_GEN_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_FILES})
+add_library (HCore STATIC ${HCORE_GEN_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_FILES})
 
 # 仅对动态库目标定义 CORE_MODULE_EXPORT
-target_compile_definitions(HCore PRIVATE CORE_MODULE_EXPORT)
+# target_compile_definitions(HCore PRIVATE CORE_MODULE_EXPORT)
 
 # 添加头文件搜索路径
 target_include_directories(HCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)

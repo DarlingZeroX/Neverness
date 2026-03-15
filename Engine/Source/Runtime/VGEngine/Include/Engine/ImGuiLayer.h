@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../EngineConfig.h"
-#include "../Core/Window.h"
+#include "VGCore/Include/Core/Window.h"
 
 namespace VisionGal
 {

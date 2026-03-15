@@ -11,7 +11,7 @@
 
 #include "Setting/ProjectSettingsWrapper.h"
 #include "EditorCore/Localization.h"
-#include "VGEngine/Include/Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "VGEngine/Include/Project/ProjectSettings.h"
 #include "VGImgui/IncludeImGuiEx.h"
 

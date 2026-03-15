@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Interface/IGalGameEngine.h"
-#include "../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal::GalGame
 {

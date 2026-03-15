@@ -11,7 +11,7 @@
 
 #pragma once
 #include <VGImgui/IncludeImGuiEx.h>
-#include <VGEngine/Include/Core/Core.h>
+#include <VGCore/Include/Core/Core.h>
 #include <HFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal::Editor

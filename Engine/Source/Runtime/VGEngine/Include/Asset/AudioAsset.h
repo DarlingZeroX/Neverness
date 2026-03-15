@@ -10,8 +10,9 @@
 */
 
 #pragma once
-#include "Asset.h"
-#include "../Core/Core.h"
+#include "../EngineConfig.h"
+#include "VGCore/Interface/VGAsset.h"
+#include "VGCore/Include/Core/Core.h"
 //#include "../Resource/Audio.h"
 //#include <HMedia/Interface/AudioInterface.h>
 #include "../Resource/Interface/AudioInterface.h"

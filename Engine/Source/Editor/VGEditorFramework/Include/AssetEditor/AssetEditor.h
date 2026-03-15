@@ -13,7 +13,7 @@
 #include "../Config.h"
 #include "EditorComponents/PanelInterface.h"
 #include <HFileSystem/Interface/HFileSystem.h>
-#include <VGEngine/Include/Core/Core.h>
+#include <VGCore/Include/Core/Core.h>
 #include <VGAsset/Include/HAsset.h>
 #include <VGEngine/Include/Asset/Package.h>
 

@@ -10,11 +10,11 @@
 */
 
 #include "Lua/LuaScript.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "Lua/LuaInterface.h"
 #include <sol/sol.hpp>
 
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 
 namespace VisionGal
 {

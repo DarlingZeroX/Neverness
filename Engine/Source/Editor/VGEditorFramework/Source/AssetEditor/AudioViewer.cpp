@@ -11,8 +11,8 @@
 
 #include "AssetEditor/AudioViewer.h"
 #include "EditorCore/Localization.h"
-#include <VGEngine/Include/Interface/Loader.h>
-#include <VGEngine/Include/Utils/TimeHelper.h>
+#include <VGCore/Interface/Loader.h>
+#include <VGCore/Include/Utils/TimeHelper.h>
 #include <VGEngine/Include/Resource/Audio.h>
 
 namespace VisionGal::Editor

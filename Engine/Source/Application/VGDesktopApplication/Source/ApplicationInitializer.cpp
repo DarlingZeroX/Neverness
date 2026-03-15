@@ -13,8 +13,8 @@
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <VGPackage/Include/PakWriter.h>
-#include <VGEngine/Include/Core/Core.h>
-#include <VGEngine/Include/Core/VFS.h>
+#include <VGCore/Include/Core/Core.h>
+#include <VGCore/Include/Core/VFS.h>
 
 void VGDesktopApplicationInitializer::PakResource(const VGDesktopApplicationVFSPath& path)
 {

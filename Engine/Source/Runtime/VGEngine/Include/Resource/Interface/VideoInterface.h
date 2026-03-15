@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include <HMedia/Interface/VideoInterface.h>
 #include <VGRHI/Interface/Texture.h>
 

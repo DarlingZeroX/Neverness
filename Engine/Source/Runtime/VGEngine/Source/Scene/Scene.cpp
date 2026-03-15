@@ -12,7 +12,7 @@
 #include "Scene/Scene.h"
 #include "Scene/Components.h"
 #include <HCore/Include/Scene/HSceneHierachy.h>
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 
 namespace VisionGal
 {

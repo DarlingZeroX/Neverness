@@ -10,7 +10,7 @@
  */
 
 #include "Galgame/UISystem/GalUISystem.h"
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "Galgame/Components.h"
 #include "UI/UISystem.h"
 

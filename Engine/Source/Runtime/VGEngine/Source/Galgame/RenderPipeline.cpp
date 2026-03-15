@@ -11,7 +11,7 @@
 
 #include "Galgame/RenderPipeline.h"
 #include "Engine/Manager.h"
-#include "Interface/Loader.h"
+#include "VGCore/Interface/Loader.h"
 #include "Render/TransitionManager.h"
 #include "Scene/Scene.h"
 

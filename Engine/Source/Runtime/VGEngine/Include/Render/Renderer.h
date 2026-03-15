@@ -12,7 +12,7 @@
 #pragma once
 #include "Camera.h"
 #include "../EngineConfig.h"
-#include "../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "../Scene/Scene.h"
 #include "../Scene/Components.h"
 

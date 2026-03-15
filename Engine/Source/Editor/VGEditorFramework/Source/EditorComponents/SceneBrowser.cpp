@@ -13,7 +13,7 @@
 #include "EditorCore/Localization.h"
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGEngine/Include/Scene/Scene.h>
-#include <VGEngine/Include/Core/EventBus.h>
+#include <VGCore/Include/Core/EventBus.h>
 #include <VGEngine/Include/Scene/Components.h>
 #include <VGEngine/Include/Scene/GameActorFactory.h>
 

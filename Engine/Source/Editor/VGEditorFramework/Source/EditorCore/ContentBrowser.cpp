@@ -19,7 +19,7 @@
 #include <VGAsset/Include/HPackage.h>
 //#include "Core/VFS.h"
 //#include "Engine/Manager/AssetManager.h"
-#include <VGEngine/Include/Core/VFS.h>
+#include <VGCore/Include/Core/VFS.h>
 #include <VGEngine/Include/Engine/Manager/AssetManager.h>
 
 namespace VisionGal {

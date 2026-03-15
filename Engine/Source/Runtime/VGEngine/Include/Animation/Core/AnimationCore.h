@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Tween.h"
-#include "../../Interface/GameInterface.h"
+#include "VGCore/Interface/GameInterface.h"
 
 namespace VisionGal
 {

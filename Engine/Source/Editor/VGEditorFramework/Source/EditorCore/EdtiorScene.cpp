@@ -16,7 +16,7 @@
 #include <VGImgui/Include/ImGuiEx/ImNotify.h>
 #include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <HFileSystem/Interface/HFileSystem.h>
-#include <VGEngine/Include/Core/VFS.h>
+#include <VGCore/Include/Core/VFS.h>
 
 namespace VisionGal::Editor
 {

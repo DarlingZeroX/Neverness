@@ -18,10 +18,10 @@
 #include "EditorCore/EdtiorScene.h"
 #include "HCorePlatform/Interface/HSystemMisc.h"
 #include "MainEditor/MainPanel.h"
-#include "VGEngine/Include/Core/Input.h"
+#include "VGCore/Include/Core/Input.h"
 #include "VGEngine/Include/Engine/Manager.h"
 #include "VGEngine/Include/Engine/VGEngine.h"
-#include "VGEngine/Include/Interface/Loader.h"
+#include "VGCore/Interface/Loader.h"
 
 namespace VisionGal::Editor
 {

@@ -9,8 +9,8 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "../Core/Core.h"
-#include "../Interface/RenderInterface.h"
+#include "VGCore/Include/Core/Core.h"
+#include "VGCore/Interface/RenderInterface.h"
 #include <HCore/Include/Event/HEventDelegate.h>
 
 namespace VisionGal {

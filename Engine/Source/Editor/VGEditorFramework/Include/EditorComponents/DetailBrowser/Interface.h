@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../../Config.h"
-#include <VGEngine/Include/Interface/SceneInterface.h>
+#include <VGCore/Interface/SceneInterface.h>
 
 namespace VisionGal::Editor {
 

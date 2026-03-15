@@ -10,6 +10,7 @@
 */
 
 #include "Engine/EngineResource.h"
+#include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal
 {

@@ -54,6 +54,7 @@ target_link_libraries(VGDesktopApplication PRIVATE HCore)
 target_link_libraries(VGDesktopApplication PRIVATE HCorePlatform)
 target_link_libraries(VGDesktopApplication PRIVATE VGPackage)
 target_link_libraries(VGDesktopApplication PRIVATE VGImgui)
+target_link_libraries(VGDesktopApplication PRIVATE VGCore)
 target_link_libraries(VGDesktopApplication PRIVATE VGEngine)
 target_link_libraries(VGDesktopApplication PRIVATE VGEditorFramework)
 

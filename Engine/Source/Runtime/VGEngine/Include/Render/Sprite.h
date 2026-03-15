@@ -11,9 +11,9 @@
 
 #pragma once
 #include "../Resource/Texture2D.h"
-#include "../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "../EngineConfig.h"
-#include "../Interface/RenderInterface.h"
+#include "VGCore/Interface/RenderInterface.h"
 //#include "../Graphics/Interface/VGFX.h"
 #include <VGRHI/Interface/VGFX.h>
 

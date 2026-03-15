@@ -12,7 +12,7 @@
 #pragma once
 #include <RmlUi/Core/FileInterface.h>
 #include <RmlUi/Core/Types.h>
-#include "../../Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 
 /**
     RmlUi file interface for the shell examples.

@@ -10,8 +10,8 @@
 */
 
 #pragma once
-#include "../Core/Viewport.h"
-#include "../Interface/GameEngineInterface.h"
+#include "VGCore/Include/Core/Viewport.h"
+#include "VGCore/Interface/GameEngineInterface.h"
 //#include "../Graphics/OpenGL/RenderTarget.h"
 #include <VGRHI/Include/OpenGL/RenderTarget.h>
 

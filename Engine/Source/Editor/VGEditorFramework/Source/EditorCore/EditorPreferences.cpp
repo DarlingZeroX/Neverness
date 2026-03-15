@@ -15,7 +15,7 @@
 #include "EditorCore/Localization.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "MainEditor/MainPanel.h"
-#include "VGEngine/Include/Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "VGImgui/IncludeImGuiEx.h"
 
 namespace VisionGal::Editor

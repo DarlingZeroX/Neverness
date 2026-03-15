@@ -11,9 +11,9 @@
 
 #include "Engine/VGEngine.h"
 #include "Resource/ResourceManager.h"
-#include "Core/Core.h"
-#include "Core/EventBus.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/Core.h"
+#include "VGCore/Include/Core/EventBus.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "Engine/Manager.h"
 #include "Scene/GameActorFactory.h"
 #include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>

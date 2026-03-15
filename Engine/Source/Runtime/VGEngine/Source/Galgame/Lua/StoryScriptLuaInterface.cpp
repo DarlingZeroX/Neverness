@@ -17,7 +17,7 @@
 #include "Animation/Interface/Animation2DScript.h"
 #include <sol/sol.hpp>
 
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "VGLuaCore/LuaErrorManager.h"
 
 namespace VisionGal::GalGame
@@ -105,7 +105,7 @@ namespace VisionGal::GalGame
 		return s_StoryScriptCoroutine;
 	}
 
-	void StoryScriptLuaInterface::SetCurrentStoryScriptPath(const String& path)
+	void StoryScriptLuaInterface::SetCurrentStoryScriptPath(const std::string& path)
 	{
 		s_StoryScriptPath = path;
 	}

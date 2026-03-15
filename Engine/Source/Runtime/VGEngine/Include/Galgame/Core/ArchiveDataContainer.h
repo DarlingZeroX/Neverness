@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../../Data/DataContainer.h"
+#include "VGCore/Include/Data/DataContainer.h"
 
 namespace VisionGal::GalGame
 {

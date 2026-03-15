@@ -12,7 +12,7 @@
 #include "VGLauncherData.h"
 #include "Include/VGLauncher.h"
 #include <VGPackage/Include/PackageFileSystem.h>
-#include <VGEngine/Include/Core/VFS.h>
+#include <VGCore/Include/Core/VFS.h>
 #include <VGEngine/Include/Engine/VGEngine.h>
 #include <VGEditorFramework/Include/EditorCore/EditorCore.h>
 

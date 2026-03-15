@@ -12,7 +12,7 @@
 #include "EditorComponents/DetailBrowser/Browser.h"
 #include "EditorComponents/DetailBrowser/ComponentDrawer.h"
 #include "EditorCore/Localization.h"
-#include <VGEngine/Include/Core/EventBus.h>
+#include <VGCore/Include/Core/EventBus.h>
 #include <VGImgui/IncludeImGui.h>
 #include <HCore/Interface/HStringTools.h>
 

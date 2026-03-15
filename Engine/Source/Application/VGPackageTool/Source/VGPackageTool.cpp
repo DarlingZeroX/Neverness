@@ -12,8 +12,8 @@
 #include "VGPackageTool.h"
 #include "VGPackage/Include/PakReader.h"
 #include "VGPackage/Include/PakWriter.h"
-#include <VGEngine/Include/Core/Core.h>
-#include <VGEngine/Include/Core/VFS.h>
+#include <VGCore/Include/Core/Core.h>
+#include <VGCore/Include/Core/VFS.h>
 #include <VGEditorFramework/Include/EditorCore/EditorCore.h>
 #include "HFileSystem/Interface/HFileSystem.h"
 

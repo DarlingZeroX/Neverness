@@ -41,6 +41,7 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Data/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/Manager/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Event/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/Core/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/Lua/*.cpp"
@@ -71,6 +72,7 @@ file(GLOB ENGINE_SRC_FILES
 file(GLOB ENGINE_HEADER_FILES 
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Audio/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Core/*.h"
@@ -117,6 +119,7 @@ add_library (VGEngine SHARED ${ENGINE_SRC_FILES} ${ENGINE_HEADER_FILES})
 # 添加头文件搜索路径
 target_include_directories(VGEngine PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(VGEngine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(VGEngine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(VGEngine PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)
 
 # 配置预编译头
@@ -148,6 +151,7 @@ target_link_libraries(VGEngine PRIVATE VGRHI)
 target_link_libraries(VGEngine PRIVATE VGPackage)
 target_link_libraries(VGEngine PRIVATE VGImgui)
 target_link_libraries(VGEngine PRIVATE RmlUi::RmlUi)
+target_link_libraries(VGEngine PRIVATE VGCore)
 
 # 链接OpenGL库
 if (APPLE)

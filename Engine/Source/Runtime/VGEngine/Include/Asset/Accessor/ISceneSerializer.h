@@ -12,7 +12,7 @@
 #pragma once
 #include "../SceneAsset.h"
 #include "../../Scene/Components.h"
-#include "../../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include <HCore/Interface/HSerialization.h>
 
 namespace VisionGal

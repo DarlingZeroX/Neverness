@@ -9,4 +9,4 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "../Interface/SceneInterface.h"
+#include "VGCore/Interface/SceneInterface.h"

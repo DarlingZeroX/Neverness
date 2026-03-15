@@ -12,7 +12,7 @@
 #pragma once
 #include "RenderPipeline.h"
 #include "../EngineConfig.h"
-#include "../Core/Viewport.h"
+#include "VGCore/Include/Core/Viewport.h"
 
 namespace VisionGal
 {

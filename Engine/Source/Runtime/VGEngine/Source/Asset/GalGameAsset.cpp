@@ -11,7 +11,7 @@
 
 #include "Asset/GalGameAsset.h"
 #include "Asset/Package.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal
 {

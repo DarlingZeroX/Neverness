@@ -9,6 +9,6 @@
 
 //#include <sol/sol.hpp>
 //#include "Lua/sol2/sol.hpp"
-#include "Core/Core.h"
+//#include "VGCore/Include/Core/Core.h"
 
 #endif //PCH_H

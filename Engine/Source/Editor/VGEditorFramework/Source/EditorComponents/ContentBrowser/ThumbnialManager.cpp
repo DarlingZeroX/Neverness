@@ -11,7 +11,7 @@
 
 #include "EditorComponents/ContentBrowser/ThumbnialManager.h"
 #include "EditorCore/EditorCore.h"
-#include <VGEngine/Include/Interface/Loader.h>
+#include <VGCore/Interface/Loader.h>
 #include <VGEngine/Include/Resource/ResourceManager.h>
 
 

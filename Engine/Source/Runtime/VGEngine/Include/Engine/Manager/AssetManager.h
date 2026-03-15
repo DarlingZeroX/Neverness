@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../../EngineConfig.h"
-#include "../../Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "../../Asset/TextureAsset.h"
 #include <unordered_set>
 #include <HCore/Interface/HTypeInfo.h>

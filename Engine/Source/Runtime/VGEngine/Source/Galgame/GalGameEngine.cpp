@@ -13,7 +13,7 @@
 #include "Galgame/GameEngineCore.h"
 #include "Galgame/Components.h"
 #include "Galgame/SpriteAnimationScriptManager.h"
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "Render/TransitionManager.h"
 #include "Scene/Scene.h"
 #include "Engine/Manager.h"

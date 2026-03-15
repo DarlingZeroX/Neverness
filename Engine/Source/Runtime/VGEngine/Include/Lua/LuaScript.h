@@ -10,7 +10,8 @@
 */
 
 #pragma once
-#include "../Interface/GameInterface.h"
+#include "../EngineConfig.h"
+#include "VGCore/Interface/GameInterface.h"
 #include <sol/table.hpp>
 #include <sol/function.hpp>
 #include <sol/state.hpp>

@@ -13,7 +13,7 @@
 #include <RmlUi/Core/Element.h>
 #include <UI/Sol/Interpreter.h>
 
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "Lua/LuaInterface.h"
 
 namespace RmlSol {

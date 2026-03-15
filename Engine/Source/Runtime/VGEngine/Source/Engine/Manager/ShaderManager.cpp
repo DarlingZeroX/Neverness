@@ -10,7 +10,7 @@
 */
 
 #include "Engine/Manager/ShaderManager.h"
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal
 {

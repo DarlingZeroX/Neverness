@@ -10,12 +10,12 @@
 */
 
 #include "EditorCore/AssetWatcher.h"
-#include "VGEngine/Include/Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "VGEngine/Include/Engine/Manager.h"
 #include "VGEngine/Include/Galgame/GalGameEngine.h"
 #include "VGEngine/Include/Galgame/GameEngineCore.h"
 #include "VGEngine/Include/UI/UISystem.h"
-#include "VGEngine/Include/Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal::Editor
 {

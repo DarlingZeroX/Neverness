@@ -69,12 +69,10 @@ file(GLOB HCORE_SRC_FILES
 )
 
 # 库
-add_library (HCorePlatform SHARED ${HCORE_INTERFACE_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_FILES})
+add_library (HCorePlatform STATIC ${HCORE_INTERFACE_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_FILES})
 
 # 仅对动态库目标定义 CORE_MODULE_EXPORT
-target_compile_definitions(HCorePlatform PRIVATE H_CORE_PLATFORM_EXPORT)
-# target_compile_definitions(HCorePlatform PRIVATE EFSW_DYNAMIC)
-# target_compile_definitions(HCorePlatform PRIVATE EFSW_EXPORTS)
+#target_compile_definitions(HCorePlatform PRIVATE H_CORE_PLATFORM_EXPORT)
 
 # 添加头文件搜索路径
 target_include_directories(HCorePlatform PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)

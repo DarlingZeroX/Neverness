@@ -10,8 +10,8 @@
  */
 
 #include "Include/VGNodeGraphApp.h"
-#include <VGEngine/Include/Core/Core.h>
-#include <VGEngine/Include/Core/VFS.h>
+#include <VGCore/Include/Core/Core.h>
+#include <VGCore/Include/Core/VFS.h>
 #include <VGEngine/Include/Engine/VGEngine.h>
 #include <VGEditorFramework/Include/EditorCore/EditorCore.h>
 

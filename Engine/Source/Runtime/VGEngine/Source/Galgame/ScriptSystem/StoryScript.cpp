@@ -10,18 +10,18 @@
  */
 
 #include "Galgame/ScriptSystem/StoryScript.h"
-#include "Core/Core.h"
+#include "VGCore/Include/Core/Core.h"
 #include "Galgame/Lua/StoryScriptLuaInterface.h"
 #include <iostream>
 #include <fstream>
 #include <regex>
 #include <HCore/Interface/HLog.h>
-#include "Core/VFS.h"
+#include "VGCore/Include/Core/VFS.h"
 #include "Galgame/GalGameEngine.h"
 #include "Galgame/GameEngineCore.h"
 #include <sol/state.hpp>
 
-#include "Core/EventBus.h"
+#include "VGCore/Include/Core/EventBus.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "Lua/LuaInterface.h"
 #include "VGLuaCore/LuaErrorManager.h"

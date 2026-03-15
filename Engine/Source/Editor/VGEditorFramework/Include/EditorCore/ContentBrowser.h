@@ -14,8 +14,8 @@
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <HCore/Interface/HSingleton.h>
 //#include <VGAsset/Include/HAsset.h>
-#include <VGEngine/Include/Core/Core.h>
-#include <VGEngine/Include/Asset/Asset.h>
+#include <VGCore/Include/Core/Core.h>
+#include <VGCore/Interface/VGAsset.h>
 
 namespace VisionGal {
 

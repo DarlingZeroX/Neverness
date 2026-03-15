@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../EngineConfig.h"
-#include "../Interface/GameInterface.h"
-#include "../Interface/SceneInterface.h"
+#include "VGCore/Interface/GameInterface.h"
+#include "VGCore/Interface/SceneInterface.h"
 
 namespace VisionGal
 {

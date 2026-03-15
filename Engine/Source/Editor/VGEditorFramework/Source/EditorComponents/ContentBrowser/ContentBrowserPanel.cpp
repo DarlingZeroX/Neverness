@@ -24,8 +24,8 @@
 #include "EditorCore/EditorCore.h"
 #include "EditorCore/Localization.h"
 #include "VGEngine/Include/Asset/AssetFactory.h"
-#include "VGEngine/Include/Core/VFS.h"
-#include "VGEngine/Include/Interface/Loader.h"
+#include "VGCore/Include/Core/VFS.h"
+#include "VGCore/Interface/Loader.h"
 
 #ifdef GetCurrentDirectory
 #undef GetCurrentDirectory
