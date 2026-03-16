@@ -36,7 +36,7 @@ namespace VisionGal {
 		VGFX::ITexture* GetTexture();
 		void SetTexture(const Ref<VGFX::ITexture>& tex);
 	private:
-		static Ref<VGFX::IStaticMesh> s_Mesh;
+		//static Ref<VGFX::IStaticMesh> s_Mesh;
 		Ref<Texture2D> m_Texture;
 	};
 

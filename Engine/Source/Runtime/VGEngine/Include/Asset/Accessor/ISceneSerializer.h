@@ -40,7 +40,7 @@ namespace VisionGal
 		virtual int ReadSegment(cereal::JSONInputArchive& archive, SceneDeserializeDataContainer& data) = 0;
 		virtual int ReadSegment(cereal::BinaryInputArchive& archive, SceneDeserializeDataContainer& data) = 0;
 
-		virtual void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) = 0;
+		virtual void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) = 0;
 	};
 	  
 	/// <summary>

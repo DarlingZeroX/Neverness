@@ -14,10 +14,11 @@
 #include <sol/object.hpp>
 #include <unordered_map>
 #include <HCore/Include/File/nlohmann/json.hpp>
+#include "../../VGCoreConfig.h"
 
 namespace VisionGal
 {
-	class VGDataVariant
+	class VG_CORE_API VGDataVariant
 	{
 	public:
 		enum class Type {

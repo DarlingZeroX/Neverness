@@ -16,7 +16,7 @@
 
 namespace VisionGal
 {
-	class VGDataContainer
+	class VG_CORE_API VGDataContainer
 	{
 	public:
 		VGDataContainer();

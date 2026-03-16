@@ -22,7 +22,7 @@ namespace VisionGal {
 		return &s_Manager;
 	}
 
-	Ref<IAnimationScript> AudioAnimationScriptManager::CreateAudioAnimationWithCommand(GameActor* actor, const String& cmd)
+	Ref<IAnimationScript> AudioAnimationScriptManager::CreateAudioAnimationWithCommand(IGameActor* actor, const String& cmd)
 	{
 		if (actor == nullptr)
 			return nullptr;
@@ -66,7 +66,7 @@ namespace VisionGal {
 		return nullptr;
 	}
 
-	bool AudioAnimationScriptManager::StartAudioAnimationWithCommand(GameActor* actor, const String& cmd)
+	bool AudioAnimationScriptManager::StartAudioAnimationWithCommand(IGameActor* actor, const String& cmd)
 	{
 		auto script = CreateAudioAnimationWithCommand(actor, cmd);
 

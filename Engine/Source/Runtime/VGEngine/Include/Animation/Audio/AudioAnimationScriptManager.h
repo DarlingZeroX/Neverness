@@ -19,9 +19,9 @@ namespace VisionGal {
 	public:
 		static AudioAnimationScriptManager* GetInstance();
 
-		static Ref<IAnimationScript> CreateAudioAnimationWithCommand(GameActor* actor, const String& cmd);
+		static Ref<IAnimationScript> CreateAudioAnimationWithCommand(IGameActor* actor, const String& cmd);
 
-		static bool StartAudioAnimationWithCommand(GameActor* actor, const String& cmd);
+		static bool StartAudioAnimationWithCommand(IGameActor* actor, const String& cmd);
 		//static bool StartAudioTransform(GameActor* actor, const Ref<IAnimationScript>& script);
 	};
 

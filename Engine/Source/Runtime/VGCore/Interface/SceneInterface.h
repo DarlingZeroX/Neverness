@@ -96,26 +96,26 @@ namespace VisionGal
 		virtual std::string GetBindComponentType() = 0;
 	};
 
-	class VG_CORE_API GameActor : public IEntity
+	class VG_CORE_API IGameActor : public IEntity
 	{
 	public:
-		GameActor() = default;
-		GameActor(const GameActor&) = default;
-		GameActor& operator=(const GameActor&) = default;
-		GameActor(GameActor&&) noexcept = default;
-		GameActor& operator=(GameActor&&) noexcept = default;
-		~GameActor() override = default;
+		IGameActor() = default;
+		IGameActor(const IGameActor&) = default;
+		IGameActor& operator=(const IGameActor&) = default;
+		IGameActor(IGameActor&&) noexcept = default;
+		IGameActor& operator=(IGameActor&&) noexcept = default;
+		~IGameActor() override = default;
 
 		template<typename T>
 		T* AddComponent();
 
-		void SetLabel(const String& label);
-		String GetLabel();
-		void SetVisible(bool visible);
-		bool GetVisible();
+		virtual void SetLabel(const String& label);
+		virtual String GetLabel();
+		virtual void SetVisible(bool visible)  = 0;
+		virtual bool GetVisible()  = 0;
 
-		IComponent* GetComponentByType(const String& type);
-		IComponent* AddComponentByType(const String& type);
+		virtual IComponent* GetComponentByType(const String& type) = 0;
+		virtual IComponent* AddComponentByType(const String& type)  = 0;
 	public:
 		void Initialize(IScene* scene) override {};
 	};
@@ -129,7 +129,7 @@ namespace VisionGal
 		IScene& operator=(IScene&&) noexcept = default;
 		~IScene() override = default;
 
-		virtual GameActor* CreateActor(IEntity* parent = nullptr) = 0;
+		virtual IGameActor* CreateActor(IEntity* parent = nullptr) = 0;
 		virtual void AddEntityComponent(IEntity* entity, IComponent* component) = 0;
 
 		virtual IEntity* GetActor(VGActorID entityID) = 0;
@@ -138,7 +138,7 @@ namespace VisionGal
 	};
 
 	template <typename T>
-	T* GameActor::AddComponent()
+	T* IGameActor::AddComponent()
 	{
 		IScene* scene = dynamic_cast<IScene*>(m_BaseScene);
 		T& com = GetWorld()->emplace<T>(GetEntity());

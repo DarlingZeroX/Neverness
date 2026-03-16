@@ -27,7 +27,7 @@ namespace VisionGal
 		m_ActorTypeList.push_back("Video Player");
 	}
 
-	GameActor* GameActorFactory::CreateActor(IScene* scene, const String& type, IEntity* parent)
+	IGameActor* GameActorFactory::CreateActor(IScene* scene, const String& type, IEntity* parent)
 	{
 		if (scene == nullptr)
 		{

@@ -12,6 +12,7 @@
 #include "Scene/Scene.h"
 #include "Scene/Components.h"
 #include <HCore/Include/Scene/HSceneHierachy.h>
+#include "Scene/GameActor.h"
 #include "VGCore/Include/Core/EventBus.h"
 
 namespace VisionGal
@@ -41,7 +42,7 @@ namespace VisionGal
 		return &m_Registry;
 	}
 
-	GameActor* Scene::GetSceneActor()
+	IGameActor* Scene::GetSceneActor()
 	{
 		return m_SceneActor.get();
 	}
@@ -95,7 +96,7 @@ namespace VisionGal
 		relationship.ParentID = parentID;
 	}
 
-	GameActor* Scene::CreateDeserializeActor(const SceneDeserializeEntity& deEntity)
+	IGameActor* Scene::CreateDeserializeActor(const SceneDeserializeEntity& deEntity)
 	{
 		if (deEntity.ID == ConstHUISceneActor)
 			return GetSceneActor();
@@ -135,7 +136,7 @@ namespace VisionGal
 			});
 	}
 
-	GameActor* Scene::CreateActor(IEntity* parent)
+	IGameActor* Scene::CreateActor(IEntity* parent)
 	{
 		auto entity = CreateRef<GameActor>();
 		entity->SetBaseEntity(this->GetWorld()->create());
@@ -218,7 +219,7 @@ namespace VisionGal
 	{
 		if (auto result = m_IDEntityMap.find(entityID); result != m_IDEntityMap.end())
 		{
-			GameActor& entity = *result->second.get();
+			IGameActor& entity = *result->second.get();
 			auto& relation = *entity.GetComponent<Horizon::HRelationship>();
 
 			Horizon::HHierarchy::DisconnectParent(m_Registry, entity, relation);

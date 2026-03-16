@@ -62,8 +62,10 @@ return {
         local spriteRenderer = self.mGameSprite:GetComponent('SpriteRenderer')
         self.mSplash = SpriteAlphaAnimator:new(spriteRenderer)
         self.mSplash:Start()
+		--print("-- 创建动画",self.mSplash)
     end,
     Update = function(self, dt)
+		--print("-- Update",self.mSplash)
         if self.mLevel == 0 then
             self.mSplash:Update(dt)
             -- 如果结束进入阶段1

@@ -329,7 +329,7 @@ namespace VisionGal::Editor
 		{
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_GAME_ACTOR"))
 			{
-				GameActor* actor = static_cast<GameActor*>(payload->Data);
+				IGameActor* actor = static_cast<IGameActor*>(payload->Data);
 				if (actor != nullptr)
 				{
 					var.VariableType = "GameActor";

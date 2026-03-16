@@ -33,10 +33,10 @@ namespace VisionGal
 		static Ref<LuaScript> LoadFromFile(const String& file);
 		String GetScriptType() override;
 		
-		void Awake(GameActor* actor) override;
-		void Start(GameActor* actor) override;
-		void Update(GameActor* actor, float deltaTime) override;
-		void FixedUpdate(GameActor* actor) override;
+		void Awake(IGameActor* actor) override;
+		void Start(IGameActor* actor) override;
+		void Update(IGameActor* actor, float deltaTime) override;
+		void FixedUpdate(IGameActor* actor) override;
 
 		ScriptVariableTable& GetVariables() override { return m_Variables; };
 		void SetVariable(IScriptVariable& variable);

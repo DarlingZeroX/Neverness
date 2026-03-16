@@ -36,7 +36,7 @@ namespace VisionGal::GalGame
 		~GalSprite() override;
 
 		const std::string& GetResourcePath() override;
-		GameActor* GetResourceActor() override;
+		IGameActor* GetResourceActor() override;
 		const std::string& GetResourceLayer() override;
 		void SetResourceLayer(const std::string& layer) override;
 
@@ -70,7 +70,7 @@ namespace VisionGal::GalGame
 
 		std::string m_Path;
 		std::string m_Layer;
-		GameActor* m_Actor = nullptr;
+		IGameActor* m_Actor = nullptr;
 		GalGameRuntimeState* m_GalState = nullptr;
 	};
 
@@ -85,7 +85,7 @@ namespace VisionGal::GalGame
 		~GalAudio() override;
 
 		const std::string& GetResourcePath() override;
-		GameActor* GetResourceActor() override;
+		IGameActor* GetResourceActor() override;
 		const std::string& GetResourceLayer() override;
 		void SetResourceLayer(const std::string& layer) override;
 		 
@@ -106,7 +106,7 @@ namespace VisionGal::GalGame
 
 		std::string m_Path;
 		std::string m_Layer;
-		GameActor* m_Actor = nullptr;
+		IGameActor* m_Actor = nullptr;
 	};
 
 	class GalVideo: public IGalGameVideo
@@ -120,7 +120,7 @@ namespace VisionGal::GalGame
 		~GalVideo() override;
 
 		const std::string& GetResourcePath() override;
-		GameActor* GetResourceActor() override;
+		IGameActor* GetResourceActor() override;
 		const std::string& GetResourceLayer() override;
 		void SetResourceLayer(const std::string& layer) override;
 
@@ -141,7 +141,7 @@ namespace VisionGal::GalGame
 
 		std::string m_Path;
 		std::string m_Layer;
-		GameActor* m_Actor = nullptr;
+		IGameActor* m_Actor = nullptr;
 	};
 
 	class GalCharacter : public IGalCharacter

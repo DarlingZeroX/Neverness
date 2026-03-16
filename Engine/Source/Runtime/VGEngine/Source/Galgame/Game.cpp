@@ -46,7 +46,7 @@ namespace VisionGal::GalGame
 		return m_Path;
 	}
 
-	GameActor* GalSprite::GetResourceActor()
+	IGameActor* GalSprite::GetResourceActor()
 	{
 		return m_Actor;
 	}
@@ -299,7 +299,7 @@ namespace VisionGal::GalGame
 		return m_Path;
 	}
 
-	GameActor* GalAudio::GetResourceActor()
+	IGameActor* GalAudio::GetResourceActor()
 	{
 		return m_Actor;
 	}
@@ -418,7 +418,7 @@ namespace VisionGal::GalGame
 		return m_Path;
 	}
 
-	GameActor* GalVideo::GetResourceActor()
+	IGameActor* GalVideo::GetResourceActor()
 	{
 		return m_Actor;
 	}

@@ -26,7 +26,7 @@ namespace VisionGal
 
 		//void Render(std::vector<GameActor*>& sprites, ICamera* camera);
 
-		void Render(GameActor* sprite, ICamera* camera, uint pipelineIndex);
+		void Render(IGameActor* sprite, ICamera* camera, uint pipelineIndex);
 	};
 
 	struct FullScreenRendererHandler

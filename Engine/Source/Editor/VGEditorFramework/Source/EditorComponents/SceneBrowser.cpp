@@ -146,7 +146,7 @@ namespace VisionGal::Editor
 		ImGui::PopClipRect();
 	}
 
-	void SceneBrowserPanel::DrawHierarchy(GameActor& parent, Horizon::HRelationship& parentRelation)
+	void SceneBrowserPanel::DrawHierarchy(IGameActor& parent, Horizon::HRelationship& parentRelation)
 	{
 		//ImVec2 size = ImGui::GetWindowSize();
 		ImVec2 windowPos = ImGui::GetWindowPos();
@@ -165,7 +165,7 @@ namespace VisionGal::Editor
 		if (!DrawTreeNodeChildRow(&parent))
 			return;
 
-		GameActor* currentChild = dynamic_cast<GameActor*>( parentRelation.FirstChild );
+		IGameActor* currentChild = dynamic_cast<IGameActor*>( parentRelation.FirstChild );
 
 		for (int child_n = 0; child_n < parentRelation.ChildrenCount; child_n++)
 		{
@@ -187,12 +187,12 @@ namespace VisionGal::Editor
 				DrawTreeNodeChildRow(currentChild);
 			}
 
-			currentChild = dynamic_cast<GameActor*>(nextSibling);
+			currentChild = dynamic_cast<IGameActor*>(nextSibling);
 		}
 		ImGui::TreePop();
 	}
 
-	bool SceneBrowserPanel::DrawTreeNodeRow(GameActor& parent)
+	bool SceneBrowserPanel::DrawTreeNodeRow(IGameActor& parent)
 	{
 		const Horizon::HRelationship& parentLabel = *parent.GetComponent<Horizon::HRelationship>();
 
@@ -214,7 +214,7 @@ namespace VisionGal::Editor
 		return open;
 	}
 
-	bool SceneBrowserPanel::DrawTreeNodeChildRow(GameActor* actor)
+	bool SceneBrowserPanel::DrawTreeNodeChildRow(IGameActor* actor)
 	{
 		const Horizon::HRelationship& relationship = *actor->GetComponent<Horizon::HRelationship>();
 
@@ -243,7 +243,7 @@ namespace VisionGal::Editor
 		return true;
 	}
 
-	void SceneBrowserPanel::HandleItemHovered(GameActor& entityID)
+	void SceneBrowserPanel::HandleItemHovered(IGameActor& entityID)
 	{
 		ItemContextMenu(entityID);
 
@@ -269,7 +269,7 @@ namespace VisionGal::Editor
 		}
 	}
 
-	bool SceneBrowserPanel::ItemContextMenu(GameActor& entityID)
+	bool SceneBrowserPanel::ItemContextMenu(IGameActor& entityID)
 	{
 		if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
 		{
@@ -288,7 +288,7 @@ namespace VisionGal::Editor
 		return false;
 	}
 
-	void SceneBrowserPanel::TriggerSelectedEvent(GameActor& entity)
+	void SceneBrowserPanel::TriggerSelectedEvent(IGameActor& entity)
 	{
 		const auto* entityInfo = entity.GetComponent<Horizon::HEntityObjectData>();
 

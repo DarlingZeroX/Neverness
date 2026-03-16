@@ -15,7 +15,7 @@
 
 namespace VisionGal
 {
-	Ref<VGFX::IStaticMesh> FullScreenQuad::s_Mesh = nullptr;
+	Ref<VGFX::IStaticMesh> s_Mesh = nullptr;
 
 	FullScreenQuad::FullScreenQuad()
 	{

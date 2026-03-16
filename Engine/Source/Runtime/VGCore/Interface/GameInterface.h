@@ -10,6 +10,7 @@
 */
 
 #pragma once
+#include "../VGCoreConfig.h"
 #include "AppInterface.h"
 #include "VGCore/Include/Core/Core.h"
 #include <HCore/Include/Scene/HEntityInterface.h>
@@ -49,16 +50,16 @@ namespace VisionGal
 	{
 		virtual ~IScript() = default;
 
-		virtual void Awake(GameActor* actor) {};
-		virtual void Start(GameActor* actor) {};
-		virtual void Update(GameActor* actor, float deltaTime) {};
-		virtual void FixedUpdate(GameActor* actor) {};
+		virtual void Awake(IGameActor* actor) {};
+		virtual void Start(IGameActor* actor) {};
+		virtual void Update(IGameActor* actor, float deltaTime) {};
+		virtual void FixedUpdate(IGameActor* actor) {};
 
 		virtual String GetScriptType() = 0;
 		virtual std::unordered_map<String, IScriptVariable>& GetVariables() = 0;
 	};
 
-	struct ICamera
+	struct VG_CORE_API ICamera
 	{
 		virtual ~ICamera();
 

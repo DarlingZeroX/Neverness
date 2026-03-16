@@ -41,12 +41,12 @@ namespace VisionGal::GalGame
 		bool RemoveSprite(GalSprite* sprite);	/// 移除指定的精灵对象。
 		bool RemoveAudio(GalAudio* audio);		/// 移除指定的音频对象。
 	private:
-		GameActor* CreateSpriteImp(const std::string& path);
-		GalSprite* AddSprite(GameActor* sprite, const std::string& layer, const std::string& path);
-		GameActor* CreateAudioImp(const std::string& path);
-		GalAudio* AddAudio(GameActor* audio, const std::string& layer, const std::string& path);
-		GameActor* CreateVideoImp(const std::string& path);
-		GalVideo* AddVideo(GameActor* audio, const std::string& layer, const std::string& path);
+		IGameActor* CreateSpriteImp(const std::string& path);
+		GalSprite* AddSprite(IGameActor* sprite, const std::string& layer, const std::string& path);
+		IGameActor* CreateAudioImp(const std::string& path);
+		GalAudio* AddAudio(IGameActor* audio, const std::string& layer, const std::string& path);
+		IGameActor* CreateVideoImp(const std::string& path);
+		GalVideo* AddVideo(IGameActor* audio, const std::string& layer, const std::string& path);
 	private:
 		Scene* m_Scene;
 

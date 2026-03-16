@@ -33,7 +33,7 @@ namespace VisionGal
 		int ReadSegment(cereal::JSONInputArchive& archive, SceneDeserializeDataContainer& data) override;
 		int ReadSegment(cereal::BinaryInputArchive& archive, SceneDeserializeDataContainer& data) override;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct TransformComponentSerializer : public IEntityComponentSerializer<TransformComponent>
@@ -45,7 +45,7 @@ namespace VisionGal
 		TransformComponentSerializer& operator=(TransformComponentSerializer&&) noexcept = default;
 		~TransformComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 	
 	struct CameraComponentSerializer: public IEntityComponentSerializer<CameraComponent>
@@ -57,7 +57,7 @@ namespace VisionGal
 		CameraComponentSerializer& operator=(CameraComponentSerializer&&) noexcept = default;
 		~CameraComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct ScriptComponentSerializer : public IEntityComponentSerializer<ScriptComponent>
@@ -69,7 +69,7 @@ namespace VisionGal
 		ScriptComponentSerializer& operator=(ScriptComponentSerializer&&) noexcept = default;
 		~ScriptComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 	
 	struct SpriteRendererComponentSerializer: public IEntityComponentSerializer<SpriteRendererComponent>
@@ -81,7 +81,7 @@ namespace VisionGal
 		SpriteRendererComponentSerializer& operator=(SpriteRendererComponentSerializer&&) noexcept = default;
 		~SpriteRendererComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct AudioSourceComponentSerializer : public IEntityComponentSerializer<AudioSourceComponent>
@@ -93,7 +93,7 @@ namespace VisionGal
 		AudioSourceComponentSerializer& operator=(AudioSourceComponentSerializer&&) noexcept = default;
 		~AudioSourceComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct VideoPlayerComponentSerializer : public IEntityComponentSerializer<VideoPlayerComponent>
@@ -105,7 +105,7 @@ namespace VisionGal
 		VideoPlayerComponentSerializer& operator=(VideoPlayerComponentSerializer&&) noexcept = default;
 		~VideoPlayerComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct RmlUIDocumentComponentSerializer : public IEntityComponentSerializer<RmlUIDocumentComponent>
@@ -117,7 +117,7 @@ namespace VisionGal
 		RmlUIDocumentComponentSerializer& operator=(RmlUIDocumentComponentSerializer&&) noexcept = default;
 		~RmlUIDocumentComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, GameActor* actor, VGActorID id) override;
+		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	class SceneSerializer

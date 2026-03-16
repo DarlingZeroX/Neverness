@@ -31,7 +31,7 @@ namespace VisionGal
 		~Scene() override = default;
 
 		//Horizon::HEventDelegate<const Horizon::HUISceneEvent&> OnSceneEvent;
-		GameActor* CreateActor(IEntity* parent = nullptr) override;
+		IGameActor* CreateActor(IEntity* parent = nullptr) override;
 
 		template<typename T, class = typename std::enable_if<std::is_base_of<IComponent, T>::value>::type>
 		T* AddEntityComponent(IEntity* entity)
@@ -51,9 +51,9 @@ namespace VisionGal
 		Horizon::HECS* GetWorld() override;
 
 		void Update();
-		GameActor* GetSceneActor();
+		IGameActor* GetSceneActor();
 
-		GameActor* CreateDeserializeActor(const SceneDeserializeEntity& entity);
+		IGameActor* CreateDeserializeActor(const SceneDeserializeEntity& entity);
 		void UpdateDeserializeComponent(IEntity* entity, IComponent* component);
 		void UpdateDeserializeActorRelationship();
 	private:
@@ -64,11 +64,11 @@ namespace VisionGal
 		void CreateSceneActor();
 		std::string GetNewLabel(IEntity* hObj);
 	private:
-		std::unordered_map<VGActorID, std::shared_ptr<GameActor>> m_IDEntityMap;
+		std::unordered_map<VGActorID, std::shared_ptr<IGameActor>> m_IDEntityMap;
 		std::unordered_set<VGComponentID> m_EntityComponentID;
 		ECS m_Registry;
 
-		std::shared_ptr<GameActor> m_SceneActor;
+		std::shared_ptr<IGameActor> m_SceneActor;
 		std::string m_SceneName = "Scene";
 	};
 }

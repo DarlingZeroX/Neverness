@@ -122,7 +122,7 @@ namespace VisionGal
 					{
 						if (script != nullptr)
 						{
-							GameActor* actor = dynamic_cast<GameActor*>(com.GetOwner());
+							IGameActor* actor = dynamic_cast<IGameActor*>(com.GetOwner());
 							script->Awake(actor);
 							script->Start(actor);
 						}
@@ -215,7 +215,7 @@ namespace VisionGal
 					{
 						if (script != nullptr)
 						{
-							GameActor* actor = dynamic_cast<GameActor*>(com.GetOwner());
+							IGameActor* actor = dynamic_cast<IGameActor*>(com.GetOwner());
 							script->Update(actor, deltaTime);
 						}
 					}

@@ -15,7 +15,7 @@
 namespace VisionGal {
 
 
-	bool AnimationScriptManager::AddActorAnimationScript(GameActor* actor, const Ref<IAnimationScript>& script)
+	bool AnimationScriptManager::AddActorAnimationScript(IGameActor* actor, const Ref<IAnimationScript>& script)
 	{
 		if (actor == nullptr)
 			return false;

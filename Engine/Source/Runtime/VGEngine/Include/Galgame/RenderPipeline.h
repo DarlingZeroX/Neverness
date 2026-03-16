@@ -41,7 +41,7 @@ namespace VisionGal::GalGame
 		void CreatePrevFrameTexture(int width, int height);
 		void CreateRenderTargets(int width, int height);
 
-		void RenderSprite(GameActor* actor, IOrthoCamera* camera);
+		void RenderSprite(IGameActor* actor, IOrthoCamera* camera);
 		void RenderFullScreen(FullScreenRendererComponent* renderer);
 
 		void RenderBackgroundLayer(ILayeredSceneManager* galScene, IOrthoCamera* camera);

@@ -19,9 +19,9 @@ namespace VisionGal::GalGame {
 	public:
 		static SpriteTransformScriptManager* GetInstance();
 
-		static Ref<IAnimationScript> CreateSpriteTransformWithCommand(GameActor* actor, const String& cmd);
+		static Ref<IAnimationScript> CreateSpriteTransformWithCommand(IGameActor* actor, const String& cmd);
 
-		static bool StartSpriteTransformWithCommand(GameActor* actor, const String& cmd);
+		static bool StartSpriteTransformWithCommand(IGameActor* actor, const String& cmd);
 	};
 
 }

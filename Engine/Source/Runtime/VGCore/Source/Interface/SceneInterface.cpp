@@ -16,7 +16,7 @@
 
 namespace VisionGal
 {
-	void GameActor::SetLabel(const String& label)
+	void IGameActor::SetLabel(const String& label)
 	{
 		auto* com = GetComponent<Horizon::HRelationship>();
 		if (com)
@@ -25,7 +25,7 @@ namespace VisionGal
 		}
 	}
 
-	String GameActor::GetLabel()
+	String IGameActor::GetLabel()
 	{
 		auto* com = GetComponent<Horizon::HRelationship>();
 		if (com)
@@ -36,38 +36,5 @@ namespace VisionGal
 		return "";
 	}
 
-	void GameActor::SetVisible(bool visible)
-	{
-		//auto* com = GetComponent<TransformComponent>();
-		//if (com)
-		//{
-		//	com->visible = visible;
-		//}
-	}
 
-	bool GameActor::GetVisible()
-	{
-		//auto* com = GetComponent<TransformComponent>();
-		//if (com)
-		//{
-		//	return com->visible;
-		//}
-
-		return true;
-	}
-
-	IComponent* GameActor::GetComponentByType(const String& type)
-	{
-		//if (type == "Transform")
-		//{
-		//	return GetComponent<TransformComponent>();
-		//}
-
-		return nullptr;
-	}
-
-	IComponent* GameActor::AddComponentByType(const String& type)
-	{
-		return nullptr;
-	}
 }

@@ -15,6 +15,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 # 添加宏
+add_definitions(-DVGCORE_DYNAMIC) 
 add_definitions(-DVG_CORE_API_EXPORT) 
 #add_definitions(-DIMGUI_IMPL_OPENGL_ES3)
 
@@ -41,7 +42,7 @@ file(GLOB ENGINE_HEADER_FILES
 #set(CMAKE_PCH_ENABLED ON)
 
 # 当前cmake C++项目为动态库
-add_library (VGCore STATIC ${ENGINE_SRC_FILES} ${ENGINE_HEADER_FILES})
+add_library (VGCore SHARED ${ENGINE_SRC_FILES} ${ENGINE_HEADER_FILES})
 
 # 添加头文件搜索路径
 target_include_directories(VGCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
@@ -57,6 +58,7 @@ target_precompile_headers(VGCore PRIVATE
 # 包
 #find_package(glad CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
+find_package(RmlUi REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)
 
 # 链接动态库
@@ -69,6 +71,7 @@ target_link_libraries(VGCore PRIVATE HFileSystem)
 target_link_libraries(VGCore PRIVATE VGImgui)
 target_link_libraries(VGCore PRIVATE VGRHI)
 target_link_libraries(VGCore PRIVATE VGPackage)
+target_link_libraries(VGCore PRIVATE RmlUi::RmlUi)
 #target_link_libraries(VGCore PRIVATE HMedia)
 
 

@@ -56,7 +56,7 @@ namespace VisionGal::GalGame
 		return true;
 	}
 
-	GameActor* ResourceSystem::CreateSpriteImp(const std::string& path)
+	IGameActor* ResourceSystem::CreateSpriteImp(const std::string& path)
 	{
 		// 读取纹理资产
 		auto tex = LoadObject<Texture2D>(path);
@@ -77,7 +77,7 @@ namespace VisionGal::GalGame
 		return actor;
 	}
 
-	GalSprite* ResourceSystem::AddSprite(GameActor* actor, const std::string& layer, const std::string& path)
+	GalSprite* ResourceSystem::AddSprite(IGameActor* actor, const std::string& layer, const std::string& path)
 	{
 		if (actor == nullptr)
 			return nullptr;
@@ -108,7 +108,7 @@ namespace VisionGal::GalGame
 		return sprite;
 	}
 
-	GameActor* ResourceSystem::CreateAudioImp(const std::string& resPath)
+	IGameActor* ResourceSystem::CreateAudioImp(const std::string& resPath)
 	{
 		// 读取音频资产
 		auto audioClip = LoadObject<VGAudioClip>(resPath);
@@ -129,7 +129,7 @@ namespace VisionGal::GalGame
 		return actor;
 	}
 
-	GalAudio* ResourceSystem::AddAudio(GameActor* actor, const std::string& layer, const std::string& path)
+	GalAudio* ResourceSystem::AddAudio(IGameActor* actor, const std::string& layer, const std::string& path)
 	{
 		// 创建GalGame的音频类
 		GalAudio* audio = new GalAudio(layer, path);
@@ -141,7 +141,7 @@ namespace VisionGal::GalGame
 		return audio;
 	}
 
-	GameActor* ResourceSystem::CreateVideoImp(const std::string& resPath)
+	IGameActor* ResourceSystem::CreateVideoImp(const std::string& resPath)
 	{
 		// 读取视频资产
 		auto videoClip = LoadObject<FVideoClip>(resPath);
@@ -162,7 +162,7 @@ namespace VisionGal::GalGame
 		return actor;
 	}
 
-	GalVideo* ResourceSystem::AddVideo(GameActor* actor, const std::string& layer, const std::string& path)
+	GalVideo* ResourceSystem::AddVideo(IGameActor* actor, const std::string& layer, const std::string& path)
 	{
 		// 创建GalGame的视频类
 		GalVideo* video = new GalVideo(layer, path);
@@ -177,7 +177,7 @@ namespace VisionGal::GalGame
 	GalSprite* ResourceSystem::ShowSprite(const std::string& layer, const std::string& path)
 	{
 		String resPath = Core::GetAssetsPathVFS() + path;
-		GameActor* actor = CreateSpriteImp(resPath);
+		IGameActor* actor = CreateSpriteImp(resPath);
 
 		if (actor == nullptr)
 			return nullptr;
@@ -188,7 +188,7 @@ namespace VisionGal::GalGame
 	GalSprite* ResourceSystem::ShowColor(const std::string& layer, const float4& color)
 	{
 		String resPath = EngineResource::GetDefaultSpriteTexturePath();
-		GameActor* actor = CreateSpriteImp(resPath);
+		IGameActor* actor = CreateSpriteImp(resPath);
 
 		if (actor == nullptr)
 			return nullptr;
@@ -205,7 +205,7 @@ namespace VisionGal::GalGame
 	GalAudio* ResourceSystem::PlayAudio(const std::string& layer, const std::string& path)
 	{
 		String resPath = Core::GetAssetsPathVFS() + path;
-		GameActor* actor = CreateAudioImp(resPath);
+		IGameActor* actor = CreateAudioImp(resPath);
 
 		if (actor == nullptr)
 			return nullptr;
@@ -219,7 +219,7 @@ namespace VisionGal::GalGame
 	GalVideo* ResourceSystem::PlayVideo(const std::string& layer, const std::string& path)
 	{
 		String resPath = Core::GetAssetsPathVFS() + path;
-		GameActor* actor = CreateVideoImp(resPath);
+		IGameActor* actor = CreateVideoImp(resPath);
 
 		if (actor == nullptr)
 			return nullptr;

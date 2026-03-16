@@ -17,7 +17,7 @@ namespace VisionGal {
 	class AnimationScriptManager
 	{
 	public:
-		static bool AddActorAnimationScript(GameActor* actor, const Ref<IAnimationScript>& script);
+		static bool AddActorAnimationScript(IGameActor* actor, const Ref<IAnimationScript>& script);
 	};
 
 }

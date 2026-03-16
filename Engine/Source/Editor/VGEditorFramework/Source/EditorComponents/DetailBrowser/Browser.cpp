@@ -129,7 +129,7 @@ namespace VisionGal::Editor {
 				auto assetType = VGPackage::GetAssetType(path);
 				if (assetType == "LuaScript")
 				{
-					if (auto* selectedEntity = dynamic_cast<GameActor*>( m_pScene->GetActor(m_SelectEntityID) ))
+					if (auto* selectedEntity = dynamic_cast<IGameActor*>( m_pScene->GetActor(m_SelectEntityID) ))
 					{
 						if (selectedEntity->GetComponent<ScriptComponent>() == nullptr)
 						{

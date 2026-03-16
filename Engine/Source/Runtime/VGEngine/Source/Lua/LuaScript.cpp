@@ -14,6 +14,7 @@
 #include "Lua/LuaInterface.h"
 #include <sol/sol.hpp>
 
+#include "Scene/GameActor.h"
 #include "VGCore/Include/Core/EventBus.h"
 
 namespace VisionGal
@@ -131,7 +132,7 @@ namespace VisionGal
 		return "LuaScript";
 	}
 
-	void LuaScript::Awake(GameActor* actor)
+	void LuaScript::Awake(IGameActor* actor)
 	{
 		if (m_IsError)
 			return;
@@ -162,10 +163,12 @@ namespace VisionGal
 			}
 		}
 
-		m_Script["gameObject"] = sol::object(m_LuaState, sol::in_place, actor);
+		GameActor* ga = dynamic_cast<GameActor*>(actor);
+		H_ASSERT_NOT_NULL(ga);
+		m_Script["gameObject"] = sol::object(m_LuaState, sol::in_place, ga);
 	}
 
-	void LuaScript::Start(GameActor* actor)
+	void LuaScript::Start(IGameActor* actor)
 	{
 		// 检查函数是否有效
 		if (!m_StartFunction.valid()) {
@@ -193,7 +196,7 @@ namespace VisionGal
 		}
 	}
 
-	void LuaScript::Update(GameActor* actor, float deltaTime)
+	void LuaScript::Update(IGameActor* actor, float deltaTime)
 	{
 		// 检查函数是否有效
 		if (!m_UpdateFunction.valid()) {
@@ -221,7 +224,7 @@ namespace VisionGal
 		}
 	}
 
-	void LuaScript::FixedUpdate(GameActor* actor)
+	void LuaScript::FixedUpdate(IGameActor* actor)
 	{
 
 	}

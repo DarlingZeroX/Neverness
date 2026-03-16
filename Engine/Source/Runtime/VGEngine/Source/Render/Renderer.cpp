@@ -32,7 +32,7 @@ namespace VisionGal
 	//	}
 	//}
 
-	void SpriteRendererHandler::Render(GameActor* actor, ICamera* camera, uint pipelineIndex)
+	void SpriteRendererHandler::Render(IGameActor* actor, ICamera* camera, uint pipelineIndex)
 	{
 		TransformComponent* transform = actor->GetComponent<TransformComponent>();
 		SpriteRendererComponent* spriteRenderer = actor->GetComponent<SpriteRendererComponent>();

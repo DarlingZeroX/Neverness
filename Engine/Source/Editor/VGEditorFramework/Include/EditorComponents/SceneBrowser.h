@@ -34,16 +34,16 @@ namespace VisionGal::Editor
 		void OpenWindow(bool open) override;
 		bool IsWindowOpened() override;
 	private:
-		virtual void DrawHierarchy(GameActor& parent, Horizon::HRelationship& parentRelation);
-		bool DrawTreeNodeRow(GameActor& parent);
-		bool DrawTreeNodeChildRow(GameActor* currentChild);
+		virtual void DrawHierarchy(IGameActor& parent, Horizon::HRelationship& parentRelation);
+		bool DrawTreeNodeRow(IGameActor& parent);
+		bool DrawTreeNodeChildRow(IGameActor* currentChild);
 
 		void TickBottomOverlayUI();							// 底部的UI
-		void HandleItemHovered(GameActor& entity);			// 当用户鼠标指向这个游戏对象
-		bool ItemContextMenu(GameActor& entity);			// 游戏对象右键菜单
+		void HandleItemHovered(IGameActor& entity);			// 当用户鼠标指向这个游戏对象
+		bool ItemContextMenu(IGameActor& entity);			// 游戏对象右键菜单
 
 		void SubscribeEngineEvent();
-		void TriggerSelectedEvent(GameActor& entity);		// 发送选中事件
+		void TriggerSelectedEvent(IGameActor& entity);		// 发送选中事件
 
 		void PanelContextMenu();							// 场景浏览器上下文菜单
 		void CreateGameActor(const String& type, IEntity* parent = nullptr) const;

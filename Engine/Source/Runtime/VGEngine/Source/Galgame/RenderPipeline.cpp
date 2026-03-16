@@ -44,7 +44,7 @@ namespace VisionGal::GalGame
 		//m_RenderTarget2DFinal = OpenGL::RenderTarget2D::Create(width, height);
 	}
 
-	void RenderPipeline::RenderSprite(GameActor* actor, IOrthoCamera* camera)
+	void RenderPipeline::RenderSprite(IGameActor* actor, IOrthoCamera* camera)
 	{
 		SpriteRendererHandler handler;
 		handler.Render(actor, camera, static_cast<uint>(RenderPipelineIndex::GalGamePipeline));

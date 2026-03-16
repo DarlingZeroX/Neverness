@@ -26,7 +26,7 @@ namespace VisionGal::GalGame {
 		return &s_Manager;
 	}
 
-	Ref<IAnimationScript> SpriteTransformScriptManager::CreateSpriteTransformWithCommand(GameActor* actor, const String& cmd)
+	Ref<IAnimationScript> SpriteTransformScriptManager::CreateSpriteTransformWithCommand(IGameActor* actor, const String& cmd)
 	{
 		if (actor == nullptr)
 			return nullptr;
@@ -101,7 +101,7 @@ namespace VisionGal::GalGame {
 		return nullptr;
 	}
 
-	bool SpriteTransformScriptManager::StartSpriteTransformWithCommand(GameActor* actor, const String& cmd)
+	bool SpriteTransformScriptManager::StartSpriteTransformWithCommand(IGameActor* actor, const String& cmd)
 	{
 		auto script = CreateSpriteTransformWithCommand(actor, cmd);
 

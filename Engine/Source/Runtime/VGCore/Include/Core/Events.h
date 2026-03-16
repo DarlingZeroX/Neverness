@@ -72,7 +72,7 @@ namespace VisionGal
 	struct SceneEvent
 	{
 		SceneEventType EventType = SceneEventType::None;
-		GameActor* Actor = nullptr;
+		IGameActor* Actor = nullptr;
 		VGActorID ActorID = 0;
 	};
 

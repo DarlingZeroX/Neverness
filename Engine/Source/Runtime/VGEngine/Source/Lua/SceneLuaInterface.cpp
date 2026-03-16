@@ -92,17 +92,17 @@ namespace VisionGal
 		);
 
 		lua.new_usertype<GameActor>("GameActor",
-			sol::constructors<GameActor()>(),
+			sol::constructors<IGameActor()>(),
 			"label", sol::property(
-				[](GameActor& self) -> std::string { return self.GetLabel(); },
-				[](GameActor& self, const std::string& value) { self.SetLabel(value); }
+				[](IGameActor& self) -> std::string { return self.GetLabel(); },
+				[](IGameActor& self, const std::string& value) { self.SetLabel(value); }
 			),
 			"visible", sol::property(
-				[](GameActor& self) -> bool { return self.GetVisible(); },
-				[](GameActor& self, bool value) { self.SetVisible(value); }
+				[](IGameActor& self) -> bool { return self.GetVisible(); },
+				[](IGameActor& self, bool value) { self.SetVisible(value); }
 			),
 			"GetComponent", &Lua::GameActorGetComponentByType,
-			"AddComponent", &GameActor::AddComponentByType
+			"AddComponent", &IGameActor::AddComponentByType
 		);
 
 		lua.new_usertype<SceneManager>("SceneManagerClass",

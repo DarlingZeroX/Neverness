@@ -10,3 +10,25 @@
 */
 
 #include "VGCore/Interface/SceneInterface.h"
+
+namespace VisionGal
+{
+	class VG_CORE_API GameActor : public IGameActor
+	{
+	public:
+		GameActor() = default;
+		GameActor(const GameActor&) = default;
+		GameActor& operator=(const GameActor&) = default;
+		GameActor(GameActor&&) noexcept = default;
+		GameActor& operator=(GameActor&&) noexcept = default;
+		~GameActor() override = default;
+
+		void SetVisible(bool visible) override;
+		bool GetVisible() override;
+
+		IComponent* GetComponentByType(const String& type) override;
+		IComponent* AddComponentByType(const String& type) override;
+	public:
+		void Initialize(IScene* scene) override {};
+	};
+}

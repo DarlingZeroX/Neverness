@@ -15,7 +15,7 @@
 
 namespace VisionGal
 {
-	class VGDataNamespace
+	class VG_CORE_API VGDataNamespace
 	{
 	public:
 		sol::object GetVariableLua(const std::string& name, sol::this_state lua);

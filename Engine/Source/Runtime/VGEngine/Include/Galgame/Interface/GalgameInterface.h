@@ -51,7 +51,7 @@ namespace VisionGal::GalGame
 		 * @brief 获取资源相关的 GameActor 实例。
 		 * @return 指向资源相关 GameActor 实例的指针。如果没有可用资源，可能返回空指针。
 		 */
-		virtual GameActor* GetResourceActor() = 0;
+		virtual IGameActor* GetResourceActor() = 0;
 
 		/**
 		 * @brief 获取资源层的名称。

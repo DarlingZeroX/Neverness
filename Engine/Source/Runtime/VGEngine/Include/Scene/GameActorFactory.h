@@ -20,7 +20,7 @@ namespace VisionGal
     {
         virtual ~IGameActorFactory() = default;
 
-        virtual GameActor* CreateActor(IScene* scene, const String& type, IEntity* parent = nullptr) = 0;
+        virtual IGameActor* CreateActor(IScene* scene, const String& type, IEntity* parent = nullptr) = 0;
     };
 
     class GameActorFactory: public IGameActorFactory
@@ -33,7 +33,7 @@ namespace VisionGal
         GameActorFactory(GameActorFactory&&) noexcept = default;
         GameActorFactory& operator=(GameActorFactory&&) noexcept = default;
 
-        GameActor* CreateActor(IScene* scene, const String& type, IEntity* parent = nullptr) override;
+        IGameActor* CreateActor(IScene* scene, const String& type, IEntity* parent = nullptr) override;
 
         std::vector<String>& GetActorTypeList();
     private:
