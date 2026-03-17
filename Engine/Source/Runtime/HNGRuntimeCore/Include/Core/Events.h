@@ -9,9 +9,10 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "Core/Core.h"
+#pragma once
+#include "RuntimeCore.h"
 
-namespace Horizon::NodeGraph
+namespace Horizon::NodeGraphRuntime
 {
 
 }

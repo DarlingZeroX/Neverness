@@ -13,6 +13,7 @@
 
 namespace Horizon::NodeGraph
 {
+	/*
 	void LinkManager::InitializePinInfo(PIN_ID pinID)
 	{
 		const auto pinRes = m_PinMap.find(pinID);
@@ -231,4 +232,5 @@ namespace Horizon::NodeGraph
 			}
 		}
 	}
+	*/
 }

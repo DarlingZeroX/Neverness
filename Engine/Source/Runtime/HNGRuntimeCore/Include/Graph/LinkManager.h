@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../Core/Core.h"
+#include "../Core/RuntimeCore.h"
 #include "../Core/Events.h"
 #include <set>
 #include <unordered_map>
@@ -18,6 +18,7 @@
 
 namespace Horizon::NodeGraph
 {
+	/*
 	class H_NODE_GRAPH_API LinkManager
 	{
 	public:
@@ -59,4 +60,5 @@ namespace Horizon::NodeGraph
 		std::unordered_map<LINK_ID, Link> m_LinkMap;
 		std::unordered_map<PIN_ID, PinLinkInfo> m_PinMap;
 	};
+	*/
 }

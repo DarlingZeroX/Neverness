@@ -9,27 +9,9 @@
 * See the LICENSE file in the project root for details.
 */
 
-#pragma once
+#include "Core/RuntimeCore.h"
 
 namespace Horizon::NodeGraph
 {
-	using UUID = unsigned int;
-	using LINK_ID = size_t;
-	using PIN_ID = size_t;
-	using NODE_ID = size_t;
-	using NODE_COMPONENT_ID = size_t;
 
-	enum class PinDirection
-	{
-		Output,
-		Input
-	};
-
-	enum class NodeComponentPosition
-	{
-		Left,
-		Center,
-		Right,
-		Size
-	};
 }

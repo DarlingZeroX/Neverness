@@ -14,7 +14,8 @@ if(NOT CMAKE_TOOLCHAIN_FILE)
 endif()
 
 # 启用测试选项
-option(ENABLE_TESTS "Enable building tests" OFF)
+#option(ENABLE_TESTS "Enable building tests" OFF)
+option(ENABLE_TESTS "Enable building tests" ON)
 
 project ("VisionGal" LANGUAGES C CXX)
 
@@ -35,7 +36,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_subdirectory ("Engine/Source/Runtime/HCore")
 add_subdirectory ("Engine/Source/Runtime/HCorePlatform")
 add_subdirectory ("Engine/Source/Runtime/HFileSystem")
-add_subdirectory ("Engine/Source/Runtime/HNodeGraph")
+add_subdirectory ("Engine/Source/Runtime/HNGRuntimeCore")
 add_subdirectory ("Engine/Source/Runtime/HMedia")
 # 引擎
 add_subdirectory ("Engine/Source/Runtime/VGLua")
@@ -54,13 +55,15 @@ add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器
 add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
 add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
 add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序
+add_subdirectory ("Engine/Source/Application/HNGRuntimeCoreDemo")     # 节点图应用程序
 
 
 ########## 加载 Tests 目录下所有子测试项目
 if (ENABLE_TESTS)
     enable_testing()
-
-    add_subdirectory("Tests/VGLauncherTest")
+      
+    # add_subdirectory("Tests/VGLauncherTest")
+    # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")
     #file(GLOB TESTS_DIRS RELATIVE ${CMAKE_SOURCE_DIR}/Tests ${CMAKE_SOURCE_DIR}/Tests/*)
     #foreach(child ${TESTS_DIRS})
     #    if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/Tests/${child}")
