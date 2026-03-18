@@ -6,12 +6,11 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
 #include <cstdint>
 
 namespace Horizon::NodeGraphRuntime
 {
-	// Value 类型标记
+	// Value 类型标记（简单类型系统）
 	enum class ValueType : uint8_t
 	{
 		None = 0,
@@ -21,35 +20,145 @@ namespace Horizon::NodeGraphRuntime
 		String
 	};
 
-    // 简单的 Value 变体（支持 int/float/bool/string）
-	// 说明：用于节点间或全局变量表的数据承载；带有访问器方法以方便读取不同类型
+    // 简单的 Value 变体（支持 int / float / bool / string）
+	// 说明：
+	// - 用作节点槽值以及 RuntimeContext::variables 中的通用数据容器
+	// - 采用显式字段而非 std::variant，方便与脚本/序列化系统集成
+	// - 通过静态工厂函数 FromXXX 与 AsXXX 访问接口简化使用
 	struct Value
 	{
 		ValueType type;
-		union
+
+		// 显式存储每种基础类型的值
+		int   intValue;
+		float floatValue;
+		bool  boolValue;
+		std::string stringValue;
+
+		// POD 风格构造：默认 None
+		Value() noexcept
+			: type(ValueType::None)
+			, intValue(0)
+			, floatValue(0.0f)
+			, boolValue(false)
+			, stringValue()
 		{
-			int64_t i;
-			double f;
-			bool b;
-		} data;
-		std::string s;
+		}
 
-		// POD 风格构造
-		Value() noexcept : type(ValueType::None) { data.i = 0; }
-		explicit Value(int64_t v) noexcept : type(ValueType::Int) { data.i = v; }
-		explicit Value(double v) noexcept : type(ValueType::Float) { data.f = v; }
-		explicit Value(bool v) noexcept : type(ValueType::Bool) { data.b = v; }
-		explicit Value(const std::string& v) : type(ValueType::String), s(v) {}
-		explicit Value(std::string&& v) : type(ValueType::String), s(std::move(v)) {}
+		// 兼容构造函数（便于旧代码使用）
+		explicit Value(int64_t v) noexcept
+			: type(ValueType::Int)
+			, intValue(static_cast<int>(v))
+			, floatValue(0.0f)
+			, boolValue(false)
+			, stringValue()
+		{
+		}
 
-        // 将 Value 清空为 None
-		void SetNone() noexcept { type = ValueType::None; data.i = 0; s.clear(); }
+		explicit Value(double v) noexcept
+			: type(ValueType::Float)
+			, intValue(0)
+			, floatValue(static_cast<float>(v))
+			, boolValue(false)
+			, stringValue()
+		{
+		}
 
-        // 读取接口：根据当前类型返回对应值，否则返回类型的默认值
-		int64_t AsInt() const noexcept { return (type == ValueType::Int) ? data.i : 0; }
-		double AsFloat() const noexcept { return (type == ValueType::Float) ? data.f : 0.0; }
-		bool AsBool() const noexcept { return (type == ValueType::Bool) ? data.b : false; }
-		const std::string& AsString() const noexcept { return s; }
+		explicit Value(bool v) noexcept
+			: type(ValueType::Bool)
+			, intValue(0)
+			, floatValue(0.0f)
+			, boolValue(v)
+			, stringValue()
+		{
+		}
+
+		explicit Value(const std::string& v)
+			: type(ValueType::String)
+			, intValue(0)
+			, floatValue(0.0f)
+			, boolValue(false)
+			, stringValue(v)
+		{
+		}
+
+		explicit Value(std::string&& v)
+			: type(ValueType::String)
+			, intValue(0)
+			, floatValue(0.0f)
+			, boolValue(false)
+			, stringValue(std::move(v))
+		{
+		}
+
+		// 工厂函数：用于显式构造特定类型的 Value
+		static Value FromInt(int v) noexcept
+		{
+			Value val;
+			val.type = ValueType::Int;
+			val.intValue = v;
+			return val;
+		}
+
+		static Value FromFloat(float v) noexcept
+		{
+			Value val;
+			val.type = ValueType::Float;
+			val.floatValue = v;
+			return val;
+		}
+
+		static Value FromBool(bool v) noexcept
+		{
+			Value val;
+			val.type = ValueType::Bool;
+			val.boolValue = v;
+			return val;
+		}
+
+		static Value FromString(const std::string& v)
+		{
+			Value val;
+			val.type = ValueType::String;
+			val.stringValue = v;
+			return val;
+		}
+
+		// 将 Value 清空为 None
+		void SetNone() noexcept
+		{
+			type = ValueType::None;
+			intValue = 0;
+			floatValue = 0.0f;
+			boolValue = false;
+			stringValue.clear();
+		}
+
+		// 读取接口：根据当前类型返回对应值，否则返回类型的默认值
+		int64_t AsInt() const noexcept
+		{
+			return (type == ValueType::Int) ? static_cast<int64_t>(intValue) : 0;
+		}
+
+		double AsFloat() const noexcept
+		{
+			if (type == ValueType::Float) return static_cast<double>(floatValue);
+			if (type == ValueType::Int)   return static_cast<double>(intValue);
+			return 0.0;
+		}
+
+		bool AsBool() const noexcept
+		{
+			if (type == ValueType::Bool)  return boolValue;
+			if (type == ValueType::Int)   return intValue != 0;
+			if (type == ValueType::Float) return floatValue != 0.0f;
+			return false;
+		}
+
+		const std::string& AsString() const noexcept
+		{
+			return stringValue;
+		}
 	};
 
 }

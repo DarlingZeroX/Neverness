@@ -16,6 +16,7 @@
 // hash/== for ax::NodeEditor::NodeId
 #include <functional>
 
+/*
 namespace ax {
 	namespace NodeEditor {
 		struct NodeId;
@@ -162,3 +163,4 @@ namespace Horizon::NodeGraphEditor
 		return g;
 	}
 }
+*/

@@ -48,27 +48,34 @@ namespace Horizon::NodeGraph
 		// 1. 创建 EditorGraph
 		EditorGraph& editor = m_EditorGraph;
 		editor.context = CreateRef<Horizon::NodeGraphEditor::IMNEEditorContext>();
+		editor.registry = &m_Registry;
 		
-		// 2. 添加节点
-		EditorNode entry = CreateEntryNode();
-		EditorNode dlg = CreateDialogueNode("你好，欢迎来到 Demo!");
-		EditorNode branch = CreateBranchNode();
-		
-		editor.nodes.push_back(entry);
-		editor.nodes.push_back(dlg);
-		editor.nodes.push_back(branch);
+		// 2. 添加节点（全部来自 NodeRegistry 元数据）
+		// 注意：不能在多次 AddNode 之间长期持有对 nodes 元素的引用，
+		// 否则 vector 可能在 push_back 时重新分配导致引用失效。
+		// 这里采用“记录索引，再通过 editor.nodes[index] 访问”的方式避免悬空引用。
+
+		const size_t entryIndex  = editor.nodes.size();
+		editor.AddNode(NodeType::Entry);
+
+		const size_t dlgIndex    = editor.nodes.size();
+		editor.AddNode(NodeType::Dialogue);
+		editor.nodes[dlgIndex].properties["text"] = "你好，欢迎来到 Demo!";
+
+		const size_t branchIndex = editor.nodes.size();
+		editor.AddNode(NodeType::Branch);
 		
 		// 3. 连接 pins
 		EditorLink link1;
 		link1.id = ax::NodeEditor::LinkId(1);
-		link1.startPinId = entry.outputs[0].id;
-		link1.endPinId = dlg.inputs[0].id;
+		link1.startPinId = editor.nodes[entryIndex].outputs[0].id;
+		link1.endPinId   = editor.nodes[dlgIndex].inputs[0].id;
 		editor.links.push_back(link1);
 		
 		EditorLink link2;
 		link2.id = ax::NodeEditor::LinkId(2);
-		link2.startPinId = dlg.outputs[0].id;
-		link2.endPinId = branch.inputs[0].id;
+		link2.startPinId = editor.nodes[dlgIndex].outputs[0].id;
+		link2.endPinId   = editor.nodes[branchIndex].inputs[0].id;
 		editor.links.push_back(link2);
 		
 		// Branch True/False 输出未连接到其它节点（可扩展）
@@ -83,10 +90,54 @@ namespace Horizon::NodeGraph
 		//m_EditorGraph.nodes.push_back(NodeGraphEditor::CreateDialogueNode());
 		//m_EditorGraph.nodes.push_back(NodeGraphEditor::CreateBranchNode());
 		using namespace Horizon::NodeGraphRuntime;
-		m_Registry.Register(NodeType::Entry, EntryNodeExecute);
-		m_Registry.Register(NodeType::Dialogue, DialogueNodeExecute);
-		m_Registry.Register(NodeType::Branch, BranchNodeExecute);
-		m_Registry.Register(NodeType::Delay, DelayNodeExecute);
+		m_Registry.Register(NodeMeta{
+			NodeType::Entry,
+			"Entry",
+			{},
+			{
+				{ "Next", SlotType::Exec, false }
+			},
+			EntryNodeExecute
+		});
+
+		m_Registry.Register(NodeMeta{
+			NodeType::Dialogue,
+			"Dialogue",
+			{
+				{ "In", SlotType::Exec, true }
+			},
+			{
+				{ "Next", SlotType::Exec, false },
+				{ "Text", SlotType::String, false }
+			},
+			DialogueNodeExecute
+		});
+
+		m_Registry.Register(NodeMeta{
+			NodeType::Branch,
+			"Branch",
+			{
+				{ "In", SlotType::Exec, true },
+				{ "Condition", SlotType::Bool, true }
+			},
+			{
+				{ "True", SlotType::Exec, false },
+				{ "False", SlotType::Exec, false }
+			},
+			BranchNodeExecute
+		});
+
+		m_Registry.Register(NodeMeta{
+			NodeType::Delay,
+			"Delay",
+			{
+				{ "In", SlotType::Exec, true }
+			},
+			{
+				{ "Next", SlotType::Exec, false }
+			},
+			DelayNodeExecute
+		});
 
 		RunDemo();
 

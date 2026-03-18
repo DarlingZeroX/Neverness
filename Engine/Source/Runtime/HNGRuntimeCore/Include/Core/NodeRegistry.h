@@ -5,23 +5,46 @@
 
 #pragma once
 #include <unordered_map>
+#include <type_traits>
+#include "NodeMeta.h"
 #include "../../Interface/Value.h"
 #include "../../Interface/Types.h"
 #include "../../Interface/RuntimeCore.h"
 
 namespace Horizon::NodeGraphRuntime
 {
-	// 注册机制：简单注册表，把 NodeType 映射到执行函数
-	struct NodeRegistry
+	struct NodeTypeHash
 	{
-		std::unordered_map<NodeType, NodeExecuteFn> table;
+		size_t operator()(NodeType t) const noexcept
+		{
+			using U = std::underlying_type_t<NodeType>;
+			return std::hash<U>{}(static_cast<U>(t));
+		}
+	};
 
-		void Register(NodeType t, NodeExecuteFn fn) { table[t] = fn; }
+	// 注册机制：NodeType -> NodeMeta（包含执行函数与槽元数据）
+	class NodeRegistry
+	{
+	public:
+		void Register(const NodeMeta& meta)
+		{
+			metas[meta.type] = meta;
+		}
+
+		const NodeMeta* GetMeta(NodeType type) const
+		{
+			auto it = metas.find(type);
+			return (it != metas.end()) ? &it->second : nullptr;
+		}
+
 		NodeExecuteFn Get(NodeType t) const
 		{
-			auto it = table.find(t);
-			return (it != table.end()) ? it->second : nullptr;
+			auto it = metas.find(t);
+			return (it != metas.end()) ? it->second.execute : nullptr;
 		}
+
+	private:
+		std::unordered_map<NodeType, NodeMeta, NodeTypeHash> metas;
 	};
 
 }

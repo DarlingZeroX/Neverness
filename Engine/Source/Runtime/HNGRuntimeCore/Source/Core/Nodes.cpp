@@ -75,21 +75,106 @@ namespace Horizon::NodeGraphRuntime
 		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
 		if (!node) return ExecResult::Finished;
 
-		// Text：从字符串输出槽读取对白（由编译器从 editor properties 写入）
+		// ------------------------------------------------------------------
+		// 多行对白状态结构（按节点持久化）：
+		// - currentLine : 当前正在显示的行号（从 0 开始）
+		// - lines       : 由 Text 槽内容按 '\n' 拆分出的所有对白行
+		// - initialized : 是否已经从 Text 槽完成初始化拆分
+		//
+		// 状态通过 RuntimeContext::GetOrCreateState<T> 绑定到 nodeIndex，
+		// 因此在多次调用 DialogueNodeExecute 之间会自动保持。
+		// ------------------------------------------------------------------
+		struct DialogueState
+		{
+			int currentLine = 0;
+			std::vector<std::string> lines;
+			bool initialized = false;
+			bool shownThisLine = false;
+		};
+
+		DialogueState& state = ctx.GetOrCreateState<DialogueState>(nodeIndex);
+
+		// Text：从字符串输出槽读取完整对白文本（由编译器从 editor properties["text"] 写入）
 		SLOT_ID textSlotId = FindOutputSlot(*ctx.graph, *node, "Text");
-		if (textSlotId != 0)
+		if (!state.initialized && textSlotId != 0)
 		{
 			if (textSlotId < ctx.graph->slots.size())
 			{
 				const RuntimeSlot& textSlot = ctx.graph->slots[textSlotId];
 				if (textSlot.value.type == ValueType::String)
 				{
-					printf("Dialogue: %s\n", textSlot.value.AsString().c_str());
+					const std::string& fullText = textSlot.value.AsString();
+
+					// 初始化：按 '\n' 拆分多行文本
+					state.lines.clear();
+					std::string current;
+					for (char c : fullText)
+					{
+						if (c == '\n')
+						{
+							state.lines.push_back(current);
+							current.clear();
+						}
+						else
+						{
+							current.push_back(c);
+						}
+					}
+					// 收尾：最后一行（无论是否以 '\n' 结尾）
+					if (!current.empty() || fullText.empty())
+					{
+						state.lines.push_back(current);
+					}
+
+					state.currentLine = 0;
+					state.initialized = true;
 				}
 			}
 		}
 
-		// Next：激活控制流输出
+		// 若尚未成功初始化（没有 Text 槽或值为空），则直接结束
+		if (!state.initialized || state.lines.empty())
+			return ExecResult::Finished;
+
+		// 若当前行还在有效范围内：展示本行对白，并等待玩家输入推进
+		if (state.currentLine < static_cast<int>(state.lines.size()))
+		{
+			const std::string& line = state.lines[static_cast<size_t>(state.currentLine)];
+			// 仅在“本行尚未显示过”时打印一次，避免 Running 状态下重复刷屏
+			if (!state.shownThisLine && !line.empty())
+			{
+				printf("Dialogue: %s\n", line.c_str());
+				state.shownThisLine = true;
+			}
+
+			// 等待玩家输入：
+			// 约定：外部逻辑在玩家点击“下一句”时，将 ctx.variables["Next"] 置为 true。
+			bool readyNext = false;
+			auto itNext = ctx.variables.find("Next");
+			if (itNext != ctx.variables.end() && itNext->second.type == ValueType::Bool)
+			{
+				readyNext = itNext->second.AsBool();
+			}
+
+			if (!readyNext)
+			{
+				// 未收到“下一句”指令：保持当前行，返回 Running 让 ExecuteGraph 继续在该节点上轮询
+				return ExecResult::Running;
+			}
+
+			// 已确认推进：消费 Next 标记并前进到下一行
+			ctx.variables["Next"] = Value(false);
+			++state.currentLine;
+			state.shownThisLine = false;
+
+			// 仍有后续行：继续保持 Running 以便下一帧再次执行本节点
+			if (state.currentLine < static_cast<int>(state.lines.size()))
+			{
+				return ExecResult::Running;
+			}
+		}
+
+		// 所有行已播放完毕：激活 Next 控制流输出，结束节点
 		SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
 		if (nextSlotId != 0) PushExec(ctx, nextSlotId);
 		return ExecResult::Finished;

@@ -35,8 +35,11 @@ namespace Horizon::NodeGraphRuntime
 
 			if (res == ExecResult::Running)
 			{
-				// 仍在运行：重新排入栈尾，下一次继续执行
+				// 仍在运行：
+				// - 将节点重新压回执行栈
+				// - 立刻中断本轮 ExecuteGraph，避免在单帧内 busy-loop
 				ctx.execStack.push_back(node.id);
+				break;
 			}
 			else
 			{

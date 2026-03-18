@@ -16,6 +16,7 @@
 #include "../HNGEditorCoreConfig.h"
 #include "EditorCore.h"
 #include "EditorGraph.h"
+#include <HNGRuntimeCore/Include/Core/NodeMeta.h>
 
 namespace Horizon::NodeGraphEditor
 {
@@ -29,85 +30,52 @@ namespace Horizon::NodeGraphEditor
 		return ax::NodeEditor::PinId(counter++);
 	}
 
-	inline EditorNode CreateEntryNode() {
+	// ------------------------------------------------------------
+	// CreateNodeFromMeta：EditorNode 的唯一创建入口（数据驱动）
+	//
+	// 设计目标：
+	// - Editor 不再手写 inputs/outputs pins（避免重复、易错、难维护）
+	// - 节点结构完全由 Runtime 的 NodeMeta 描述（真正“蓝图编辑器”）
+	//
+	// 行为说明：
+	// - 自动生成：
+	//   - inputs / outputs
+	//   - pin name
+	//   - slot type
+	//   - isInput
+	// - pins 的 id 由 GenPinId() 生成，node.id 由 GenNodeId() 生成
+	//
+	// 约束：
+	// - meta.inputs / meta.outputs 各自代表输入/输出 pin 列表；
+	//   SlotMeta::isInput 字段在这里作为一致性校验来源（不依赖它决定方向）。
+	// ------------------------------------------------------------
+	inline EditorNode CreateNodeFromMeta(const Horizon::NodeGraphRuntime::NodeMeta& meta)
+	{
 		EditorNode node;
 		node.id = GenNodeId();
-		node.type = NodeGraphRuntime::NodeType::Entry;
-		node.name = "Entry";
-		// 输出：Next
-		EditorPin outPin;
-		outPin.id = GenPinId();
-		outPin.name = "Next";
-		outPin.type = NodeGraphRuntime::SlotType::Exec;
-		outPin.isInput = false;
-		node.outputs.push_back(outPin);
-		return node;
-	}
+		node.type = meta.type;
+		node.name = meta.name;
 
-	EditorNode CreateDialogueNode(const std::string& text = "") {
-		EditorNode node;
-		node.id = GenNodeId();
-		node.type = NodeGraphRuntime::NodeType::Dialogue;
-		node.name = "Dialogue";
-		// 输入：In
-		EditorPin inPin;
-		inPin.id = GenPinId();
-		inPin.name = "In";
-		inPin.type = NodeGraphRuntime::SlotType::Exec;
-		inPin.isInput = true;
-		node.inputs.push_back(inPin);
-		// 输出：Next
-		EditorPin outPin;
-		outPin.id = GenPinId();
-		outPin.name = "Next";
-		outPin.type = NodeGraphRuntime::SlotType::Exec;
-		outPin.isInput = false;
-		node.outputs.push_back(outPin);
-		// 输出：Text（对白内容，由编译器填充 Value）
-		EditorPin outText;
-		outText.id = GenPinId();
-		outText.name = "Text";
-		outText.type = NodeGraphRuntime::SlotType::String;
-		outText.isInput = false;
-		node.outputs.push_back(outText);
-		// 属性
-		node.properties["text"] = text;
-		return node;
-	}
+		for (const auto& in : meta.inputs)
+		{
+			EditorPin pin;
+			pin.id = GenPinId();
+			pin.name = in.name;
+			pin.type = in.type;
+			pin.isInput = true;
+			node.inputs.push_back(std::move(pin));
+		}
 
-	inline EditorNode CreateBranchNode() {
-		EditorNode node;
-		node.id = GenNodeId();
-		node.type = NodeGraphRuntime::NodeType::Branch;
-		node.name = "Branch";
-		// 输入：Exec
-		EditorPin inExec;
-		inExec.id = GenPinId();
-		inExec.name = "In";
-		inExec.type = NodeGraphRuntime::SlotType::Exec;
-		inExec.isInput = true;
-		node.inputs.push_back(inExec);
-		// 输入：Bool
-		EditorPin inCond;
-		inCond.id = GenPinId();
-		inCond.name = "Condition";
-		inCond.type = NodeGraphRuntime::SlotType::Bool;
-		inCond.isInput = true;
-		node.inputs.push_back(inCond);
-		// 输出：True
-		EditorPin outTrue;
-		outTrue.id = GenPinId();
-		outTrue.name = "True";
-		outTrue.type = NodeGraphRuntime::SlotType::Exec;
-		outTrue.isInput = false;
-		node.outputs.push_back(outTrue);
-		// 输出：False
-		EditorPin outFalse;
-		outFalse.id = GenPinId();
-		outFalse.name = "False";
-		outFalse.type = NodeGraphRuntime::SlotType::Exec;
-		outFalse.isInput = false;
-		node.outputs.push_back(outFalse);
+		for (const auto& out : meta.outputs)
+		{
+			EditorPin pin;
+			pin.id = GenPinId();
+			pin.name = out.name;
+			pin.type = out.type;
+			pin.isInput = false;
+			node.outputs.push_back(std::move(pin));
+		}
+
 		return node;
 	}
 }

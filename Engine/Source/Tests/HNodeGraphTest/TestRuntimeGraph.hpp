@@ -146,9 +146,9 @@ TEST(HNodeGraphRuntime, BranchTrueRoutesToA)
 
 	// 注册执行函数
 	NodeRegistry reg;
-	reg.Register(NodeType::Entry, EntryFn);
-	reg.Register(NodeType::Branch, BranchFn);
-	reg.Register(NodeType::Dialogue, DialogueFn);
+	reg.Register(NodeMeta{ NodeType::Entry, "Entry", {}, {}, EntryFn });
+	reg.Register(NodeMeta{ NodeType::Branch, "Branch", {}, {}, BranchFn });
+	reg.Register(NodeMeta{ NodeType::Dialogue, "Dialogue", {}, {}, DialogueFn });
 
 	// 运行
 	RuntimeContext ctx; ctx.graph = &g;
@@ -181,9 +181,9 @@ TEST(HNodeGraphRuntime, BranchFalseRoutesToB)
 
 	// 注册执行函数
 	NodeRegistry reg;
-	reg.Register(NodeType::Entry, EntryFn);
-	reg.Register(NodeType::Branch, BranchFn);
-	reg.Register(NodeType::Dialogue, DialogueFn);
+	reg.Register(NodeMeta{ NodeType::Entry, "Entry", {}, {}, EntryFn });
+	reg.Register(NodeMeta{ NodeType::Branch, "Branch", {}, {}, BranchFn });
+	reg.Register(NodeMeta{ NodeType::Dialogue, "Dialogue", {}, {}, DialogueFn });
 
 	// 运行
 	RuntimeContext ctx; ctx.graph = &g;

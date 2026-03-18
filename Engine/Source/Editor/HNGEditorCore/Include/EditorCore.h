@@ -11,6 +11,8 @@
 
 #pragma once
 #include <string>
+#include <unordered_map>
+
 #include "../HNGEditorCoreConfig.h"
 
 #include <VGImgui/Include/ImNodeEditor/imgui_node_editor.h>
