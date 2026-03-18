@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../HNodeGraphConfig.h"
 #include "Types.h"
 #include "Value.h"
 #include <HCore/Interface/HConfig.h>
@@ -25,7 +25,7 @@ namespace Horizon::NodeGraphRuntime
 
 	// RuntimeSlot 表示节点的输入/输出槽
 	// 说明：
-	// - 每个槽由唯一的 SLOT_ID 标识（由 MakeSlotId 生成）
+	// - 每个槽由唯一的 SLOT_ID 标识（SLOT_ID == RuntimeGraph::slots 的索引）
 	// - name 字段用于标识 Exec 输出（例如 "True"/"False"/"Next"），也可用于数据槽命名
 	// - type 区分槽的数据类型或是否为 Exec 控制流槽
 	struct RuntimeSlot

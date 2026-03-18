@@ -2,13 +2,6 @@
 
 namespace Horizon::NodeGraphRuntime
 {
-    // 示例帮助函数：创建节点槽
-    SLOT_ID MakeSlotId(NODE_ID nodeId, uint32_t localIndex)
-    {
-        // high 32 bits node id, low 32 bits local index
-        return (static_cast<SLOT_ID>(nodeId) << 32) | static_cast<SLOT_ID>(localIndex);
-    }
-
     // Build nodeIdToIndex map
     void BuildNodeIndexMap(RuntimeGraph& g)
     {
@@ -27,11 +20,11 @@ namespace Horizon::NodeGraphRuntime
     }
 
     // helper to push a slot and return its index in graph.slots
-    uint32_t PushSlot(RuntimeGraph& g, const RuntimeSlot& s)
+    SLOT_ID PushSlot(RuntimeGraph& g, RuntimeSlot s)
     {
-        g.slots.push_back(s);
-        uint32_t idx = static_cast<uint32_t>(g.slots.size() - 1);
-        g.slotIdToIndex[s.id] = idx;
+        const SLOT_ID idx = static_cast<SLOT_ID>(g.slots.size());
+        s.id = idx;
+        g.slots.push_back(std::move(s));
         return idx;
     }
 
@@ -43,11 +36,6 @@ namespace Horizon::NodeGraphRuntime
         for (const RuntimeEdge& e : g.edges)
         {
             g.edgeFromTo[e.from].push_back(e.to);
-        }
-        // also ensure slotIdToIndex for existing slots (already filled by PushSlot)
-        for (uint32_t i = 0; i < g.slots.size(); ++i)
-        {
-            g.slotIdToIndex[g.slots[i].id] = i;
         }
     }
 
@@ -66,7 +54,9 @@ namespace Horizon::NodeGraphRuntime
 
     RuntimeNode* GetNodeById(RuntimeGraph& g, NODE_ID id)
     {
-        int idx = g.FindNodeIndex(id);
+        // Use nodeIdToIndex for O(1) lookup.
+        // NOTE: caller must have called BuildNodeIndexMap(g) after nodes are finalized.
+        int idx = GetNodeIndex(g, id);
         if (idx < 0) return nullptr;
         return &g.nodes[static_cast<size_t>(idx)];
     }

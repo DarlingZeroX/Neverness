@@ -5,9 +5,9 @@
 
 #pragma once
 #include <unordered_map>
-#include "Value.h"
-#include "Types.h"
-#include "RuntimeCore.h"
+#include "../../Interface/Value.h"
+#include "../../Interface/Types.h"
+#include "../../Interface/RuntimeCore.h"
 
 namespace Horizon::NodeGraphRuntime
 {

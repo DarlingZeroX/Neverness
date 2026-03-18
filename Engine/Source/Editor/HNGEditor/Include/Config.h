@@ -1,0 +1,21 @@
+#pragma once
+
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef HNG_EDITOR_API_EXPORT
+#define HNG_EDITOR_API __declspec(dllexport)
+#else
+#define HNG_EDITOR_API __declspec(dllimport)
+#endif
+
+#else
+#ifdef HNG_EDITOR_API_EXPORT
+#define HNG_EDITOR_API __attribute__((visibility("default")))
+#else
+#define HNG_EDITOR_API
+#endif
+#endif
+
+#include <VGImgui/Include/ImNodeEditor/imgui_node_editor.h>
+
+namespace IMNE = ax::NodeEditor;
+

@@ -24,20 +24,23 @@ file(GLOB HNODEGRAPH_EDITOR_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
 )
 
-add_library (HNodeGraphEditor SHARED ${HNODEGRAPH_EDITOR_HEADER_FILES} ${HNODEGRAPH_EDITOR_SRC_FILES})
+add_library (HNGEditor SHARED ${HNODEGRAPH_EDITOR_HEADER_FILES} ${HNODEGRAPH_EDITOR_SRC_FILES})
 
 # 添加宏
-target_compile_definitions(HNodeGraphEditor PRIVATE H_NODE_GRAPH_EDITOR_API_EXPORT)
+target_compile_definitions(HNGEditor PRIVATE HNG_EDITOR_API_EXPORT)
 
 # 添加头文件搜索路径
-target_include_directories(HNodeGraphEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(HNodeGraphEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(HNGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(HNGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
+target_include_directories(HNGEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 # 寻找CMake包
 find_package(SDL3 CONFIG REQUIRED)
 
 # 链接库
-target_link_libraries(HNodeGraphEditor PRIVATE SDL3::SDL3)
-target_link_libraries(HNodeGraphEditor PRIVATE HCore)
-target_link_libraries(HNodeGraphEditor PRIVATE VGImgui)
+target_link_libraries(HNGEditor PRIVATE SDL3::SDL3)
+target_link_libraries(HNGEditor PRIVATE HCore)
+target_link_libraries(HNGEditor PRIVATE VGImgui)
+target_link_libraries(HNGEditor PRIVATE HNGRuntimeCore)
+target_link_libraries(HNGEditor PRIVATE HNGEditorCore)
 

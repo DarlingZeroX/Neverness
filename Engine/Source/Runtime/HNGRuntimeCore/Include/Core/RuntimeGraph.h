@@ -11,9 +11,9 @@
 #include <unordered_map>
 #include <cstdint>
 #include <functional>
-#include "Value.h"
-#include "Types.h"
-#include "RuntimeCore.h"
+#include "../../Interface/Value.h"
+#include "../../Interface/Types.h"
+#include "../../Interface/RuntimeCore.h"
 #include "../../HNodeGraphConfig.h"
 
 namespace Horizon::NodeGraphRuntime
@@ -25,11 +25,8 @@ namespace Horizon::NodeGraphRuntime
 	struct NodeRegistry;
 	//struct RuntimeContext; // forward
 
-    // 构造槽 ID：将节点 ID 与槽局部索引组合成唯一 SLOT_ID
-    H_NODE_GRAPH_API SLOT_ID MakeSlotId(NODE_ID nodeId, uint32_t localIndex);
-
-    // 将一个 RuntimeSlot 推入 graph.slots 并返回其索引（同时填充 slotIdToIndex）
-    H_NODE_GRAPH_API uint32_t PushSlot(RuntimeGraph& g, const RuntimeSlot& s);
+    // 将一个 RuntimeSlot 推入 graph.slots 并返回其 SLOT_ID（即 slots 索引）
+    H_NODE_GRAPH_API SLOT_ID PushSlot(RuntimeGraph& g, RuntimeSlot s);
 
     // 根据节点 ID 获取 RuntimeNode 指针（返回 nullptr 则未找到）
     H_NODE_GRAPH_API RuntimeNode* GetNodeById(RuntimeGraph& g, NODE_ID id);
@@ -57,8 +54,6 @@ namespace Horizon::NodeGraphRuntime
 
         // 槽 ID 到所属节点 ID 的映射，用于 O(1) 查找槽所属节点
         std::unordered_map<SLOT_ID, NODE_ID> slotToNode;
-        // 槽 ID 到 slots 向量索引的映射，用于 O(1) 查找槽对象
-        std::unordered_map<SLOT_ID, uint32_t> slotIdToIndex;
         // 边的映射：输出槽 ID 到目标槽 ID 列表，用于 O(1) 查找所有下游槽
         std::unordered_map<SLOT_ID, std::vector<SLOT_ID>> edgeFromTo;
         // 节点 ID 到 nodes 向量索引的映射，用于 O(1) 查找节点对象

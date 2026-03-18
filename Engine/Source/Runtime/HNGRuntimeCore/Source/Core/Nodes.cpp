@@ -17,6 +17,7 @@ namespace Horizon::NodeGraphRuntime
 {
 	ExecResult EntryNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
+		if (!ctx.graph) return ExecResult::Finished;
 		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
 		if (!node) return ExecResult::Finished;
 		// 激活所有 Exec 类型输出槽
@@ -27,33 +28,35 @@ namespace Horizon::NodeGraphRuntime
 				PushExec(ctx, slot.id);
 			}
 		}
-		AdvanceToNextNode(ctx);
 		return ExecResult::Finished;
 	}
 
     // Branch 节点执行函数：根据输入条件激活 True/False 路径
 	ExecResult BranchNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
+		if (!ctx.graph) return ExecResult::Finished;
 		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
 		if (!node) return ExecResult::Finished;
 		if (node->inputsCount == 0) return ExecResult::Finished;
 
-		// 读取条件（第一个输入槽）
-		RuntimeSlot& condSlot = ctx.graph->slots[node->inputsBegin];
-		bool cond = condSlot.value.AsBool();
+		// 读取条件：Branch 的第 0 个输入通常是 Exec(In)，Bool 条件在后续输入槽中
+		bool cond = false;
+		for (uint32_t i = 0; i < node->inputsCount; ++i)
+		{
+			RuntimeSlot& inSlot = ctx.graph->slots[node->inputsBegin + i];
+			if (inSlot.type == SlotType::Bool)
+			{
+				cond = inSlot.value.AsBool();
+				break;
+			}
+		}
 
 		// 查找 True/False 输出槽
 		SLOT_ID trueSlot = FindOutputSlot(*ctx.graph, *node, "True");
 		SLOT_ID falseSlot = FindOutputSlot(*ctx.graph, *node, "False");
 
 		SLOT_ID outSlot = cond ? trueSlot : falseSlot;
-		if (outSlot != 0)
-		{
-			PushExec(ctx, outSlot);
-			// 只激活对应路径
-			NODE_ID nextId = FindNextNode(ctx, outSlot);
-			AdvanceToNextNode(ctx, nextId);
-		}
+		if (outSlot != 0) PushExec(ctx, outSlot);
 		return ExecResult::Finished;
 	}
 
@@ -67,54 +70,35 @@ namespace Horizon::NodeGraphRuntime
 	// Dialogue 节点执行函数：支持多行对白和 Flow 等待
 	ExecResult DialogueNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
+		if (!ctx.graph) return ExecResult::Finished;
 		// 获取节点对象
 		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
 		if (!node) return ExecResult::Finished;
 
-		// 获取/创建节点状态
-		DialogueState& state = ctx.GetOrCreateState<DialogueState>(nodeIndex);
-
-		int totalLines = static_cast<int>(node->outputsCount);
-		if (totalLines == 0) {
-			AdvanceToNextNode(ctx);
-			return ExecResult::Finished;
-		}
-
-		// 如果处于等待状态，模拟 Flow 完成
-		if (state.waiting) {
-			// 这里可扩展为条件检查或异步事件
-			state.waiting = false;
-			state.currentLine++;
-		}
-
-		// 如果还有对白行
-		if (state.currentLine < totalLines) {
-			// 输出当前行文本
-			const RuntimeSlot& lineSlot = ctx.graph->slots[node->outputsBegin + state.currentLine];
-			if (lineSlot.value.type == ValueType::String) {
-				printf("Dialogue: %s\n", lineSlot.value.AsString().c_str());
-			}
-
-			// 检查当前行是否有 Flow（可用槽 name 或 value 标记）
-			bool hasFlow = (lineSlot.name == "Flow");
-			if (hasFlow) {
-				state.waiting = true;
-				return ExecResult::Running;
-			} else {
-				state.currentLine++;
-				// 继续下一行（本帧只输出一行）
-				return ExecResult::Running;
+		// Text：从字符串输出槽读取对白（由编译器从 editor properties 写入）
+		SLOT_ID textSlotId = FindOutputSlot(*ctx.graph, *node, "Text");
+		if (textSlotId != 0)
+		{
+			if (textSlotId < ctx.graph->slots.size())
+			{
+				const RuntimeSlot& textSlot = ctx.graph->slots[textSlotId];
+				if (textSlot.value.type == ValueType::String)
+				{
+					printf("Dialogue: %s\n", textSlot.value.AsString().c_str());
+				}
 			}
 		}
 
-		// 所有行完成，推进到下一个节点
-		AdvanceToNextNode(ctx);
+		// Next：激活控制流输出
+		SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
+		if (nextSlotId != 0) PushExec(ctx, nextSlotId);
 		return ExecResult::Finished;
 	}
 
 	// Delay 节点执行函数：非阻塞等待，支持多帧
 	ExecResult DelayNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
+		if (!ctx.graph) return ExecResult::Finished;
 		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
 		if (!node) return ExecResult::Finished;
 
@@ -152,7 +136,8 @@ namespace Horizon::NodeGraphRuntime
 		}
 		else
 		{
-			AdvanceToNextNode(ctx);
+			SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
+			if (nextSlotId != 0) PushExec(ctx, nextSlotId);
 			return ExecResult::Finished;
 		}
 	}

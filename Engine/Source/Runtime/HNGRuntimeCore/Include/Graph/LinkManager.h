@@ -10,7 +10,6 @@
 */
 
 #pragma once
-#include "../Core/RuntimeCore.h"
 #include "../Core/Events.h"
 #include <set>
 #include <unordered_map>

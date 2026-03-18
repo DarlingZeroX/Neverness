@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <cstdint>
 #include <functional>
+#include <algorithm>
 #include "RuntimeGraph.h"
 
 namespace Horizon::NodeGraphRuntime
@@ -50,6 +51,7 @@ namespace Horizon::NodeGraphRuntime
 		NODE_ID currentNodeId;
 		std::unordered_map<std::string, Value> variables;
 		std::vector<NODE_ID> execStack; // execution stack of node ids
+		std::vector<NODE_ID> executedNodes;
 		bool jumped;
 
 		// pointer to graph being executed
@@ -59,6 +61,11 @@ namespace Horizon::NodeGraphRuntime
 		std::unordered_map<NODE_ID, std::any> nodeStates;
 
 		RuntimeContext() noexcept : currentNodeId(0), jumped(false), graph(nullptr) {}
+
+		bool WasNodeExecuted(NODE_ID id) const
+		{
+			return std::find(executedNodes.begin(), executedNodes.end(), id) != executedNodes.end();
+		}
 
 		// 获取并创建节点本地状态对象（若不存在则默认构造）
 		template<typename T>

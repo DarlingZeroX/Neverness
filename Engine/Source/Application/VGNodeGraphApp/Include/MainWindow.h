@@ -11,7 +11,7 @@
 
 #pragma once
 #include <VGEditorFramework/Interface/UIInterface.h>
-#include <HNodeGraphEditor/Include/NodeGraphEditor.h>
+#include <HNGEditor/Include/NodeGraphEditor.h>
 
 namespace VisionGal::Editor
 {
@@ -40,7 +40,7 @@ namespace VisionGal::Editor
 		void RenderLeftUI();
 		void RenderRightUI();
 	private:
-		Horizon::NodeGraph::NodeGraphEditor m_NodeGraphEditor;
-		Horizon::NodeGraph::NodeGraphWindow m_NodeGraphWindow{ "VGPackageTool Node Graph" };
+		Horizon::NodeGraph::HNodeGraphEditor m_NodeGraphEditor;
+		//Horizon::NodeGraph::NodeGraphWindow m_NodeGraphWindow{ "VGPackageTool Node Graph" };
 	};
 }

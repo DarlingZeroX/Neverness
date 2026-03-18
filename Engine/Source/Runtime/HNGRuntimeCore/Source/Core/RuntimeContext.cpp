@@ -25,6 +25,11 @@ namespace Horizon::NodeGraphRuntime
 			RuntimeNode& node = ctx.graph->nodes[static_cast<size_t>(idx)];
 			if (!node.execute) continue;
 
+			ctx.executedNodes.push_back(node.id);
+
+			// 让 AdvanceToNextNode(ctx) 能获取“当前节点”
+			ctx.currentNodeId = node.id;
+
 			// 调用节点执行函数
 			ExecResult res = node.execute(ctx, node.id);
 
@@ -47,18 +52,16 @@ namespace Horizon::NodeGraphRuntime
 	void PushExec(RuntimeContext& ctx, SLOT_ID slotId)
 	{
 		if (!ctx.graph) return;
-		auto it = ctx.graph->slotIdToIndex.find(slotId);
-		if (it == ctx.graph->slotIdToIndex.end()) return;
-		ctx.graph->slots[it->second].active = true;
+		if (slotId >= ctx.graph->slots.size()) return;
+		ctx.graph->slots[slotId].active = true;
 	}
 
 	// Consume exec token from a slot (if active, clear and return true)
 	bool ConsumeExec(RuntimeContext& ctx, SLOT_ID slotId)
 	{
 		if (!ctx.graph) return false;
-		auto it = ctx.graph->slotIdToIndex.find(slotId);
-		if (it == ctx.graph->slotIdToIndex.end()) return false;
-		RuntimeSlot& s = ctx.graph->slots[it->second];
+		if (slotId >= ctx.graph->slots.size()) return false;
+		RuntimeSlot& s = ctx.graph->slots[slotId];
 		if (s.active)
 		{
 			s.active = false;

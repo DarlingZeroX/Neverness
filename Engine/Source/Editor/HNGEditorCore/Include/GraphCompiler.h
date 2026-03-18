@@ -11,19 +11,14 @@
 
 #pragma once
 #include <string>
-#include "Config.h"
+#include "../HNGEditorCoreConfig.h"
+#include "EditorCore.h"
+#include "EditorGraph.h"
 
-namespace Horizon::NodeGraph
+#include <HNGRuntimeCore/Include/Core/RuntimeGraph.h>
+
+
+namespace Horizon::NodeGraphEditor
 {
-	class H_NODE_GRAPH_EDITOR_API NodeGraphWindow
-	{
-	public:
-		NodeGraphWindow(const std::string& windowID);
-		~NodeGraphWindow();
-
-		virtual void OnGUI();
-	private:
-		std::string m_WindowID;
-	};
-
+	HNG_EDITOR_CORE_API NodeGraphRuntime::RuntimeGraph Compile(const EditorGraph& editor, const NodeGraphRuntime::NodeRegistry& registry);
 }

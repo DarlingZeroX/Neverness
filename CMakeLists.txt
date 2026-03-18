@@ -47,7 +47,8 @@ add_subdirectory ("Engine/Source/Runtime/VGImgui")
 add_subdirectory ("Engine/Source/Runtime/VGCore")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
 # 编辑器
-add_subdirectory ("Engine/Source/Editor/HNodeGraphEditor")
+add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
+add_subdirectory ("Engine/Source/Editor/HNGEditor")
 add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 

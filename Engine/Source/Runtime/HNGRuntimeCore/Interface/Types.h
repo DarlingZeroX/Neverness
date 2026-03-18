@@ -15,7 +15,8 @@
 namespace Horizon::NodeGraphRuntime
 {
 	using NODE_ID = std::uint32_t;
-	using SLOT_ID = std::uint64_t;
+	// SLOT_ID 直接等于 RuntimeGraph::slots 的索引（消除运行时 hash 查找）
+	using SLOT_ID = std::uint32_t;
 
 	// Slot 类型（Exec 控制流 或 数据槽）
 	enum class SlotType : uint8_t

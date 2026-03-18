@@ -1,4 +1,4 @@
-#include "Core/RuntimeCore.h"
+#include "RuntimeCore.h"
 
 namespace Horizon::NodeGraph
 {

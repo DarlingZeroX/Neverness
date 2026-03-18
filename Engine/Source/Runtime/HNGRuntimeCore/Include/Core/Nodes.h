@@ -11,7 +11,7 @@
 
 #pragma once
 #include <cstdint>
-#include "RuntimeCore.h"
+#include "../../Interface/RuntimeCore.h"
 #include "RuntimeContext.h"
 
 namespace Horizon::NodeGraphRuntime

@@ -34,6 +34,7 @@ target_compile_definitions(HNGRuntimeCore PRIVATE H_NODE_GRAPH_API_EXPORT)
 # 添加头文件搜索路径
 target_include_directories(HNGRuntimeCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(HNGRuntimeCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(HNGRuntimeCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 # 寻找CMake包
 find_package(SDL3 CONFIG REQUIRED)

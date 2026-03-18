@@ -24,26 +24,26 @@ static RuntimeGraph BuildBranchGraph(bool branchConditionTrue)
 	BuildNodeIndexMap(g);
 
     // entry output -> branch
-    RuntimeSlot entryOut; entryOut.id = MakeSlotId(entry.id, 0); entryOut.type = SlotType::Int; entryOut.value = Value(static_cast<int64_t>(branch.id));
-    uint32_t eidx = PushSlot(g, entryOut);
+    RuntimeSlot entryOut; entryOut.type = SlotType::Int; entryOut.value = Value(static_cast<int64_t>(branch.id));
+    SLOT_ID eidx = PushSlot(g, entryOut);
 	int entryIndex = GetNodeIndex(g, entry.id);
 	if (entryIndex >= 0) { g.nodes[entryIndex].outputsBegin = eidx; g.nodes[entryIndex].outputsCount = 1; }
-    g.slotToNode[entryOut.id] = entry.id;
+    g.slotToNode[eidx] = entry.id;
 
     // branch condition input
-    RuntimeSlot cond; cond.id = MakeSlotId(branch.id, 0); cond.type = SlotType::Bool; cond.value = Value(branchConditionTrue);
-    uint32_t cidx = PushSlot(g, cond);
+    RuntimeSlot cond; cond.type = SlotType::Bool; cond.value = Value(branchConditionTrue);
+    SLOT_ID cidx = PushSlot(g, cond);
 	int branchIndex = GetNodeIndex(g, branch.id);
 	if (branchIndex >= 0) { g.nodes[branchIndex].inputsBegin = cidx; g.nodes[branchIndex].inputsCount = 1; }
-    g.slotToNode[cond.id] = branch.id;
+    g.slotToNode[cidx] = branch.id;
 
     // branch outputs
-    RuntimeSlot tslot; tslot.id = MakeSlotId(branch.id, 1); tslot.type = SlotType::Exec; tslot.name = "True"; tslot.value = Value(static_cast<int64_t>(A.id));
-	RuntimeSlot fslot; fslot.id = MakeSlotId(branch.id, 2); fslot.type = SlotType::Exec; fslot.name = "False"; fslot.value = Value(static_cast<int64_t>(B.id));
-    uint32_t tidx = PushSlot(g, tslot);
-    uint32_t fidx = PushSlot(g, fslot);
-    g.slotToNode[tslot.id] = branch.id;
-    g.slotToNode[fslot.id] = branch.id;
+    RuntimeSlot tslot; tslot.type = SlotType::Exec; tslot.name = "True"; tslot.value = Value(static_cast<int64_t>(A.id));
+	RuntimeSlot fslot; fslot.type = SlotType::Exec; fslot.name = "False"; fslot.value = Value(static_cast<int64_t>(B.id));
+    SLOT_ID tidx = PushSlot(g, tslot);
+    SLOT_ID fidx = PushSlot(g, fslot);
+    g.slotToNode[tidx] = branch.id;
+    g.slotToNode[fidx] = branch.id;
 	// set branch outputs range
     branchIndex = GetNodeIndex(g, branch.id);
 	if (branchIndex >= 0)
@@ -53,27 +53,21 @@ static RuntimeGraph BuildBranchGraph(bool branchConditionTrue)
 	}
 
     // A and B input exec slots
-    RuntimeSlot Ain; Ain.id = MakeSlotId(A.id, 0); Ain.type = SlotType::Exec; Ain.name = "In";
-    uint32_t aInIdx = PushSlot(g, Ain);
-	g.slotToNode[Ain.id] = A.id;
+    RuntimeSlot Ain; Ain.type = SlotType::Exec; Ain.name = "In";
+    SLOT_ID aInIdx = PushSlot(g, Ain);
+	g.slotToNode[aInIdx] = A.id;
 	int aIndex = GetNodeIndex(g, A.id);
 	if (aIndex >= 0) { g.nodes[aIndex].inputsBegin = aInIdx; g.nodes[aIndex].inputsCount = 1; }
 
-    RuntimeSlot Bin; Bin.id = MakeSlotId(B.id, 0); Bin.type = SlotType::Exec; Bin.name = "In";
-    uint32_t bInIdx = PushSlot(g, Bin);
-	g.slotToNode[Bin.id] = B.id;
+    RuntimeSlot Bin; Bin.type = SlotType::Exec; Bin.name = "In";
+    SLOT_ID bInIdx = PushSlot(g, Bin);
+	g.slotToNode[bInIdx] = B.id;
 	int bIndex = GetNodeIndex(g, B.id);
 	if (bIndex >= 0) { g.nodes[bIndex].inputsBegin = bInIdx; g.nodes[bIndex].inputsCount = 1; }
 
     // connect edges: branch true -> Ain; branch false -> Bin
-	g.edges.push_back(RuntimeEdge(tslot.id, Ain.id));
-	g.edges.push_back(RuntimeEdge(fslot.id, Bin.id));
-	g.edgeFromTo[tslot.id].push_back(Ain.id);
-	g.edgeFromTo[fslot.id].push_back(Bin.id);
-
-	// map destination slots to node indices (ensure slotIdToIndex filled)
-	g.slotToNode[Ain.id] = A.id;
-	g.slotToNode[Bin.id] = B.id;
+	g.edges.push_back(RuntimeEdge(tidx, aInIdx));
+	g.edges.push_back(RuntimeEdge(fidx, bInIdx));
 
     // set entry
     g.entryNodeId = entry.id;

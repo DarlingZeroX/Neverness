@@ -10,24 +10,22 @@
 */
 
 #pragma once
-#include "Config.h"
-#include "NodeGraphWindow.h"
+#include <string>
+#include "../HNGEditorCoreConfig.h"
+#include "EditorCore.h"
 
-namespace Horizon::NodeGraph
+namespace Horizon::NodeGraphEditor
 {
-	class H_NODE_GRAPH_EDITOR_API NodeGraphEditor
+	class HNG_EDITOR_CORE_API IMNEEditorContext
 	{
 	public:
-		NodeGraphEditor();
-		~NodeGraphEditor();
+		IMNEEditorContext();
+		IMNEEditorContext(const ax::NodeEditor::Config& config);
+		~IMNEEditorContext();
 
 		void SetContext();
 		static void ResetContext();
-		void DrawNodeGraphWindow(NodeGraphWindow& window);
-	private:
-		void Initialize();
-	private:
+
 		ax::NodeEditor::EditorContext* m_EditorContext;
 	};
-
 }
