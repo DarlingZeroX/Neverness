@@ -11,6 +11,7 @@
 
 #pragma once
 #include <string>
+#include <unordered_map>
 #include "../HNGEditorCoreConfig.h"
 #include "EditorCore.h"
 #include "IMNEWrap.h"
@@ -23,6 +24,7 @@ namespace Horizon::NodeGraphRuntime
 
 namespace Horizon::NodeGraphEditor
 {
+	class CommandManager;
 	namespace Runtime = Horizon::NodeGraphRuntime;
 
 	struct HNG_EDITOR_CORE_API EditorGraph
@@ -44,6 +46,29 @@ namespace Horizon::NodeGraphEditor
 		bool dirty = true;
 
 		// ----------------------------
+		// 辅助索引（O(1) 查找）
+		//
+		// 说明：
+		// - nodeIndexById : NodeId -> nodes 向量下标
+		//   用于快速通过 NodeId 查找 EditorNode（替代线性遍历）
+		// - pinOwnerById  : PinId  -> NodeId
+		//   用于快速判断一个 Pin 属于哪个节点（连线/命令系统/编译器使用）
+		//
+		// 维护策略：
+		// - 在 AddNode / 删除节点 / 反序列化 后调用 RebuildIndices() 或局部更新，
+		//   保证索引与 nodes 内容保持一致。
+		// - 对于少量节点时性能差异不大，但随着图规模增长，索引能显著降低查找开销。
+		// ----------------------------
+		std::unordered_map<EditorNodeID, size_t, EditorIdHash> nodeIndexById;
+		std::unordered_map<EditorPinID, EditorNodeID, EditorIdHash> pinOwnerById;
+
+		// 命令管理器指针（可选）
+		// - 若不为 nullptr，则 UI 操作（如创建连线、移动节点）会通过命令系统执行，
+		//   从而支持 Undo/Redo。
+		// - 由上层（例如 HNodeGraphEditor）负责设置与生命周期管理。
+		CommandManager* commandManager = nullptr;
+
+		// ----------------------------
 		// AddNode：以 NodeType 为输入，自动构建 EditorNode
 		//
 		// 核心逻辑：
@@ -57,9 +82,15 @@ namespace Horizon::NodeGraphEditor
 		EditorNode& AddNode(Runtime::NodeType type);
 
 		// 根据 NodeId 在线性表中查找 EditorNode
+		// 优先通过 nodeIndexById 做 O(1) 查找，发现不一致时会回退线性扫描并修正索引。
 		EditorNode* FindNode(ax::NodeEditor::NodeId id);
 		// 根据 PinId 在线性表中查找 EditorPin
+		// - 先通过 pinOwnerById 找到所属节点，再在该节点的 inputs/outputs 中查找
+		// - 若索引缺失或失配，会回退线性扫描并修正 pinOwnerById。
 		EditorPin* FindPin(ax::NodeEditor::PinId id);
+
+		// 全量重建辅助索引（在大规模修改或反序列化后调用）
+		void RebuildIndices();
 	};
 
 	HNG_EDITOR_CORE_API void HandleCreateLink(EditorGraph& graph);

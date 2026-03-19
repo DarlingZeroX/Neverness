@@ -16,37 +16,55 @@
 // hash/== for ax::NodeEditor::NodeId
 #include <functional>
 
-/*
+#include <HNGRuntimeCore/Include/Core/RuntimeGraph.h>
+#include <HNGRuntimeCore/Include/Core/Nodes.h>
+#include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
+#include <unordered_map>
+// hash/== for ax::NodeEditor::NodeId
+#include <functional>
+
 namespace ax {
 	namespace NodeEditor {
 		struct NodeId;
 		struct PinId;
 	}
 }
-namespace std {
-	template<> struct hash<ax::NodeEditor::NodeId> {
-		size_t operator()(const ax::NodeEditor::NodeId& id) const noexcept {
-			// NodeId 必须能转换为整数（如 .Get()），否则请修改此处
-			return std::hash<int>()(id.Get());
-		}
-	};
-
-	// 让 EditorPinID(ax::NodeEditor::PinId) 可作为 unordered_map key
-	template<> struct hash<ax::NodeEditor::PinId> {
-		size_t operator()(const ax::NodeEditor::PinId& id) const noexcept {
-			// PinId 必须能转换为整数（如 .Get()），否则请修改此处
-			return std::hash<int>()(id.Get());
-		}
-	};
-}
+//namespace std {
+//	template<> struct hash<ax::NodeEditor::NodeId> {
+//		size_t operator()(const ax::NodeEditor::NodeId& id) const noexcept {
+//			// NodeId 必须能转换为整数（如 .Get()），否则请修改此处
+//			return std::hash<int>()(id.Get());
+//		}
+//	};
+//
+//	// 让 EditorPinID(ax::NodeEditor::PinId) 可作为 unordered_map key
+//	template<> struct hash<ax::NodeEditor::PinId> {
+//		size_t operator()(const ax::NodeEditor::PinId& id) const noexcept {
+//			// PinId 必须能转换为整数（如 .Get()），否则请修改此处
+//			return std::hash<int>()(id.Get());
+//		}
+//	};
+//}
 
 namespace Horizon::NodeGraphEditor
 {
+	// GraphCompiler：将 EditorGraph 编译为 RuntimeGraph
+	//
+	// 设计要点：
+	// - 统一由 NodeRegistry 提供节点元数据与执行函数（NodeMeta / NodeExecuteFn）
+	// - 编译过程中一次遍历 EditorGraph，构建 RuntimeGraph 的 nodes / slots / edges
+	// - 使用 pinLookup（PinId -> slotId）加速 link 转换，避免 O(links * nodes * pins) 的二次复杂度
+	//
+	// 目前支持的节点类型示例：
+	// - Dialogue   : 通过 properties["text"] 设置对白内容，编译到 "Text" 槽
+	// - SetVariable: properties["name"] / properties["value"] 编译到 Name / Expression 槽
+	// - GetVariable: properties["name"] 编译到 Name 槽
+	// - Condition  : properties["condition"] 编译到 Condition 槽
 	NodeGraphRuntime::RuntimeGraph Compile(const EditorGraph& editor, const NodeGraphRuntime::NodeRegistry& registry)
 	{
 		using namespace NodeGraphRuntime;
 		RuntimeGraph g;
-		std::unordered_map<ax::NodeEditor::NodeId, NODE_ID> nodeIdMap;
+		std::unordered_map<ax::NodeEditor::NodeId, NODE_ID, EditorIdHash> nodeIdMap;
 
 		// ------------------------------
 		// Pin 查找表（性能关键）
@@ -60,7 +78,7 @@ namespace Horizon::NodeGraphEditor
 			SLOT_ID slotId = 0;
 			bool isOutput = false;  // true: outputs pin，false: inputs pin
 		};
-		std::unordered_map<EditorPinID, PinInfo> pinLookup;
+		std::unordered_map<EditorPinID, PinInfo, EditorIdHash> pinLookup;
 		// 预留空间，减少 rehash；links 不一定覆盖所有 pin，但通常同量级
 		{
 			size_t totalPins = 0;
@@ -81,7 +99,7 @@ namespace Horizon::NodeGraphEditor
 			nodeIdMap[enode.id] = nodeId;
 		}
 
-		// 2. Pin 转换
+		// 2. Pin 转换：为每个 EditorNode 生成对应的 RuntimeSlot 列表
 		for (size_t nidx = 0; nidx < editor.nodes.size(); ++nidx)
 		{
 			const auto& enode = editor.nodes[nidx];
@@ -108,17 +126,57 @@ namespace Horizon::NodeGraphEditor
 				slot.name = epin.name;
 				slot.type = epin.type;
 				slot.active = false;
-				// 将 editor 节点属性写入 runtime 槽值（示例：Dialogue 的 Text 输出）
-				if (enode.type == NodeType::Dialogue && epin.type == SlotType::String && epin.name == "Text")
+				// 将 editor 节点属性写入 runtime 槽值（基于 NodeType / 槽名 的约定）
+				//
+				// 1) Dialogue: Text 输出（多行对白文本）
+				if ( enode.type == NodeType::Dialogue
+					&& epin.type == SlotType::String
+					&& epin.name == "Text")
 				{
 					auto pit = enode.properties.find("text");
 					if (pit != enode.properties.end())
 					{
-						slot.value = Value(pit->second);
+						slot.value = Value::FromString(pit->second);
 					}
+				}
+				// 2) SetVariable: Name / Expression
+				else if (enode.type == NodeType::SetVariable && epin.type == SlotType::String)
+				{
+					if (epin.name == "Name")
+					{
+						auto pit = enode.properties.find("name");
+						if (pit != enode.properties.end())
+							slot.value = Value::FromString(pit->second);
+					}
+					else if (epin.name == "Expression")
+					{
+						auto pit = enode.properties.find("value");
+						if (pit != enode.properties.end())
+							slot.value = Value::FromString(pit->second);
+					}
+				}
+				// 3) GetVariable: Name
+				else if ( enode.type == NodeType::GetVariable
+					&& epin.type == SlotType::String
+					&& epin.name == "Name")
+				{
+					auto pit = enode.properties.find("name");
+					if (pit != enode.properties.end())
+						slot.value = Value::FromString(pit->second);
+				}
+				// 4) Condition: Condition 表达式
+				else if ( enode.type == NodeType::Condition
+					&& epin.type == SlotType::String
+					&& epin.name == "Condition")
+				{
+					auto pit = enode.properties.find("condition");
+					if (pit != enode.properties.end())
+						slot.value = Value::FromString(pit->second);
 				}
 				const SLOT_ID slotId = PushSlot(g, std::move(slot));
 				g.slotToNode[slotId] = nodeId;
+				// 填充 RuntimeNode::outputSlotMap（O(1) FindOutputSlot）
+				g.nodes[nidx].outputSlotMap[g.slots[slotId].name] = slotId;
 
 				// 建立 pin -> slotId 映射，供 link 转换阶段 O(1) 查找
 				pinLookup[epin.id] = PinInfo{ slotId, true };
@@ -163,4 +221,3 @@ namespace Horizon::NodeGraphEditor
 		return g;
 	}
 }
-*/

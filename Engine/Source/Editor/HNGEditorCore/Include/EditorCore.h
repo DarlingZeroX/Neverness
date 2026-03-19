@@ -21,6 +21,16 @@
 
 namespace Horizon::NodeGraphEditor
 {
+	struct EditorIdHash
+	{
+		template<typename T>
+		size_t operator()(const T& id) const noexcept
+		{
+			// ax::NodeEditor::NodeId / PinId / LinkId 都提供 Get() -> int
+			return std::hash<int>()(id.Get());
+		}
+	};
+
 	using EditorNodeID = ax::NodeEditor::NodeId;
 	using EditorLinkID = ax::NodeEditor::LinkId;
 	using EditorPinID = ax::NodeEditor::PinId;

@@ -26,6 +26,7 @@ namespace Horizon::NodeGraphRuntime
 			if (!node.execute) continue;
 
 			ctx.executedNodes.push_back(node.id);
+			ctx.executedNodeSet.insert(node.id);
 
 			// 让 AdvanceToNextNode(ctx) 能获取“当前节点”
 			ctx.currentNodeId = node.id;
@@ -87,6 +88,29 @@ namespace Horizon::NodeGraphRuntime
 				return jt->second;
 		}
 		return 0;
+	}
+
+	// Data Flow：输入值读取（pull model）
+	Value GetInputValue(RuntimeContext& ctx, SLOT_ID inputSlotId)
+	{
+		if (!ctx.graph) return Value();
+		if (inputSlotId >= ctx.graph->slots.size()) return Value();
+
+		// 1) 查找反向边：inputSlot -> 上游 outputs
+		auto it = ctx.graph->edgeToFrom.find(inputSlotId);
+		if (it == ctx.graph->edgeToFrom.end() || it->second.empty())
+		{
+			// 2) 未连接：返回自身默认值
+			return ctx.graph->slots[inputSlotId].value;
+		}
+
+		// 3) 已连接：取第一个上游输出槽
+		const SLOT_ID fromSlotId = it->second.front();
+		if (fromSlotId >= ctx.graph->slots.size())
+		{
+			return ctx.graph->slots[inputSlotId].value;
+		}
+		return ctx.graph->slots[fromSlotId].value;
 	}
 
 	// Advance from current node via its first exec output slot

@@ -37,6 +37,9 @@ namespace Horizon::NodeGraphRuntime
 		Dialogue,
 		Delay,
 		Branch,
+		SetVariable,
+		GetVariable,
+		Condition,
 		Custom0,
 		Custom1
 	};

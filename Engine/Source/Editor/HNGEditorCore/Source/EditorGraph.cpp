@@ -10,6 +10,7 @@
 */
 #include "EditorGraph.h"
 #include "NodeFactory.h"
+#include "CommandSystem.h"
 #include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
 #include <unordered_set>
 
@@ -17,24 +18,77 @@ namespace Horizon::NodeGraphEditor
 {
 	EditorNode* EditorGraph::FindNode(ax::NodeEditor::NodeId id)
 	{
-		for (auto& n : nodes)
+		// 优先使用辅助索引（O(1)）
+		auto it = nodeIndexById.find(id);
+		if (it != nodeIndexById.end())
 		{
-			if (n.id == id)
-				return &n;
+			size_t idx = it->second;
+			if (idx < nodes.size() && nodes[idx].id == id)
+				return &nodes[idx];
+		}
+
+		// 索引缺失或失配：回退线性扫描，并在找到后修正索引
+		for (size_t i = 0; i < nodes.size(); ++i)
+		{
+			if (nodes[i].id == id)
+			{
+				nodeIndexById[id] = i;
+				return &nodes[i];
+			}
 		}
 		return nullptr;
 	}
 
 	EditorPin* EditorGraph::FindPin(ax::NodeEditor::PinId id)
 	{
+		// 1) 通过 pinOwnerById 快速找到所属节点
+		auto ownerIt = pinOwnerById.find(id);
+		if (ownerIt != pinOwnerById.end())
+		{
+			EditorNode* owner = FindNode(ownerIt->second);
+			if (owner)
+			{
+				for (auto& p : owner->inputs)
+					if (p.id == id) return &p;
+				for (auto& p : owner->outputs)
+					if (p.id == id) return &p;
+			}
+		}
+
+		// 2) 索引缺失或失配：回退线性扫描并修正 pinOwnerById
 		for (auto& n : nodes)
 		{
 			for (auto& p : n.inputs)
-				if (p.id == id) return &p;
+				if (p.id == id)
+				{
+					pinOwnerById[id] = n.id;
+					return &p;
+				}
 			for (auto& p : n.outputs)
-				if (p.id == id) return &p;
+				if (p.id == id)
+				{
+					pinOwnerById[id] = n.id;
+					return &p;
+				}
 		}
 		return nullptr;
+	}
+
+	void EditorGraph::RebuildIndices()
+	{
+		nodeIndexById.clear();
+		pinOwnerById.clear();
+
+		for (size_t i = 0; i < nodes.size(); ++i)
+		{
+			EditorNode& n = nodes[i];
+			nodeIndexById[n.id] = i;
+
+			for (const auto& p : n.inputs)
+				pinOwnerById[p.id] = n.id;
+			for (const auto& p : n.outputs)
+				pinOwnerById[p.id] = n.id;
+		}
 	}
 
 	EditorNode& EditorGraph::AddNode(Runtime::NodeType type)
@@ -67,6 +121,15 @@ namespace Horizon::NodeGraphEditor
 		// 3) 正常路径：由 NodeMeta 数据驱动创建 pins
 		EditorNode node = CreateNodeFromMeta(*meta);
 		nodes.push_back(std::move(node));
+		// 新增节点后更新索引（仅追加一项，避免全量重建）
+		EditorNode& back = nodes.back();
+		const size_t idx = nodes.size() - 1;
+		nodeIndexById[back.id] = idx;
+		for (const auto& p : back.inputs)
+			pinOwnerById[p.id] = back.id;
+		for (const auto& p : back.outputs)
+			pinOwnerById[p.id] = back.id;
+
 		dirty = true;
 		return nodes.back();
 	}
@@ -106,8 +169,20 @@ namespace Horizon::NodeGraphEditor
 				link.id = ax::NodeEditor::LinkId(static_cast<int>(graph.links.size() + 1));
 				link.startPinId = outputPin->id;
 				link.endPinId = inputPin->id;
-				graph.links.push_back(link);
-				graph.dirty = true;
+
+				// 若提供了命令管理器，则通过命令系统创建连线，支持 Undo/Redo
+				if (graph.commandManager)
+				{
+					graph.commandManager->ExecuteCommand(
+						std::make_unique<LinkCommand>(graph, link)
+					);
+				}
+				else
+				{
+					// 回退路径：直接修改 graph.links
+					graph.links.push_back(link);
+					graph.dirty = true;
+				}
 			}
 		}
 		EndCreate();
@@ -140,6 +215,8 @@ namespace Horizon::NodeGraphEditor
 			}
 		}
 
+		const bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+
 		// 绘制所有节点
 		for (auto& node : graph.nodes)
 		{
@@ -160,6 +237,9 @@ namespace Horizon::NodeGraphEditor
 				PushStyleColor(StyleColor_NodeBorder, ImColor(120, 180, 255, 255));
 				//PushStyleColor(StyleColor_No, ImColor(0, 0, 0, 0));
 			}
+
+			// 记录移动前的位置，用于 MoveNodeCommand
+			ImVec2 oldPos = node.position;
 
 			BeginNode(node.id);
 			ImGui::Text("%s", node.name.c_str());
@@ -184,6 +264,57 @@ namespace Horizon::NodeGraphEditor
 				}
 			}
 
+			// SetVariable 节点：提供变量名与表达式的编辑 UI
+			if (node.type == Horizon::NodeGraphRuntime::NodeType::SetVariable)
+			{
+				std::string& name = node.properties["name"];
+				std::string& expr = node.properties["value"];
+
+				char nameBuf[256] = {};
+				char exprBuf[256] = {};
+				std::snprintf(nameBuf, sizeof(nameBuf), "%s", name.c_str());
+				std::snprintf(exprBuf, sizeof(exprBuf), "%s", expr.c_str());
+
+				if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf)))
+				{
+					name = nameBuf;
+					graph.dirty = true;
+				}
+				if (ImGui::InputText("Expression", exprBuf, sizeof(exprBuf)))
+				{
+					expr = exprBuf;
+					graph.dirty = true;
+				}
+			}
+
+			// GetVariable 节点：仅编辑变量名
+			if (node.type == Horizon::NodeGraphRuntime::NodeType::GetVariable)
+			{
+				std::string& name = node.properties["name"];
+
+				char nameBuf[256] = {};
+				std::snprintf(nameBuf, sizeof(nameBuf), "%s", name.c_str());
+
+				if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf)))
+				{
+					name = nameBuf;
+					graph.dirty = true;
+				}
+			}
+
+			// Condition 节点：编辑条件表达式
+			if (node.type == Horizon::NodeGraphRuntime::NodeType::Condition)
+			{
+				std::string& cond = node.properties["condition"];
+				char buf[256] = {};
+				std::snprintf(buf, sizeof(buf), "%s", cond.c_str());
+				if (ImGui::InputText("Condition", buf, sizeof(buf)))
+				{
+					cond = buf;
+					graph.dirty = true;
+				}
+			}
+
 			// 输入区
 			for (auto& pin : node.inputs)
 			{
@@ -203,6 +334,17 @@ namespace Horizon::NodeGraphEditor
 			}
 
 			EndNode();
+
+			// 同步并检测节点位置变化
+			ImVec2 newPos = GetNodePosition(node.id);
+			node.position = newPos;
+			if (mouseReleased && graph.commandManager &&
+				(newPos.x != oldPos.x || newPos.y != oldPos.y))
+			{
+				graph.commandManager->ExecuteCommand(
+					std::make_unique<MoveNodeCommand>(graph, node.id, oldPos, newPos)
+				);
+			}
 
 			if (isCurrent || executed)
 			{

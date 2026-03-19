@@ -33,23 +33,31 @@ namespace Horizon::NodeGraphRuntime
     {
         // clear existing
         g.edgeFromTo.clear();
+		g.edgeToFrom.clear();
         for (const RuntimeEdge& e : g.edges)
         {
             g.edgeFromTo[e.from].push_back(e.to);
+			g.edgeToFrom[e.to].push_back(e.from);
         }
     }
 
     // find output slot by name
     SLOT_ID FindOutputSlot(RuntimeGraph& g, const RuntimeNode& node, const std::string& name)
     {
-        uint32_t begin = node.outputsBegin;
-        uint32_t count = node.outputsCount;
-        for (uint32_t i = 0; i < count; ++i)
-        {
-            const RuntimeSlot& s = g.slots[begin + i];
-            if (s.name == name) return s.id;
-        }
-        return 0;
+		// 优先走 O(1) 的 outputSlotMap（由编译阶段填充）
+		auto it = node.outputSlotMap.find(name);
+		if (it != node.outputSlotMap.end())
+			return it->second;
+
+		// 回退路径：若 outputSlotMap 未填充，则按范围线性扫描（O(N)）
+		uint32_t begin = node.outputsBegin;
+		uint32_t count = node.outputsCount;
+		for (uint32_t i = 0; i < count; ++i)
+		{
+			const RuntimeSlot& s = g.slots[begin + i];
+			if (s.name == name) return s.id;
+		}
+		return 0;
     }
 
     RuntimeNode* GetNodeById(RuntimeGraph& g, NODE_ID id)

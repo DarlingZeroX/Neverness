@@ -56,6 +56,11 @@ namespace Horizon::NodeGraphRuntime
         std::unordered_map<SLOT_ID, NODE_ID> slotToNode;
         // 边的映射：输出槽 ID 到目标槽 ID 列表，用于 O(1) 查找所有下游槽
         std::unordered_map<SLOT_ID, std::vector<SLOT_ID>> edgeFromTo;
+		// 边的反向映射：输入槽 ID 到上游输出槽 ID 列表（Data Flow 读取用）
+		// 说明：
+		// - 用于 pull model：当节点读取某个输入槽时，可通过 edgeToFrom 找到其上游输出槽
+		// - 当前版本只取第一个上游（后续可扩展 merge/多输入）
+		std::unordered_map<SLOT_ID, std::vector<SLOT_ID>> edgeToFrom;
         // 节点 ID 到 nodes 向量索引的映射，用于 O(1) 查找节点对象
         std::unordered_map<NODE_ID, uint32_t> nodeIdToIndex;
 

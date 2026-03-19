@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <cstdint>
 #include <functional>
 #include <algorithm>
@@ -38,6 +39,24 @@ namespace Horizon::NodeGraphRuntime
 	// 为避免死循环，内部包含最大执行步数保护
 	H_NODE_GRAPH_API void ExecuteGraph(RuntimeContext& ctx);
 
+	// ----------------------------
+	// Data Flow：输入值读取（pull model）
+	//
+	// GetInputValue 的设计目标：
+	// - 让节点“读取输入值”时不再直接访问 ctx.graph->slots[...]（禁止）
+	// - 输入值来自连接的上游输出槽（通过 edgeToFrom 反查）
+	//
+	// 行为：
+	// 1) 查找 edgeToFrom[inputSlotId]
+	// 2) 若没有连接：返回当前 input 槽自身的 slot.value（作为默认值）
+	// 3) 若有连接：取第一个上游槽（fromSlotId），返回上游槽的 slot.value
+	//
+	// 说明：
+	// - 当前版本不做 merge/聚合，只取第一条连接（后续可扩展）
+	// - SLOT_ID == slots 索引，因此可以直接 slots[slotId] O(1) 访问
+	// ----------------------------
+	H_NODE_GRAPH_API Value GetInputValue(RuntimeContext& ctx, SLOT_ID inputSlotId);
+
 	// RuntimeContext: 执行时上下文
 	// 说明：
 	// - currentNodeId: 当前正在执行的节点 ID（本实现主要使用 execStack，为兼容保留）
@@ -52,6 +71,11 @@ namespace Horizon::NodeGraphRuntime
 		std::unordered_map<std::string, Value> variables;
 		std::vector<NODE_ID> execStack; // execution stack of node ids
 		std::vector<NODE_ID> executedNodes;
+		std::unordered_set<NODE_ID> executedNodeSet;
+
+		// deltaTime：每帧时间步长（秒）
+		// 用途：Delay、动画、自动播放对话等需要“随时间推进”的节点
+		float deltaTime;
 		bool jumped;
 
 		// pointer to graph being executed
@@ -60,11 +84,11 @@ namespace Horizon::NodeGraphRuntime
 		// per-node状态存储（任意类型）
 		std::unordered_map<NODE_ID, std::any> nodeStates;
 
-		RuntimeContext() noexcept : currentNodeId(0), jumped(false), graph(nullptr) {}
+		RuntimeContext() noexcept : currentNodeId(0), deltaTime(0.0f), jumped(false), graph(nullptr) {}
 
 		bool WasNodeExecuted(NODE_ID id) const
 		{
-			return std::find(executedNodes.begin(), executedNodes.end(), id) != executedNodes.end();
+			return executedNodeSet.find(id) != executedNodeSet.end();
 		}
 
 		// 获取并创建节点本地状态对象（若不存在则默认构造）

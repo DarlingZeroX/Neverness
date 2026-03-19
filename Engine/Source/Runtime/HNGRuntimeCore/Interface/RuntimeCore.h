@@ -15,10 +15,13 @@
 #include "Value.h"
 #include <HCore/Interface/HConfig.h>
 #include <HCore/Interface/HCoreTypes.h>
+#include <unordered_map>
+#include <memory>
 
 namespace Horizon::NodeGraphRuntime
 {
 	struct RuntimeContext;
+	struct CompiledExpression;
 
 	// 执行函数返回 ExecResult 表示节点当前是否仍在运行（ExecResult 在 Types.h 中定义）
 	using NodeExecuteFn = ExecResult(*)(RuntimeContext& ctx, NODE_ID nodeIndex);
@@ -63,6 +66,21 @@ namespace Horizon::NodeGraphRuntime
 
 		// 执行函数（由注册表提供）
 		NodeExecuteFn execute;
+
+		// 输出槽快速索引表（O(1) FindOutputSlot）
+		// 说明：
+		// - key   : slot.name（例如 "Next"/"True"/"Text"）
+		// - value : SLOT_ID（注意：SLOT_ID == RuntimeGraph::slots 的索引）
+		// - 该表由编译阶段填充（GraphCompiler），运行时只读
+		std::unordered_map<std::string, SLOT_ID> outputSlotMap;
+
+		// 节点内表达式缓存表（使用 shared_ptr<CompiledExpression> 支持前向声明）
+		// - key   : 表达式 key（通常为属性名，例如 "condition"/"value"）
+		// - value : 预编译表达式结构（CompiledExpression）的共享指针
+		// 说明：
+		// - CompiledExpression 在 ExpressionEvaluator.h 中给出完整定义；
+		//   这里使用 shared_ptr 可以只依赖前向声明，避免头文件循环依赖问题。
+		std::unordered_map<std::string, std::shared_ptr<CompiledExpression>> expressionCache;
 
 		// 构造
 		RuntimeNode() noexcept

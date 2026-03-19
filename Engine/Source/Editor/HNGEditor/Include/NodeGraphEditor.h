@@ -12,6 +12,7 @@
 #pragma once
 #include "Config.h"
 #include "HNGEditorCore/Include/EditorGraph.h"
+#include "HNGEditorCore/Include/CommandSystem.h"
 #include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
 #include <HNGRuntimeCore/Include/Core/RuntimeGraph.h>
 #include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
@@ -33,6 +34,7 @@ namespace Horizon::NodeGraph
 		Horizon::NodeGraphRuntime::RuntimeGraph m_RuntimeGraph;
 		Horizon::NodeGraphRuntime::RuntimeContext m_RuntimeContext;
 		Horizon::NodeGraphRuntime::NodeRegistry m_Registry;
+		NodeGraphEditor::CommandManager m_CommandManager;
 		//ax::NodeEditor::EditorContext* m_EditorContext;
 	};
 

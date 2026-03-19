@@ -12,6 +12,7 @@
 #pragma once
 #include <cstdint>
 #include "Core/Nodes.h"
+#include "Core/ExpressionEvaluator.h"
 
 namespace Horizon::NodeGraphRuntime
 {
@@ -43,10 +44,13 @@ namespace Horizon::NodeGraphRuntime
 		bool cond = false;
 		for (uint32_t i = 0; i < node->inputsCount; ++i)
 		{
-			RuntimeSlot& inSlot = ctx.graph->slots[node->inputsBegin + i];
-			if (inSlot.type == SlotType::Bool)
+			const SLOT_ID inputSlotId = static_cast<SLOT_ID>(node->inputsBegin + i);
+			// ✅ 必须使用 GetInputValue 读取输入（数据来自上游连接）
+			Value v = GetInputValue(ctx, inputSlotId);
+			// 仅对 Bool 类型输入槽进行条件读取
+			if (ctx.graph->slots[inputSlotId].type == SlotType::Bool)
 			{
-				cond = inSlot.value.AsBool();
+				cond = v.AsBool();
 				break;
 			}
 		}
@@ -190,21 +194,21 @@ namespace Horizon::NodeGraphRuntime
 		// 获取/创建节点状态
 		DelayState& state = ctx.GetOrCreateState<DelayState>(nodeIndex);
 
-		// 获取 deltaTime（需 ctx 提供，若无则默认 0.016f）
-		float dt = 0.016f;
-		auto it = ctx.variables.find("deltaTime");
-		if (it != ctx.variables.end())
-			dt = static_cast<float>(it->second.AsFloat());
+		// 获取 deltaTime（秒）
+		// 说明：由 RuntimeContext 提供，避免通过 variables 做字符串查找
+		// 若未设置（==0），这里提供一个安全的默认值（约 60fps）
+		float dt = (ctx.deltaTime > 0.0f) ? ctx.deltaTime : 0.016f;
 
 		// 获取等待时长（duration），优先从第一个输入槽读取
 		float duration = 1.0f;
 		if (node->inputsCount > 0)
 		{
-			RuntimeSlot& slot = ctx.graph->slots[node->inputsBegin];
-			if (slot.value.type == ValueType::Float)
-				duration = static_cast<float>(slot.value.AsFloat());
-			else if (slot.value.type == ValueType::Int)
-				duration = static_cast<float>(slot.value.AsInt());
+			const SLOT_ID inputSlotId = static_cast<SLOT_ID>(node->inputsBegin);
+			Value v = GetInputValue(ctx, inputSlotId);
+			if (v.type == ValueType::Float)
+				duration = static_cast<float>(v.AsFloat());
+			else if (v.type == ValueType::Int)
+				duration = static_cast<float>(v.AsInt());
 		}
 		else if (ctx.variables.find("delayDuration") != ctx.variables.end())
 		{
@@ -225,5 +229,161 @@ namespace Horizon::NodeGraphRuntime
 			if (nextSlotId != 0) PushExec(ctx, nextSlotId);
 			return ExecResult::Finished;
 		}
+	}
+
+	// ------------------------------------------------------------------
+	// SetVariable 节点：执行表达式并写入全局变量表
+	//
+	// 设计意图：
+	// - 为图形化节点图提供“赋值语句”，形如：
+	//     name   = "hp"
+	//     value  = "hp + 10"
+	//   运行时求值后相当于：ctx.variables["hp"] = EvaluateExpression("hp + 10", ctx);
+	//
+	// 槽约定：
+	// - 输出 "Name"      : string，存放变量名
+	// - 输出 "Expression": string，存放表达式源码
+	// - 输出 "Next"      : Exec，赋值完成后激活的控制流输出
+	// ------------------------------------------------------------------
+	ExecResult SetVariableNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
+	{
+		if (!ctx.graph) return ExecResult::Finished;
+		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
+		if (!node) return ExecResult::Finished;
+
+		// 读取 Name 槽（变量名）
+		SLOT_ID nameSlotId = FindOutputSlot(*ctx.graph, *node, "Name");
+		std::string varName;
+		if (nameSlotId != 0 && nameSlotId < ctx.graph->slots.size())
+		{
+			const RuntimeSlot& nameSlot = ctx.graph->slots[nameSlotId];
+			if (nameSlot.value.type == ValueType::String)
+				varName = nameSlot.value.AsString();
+		}
+		if (varName.empty())
+		{
+			// 未配置变量名：直接结束
+			return ExecResult::Finished;
+		}
+
+		// 读取 Expression 槽（表达式源码）
+		SLOT_ID exprSlotId = FindOutputSlot(*ctx.graph, *node, "Expression");
+		std::string expr;
+		if (exprSlotId != 0 && exprSlotId < ctx.graph->slots.size())
+		{
+			const RuntimeSlot& exprSlot = ctx.graph->slots[exprSlotId];
+			if (exprSlot.value.type == ValueType::String)
+			 expr = exprSlot.value.AsString();
+		}
+
+		// 评价表达式并写入变量表
+		if (!expr.empty())
+		{
+			Value result = EvaluateExpression(expr, ctx);
+			ctx.variables[varName] = result;
+		}
+
+		// 推进控制流到 Next
+		SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
+		if (nextSlotId != 0) PushExec(ctx, nextSlotId);
+		return ExecResult::Finished;
+	}
+
+	// ------------------------------------------------------------------
+	// GetVariable 节点：从全局变量表读取变量值并输出到数据槽
+	//
+	// 设计意图：
+	// - 作为 SetVariable 的“反向操作”，让后续节点可以把变量当作普通输入使用
+	//
+	// 槽约定：
+	// - 输出 "Name" : string，存放变量名
+	// - 输出 "Value": 任意类型（SlotType 可设为 String 以便在 Editor 中显示），
+	//                 实际运行时将 Value 整体写入 RuntimeSlot.value
+	// - 输出 "Next" : Exec，读取完成后激活的控制流输出
+	// ------------------------------------------------------------------
+	ExecResult GetVariableNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
+	{
+		if (!ctx.graph) return ExecResult::Finished;
+		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
+		if (!node) return ExecResult::Finished;
+
+		// 读取 Name 槽
+		SLOT_ID nameSlotId = FindOutputSlot(*ctx.graph, *node, "Name");
+		std::string varName;
+		if (nameSlotId != 0 && nameSlotId < ctx.graph->slots.size())
+		{
+			const RuntimeSlot& nameSlot = ctx.graph->slots[nameSlotId];
+			if (nameSlot.value.type == ValueType::String)
+				varName = nameSlot.value.AsString();
+		}
+		if (varName.empty())
+			return ExecResult::Finished;
+
+		// 从变量表读取值
+		Value value;
+		{
+			auto it = ctx.variables.find(varName);
+			if (it != ctx.variables.end())
+				value = it->second;
+		}
+
+		// 写入 Value 输出槽
+		SLOT_ID valueSlotId = FindOutputSlot(*ctx.graph, *node, "Value");
+		if (valueSlotId != 0 && valueSlotId < ctx.graph->slots.size())
+		{
+			RuntimeSlot& out = ctx.graph->slots[valueSlotId];
+			out.value = value;
+		}
+
+		// 推进控制流到 Next
+		SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
+		if (nextSlotId != 0) PushExec(ctx, nextSlotId);
+		return ExecResult::Finished;
+	}
+
+	// ------------------------------------------------------------------
+	// Condition 节点：基于表达式的条件分支（升级版 Branch）
+	//
+	// 设计意图：
+	// - 替代传统“Bool 输入 + True/False 输出”的 Branch 设计，
+	//   直接在 Editor 中写逻辑表达式：
+	//     condition = "hp > 10 && hasKey == true"
+	//
+	// 槽约定：
+	// - 输出 "Condition" : string，存放条件表达式
+	// - 输出 "True"      : Exec，条件为 true 时激活
+	// - 输出 "False"     : Exec，条件为 false 时激活
+	// ------------------------------------------------------------------
+	ExecResult ConditionNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
+	{
+		if (!ctx.graph) return ExecResult::Finished;
+		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
+		if (!node) return ExecResult::Finished;
+
+		// 读取 Condition 表达式
+		SLOT_ID condSlotId = FindOutputSlot(*ctx.graph, *node, "Condition");
+		std::string condExpr;
+		if (condSlotId != 0 && condSlotId < ctx.graph->slots.size())
+		{
+			const RuntimeSlot& condSlot = ctx.graph->slots[condSlotId];
+			if (condSlot.value.type == ValueType::String)
+				condExpr = condSlot.value.AsString();
+		}
+		if (condExpr.empty())
+		{
+			return ExecResult::Finished;
+		}
+
+		// 求值表达式
+		Value res = EvaluateExpression(condExpr, ctx);
+		bool cond = res.AsBool();
+
+		// 根据结果激活 True / False 输出
+		const char* outName = cond ? "True" : "False";
+		SLOT_ID outSlotId = FindOutputSlot(*ctx.graph, *node, outName);
+		if (outSlotId != 0)
+			PushExec(ctx, outSlotId);
+
+		return ExecResult::Finished;
 	}
 }

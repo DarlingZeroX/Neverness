@@ -13,6 +13,7 @@
 #include "HNGEditorCore/Include/NodeFactory.h"
 #include "HNGEditorCore/Include/GraphCompiler.h"
 #include <HNGRuntimeCore/Include/Core/Nodes.h>
+#include <VGImgui/IncludeImGui.h>
 #include <cstdio>
 #include <utility>
 
@@ -113,6 +114,7 @@ namespace Horizon::NodeGraph
 			DialogueNodeExecute
 		});
 
+		// 旧 Branch 节点保留，供需要 Bool 条件输入的图使用
 		m_Registry.Register(NodeMeta{
 			NodeType::Branch,
 			"Branch",
@@ -139,6 +141,54 @@ namespace Horizon::NodeGraph
 			DelayNodeExecute
 		});
 
+		// SetVariable 节点：执行表达式并写入变量表
+		m_Registry.Register(NodeMeta{
+			NodeType::SetVariable,
+			"SetVariable",
+			{
+				{ "In", SlotType::Exec, true }
+			},
+			{
+				{ "Next",       SlotType::Exec,   false },
+				{ "Name",       SlotType::String, false }, // 变量名
+				{ "Expression", SlotType::String, false }  // 表达式源码
+			},
+			SetVariableNodeExecute
+		});
+
+		// GetVariable 节点：从变量表读取变量值并输出
+		m_Registry.Register(NodeMeta{
+			NodeType::GetVariable,
+			"GetVariable",
+			{
+				{ "In", SlotType::Exec, true }
+			},
+			{
+				{ "Next", SlotType::Exec,   false },
+				{ "Name", SlotType::String, false }, // 变量名
+				{ "Value",SlotType::String, false }  // 变量值（实际 Value 类型由运行时决定）
+			},
+			GetVariableNodeExecute
+		});
+
+		// Condition 节点：基于表达式的条件分支
+		m_Registry.Register(NodeMeta{
+			NodeType::Condition,
+			"Condition",
+			{
+				{ "In", SlotType::Exec, true }
+			},
+			{
+				{ "True",      SlotType::Exec,   false },
+				{ "False",     SlotType::Exec,   false },
+				{ "Condition", SlotType::String, false } // 条件表达式
+			},
+			ConditionNodeExecute
+		});
+
+		// 绑定命令管理器到 EditorGraph，启用命令驱动的编辑操作
+		m_EditorGraph.commandManager = &m_CommandManager;
+
 		RunDemo();
 
 	}
@@ -149,6 +199,18 @@ namespace Horizon::NodeGraph
 
 	void HNodeGraphEditor::DrawNodeGraphWindow()
 	{
+		// 处理 Undo / Redo 快捷键（Ctrl+Z / Ctrl+Y）
+		ImGuiIO& io = ImGui::GetIO();
+		const bool ctrlDown = io.KeyCtrl;
+		if (ctrlDown && ImGui::IsKeyPressed(ImGuiKey_Z, false))
+		{
+			m_CommandManager.Undo();
+		}
+		if (ctrlDown && ImGui::IsKeyPressed(ImGuiKey_Y, false))
+		{
+			m_CommandManager.Redo();
+		}
+
 		RecompileIfDirty(m_EditorGraph);
 		Horizon::NodeGraphRuntime::ExecuteGraph(m_RuntimeContext);
 		Horizon::NodeGraphEditor::DrawEditorGraph(m_EditorGraph, &m_RuntimeContext);
