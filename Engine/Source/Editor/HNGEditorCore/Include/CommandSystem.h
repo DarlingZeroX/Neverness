@@ -106,7 +106,9 @@ namespace Horizon::NodeGraphEditor
 
 	// DeleteNodeCommand：删除节点（可撤销）
 	// - Execute：删除节点，并移除与其相关的所有 links
-	// - Undo：恢复节点与 links（保持原 id 不变）
+	// - Undo：恢复节点与 links（保持原 id / pins 不变）
+	// - 索引一致性：删除/恢复后会调用 graph.RebuildIndices()，
+	//   确保 nodeIndexById / pinOwnerById 不会残留旧映射
 	class HNG_EDITOR_CORE_API DeleteNodeCommand final : public ICommand
 	{
 	public:
@@ -137,6 +139,27 @@ namespace Horizon::NodeGraphEditor
 	private:
 		EditorGraph& m_Graph;
 		EditorLink m_Link;
+		bool m_Executed = false;
+	};
+
+	// DeleteLinkCommand：删除连线（可撤销）
+	// - Execute：保存被删 link 的快照，并从 graph.links 移除
+	// - Undo：恢复保存的 link（保持原 id / pin id）
+	// - 索引一致性：由于图的 UI 查询依赖 pin->owner 映射，
+	//   DeleteLink 结束后也会调用 graph.RebuildIndices()（实现简单且安全）
+	class HNG_EDITOR_CORE_API DeleteLinkCommand final : public ICommand
+	{
+	public:
+		DeleteLinkCommand(EditorGraph& graph, ax::NodeEditor::LinkId linkId);
+		void Execute() override;
+		void Undo() override;
+
+	private:
+		EditorGraph& m_Graph;
+		ax::NodeEditor::LinkId m_LinkId;
+
+		// 快照：被删除的 EditorLink
+		std::optional<EditorLink> m_DeletedLink;
 		bool m_Executed = false;
 	};
 

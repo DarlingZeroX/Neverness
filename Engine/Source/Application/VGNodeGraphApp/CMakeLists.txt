@@ -27,6 +27,8 @@ file(GLOB VG_NODE_GRAPH_APP_SRC_FILES
 
 add_executable (VGNodeGraphApp ${VG_NODE_GRAPH_APP_HEADER_FILES} ${VG_NODE_GRAPH_APP_SRC_FILES})
 
+target_compile_definitions(VGNodeGraphApp PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")
+
 # 添加头文件搜索路径
 target_include_directories(VGNodeGraphApp PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(VGNodeGraphApp PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)

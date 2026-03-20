@@ -103,6 +103,8 @@ namespace Horizon::NodeGraphEditor
 	};
 
 	HNG_EDITOR_CORE_API void HandleCreateLink(EditorGraph& graph);
+	// 节点删除 / 连线删除入口（内部通过 ImNodeEditor 的 BeginDelete/QueryDeleted...）
+	HNG_EDITOR_CORE_API void HandleDelete(EditorGraph& graph);
 	// 节点创建菜单（右键弹出）
 	HNG_EDITOR_CORE_API void DrawNodeCreateMenu(EditorGraph& graph, const ImVec2& spawnPos);
 	HNG_EDITOR_CORE_API void DrawEditorGraph(EditorGraph& graph, const Runtime::RuntimeContext* runtimeCtx = nullptr);

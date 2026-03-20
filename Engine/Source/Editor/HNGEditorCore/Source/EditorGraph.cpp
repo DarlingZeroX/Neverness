@@ -16,269 +16,44 @@
 #include <cctype>
 #include <cstdio>
 #include <map>
+#include <sstream>
 #include <unordered_set>
+
+#include "EditorGraphDrawingImpl.h"
+#include "EditorGraphActionsImpl.h"
+#include "EditorGraphContextMenuImpl.h"
+
+#include "Utilities/builders.h"
+#include <HNGRuntimeCore/Include/Core/ExpressionEvaluator.h>
 
 namespace Horizon::NodeGraphEditor
 {
-	static const NodeEditorRegistry* s_EditorRegistry = nullptr;
-	static EditorGraph* s_CurrentGraph = nullptr;
-
-	// ------------------------------------------------------------
-	// 字符串匹配（忽略大小写，子串匹配）
-	// ------------------------------------------------------------
-	static bool MatchIgnoreCaseSubstring(const std::string& text, const std::string& keyword)
-	{
-		if (keyword.empty()) return true;
-
-		auto toLower = [](std::string s)
-		{
-			for (char& c : s)
-			{
-				c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-			}
-			return s;
-		};
-
-		const std::string t = toLower(text);
-		const std::string k = toLower(keyword);
-		return t.find(k) != std::string::npos;
-	}
+	// 字符串匹配 / 节点绘制 / 连线创建删除实现已拆分到 EditorGraphDrawingImpl /
+	// EditorGraphActionsImpl，EditorGraph.cpp 内保留 wrapper 入口即可。
 
 	// ------------------------------------------------------------
 	// DrawNodeCreateMenu：右键弹出“创建节点”菜单
 	// ------------------------------------------------------------
 	void DrawNodeCreateMenu(EditorGraph& graph, const ImVec2& spawnPos)
 	{
-		if (!graph.editorRegistry) return;
-
-		static char s_Search[128] = {};
-		static ImVec2 s_LastSpawnPos = spawnPos;
-		static bool s_Initialized = false;
-		if (!s_Initialized)
-		{
-			s_Initialized = true;
-			s_LastSpawnPos = spawnPos;
-		}
-
-		// 右键背景：打开弹窗
-		// 注意：NodeEditor 的右键“上下文菜单触发”应使用 ShowBackgroundContextMenu()
-		// IsBackgroundClicked() 对应的是 SelectButtonIndex（默认左键），因此不能用它判断右键。
-		if (ax::NodeEditor::ShowBackgroundContextMenu())
-		{
-			s_LastSpawnPos = spawnPos;
-			s_Search[0] = '\0';
-			ImGui::OpenPopup("CreateNodePopup");
-			ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_Always);
-		}
-
-		// 弹窗绘制
-		if (!ImGui::BeginPopup("CreateNodePopup", ImGuiWindowFlags_AlwaysAutoResize))
-			return;
-		// 1) 搜索框
-		ImGui::InputText("Search", s_Search, sizeof(s_Search));
-
-		const std::string keyword = s_Search;
-
-		// 2) 构建：category -> metas
-		std::map<std::string, std::vector<const NodeEditorMeta*>> grouped;
-		const auto allMetas = graph.editorRegistry->GetAll();
-		for (const NodeEditorMeta* meta : allMetas)
-		{
-			if (!meta) continue;
-
-			bool matched =
-				MatchIgnoreCaseSubstring(meta->displayName, keyword) ||
-				MatchIgnoreCaseSubstring(meta->category, keyword);
-
-			// PropertyMeta.name（可选加分）：同样参与匹配
-			if (!matched && !keyword.empty())
-			{
-				for (const auto& prop : meta->properties)
-				{
-					if (MatchIgnoreCaseSubstring(prop.name, keyword))
-					{
-						matched = true;
-						break;
-					}
-				}
-			}
-
-			if (!matched) continue;
-			grouped[meta->category].push_back(meta);
-		}
-
-		// 3) 分类别展示
-		size_t totalMatched = 0;
-		for (const auto& kv : grouped) totalMatched += kv.second.size();
-
-		// 如果没有匹配，给提示
-		if (totalMatched == 0)
-		{
-			ImGui::TextUnformatted("No match.");
-			ImGui::EndPopup();
-			return;
-		}
-
-		// 可选增强：Enter 创建第一个匹配节点（简单实现）
-		const bool enterPressed = ImGui::IsKeyPressed(ImGuiKey_Enter, false);
-
-		const NodeEditorMeta* firstMatch = nullptr;
-		bool created = false;
-		for (const auto& kv : grouped)
-		{
-			const std::string& category = kv.first;
-			const auto& list = kv.second;
-			if (list.empty()) continue;
-
-			ImGui::SeparatorText(category.c_str());
-			for (const NodeEditorMeta* meta : list)
-			{
-				if (!firstMatch) firstMatch = meta;
-
-				const bool selected = ImGui::Selectable(meta->displayName.c_str());
-				if (selected)
-				{
-					EditorNode& newNode = graph.AddNode(meta->type);
-					newNode.position = s_LastSpawnPos;
-					ax::NodeEditor::SetNodePosition(newNode.id, s_LastSpawnPos);
-
-					created = true;
-					ImGui::CloseCurrentPopup();
-					break;
-				}
-			}
-
-			if (created) break;
-
-			if (enterPressed && firstMatch)
-			{
-				EditorNode& n = graph.AddNode(firstMatch->type);
-				n.position = s_LastSpawnPos;
-				ax::NodeEditor::SetNodePosition(n.id, s_LastSpawnPos);
-
-				created = true;
-				ImGui::CloseCurrentPopup();
-				break;
-			}
-
-			// 若 CloseCurrentPopup 在上一轮已经触发，这里也直接跳出
-			if (enterPressed) break;
-		}
-
-		ImGui::EndPopup();
+		// implementation moved to EditorGraphDrawingImpl.cpp
+		DrawNodeCreateMenuImpl(graph, spawnPos);
 	}
 
+	// DrawNodeProperties / ValueToString 等由 EditorGraphDrawingImpl.cpp 负责
+
 	// ------------------------------------------------------------
-	// DrawNodeProperties：由 NodeEditorMeta 驱动的节点属性 UI
+	// DrawSingleNode：使用 BlueprintNodeBuilder 结构化绘制节点 UI
 	// ------------------------------------------------------------
-	void DrawNodeProperties(EditorNode& node)
+
+	void DrawSingleNode(
+		EditorGraph& graph,
+		EditorNode& node,
+		const Horizon::NodeGraphRuntime::RuntimeContext* runtimeCtx
+	)
 	{
-		if (!s_EditorRegistry) return;
-
-		const NodeEditorMeta* meta = s_EditorRegistry->Get(node.type);
-		if (!meta) return;
-
-		for (const auto& prop : meta->properties)
-		{
-			auto& v = node.GetProperty(prop.name);
-			const char* label = prop.displayName.empty() ? prop.name.c_str() : prop.displayName.c_str();
-
-			switch (prop.widget)
-			{
-			case PropertyWidgetType::InputText:
-			{
-				char buf[1024];
-				std::snprintf(buf, sizeof(buf), "%s", v.AsString().c_str());
-				if (ImGui::InputText(label, buf, sizeof(buf)))
-				{
-					v = NodeGraphRuntime::Value::FromString(buf);
-					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
-				}
-				break;
-			}
-			case PropertyWidgetType::MultilineText:
-			{
-				char buf[2048];
-				std::snprintf(buf, sizeof(buf), "%s", v.AsString().c_str());
-				if (ImGui::InputTextMultiline(label, buf, sizeof(buf),
-					ImVec2(0, 0), ImGuiInputTextFlags_AllowTabInput))
-				{
-					v = NodeGraphRuntime::Value::FromString(buf);
-					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
-				}
-				break;
-			}
-			case PropertyWidgetType::Checkbox:
-			{
-				bool b = v.AsBool();
-				if (ImGui::Checkbox(label, &b))
-				{
-					v = NodeGraphRuntime::Value::FromBool(b);
-					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
-				}
-				break;
-			}
-			case PropertyWidgetType::Float:
-			{
-				float f = static_cast<float>(v.AsFloat());
-				if (ImGui::InputFloat(label, &f))
-				{
-					v = NodeGraphRuntime::Value::FromFloat(f);
-					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
-				}
-				break;
-			}
-			case PropertyWidgetType::Int:
-			{
-				int i = static_cast<int>(v.AsInt());
-				if (ImGui::InputInt(label, &i))
-				{
-					v = NodeGraphRuntime::Value::FromInt(i);
-					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
-				}
-				break;
-			}
-			case PropertyWidgetType::Combo:
-			{
-				if (prop.options.empty()) break;
-
-				int currentIndex = 0;
-				if (prop.type == NodeGraphRuntime::ValueType::Int)
-				{
-					currentIndex = static_cast<int>(v.AsInt());
-				}
-				else
-				{
-					const std::string cur = v.AsString();
-					auto it = std::find(prop.options.begin(), prop.options.end(), cur);
-					currentIndex = (it != prop.options.end())
-						? static_cast<int>(std::distance(prop.options.begin(), it))
-						: 0;
-				}
-
-				if (currentIndex < 0) currentIndex = 0;
-				if (currentIndex >= static_cast<int>(prop.options.size()))
-					currentIndex = static_cast<int>(prop.options.size() - 1);
-
-				std::vector<const char*> items;
-				items.reserve(prop.options.size());
-				for (const auto& opt : prop.options) items.push_back(opt.c_str());
-
-				if (ImGui::Combo(label, &currentIndex, items.data(), static_cast<int>(items.size())))
-				{
-					if (prop.type == NodeGraphRuntime::ValueType::Int)
-						v = NodeGraphRuntime::Value::FromInt(currentIndex);
-					else
-						v = NodeGraphRuntime::Value::FromString(prop.options[static_cast<size_t>(currentIndex)]);
-
-					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
-				}
-				break;
-			}
-			default:
-				break;
-			}
-		}
+		// implementation moved to EditorGraphDrawingImpl.cpp
+		DrawSingleNodeImpl(graph, node, runtimeCtx);
 	}
 
 	EditorNode* EditorGraph::FindNode(ax::NodeEditor::NodeId id)
@@ -416,59 +191,12 @@ namespace Horizon::NodeGraphEditor
 
 	void HandleCreateLink(EditorGraph& graph)
 	{
-		using namespace ax::NodeEditor;
-		// 必须在 BeginCreate() 返回 true 时，才允许调用 QueryNewLink / QueryNewNode，
-		// 否则新版 ImNodeEditor 会在 CreateItemAction 未激活时触发断言。
-		if (BeginCreate())
-		{
-			PinId startPinId, endPinId;
-			if (QueryNewLink(&startPinId, &endPinId))
-			{
-				EditorPin* startPin = graph.FindPin(startPinId);
-				EditorPin* endPin = graph.FindPin(endPinId);
-				if (!startPin || !endPin)
-				{
-					RejectNewItem();
-					EndCreate();
-					return;
-				}
+		HandleCreateLinkImpl(graph);
+	}
 
-				// 校验方向
-				if (startPin->isInput == endPin->isInput)
-				{
-					RejectNewItem();
-				}
-				// 校验类型
-				else if (startPin->type != endPin->type)
-				{
-					RejectNewItem();
-				}
-				else if (AcceptNewItem())
-				{
-					EditorPin* outputPin = startPin->isInput ? endPin : startPin;
-					EditorPin* inputPin = startPin->isInput ? startPin : endPin;
-					EditorLink link;
-					link.id = ax::NodeEditor::LinkId(static_cast<int>(graph.links.size() + 1));
-					link.startPinId = outputPin->id;
-					link.endPinId = inputPin->id;
-
-					// 若提供了命令管理器，则通过命令系统创建连线，支持 Undo/Redo
-					if (graph.commandManager)
-					{
-						graph.commandManager->ExecuteCommand(
-							std::make_unique<LinkCommand>(graph, link)
-						);
-					}
-					else
-					{
-						// 回退路径：直接修改 graph.links
-						graph.links.push_back(link);
-						graph.dirty = true;
-					}
-				}
-			}
-			EndCreate();
-		}
+	void HandleDelete(EditorGraph& graph)
+	{
+		HandleDeleteImpl(graph);
 	}
 
 	void DrawEditorGraph(EditorGraph& graph, const Horizon::NodeGraphRuntime::RuntimeContext* runtimeCtx)
@@ -476,9 +204,26 @@ namespace Horizon::NodeGraphEditor
 		using namespace ax::NodeEditor;
 		//SetCurrentEditor(graph.context);
 		graph.context->SetContext();
-		s_EditorRegistry = graph.editorRegistry;
-		s_CurrentGraph = &graph;
 		Begin("Node Graph");
+
+		// ----------------------------
+		// 删除请求缓存（pending）
+		// ----------------------------
+		// 关键原因：我们在同一帧内会遍历：
+		// - `for (auto& node : graph.nodes)` 调用 `DrawSingleNode`
+		// - `for (auto& link : graph.links)` 调用 `Link(...)`
+		//
+		// 如果在上下文菜单的按钮回调中“立刻 Execute 删除命令”，命令会修改
+		// `graph.nodes / graph.links`（例如删除节点会 erase vector 元素），这会使
+		// 当前 range-for 的迭代器/引用失效，从而引发各种 debug assertion 或崩溃。
+		//
+		// 因此这里采用两阶段策略：
+		// 1) 菜单按钮只写入 pendingDeleteNode / pendingDeleteLink
+		// 2) 完成 nodes/links 的遍历后，再统一 Execute 对应 Command
+		bool pendingDeleteNode = false;
+		EditorNodeID pendingDeleteNodeId{};
+		bool pendingDeleteLink = false;
+		EditorLinkID pendingDeleteLinkId{};
 
 		// 节点创建菜单：右键弹出（基于 editorRegistry 的 NodeEditorMeta）
 		// spawnPos 需要在“节点画布坐标系”下
@@ -506,73 +251,11 @@ namespace Horizon::NodeGraphEditor
 			}
 		}
 
-		const bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
-
 		// 绘制所有节点
 		for (auto& node : graph.nodes)
 		{
-			const Horizon::NodeGraphRuntime::NODE_ID runtimeNodeId = static_cast<Horizon::NodeGraphRuntime::NODE_ID>(node.id.Get());
-			const bool executed = runtimeCtx ? runtimeCtx->WasNodeExecuted(runtimeNodeId) : false;
-			const bool isCurrent = runtimeCtx ? (runtimeCtx->currentNodeId == runtimeNodeId) : false;
-
-			// 1) 当前执行节点：使用更亮的颜色高亮
-			if (isCurrent)
-			{
-				PushStyleColor(StyleColor_NodeBg, ImColor(240, 200, 80, 230));
-				PushStyleColor(StyleColor_NodeBorder, ImColor(255, 230, 120, 255));
-			}
-			// 2) 已执行节点（但当前不在这里）：使用次级高亮
-			else if (executed)
-			{
-				PushStyleColor(StyleColor_NodeBg, ImColor(70, 120, 255, 200));
-				PushStyleColor(StyleColor_NodeBorder, ImColor(120, 180, 255, 255));
-				//PushStyleColor(StyleColor_No, ImColor(0, 0, 0, 0));
-			}
-
-			// 记录移动前的位置，用于 MoveNodeCommand
-			ImVec2 oldPos = node.position;
-
-			BeginNode(node.id);
-			ImGui::Text("%s", node.name.c_str());
-
-			// 通用：节点属性 UI（由 NodeEditorMeta 驱动）
-			DrawNodeProperties(node);
-
-			// 输入区
-			for (auto& pin : node.inputs)
-			{
-				BeginPin(pin.id, PinKind::Input);
-				ImGui::Text("%s", pin.name.c_str());
-				EndPin();
-			}
-
-			ImGui::SameLine();
-
-			// 输出区
-			for (auto& pin : node.outputs)
-			{
-				BeginPin(pin.id, PinKind::Output);
-				ImGui::Text("%s", pin.name.c_str());
-				EndPin();
-			}
-
-			EndNode();
-
-			// 同步并检测节点位置变化
-			ImVec2 newPos = GetNodePosition(node.id);
-			node.position = newPos;
-			if (mouseReleased && graph.commandManager &&
-				(newPos.x != oldPos.x || newPos.y != oldPos.y))
-			{
-				graph.commandManager->ExecuteCommand(
-					std::make_unique<MoveNodeCommand>(graph, node.id, oldPos, newPos)
-				);
-			}
-
-			if (isCurrent || executed)
-			{
-				PopStyleColor(2);
-			}
+			// 节点绘制与拖拽记录逻辑已封装在 DrawSingleNode
+			DrawSingleNode(graph, node, runtimeCtx);
 		}
 
 		// 绘制所有连线
@@ -612,7 +295,51 @@ namespace Horizon::NodeGraphEditor
 			{
 				Link(link.id, link.startPinId, link.endPinId);
 			}
+
+			// 说明：Link 上下文菜单不要在此处创建（在遍历 graph.links 的过程中弹窗/执行交互）
+			// 否则容易出现重复菜单或触发 ImNodeEditor 内部状态异常。
+			// 我们改为在所有 node/link 绘制完成后统一集中处理。
 		}
+
+		// ----------------------------
+		// 集中处理 Node/Link 上下文菜单（右键）
+		// ----------------------------
+		HandleNodeLinkContextMenusImpl(
+			graph,
+			pendingDeleteNode,
+			pendingDeleteNodeId,
+			pendingDeleteLink,
+			pendingDeleteLinkId
+		);
+
+		// ----------------------------
+		// 执行上下文菜单触发的删除（统一在遍历结束后执行）
+		// ----------------------------
+		// 删除命令必须走 CommandSystem 才能支持 Undo/Redo。
+		// - 如果上层提供了 `graph.commandManager`：通过 ExecuteCommand 入栈
+		// - 否则：回退为直接 Execute（保持功能可用）
+		if (pendingDeleteNode)
+		{
+			if (graph.commandManager)
+				graph.commandManager->ExecuteCommand(
+					std::make_unique<DeleteNodeCommand>(graph, pendingDeleteNodeId)
+				);
+			else
+				DeleteNodeCommand(graph, pendingDeleteNodeId).Execute();
+		}
+
+		if (pendingDeleteLink)
+		{
+			if (graph.commandManager)
+				graph.commandManager->ExecuteCommand(
+					std::make_unique<DeleteLinkCommand>(graph, pendingDeleteLinkId)
+				);
+			else
+				DeleteLinkCommand(graph, pendingDeleteLinkId).Execute();
+		}
+
+		// 处理删除（Delete/Backspace 或拖断连接）
+		HandleDelete(graph);
 
 		// 处理新建连线
 		HandleCreateLink(graph);

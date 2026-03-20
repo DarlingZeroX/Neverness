@@ -1,0 +1,421 @@
+/*
+* EditorGraphDrawingImpl：节点相关 UI 与交互拆分实现
+*/
+
+#include "EditorGraphDrawingImpl.h"
+
+#include <algorithm>
+#include <cctype>
+#include <map>
+#include <sstream>
+
+#include "Utilities/builders.h"
+#include <HNGRuntimeCore/Include/Core/ExpressionEvaluator.h>
+#include "CommandSystem.h"
+
+namespace Horizon::NodeGraphEditor
+{
+	// ------------------------------------------------------------
+	// 字符串匹配（忽略大小写，子串匹配）
+	// ------------------------------------------------------------
+	static bool MatchIgnoreCaseSubstring(const std::string& text, const std::string& keyword)
+	{
+		if (keyword.empty()) return true;
+
+		auto toLower = [](std::string s)
+		{
+			for (char& c : s)
+			{
+				c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+			}
+			return s;
+		};
+
+		const std::string t = toLower(text);
+		const std::string k = toLower(keyword);
+		return t.find(k) != std::string::npos;
+	}
+
+	// ------------------------------------------------------------
+	// DrawNodeProperties：由 NodeEditorMeta / PropertyMeta 驱动的节点属性 UI
+	// ------------------------------------------------------------
+	static void DrawNodePropertiesImpl(EditorGraph& graph, EditorNode& node)
+	{
+		if (!graph.editorRegistry) return;
+
+		const NodeEditorMeta* meta = graph.editorRegistry->Get(node.type);
+		if (!meta) return;
+
+		for (const auto& prop : meta->properties)
+		{
+			auto& v = node.GetProperty(prop.name);
+			const char* label = prop.displayName.empty() ? prop.name.c_str() : prop.displayName.c_str();
+
+			switch (prop.widget)
+			{
+			case PropertyWidgetType::InputText:
+			{
+				char buf[1024];
+				std::snprintf(buf, sizeof(buf), "%s", v.AsString().c_str());
+				if (ImGui::InputText(label, buf, sizeof(buf)))
+				{
+					v = NodeGraphRuntime::Value::FromString(buf);
+					graph.dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::MultilineText:
+			{
+				// 目前历史代码中 MultilineText 先保留占位（避免引入未完成控件）。
+				break;
+			}
+			case PropertyWidgetType::Checkbox:
+			{
+				bool b = v.AsBool();
+				if (ImGui::Checkbox(label, &b))
+				{
+					v = NodeGraphRuntime::Value::FromBool(b);
+					graph.dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::Float:
+			{
+				float f = static_cast<float>(v.AsFloat());
+				if (ImGui::InputFloat(label, &f))
+				{
+					v = NodeGraphRuntime::Value::FromFloat(f);
+					graph.dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::Int:
+			{
+				int i = static_cast<int>(v.AsInt());
+				if (ImGui::InputInt(label, &i))
+				{
+					v = NodeGraphRuntime::Value::FromInt(i);
+					graph.dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::Combo:
+			{
+				if (prop.options.empty()) break;
+
+				int currentIndex = 0;
+				if (prop.type == NodeGraphRuntime::ValueType::Int)
+				{
+					currentIndex = static_cast<int>(v.AsInt());
+				}
+				else
+				{
+					const std::string cur = v.AsString();
+					auto it = std::find(prop.options.begin(), prop.options.end(), cur);
+					currentIndex = (it != prop.options.end())
+						? static_cast<int>(std::distance(prop.options.begin(), it))
+						: 0;
+				}
+
+				currentIndex = std::clamp(currentIndex, 0, static_cast<int>(prop.options.size() - 1));
+
+				std::vector<const char*> items;
+				items.reserve(prop.options.size());
+				for (const auto& opt : prop.options) items.push_back(opt.c_str());
+
+				if (ImGui::Combo(label, &currentIndex, items.data(), static_cast<int>(items.size())))
+				{
+					if (prop.type == NodeGraphRuntime::ValueType::Int)
+						v = NodeGraphRuntime::Value::FromInt(currentIndex);
+					else
+						v = NodeGraphRuntime::Value::FromString(prop.options[static_cast<size_t>(currentIndex)]);
+
+					graph.dirty = true;
+				}
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+
+	// ------------------------------------------------------------
+	// Value -> string（用于调试信息显示）
+	// ------------------------------------------------------------
+	static std::string ValueToString(const NodeGraphRuntime::Value& v)
+	{
+		switch (v.type)
+		{
+		case NodeGraphRuntime::ValueType::Int:
+			return std::to_string(static_cast<int>(v.AsInt()));
+		case NodeGraphRuntime::ValueType::Float:
+		{
+			std::ostringstream oss;
+			oss << v.AsFloat();
+			return oss.str();
+		}
+		case NodeGraphRuntime::ValueType::Bool:
+			return v.AsBool() ? "true" : "false";
+		case NodeGraphRuntime::ValueType::String:
+			return v.AsString();
+		default:
+			return {};
+		}
+	}
+
+	// ------------------------------------------------------------
+	// DrawSingleNode：使用 BlueprintNodeBuilder 结构化绘制节点 UI
+	// ------------------------------------------------------------
+	void DrawSingleNodeImpl(
+		EditorGraph& graph,
+		EditorNode& node,
+		const Horizon::NodeGraphRuntime::RuntimeContext* runtimeCtx
+	)
+	{
+		const Horizon::NodeGraphRuntime::NODE_ID runtimeNodeId =
+			static_cast<Horizon::NodeGraphRuntime::NODE_ID>(node.id.Get());
+		const bool executed = runtimeCtx ? runtimeCtx->WasNodeExecuted(runtimeNodeId) : false;
+		const bool isCurrent = runtimeCtx ? (runtimeCtx->currentNodeId == runtimeNodeId) : false;
+
+		// 根据状态计算 Header 颜色（替代旧的 PushStyleColor(NodeBg/NodeBorder)）
+		ImVec4 headerLeftColor = ImVec4(0.28f, 0.28f, 0.28f, 0.35f);
+		ImVec4 headerRightColor = ImVec4(0.25f, 0.25f, 0.25f, 0.35f);
+
+		// 运行时调试高亮优先级高于节点类型渐变
+		if (isCurrent)
+		{
+			headerLeftColor = ImVec4(240.0f / 255.0f, 200.0f / 255.0f, 80.0f / 255.0f, 0.9f);
+			headerRightColor = ImVec4(255.0f / 255.0f, 140.0f / 255.0f, 60.0f / 255.0f, 0.9f);
+		}
+		else if (executed)
+		{
+			headerLeftColor = ImVec4(70.0f / 255.0f, 120.0f / 255.0f, 255.0f / 255.0f, 0.75f);
+			headerRightColor = ImVec4(140.0f / 255.0f, 210.0f / 255.0f, 255.0f / 255.0f, 0.75f);
+		}
+		else
+		{
+			switch (node.type)
+			{
+			case Horizon::NodeGraphRuntime::NodeType::Dialogue:
+				headerLeftColor = ImVec4(138.0f / 255.0f, 104.0f / 255.0f, 220.0f / 255.0f, 0.55f);
+				headerRightColor = ImVec4(0.0f / 255.0f, 209.0f / 255.0f, 216.0f / 255.0f, 0.55f);
+				break;
+			case Horizon::NodeGraphRuntime::NodeType::SetVariable:
+				headerLeftColor = ImVec4(46.0f / 255.0f, 139.0f / 255.0f, 87.0f / 255.0f, 0.55f);
+				headerRightColor = ImVec4(32.0f / 255.0f, 178.0f / 255.0f, 170.0f / 255.0f, 0.55f);
+				break;
+			case Horizon::NodeGraphRuntime::NodeType::GetVariable:
+				headerLeftColor = ImVec4(255.0f / 255.0f, 165.0f / 255.0f, 0.0f / 255.0f, 0.55f);
+				headerRightColor = ImVec4(255.0f / 255.0f, 215.0f / 255.0f, 0.0f / 255.0f, 0.55f);
+				break;
+			case Horizon::NodeGraphRuntime::NodeType::Condition:
+				headerLeftColor = ImVec4(255.0f / 255.0f, 69.0f / 255.0f, 0.0f / 255.0f, 0.55f);
+				headerRightColor = ImVec4(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f, 0.55f);
+				break;
+			case Horizon::NodeGraphRuntime::NodeType::Delay:
+				headerLeftColor = ImVec4(30.0f / 255.0f, 144.0f / 255.0f, 255.0f / 255.0f, 0.55f);
+				headerRightColor = ImVec4(0.0f / 255.0f, 191.0f / 255.0f, 255.0f / 255.0f, 0.55f);
+				break;
+			case Horizon::NodeGraphRuntime::NodeType::Branch:
+				headerLeftColor = ImVec4(138.0f / 255.0f, 43.0f / 255.0f, 226.0f / 255.0f, 0.55f);
+				headerRightColor = ImVec4(75.0f / 255.0f, 0.0f / 255.0f, 130.0f / 255.0f, 0.55f);
+				break;
+			default:
+				break;
+			}
+		}
+
+		// 记录移动前的位置，用于 MoveNodeCommand
+		ImVec2 oldPos = node.position;
+
+		BlueprintNodeBuilder builder;
+		builder.Begin(node.id);
+		builder.HeaderGradient(headerLeftColor, headerRightColor);
+
+		ImGui::TextUnformatted(node.name.c_str());
+
+		builder.EndHeader();
+		builder.BeginBody();
+
+		// 左列：Inputs
+		for (auto& pin : node.inputs)
+			builder.Input(pin.id, pin.name.c_str(), pin.type);
+		builder.NextColumn();
+		// 右列：Outputs
+		for (auto& pin : node.outputs)
+			builder.Output(pin.id, pin.name.c_str(), pin.type);
+		builder.EndBody();
+
+		// 中间内容：属性 UI + Debug 信息
+		builder.MiddleContent([&]
+		{
+			DrawNodePropertiesImpl(graph, node);
+
+			if (!runtimeCtx)
+				return;
+
+			// Debug：SetVariable / Condition
+			if (node.type == Horizon::NodeGraphRuntime::NodeType::SetVariable)
+			{
+				const std::string varName = node.GetProperty("name").AsString();
+				if (!varName.empty())
+				{
+					auto it = runtimeCtx->variables.find(varName);
+					if (it != runtimeCtx->variables.end())
+					{
+						const std::string valueStr = ValueToString(it->second);
+						ImGui::Text("Value: %s", valueStr.empty() ? "<empty>" : valueStr.c_str());
+					}
+					else
+					{
+						ImGui::TextUnformatted("Value: <unset>");
+					}
+				}
+			}
+			else if (node.type == Horizon::NodeGraphRuntime::NodeType::Condition)
+			{
+				const std::string condExpr = node.GetProperty("condition").AsString();
+				if (!condExpr.empty())
+				{
+					// EvaluateExpression 在运行时接口上不使用 const，这里用于调试显示：
+					auto& nonConstCtx = *const_cast<Horizon::NodeGraphRuntime::RuntimeContext*>(runtimeCtx);
+					Horizon::NodeGraphRuntime::Value res =
+						Horizon::NodeGraphRuntime::EvaluateExpression(condExpr, nonConstCtx);
+					ImGui::Text("lastCondition: %s", res.AsBool() ? "true" : "false");
+				}
+			}
+		});
+
+		builder.End();
+
+		// 同步并检测节点位置变化（拖拽记录）
+		const bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+		ImVec2 newPos = GetNodePosition(node.id);
+		node.position = newPos;
+		if (mouseReleased && graph.commandManager && (newPos.x != oldPos.x || newPos.y != oldPos.y))
+		{
+			graph.commandManager->ExecuteCommand(
+				std::make_unique<MoveNodeCommand>(graph, node.id, oldPos, newPos)
+			);
+		}
+	}
+
+	// ------------------------------------------------------------
+	// DrawNodeCreateMenu：右键弹出“创建节点”菜单
+	// ------------------------------------------------------------
+	void DrawNodeCreateMenuImpl(EditorGraph& graph, const ImVec2& spawnPos)
+	{
+		if (!graph.editorRegistry) return;
+
+		static char s_Search[128] = {};
+		static ImVec2 s_LastSpawnPos = spawnPos;
+		static bool s_Initialized = false;
+		if (!s_Initialized)
+		{
+			s_Initialized = true;
+			s_LastSpawnPos = spawnPos;
+		}
+
+		if (ax::NodeEditor::ShowBackgroundContextMenu())
+		{
+			s_LastSpawnPos = spawnPos;
+			s_Search[0] = '\0';
+			ImGui::OpenPopup("CreateNodePopup");
+			ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_Always);
+		}
+
+		if (!ImGui::BeginPopup("CreateNodePopup", ImGuiWindowFlags_AlwaysAutoResize))
+			return;
+
+		// 1) 搜索框
+		ImGui::InputText("Search", s_Search, sizeof(s_Search));
+		const std::string keyword = s_Search;
+
+		// 2) 构建：category -> metas
+		std::map<std::string, std::vector<const NodeEditorMeta*>> grouped;
+		const auto allMetas = graph.editorRegistry->GetAll();
+		for (const NodeEditorMeta* meta : allMetas)
+		{
+			if (!meta) continue;
+
+			bool matched =
+				MatchIgnoreCaseSubstring(meta->displayName, keyword) ||
+				MatchIgnoreCaseSubstring(meta->category, keyword);
+
+			if (!matched && !keyword.empty())
+			{
+				for (const auto& prop : meta->properties)
+				{
+					if (MatchIgnoreCaseSubstring(prop.name, keyword))
+					{
+						matched = true;
+						break;
+					}
+				}
+			}
+
+			if (!matched) continue;
+			grouped[meta->category].push_back(meta);
+		}
+
+		// 3) 分类别展示
+		size_t totalMatched = 0;
+		for (const auto& kv : grouped) totalMatched += kv.second.size();
+
+		if (totalMatched == 0)
+		{
+			ImGui::TextUnformatted("No match.");
+			ImGui::EndPopup();
+			return;
+		}
+
+		// 可选增强：Enter 创建第一个匹配节点（简单实现）
+		const bool enterPressed = ImGui::IsKeyPressed(ImGuiKey_Enter, false);
+
+		const NodeEditorMeta* firstMatch = nullptr;
+		bool created = false;
+		for (const auto& kv : grouped)
+		{
+			const std::string& category = kv.first;
+			const auto& list = kv.second;
+			if (list.empty()) continue;
+
+			ImGui::SeparatorText(category.c_str());
+			for (const NodeEditorMeta* meta : list)
+			{
+				if (!firstMatch) firstMatch = meta;
+
+				const bool selected = ImGui::Selectable(meta->displayName.c_str());
+				if (selected)
+				{
+					EditorNode& newNode = graph.AddNode(meta->type);
+					newNode.position = s_LastSpawnPos;
+					ax::NodeEditor::SetNodePosition(newNode.id, s_LastSpawnPos);
+
+					created = true;
+					ImGui::CloseCurrentPopup();
+					break;
+				}
+			}
+
+			if (created) break;
+
+			if (enterPressed && firstMatch)
+			{
+				EditorNode& n = graph.AddNode(firstMatch->type);
+				n.position = s_LastSpawnPos;
+				ax::NodeEditor::SetNodePosition(n.id, s_LastSpawnPos);
+
+				created = true;
+				ImGui::CloseCurrentPopup();
+				break;
+			}
+
+			if (enterPressed) break;
+		}
+
+		ImGui::EndPopup();
+	}
+}
+

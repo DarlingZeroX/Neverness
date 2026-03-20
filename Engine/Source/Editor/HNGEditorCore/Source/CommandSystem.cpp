@@ -145,6 +145,9 @@ namespace Horizon::NodeGraphEditor
 		RemoveNodeById(m_Graph, m_NodeId, &m_DeletedNode);
 
 		m_Graph.dirty = true;
+		// 删除后必须保证索引一致性（nodeIndexById / pinOwnerById）
+		// 否则后续 FindNode/FindPin 可能依赖旧索引返回错误对象。
+		m_Graph.RebuildIndices();
 		m_Executed = true;
 	}
 
@@ -167,6 +170,54 @@ namespace Horizon::NodeGraphEditor
 		}
 
 		m_Graph.dirty = true;
+		// 恢复后同样重建索引，确保 UI/编译器使用的查找映射正确
+		m_Graph.RebuildIndices();
+	}
+
+	// ---------------- DeleteLinkCommand ----------------
+
+	DeleteLinkCommand::DeleteLinkCommand(EditorGraph& graph, ax::NodeEditor::LinkId linkId)
+		: m_Graph(graph)
+		, m_LinkId(linkId)
+	{
+	}
+
+	void DeleteLinkCommand::Execute()
+	{
+		// 若 link 不存在，直接忽略（可能原因：同一帧/多选导致重复删除查询）
+		auto it = std::find_if(m_Graph.links.begin(), m_Graph.links.end(),
+			[&](const EditorLink& x) { return x.id == m_LinkId; });
+		if (it == m_Graph.links.end())
+			return;
+
+		// 保存快照：Undo 需要恢复该 link（保持原 id / pin id）
+		m_DeletedLink = *it;
+
+		// 从图中移除
+		m_Graph.links.erase(it);
+		m_Graph.dirty = true;
+
+		// 虽然 DeleteLink 不改变 nodes，但为了保证 pin->hadLinks 状态等依赖
+		// 也处于一致视图，这里统一重建索引（实现简单且安全）。
+		m_Graph.RebuildIndices();
+
+		m_Executed = true;
+	}
+
+	void DeleteLinkCommand::Undo()
+	{
+		if (!m_Executed) return;
+		if (!m_DeletedLink.has_value()) return;
+
+		// 若 link 已存在（例如多次 Undo/执行顺序异常），则跳过，避免重复。
+		auto it = std::find_if(m_Graph.links.begin(), m_Graph.links.end(),
+			[&](const EditorLink& x) { return x.id == m_DeletedLink->id; });
+		if (it != m_Graph.links.end())
+			return;
+
+		m_Graph.links.push_back(*m_DeletedLink);
+		m_Graph.dirty = true;
+		m_Graph.RebuildIndices();
 	}
 
 	// ---------------- LinkCommand ----------------
