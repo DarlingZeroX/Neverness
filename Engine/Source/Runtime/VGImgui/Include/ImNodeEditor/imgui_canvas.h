@@ -1,4 +1,4 @@
-﻿// Canvas widget - view over infinite virtual space.
+// Canvas widget - view over infinite virtual space.
 //
 // Canvas allows you to draw your widgets anywhere over infinite space and provide
 // view over it with support for panning and scaling.
@@ -52,7 +52,7 @@
 # include "../imgui/imgui_internal.h" // ImRect, ImFloor
 
 #ifndef IMGUIEX_CANVAS_API
-#define IMGUIEX_CANVAS_API IMGUI_API
+#define IMGUIEX_CANVAS_API
 #endif
 
 namespace ImGuiEx {
@@ -258,13 +258,8 @@ private:
     ImVec2 m_WindowPosBackup;
     ImVec2 m_ViewportPosBackup;
     ImVec2 m_ViewportSizeBackup;
-# if IMGUI_VERSION_NUM > 18002
     ImVec2 m_ViewportWorkPosBackup;
     ImVec2 m_ViewportWorkSizeBackup;
-# else
-    ImVec2 m_ViewportWorkOffsetMinBackup;
-    ImVec2 m_ViewportWorkOffsetMaxBackup;
-# endif
 # endif
 };
 

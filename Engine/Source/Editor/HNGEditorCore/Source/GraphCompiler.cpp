@@ -13,6 +13,7 @@
 #include <HNGRuntimeCore/Include/Core/Nodes.h>
 #include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
 #include <unordered_map>
+#include <sstream>
 // hash/== for ax::NodeEditor::NodeId
 #include <functional>
 
@@ -64,6 +65,27 @@ namespace Horizon::NodeGraphEditor
 	{
 		using namespace NodeGraphRuntime;
 		RuntimeGraph g;
+		auto ValueToString = [](const Value& v) -> std::string
+		{
+			switch (v.type)
+			{
+			case ValueType::Int:
+				return std::to_string(static_cast<int>(v.AsInt()));
+			case ValueType::Float:
+			{
+				std::ostringstream oss;
+				oss << v.AsFloat();
+				return oss.str();
+			}
+			case ValueType::Bool:
+				return v.AsBool() ? "true" : "false";
+			case ValueType::String:
+				return v.AsString();
+			default:
+				return {};
+			}
+		};
+
 		std::unordered_map<ax::NodeEditor::NodeId, NODE_ID, EditorIdHash> nodeIdMap;
 
 		// ------------------------------
@@ -136,7 +158,7 @@ namespace Horizon::NodeGraphEditor
 					auto pit = enode.properties.find("text");
 					if (pit != enode.properties.end())
 					{
-						slot.value = Value::FromString(pit->second);
+						slot.value = Value::FromString(ValueToString(pit->second));
 					}
 				}
 				// 2) SetVariable: Name / Expression
@@ -146,13 +168,13 @@ namespace Horizon::NodeGraphEditor
 					{
 						auto pit = enode.properties.find("name");
 						if (pit != enode.properties.end())
-							slot.value = Value::FromString(pit->second);
+							slot.value = Value::FromString(ValueToString(pit->second));
 					}
 					else if (epin.name == "Expression")
 					{
 						auto pit = enode.properties.find("value");
 						if (pit != enode.properties.end())
-							slot.value = Value::FromString(pit->second);
+							slot.value = Value::FromString(ValueToString(pit->second));
 					}
 				}
 				// 3) GetVariable: Name
@@ -162,7 +184,7 @@ namespace Horizon::NodeGraphEditor
 				{
 					auto pit = enode.properties.find("name");
 					if (pit != enode.properties.end())
-						slot.value = Value::FromString(pit->second);
+						slot.value = Value::FromString(ValueToString(pit->second));
 				}
 				// 4) Condition: Condition 表达式
 				else if ( enode.type == NodeType::Condition
@@ -171,7 +193,7 @@ namespace Horizon::NodeGraphEditor
 				{
 					auto pit = enode.properties.find("condition");
 					if (pit != enode.properties.end())
-						slot.value = Value::FromString(pit->second);
+						slot.value = Value::FromString(ValueToString(pit->second));
 				}
 				const SLOT_ID slotId = PushSlot(g, std::move(slot));
 				g.slotToNode[slotId] = nodeId;

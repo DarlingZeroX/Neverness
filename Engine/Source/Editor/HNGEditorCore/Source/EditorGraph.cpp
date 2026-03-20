@@ -12,10 +12,275 @@
 #include "NodeFactory.h"
 #include "CommandSystem.h"
 #include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <map>
 #include <unordered_set>
 
 namespace Horizon::NodeGraphEditor
 {
+	static const NodeEditorRegistry* s_EditorRegistry = nullptr;
+	static EditorGraph* s_CurrentGraph = nullptr;
+
+	// ------------------------------------------------------------
+	// 字符串匹配（忽略大小写，子串匹配）
+	// ------------------------------------------------------------
+	static bool MatchIgnoreCaseSubstring(const std::string& text, const std::string& keyword)
+	{
+		if (keyword.empty()) return true;
+
+		auto toLower = [](std::string s)
+		{
+			for (char& c : s)
+			{
+				c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+			}
+			return s;
+		};
+
+		const std::string t = toLower(text);
+		const std::string k = toLower(keyword);
+		return t.find(k) != std::string::npos;
+	}
+
+	// ------------------------------------------------------------
+	// DrawNodeCreateMenu：右键弹出“创建节点”菜单
+	// ------------------------------------------------------------
+	void DrawNodeCreateMenu(EditorGraph& graph, const ImVec2& spawnPos)
+	{
+		if (!graph.editorRegistry) return;
+
+		static char s_Search[128] = {};
+		static ImVec2 s_LastSpawnPos = spawnPos;
+		static bool s_Initialized = false;
+		if (!s_Initialized)
+		{
+			s_Initialized = true;
+			s_LastSpawnPos = spawnPos;
+		}
+
+		// 右键背景：打开弹窗
+		// 注意：NodeEditor 的右键“上下文菜单触发”应使用 ShowBackgroundContextMenu()
+		// IsBackgroundClicked() 对应的是 SelectButtonIndex（默认左键），因此不能用它判断右键。
+		if (ax::NodeEditor::ShowBackgroundContextMenu())
+		{
+			s_LastSpawnPos = spawnPos;
+			s_Search[0] = '\0';
+			ImGui::OpenPopup("CreateNodePopup");
+			ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_Always);
+		}
+
+		// 弹窗绘制
+		if (!ImGui::BeginPopup("CreateNodePopup", ImGuiWindowFlags_AlwaysAutoResize))
+			return;
+		// 1) 搜索框
+		ImGui::InputText("Search", s_Search, sizeof(s_Search));
+
+		const std::string keyword = s_Search;
+
+		// 2) 构建：category -> metas
+		std::map<std::string, std::vector<const NodeEditorMeta*>> grouped;
+		const auto allMetas = graph.editorRegistry->GetAll();
+		for (const NodeEditorMeta* meta : allMetas)
+		{
+			if (!meta) continue;
+
+			bool matched =
+				MatchIgnoreCaseSubstring(meta->displayName, keyword) ||
+				MatchIgnoreCaseSubstring(meta->category, keyword);
+
+			// PropertyMeta.name（可选加分）：同样参与匹配
+			if (!matched && !keyword.empty())
+			{
+				for (const auto& prop : meta->properties)
+				{
+					if (MatchIgnoreCaseSubstring(prop.name, keyword))
+					{
+						matched = true;
+						break;
+					}
+				}
+			}
+
+			if (!matched) continue;
+			grouped[meta->category].push_back(meta);
+		}
+
+		// 3) 分类别展示
+		size_t totalMatched = 0;
+		for (const auto& kv : grouped) totalMatched += kv.second.size();
+
+		// 如果没有匹配，给提示
+		if (totalMatched == 0)
+		{
+			ImGui::TextUnformatted("No match.");
+			ImGui::EndPopup();
+			return;
+		}
+
+		// 可选增强：Enter 创建第一个匹配节点（简单实现）
+		const bool enterPressed = ImGui::IsKeyPressed(ImGuiKey_Enter, false);
+
+		const NodeEditorMeta* firstMatch = nullptr;
+		bool created = false;
+		for (const auto& kv : grouped)
+		{
+			const std::string& category = kv.first;
+			const auto& list = kv.second;
+			if (list.empty()) continue;
+
+			ImGui::SeparatorText(category.c_str());
+			for (const NodeEditorMeta* meta : list)
+			{
+				if (!firstMatch) firstMatch = meta;
+
+				const bool selected = ImGui::Selectable(meta->displayName.c_str());
+				if (selected)
+				{
+					EditorNode& newNode = graph.AddNode(meta->type);
+					newNode.position = s_LastSpawnPos;
+					ax::NodeEditor::SetNodePosition(newNode.id, s_LastSpawnPos);
+
+					created = true;
+					ImGui::CloseCurrentPopup();
+					break;
+				}
+			}
+
+			if (created) break;
+
+			if (enterPressed && firstMatch)
+			{
+				EditorNode& n = graph.AddNode(firstMatch->type);
+				n.position = s_LastSpawnPos;
+				ax::NodeEditor::SetNodePosition(n.id, s_LastSpawnPos);
+
+				created = true;
+				ImGui::CloseCurrentPopup();
+				break;
+			}
+
+			// 若 CloseCurrentPopup 在上一轮已经触发，这里也直接跳出
+			if (enterPressed) break;
+		}
+
+		ImGui::EndPopup();
+	}
+
+	// ------------------------------------------------------------
+	// DrawNodeProperties：由 NodeEditorMeta 驱动的节点属性 UI
+	// ------------------------------------------------------------
+	void DrawNodeProperties(EditorNode& node)
+	{
+		if (!s_EditorRegistry) return;
+
+		const NodeEditorMeta* meta = s_EditorRegistry->Get(node.type);
+		if (!meta) return;
+
+		for (const auto& prop : meta->properties)
+		{
+			auto& v = node.GetProperty(prop.name);
+			const char* label = prop.displayName.empty() ? prop.name.c_str() : prop.displayName.c_str();
+
+			switch (prop.widget)
+			{
+			case PropertyWidgetType::InputText:
+			{
+				char buf[1024];
+				std::snprintf(buf, sizeof(buf), "%s", v.AsString().c_str());
+				if (ImGui::InputText(label, buf, sizeof(buf)))
+				{
+					v = NodeGraphRuntime::Value::FromString(buf);
+					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::MultilineText:
+			{
+				char buf[2048];
+				std::snprintf(buf, sizeof(buf), "%s", v.AsString().c_str());
+				if (ImGui::InputTextMultiline(label, buf, sizeof(buf),
+					ImVec2(0, 0), ImGuiInputTextFlags_AllowTabInput))
+				{
+					v = NodeGraphRuntime::Value::FromString(buf);
+					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::Checkbox:
+			{
+				bool b = v.AsBool();
+				if (ImGui::Checkbox(label, &b))
+				{
+					v = NodeGraphRuntime::Value::FromBool(b);
+					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::Float:
+			{
+				float f = static_cast<float>(v.AsFloat());
+				if (ImGui::InputFloat(label, &f))
+				{
+					v = NodeGraphRuntime::Value::FromFloat(f);
+					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::Int:
+			{
+				int i = static_cast<int>(v.AsInt());
+				if (ImGui::InputInt(label, &i))
+				{
+					v = NodeGraphRuntime::Value::FromInt(i);
+					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
+				}
+				break;
+			}
+			case PropertyWidgetType::Combo:
+			{
+				if (prop.options.empty()) break;
+
+				int currentIndex = 0;
+				if (prop.type == NodeGraphRuntime::ValueType::Int)
+				{
+					currentIndex = static_cast<int>(v.AsInt());
+				}
+				else
+				{
+					const std::string cur = v.AsString();
+					auto it = std::find(prop.options.begin(), prop.options.end(), cur);
+					currentIndex = (it != prop.options.end())
+						? static_cast<int>(std::distance(prop.options.begin(), it))
+						: 0;
+				}
+
+				if (currentIndex < 0) currentIndex = 0;
+				if (currentIndex >= static_cast<int>(prop.options.size()))
+					currentIndex = static_cast<int>(prop.options.size() - 1);
+
+				std::vector<const char*> items;
+				items.reserve(prop.options.size());
+				for (const auto& opt : prop.options) items.push_back(opt.c_str());
+
+				if (ImGui::Combo(label, &currentIndex, items.data(), static_cast<int>(items.size())))
+				{
+					if (prop.type == NodeGraphRuntime::ValueType::Int)
+						v = NodeGraphRuntime::Value::FromInt(currentIndex);
+					else
+						v = NodeGraphRuntime::Value::FromString(prop.options[static_cast<size_t>(currentIndex)]);
+
+					if (s_CurrentGraph) s_CurrentGraph->dirty = true;
+				}
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+
 	EditorNode* EditorGraph::FindNode(ax::NodeEditor::NodeId id)
 	{
 		// 优先使用辅助索引（O(1)）
@@ -93,6 +358,18 @@ namespace Horizon::NodeGraphEditor
 
 	EditorNode& EditorGraph::AddNode(Runtime::NodeType type)
 	{
+		// 根据 NodeEditorMeta 初始化 EditorNode.properties 的默认值
+		auto initFromEditorMeta = [&](EditorNode& node)
+		{
+			if (!editorRegistry) return;
+			const NodeEditorMeta* meta = editorRegistry->Get(type);
+			if (!meta) return;
+			for (const auto& prop : meta->properties)
+			{
+				node.properties[prop.name] = prop.defaultValue;
+			}
+		};
+
 		// 1) registry 缺失：创建占位节点，避免空指针崩溃
 		if (!registry)
 		{
@@ -100,6 +377,7 @@ namespace Horizon::NodeGraphEditor
 			node.id = GenNodeId();
 			node.type = type;
 			node.name = "Missing Registry";
+			initFromEditorMeta(node);
 			nodes.push_back(std::move(node));
 			dirty = true;
 			return nodes.back();
@@ -113,6 +391,7 @@ namespace Horizon::NodeGraphEditor
 			node.id = GenNodeId();
 			node.type = type;
 			node.name = "Unregistered NodeType";
+			initFromEditorMeta(node);
 			nodes.push_back(std::move(node));
 			dirty = true;
 			return nodes.back();
@@ -120,6 +399,7 @@ namespace Horizon::NodeGraphEditor
 
 		// 3) 正常路径：由 NodeMeta 数据驱动创建 pins
 		EditorNode node = CreateNodeFromMeta(*meta);
+		initFromEditorMeta(node);
 		nodes.push_back(std::move(node));
 		// 新增节点后更新索引（仅追加一项，避免全量重建）
 		EditorNode& back = nodes.back();
@@ -137,55 +417,58 @@ namespace Horizon::NodeGraphEditor
 	void HandleCreateLink(EditorGraph& graph)
 	{
 		using namespace ax::NodeEditor;
-		BeginCreate();
-
-		PinId startPinId, endPinId;
-		if (QueryNewLink(&startPinId, &endPinId))
+		// 必须在 BeginCreate() 返回 true 时，才允许调用 QueryNewLink / QueryNewNode，
+		// 否则新版 ImNodeEditor 会在 CreateItemAction 未激活时触发断言。
+		if (BeginCreate())
 		{
-			EditorPin* startPin = graph.FindPin(startPinId);
-			EditorPin* endPin = graph.FindPin(endPinId);
-			if (!startPin || !endPin)
+			PinId startPinId, endPinId;
+			if (QueryNewLink(&startPinId, &endPinId))
 			{
-				RejectNewItem();
-				EndCreate();
-				return;
-			}
-
-			// 校验方向
-			if (startPin->isInput == endPin->isInput)
-			{
-				RejectNewItem();
-			}
-			// 校验类型
-			else if (startPin->type != endPin->type)
-			{
-				RejectNewItem();
-			}
-			else if (AcceptNewItem())
-			{
-				EditorPin* outputPin = startPin->isInput ? endPin : startPin;
-				EditorPin* inputPin = startPin->isInput ? startPin : endPin;
-				EditorLink link;
-				link.id = ax::NodeEditor::LinkId(static_cast<int>(graph.links.size() + 1));
-				link.startPinId = outputPin->id;
-				link.endPinId = inputPin->id;
-
-				// 若提供了命令管理器，则通过命令系统创建连线，支持 Undo/Redo
-				if (graph.commandManager)
+				EditorPin* startPin = graph.FindPin(startPinId);
+				EditorPin* endPin = graph.FindPin(endPinId);
+				if (!startPin || !endPin)
 				{
-					graph.commandManager->ExecuteCommand(
-						std::make_unique<LinkCommand>(graph, link)
-					);
+					RejectNewItem();
+					EndCreate();
+					return;
 				}
-				else
+
+				// 校验方向
+				if (startPin->isInput == endPin->isInput)
 				{
-					// 回退路径：直接修改 graph.links
-					graph.links.push_back(link);
-					graph.dirty = true;
+					RejectNewItem();
+				}
+				// 校验类型
+				else if (startPin->type != endPin->type)
+				{
+					RejectNewItem();
+				}
+				else if (AcceptNewItem())
+				{
+					EditorPin* outputPin = startPin->isInput ? endPin : startPin;
+					EditorPin* inputPin = startPin->isInput ? startPin : endPin;
+					EditorLink link;
+					link.id = ax::NodeEditor::LinkId(static_cast<int>(graph.links.size() + 1));
+					link.startPinId = outputPin->id;
+					link.endPinId = inputPin->id;
+
+					// 若提供了命令管理器，则通过命令系统创建连线，支持 Undo/Redo
+					if (graph.commandManager)
+					{
+						graph.commandManager->ExecuteCommand(
+							std::make_unique<LinkCommand>(graph, link)
+						);
+					}
+					else
+					{
+						// 回退路径：直接修改 graph.links
+						graph.links.push_back(link);
+						graph.dirty = true;
+					}
 				}
 			}
+			EndCreate();
 		}
-		EndCreate();
 	}
 
 	void DrawEditorGraph(EditorGraph& graph, const Horizon::NodeGraphRuntime::RuntimeContext* runtimeCtx)
@@ -193,7 +476,15 @@ namespace Horizon::NodeGraphEditor
 		using namespace ax::NodeEditor;
 		//SetCurrentEditor(graph.context);
 		graph.context->SetContext();
+		s_EditorRegistry = graph.editorRegistry;
+		s_CurrentGraph = &graph;
 		Begin("Node Graph");
+
+		// 节点创建菜单：右键弹出（基于 editorRegistry 的 NodeEditorMeta）
+		// spawnPos 需要在“节点画布坐标系”下
+		ax::NodeEditor::Suspend();
+		DrawNodeCreateMenu(graph, ax::NodeEditor::ScreenToCanvas(ImGui::GetMousePos()));
+		ax::NodeEditor::Resume();
 
 		// ----------------------------
 		// 预处理：构建“执行路径上的节点对”集合，用于高亮连线
@@ -244,76 +535,8 @@ namespace Horizon::NodeGraphEditor
 			BeginNode(node.id);
 			ImGui::Text("%s", node.name.c_str());
 
-			// 若是 Dialogue 节点，在节点标题下方显示多行文本编辑框
-			// 说明：
-			// - 文本存放在 EditorNode.properties["text"] 中
-			// - GraphCompiler 会在编译时将该文本写入 RuntimeGraph 的 "Text" 输出槽
-			// - 运行时 DialogueNodeExecute 使用该文本按行拆分并逐行播放
-			if (node.type == Horizon::NodeGraphRuntime::NodeType::Dialogue)
-			{
-				std::string& text = node.properties["text"];
-				// 为 ImGui 提供一个可修改的缓冲区
-				// 这里用静态缓冲示例，若未来需要支持任意长度，可改为动态缓冲管理
-				static char buffer[2048];
-				std::snprintf(buffer, sizeof(buffer), "%s", text.c_str());
-				if (ImGui::InputTextMultiline("Text", buffer, sizeof(buffer),
-					ImVec2(0, 0), ImGuiInputTextFlags_AllowTabInput))
-				{
-					text = buffer;
-					graph.dirty = true;
-				}
-			}
-
-			// SetVariable 节点：提供变量名与表达式的编辑 UI
-			if (node.type == Horizon::NodeGraphRuntime::NodeType::SetVariable)
-			{
-				std::string& name = node.properties["name"];
-				std::string& expr = node.properties["value"];
-
-				char nameBuf[256] = {};
-				char exprBuf[256] = {};
-				std::snprintf(nameBuf, sizeof(nameBuf), "%s", name.c_str());
-				std::snprintf(exprBuf, sizeof(exprBuf), "%s", expr.c_str());
-
-				if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf)))
-				{
-					name = nameBuf;
-					graph.dirty = true;
-				}
-				if (ImGui::InputText("Expression", exprBuf, sizeof(exprBuf)))
-				{
-					expr = exprBuf;
-					graph.dirty = true;
-				}
-			}
-
-			// GetVariable 节点：仅编辑变量名
-			if (node.type == Horizon::NodeGraphRuntime::NodeType::GetVariable)
-			{
-				std::string& name = node.properties["name"];
-
-				char nameBuf[256] = {};
-				std::snprintf(nameBuf, sizeof(nameBuf), "%s", name.c_str());
-
-				if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf)))
-				{
-					name = nameBuf;
-					graph.dirty = true;
-				}
-			}
-
-			// Condition 节点：编辑条件表达式
-			if (node.type == Horizon::NodeGraphRuntime::NodeType::Condition)
-			{
-				std::string& cond = node.properties["condition"];
-				char buf[256] = {};
-				std::snprintf(buf, sizeof(buf), "%s", cond.c_str());
-				if (ImGui::InputText("Condition", buf, sizeof(buf)))
-				{
-					cond = buf;
-					graph.dirty = true;
-				}
-			}
+			// 通用：节点属性 UI（由 NodeEditorMeta 驱动）
+			DrawNodeProperties(node);
 
 			// 输入区
 			for (auto& pin : node.inputs)

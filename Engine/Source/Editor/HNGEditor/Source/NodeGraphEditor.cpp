@@ -50,6 +50,7 @@ namespace Horizon::NodeGraph
 		EditorGraph& editor = m_EditorGraph;
 		editor.context = CreateRef<Horizon::NodeGraphEditor::IMNEEditorContext>();
 		editor.registry = &m_Registry;
+		editor.editorRegistry = &m_NodeEditorRegistry;
 		
 		// 2. 添加节点（全部来自 NodeRegistry 元数据）
 		// 注意：不能在多次 AddNode 之间长期持有对 nodes 元素的引用，
@@ -61,7 +62,7 @@ namespace Horizon::NodeGraph
 
 		const size_t dlgIndex    = editor.nodes.size();
 		editor.AddNode(NodeType::Dialogue);
-		editor.nodes[dlgIndex].properties["text"] = "你好，欢迎来到 Demo!";
+		editor.nodes[dlgIndex].GetProperty("text") = Value::FromString("你好，欢迎来到 Demo!");
 
 		const size_t branchIndex = editor.nodes.size();
 		editor.AddNode(NodeType::Branch);
@@ -185,6 +186,102 @@ namespace Horizon::NodeGraph
 			},
 			ConditionNodeExecute
 		});
+
+		// ------------------------------------------------------------------
+		// Editor 专用：注册 NodeEditorMeta / PropertyMeta
+		// - 注意：与 Runtime NodeRegistry 完全独立
+		// - 这里为 Dialogue / SetVariable（以及为保持旧 UI 兼容，额外注册 GetVariable/Condition）
+		//   提供属性默认值与 ImGui 控件类型
+		// ------------------------------------------------------------------
+		{
+			using Horizon::NodeGraphEditor::NodeEditorMeta;
+			using Horizon::NodeGraphEditor::PropertyMeta;
+			using Horizon::NodeGraphEditor::PropertyWidgetType;
+
+			// Dialogue
+			m_NodeEditorRegistry.Register(NodeEditorMeta{
+				NodeType::Dialogue,
+				"Dialogue",
+				"Dialogue",
+				{
+					PropertyMeta{
+						"text",
+						"Text",
+						ValueType::String,
+						PropertyWidgetType::MultilineText,
+						Value::FromString(""),
+						{}
+					},
+					PropertyMeta{
+						"speaker",
+						"Speaker",
+						ValueType::String,
+						PropertyWidgetType::InputText,
+						Value::FromString(""),
+						{}
+					}
+				}
+			});
+
+			// SetVariable
+			m_NodeEditorRegistry.Register(NodeEditorMeta{
+				NodeType::SetVariable,
+				"SetVariable",
+				"Variable",
+				{
+					PropertyMeta{
+						"name",
+						"Name",
+						ValueType::String,
+						PropertyWidgetType::InputText,
+						Value::FromString(""),
+						{}
+					},
+					PropertyMeta{
+						"value",
+						"Expression",
+						ValueType::String, // Runtime 的 Expression 槽当前要求 String
+						PropertyWidgetType::InputText,
+						Value::FromString(""),
+						{}
+					}
+				}
+			});
+
+			// GetVariable（为保持旧功能：编辑变量名）
+			m_NodeEditorRegistry.Register(NodeEditorMeta{
+				NodeType::GetVariable,
+				"GetVariable",
+				"Variable",
+				{
+					PropertyMeta{
+						"name",
+						"Name",
+						ValueType::String,
+						PropertyWidgetType::InputText,
+						Value::FromString(""),
+						{}
+					}
+				}
+			});
+
+			// Condition（为保持旧功能：编辑条件表达式）
+			m_NodeEditorRegistry.Register(NodeEditorMeta{
+				NodeType::Condition,
+				"Condition",
+				"Logic",
+				{
+					PropertyMeta{
+						"condition",
+						"Condition",
+						ValueType::String,
+						PropertyWidgetType::InputText,
+						Value::FromString(""),
+						{}
+					}
+				}
+			});
+		}
 
 		// 绑定命令管理器到 EditorGraph，启用命令驱动的编辑操作
 		m_EditorGraph.commandManager = &m_CommandManager;

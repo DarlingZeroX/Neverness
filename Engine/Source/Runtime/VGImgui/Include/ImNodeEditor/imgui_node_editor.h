@@ -21,19 +21,13 @@
 
 
 //------------------------------------------------------------------------------
-# define IMGUI_NODE_EDITOR_VERSION      "0.9.4"
-# define IMGUI_NODE_EDITOR_VERSION_NUM  000904
+# define IMGUI_NODE_EDITOR_VERSION      "0.10.0"
+# define IMGUI_NODE_EDITOR_VERSION_NUM  001000
 
 
 //------------------------------------------------------------------------------
 #ifndef IMGUI_NODE_EDITOR_API
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#ifdef IMGUI_EXPORT
-#define IMGUI_NODE_EDITOR_API __declspec(dllexport)
-#else
-#define IMGUI_NODE_EDITOR_API __declspec(dllimport)
-#endif
-#endif
+#define IMGUI_NODE_EDITOR_API IMGUI_API
 #endif
 
 
@@ -129,7 +123,7 @@ struct Config
         , SelectButtonIndex(0)
         , NavigateButtonIndex(1)
         , ContextMenuButtonIndex(1)
-        , EnableSmoothZoom(false)
+        , EnableSmoothZoom(true)
 # ifdef __APPLE__
         , SmoothZoomPower(1.1f)
 # else
@@ -251,11 +245,7 @@ struct Style
         PivotAlignment           = ImVec2(0.5f, 0.5f);
         PivotSize                = ImVec2(0.0f, 0.0f);
         PivotScale               = ImVec2(1, 1);
-#if IMGUI_VERSION_NUM > 18101
         PinCorners               = ImDrawFlags_RoundCornersAll;
-#else
-        PinCorners               = ImDrawCornerFlags_All;
-#endif
         PinRadius                = 0.0f;
         PinArrowSize             = 0.0f;
         PinArrowWidth            = 0.0f;

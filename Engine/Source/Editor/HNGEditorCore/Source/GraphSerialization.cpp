@@ -52,6 +52,46 @@ namespace Horizon::NodeGraphEditor
 		return ImColor(v);
 	}
 
+	static json SerializeValue(const NodeGraphRuntime::Value& v)
+	{
+		using namespace NodeGraphRuntime;
+		switch (v.type)
+		{
+		case ValueType::Int:
+			return json{ {"type", "Int"}, {"value", v.AsInt()} };
+		case ValueType::Float:
+			return json{ {"type", "Float"}, {"value", v.AsFloat()} };
+		case ValueType::Bool:
+			return json{ {"type", "Bool"}, {"value", v.AsBool()} };
+		case ValueType::String:
+			return json{ {"type", "String"}, {"value", v.AsString()} };
+		default:
+			return json{ {"type", "None"} };
+		}
+	}
+
+	static NodeGraphRuntime::Value DeserializeValue(const json& j)
+	{
+		using namespace NodeGraphRuntime;
+		if (j.is_object())
+		{
+			const std::string type = j.value("type", "None");
+			if (type == "Int") return Value::FromInt(static_cast<int>(j.value("value", 0)));
+			if (type == "Float") return Value::FromFloat(j.value("value", 0.0f));
+			if (type == "Bool") return Value::FromBool(j.value("value", false));
+			if (type == "String") return Value::FromString(j.value("value", std::string{}));
+			return Value{};
+		}
+
+		// 兼容旧版：properties 中原先只支持 string
+		if (j.is_string()) return Value::FromString(j.get<std::string>());
+		if (j.is_boolean()) return Value::FromBool(j.get<bool>());
+		if (j.is_number_integer()) return Value::FromInt(static_cast<int>(j.get<int64_t>()));
+		if (j.is_number_float()) return Value::FromFloat(j.get<float>());
+
+		return Value{};
+	}
+
 	bool SaveGraph(const EditorGraph& graph, const std::string& path)
 	{
 		try
@@ -73,7 +113,7 @@ namespace Horizon::NodeGraphEditor
 				jn["properties"] = json::object();
 				for (const auto& kv : n.properties)
 				{
-					jn["properties"][kv.first] = kv.second;
+					jn["properties"][kv.first] = SerializeValue(kv.second);
 				}
 
 				// pins
@@ -162,10 +202,7 @@ namespace Horizon::NodeGraphEditor
 					{
 						for (auto it = jn["properties"].begin(); it != jn["properties"].end(); ++it)
 						{
-							if (it.value().is_string())
-								n.properties[it.key()] = it.value().get<std::string>();
-							else
-								n.properties[it.key()] = it.value().dump();
+							n.properties[it.key()] = DeserializeValue(it.value());
 						}
 					}
 

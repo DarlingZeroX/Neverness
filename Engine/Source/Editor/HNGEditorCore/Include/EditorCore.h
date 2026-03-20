@@ -64,7 +64,20 @@ namespace Horizon::NodeGraphEditor
 		ImVec2 position;
 
 		// 自定义数据（用于 Dialogue 等）
-		std::unordered_map<std::string, std::string> properties;
+		std::unordered_map<std::string, NodeGraphRuntime::Value> properties;
+
+		// 属性访问封装：
+		// - 不存在则创建一个默认 Value（type=ValueType::None）
+		// - UI 不应直接操作 properties，优先走该函数
+		NodeGraphRuntime::Value& GetProperty(const std::string& name)
+		{
+			auto it = properties.find(name);
+			if (it == properties.end())
+			{
+				it = properties.emplace(name, NodeGraphRuntime::Value{}).first;
+			}
+			return it->second;
+		}
 	};
 
 	struct EditorLink

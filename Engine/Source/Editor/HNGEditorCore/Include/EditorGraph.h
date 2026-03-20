@@ -16,6 +16,7 @@
 #include "EditorCore.h"
 #include "IMNEWrap.h"
 #include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
+#include "NodeEditorRegistry.h"
 
 namespace Horizon::NodeGraphRuntime
 {
@@ -42,6 +43,14 @@ namespace Horizon::NodeGraphEditor
 		// - registry 的生命周期由上层（例如 HNodeGraphEditor）保证
 		// ----------------------------
 		const Runtime::NodeRegistry* registry = nullptr;
+
+		// ----------------------------
+		// Editor 节点注册表（独立于 Runtime）
+		// - 用于 NodeEditorMeta / PropertyMeta 的默认值初始化
+		// - 用于 DrawNodeProperties(ImGui) 自动生成节点属性 UI
+		// - 与 Runtime::NodeRegistry 完全独立
+		// ----------------------------
+		const NodeEditorRegistry* editorRegistry = nullptr;
 
 		bool dirty = true;
 
@@ -94,5 +103,7 @@ namespace Horizon::NodeGraphEditor
 	};
 
 	HNG_EDITOR_CORE_API void HandleCreateLink(EditorGraph& graph);
+	// 节点创建菜单（右键弹出）
+	HNG_EDITOR_CORE_API void DrawNodeCreateMenu(EditorGraph& graph, const ImVec2& spawnPos);
 	HNG_EDITOR_CORE_API void DrawEditorGraph(EditorGraph& graph, const Runtime::RuntimeContext* runtimeCtx = nullptr);
 }
