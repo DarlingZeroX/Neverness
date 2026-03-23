@@ -16,6 +16,7 @@ endif()
 # 将源代码添加到此项目的可执行文件。
 file(GLOB HNODEGRAPH_EDITOR_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utilities/*.h"
 )
@@ -35,6 +36,7 @@ target_compile_definitions(HNGEditorCore PRIVATE HNG_EDITOR_CORE_API_EXPORT)
 target_include_directories(HNGEditorCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(HNGEditorCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(HNGEditorCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(HNGEditorCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 # 寻找CMake包
 find_package(SDL3 CONFIG REQUIRED)

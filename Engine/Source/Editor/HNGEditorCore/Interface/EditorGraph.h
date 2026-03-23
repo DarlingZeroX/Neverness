@@ -12,11 +12,13 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include "../HNGEditorCoreConfig.h"
-#include "EditorCore.h"
-#include "IMNEWrap.h"
 #include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
-#include "NodeEditorRegistry.h"
+#include "../HNGEditorCoreConfig.h"
+#include "NodeEditorCore.h"
+#include "../Include/NodeEditorRegistry.h"
+#include "../Include/GraphIdGenerator.h"
+#include "../Include/IMNEWrap.h"
+
 
 namespace Horizon::NodeGraphRuntime
 {
@@ -53,6 +55,9 @@ namespace Horizon::NodeGraphEditor
 		const NodeEditorRegistry* editorRegistry = nullptr;
 
 		bool dirty = true;
+
+		// 统一的图内 ID 生成与持久化状态（Node/Pin/Link 三种类型使用同一个状态机）
+		GraphIdGenerator idGen;
 
 		// ----------------------------
 		// 辅助索引（O(1) 查找）
@@ -100,6 +105,9 @@ namespace Horizon::NodeGraphEditor
 
 		// 全量重建辅助索引（在大规模修改或反序列化后调用）
 		void RebuildIndices();
+
+		// 反序列化后修复 idGen.next*，确保后续生成的新 ID 不会与加载数据冲突
+		void FixupIdStateAfterLoad();
 	};
 
 	HNG_EDITOR_CORE_API void HandleCreateLink(EditorGraph& graph);

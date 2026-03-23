@@ -11,8 +11,8 @@
 
 #pragma once
 #include "Config.h"
-#include "HNGEditorCore/Include/EditorGraph.h"
-#include "HNGEditorCore/Include/CommandSystem.h"
+#include "HNGEditorCore/Interface/EditorGraph.h"
+#include "HNGEditorCore/Interface/CommandSystem.h"
 #include "HNGEditorCore/Include/NodeEditorRegistry.h"
 #include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
 #include <HNGRuntimeCore/Include/Core/RuntimeGraph.h>

@@ -10,7 +10,8 @@
 */
 #include "EditorGraph.h"
 #include "NodeFactory.h"
-#include "CommandSystem.h"
+#include "CommandInGraph.h"
+#include "GraphCommandAPI.h"
 #include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
 #include <algorithm>
 #include <cctype>
@@ -131,6 +132,34 @@ namespace Horizon::NodeGraphEditor
 		}
 	}
 
+	void EditorGraph::FixupIdStateAfterLoad()
+	{
+		int maxNodeId = 0;
+		int maxPinId = 0;
+		int maxLinkId = 0;
+
+		// nodes -> nodeId + pinIds
+		for (const auto& n : nodes)
+		{
+			maxNodeId = std::max(maxNodeId, static_cast<int>(n.id.Get()));
+			for (const auto& p : n.inputs)
+				maxPinId = std::max(maxPinId, static_cast<int>(p.id.Get()));
+			for (const auto& p : n.outputs)
+				maxPinId = std::max(maxPinId, static_cast<int>(p.id.Get()));
+		}
+
+		// links -> linkId
+		for (const auto& l : links)
+			maxLinkId = std::max(maxLinkId, static_cast<int>(l.id.Get()));
+
+		// 单调递增：next* 只会向上，不会回退，避免 Undo/Redo/多次加载后的 ID 复用风险
+		GraphIdState st = idGen.GetState();
+		st.nextNodeId = std::max(st.nextNodeId, maxNodeId + 1);
+		st.nextPinId = std::max(st.nextPinId, maxPinId + 1);
+		st.nextLinkId = std::max(st.nextLinkId, maxLinkId + 1);
+		idGen.Reset(st);
+	}
+
 	EditorNode& EditorGraph::AddNode(Runtime::NodeType type)
 	{
 		// 根据 NodeEditorMeta 初始化 EditorNode.properties 的默认值
@@ -149,7 +178,7 @@ namespace Horizon::NodeGraphEditor
 		if (!registry)
 		{
 			EditorNode node;
-			node.id = GenNodeId();
+			node.id = idGen.NewNodeId();
 			node.type = type;
 			node.name = "Missing Registry";
 			initFromEditorMeta(node);
@@ -163,7 +192,7 @@ namespace Horizon::NodeGraphEditor
 		if (!meta)
 		{
 			EditorNode node;
-			node.id = GenNodeId();
+			node.id = idGen.NewNodeId();
 			node.type = type;
 			node.name = "Unregistered NodeType";
 			initFromEditorMeta(node);
@@ -173,7 +202,7 @@ namespace Horizon::NodeGraphEditor
 		}
 
 		// 3) 正常路径：由 NodeMeta 数据驱动创建 pins
-		EditorNode node = CreateNodeFromMeta(*meta);
+		EditorNode node = CreateNodeFromMeta(*meta, idGen);
 		initFromEditorMeta(node);
 		nodes.push_back(std::move(node));
 		// 新增节点后更新索引（仅追加一项，避免全量重建）
@@ -320,22 +349,12 @@ namespace Horizon::NodeGraphEditor
 		// - 否则：回退为直接 Execute（保持功能可用）
 		if (pendingDeleteNode)
 		{
-			if (graph.commandManager)
-				graph.commandManager->ExecuteCommand(
-					std::make_unique<DeleteNodeCommand>(graph, pendingDeleteNodeId)
-				);
-			else
-				DeleteNodeCommand(graph, pendingDeleteNodeId).Execute();
+			GraphCommandAPI(graph).DeleteNode(pendingDeleteNodeId);
 		}
 
 		if (pendingDeleteLink)
 		{
-			if (graph.commandManager)
-				graph.commandManager->ExecuteCommand(
-					std::make_unique<DeleteLinkCommand>(graph, pendingDeleteLinkId)
-				);
-			else
-				DeleteLinkCommand(graph, pendingDeleteLinkId).Execute();
+			GraphCommandAPI(graph).DeleteLink(pendingDeleteLinkId);
 		}
 
 		// 处理删除（Delete/Backspace 或拖断连接）

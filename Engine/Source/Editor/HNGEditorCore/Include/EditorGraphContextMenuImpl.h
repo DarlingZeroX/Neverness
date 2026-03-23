@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EditorGraph.h>
+#include "../Interface/EditorGraph.h"
 
 namespace Horizon::NodeGraphEditor
 {

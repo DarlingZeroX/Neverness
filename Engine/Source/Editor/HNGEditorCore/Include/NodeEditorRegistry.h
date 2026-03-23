@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "../HNGEditorCoreConfig.h"
-#include "NodeEditorMeta.h"
+#include "../Interface/NodeEditorMeta.h"
 
 namespace Horizon::NodeGraphEditor
 {

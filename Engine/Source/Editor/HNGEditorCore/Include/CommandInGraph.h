@@ -32,55 +32,11 @@
 #include <vector>
 #include <optional>
 #include "../HNGEditorCoreConfig.h"
-#include "EditorGraph.h"
+#include "../Interface/EditorGraph.h"
+#include "../Interface/CommandSystem.h"
 
 namespace Horizon::NodeGraphEditor
 {
-	// ----------------------------
-	// ICommand：命令接口
-	// ----------------------------
-	class HNG_EDITOR_CORE_API ICommand
-	{
-	public:
-		virtual ~ICommand() = default;
-		virtual void Execute() = 0;
-		virtual void Undo() = 0;
-	};
-
-	// ----------------------------
-	// CommandManager：命令管理器（Undo/Redo）
-	// ----------------------------
-	class HNG_EDITOR_CORE_API CommandManager
-	{
-	public:
-		CommandManager() = default;
-		~CommandManager() = default;
-
-		// 命令历史不允许拷贝（unique_ptr 不可拷贝，且语义上也不应复制 Undo/Redo 栈）
-		CommandManager(const CommandManager&) = delete;
-		CommandManager& operator=(const CommandManager&) = delete;
-
-		// 允许移动（例如容器搬运/对象移动）
-		CommandManager(CommandManager&&) noexcept = default;
-		CommandManager& operator=(CommandManager&&) noexcept = default;
-
-		// 执行一个命令（会清空 redo 栈）
-		void ExecuteCommand(std::unique_ptr<ICommand> cmd);
-
-		// 撤销/重做
-		bool CanUndo() const { return !m_UndoStack.empty(); }
-		bool CanRedo() const { return !m_RedoStack.empty(); }
-		void Undo();
-		void Redo();
-
-		// 清空历史（例如加载新图时）
-		void Clear();
-
-	private:
-		std::vector<std::unique_ptr<ICommand>> m_UndoStack;
-		std::vector<std::unique_ptr<ICommand>> m_RedoStack;
-	};
-
 	// ----------------------------
 	// 具体命令
 	// ----------------------------

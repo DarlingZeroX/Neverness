@@ -11,7 +11,7 @@
 
 #include "NodeGraphEditor.h"
 #include "HNGEditorCore/Include/NodeFactory.h"
-#include "HNGEditorCore/Include/GraphCompiler.h"
+#include "HNGEditorCore/Interface/GraphCompiler.h"
 #include <HNGRuntimeCore/Include/Core/Nodes.h>
 #include <VGImgui/IncludeImGui.h>
 #include <cstdio>

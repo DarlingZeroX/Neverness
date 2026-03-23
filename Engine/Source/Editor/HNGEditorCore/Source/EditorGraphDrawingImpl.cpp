@@ -11,7 +11,8 @@
 
 #include "Utilities/builders.h"
 #include <HNGRuntimeCore/Include/Core/ExpressionEvaluator.h>
-#include "CommandSystem.h"
+#include "CommandInGraph.h"
+#include "GraphCommandAPI.h"
 
 namespace Horizon::NodeGraphEditor
 {
@@ -295,9 +296,7 @@ namespace Horizon::NodeGraphEditor
 		node.position = newPos;
 		if (mouseReleased && graph.commandManager && (newPos.x != oldPos.x || newPos.y != oldPos.y))
 		{
-			graph.commandManager->ExecuteCommand(
-				std::make_unique<MoveNodeCommand>(graph, node.id, oldPos, newPos)
-			);
+			GraphCommandAPI(graph).MoveNode(node.id, oldPos, newPos);
 		}
 	}
 
@@ -389,9 +388,8 @@ namespace Horizon::NodeGraphEditor
 				const bool selected = ImGui::Selectable(meta->displayName.c_str());
 				if (selected)
 				{
-					EditorNode& newNode = graph.AddNode(meta->type);
-					newNode.position = s_LastSpawnPos;
-					ax::NodeEditor::SetNodePosition(newNode.id, s_LastSpawnPos);
+					const EditorNodeID newNodeId = GraphCommandAPI(graph).AddNode(meta->type, s_LastSpawnPos);
+					ax::NodeEditor::SetNodePosition(newNodeId, s_LastSpawnPos);
 
 					created = true;
 					ImGui::CloseCurrentPopup();
@@ -403,9 +401,8 @@ namespace Horizon::NodeGraphEditor
 
 			if (enterPressed && firstMatch)
 			{
-				EditorNode& n = graph.AddNode(firstMatch->type);
-				n.position = s_LastSpawnPos;
-				ax::NodeEditor::SetNodePosition(n.id, s_LastSpawnPos);
+				const EditorNodeID newNodeId = GraphCommandAPI(graph).AddNode(firstMatch->type, s_LastSpawnPos);
+				ax::NodeEditor::SetNodePosition(newNodeId, s_LastSpawnPos);
 
 				created = true;
 				ImGui::CloseCurrentPopup();

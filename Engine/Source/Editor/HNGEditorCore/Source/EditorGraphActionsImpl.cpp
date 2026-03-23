@@ -6,7 +6,8 @@
 
 #include <unordered_set>
 
-#include "CommandSystem.h"
+#include "CommandInGraph.h"
+#include "GraphCommandAPI.h"
 
 #include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
 
@@ -43,26 +44,7 @@ namespace Horizon::NodeGraphEditor
 				}
 				else if (AcceptNewItem())
 				{
-					EditorPin* outputPin = startPin->isInput ? endPin : startPin;
-					EditorPin* inputPin = startPin->isInput ? startPin : endPin;
-					EditorLink link;
-					link.id = ax::NodeEditor::LinkId(static_cast<int>(graph.links.size() + 1));
-					link.startPinId = outputPin->id;
-					link.endPinId = inputPin->id;
-
-					// 若提供了命令管理器，则通过命令系统创建连线，支持 Undo/Redo
-					if (graph.commandManager)
-					{
-						graph.commandManager->ExecuteCommand(
-							std::make_unique<LinkCommand>(graph, link)
-						);
-					}
-					else
-					{
-						// 回退路径：直接修改 graph.links
-						graph.links.push_back(link);
-						graph.dirty = true;
-					}
+					GraphCommandAPI(graph).CreateLink(startPinId, endPinId);
 				}
 			}
 			EndCreate();
@@ -104,10 +86,7 @@ namespace Horizon::NodeGraphEditor
 					for (const auto& p : node->outputs) deletedPins.insert(p.id);
 				}
 
-				if (graph.commandManager)
-					graph.commandManager->ExecuteCommand(std::make_unique<DeleteNodeCommand>(graph, nodeId));
-				else
-					DeleteNodeCommand(graph, nodeId).Execute();
+				GraphCommandAPI(graph).DeleteNode(nodeId);
 
 				// deleteDependencies=false，避免级联删除依赖导致其他 link 显示/消失异常
 				AcceptDeletedItem(false);
@@ -129,10 +108,7 @@ namespace Horizon::NodeGraphEditor
 
 				if (!relatedToDeletedNode)
 				{
-					if (graph.commandManager)
-						graph.commandManager->ExecuteCommand(std::make_unique<DeleteLinkCommand>(graph, linkId));
-					else
-						DeleteLinkCommand(graph, linkId).Execute();
+					GraphCommandAPI(graph).DeleteLink(linkId);
 				}
 
 				AcceptDeletedItem(false);

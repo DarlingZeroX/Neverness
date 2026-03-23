@@ -97,7 +97,16 @@ namespace Horizon::NodeGraphEditor
 		try
 		{
 			json root;
-			root["version"] = 1;
+			root["version"] = 2;
+			// 保存下一次生成用的 id state，避免重载后 ID 复用
+			{
+				const GraphIdState st = graph.idGen.GetState();
+				root["id_state"] = json{
+					{"nextNodeId", st.nextNodeId},
+					{"nextPinId", st.nextPinId},
+					{"nextLinkId", st.nextLinkId}
+				};
+			}
 
 			// nodes
 			root["nodes"] = json::array();
@@ -182,7 +191,18 @@ namespace Horizon::NodeGraphEditor
 			json root = json::parse(ifs, nullptr, true, true);
 
 			// version（目前仅保留字段，后续可按版本迁移）
-			(void)root.value("version", 1);
+			(void)root.value("version", 2);
+
+			// id_state：优先加载生成器状态
+			if (root.contains("id_state") && root["id_state"].is_object())
+			{
+				const auto& js = root["id_state"];
+				GraphIdState loaded{};
+				loaded.nextNodeId = js.value("nextNodeId", loaded.nextNodeId);
+				loaded.nextPinId = js.value("nextPinId", loaded.nextPinId);
+				loaded.nextLinkId = js.value("nextLinkId", loaded.nextLinkId);
+				graph.idGen.Reset(loaded);
+			}
 
 			// nodes
 			if (root.contains("nodes") && root["nodes"].is_array())
@@ -246,6 +266,9 @@ namespace Horizon::NodeGraphEditor
 					graph.links.push_back(std::move(l));
 				}
 			}
+
+			// 冲突修复：确保 idGen.next* 至少大于图中最大已存在 id
+			graph.FixupIdStateAfterLoad();
 
 			return graph;
 		}

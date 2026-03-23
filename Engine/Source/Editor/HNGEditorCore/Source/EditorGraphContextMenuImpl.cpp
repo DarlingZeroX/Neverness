@@ -35,8 +35,8 @@ namespace Horizon::NodeGraphEditor
 		EditorLinkID& pendingDeleteLinkId
 	)
 	{
-		EditorNodeID contextNodeId{};
-		EditorLinkID contextLinkId{};
+		static EditorNodeID contextNodeId{};
+		static EditorLinkID contextLinkId{};
 
 		bool openNodeMenu = false;
 		bool openLinkMenu = false;
@@ -52,7 +52,6 @@ namespace Horizon::NodeGraphEditor
 		{
 			openLinkMenu = true;
 		}
-		ax::NodeEditor::Resume();
 
 		if (openNodeMenu)
 			ImGui::OpenPopup("Node Context Menu");
@@ -62,6 +61,7 @@ namespace Horizon::NodeGraphEditor
 		// ----------------------------
 		// Node 上下文菜单
 		// ----------------------------
+
 		if (ImGui::BeginPopup("Node Context Menu"))
 		{
 			EditorNode* node = graph.FindNode(contextNodeId);
@@ -159,6 +159,8 @@ namespace Horizon::NodeGraphEditor
 
 			ImGui::EndPopup();
 		}
+
+		ax::NodeEditor::Resume();
 	}
 }
 

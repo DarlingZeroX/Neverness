@@ -12,7 +12,7 @@
 #pragma once
 #include <string>
 #include "../HNGEditorCoreConfig.h"
-#include "EditorCore.h"
+#include "../Interface/NodeEditorCore.h"
 
 namespace Horizon::NodeGraphEditor
 {
