@@ -15,7 +15,7 @@
 #include "VGCore/Include/Core/Window.h"
 #include "VGCore/Interface/EngineInterface.h"
 #include "VGCore/Include/Core/Viewport.h"
-#include "../Resource/UIDocument.h"
+#include "../UI/UIDocument.h"
 #include <string>
 #include <RmlUi/Core.h>
 

@@ -15,7 +15,7 @@ namespace VisionGal
 {
 	AudioFadeInOutAnimationScript::AudioFadeInOutAnimationScript(Direction direction)
 	{
-		m_Script = CreateRef<AudioAnimationScript>();
+		m_Script = MakeRef<AudioAnimationScript>();
 
 		switch (direction)
 		{

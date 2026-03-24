@@ -71,7 +71,5 @@ target_link_libraries(VGCore PRIVATE HFileSystem)
 target_link_libraries(VGCore PRIVATE VGImgui)
 target_link_libraries(VGCore PRIVATE VGRHI)
 target_link_libraries(VGCore PRIVATE VGPackage)
-target_link_libraries(VGCore PRIVATE RmlUi::RmlUi)
-#target_link_libraries(VGCore PRIVATE HMedia)
 
 

@@ -35,10 +35,10 @@ namespace VisionGal::Editor
 		auto windowWidth = editorConfig.Application.WindowWidth;
 		auto windowHeight = editorConfig.Application.WindowHeight;
 
-		m_ApplicationWindow = CreateRef<VGWindow>();
+		m_ApplicationWindow = MakeRef<VGWindow>();
 		m_ApplicationWindow->Initialize(editorName.c_str(), windowWidth, windowHeight,true);
 
-		m_GameEngine = CreateRef<CoreGameEngine>();
+		m_GameEngine = MakeRef<CoreGameEngine>();
 		m_GameEngine->Initialize(m_ApplicationWindow.get());
 
 		AddImguiLayer();
@@ -53,11 +53,11 @@ namespace VisionGal::Editor
 	{
 		auto* editor = PanelManager::GetInstance();
 
-		//editor->AddPanelWithID("EditorMenuBar", CreateRef<EditorMenuBar>());
-		//editor->AddPanelWithID("EditorPreferences", CreateRef<PreferencesPanel>());
-		//editor->AddPanelWithID("ProjectSetting", CreateRef<ProjectSettingPanel>());
+		//editor->AddPanelWithID("EditorMenuBar", MakeRef<EditorMenuBar>());
+		//editor->AddPanelWithID("EditorPreferences", MakeRef<PreferencesPanel>());
+		//editor->AddPanelWithID("ProjectSetting", MakeRef<ProjectSettingPanel>());
 
-		//editor->AddPanelWithID("EditorViewport", CreateRef<EditorViewport>(m_GameEngine->GetViewport()));
+		//editor->AddPanelWithID("EditorViewport", MakeRef<EditorViewport>(m_GameEngine->GetViewport()));
 	}
 
 	void VGDesktopApplication::RunScene()

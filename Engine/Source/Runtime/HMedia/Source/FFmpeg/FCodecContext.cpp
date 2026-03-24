@@ -78,7 +78,7 @@ namespace Horizon {
 
 	Ref<FfmpegAVCodecContext> FfmpegAVCodecContext::Create(FfmpegAVFormatContext& context, uint index)
 	{
-		return CreateRef<FfmpegAVCodecContext>(context, index);
+		return MakeRef<FfmpegAVCodecContext>(context, index);
 	}
 
 	AVChannelLayout FfmpegAVCodecContext::GetCHLayout() const

@@ -10,7 +10,7 @@
  */
 
 #include "EditorCore/ContentBrowser.h"
-#include <VGEngine/Include/Asset/Package.h>
+#include <VGAsset/Interface/Package.h>
 #include <VGImgui/IncludeImGui.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <HCore/Interface/HStringTools.h>

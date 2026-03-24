@@ -39,7 +39,7 @@ namespace Horizon {
 	Ref<FfmpegSwsContext> FfmpegSwsContext::Create(int srcW, int srcH, enum AVPixelFormat srcFormat, int dstW, int dstH,
 	                                               enum AVPixelFormat dstFormat, int flags, SwsFilter* srcFilter, SwsFilter* dstFilter, const double* param)
 	{
-		auto context = CreateRef<FfmpegSwsContext>();
+		auto context = MakeRef<FfmpegSwsContext>();
 		if (context->Initialize(srcW, srcH, srcFormat, dstW, dstH, dstFormat, flags, srcFilter, dstFilter, param) == false)
 			return nullptr;
 

@@ -12,7 +12,7 @@
 #include "UI/UISystem.h"
 #include <RmlUi/Debugger.h>
 #include "Engine/Manager.h"
-#include "Galgame/Lua/GameLua.h"
+//#include "Galgame/Lua/GameLua.h"
 #include "UI/Rml/Shell.h"
 #include "UI/Rml/RmlUi_Platform_SDL.h"
 #include "UI/Rml/RmlUi_Renderer_GL3.h"
@@ -88,7 +88,7 @@ namespace VisionGal
 				return result;
 			}
 
-			auto uiDocument = CreateRef<RmlUIDocument>();
+			auto uiDocument = MakeRef<RmlUIDocument>();
 			uiDocument->document = document;
 
 			uiDocument->SetResourcePath(path);
@@ -183,7 +183,7 @@ namespace VisionGal
 
 	Ref<RmlUIDocument> UISystem::OnScriptOpenDocument(Rml::ElementDocument* document)
 	{
-		auto uiDocument = CreateRef<RmlUIDocument>();
+		auto uiDocument = MakeRef<RmlUIDocument>();
 		uiDocument->document = document;
 
 		m_Documents.push_back(uiDocument);

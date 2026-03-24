@@ -15,13 +15,13 @@
 #include <VGImgui/Include/ImGuiEx/ImGuiVector.h>
 #include <VGEngine/Include/Galgame/GalGameEngine.h>
 #include <VGEngine/Include/Galgame/Components.h>
-#include <VGEngine/Include/Asset/Package.h>
+#include <VGAsset/Interface/Package.h>
 #include <VGEngine/Include/UI/UISystem.h>
 #include <VGEngine/Include/Galgame/GameEngineCore.h>
 #include <VGCore/Interface/Loader.h>
 #include <VGEngine/Include/Lua/LuaScript.h>
-#include <VGEngine/Include/Resource/Audio.h>
-#include <VGEngine/Include/Resource/FVideo.h>
+#include <VGEngine/Include/Engine/AudioPlayer.h>
+#include <VGEngine/Include/Engine/VideoPlayer.h>
 
 namespace VisionGal::Editor
 {

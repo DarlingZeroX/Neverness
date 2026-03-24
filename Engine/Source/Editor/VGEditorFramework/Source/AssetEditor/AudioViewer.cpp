@@ -13,7 +13,7 @@
 #include "EditorCore/Localization.h"
 #include <VGCore/Interface/Loader.h>
 #include <VGCore/Include/Utils/TimeHelper.h>
-#include <VGEngine/Include/Resource/Audio.h>
+#include <VGEngine/Include/Engine/AudioPlayer.h>
 
 namespace VisionGal::Editor
 {

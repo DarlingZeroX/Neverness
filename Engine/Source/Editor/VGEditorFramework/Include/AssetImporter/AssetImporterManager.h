@@ -15,7 +15,7 @@
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <VGCore/Include/Core/Core.h>
 #include <VGCore/Include/Core/Window.h>
-#include <VGEngine/Include/Asset/Package.h>
+#include <VGAsset/Interface/Package.h>
 
 namespace VisionGal::Editor
 {

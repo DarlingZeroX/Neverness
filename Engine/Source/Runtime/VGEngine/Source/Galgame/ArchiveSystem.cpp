@@ -10,7 +10,7 @@
  */
 
 #include "Galgame/ArchiveSystem.h"
-#include "Resource/Texture/TextureConverter.h"
+#include "Render/TextureConverter.h"
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <HCore/Include/File/nlohmann/json.hpp>
 
@@ -145,7 +145,7 @@ namespace VisionGal::GalGame
 		archive.WriteToJson(json);
 		std::string jsonStr = json.dump(2);
 
-		//archive.archiveData = CreateRef<ArchiveDataContainer>();
+		//archive.archiveData = MakeRef<ArchiveDataContainer>();
 		//archive.archiveData->Deserialize()
 
 		// 写入JSON到文件

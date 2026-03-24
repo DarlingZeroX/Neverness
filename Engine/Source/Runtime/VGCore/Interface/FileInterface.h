@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "../Include/Core/Types.h"
+#include "../Include/Core/CoreTypes.h"
 
 namespace VisionGal
 {

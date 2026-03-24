@@ -45,7 +45,7 @@ namespace VisionGal
 
 		if (length != read_length)
 		{
-			Rml::Log::Message(Rml::Log::LT_WARNING, "Could only read %zu of %zu bytes from file %s", read_length, length, path.c_str());
+			H_LOG_WARN("Could only read %zu of %zu bytes from file %s", read_length, length, path.c_str());
 		}
 
 		Close(handle);

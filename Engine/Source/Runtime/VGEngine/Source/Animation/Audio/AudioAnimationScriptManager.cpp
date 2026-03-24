@@ -47,7 +47,7 @@ namespace VisionGal {
 
 		if (command == "fade_in" || command == "淡入")
 		{
-			auto transform = CreateRef<AudioFadeInOutAnimationScript>(AudioFadeInOutAnimationScript::Direction::In);
+			auto transform = MakeRef<AudioFadeInOutAnimationScript>(AudioFadeInOutAnimationScript::Direction::In);
 			transform->SetInVolume(audioSource->volume);
 			transform->SetDuration(duration);
 			return transform;
@@ -55,7 +55,7 @@ namespace VisionGal {
 
 		if (command == "fade_out" || command == "淡出")
 		{
-			auto transform = CreateRef<AudioFadeInOutAnimationScript>(AudioFadeInOutAnimationScript::Direction::Out);
+			auto transform = MakeRef<AudioFadeInOutAnimationScript>(AudioFadeInOutAnimationScript::Direction::Out);
 			transform->SetOutVolume(audioSource->volume);
 			transform->SetDuration(duration);
 			return transform;

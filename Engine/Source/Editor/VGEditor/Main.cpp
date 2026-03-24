@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 	VGEngine::Get()->LoadProject();
 
 	// 初始化编辑器应用
-	Ref<Editor::VGEditorApplication> editor = CreateRef<Editor::VGEditorApplication>();
+	Ref<Editor::VGEditorApplication> editor = MakeRef<Editor::VGEditorApplication>();
 	editor->Initialize();
 	editor->InitializeEditorPanels();
 	VGEngine::Get()->AddApplication(editor);

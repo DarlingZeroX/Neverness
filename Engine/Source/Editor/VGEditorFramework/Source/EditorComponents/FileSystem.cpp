@@ -83,7 +83,7 @@ namespace VisionGal::Editor
 	{
 		m_pContentBrowser = ContentBrowser::GetInstancePtr();
 		m_ContentPath = m_pContentBrowser->GetProjectDirectory();
-		m_EditorContentBrowser = CreateRef<EditorFileSystem>(m_ContentPath);
+		m_EditorContentBrowser = MakeRef<EditorFileSystem>(m_ContentPath);
 	}
 
 	FileSystemPanel::FileSystemPanel(const String& contentPath)

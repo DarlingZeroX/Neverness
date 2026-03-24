@@ -12,7 +12,7 @@
 #include "EditorComponents/ContentBrowser/ThumbnialManager.h"
 #include "EditorCore/EditorCore.h"
 #include <VGCore/Interface/Loader.h>
-#include <VGEngine/Include/Resource/ResourceManager.h>
+#include <VGEngine/Include/Engine/ResourceManager.h>
 
 
 namespace VisionGal::Editor {
@@ -137,7 +137,7 @@ namespace VisionGal::Editor {
 		m_DefaultThumbnails["GalGameStoryScript"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/galStoryScript.png");
 		m_DefaultThumbnails["Video"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/video.png");
 
-		m_AssetThumbnailManagers["Texture"] = CreateRef<TextureThumbnailManager>();
+		m_AssetThumbnailManagers["Texture"] = MakeRef<TextureThumbnailManager>();
 		for (auto& [type, manager] : m_AssetThumbnailManagers)
 		{
 			manager->Initialize();

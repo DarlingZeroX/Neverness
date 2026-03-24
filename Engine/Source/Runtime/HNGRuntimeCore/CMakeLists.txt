@@ -16,14 +16,11 @@ endif()
 # 将源代码添加到此项目的可执行文件。
 file(GLOB HNODEGRAPH_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Core/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Graph/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
 file(GLOB HNODEGRAPH_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Graph/*.cpp"
 )
 
 add_library (HNGRuntimeCore SHARED ${HNODEGRAPH_HEADER_FILES} ${HNODEGRAPH_SRC_FILES})

@@ -70,7 +70,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	Ref<ShaderProgram> ShaderProgram::Create(const std::vector<Shader*>& shaders)
 	{
-		auto sp = CreateRef<ShaderProgram>();
+		auto sp = MakeRef<ShaderProgram>();
 		sp->CreateImp(shaders);
 
 		return sp;
@@ -78,7 +78,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	Ref<ShaderProgram> ShaderProgram::Create(const std::vector<VGFX::IShader*>& shaders)
 	{
-		auto sp = CreateRef<ShaderProgram>();
+		auto sp = MakeRef<ShaderProgram>();
 		sp->CreateImp(shaders);
 
 		return sp;

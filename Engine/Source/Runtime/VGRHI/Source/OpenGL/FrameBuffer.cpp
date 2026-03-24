@@ -28,7 +28,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	Ref<FrameBuffer> FrameBuffer::Create()
 	{
-		Ref<FrameBuffer> fb = CreateRef<FrameBuffer>();
+		Ref<FrameBuffer> fb = MakeRef<FrameBuffer>();
 
 		return fb;
 	}
@@ -169,7 +169,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	Ref<FrameBufferTexture> FrameBufferTexture::Create(unsigned int width, unsigned int height, Type type, unsigned int slot)
 	{
-		Ref<FrameBufferTexture> fbt = CreateRef<FrameBufferTexture>();
+		Ref<FrameBufferTexture> fbt = MakeRef<FrameBufferTexture>();
 		fbt->CreateFBTInline(width, height, type, slot);
 
 		return fbt;
@@ -224,7 +224,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	Ref<FrameBufferDepth> FrameBufferDepth::Create(unsigned int width, unsigned int height, Type type)
 	{
-		Ref<FrameBufferDepth> fbt = CreateRef<FrameBufferDepth>();
+		Ref<FrameBufferDepth> fbt = MakeRef<FrameBufferDepth>();
 		fbt->CreateImp(width, height, type);
 
 		return fbt;

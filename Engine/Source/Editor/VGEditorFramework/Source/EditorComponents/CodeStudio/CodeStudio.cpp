@@ -12,7 +12,7 @@
 #include "EditorComponents/CodeStudio/CodeStudio.h"
 #include "EditorCore/Localization.h"
 #include "HFileSystem/Interface/HFileSystem.h"
-#include "VGEngine/Include/Asset/Package.h"
+#include "VGAsset/Interface/Package.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"

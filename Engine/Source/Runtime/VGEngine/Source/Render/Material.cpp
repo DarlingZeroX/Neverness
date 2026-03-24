@@ -63,7 +63,7 @@ namespace VisionGal
 
 	Ref<Material> Material::Create()
 	{
-		return CreateRef<Material>();
+		return MakeRef<Material>();
 	}
 
     VGFX::IShaderProgram* Material::GetShaderProgram()

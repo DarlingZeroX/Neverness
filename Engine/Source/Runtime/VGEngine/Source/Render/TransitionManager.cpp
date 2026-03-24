@@ -39,49 +39,49 @@ namespace VisionGal {
 
 		if (command == "dissolve" || command == "溶解")
 		{
-			auto iTransition = CreateRef<DissolveSceneTransition>();
+			auto iTransition = MakeRef<DissolveSceneTransition>();
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
 
 		if (command == "fadeIn" || command == "淡入")
 		{
-			auto iTransition = CreateRef<FadeSceneTransition>(FadeSceneTransition::FadeType::FadeIn);
+			auto iTransition = MakeRef<FadeSceneTransition>(FadeSceneTransition::FadeType::FadeIn);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
 
 		if (command == "fadeOut" || command == "淡出")
 		{
-			auto iTransition = CreateRef<FadeSceneTransition>(FadeSceneTransition::FadeType::FadeOut);
+			auto iTransition = MakeRef<FadeSceneTransition>(FadeSceneTransition::FadeType::FadeOut);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
 
 		if (command == "pushLeft" || command == "向左推入")
 		{
-			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushLeft);
+			auto iTransition = MakeRef<PushSceneTransition>(PushSceneTransition::PushType::PushLeft);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
 
 		if (command == "pushRight" || command == "向右推入")
 		{
-			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushRight);
+			auto iTransition = MakeRef<PushSceneTransition>(PushSceneTransition::PushType::PushRight);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
 
 		if (command == "pushDown" || command == "向下推入")
 		{
-			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushDown);
+			auto iTransition = MakeRef<PushSceneTransition>(PushSceneTransition::PushType::PushDown);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
 
 		if (command == "pushUp" || command == "向上推入")
 		{
-			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushUp);
+			auto iTransition = MakeRef<PushSceneTransition>(PushSceneTransition::PushType::PushUp);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
@@ -128,7 +128,7 @@ namespace VisionGal {
 			return nullptr;
 		}
 
-		auto iTransition = CreateRef<CustomImageSceneTransition>(tex);
+		auto iTransition = MakeRef<CustomImageSceneTransition>(tex);
 		iTransition->SetDuration(duration);
 		return iTransition;
 	}

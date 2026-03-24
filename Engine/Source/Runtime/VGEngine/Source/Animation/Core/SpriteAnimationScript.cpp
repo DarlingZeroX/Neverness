@@ -15,7 +15,7 @@ namespace VisionGal
 {
 	SpriteFadeInOutTransformScript::SpriteFadeInOutTransformScript(Horizon::HEntityInterface* entity,Direction direction)
 	{
-		m_Script = CreateRef<SpriteAlphaAnimationScript>();
+		m_Script = MakeRef<SpriteAlphaAnimationScript>();
 
 		switch (direction)
 		{

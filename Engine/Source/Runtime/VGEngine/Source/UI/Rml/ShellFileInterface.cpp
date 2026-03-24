@@ -72,7 +72,7 @@ Rml::FileHandle UIFileInterfaceVFS::Open(const Rml::String& path)
 	//if (!file->IsOpened())
 	//	return 0;
 
-	Ref<FilePtr> filePtr = CreateRef<FilePtr>();
+	Ref<FilePtr> filePtr = MakeRef<FilePtr>();
 	bool result = filePtr->Open(type, processPath);
 
 	if (result == false)

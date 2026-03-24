@@ -65,7 +65,7 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::CaptureSceneImage()
 	{
-		m_GalGameContext->runtimeState.screenshotPixels = CreateRef<VGFX::TexturePixels>();
+		m_GalGameContext->runtimeState.screenshotPixels = MakeRef<VGFX::TexturePixels>();
 		m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_GalGameContext->runtimeState.screenshotPixels);
 	}
 
@@ -101,36 +101,36 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext)
 	{
-		m_GalGameContext = CreateRef<GalGameContext>();
+		m_GalGameContext = MakeRef<GalGameContext>();
 
 		// 初始化对话系统
-		m_DialogueSystem = CreateRef<DialogueSystem>();
+		m_DialogueSystem = MakeRef<DialogueSystem>();
 		m_DialogueSystem->InitialiseDataModel(uiContext);
 		m_DialogueSystem->Initialize(m_GalGameContext);
 
 		// 初始化分层场景管理器
-		m_LayeredSceneManager = CreateRef<LayeredSceneSystem>();
+		m_LayeredSceneManager = MakeRef<LayeredSceneSystem>();
 		m_LayeredSceneManager->Initialize(m_GalGameContext);
 
 		// 初始化渲染管线
-		m_RenderPipeline = CreateRef<RenderPipeline>();
+		m_RenderPipeline = MakeRef<RenderPipeline>();
 		m_RenderPipeline->Initialize(context);
 
 		// 初始化存档系统
-		m_ArchiveSystem = CreateRef<ArchiveSystem>();
+		m_ArchiveSystem = MakeRef<ArchiveSystem>();
 		m_ArchiveSystem->Initialise(m_GalGameContext);
 
 		// 初始剧情脚本系统
-		m_StoryScriptSystem = CreateRef<StoryScriptSystem>();
+		m_StoryScriptSystem = MakeRef<StoryScriptSystem>();
 		m_StoryScriptSystem->SetEngine(this);
 		m_StoryScriptSystem->Initialise(m_GalGameContext, context);
 
 		// 初始资源系统
-		m_ResourceSystem = CreateRef<ResourceSystem>();
+		m_ResourceSystem = MakeRef<ResourceSystem>();
 		m_ResourceSystem->Initialize(m_GalGameContext, m_LayeredSceneManager);
 
 		// 初始界面系统
-		m_GalGameUISystem = CreateRef<GalGameUISystem>();
+		m_GalGameUISystem = MakeRef<GalGameUISystem>();
 		m_GalGameUISystem->Initialize(m_GalGameContext, context);
 	}
 

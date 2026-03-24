@@ -55,7 +55,7 @@ namespace VisionGal
 
 		void InitializeLuaState()
 		{
-			g_CoreLuaState = CreateRef<sol::state>();
+			g_CoreLuaState = MakeRef<sol::state>();
 
 			g_CoreLuaState->open_libraries(sol::lib::base,
 				sol::lib::math,
@@ -73,7 +73,7 @@ namespace VisionGal
 
 		void ResetLuaState()
 		{
-			g_CoreLuaState = CreateRef<sol::state>();
+			g_CoreLuaState = MakeRef<sol::state>();
 
 			g_CoreLuaState->open_libraries(sol::lib::base,
 				sol::lib::math,

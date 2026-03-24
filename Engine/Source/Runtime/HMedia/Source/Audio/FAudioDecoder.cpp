@@ -39,7 +39,7 @@ namespace Horizon {
 		if (m_AudioStreamIndex != -1)				// 音频解码器
 		{
 			// 音频
-			m_CodecContext = CreateRef<FfmpegAVCodecContext>(*m_FContext->GetFormatContext(), m_AudioStreamIndex);
+			m_CodecContext = MakeRef<FfmpegAVCodecContext>(*m_FContext->GetFormatContext(), m_AudioStreamIndex);
 
 			// 假设 actx 是已经 open2 的 AVCodecContext*
 			FfmpegAVChannelLayout in_ch_layout(m_CodecContext->GetCHLayout());
@@ -47,14 +47,14 @@ namespace Horizon {
 			m_SwrContext = FfmpegSwrContext::Create(in_ch_layout, out_ch_layout, *m_CodecContext);
 
 			// 创建音频数据缓冲区
-			m_AudioRingBuffer = CreateRef<AudioRingBuffer>(2 * 1024 * 1024);
+			m_AudioRingBuffer = MakeRef<AudioRingBuffer>(2 * 1024 * 1024);
 
 			// 创建Ffmpeg音频缓冲区
 			m_AudioMaxSamples = av_rescale_rnd(4096, 44100, m_CodecContext->GetSampleRate(), AV_ROUND_UP);
 			av_samples_alloc(&m_AudioBuf, nullptr, 2, m_AudioMaxSamples, AV_SAMPLE_FMT_S16, 0);
 		}
 
-		m_FfmpegAVFrame = CreateRef<FfmpegAVFrame>();
+		m_FfmpegAVFrame = MakeRef<FfmpegAVFrame>();
 
 		return true;
 	}

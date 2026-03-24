@@ -19,7 +19,7 @@ namespace VisionGal
 	{
 		CoreImp()
 		{
-			VFS = CreateRef<vfspp::VirtualFileSystem>();
+			VFS = MakeRef<vfspp::VirtualFileSystem>();
 		}
 
 		static CoreImp* Get()

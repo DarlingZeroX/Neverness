@@ -10,7 +10,7 @@
 */
 
 #include "Project/ProjectBuilder.h"
-#include "Asset/Package.h"
+#include "VGAsset/Interface/Package.h"
 #include "VGCore/Include/Core/Core.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "Project/ProjectSettings.h"

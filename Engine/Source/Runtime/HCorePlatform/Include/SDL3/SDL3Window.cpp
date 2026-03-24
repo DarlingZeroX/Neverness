@@ -34,14 +34,14 @@ namespace Horizon::SDL3
 
 	void Window::InitialMouseKeyboard()
 	{
-		m_Mouse = NewRef<Mouse>(HNativeMouse::GetContext());
+		m_Mouse = MakeRef<Mouse>(HNativeMouse::GetContext());
 
 		if (HNativeMouse::Get().VaildAttachedMouse() == false)
 		{
 			HNativeMouse::Get().MouseAttached(m_Mouse);
 		}
 
-		m_Keyboard = NewRef<Keyboard>(HNativeKeyboard::GetContext());
+		m_Keyboard = MakeRef<Keyboard>(HNativeKeyboard::GetContext());
 
 		if (HNativeKeyboard::Get().VaildAttachedKeyboard() == false)
 		{

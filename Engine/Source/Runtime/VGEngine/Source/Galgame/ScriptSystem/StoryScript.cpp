@@ -35,7 +35,7 @@ namespace VisionGal::GalGame
 
     Ref<LuaStoryScript> LuaStoryScript::LoadFromFile(const std::string& path)
     {
-        Ref<LuaStoryScript> script = CreateRef<LuaStoryScript>();
+        Ref<LuaStoryScript> script = MakeRef<LuaStoryScript>();
 
         script->SetResourcePath(path);
 

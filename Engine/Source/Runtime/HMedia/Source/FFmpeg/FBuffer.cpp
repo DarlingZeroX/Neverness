@@ -35,7 +35,7 @@ namespace Horizon {
 
 	Ref<FfmpegBuffer> FfmpegBuffer::New(size_t size)
 	{
-		return CreateRef<FfmpegBuffer>(size);
+		return MakeRef<FfmpegBuffer>(size);
 	}
 
 	size_t FfmpegBuffer::Size() const

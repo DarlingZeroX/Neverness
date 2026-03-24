@@ -29,7 +29,7 @@ namespace Horizon
 
     bool AudioClip::Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
     {
-		auto decoder = CreateRef<FAudioDecoder>();
+		auto decoder = MakeRef<FAudioDecoder>();
 
 		bool result = decoder->Open(vfs, filePath);
 		if (result)
@@ -61,7 +61,7 @@ namespace Horizon
 
     Ref<AudioPlayer> AudioPlayer::CreatePlayer(const Ref<IAudioClip>& clip)
     {
-		auto player = CreateRef<AudioPlayer>();
+		auto player = MakeRef<AudioPlayer>();
 		player->OpenAudioClip(clip);
 		return player;
     }

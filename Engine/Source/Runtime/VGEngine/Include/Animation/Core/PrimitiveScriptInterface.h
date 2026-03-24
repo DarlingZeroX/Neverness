@@ -78,7 +78,7 @@ namespace VisionGal
 		{
 			H_ASSERT_NOT_NULL(entity);
 
-			auto script = CreateRef<T>();
+			auto script = MakeRef<T>();
 			script->StartEntityAnimation(entity, primitive, targetProperty.duration, targetProperty.tween, reverse);
 
 			return script;
@@ -94,7 +94,7 @@ namespace VisionGal
 		{
 			H_ASSERT_NOT_NULL(entity);
 
-			auto script = CreateRef<T>();
+			auto script = MakeRef<T>();
 			script->StartEntityAnimation(entity, primitive, targetProperty.duration, targetProperty.tween, reverse);
 
 			return script;

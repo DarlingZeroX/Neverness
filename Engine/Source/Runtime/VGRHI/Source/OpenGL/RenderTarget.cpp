@@ -15,7 +15,7 @@
 VISIONGAL_OPENGL_NAMESPACE_BEGIN
 	Ref<RenderTarget2D> RenderTarget2D::Create(unsigned int width, unsigned int height)
 	{
-		auto rt = CreateRef<RenderTarget2D>();
+		auto rt = MakeRef<RenderTarget2D>();
 		rt->CreateImp(width, height);
 
 		return rt;
@@ -45,7 +45,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	bool RenderTarget2D::CreateImp(unsigned int width, unsigned int height)
 	{
-		m_FrameBuffer = CreateRef<FrameBuffer>();
+		m_FrameBuffer = MakeRef<FrameBuffer>();
 		m_FrameBuffer->Bind();
 
 		m_ColorFBT = FrameBufferTexture::Create(width, height, FrameBufferTexture::Type::COLOR);

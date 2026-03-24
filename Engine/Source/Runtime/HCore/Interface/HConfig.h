@@ -124,12 +124,7 @@ template<typename T>
 using Scope = std::unique_ptr<T>;
 
 template<typename T, typename ... Args>
-constexpr Scope<T> CreateScope(Args&& ... args)
-{
-	return std::make_unique<T>(std::forward<Args>(args)...);
-}
-template<typename T, typename ... Args>
-constexpr Scope<T> NewScope(Args&& ... args)
+constexpr Scope<T> MakeScope(Args&& ... args)
 {
 	return std::make_unique<T>(std::forward<Args>(args)...);
 }
@@ -138,12 +133,7 @@ template<typename T>
 using Ref = std::shared_ptr<T>;
 
 template<typename T, typename ... Args>
-constexpr Ref<T> CreateRef(Args&& ... args)
-{
-	return std::make_shared<T>(std::forward<Args>(args)...);
-}
-template<typename T, typename ... Args>
-constexpr Ref<T> NewRef(Args&& ... args)
+constexpr Ref<T> MakeRef(Args&& ... args)
 {
 	return std::make_shared<T>(std::forward<Args>(args)...);
 }
@@ -158,14 +148,6 @@ constexpr Ref<T> NewRef(Args&& ... args)
 
 #ifndef H_GLOBALCONST
 #define H_GLOBALCONST extern const __declspec(selectany)
-#endif
-
-#ifndef _HIn
-#define _HIn
-#endif
-
-#ifndef _HOut
-#define _HOut
 #endif
 
 #ifndef H_NODISCARD

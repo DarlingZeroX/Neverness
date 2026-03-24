@@ -11,7 +11,7 @@
 
 #include "Engine/Manager/SceneManager.h"
 
-#include "Asset/Package.h"
+#include "VGAsset/Interface/Package.h"
 #include "Asset/Accessor/SceneAccessor.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "Scene/GameActorFactory.h"
@@ -165,7 +165,7 @@ namespace VisionGal
 
 	Ref<Scene> SceneManager::LoadNewScene()
 	{
-		Ref<Scene> scene = CreateRef<Scene>();
+		Ref<Scene> scene = MakeRef<Scene>();
 		GetGameActorFactory()->CreateActor(scene.get(), "camera");
 
 		m_NewScene = scene;

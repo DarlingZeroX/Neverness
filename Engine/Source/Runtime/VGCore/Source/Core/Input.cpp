@@ -18,14 +18,14 @@ namespace VisionGal
 {
 	Input::Input()
 	{
-		m_Mouse = NewRef<Horizon::SDL3::Mouse>(Horizon::HNativeMouse::GetContext());
+		m_Mouse = MakeRef<Horizon::SDL3::Mouse>(Horizon::HNativeMouse::GetContext());
 
 		if (Horizon::HNativeMouse::Get().VaildAttachedMouse() == false)
 		{
 			Horizon::HNativeMouse::Get().MouseAttached(m_Mouse);
 		}
 
-		m_Keyboard = NewRef<Horizon::SDL3::Keyboard>(Horizon::HNativeKeyboard::GetContext());
+		m_Keyboard = MakeRef<Horizon::SDL3::Keyboard>(Horizon::HNativeKeyboard::GetContext());
 
 		if (Horizon::HNativeKeyboard::Get().VaildAttachedKeyboard() == false)
 		{

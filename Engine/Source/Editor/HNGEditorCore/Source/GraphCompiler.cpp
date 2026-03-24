@@ -10,16 +10,16 @@
 */
 
 #include "GraphCompiler.h"
-#include <HNGRuntimeCore/Include/Core/Nodes.h>
-#include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
+#include <HNGRuntimeCore/Include/Nodes.h>
+#include <HNGRuntimeCore/Include/NodeRegistry.h>
 #include <unordered_map>
 #include <sstream>
 // hash/== for ax::NodeEditor::NodeId
 #include <functional>
 
-#include <HNGRuntimeCore/Include/Core/RuntimeGraph.h>
-#include <HNGRuntimeCore/Include/Core/Nodes.h>
-#include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
+#include <HNGRuntimeCore/Include/RuntimeGraph.h>
+#include <HNGRuntimeCore/Include/Nodes.h>
+#include <HNGRuntimeCore/Include/NodeRegistry.h>
 #include <unordered_map>
 // hash/== for ax::NodeEditor::NodeId
 #include <functional>

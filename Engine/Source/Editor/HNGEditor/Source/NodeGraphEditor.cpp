@@ -12,7 +12,7 @@
 #include "NodeGraphEditor.h"
 #include "HNGEditorCore/Include/NodeFactory.h"
 #include "HNGEditorCore/Interface/GraphCompiler.h"
-#include <HNGRuntimeCore/Include/Core/Nodes.h>
+#include <HNGRuntimeCore/Include/Nodes.h>
 #include <VGImgui/IncludeImGui.h>
 #include <cstdio>
 #include <utility>
@@ -48,7 +48,7 @@ namespace Horizon::NodeGraph
 		
 		// 1. 创建 EditorGraph
 		EditorGraph& editor = m_EditorGraph;
-		editor.context = CreateRef<Horizon::NodeGraphEditor::IMNEEditorContext>();
+		editor.context = MakeRef<Horizon::NodeGraphEditor::IMNEEditorContext>();
 		editor.registry = &m_Registry;
 		editor.editorRegistry = &m_NodeEditorRegistry;
 		
@@ -87,7 +87,7 @@ namespace Horizon::NodeGraph
 
 	HNodeGraphEditor::HNodeGraphEditor()
 	{
-		//m_EditorGraph.context = CreateRef<NodeGraphEditor::IMNEEditorContext>();
+		//m_EditorGraph.context = MakeRef<NodeGraphEditor::IMNEEditorContext>();
 		//m_EditorGraph.nodes.push_back(NodeGraphEditor::CreateEntryNode());
 		//m_EditorGraph.nodes.push_back(NodeGraphEditor::CreateDialogueNode());
 		//m_EditorGraph.nodes.push_back(NodeGraphEditor::CreateBranchNode());

@@ -28,7 +28,7 @@ namespace Horizon {
 
 	Ref<FfmpegAVFormatContext> FfmpegAVFormatContext::Create()
 	{
-		return CreateRef<FfmpegAVFormatContext>();
+		return MakeRef<FfmpegAVFormatContext>();
 	}
 
 	void FfmpegAVFormatContext::SetIOContext(FfmpegAVIOContext& ioCtx) const

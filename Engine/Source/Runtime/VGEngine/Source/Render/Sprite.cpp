@@ -19,13 +19,13 @@ namespace VisionGal
 
 	FullScreenQuad::FullScreenQuad()
 	{
-		m_Texture = CreateRef<Texture2D>();
+		m_Texture = MakeRef<Texture2D>();
 		GetFullScreenQuadMesh();
 	}
 
 	Ref<FullScreenQuad> FullScreenQuad::Create()
 	{
-		return CreateRef<FullScreenQuad>();
+		return MakeRef<FullScreenQuad>();
 	}
 
 	VGFX::IStaticMesh* FullScreenQuad::GetFullScreenQuadMesh()
@@ -85,7 +85,7 @@ namespace VisionGal
 
 	Ref<Sprite> Sprite::Create(Ref<Texture2D> tex, float2 size)
 	{
-		return CreateRef<Sprite>(tex, size);
+		return MakeRef<Sprite>(tex, size);
 	}
 
 	VGFX::IStaticMesh* Sprite::GetMesh()

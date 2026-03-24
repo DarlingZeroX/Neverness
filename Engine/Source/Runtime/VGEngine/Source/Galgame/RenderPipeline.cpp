@@ -83,7 +83,7 @@ namespace VisionGal::GalGame
 		CreateRenderTargets(width, height);
 		CreatePrevFrameTexture(width, height);
 
-		m_FullScreenRenderer = CreateRef<FullScreenRendererComponent>();
+		m_FullScreenRenderer = MakeRef<FullScreenRendererComponent>();
 		//m_FullScreenRenderer->image->GetITexture()->SetTexture(m_RenderTarget2DFinal->GetTextureRef());
 
 		TransitionManager::GetInstance()->OnTransitionEvent.Subscribe([this](const TransitionEvent& event)

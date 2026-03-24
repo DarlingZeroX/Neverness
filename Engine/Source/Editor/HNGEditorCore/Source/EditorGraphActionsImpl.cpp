@@ -9,7 +9,7 @@
 #include "CommandInGraph.h"
 #include "GraphCommandAPI.h"
 
-#include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
+#include <HNGRuntimeCore/Include/RuntimeContext.h>
 
 namespace Horizon::NodeGraphEditor
 {

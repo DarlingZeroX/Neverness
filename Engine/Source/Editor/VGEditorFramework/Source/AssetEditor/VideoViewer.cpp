@@ -13,14 +13,14 @@
 #include "EditorCore/Localization.h"
 #include <VGCore/Interface/Loader.h>
 #include <VGCore/Include/Utils/TimeHelper.h>
-#include <VGEngine/Include/Resource/FVideo.h>
+#include <VGEngine/Include/Engine/VideoPlayer.h>
 
 namespace VisionGal::Editor
 {
 	VideoViewer::VideoViewer(const VGPath& path)
 	{
 		m_Path = path;
-		auto clip = CreateRef<FVideoClip>();
+		auto clip = MakeRef<FVideoClip>();
 		if (clip->Open(path))
 		{
 			m_VideoPlayer = FVideoPlayer::CreatePlayer(clip);

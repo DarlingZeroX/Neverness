@@ -38,7 +38,7 @@ namespace VisionGal::Editor
 		auto windowHeight = 720;
 
 		// 创建启动器窗口
-		m_LauncherWindow = CreateScope<VGWindow>();
+		m_LauncherWindow = MakeScope<VGWindow>();
 		m_LauncherWindow->Initialize(editorName, windowWidth, windowHeight,true);
 
 		// 添加ImGui Layer
@@ -53,8 +53,8 @@ namespace VisionGal::Editor
 	{
 		auto* panelManager = PanelManager::GetInstance();
 
-		//editor->AddPanelWithID("EditorMenuBar", CreateRef<EditorMenuBar>());
-		panelManager->AddPanelWithID("LauncherMainWindow", CreateRef<VGLauncherMainWindow>());
+		//editor->AddPanelWithID("EditorMenuBar", MakeRef<EditorMenuBar>());
+		panelManager->AddPanelWithID("LauncherMainWindow", MakeRef<VGLauncherMainWindow>());
 	}
 
 	void VGLauncher::InitializeEditorUI()

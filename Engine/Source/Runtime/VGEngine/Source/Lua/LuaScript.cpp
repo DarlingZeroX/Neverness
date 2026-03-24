@@ -21,7 +21,7 @@ namespace VisionGal
 {
 	Ref<LuaScript> LuaScript::LoadFromFile(const String& file)
 	{
-		auto script = CreateRef<LuaScript>();
+		auto script = MakeRef<LuaScript>();
 
 		auto result = VFS::ReadTextFromFile(file, script->m_ScriptString);
 		 

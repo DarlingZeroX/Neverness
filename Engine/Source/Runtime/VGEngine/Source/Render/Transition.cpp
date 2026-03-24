@@ -26,7 +26,7 @@ namespace VisionGal
 	void SceneTransitionBase::Start()
 	{
 		m_IsBegin = true;
-		m_Helper = CreateRef<TransitionHelper>(m_Duration);
+		m_Helper = MakeRef<TransitionHelper>(m_Duration);
 	}
 
 	void SceneTransitionBase::Finish()

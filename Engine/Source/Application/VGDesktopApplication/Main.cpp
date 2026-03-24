@@ -51,7 +51,7 @@ int main()
 	VGEngine::Get()->LoadProject();
 
 	// 初始化桌面应用程序
-	Ref<Editor::VGDesktopApplication> application = CreateRef<Editor::VGDesktopApplication>();
+	Ref<Editor::VGDesktopApplication> application = MakeRef<Editor::VGDesktopApplication>();
 	application->Initialize();
 
 	// 初始化编辑器面板

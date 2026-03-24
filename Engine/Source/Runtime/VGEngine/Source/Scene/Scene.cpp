@@ -101,7 +101,7 @@ namespace VisionGal
 		if (deEntity.ID == ConstHUISceneActor)
 			return GetSceneActor();
 
-		auto entity = CreateRef<GameActor>();
+		auto entity = MakeRef<GameActor>();
 		entity->SetBaseEntity(this->GetWorld()->create());
 
 		{
@@ -138,7 +138,7 @@ namespace VisionGal
 
 	IGameActor* Scene::CreateActor(IEntity* parent)
 	{
-		auto entity = CreateRef<GameActor>();
+		auto entity = MakeRef<GameActor>();
 		entity->SetBaseEntity(this->GetWorld()->create());
 
 		{
@@ -165,7 +165,7 @@ namespace VisionGal
 
 	void Scene::CreateSceneActor()
 	{
-		m_SceneActor = CreateRef<SceneActor>();
+		m_SceneActor = MakeRef<SceneActor>();
 		m_SceneActor->Initialize(this);
 		m_SceneActor->SetEntityID(ConstHUISceneActor);
 		m_SceneActor->SetBaseEntity(this->GetWorld()->create());

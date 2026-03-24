@@ -16,7 +16,7 @@ namespace VisionGal::GalGame
 {
 	ScrollTransformScript::ScrollTransformScript(Direction direction, float2 texSize)
 	{
-		m_Script = CreateRef<TransformAnimationScript>();
+		m_Script = MakeRef<TransformAnimationScript>();
 
 		switch (direction)
 		{

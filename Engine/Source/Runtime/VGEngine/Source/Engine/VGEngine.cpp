@@ -10,7 +10,7 @@
  */
 
 #include "Engine/VGEngine.h"
-#include "Resource/ResourceManager.h"
+#include "Engine/ResourceManager.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGCore/Include/Core/VFS.h"
@@ -97,7 +97,7 @@ namespace VisionGal
 		if (setting.MainScene.empty())
 		{
 			H_LOG_INFO("Editor default scene no exist!");
-			m_Scene = CreateRef<Scene>();
+			m_Scene = MakeRef<Scene>();
 			GetSceneManager()->SetCurrentScene(m_Scene);
 			return;
 		}
@@ -106,7 +106,7 @@ namespace VisionGal
 
 		if (m_Scene == nullptr)
 		{
-			m_Scene = CreateRef<Scene>();
+			m_Scene = MakeRef<Scene>();
 			GetSceneManager()->SetCurrentScene(m_Scene);
 		}
 	}

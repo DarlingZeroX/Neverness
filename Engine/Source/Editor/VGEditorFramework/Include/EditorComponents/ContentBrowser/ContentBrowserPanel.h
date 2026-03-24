@@ -13,7 +13,7 @@
 #include "../../Config.h"
 #include "../PanelInterface.h"
 #include "../../EditorCore/ContentBrowser.h"
-#include <VGEngine/Include/Resource/Texture2D.h>
+#include <VGEngine/Include/Render/Texture2D.h>
 
 namespace VisionGal::Editor {
 	class VG_EDITOR_FRAMEWORK_API ContentBrowserPanel: public IEditorPanel

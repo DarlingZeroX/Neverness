@@ -34,12 +34,12 @@ namespace VisionGal::Editor
 		auto windowHeight = editorConfig.EditorWindowHeight;
 
 		// 初始化编辑器窗口
-		m_EditorWindow = CreateRef<VGWindow>();
+		m_EditorWindow = MakeRef<VGWindow>();
 		m_EditorWindow->SetInitializeBorderless(true);
 		m_EditorWindow->Initialize(editorName.c_str(), windowWidth, windowHeight,true);
 
 		// 初始化游戏引擎
-		m_GameEngine = CreateRef<CoreGameEngine>();
+		m_GameEngine = MakeRef<CoreGameEngine>();
 		m_GameEngine->Initialize(m_EditorWindow.get());
 
 		// 初始化ImGui
@@ -62,22 +62,22 @@ namespace VisionGal::Editor
 	{
 		auto* editor = PanelManager::GetInstance();
 
-		auto mainWindow = CreateRef<EditorMainWindow>();
-		//auto editorSidebar = CreateRef<EditorSideBar>();
+		auto mainWindow = MakeRef<EditorMainWindow>();
+		//auto editorSidebar = MakeRef<EditorSideBar>();
 
-		editor->AddPanelWithID("EditorMenuBar", CreateRef<EditorMenuBar>(m_EditorWindow.get()));
+		editor->AddPanelWithID("EditorMenuBar", MakeRef<EditorMenuBar>(m_EditorWindow.get()));
 		//editor->AddPanelWithID("EditorSideBar", editorSidebar);
 		editor->AddPanelWithID("EditorMainWindow", mainWindow);
-		editor->AddPanelWithID("EditorPreferences", CreateRef<PreferencesPanel>());
-		editor->AddPanelWithID("ProjectSetting", CreateRef<ProjectSettingPanel>());
-		editor->AddPanelWithID("BuildSettings", CreateRef<BuildSettingsPanel>());
+		editor->AddPanelWithID("EditorPreferences", MakeRef<PreferencesPanel>());
+		editor->AddPanelWithID("ProjectSetting", MakeRef<ProjectSettingPanel>());
+		editor->AddPanelWithID("BuildSettings", MakeRef<BuildSettingsPanel>());
 
-		mainWindow->AddPanelWithID("ContentBrowserPanel", CreateRef<ContentBrowserPanel>());
-		mainWindow->AddPanelWithID("ConsolePanel", CreateRef<ConsolePanel>());
-		mainWindow->AddPanelWithID("SceneBrowserPanel", CreateRef<SceneBrowserPanel>());
-		mainWindow->AddPanelWithID("DetailBrowserPanel", CreateRef<DetailBrowserPanel>());
-		mainWindow->AddPanelWithID("EditorViewport", CreateRef<EditorViewport>(m_GameEngine->GetViewport()));
-		mainWindow->AddPanelWithID("CodeStudioPanel", CreateRef<CodeStudioPanel>());
+		mainWindow->AddPanelWithID("ContentBrowserPanel", MakeRef<ContentBrowserPanel>());
+		mainWindow->AddPanelWithID("ConsolePanel", MakeRef<ConsolePanel>());
+		mainWindow->AddPanelWithID("SceneBrowserPanel", MakeRef<SceneBrowserPanel>());
+		mainWindow->AddPanelWithID("DetailBrowserPanel", MakeRef<DetailBrowserPanel>());
+		mainWindow->AddPanelWithID("EditorViewport", MakeRef<EditorViewport>(m_GameEngine->GetViewport()));
+		mainWindow->AddPanelWithID("CodeStudioPanel", MakeRef<CodeStudioPanel>());
 	}
 
 	void VGEditorApplication::InitializeEditorUI()

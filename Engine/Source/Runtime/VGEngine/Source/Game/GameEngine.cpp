@@ -64,7 +64,7 @@ namespace VisionGal
 
 	CoreGameEngine::CoreGameEngine()
 	{
-		m_RenderEngine = CreateRef<CoreRenderEngine>();
+		m_RenderEngine = MakeRef<CoreRenderEngine>();
 
 		// 订阅引擎事件
 		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
@@ -283,7 +283,7 @@ namespace VisionGal
 		Input::Get()->AttachViewport(m_Viewport);
 
 		// 放在最后创建GalGame子引擎，因为有些系统还没初始化，比如UI系统
-		auto galgameEngine = CreateRef<GalGame::GalGameEngine>();
+		auto galgameEngine = MakeRef<GalGame::GalGameEngine>();
 		galgameEngine->Initialize(&m_EngineContext);
 		m_SubGameEngines.push_back(galgameEngine);
 

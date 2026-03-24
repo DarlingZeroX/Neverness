@@ -33,7 +33,7 @@
 #include <optional>
 #include "../HNGEditorCoreConfig.h"
 #include "../Interface/EditorGraph.h"
-#include "../Interface/CommandSystem.h"
+#include "CommandSystem.h"
 
 namespace Horizon::NodeGraphEditor
 {

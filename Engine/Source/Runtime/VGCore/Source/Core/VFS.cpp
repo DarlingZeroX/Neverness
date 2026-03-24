@@ -19,7 +19,7 @@ namespace VisionGal
 	{
 		VFSImp()
 		{
-			VFS = CreateRef<vfspp::VirtualFileSystem>();
+			VFS = MakeRef<vfspp::VirtualFileSystem>();
 		}
 
 		static VFSImp* Get()
@@ -73,7 +73,7 @@ namespace VisionGal
 		{
 			if (file->IsOpened())
 			{
-				Ref<std::vector<uint8_t>> fileData = CreateRef<std::vector<uint8_t>>();
+				Ref<std::vector<uint8_t>> fileData = MakeRef<std::vector<uint8_t>>();
 				fileData->resize(file->Size());
 
 				//auto* fileData = new uint8_t[file->Size()];

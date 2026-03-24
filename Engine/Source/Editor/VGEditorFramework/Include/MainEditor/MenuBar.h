@@ -15,7 +15,7 @@
 #include <HCore/Interface/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
 #include <VGCore/Include/Core/Window.h>
-#include <VGEngine/Include/Resource/Texture2D.h>
+#include <VGEngine/Include/Render/Texture2D.h>
 
 namespace VisionGal::Editor
 {

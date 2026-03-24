@@ -16,7 +16,7 @@
 #include <VGImgui/IncludeImGui.h>
 #include <HCore/Interface/HStringTools.h>
 
-#include "VGEngine/Include/Asset/Package.h"
+#include "VGAsset/Interface/Package.h"
 #include "VGEngine/Include/Lua/LuaScript.h"
 #include "VGImgui/Include/ImGuiEx/ImGuiEx.h"
 #include "VGImgui/Include/ImGuiEx/ImNotify.h"
@@ -25,14 +25,14 @@ namespace VisionGal::Editor {
 
 	DetailBrowserPanel::DetailBrowserPanel()
 	{
-		m_DrawerManager.RegisterDrawer(CreateRef<TransformComponentDrawer>());
-		m_DrawerManager.RegisterDrawer(CreateRef<CameraComponentDrawer>());
-		m_DrawerManager.RegisterDrawer(CreateRef<SpriteRendererComponentDrawer>());
-		m_DrawerManager.RegisterDrawer(CreateRef<GalGameEngineComponentDrawer>());
-		m_DrawerManager.RegisterDrawer(CreateRef<ScriptComponentDrawer>());
-		m_DrawerManager.RegisterDrawer(CreateRef<AudioSourceComponentDrawer>());
-		m_DrawerManager.RegisterDrawer(CreateRef<VideoPlayerComponentDrawer>());
-		m_DrawerManager.RegisterDrawer(CreateRef<RmlUIDocumentComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<TransformComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<CameraComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<SpriteRendererComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<GalGameEngineComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<ScriptComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<AudioSourceComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<VideoPlayerComponentDrawer>());
+		m_DrawerManager.RegisterDrawer(MakeRef<RmlUIDocumentComponentDrawer>());
 
 		SubscribeEngineEvent();
 		SubscribeSceneEvent();

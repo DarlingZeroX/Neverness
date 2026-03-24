@@ -13,8 +13,8 @@
 #include "../../Config.h"
 #include "../../EditorCore/ContentBrowser.h"
 #include <unordered_map>
-#include <VGEngine/Include/Resource/Texture2D.h>
-#include <VGEngine/Include/Asset/TextureAsset.h>
+#include <VGEngine/Include/Render/Texture2D.h>
+#include <VGAsset/Include/TextureAsset.h>
 
 namespace VisionGal::Editor {
 

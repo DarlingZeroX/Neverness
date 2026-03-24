@@ -84,7 +84,7 @@ int main()
 	Editor::VGLauncherData::GetLauncherData().LoadAllProjectsInDirectory("Project/");
 
 	// 初始化启动器
-	Ref<Editor::VGLauncher> launcher = CreateRef<Editor::VGLauncher>();
+	Ref<Editor::VGLauncher> launcher = MakeRef<Editor::VGLauncher>();
 	launcher->Initialize();
 	VGEngine::Get()->AddApplication(launcher);
 

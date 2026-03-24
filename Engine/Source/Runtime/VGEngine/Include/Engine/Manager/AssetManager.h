@@ -12,7 +12,7 @@
 #pragma once
 #include "../../EngineConfig.h"
 #include "VGCore/Include/Core/Core.h"
-#include "../../Asset/TextureAsset.h"
+#include "VGAsset/Include/TextureAsset.h"
 #include <unordered_set>
 #include <HCore/Interface/HTypeInfo.h>
 #include <HFileSystem/Interface/HFileSystem.h>

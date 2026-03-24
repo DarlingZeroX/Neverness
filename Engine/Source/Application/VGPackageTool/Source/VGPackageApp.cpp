@@ -35,7 +35,7 @@ namespace VisionGal::Editor
 		auto windowWidth = editorConfig.Application.WindowWidth;
 		auto windowHeight = editorConfig.Application.WindowHeight;
 
-		m_ApplicationWindow = CreateRef<VGWindow>();
+		m_ApplicationWindow = MakeRef<VGWindow>();
 		m_ApplicationWindow->Initialize(editorName.c_str(), windowWidth, windowHeight,true);
 
 		AddImguiLayer();
@@ -50,8 +50,8 @@ namespace VisionGal::Editor
 	{
 		auto* editor = PanelManager::GetInstance();
 
-		//editor->AddPanelWithID("EditorMenuBar", CreateRef<EditorMenuBar>());
-		editor->AddPanelWithID("VGPackageToolMainWindow", CreateRef<VGPackageToolMainWindow>());
+		//editor->AddPanelWithID("EditorMenuBar", MakeRef<EditorMenuBar>());
+		editor->AddPanelWithID("VGPackageToolMainWindow", MakeRef<VGPackageToolMainWindow>());
 	}
 
 	void VGPackageApp::InitializeEditorUI()

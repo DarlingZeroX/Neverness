@@ -34,7 +34,7 @@ namespace Horizon
 	{
 		HJson()
 		{
-			m_Doc = CreateRef<rjson::Document>();
+			m_Doc = MakeRef<rjson::Document>();
 
 			m_Doc->SetObject();
 		}

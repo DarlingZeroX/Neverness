@@ -16,7 +16,7 @@ namespace Horizon {
 
 	Ref<FfmpegContext> FfmpegContext::Create(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
 	{
-		auto context = CreateRef<FfmpegContext>();
+		auto context = MakeRef<FfmpegContext>();
 
 		if (bool result = context->Open(vfs, filePath))
 			return context;
@@ -59,7 +59,7 @@ namespace Horizon {
 		m_VFSIoContext = { file };
 
 		// 创建 IO 上下文
-		m_AVIOContext = CreateRef<FfmpegAVIOContext>(
+		m_AVIOContext = MakeRef<FfmpegAVIOContext>(
 			&m_VFSIoContext, 
 			VFSFFmpegIOContext::read_packet,
 			VFSFFmpegIOContext::seek

@@ -15,8 +15,8 @@
 #include "VGCore/Include/Core/EventBus.h"
 #include "Engine/Manager.h"
 #include "Engine/EngineResource.h"
-#include "Resource/Audio.h"
-#include "Resource/FVideo.h"
+#include "Engine/AudioPlayer.h"
+#include "Engine/VideoPlayer.h"
 
 namespace VisionGal::GalGame
 {

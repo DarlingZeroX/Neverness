@@ -56,42 +56,42 @@ namespace VisionGal::GalGame {
 
 		if (command == "scroll_down" || command == "向下滚动")
 		{
-			auto script = CreateRef<ScrollTransformScript>(ScrollTransformScript::Direction::Down, sp->sprite->GetSize());
+			auto script = MakeRef<ScrollTransformScript>(ScrollTransformScript::Direction::Down, sp->sprite->GetSize());
 			script->SetDuration(duration);
 			return script;
 		}
 
 		if (command == "scroll_up" || command == "向上滚动")
 		{
-			auto transform = CreateRef<ScrollTransformScript>(ScrollTransformScript::Direction::Up, sp->sprite->GetSize());
+			auto transform = MakeRef<ScrollTransformScript>(ScrollTransformScript::Direction::Up, sp->sprite->GetSize());
 			transform->SetDuration(duration);
 			return transform;
 		}
 
 		if (command == "scroll_left" || command == "向左滚动")
 		{
-			auto transform = CreateRef<ScrollTransformScript>(ScrollTransformScript::Direction::Left, sp->sprite->GetSize());
+			auto transform = MakeRef<ScrollTransformScript>(ScrollTransformScript::Direction::Left, sp->sprite->GetSize());
 			transform->SetDuration(duration);
 			return transform;
 		}
 
 		if (command == "scroll_right" || command == "向右滚动")
 		{
-			auto transform = CreateRef<ScrollTransformScript>(ScrollTransformScript::Direction::Right, sp->sprite->GetSize());
+			auto transform = MakeRef<ScrollTransformScript>(ScrollTransformScript::Direction::Right, sp->sprite->GetSize());
 			transform->SetDuration(duration);
 			return transform;
 		}
 
 		if (command == "fade_in" || command == "淡入")
 		{
-			auto transform = CreateRef<SpriteFadeInOutTransformScript>(actor, SpriteFadeInOutTransformScript::Direction::In);
+			auto transform = MakeRef<SpriteFadeInOutTransformScript>(actor, SpriteFadeInOutTransformScript::Direction::In);
 			transform->SetDuration(duration);
 			return transform;
 		}
 
 		if (command == "fade_out" || command == "淡出")
 		{
-			auto transform = CreateRef<SpriteFadeInOutTransformScript>(actor, SpriteFadeInOutTransformScript::Direction::Out);
+			auto transform = MakeRef<SpriteFadeInOutTransformScript>(actor, SpriteFadeInOutTransformScript::Direction::Out);
 			transform->SetDuration(duration);
 			return transform;
 		}

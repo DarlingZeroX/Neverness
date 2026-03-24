@@ -150,7 +150,7 @@ namespace VisionGal::VGFX
 	Ref<IStaticMesh> CreateStaticMesh(void* vertexData, unsigned int vertexSize, void* indexData,
 	                                  unsigned int indexSize, const std::vector<VertexElement::IElement*>& elements)
 	{
-		return CreateRef<OpenGL::StaticMesh>(vertexData,vertexSize,indexData,indexSize, elements);
+		return MakeRef<OpenGL::StaticMesh>(vertexData,vertexSize,indexData,indexSize, elements);
 	}
 
 	void RenderMesh(IStaticMesh* mesh)

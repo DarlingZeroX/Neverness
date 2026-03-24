@@ -20,7 +20,7 @@ namespace VisionGal::GalGame
 	{
 		GalGameContext()
 		{
-			archiveData = CreateRef<ArchiveDataContainer>();
+			archiveData = MakeRef<ArchiveDataContainer>();
 		}
 
 		GalEngineEventBus engineEventBus;

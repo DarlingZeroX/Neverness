@@ -148,7 +148,7 @@ namespace Horizon
 
 		static Ref<Internal> LoadFromFile(const std::filesystem::path& path)
 		{
-			auto file = CreateRef<Internal>();
+			auto file = MakeRef<Internal>();
 
 			file->LoadFile(path.c_str());
 
@@ -157,7 +157,7 @@ namespace Horizon
 
 		static Ref<HIniFile::Internal> SerializeType(const META_NAMESPACE::Type& type, const META_NAMESPACE::Variant& variant)
 		{
-			auto file = CreateRef<HIniFile::Internal>();
+			auto file = MakeRef<HIniFile::Internal>();
 
 			auto typeName = type.GetName();
 			auto* sectionName = typeName.data();
@@ -227,10 +227,10 @@ namespace Horizon
 
 	HIniTypeManager::HIniTypeManager()
 	{
-		auto boolHandler = CreateRef<HIniBooleanHandler>();
-		auto stringHandler = CreateRef<HIniStringHandler>();
-		auto doubleHandler = CreateRef<HIniDoubleHandler>();
-		auto longHandler = CreateRef<HIniLongHandler>();
+		auto boolHandler = MakeRef<HIniBooleanHandler>();
+		auto stringHandler = MakeRef<HIniStringHandler>();
+		auto doubleHandler = MakeRef<HIniDoubleHandler>();
+		auto longHandler = MakeRef<HIniLongHandler>();
 
 		m_TypeHandler[&typeid(bool)] = boolHandler;
 		m_TypeHandler[&typeid(std::string)] = stringHandler;
@@ -260,7 +260,7 @@ namespace Horizon
 
 	HIniFile::HIniFile()
 	{
-		m_Impl = CreateScope<HIniFile::Internal>();
+		m_Impl = MakeScope<HIniFile::Internal>();
 
 		m_Impl->SetUnicode();
 	}
@@ -277,7 +277,7 @@ namespace Horizon
 
 	Ref<HIniFile> HIniFile::LoadFromFile(const std::filesystem::path& path)
 	{
-		auto file = CreateRef<HIniFile>();
+		auto file = MakeRef<HIniFile>();
 
 		file->m_Impl->LoadFile(path.c_str());
 
@@ -286,7 +286,7 @@ namespace Horizon
 
 	Ref<HIniFile> HIniFile::SerializeType(const Horizon::Meta::Type& type, const META_NAMESPACE::Variant& variant)
 	{
-		return CreateRef<HIniFile>(Internal::SerializeType(type, variant)) ;
+		return MakeRef<HIniFile>(Internal::SerializeType(type, variant)) ;
 	}
 
 	int HIniFile::DeserializeType(const Meta::Type& type, Meta::Variant& variant)

@@ -152,6 +152,7 @@ target_link_libraries(VGEngine PRIVATE VGPackage)
 target_link_libraries(VGEngine PRIVATE VGImgui)
 target_link_libraries(VGEngine PRIVATE RmlUi::RmlUi)
 target_link_libraries(VGEngine PRIVATE VGCore)
+target_link_libraries(VGEngine PRIVATE VGAsset)
 
 # 链接OpenGL库
 if (APPLE)

@@ -35,7 +35,7 @@ namespace VisionGal
 
 	Viewport* ViewportManager::NewViewport(float2 size)
 	{
-		auto viewport = CreateRef<Viewport>(size);
+		auto viewport = MakeRef<Viewport>(size);
 
 		m_Viewports.push_back(viewport);
 

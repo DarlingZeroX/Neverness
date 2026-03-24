@@ -23,7 +23,7 @@ namespace Horizon {
 	Ref<FfmpegSwrContext> FfmpegSwrContext::Create(FfmpegAVChannelLayout& inLayout, FfmpegAVChannelLayout& outLayout,
 	                                               FfmpegAVCodecContext& ctx)
 	{
-		auto context = CreateRef<FfmpegSwrContext>();
+		auto context = MakeRef<FfmpegSwrContext>();
 		if (context->Initialize(inLayout, outLayout, ctx) == false)
 			return nullptr;
 

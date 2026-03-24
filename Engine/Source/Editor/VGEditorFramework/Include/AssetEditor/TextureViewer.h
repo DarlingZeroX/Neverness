@@ -12,7 +12,7 @@
 #pragma once
 #include <VGAsset/Include/HAsset.h>
 #include <VGImgui/IncludeImGuiEx.h>
-#include <VGEngine/Include/Resource/Texture2D.h>
+#include <VGEngine/Include/Render/Texture2D.h>
 
 namespace VisionGal::Editor
 {

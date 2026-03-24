@@ -33,7 +33,7 @@ namespace Horizon {
 			return false;
 
 		// 音频Codec上下文
-		m_AudioCodecContext = CreateRef<FfmpegAVCodecContext>(*context.GetFormatContext(), m_AudioStreamIndex);
+		m_AudioCodecContext = MakeRef<FfmpegAVCodecContext>(*context.GetFormatContext(), m_AudioStreamIndex);
 
 		// 假设 actx 是已经 open2 的 AVCodecContext*
 		FfmpegAVChannelLayout in_ch_layout(m_AudioCodecContext->GetCHLayout());
@@ -41,14 +41,14 @@ namespace Horizon {
 		m_AudioSwrContext = FfmpegSwrContext::Create(in_ch_layout, out_ch_layout, *m_AudioCodecContext);
 
 		// 创建音频数据缓冲区
-		m_AudioRingBuffer = CreateRef<AudioRingBuffer>(2 * 1024 * 1024);
+		m_AudioRingBuffer = MakeRef<AudioRingBuffer>(2 * 1024 * 1024);
 
 		// 创建Ffmpeg音频缓冲区
 		m_AudioMaxSamples = av_rescale_rnd(4096, 44100, m_AudioCodecContext->GetSampleRate(), AV_ROUND_UP);
 		av_samples_alloc(&m_AudioBuf, nullptr, 2, m_AudioMaxSamples, AV_SAMPLE_FMT_S16, 0);
 
 		// 创建音频帧
-		m_AudioFrame = CreateRef<FfmpegAVFrame>();
+		m_AudioFrame = MakeRef<FfmpegAVFrame>();
 
 		return true;
 	}
@@ -94,15 +94,15 @@ namespace Horizon {
 		m_TimeBase = formatCtx->GetStream(m_VideoStreamIndex)->time_base;
 
 		// 视频Codec上下文
-		m_VideoCodecContext = CreateRef<FfmpegAVCodecContext>(*context.GetFormatContext(), m_VideoStreamIndex, true);
+		m_VideoCodecContext = MakeRef<FfmpegAVCodecContext>(*context.GetFormatContext(), m_VideoStreamIndex, true);
 
 		// 再设置一下视频格式
 		AVCodecParameters* videoCodeParam = formatCtx->GetStream(m_VideoStreamIndex)->codecpar;;
 		m_VideoCodecContext->SetPixelFormat(videoCodeParam);
 
 		// 创建视频帧
-		m_VideoFrame = CreateRef<FfmpegAVFrame>();
-		m_VideoRGBFrame = CreateRef<FfmpegAVFrame>();
+		m_VideoFrame = MakeRef<FfmpegAVFrame>();
+		m_VideoRGBFrame = MakeRef<FfmpegAVFrame>();
 
 		// 确定RGB格式和分配缓冲区
 		m_VideoWidth = m_VideoCodecContext->GetVideoWidth();
@@ -259,7 +259,7 @@ namespace Horizon {
 
 			FfmpegAVFormatContext* formatContext = m_FContext->GetFormatContext();
 
-			Ref<FfmpegAVPacket> pkt = CreateRef<FfmpegAVPacket>();
+			Ref<FfmpegAVPacket> pkt = MakeRef<FfmpegAVPacket>();
 			int ret = -1;
 			{
 				std::unique_lock lock(m_Mutex);

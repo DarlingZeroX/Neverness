@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../Resource/Texture2D.h"
+#include "../Render/Texture2D.h"
 #include "VGCore/Include/Core/Core.h"
 #include "../EngineConfig.h"
 #include "VGCore/Interface/RenderInterface.h"

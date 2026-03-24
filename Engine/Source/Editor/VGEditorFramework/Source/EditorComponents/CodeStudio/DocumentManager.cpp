@@ -1,7 +1,7 @@
 #include "EditorComponents/CodeStudio/DocumentManager.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "VGCore/Interface/VGAsset.h"
-#include "VGEngine/Include/Asset/Package.h"
+#include "VGAsset/Interface/Package.h"
 #include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal::Editor
@@ -14,7 +14,7 @@ namespace VisionGal::Editor
 			return true;
 		}
 
-		auto doc = CreateRef<CodeDocument>();
+		auto doc = MakeRef<CodeDocument>();
 		if (doc->OpenFile(path) == false)
 		{
 			return false;

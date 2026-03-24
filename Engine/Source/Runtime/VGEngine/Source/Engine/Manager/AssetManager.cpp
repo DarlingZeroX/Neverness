@@ -11,9 +11,9 @@
 
 #include "VGCore/Include/Core/VFS.h"
 #include "Engine/Manager/AssetManager.h"
-#include "Asset/TextureAsset.h"
-#include "Asset/VideoAsset.h"
-#include "Asset/AudioAsset.h"
+#include "VGAsset/Include/TextureAsset.h"
+#include "VGAsset/Include/VideoAsset.h"
+#include "VGAsset/Include/AudioAsset.h"
 #include <HFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal

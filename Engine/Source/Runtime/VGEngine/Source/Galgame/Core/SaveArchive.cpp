@@ -57,7 +57,7 @@ namespace VisionGal::GalGame
 		if (json.contains("Data") && json["Data"].is_object())
 		{
 			auto& data = json["Data"];
-			archiveData = CreateRef<ArchiveDataContainer>();
+			archiveData = MakeRef<ArchiveDataContainer>();
 			archiveData->Deserialize(data);
 		}
 	}

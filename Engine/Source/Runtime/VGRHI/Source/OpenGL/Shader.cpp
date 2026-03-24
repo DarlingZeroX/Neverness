@@ -127,7 +127,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	Ref<Shader> CreateShader(unsigned int type, const std::string& source)
 	{
-		Ref<Shader> shader = CreateRef<Shader>(type, source);
+		Ref<Shader> shader = MakeRef<Shader>(type, source);
 
 		return shader;
 	}

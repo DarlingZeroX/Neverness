@@ -12,11 +12,11 @@
 #pragma once
 #include "Config.h"
 #include "HNGEditorCore/Interface/EditorGraph.h"
-#include "HNGEditorCore/Interface/CommandSystem.h"
+#include "HNGEditorCore/Include/CommandSystem.h"
 #include "HNGEditorCore/Include/NodeEditorRegistry.h"
-#include <HNGRuntimeCore/Include/Core/RuntimeContext.h>
-#include <HNGRuntimeCore/Include/Core/RuntimeGraph.h>
-#include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
+#include <HNGRuntimeCore/Include/RuntimeContext.h>
+#include <HNGRuntimeCore/Include/RuntimeGraph.h>
+#include <HNGRuntimeCore/Include/NodeRegistry.h>
 
 namespace Horizon::NodeGraph
 {

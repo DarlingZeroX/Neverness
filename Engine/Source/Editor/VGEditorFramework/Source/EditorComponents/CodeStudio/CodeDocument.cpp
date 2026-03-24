@@ -1,7 +1,7 @@
 #include "EditorComponents/CodeStudio/CodeStudio.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "VGCore/Interface/VGAsset.h"
-#include "VGEngine/Include/Asset/Package.h"
+#include "VGAsset/Interface/Package.h"
 #include "VGCore/Include/Core/VFS.h"
 
 namespace VisionGal::Editor

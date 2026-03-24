@@ -13,8 +13,8 @@
 #include <HCore/Include/Math/GLM/ext/matrix_transform.hpp>
 #include "Engine/Manager.h"
 #include "HCore/Include/Math/GLM/gtc/quaternion.hpp"
-#include "Resource/Audio.h"
-#include "Resource/FVideo.h"
+#include "Engine/AudioPlayer.h"
+#include "Engine/VideoPlayer.h"
 
 namespace VisionGal
 {
@@ -53,7 +53,7 @@ namespace VisionGal
 	{
 		color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 		flip = int2(0, 0);
-		material = CreateRef<Material>();
+		material = MakeRef<Material>();
 		sprite = nullptr;
 		pipelineIndex = static_cast<uint>( RenderPipelineIndex::CoreRenderPipeline );
 	}
@@ -96,7 +96,7 @@ namespace VisionGal
 
 	VideoPlayerComponent::VideoPlayerComponent()
 	{
-		videoPlayer = CreateRef<FVideoPlayer>();
+		videoPlayer = MakeRef<FVideoPlayer>();
 		pipelineIndex = static_cast<uint>(RenderPipelineIndex::CoreRenderPipeline);
 	}
 
@@ -113,7 +113,7 @@ namespace VisionGal
 			videoPlayer->Play();
 			videoPlayer->SetLoop(loop);
 
-			auto tex2D = CreateRef<Texture2D>();
+			auto tex2D = MakeRef<Texture2D>();
 			tex2D->SetTexture(videoPlayer->GetVideoTextureRef());
 			videoSprite = Sprite::Create(tex2D, { videoPlayer->GetVideoWidth(), videoPlayer->GetVideoHeight() });
 
@@ -179,7 +179,7 @@ namespace VisionGal
 
 	AudioSourceComponent::AudioSourceComponent()
 	{
-		audioPlayer = CreateRef<VGAudioPlayer>();
+		audioPlayer = MakeRef<VGAudioPlayer>();
 	}
 
 	std::string AudioSourceComponent::GetComponentType() const

@@ -10,7 +10,7 @@
 */
 
 #include "Render/Renderer.h"
-#include "Resource/Texture2D.h"
+#include "Render/Texture2D.h"
 #include "Render/Material.h"
 #include "Render/Sprite.h"
 #include "Scene/Components.h"

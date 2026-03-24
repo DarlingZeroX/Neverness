@@ -18,8 +18,8 @@
 #include "Render/Camera.h"
 
 #include "Galgame/Components.h"
-#include "Resource/Audio.h"
-#include "Resource/FVideo.h"
+#include "Engine/AudioPlayer.h"
+#include "Engine/VideoPlayer.h"
 
 namespace VisionGal
 {
@@ -107,7 +107,7 @@ namespace VisionGal
 			{
 				auto* viewport = GetViewportManager()->GetMainViewport();
 				auto size = viewport->GetState().ViewportSize;
-				com.camera = CreateRef<Letterbox2DCamera>(size.x, size.y);
+				com.camera = MakeRef<Letterbox2DCamera>(size.x, size.y);
 
 				viewport->AttachCamera(com.camera.get());
 				com.camera->AttachViewport(viewport);
@@ -158,7 +158,7 @@ namespace VisionGal
 		if (deserializeComponent.__DeserializeData.HasSprite)
 		{
 			auto tex = LoadObject<Texture2D>(deserializeComponent.__DeserializeData.m_SpriteTexturePath);
-			com.sprite = CreateRef<Sprite>(tex, deserializeComponent.__DeserializeData.m_SpriteSize, deserializeComponent.__DeserializeData.m_SpritePosition);
+			com.sprite = MakeRef<Sprite>(tex, deserializeComponent.__DeserializeData.m_SpriteSize, deserializeComponent.__DeserializeData.m_SpritePosition);
 
 			if (tex == nullptr)
 			{
@@ -223,7 +223,7 @@ namespace VisionGal
 		com = deserializeComponent;
 		if (deserializeComponent.__DeserializeData.HasDocument)
 		{
-			com.document = CreateRef<RmlUIDocument>();
+			com.document = MakeRef<RmlUIDocument>();
 			com.document->SetResourcePath(deserializeComponent.__DeserializeData.m_DocumentPath);
 			//UISystem::Get()->LoadUIDocument(deserializeComponent.__DeserializeData.m_DocumentPath);
 			//UISystem::Get()->ShowUIDocument(com.document);
@@ -234,16 +234,16 @@ namespace VisionGal
 
 	SceneSerializer::SceneSerializer()
 	{
-		m_SegmentSerializers[EntitySerializer{}.GetSegmentType()] = CreateRef<EntitySerializer>();
-		m_SegmentSerializers[TransformComponentSerializer{}.GetSegmentType()] = CreateRef<TransformComponentSerializer>();
-		m_SegmentSerializers[CameraComponentSerializer{}.GetSegmentType()] = CreateRef<CameraComponentSerializer>();
-		m_SegmentSerializers[SpriteRendererComponentSerializer{}.GetSegmentType()] = CreateRef<SpriteRendererComponentSerializer>();
-		m_SegmentSerializers[ScriptComponentSerializer{}.GetSegmentType()] = CreateRef<ScriptComponentSerializer>();
-		m_SegmentSerializers[AudioSourceComponentSerializer{}.GetSegmentType()] = CreateRef<AudioSourceComponentSerializer>();
-		m_SegmentSerializers[VideoPlayerComponentSerializer{}.GetSegmentType()] = CreateRef<VideoPlayerComponentSerializer>();
-		m_SegmentSerializers[RmlUIDocumentComponentSerializer{}.GetSegmentType()] = CreateRef<RmlUIDocumentComponentSerializer>();
+		m_SegmentSerializers[EntitySerializer{}.GetSegmentType()] = MakeRef<EntitySerializer>();
+		m_SegmentSerializers[TransformComponentSerializer{}.GetSegmentType()] = MakeRef<TransformComponentSerializer>();
+		m_SegmentSerializers[CameraComponentSerializer{}.GetSegmentType()] = MakeRef<CameraComponentSerializer>();
+		m_SegmentSerializers[SpriteRendererComponentSerializer{}.GetSegmentType()] = MakeRef<SpriteRendererComponentSerializer>();
+		m_SegmentSerializers[ScriptComponentSerializer{}.GetSegmentType()] = MakeRef<ScriptComponentSerializer>();
+		m_SegmentSerializers[AudioSourceComponentSerializer{}.GetSegmentType()] = MakeRef<AudioSourceComponentSerializer>();
+		m_SegmentSerializers[VideoPlayerComponentSerializer{}.GetSegmentType()] = MakeRef<VideoPlayerComponentSerializer>();
+		m_SegmentSerializers[RmlUIDocumentComponentSerializer{}.GetSegmentType()] = MakeRef<RmlUIDocumentComponentSerializer>();
 
-		m_SegmentSerializers[GalGame::GalGameEngineComponentSerializer{}.GetSegmentType()] = CreateRef<GalGame::GalGameEngineComponentSerializer>();
+		m_SegmentSerializers[GalGame::GalGameEngineComponentSerializer{}.GetSegmentType()] = MakeRef<GalGame::GalGameEngineComponentSerializer>();
 	}
 
 	int SceneSerializer::GetSerializerNumber() const

@@ -179,7 +179,7 @@ namespace VisionGal
 		m_Viewport = context->GetViewport();
 
 		// 创建渲染管线
-		m_RenderPipeline = CreateRef<CoreRenderPipeline>();
+		m_RenderPipeline = MakeRef<CoreRenderPipeline>();
 		m_RenderPipeline->Initialize(context);
 		m_RenderPipeline->SetViewport(m_Viewport);
 

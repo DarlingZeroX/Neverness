@@ -10,7 +10,7 @@
 #include <sstream>
 
 #include "Utilities/builders.h"
-#include <HNGRuntimeCore/Include/Core/ExpressionEvaluator.h>
+#include <HNGRuntimeCore/Include/ExpressionEvaluator.h>
 #include "CommandInGraph.h"
 #include "GraphCommandAPI.h"
 

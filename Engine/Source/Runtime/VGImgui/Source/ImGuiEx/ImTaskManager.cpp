@@ -12,7 +12,7 @@ namespace ImGuiEx {
 		const std::string& taskName, ImTaskFlags flags
 	)
 	{
-		auto taskInternal = CreateRef<TaskInternal>(taskName, flags, task);
+		auto taskInternal = MakeRef<TaskInternal>(taskName, flags, task);
 		m_currentUITasks.emplace_back(taskInternal);
 
 		return m_currentUITasks.back();

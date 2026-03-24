@@ -85,7 +85,7 @@ namespace Horizon
 
 		fsPath metaPath = parentPath;
 
-		auto package = CreateRef<HPackage>(path);
+		auto package = MakeRef<HPackage>(path);
 
 		package->m_AssetMetaData.MetaData.UUID = HUUID::NewUUID();
 
@@ -94,7 +94,7 @@ namespace Horizon
 
 	Ref<HPackage> HPackage::LoadPackage(const HPath& path, HResult& result)
 	{
-		auto package = CreateRef<HPackage>(path);
+		auto package = MakeRef<HPackage>(path);
 
 		package->Load();
 

@@ -14,8 +14,8 @@
 #include "Asset/Accessor/SceneSerializeFormat.h"
 #include <HCore/Interface/HSerialization.h>
 #include "VGCore/Include/Core/VFS.h"
-#include "Asset/Package.h"
-#include "Scene/Components.h"
+#include "VGAsset/Interface/Package.h"
+//#include "Scene/Components.h"
 
 namespace VisionGal
 {
@@ -63,8 +63,8 @@ namespace VisionGal
 
 	bool SceneAssetLoader::Read(const std::string path, Ref<VGAsset>& asset)
 	{
-		Ref<SceneAsset> sceneAsset = CreateRef<SceneAsset>();
-		sceneAsset->LoadedScene = CreateRef<Scene>();
+		Ref<SceneAsset> sceneAsset = MakeRef<SceneAsset>();
+		sceneAsset->LoadedScene = MakeRef<Scene>();
 
 		IStringStreamVFS stream;
 		if (stream.Open(path) == false)
@@ -116,7 +116,7 @@ namespace VisionGal
 
 		if (isException)
 		{
-			asset = CreateRef<SceneAsset>();
+			asset = MakeRef<SceneAsset>();
 			return false;
 		}
 

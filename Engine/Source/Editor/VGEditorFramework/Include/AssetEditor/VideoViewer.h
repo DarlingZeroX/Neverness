@@ -12,7 +12,7 @@
 #pragma once
 #include "../Config.h"
 #include <VGCore/Include/Core/CoreTypes.h>
-#include <VGEngine/Include/Resource/Interface/VideoInterface.h>
+#include <VGEngine/Include/Engine/VideoPlayer.h>
 
 namespace VisionGal::Editor
 {

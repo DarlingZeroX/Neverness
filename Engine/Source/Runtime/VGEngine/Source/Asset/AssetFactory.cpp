@@ -10,11 +10,11 @@
 */
 
 #include "Asset/AssetFactory.h"
-#include "Asset/GalGameAsset.h"
-#include "Asset/LuaScriptAsset.h"
-#include "Asset/Package.h"
+#include "VGAsset/Include/GalGameAsset.h"
+#include "VGAsset/Include/LuaScriptAsset.h"
+#include "VGAsset/Interface/Package.h"
 #include "Asset/SceneAsset.h"
-#include "Asset/UIAsset.h"
+#include "VGAsset/Include/UIAsset.h"
 #include "Asset/Accessor/SceneAccessor.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "Engine/Manager.h"
@@ -26,11 +26,11 @@ namespace VisionGal
 {
 	EngineAssetFactory::EngineAssetFactory()
 	{
-		m_AssetFactoryInstances.push_back(CreateScope<SceneAssetFactory>());
-		m_AssetFactoryInstances.push_back(CreateScope<UIDocumentAssetFactory>());
-		m_AssetFactoryInstances.push_back(CreateScope<UICssAssetFactory>());
-		m_AssetFactoryInstances.push_back(CreateScope<LuaScriptAssetFactory>());
-		m_AssetFactoryInstances.push_back(CreateScope<GalGameStoryScriptFactory>());
+		m_AssetFactoryInstances.push_back(MakeScope<SceneAssetFactory>());
+		m_AssetFactoryInstances.push_back(MakeScope<UIDocumentAssetFactory>());
+		m_AssetFactoryInstances.push_back(MakeScope<UICssAssetFactory>());
+		m_AssetFactoryInstances.push_back(MakeScope<LuaScriptAssetFactory>());
+		m_AssetFactoryInstances.push_back(MakeScope<GalGameStoryScriptFactory>());
 	}
 
 	Ref<VGAsset> EngineAssetFactory::CreateAsset(const String& path, const String& type)
@@ -77,12 +77,12 @@ namespace VisionGal
 
 		// 创建场景资产
 		SceneAssetWriter writer;
-		Ref<Scene> scene = CreateRef<Scene>();
+		Ref<Scene> scene = MakeRef<Scene>();
 		GameActorFactory factory;
 		factory.CreateActor(scene.get(), "Camera");
 		factory.CreateActor(scene.get(), "Sprite");
 
-		Ref<SceneAsset> asset = CreateRef<SceneAsset>();
+		Ref<SceneAsset> asset = MakeRef<SceneAsset>();
 		asset->WriteScene = scene.get();
 		 
 		// 序列化场景资产到本地
@@ -105,7 +105,7 @@ namespace VisionGal
 		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
-		Ref<UIDocumentAsset> asset = CreateRef<UIDocumentAsset>();
+		Ref<UIDocumentAsset> asset = MakeRef<UIDocumentAsset>();
 
 		// 获取UI模版文档
 		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/document.html";
@@ -141,7 +141,7 @@ namespace VisionGal
 		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
-		Ref<UICssAsset> asset = CreateRef<UICssAsset>();
+		Ref<UICssAsset> asset = MakeRef<UICssAsset>();
 
 		// 获取UI模版文档
 		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/style.css";
@@ -177,7 +177,7 @@ namespace VisionGal
 		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
-		Ref<LuaScriptAsset> asset = CreateRef<LuaScriptAsset>();
+		Ref<LuaScriptAsset> asset = MakeRef<LuaScriptAsset>();
 
 		// 获取UI模版文档
 		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/luaScript.lua";
@@ -213,7 +213,7 @@ namespace VisionGal
 		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
-		Ref<GalGameStoryScriptAsset> asset = CreateRef<GalGameStoryScriptAsset>();
+		Ref<GalGameStoryScriptAsset> asset = MakeRef<GalGameStoryScriptAsset>();
 
 		// 获取UI模版文档
 		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/galgameStoryScript.lua";

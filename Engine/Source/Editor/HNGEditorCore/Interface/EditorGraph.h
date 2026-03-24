@@ -12,7 +12,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include <HNGRuntimeCore/Include/Core/NodeRegistry.h>
+#include <HNGRuntimeCore/Include/NodeRegistry.h>
 #include "../HNGEditorCoreConfig.h"
 #include "NodeEditorCore.h"
 #include "../Include/NodeEditorRegistry.h"

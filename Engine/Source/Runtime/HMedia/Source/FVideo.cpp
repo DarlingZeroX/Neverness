@@ -182,7 +182,7 @@ namespace Horizon
 
 	bool FVideoClip::Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
 	{
-		auto decoder = CreateRef<FVideoDecoder>();
+		auto decoder = MakeRef<FVideoDecoder>();
 
 		bool result = decoder->Open(vfs, filePath);
 		if (result)
@@ -215,7 +215,7 @@ namespace Horizon
 
 	Ref<FVideoPlayer> FVideoPlayer::CreatePlayer(const Ref<IVideoClip>& clip)
 	{
-		auto player = CreateRef<FVideoPlayer>();
+		auto player = MakeRef<FVideoPlayer>();
 		player->Open(clip);
 		return player;
 	}

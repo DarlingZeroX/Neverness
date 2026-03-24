@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 	InitializeVFS(paths);
 
 	// 初始化打包系统应用
-	Ref<Editor::VGPackageApp> application = CreateRef<Editor::VGPackageApp>();
+	Ref<Editor::VGPackageApp> application = MakeRef<Editor::VGPackageApp>();
 	application->Initialize();
 	VGEngine::Get()->AddApplication(application);
 

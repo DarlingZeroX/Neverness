@@ -48,7 +48,7 @@ namespace VisionGal
 			auto com = actor->AddComponent<CameraComponent>();
 			auto* viewport = GetViewportManager()->GetMainViewport();
 			auto size = viewport->GetState().ViewportSize;
-			com->camera = CreateRef<Letterbox2DCamera>(size.x, size.y);
+			com->camera = MakeRef<Letterbox2DCamera>(size.x, size.y);
 
 			viewport->AttachCamera(com->camera.get());
 			com->camera->AttachViewport(viewport);

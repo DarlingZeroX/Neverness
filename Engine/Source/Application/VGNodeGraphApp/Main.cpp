@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 	InitializeVFS(paths);
 
 	// 初始化打包系统应用
-	Ref<Editor::VGNodeGraphApp> application = CreateRef<Editor::VGNodeGraphApp>();
+	Ref<Editor::VGNodeGraphApp> application = MakeRef<Editor::VGNodeGraphApp>();
 	application->Initialize();
 	VGEngine::Get()->AddApplication(application);
 

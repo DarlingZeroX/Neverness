@@ -75,7 +75,7 @@ namespace VisionGal::GalGame
 
 	Animation2DScript* GalSprite::Animate(const sol::table& targetValue, float duration, std::string tween, int numIterations, bool alternateDirection)
 	{
-		auto script = CreateRef<Animation2DScript>(m_Actor);
+		auto script = MakeRef<Animation2DScript>(m_Actor);
 
 		if (m_GalState != nullptr)
 		{

@@ -318,7 +318,7 @@ namespace VisionGal
 	{
 		H_ASSERT_NOT_NULL(entity);
 
-		auto script = CreateRef<SpriteColor3AnimationScript>();
+		auto script = MakeRef<SpriteColor3AnimationScript>();
 		script->StartEntityAnimation(entity, primitive, targetProperty.duration, targetProperty.tween, reverse);
 
 		return script;
