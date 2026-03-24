@@ -9,11 +9,12 @@
 * See the LICENSE file in the project root for details.
 */
 
+#include "../EngineConfig.h"
 #include "VGCore/Interface/SceneInterface.h"
 
 namespace VisionGal
 {
-	class VG_CORE_API GameActor : public IGameActor
+	class VG_ENGINE_API GameActor : public IGameActor
 	{
 	public:
 		GameActor() = default;

@@ -11,18 +11,25 @@
 
 #pragma once
 #include "VGCore/Interface/VGAsset.h"
-#include "../Scene/Scene.h"
+#include "VGCore/Interface/SceneInterface.h"
+//#include "../Scene/Scene.h"
 
 namespace VisionGal
 {
 	struct SceneAsset : public VGAsset
 	{
-		Ref<Scene> LoadedScene = nullptr;
-		Scene* WriteScene = nullptr;
+		Ref<IScene> LoadedScene = nullptr;
+		IScene* WriteScene = nullptr;
 
 		SceneAsset()
 			: VGAsset("Scene")
-			//: HAssetBase(HAssetType::Scene)
 		{}
+	};
+
+	struct SceneSerializeFormatHeader {
+		std::string magic = "VGSCENE";  // 魔数
+		uint32_t majorVersion = 0;
+		uint32_t minorVersion = 1;
+		std::string loader = "DEFAULT;"; // 加载器标识;
 	};
 }

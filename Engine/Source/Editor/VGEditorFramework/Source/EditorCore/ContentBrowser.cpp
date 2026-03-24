@@ -16,7 +16,7 @@
 #include <HCore/Interface/HStringTools.h>
 #include <HCorePlatform/Interface/HClipboard.h>
 #include <HFileSystem/Interface/HFileSystemGenerator.h>
-#include <VGAsset/Include/HPackage.h>
+//#include <VGAsset/Include/HPackage.h>
 //#include "Core/VFS.h"
 //#include "Engine/Manager/AssetManager.h"
 #include <VGCore/Include/Core/VFS.h>

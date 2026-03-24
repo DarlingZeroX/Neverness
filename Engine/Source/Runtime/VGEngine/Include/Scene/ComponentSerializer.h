@@ -10,32 +10,13 @@
 */
 
 #pragma once
-#include "ISceneSerializer.h"
+#include "VGAsset/Interface/ISceneSerializer.h"
 #include "VGCore/Include/Core/Core.h"
-#include "../../Scene/Components.h"
+#include "Components.h"
 #include <HCore/Interface/HSerialization.h>
 
 namespace VisionGal
 {
-	struct EntitySerializer : public ISceneSegmentSerializer
-	{
-		EntitySerializer() = default;
-		EntitySerializer(const EntitySerializer&) = default;
-		EntitySerializer& operator=(const EntitySerializer&) = default;
-		EntitySerializer(EntitySerializer&&) noexcept = default;
-		EntitySerializer& operator=(EntitySerializer&&) noexcept = default;
-		~EntitySerializer() override = default;
-
-		String GetSegmentType() override;
-
-		int WriteSegment(cereal::JSONOutputArchive& archive, Scene* scene) override;
-		int WriteSegment(cereal::BinaryOutputArchive& archive, Scene* scene) override;
-		int ReadSegment(cereal::JSONInputArchive& archive, SceneDeserializeDataContainer& data) override;
-		int ReadSegment(cereal::BinaryInputArchive& archive, SceneDeserializeDataContainer& data) override;
-
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
-	};
-
 	struct TransformComponentSerializer : public IEntityComponentSerializer<TransformComponent>
 	{
 		TransformComponentSerializer() = default;
@@ -45,7 +26,11 @@ namespace VisionGal
 		TransformComponentSerializer& operator=(TransformComponentSerializer&&) noexcept = default;
 		~TransformComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<TransformComponentSerializer>();
+		};
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 	
 	struct CameraComponentSerializer: public IEntityComponentSerializer<CameraComponent>
@@ -57,7 +42,11 @@ namespace VisionGal
 		CameraComponentSerializer& operator=(CameraComponentSerializer&&) noexcept = default;
 		~CameraComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<CameraComponentSerializer>();
+		};
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct ScriptComponentSerializer : public IEntityComponentSerializer<ScriptComponent>
@@ -69,7 +58,11 @@ namespace VisionGal
 		ScriptComponentSerializer& operator=(ScriptComponentSerializer&&) noexcept = default;
 		~ScriptComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<ScriptComponentSerializer>();
+		};
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 	
 	struct SpriteRendererComponentSerializer: public IEntityComponentSerializer<SpriteRendererComponent>
@@ -81,7 +74,11 @@ namespace VisionGal
 		SpriteRendererComponentSerializer& operator=(SpriteRendererComponentSerializer&&) noexcept = default;
 		~SpriteRendererComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<SpriteRendererComponentSerializer>();
+		};
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct AudioSourceComponentSerializer : public IEntityComponentSerializer<AudioSourceComponent>
@@ -93,7 +90,11 @@ namespace VisionGal
 		AudioSourceComponentSerializer& operator=(AudioSourceComponentSerializer&&) noexcept = default;
 		~AudioSourceComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<AudioSourceComponentSerializer>();
+		};
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct VideoPlayerComponentSerializer : public IEntityComponentSerializer<VideoPlayerComponent>
@@ -105,7 +106,11 @@ namespace VisionGal
 		VideoPlayerComponentSerializer& operator=(VideoPlayerComponentSerializer&&) noexcept = default;
 		~VideoPlayerComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<VideoPlayerComponentSerializer>();
+		};
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
 	struct RmlUIDocumentComponentSerializer : public IEntityComponentSerializer<RmlUIDocumentComponent>
@@ -117,24 +122,28 @@ namespace VisionGal
 		RmlUIDocumentComponentSerializer& operator=(RmlUIDocumentComponentSerializer&&) noexcept = default;
 		~RmlUIDocumentComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<RmlUIDocumentComponentSerializer>();
+		};
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 
-	class SceneSerializer
-	{
-	public:
-		SceneSerializer();
-		SceneSerializer(const SceneSerializer&) = default;
-		SceneSerializer& operator=(const SceneSerializer&) = default;
-		SceneSerializer(SceneSerializer&&) noexcept = default;
-		SceneSerializer& operator=(SceneSerializer&&) noexcept = default;
-		~SceneSerializer() = default;
-
-		int GetSerializerNumber() const;
-
-		int SerializeScene(cereal::JSONOutputArchive& archive, Scene* scene);
-		int DeserializeScene(cereal::JSONInputArchive& archive, Scene* scene);
-	private:
-		std::unordered_map<String, Ref<ISceneSegmentSerializer>> m_SegmentSerializers;
-	};
+	//class SceneSerializer : public ISceneSerializer
+	//{
+	//public:
+	//	SceneSerializer();
+	//	SceneSerializer(const SceneSerializer&) = default;
+	//	SceneSerializer& operator=(const SceneSerializer&) = default;
+	//	SceneSerializer(SceneSerializer&&) noexcept = default;
+	//	SceneSerializer& operator=(SceneSerializer&&) noexcept = default;
+	//	~SceneSerializer() override = default;
+	//
+	//	int GetSerializerNumber() const override;
+	//
+	//	int SerializeScene(cereal::JSONOutputArchive& archive, IScene* scene) override;
+	//	int DeserializeScene(cereal::JSONInputArchive& archive, IScene* scene) override;
+	//private:
+	//	std::unordered_map<String, Ref<ISceneSegmentSerializer>> m_SegmentSerializers;
+	//};
 }

@@ -12,16 +12,11 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "VGCore/Interface/GameInterface.h"
+#include "VGCore/Interface/ISceneFactory.h"
 #include "VGCore/Interface/SceneInterface.h"
 
 namespace VisionGal
 {
-    struct IGameActorFactory
-    {
-        virtual ~IGameActorFactory() = default;
-
-        virtual IGameActor* CreateActor(IScene* scene, const String& type, IEntity* parent = nullptr) = 0;
-    };
 
     class GameActorFactory: public IGameActorFactory
     {

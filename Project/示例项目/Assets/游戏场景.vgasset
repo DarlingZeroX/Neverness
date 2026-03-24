@@ -8,13 +8,6 @@
     "ComponentNumber": 0,
     "SegmentType": "Entity",
     "EntityNumber": 4,
-    "Label": "UI文档",
-    "ID": 1121397486019454353,
-    "Parent": 0,
-    "ComponentIDs": [
-        1121397486019454353,
-        669284186378080398
-    ],
     "Label": "GalGame引擎",
     "ID": 13669168056528829473,
     "Parent": 0,
@@ -29,34 +22,21 @@
         16414287039044744827,
         6160332589096119729
     ],
+    "Label": "UI文档",
+    "ID": 1121397486019454353,
+    "Parent": 0,
+    "ComponentIDs": [
+        1121397486019454353,
+        669284186378080398
+    ],
     "Label": "Scene",
     "ID": 0,
     "Parent": 0,
     "ComponentIDs": [],
-    "SegmentType": "AudioSourceComponent",
+    "SegmentType": "SpriteRenderer",
     "ComponentNumber": 0,
     "SegmentType": "Transform",
     "ComponentNumber": 3,
-    "Transform": {
-        "EntityComponentID": 1121397486019454353,
-        "location": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
-        "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "w": 1.0
-        },
-        "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-        },
-        "visible": true
-    },
     "Transform": {
         "EntityComponentID": 13669168056528829473,
         "location": {
@@ -97,21 +77,41 @@
         },
         "visible": true
     },
-    "SegmentType": "SpriteRenderer",
-    "ComponentNumber": 0,
-    "SegmentType": "RmlUIDocumentComponent",
-    "ComponentNumber": 1,
-    "RmlUIDocumentComponent": {
-        "EntityComponentID": 669284186378080398,
-        "HasDocument": true,
-        "m_DocumentPath": "/assets/UI\\游戏\\游戏自定义对话效果.html"
+    "Transform": {
+        "EntityComponentID": 1121397486019454353,
+        "location": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "visible": true
     },
+    "SegmentType": "AudioSourceComponent",
+    "ComponentNumber": 0,
     "SegmentType": "Camera",
     "ComponentNumber": 1,
     "Camera": {
         "EntityComponentID": 6160332589096119729,
         "HasCamera": true,
         "m_CameraType": "Letterbox2D"
+    },
+    "SegmentType": "RmlUIDocumentComponent",
+    "ComponentNumber": 1,
+    "RmlUIDocumentComponent": {
+        "EntityComponentID": 669284186378080398,
+        "HasDocument": true,
+        "m_DocumentPath": "/assets/UI\\游戏\\游戏自定义对话效果.html"
     },
     "SegmentType": "VideoPlayer",
     "ComponentNumber": 0,

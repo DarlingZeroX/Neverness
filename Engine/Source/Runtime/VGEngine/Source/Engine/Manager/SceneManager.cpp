@@ -12,7 +12,7 @@
 #include "Engine/Manager/SceneManager.h"
 
 #include "VGAsset/Interface/Package.h"
-#include "Asset/Accessor/SceneAccessor.h"
+#include "VGAsset/Interface/SceneAccessor.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "Scene/GameActorFactory.h"
 

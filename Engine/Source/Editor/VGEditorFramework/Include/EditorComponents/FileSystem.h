@@ -13,7 +13,7 @@
 #include "../Config.h"
 #include "../EditorCore/ContentBrowser.h"
 #include <VGCore/Include/Core\Core.h>
-#include "VGAsset/Include/HAsset.h"
+//#include "VGAsset/Include/HAsset.h"
 
 namespace VisionGal::Editor {
 
@@ -27,7 +27,7 @@ namespace VisionGal::Editor {
 		std::string pathStr;
 		Horizon::fsPath path;
 
-		Horizon::HAssetMeatData metaData;
+		//Horizon::HAssetMeatData metaData;
 		std::string assetType;
 		int uiFlags;
 	};

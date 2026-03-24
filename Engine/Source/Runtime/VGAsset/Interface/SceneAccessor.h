@@ -10,13 +10,14 @@
 */
 
 #pragma once
+#include "../VGAssetConfig.h"
 #include "VGCore/Interface/VGAsset.h"
-#include "../SceneAsset.h"
+#include "VGAsset/Include/SceneAsset.h"
 #include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal
 {
-    class VG_ENGINE_API SceneAssetLoader : public IAssetLoader
+    class VG_ASSET_API SceneAssetLoader : public IAssetLoader
     {
     public:
         SceneAssetLoader() = default;
@@ -25,7 +26,7 @@ namespace VisionGal
         bool Read(const std::string path, Ref<VGAsset>& asset) override;
     };
 
-    class VG_ENGINE_API SceneAssetWriter : public IAssetWriter
+    class VG_ASSET_API SceneAssetWriter : public IAssetWriter
     {
     public:
         SceneAssetWriter() = default;

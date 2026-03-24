@@ -24,6 +24,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "Scene/SceneSystem.h"
+
 namespace VisionGal
 {
 	namespace
@@ -66,6 +68,7 @@ namespace VisionGal
 		//	H_LOG_ERROR(message);
 		//	return 0;
 		//});
+		SceneSystem::Initialize();
 	}
 
 	VGEngine* VGEngine::Get()

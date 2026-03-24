@@ -14,7 +14,7 @@
 #include "EditorComponents/PanelInterface.h"
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <VGCore/Include/Core/Core.h>
-#include <VGAsset/Include/HAsset.h>
+//#include <VGAsset/Include/HAsset.h>
 #include <VGAsset/Interface/Package.h>
 
 namespace VisionGal::Editor

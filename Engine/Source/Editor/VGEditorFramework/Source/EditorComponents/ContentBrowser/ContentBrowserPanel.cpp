@@ -23,7 +23,7 @@
 #include "EditorCore/AssetWatcher.h"
 #include "EditorCore/EditorCore.h"
 #include "EditorCore/Localization.h"
-#include "VGEngine/Include/Asset/AssetFactory.h"
+#include "VGAsset/Interface/AssetFactory.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGCore/Interface/Loader.h"
 

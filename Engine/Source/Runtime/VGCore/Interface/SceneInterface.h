@@ -120,6 +120,14 @@ namespace VisionGal
 		void Initialize(IScene* scene) override {};
 	};
 
+	struct SceneDeserializeEntity
+	{
+		String Label;
+		VGActorID ID;
+		VGActorID Parent;
+		std::vector<uint64> ComponentIDs;
+	};
+
 	struct IScene : public VGEngineResource,public Horizon::HSceneInterface
 	{
 		IScene() = default;
@@ -135,6 +143,13 @@ namespace VisionGal
 		virtual IEntity* GetActor(VGActorID entityID) = 0;
 		virtual bool RemoveActor(VGActorID entityID) = 0;
 		virtual bool ExistActor(VGActorID entityID) = 0;
+
+		virtual void Update() = 0;
+		virtual IGameActor* GetSceneActor() = 0;
+
+		virtual IGameActor* CreateDeserializeActor(const SceneDeserializeEntity& entity) = 0;
+		virtual void UpdateDeserializeComponent(IEntity* entity, IComponent* component) = 0;
+		virtual void UpdateDeserializeActorRelationship() = 0;
 	};
 
 	template <typename T>
@@ -146,12 +161,4 @@ namespace VisionGal
 
 		return &com;
 	}
-
-	struct SceneDeserializeEntity
-	{
-		String Label;
-		VGActorID ID;
-		VGActorID Parent;
-		std::vector<uint64> ComponentIDs;
-	};
 }

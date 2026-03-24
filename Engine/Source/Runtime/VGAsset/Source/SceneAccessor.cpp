@@ -9,20 +9,21 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "Asset/Accessor/SceneAccessor.h"
-#include "Asset/Accessor/SceneSerializer.h"
-#include "Asset/Accessor/SceneSerializeFormat.h"
+#include "SceneAccessor.h"
+#include "SceneSerializerFactory.h"
 #include <HCore/Interface/HSerialization.h>
 #include "VGCore/Include/Core/VFS.h"
+#include "VGCore/Interface/ISceneFactory.h"
 #include "VGAsset/Interface/Package.h"
 //#include "Scene/Components.h"
+//#include "Scene/Scene.h"
 
 namespace VisionGal
 {
 	bool SceneAssetWriter::Write(const std::string path, VGAsset* asset)
 	{
 		SceneAsset* sceneAsset = dynamic_cast<SceneAsset*>(asset);
-		Scene* scene = sceneAsset->WriteScene;
+		IScene* scene = sceneAsset->WriteScene;
 
 		// 创建或打开一个文件用于写入
 		auto file = VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Write);
@@ -44,8 +45,9 @@ namespace VisionGal
 			archive(cereal::make_nvp("VGSCENE_MinorVersion", header.minorVersion));
 			archive(cereal::make_nvp("VGSCENE_Loader", header.loader));
 
-			SceneSerializer serializer;
-			serializer.SerializeScene(archive, scene);
+			auto serializer = SceneSerializerRegistry::GetSerializer();
+			//SceneSerializer serializer;
+			serializer->SerializeScene(archive, scene);
 
 		}
 		// 2. 转换为输入流并写入 vfspp 文件
@@ -64,7 +66,8 @@ namespace VisionGal
 	bool SceneAssetLoader::Read(const std::string path, Ref<VGAsset>& asset)
 	{
 		Ref<SceneAsset> sceneAsset = MakeRef<SceneAsset>();
-		sceneAsset->LoadedScene = MakeRef<Scene>();
+		//sceneAsset->LoadedScene = dynamic_pointer_cast<IScene>(MakeRef<Scene>());
+		sceneAsset->LoadedScene = SceneFactoryRegistry::GetFactory()->CreateScene();
 
 		IStringStreamVFS stream;
 		if (stream.Open(path) == false)
@@ -93,10 +96,11 @@ namespace VisionGal
 				isException = true;
 			}
 
-			SceneSerializer serializer;
+			auto serializer = SceneSerializerRegistry::GetSerializer();
+			//SceneSerializer serializer;
 			if (isException == false)
 			{
-				serializer.DeserializeScene(archive, sceneAsset->LoadedScene.get());
+				serializer->DeserializeScene(archive, dynamic_cast<IScene*>(sceneAsset->LoadedScene.get()) );
 			}
 		}
 		catch (const cereal::RapidJSONException& e) {

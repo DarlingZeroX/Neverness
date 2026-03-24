@@ -9,18 +9,19 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "Asset/AssetFactory.h"
+#include "AssetFactory.h"
 #include "VGAsset/Include/GalGameAsset.h"
 #include "VGAsset/Include/LuaScriptAsset.h"
 #include "VGAsset/Interface/Package.h"
-#include "Asset/SceneAsset.h"
+#include "VGAsset/Include/SceneAsset.h"
 #include "VGAsset/Include/UIAsset.h"
-#include "Asset/Accessor/SceneAccessor.h"
+#include "VGAsset/Interface/SceneAccessor.h"
 #include "VGCore/Include/Core/VFS.h"
-#include "Engine/Manager.h"
+//#include "Engine/Manager.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "HCore/Include/Utils/HStringGenerator.h"
-#include "Scene/GameActorFactory.h"
+#include "VGCore/Interface/ISceneFactory.h"
+//#include "Scene/GameActorFactory.h"
 
 namespace VisionGal
 {
@@ -77,10 +78,10 @@ namespace VisionGal
 
 		// 创建场景资产
 		SceneAssetWriter writer;
-		Ref<Scene> scene = MakeRef<Scene>();
-		GameActorFactory factory;
-		factory.CreateActor(scene.get(), "Camera");
-		factory.CreateActor(scene.get(), "Sprite");
+		Ref<IScene> scene = SceneFactoryRegistry::GetFactory()->CreateScene();
+		auto factory = GameActorFactoryRegistry::GetFactory();
+		factory->CreateActor(scene.get(), "Camera");
+		factory->CreateActor(scene.get(), "Sprite");
 
 		Ref<SceneAsset> asset = MakeRef<SceneAsset>();
 		asset->WriteScene = scene.get();

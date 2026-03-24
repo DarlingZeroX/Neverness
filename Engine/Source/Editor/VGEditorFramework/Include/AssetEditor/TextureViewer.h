@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include <VGAsset/Include/HAsset.h>
+//#include <VGAsset/Include/HAsset.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGEngine/Include/Render/Texture2D.h>
 

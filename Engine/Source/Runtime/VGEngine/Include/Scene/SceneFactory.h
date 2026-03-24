@@ -8,19 +8,19 @@
 *
 * See the LICENSE file in the project root for details.
 */
-
 #pragma once
-#include <cstdint>
-#include <string>
-#include <istream>
-#include <ostream>
+#include "../EngineConfig.h"
+#include "VGCore/Interface/ISceneFactory.h"
+#include "Scene.h"
 
-namespace VisionGal {
-
-	struct SceneSerializeFormatHeader {
-		std::string magic = "VGSCENE";  // 魔数
-		uint32_t majorVersion = 0;
-		uint32_t minorVersion = 1;
-		std::string loader = "DEFAULT;"; // 加载器标识;
+namespace VisionGal
+{
+	class SceneFactory : public ISceneFactory
+	{
+	public:
+		Ref<IScene> CreateScene() override
+		{
+			return MakeRef<Scene>();
+		}
 	};
 }

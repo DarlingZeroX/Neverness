@@ -10,8 +10,9 @@
  */
 
 #pragma once
+#include "../EngineConfig.h"
 #include "VGCore/Interface/SceneInterface.h"
-#include "../Asset/Accessor/ISceneSerializer.h"
+#include "VGAsset/Interface/ISceneSerializer.h"
 
 namespace VisionGal::GalGame
 {
@@ -81,6 +82,11 @@ namespace VisionGal::GalGame
 		GalGameEngineComponentSerializer& operator=(GalGameEngineComponentSerializer&&) noexcept = default;
 		~GalGameEngineComponentSerializer() override = default;
 
-		void AddActorSerializeComponent(Scene* scene, IGameActor* actor, VGActorID id) override;
+		Ref<ISceneSegmentSerializer> NewRef() override
+		{
+			return MakeRef<GalGameEngineComponentSerializer>();
+		};
+
+		void AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id) override;
 	};
 }

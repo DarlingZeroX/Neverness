@@ -50,12 +50,12 @@ namespace VisionGal
 		bool ExistActor(VGActorID entityID) override;
 		Horizon::HECS* GetWorld() override;
 
-		void Update();
-		IGameActor* GetSceneActor();
+		void Update() override;
+		IGameActor* GetSceneActor() override;
 
-		IGameActor* CreateDeserializeActor(const SceneDeserializeEntity& entity);
-		void UpdateDeserializeComponent(IEntity* entity, IComponent* component);
-		void UpdateDeserializeActorRelationship();
+		IGameActor* CreateDeserializeActor(const SceneDeserializeEntity& entity) override;
+		void UpdateDeserializeComponent(IEntity* entity, IComponent* component) override;
+		void UpdateDeserializeActorRelationship() override;
 	private:
 
 		VGActorID NewEntityID();

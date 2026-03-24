@@ -11,7 +11,7 @@
 
 #pragma once
 #include "VGCore/Interface/VGAsset.h"
-#include "../EngineConfig.h"
+#include "../VGAssetConfig.h"
 #include "VGCore/Interface/AssetInterface.h"
 
 namespace VisionGal
@@ -19,7 +19,7 @@ namespace VisionGal
     /// <summary>
     /// 引擎所有资产的创建工厂
     /// </summary>
-    class VG_ENGINE_API EngineAssetFactory : public IEngineAssetFactory
+    class VG_ASSET_API EngineAssetFactory : public IEngineAssetFactory
     {
     public:
         EngineAssetFactory();
@@ -114,5 +114,5 @@ namespace VisionGal
         Ref<VGAsset> CreateAsset(const String& path) override;
     };
 
-    VG_ENGINE_API EngineAssetFactory* GetEngineAssetFactory();
+	VG_ASSET_API EngineAssetFactory* GetEngineAssetFactory();
 }
