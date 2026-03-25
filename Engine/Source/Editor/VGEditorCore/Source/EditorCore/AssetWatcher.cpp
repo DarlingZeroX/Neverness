@@ -12,8 +12,8 @@
 #include "EditorCore/AssetWatcher.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGEngine/Include/Engine/Manager.h"
-#include "VGGalgame/Include/GalGameEngine.h"
-#include "VGGalgame/Include/GameEngineCore.h"
+//#include "VGGalgame/Include/GalGameEngine.h"
+//#include "VGGalgame/Include/GameEngineCore.h"
 #include <VGUI/Interface/UISystem.h>
 #include "VGCore/Include/Core/VFS.h"
 
@@ -47,36 +47,16 @@ namespace VisionGal::Editor
 		if (GetSceneManager()->IsPlayMode())
 		{
 			// 剧情脚本监视更新
-			OnStoryScriptWatchUpdate();
+			//OnStoryScriptWatchUpdate();
 
 			// UI文件监视更新
 			OnUIFileWatchUpdate();
 		}
 	}
 
-	void AssetWatcher::OnStoryScriptWatchUpdate()
+	void AssetWatcher::AddWatchUpdateCallback(std::function<void()> callback)
 	{
-		auto* galEngine = dynamic_cast<GalGame::GalGameEngine*>(GalGame::GameEngineCore::GetCurrentEngine());
-
-		if (galEngine == nullptr)
-			return;
-
-		//auto* storyScript = galEngine->GetCurrentStoryScript();
-		//
-		//if (storyScript == nullptr)
-		//	return;
-		auto storyScriptPath = galEngine->GetStoryScriptSystem()->GetCurrentStoryScriptPath();
-
-		//auto absPath = VFS::GetInstance()->AbsolutePath(storyScript->GetResourcePath());
-		auto absPath = VFS::GetInstance()->AbsolutePath(storyScriptPath);
-		if (Horizon::HFileSystem::ExistsFile(absPath) == false)
-			return;
-
-		if (galEngine->GetStoryScriptSystem()->GetScriptLastWriteTime() != std::filesystem::last_write_time(absPath))
-		//if (storyScript->GetScriptLastWriteTime() != std::filesystem::last_write_time(absPath))
-		{
-			galEngine->ReloadStoryScript();
-		}
+		m_WatchUpdateCallbacks.push_back(std::move(callback));
 	}
 
 	void AssetWatcher::OnUIFileWatchUpdate()

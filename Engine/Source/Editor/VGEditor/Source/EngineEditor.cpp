@@ -14,10 +14,11 @@
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <VGImgui/Include/Imgui/imgui_impl_opengl3.h>
-#include <VGEditorFramework/Framework.h>
+#include <VGEditorComponent/Framework.h>
 //#include <VGEngine/Include/UI/UISystem.h>
-#include "VGEditorFramework/Include/EditorCore/EditorCore.h"
+#include <VGEditorCore/IncludeCore.h>
 #include "VGCore/Include/Core/VFS.h"
+#include "VGEditorComGalgame/Interface/VGEditorGalgame.h"
 #include "VGGalgame/Interface/GalgameSystem.h"
 
 namespace VisionGal::Editor
@@ -56,6 +57,9 @@ namespace VisionGal::Editor
 
 		// 初始化资源导入管理器
 		AssetImporterManager::GetInstance().Initialize(m_EditorWindow);
+
+		// 初始化GalGame编辑器组件
+		VGEditorGalGame::Initialize();
 	}
 
 	void VGEditorApplication::AddApplicationLayer(IEngineApplicationLayer* layer)

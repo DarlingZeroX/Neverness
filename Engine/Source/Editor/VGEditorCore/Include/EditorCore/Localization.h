@@ -10,14 +10,14 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <HCore/Interface/HLocalization.h>
 
 namespace VisionGal::Editor
 {
-	VG_EDITOR_FRAMEWORK_API bool EditorLoadLanguage(const std::string& code);
+	VG_EDITOR_CORE_API bool EditorLoadLanguage(const std::string& code);
 
-	class VG_EDITOR_FRAMEWORK_API EditorText
+	class VG_EDITOR_CORE_API EditorText
 	{
 	public:
 		EditorText(const std::string& title);

@@ -34,15 +34,9 @@ target_include_directories(VGNodeGraphApp PRIVATE ${PROJECT_SOURCE_DIR}/Engine/S
 target_include_directories(VGNodeGraphApp PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGNodeGraphApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
-# 寻找CMake包
-find_package(SDL3 CONFIG REQUIRED)
+# 寻找CMake包 
+#find_package(SDL3 CONFIG REQUIRED)
 
 # 链接库
-target_link_libraries(VGNodeGraphApp PRIVATE SDL3::SDL3)
-target_link_libraries(VGNodeGraphApp PRIVATE HCore)
-target_link_libraries(VGNodeGraphApp PRIVATE HCorePlatform)
-target_link_libraries(VGNodeGraphApp PRIVATE VGImgui)
-target_link_libraries(VGNodeGraphApp PRIVATE VGCore)
-target_link_libraries(VGNodeGraphApp PRIVATE VGEngine)
-target_link_libraries(VGNodeGraphApp PRIVATE VGEditorFramework)
+target_link_libraries(VGNodeGraphApp PRIVATE VGEditorComponent)
 target_link_libraries(VGNodeGraphApp PRIVATE HNGEditor)

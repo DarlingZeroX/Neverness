@@ -10,13 +10,13 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include "../EditorCore/EditorSettingInterface.h"
 #include "VGEngine/Include/Project/ProjectBuilder.h"
 
 namespace VisionGal::Editor
 {
-	class VG_EDITOR_FRAMEWORK_API BuildSettingsPanel : public IEditorPanel
+	class VG_EDITOR_CORE_API BuildSettingsPanel : public IEditorPanel
 	{
 	public:
 		BuildSettingsPanel();

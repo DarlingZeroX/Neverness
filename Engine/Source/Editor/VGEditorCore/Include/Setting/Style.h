@@ -10,11 +10,11 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 
 namespace VisionGal::Editor
 {
-	struct VG_EDITOR_FRAMEWORK_API EditorStyle
+	struct VG_EDITOR_CORE_API EditorStyle
 	{
 		static void DarkTheme();
 

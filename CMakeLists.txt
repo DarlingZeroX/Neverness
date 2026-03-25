@@ -51,15 +51,16 @@ add_subdirectory ("Engine/Source/Runtime/VGGalgame")
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
 add_subdirectory ("Engine/Source/Editor/HNGEditor")
-add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
-add_subdirectory ("Engine/Source/Editor/VGGalEditor")
+add_subdirectory ("Engine/Source/Editor/VGEditorCore")
+add_subdirectory ("Engine/Source/Editor/VGEditorComponent")
+add_subdirectory ("Engine/Source/Editor/VGEditorComGalgame")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 
 add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器
 add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
 add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
 add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序
-add_subdirectory ("Engine/Source/Application/HNGRuntimeCoreDemo")     # 节点图应用程序
+#add_subdirectory ("Engine/Source/Application/HNGRuntimeCoreDemo")     # 节点图应用程序
 
 
 ########## 加载 Tests 目录下所有子测试项目

@@ -12,7 +12,7 @@
 #pragma once
 #include <functional>
 #include <string>
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 
 namespace VisionGal::Editor
 {
@@ -24,7 +24,7 @@ namespace VisionGal::Editor
         std::function<void()> callback;
     };
 
-    class EditorUIMenu
+    class VG_EDITOR_CORE_API EditorUIMenu
     {
     public:
 

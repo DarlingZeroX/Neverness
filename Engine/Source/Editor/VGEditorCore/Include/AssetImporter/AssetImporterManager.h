@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 //#include <VGAsset/Include/HAsset.h>
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <VGCore/Include/Core/Core.h>
@@ -19,7 +19,7 @@
 
 namespace VisionGal::Editor
 {
-	struct VG_EDITOR_FRAMEWORK_API AssetImporterManager
+	struct VG_EDITOR_CORE_API AssetImporterManager
 	{
 		//void OpenAsset(const VGPath& path, const VGAssetMetaData& metaData);
 

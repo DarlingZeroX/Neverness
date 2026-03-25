@@ -10,14 +10,14 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include "EditorPreferences.h"
 #include <functional>
 #include <string>
 
 namespace VisionGal::Editor
 {
-    struct VG_EDITOR_FRAMEWORK_API EditorCore
+    struct VG_EDITOR_CORE_API EditorCore
     {
     	static std::string GetEditorResourcePathVFS();
 

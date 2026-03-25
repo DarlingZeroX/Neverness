@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <vector>
 #include <HCore/Interface/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
@@ -19,7 +19,7 @@
 
 namespace VisionGal::Editor
 {
-	struct VG_EDITOR_FRAMEWORK_API EditorMenuBar : public IEditorPanel
+	struct VG_EDITOR_CORE_API EditorMenuBar : public IEditorPanel
 	{
 		EditorMenuBar() = default;
 		EditorMenuBar(VGWindow* window);

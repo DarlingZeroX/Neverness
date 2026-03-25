@@ -10,14 +10,14 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <vector>
 #include <HCore/Interface/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
 
 namespace VisionGal::Editor
 {
-	class VG_EDITOR_FRAMEWORK_API EditorSideBar : public IEditorPanel
+	class VG_EDITOR_CORE_API EditorSideBar : public IEditorPanel
 	{
 	public:
 		EditorSideBar() = default;

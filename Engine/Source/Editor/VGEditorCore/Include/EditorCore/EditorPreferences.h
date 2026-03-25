@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include "EditorSettingInterface.h"
 
 namespace VisionGal::Editor

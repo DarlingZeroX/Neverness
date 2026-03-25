@@ -10,14 +10,14 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <string>
 #include <functional>
 #include <VGCore/Include/Core/Core.h>
 
 namespace VisionGal::Editor
 {
-    struct EditorScene
+    struct VG_EDITOR_CORE_API EditorScene
     {
         static void OpenSaveCurrentSceneDialog(const std::function<void(int)>& callback);
 

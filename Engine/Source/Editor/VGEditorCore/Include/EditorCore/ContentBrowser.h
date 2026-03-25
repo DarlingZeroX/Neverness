@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <HCore/Interface/HSingleton.h>
 //#include <VGAsset/Include/HAsset.h>
@@ -57,7 +57,7 @@ namespace VisionGal {
 		std::vector<ContentBrowserFile> Files;
 	};
 
-	class VG_EDITOR_FRAMEWORK_API ContentBrowser
+	class VG_EDITOR_CORE_API ContentBrowser
 		:
 		public Horizon::HSingletonBase<ContentBrowser>
 	{

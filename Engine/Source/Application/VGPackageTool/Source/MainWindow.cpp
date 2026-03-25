@@ -12,7 +12,7 @@
 #include "MainWindow.h"
 #include "VGPackageTool.h"
 #include <VGImgui/IncludeImGui.h>
-#include <VGEditorFramework/Include/EditorCore/Localization.h>
+#include <VGEditorCore/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor
 {

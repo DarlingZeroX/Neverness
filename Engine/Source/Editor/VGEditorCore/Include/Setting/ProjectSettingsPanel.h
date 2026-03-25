@@ -10,12 +10,12 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include "../EditorCore/EditorSettingInterface.h"
 
 namespace VisionGal::Editor
 {
-	class VG_EDITOR_FRAMEWORK_API ProjectSettingPanel : public IEditorPanel
+	class VG_EDITOR_CORE_API ProjectSettingPanel : public IEditorPanel
 	{
 	public:
 		ProjectSettingPanel() = default;

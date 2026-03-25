@@ -14,8 +14,8 @@
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
-#include <VGEditorFramework/Framework.h>
-#include "VGEditorFramework/Include/EditorCore/EditorCore.h"
+#include <VGEditorCore/IncludeCore.h>
+#include "VGEditorComponent/Framework.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGEngine/Include/Engine/Manager.h"
 #include "VGEngine/Include/Project/ProjectSettings.h"

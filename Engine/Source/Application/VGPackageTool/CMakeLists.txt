@@ -34,15 +34,5 @@ target_include_directories(VGPackageTool PRIVATE ${PROJECT_SOURCE_DIR}/Engine/So
 target_include_directories(VGPackageTool PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGPackageTool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
-# 寻找CMake包
-find_package(SDL3 CONFIG REQUIRED)
-
 # 链接库
-target_link_libraries(VGPackageTool PRIVATE SDL3::SDL3)
-target_link_libraries(VGPackageTool PRIVATE HCore)
-target_link_libraries(VGPackageTool PRIVATE HCorePlatform)
-target_link_libraries(VGPackageTool PRIVATE VGPackage)
-target_link_libraries(VGPackageTool PRIVATE VGImgui)
-target_link_libraries(VGPackageTool PRIVATE VGCore)
-target_link_libraries(VGPackageTool PRIVATE VGEngine)
-target_link_libraries(VGPackageTool PRIVATE VGEditorFramework)
+target_link_libraries(VGPackageTool PRIVATE VGEditorComponent)

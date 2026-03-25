@@ -10,13 +10,13 @@
 */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <unordered_map>
 #include <filesystem>
 
 namespace VisionGal::Editor
 {
-	struct AssetWatcher
+	struct VG_EDITOR_CORE_API AssetWatcher
 	{
 		AssetWatcher();
 		~AssetWatcher() = default;
@@ -24,8 +24,10 @@ namespace VisionGal::Editor
 		static AssetWatcher& GetInstance();
 
 		void OnUpdate();
+
+		void AddWatchUpdateCallback(std::function<void()> callback);
 	private:
-		void OnStoryScriptWatchUpdate();
+		//void OnStoryScriptWatchUpdate();
 		void OnUIFileWatchUpdate();
 
 		void OnUIFileOpen(const std::string& path);
@@ -37,6 +39,7 @@ namespace VisionGal::Editor
 		};
 
 		std::unordered_map<std::string, UIFileState> m_UIFilesState;
+		std::vector<std::function<void()>> m_WatchUpdateCallbacks;
 	};
 
 }

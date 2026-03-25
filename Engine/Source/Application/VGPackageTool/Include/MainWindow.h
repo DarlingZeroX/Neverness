@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include <VGEditorFramework/Interface/UIInterface.h>
+#include <VGEditorCore/Interface/UIInterface.h>
 
 namespace VisionGal::Editor
 {

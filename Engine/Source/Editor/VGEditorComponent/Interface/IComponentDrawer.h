@@ -1,0 +1,25 @@
+/*
+ * This source file is part of VisionGal, the Visual Novel Engine
+ *
+ * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * GitHub page: https://github.com/DarlingZeroX/VisionGal
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ *
+ * See the LICENSE file in the project root for details.
+ */
+
+#pragma once
+#include "../Config.h"
+#include <VGCore/Interface/SceneInterface.h>
+
+namespace VisionGal::Editor {
+
+	struct IComponentDrawer
+	{
+		virtual ~IComponentDrawer() = default;
+
+		virtual void OnGUI(IEntity* entity) = 0;
+		virtual const String GetBindType() const = 0;
+	};
+}

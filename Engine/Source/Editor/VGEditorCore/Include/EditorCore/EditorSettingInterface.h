@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <string>
 #include <HCore/Include/File/NlohmannJson.h>
 #include "VGImgui/Include/Imgui/imgui.h"

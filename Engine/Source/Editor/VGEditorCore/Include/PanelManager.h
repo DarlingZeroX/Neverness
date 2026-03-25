@@ -13,13 +13,13 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
-#include "Config.h"
+#include "../VGEditorCoreConfig.h"
 #include <HCore/Interface/HConfig.h>
 #include <VGImgui/IncludeImgui.h>
 
 namespace VisionGal::Editor
 {
-	class VG_EDITOR_FRAMEWORK_API PanelManager: public IPanel
+	class VG_EDITOR_CORE_API PanelManager: public IPanel
 	{
 		PanelManager();
 	public:

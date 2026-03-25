@@ -14,7 +14,7 @@
 #include "VGPackage/Include/PakWriter.h"
 #include <VGCore/Include/Core/Core.h>
 #include <VGCore/Include/Core/VFS.h>
-#include <VGEditorFramework/Include/EditorCore/EditorCore.h>
+#include <VGEditorCore/Include/EditorCore/EditorCore.h>
 #include "HFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal::Editor

@@ -11,7 +11,7 @@
 
 #pragma once
 #include <functional>
-#include "../Config.h"
+#include "../../VGEditorCoreConfig.h"
 #include <vector>
 #include <unordered_map>
 #include <HCore/Interface/HConfig.h>
@@ -19,7 +19,7 @@
 
 namespace VisionGal::Editor
 {
-	class VG_EDITOR_FRAMEWORK_API EditorMainWindow : public IEditorPanel
+	class VG_EDITOR_CORE_API EditorMainWindow : public IEditorPanel
 	{
 	public:
 		EditorMainWindow();

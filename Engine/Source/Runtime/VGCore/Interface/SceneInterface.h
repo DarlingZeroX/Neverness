@@ -88,13 +88,13 @@ namespace VisionGal
 		//virtual IComponent* Emplace(Horizon::HSceneInterface* scene, IEntity* entity) = 0;
 	};
 
-	struct IComponentDrawer
-	{
-		virtual ~IComponentDrawer() {}
-
-		virtual void OnGUI(IEntity* entity) = 0;
-		virtual std::string GetBindComponentType() = 0;
-	};
+	//struct IComponentDrawer
+	//{
+	//	virtual ~IComponentDrawer() {}
+	//
+	//	virtual void OnGUI(IEntity* entity) = 0;
+	//	virtual std::string GetBindComponentType() = 0;
+	//};
 
 	class VG_CORE_API IGameActor : public IEntity
 	{
