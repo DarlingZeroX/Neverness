@@ -10,6 +10,7 @@
 */
 
 #pragma once
+#include "../EngineConfig.h"
 #include <sol/object.hpp>
 #include <unordered_map>
 #include "LuaVariant.h"
@@ -17,7 +18,7 @@
 
 namespace VisionGal
 {
-	class LuaDataBridge
+	class VG_ENGINE_API LuaDataBridge
 	{
 	public:
 		sol::object GetVariable(const String& name, sol::this_state lua);
@@ -27,7 +28,7 @@ namespace VisionGal
 		std::unordered_map<String, LuaVariant> m_Data;
 	};
 
-	class LuaDataBridgeManager
+	class VG_ENGINE_API LuaDataBridgeManager
 	{
 	public:
 		LuaDataBridgeManager();

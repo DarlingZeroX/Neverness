@@ -23,6 +23,8 @@ namespace VisionGal
 		static sol::state* GetCoreLuaState();
 
 		static void Update();
+
+		static void  RegisterGlobalAPI(const std::function<void(sol::state*)>& api);
 	};
 
 

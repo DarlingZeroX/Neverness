@@ -18,6 +18,7 @@
 //#include <VGEngine/Include/UI/UISystem.h>
 #include "VGEditorFramework/Include/EditorCore/EditorCore.h"
 #include "VGCore/Include/Core/VFS.h"
+#include "VGGalgame/Interface/GalgameSystem.h"
 
 namespace VisionGal::Editor
 {
@@ -41,6 +42,9 @@ namespace VisionGal::Editor
 		// 初始化游戏引擎
 		m_GameEngine = MakeRef<CoreGameEngine>();
 		m_GameEngine->Initialize(m_EditorWindow.get());
+
+		// 初始化GalGame子系统
+		GalGameSystem::Initialize(*m_GameEngine);
 
 		// 初始化ImGui
 		AddImguiLayer();

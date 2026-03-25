@@ -10,12 +10,13 @@
 */
 
 #pragma once
+#include "../../EngineConfig.h"
 #include "../Core/AnimationCore.h"
 #include <sol/table.hpp>
 
 namespace VisionGal
 {
-	class Animation2DScript : public IAnimationScript
+	class VG_ENGINE_API Animation2DScript : public IAnimationScript
 	{
 	public:
 		Animation2DScript(Horizon::HEntityInterface* entity);

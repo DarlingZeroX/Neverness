@@ -81,8 +81,7 @@ target_include_directories(HFileSystem PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Sour
 target_include_directories(HFileSystem PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HFileSystem PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-find_package(SDL3 CONFIG REQUIRED)
-target_link_libraries(HFileSystem PRIVATE SDL3::SDL3)
-
-target_link_libraries(HFileSystem PRIVATE HCore)
+#find_package(SDL3 CONFIG REQUIRED)
+#target_link_libraries(HFileSystem PRIVATE SDL3::SDL3)
+target_link_libraries(HFileSystem PUBLIC HCore)
 #target_link_libraries(HFileSystem PRIVATE HCorePlatform)

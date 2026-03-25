@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Interface.h"
-#include <VGEngine/Include/Galgame/Components.h>
+#include <VGGalgame/Include/Components.h>
 #include <VGEngine/Include/Scene/Components.h>
 
 namespace VisionGal::Editor

@@ -9,6 +9,8 @@
  * See the LICENSE file in the project root for details.
  */
 
+#pragma once
+#include "../EngineConfig.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Interface/RenderInterface.h"
 #include <HCore/Include/Event/HEventDelegate.h>
@@ -29,7 +31,7 @@ namespace VisionGal {
 		ISceneTransition* Transition;
 	};
 
-	class TransitionManager
+	class VG_ENGINE_API TransitionManager
 	{
 	public:
 		static TransitionManager* GetInstance();

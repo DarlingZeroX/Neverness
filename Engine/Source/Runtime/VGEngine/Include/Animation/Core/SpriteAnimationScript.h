@@ -15,7 +15,7 @@
 
 namespace VisionGal
 {
-    class SpriteFadeInOutTransformScript : public IAnimationScript
+    class VG_ENGINE_API SpriteFadeInOutTransformScript : public IAnimationScript
     {
     public:
         enum class Direction

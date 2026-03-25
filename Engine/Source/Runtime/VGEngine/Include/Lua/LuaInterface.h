@@ -10,11 +10,12 @@
 */
 
 #pragma once
+#include "../EngineConfig.h"
 #include <sol/state.hpp>
 
 namespace VisionGal
 {
-	struct VGLuaInterface
+	struct VG_ENGINE_API VGLuaInterface
 	{
 		static int ExtractErrorLineNumber(const std::string& error_msg);
 

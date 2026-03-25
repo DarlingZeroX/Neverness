@@ -63,11 +63,8 @@ target_include_directories(HMedia PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 #)
  
 # 包
-#find_package(glad CONFIG REQUIRED)
-find_package(SDL3 CONFIG REQUIRED)
-find_package(RmlUi REQUIRED)
-find_package(SDL3_image CONFIG REQUIRED)
-
+#find_package(SDL3 CONFIG REQUIRED)
+ 
 # FFmpeg
 find_package(FFMPEG REQUIRED)
 target_include_directories(HMedia PRIVATE ${FFMPEG_INCLUDE_DIRS})
@@ -75,7 +72,5 @@ target_link_directories(HMedia PRIVATE ${FFMPEG_LIBRARY_DIRS})
 target_link_libraries(HMedia PRIVATE ${FFMPEG_LIBRARIES})
 
 # 链接动态库
-target_link_libraries(HMedia PRIVATE SDL3::SDL3)
+#target_link_libraries(HMedia PRIVATE SDL3::SDL3)
 target_link_libraries(HMedia PRIVATE HCore)
-
-# TODO: 如有需要，请添加测试并安装目标。

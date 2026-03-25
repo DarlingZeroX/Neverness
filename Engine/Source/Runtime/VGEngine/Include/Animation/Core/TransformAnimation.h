@@ -10,12 +10,13 @@
 */
 
 #pragma once
+#include "../../EngineConfig.h"
 #include "VGCore/Interface/GameInterface.h"
 #include "AnimationProperty.h"
 
 namespace VisionGal
 {
-	struct TransformAnimationState {
+	struct VG_ENGINE_API TransformAnimationState {
 		TransformAnimationState();
 
 		struct AnimationData
@@ -52,7 +53,7 @@ namespace VisionGal
 		AnimationData GetCurrent() const;
 	};
 
-	class TransformAnimationScript : public IAnimationScript
+	class VG_ENGINE_API TransformAnimationScript : public IAnimationScript
 	{
 	public:
 		TransformAnimationScript() = default;

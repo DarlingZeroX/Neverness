@@ -130,7 +130,7 @@ namespace VisionGal
 		void Reset() override;
 	};
 
-    struct EasingCallbacks
+    struct VG_ENGINE_API EasingCallbacks
     {
         static EasingFunction linear;
     };

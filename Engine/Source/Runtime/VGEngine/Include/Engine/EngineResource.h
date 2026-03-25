@@ -10,11 +10,12 @@
 */
 
 #pragma once
+#include "../EngineConfig.h"
 #include <string>
 
 namespace VisionGal
 {
-	struct EngineResource
+	struct VG_ENGINE_API EngineResource
 	{
 		static std::string GetDefaultSpriteTexturePath();
 	};

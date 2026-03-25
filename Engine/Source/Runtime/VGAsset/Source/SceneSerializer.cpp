@@ -120,7 +120,14 @@ namespace VisionGal
 			std::string segmentType;
 			archive(segmentType);
 
-			m_SegmentSerializers[segmentType]->ReadSegment(archive, container);
+			if (m_SegmentSerializers.find(segmentType) != m_SegmentSerializers.end())
+			{
+				m_SegmentSerializers[segmentType]->ReadSegment(archive, container);
+			}
+			else
+			{
+				H_LOG_ERROR("SceneSerializer: No serializer found for segment type: %s", segmentType.c_str());
+			}
 		} 
 
 		// 创建反序列化后的实体

@@ -18,7 +18,7 @@
 
 namespace VisionGal 
 {
-	class SpriteRendererHandler
+	class VG_ENGINE_API SpriteRendererHandler
 	{
 	public:
 		SpriteRendererHandler();
@@ -29,7 +29,7 @@ namespace VisionGal
 		void Render(IGameActor* sprite, ICamera* camera, uint pipelineIndex);
 	};
 
-	struct FullScreenRendererHandler
+	struct VG_ENGINE_API FullScreenRendererHandler
 	{
 		void Render(FullScreenRendererComponent* renderer);
 	};

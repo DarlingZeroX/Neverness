@@ -8,13 +8,14 @@
 *
 * See the LICENSE file in the project root for details.
 */
-
+#pragma once
+#include "../../EngineConfig.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Interface/GameInterface.h"
 
 namespace VisionGal {
 
-	class AudioAnimationScriptManager
+	class VG_ENGINE_API AudioAnimationScriptManager
 	{
 	public:
 		static AudioAnimationScriptManager* GetInstance();

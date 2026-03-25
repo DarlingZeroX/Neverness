@@ -17,8 +17,15 @@
 
 namespace VisionGal
 {
+	struct IGameActorBuilder
+	{
+		virtual ~IGameActorBuilder() = default;
 
-    class GameActorFactory: public IGameActorFactory
+		virtual std::string GetType() const = 0;
+		virtual IGameActor* BuildActor(IGameActor* emptyActor) = 0;
+	};
+
+    class VG_ENGINE_API GameActorFactory: public IGameActorFactory
     {
     public:
         GameActorFactory();
@@ -30,9 +37,12 @@ namespace VisionGal
 
         IGameActor* CreateActor(IScene* scene, const String& type, IEntity* parent = nullptr) override;
 
+		void AddGameActorCreator(const Ref<IGameActorBuilder>& creator);
+
         std::vector<String>& GetActorTypeList();
     private:
         std::vector<String> m_ActorTypeList;
+		std::vector<Ref<IGameActorBuilder>> m_ActorCreators;
     };
 
 	VG_ENGINE_API GameActorFactory* GetGameActorFactory();

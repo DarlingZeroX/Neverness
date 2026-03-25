@@ -12,7 +12,6 @@
 #include "Scene/SceneSystem.h"
 #include "Scene/SceneFactory.h"
 #include "Scene/ComponentSerializer.h"
-#include "Galgame/Components.h"
 #include "Scene/GameActorFactory.h"
 #include "VGAsset/Interface/SceneSerializerFactory.h"
 
@@ -56,9 +55,9 @@ namespace VisionGal
 			MakeRef<RmlUIDocumentComponentSerializer>()
 		);
 		
-		SceneSerializerRegistry::RegisterSegmentSerializer(
-			GalGame::GalGameEngineComponentSerializer{}.GetSegmentType() , 
-			MakeRef<GalGame::GalGameEngineComponentSerializer>()
-		);
+		//SceneSerializerRegistry::RegisterSegmentSerializer(
+		//	GalGame::GalGameEngineComponentSerializer{}.GetSegmentType() , 
+		//	MakeRef<GalGame::GalGameEngineComponentSerializer>()
+		//);
 	}
 }

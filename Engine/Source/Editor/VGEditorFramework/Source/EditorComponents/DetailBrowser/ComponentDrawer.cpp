@@ -13,11 +13,11 @@
 #include "EditorCore/Localization.h"
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiEx/ImGuiVector.h>
-#include <VGEngine/Include/Galgame/GalGameEngine.h>
-#include <VGEngine/Include/Galgame/Components.h>
+#include <VGGalgame/Include/GalGameEngine.h>
+#include <VGGalgame/Include/Components.h>
 #include <VGAsset/Interface/Package.h>
 #include <VGUI/Interface/UISystem.h>
-#include <VGEngine/Include/Galgame/GameEngineCore.h>
+#include <VGGalgame/Include/GameEngineCore.h>
 #include <VGCore/Interface/Loader.h>
 #include <VGEngine/Include/Lua/LuaScript.h>
 #include <VGEngine/Include/Engine/AudioPlayer.h>

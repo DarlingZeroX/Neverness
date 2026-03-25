@@ -79,7 +79,6 @@ target_include_directories(HCorePlatform PRIVATE ${PROJECT_SOURCE_DIR}/Engine/So
 target_include_directories(HCorePlatform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HCorePlatform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-find_package(SDL3 CONFIG REQUIRED)
-target_link_libraries(HCorePlatform PRIVATE SDL3::SDL3)
-
-target_link_libraries(HCorePlatform PRIVATE HCore)
+#find_package(SDL3 CONFIG REQUIRED)
+#target_link_libraries(HCorePlatform PRIVATE SDL3::SDL3)
+target_link_libraries(HCorePlatform PUBLIC HCore)

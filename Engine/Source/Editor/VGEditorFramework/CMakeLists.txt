@@ -64,16 +64,5 @@ target_compile_definitions(VGEditorFramework PRIVATE VG_EDITOR_FRAMEWORK_API_EXP
 target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(VGEditorFramework PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
-find_package(SDL3 CONFIG REQUIRED)
-
-target_link_libraries(VGEditorFramework PRIVATE SDL3::SDL3)
-target_link_libraries(VGEditorFramework PRIVATE HCore)
-target_link_libraries(VGEditorFramework PRIVATE HCorePlatform)
-target_link_libraries(VGEditorFramework PRIVATE HFileSystem)
-target_link_libraries(VGEditorFramework PRIVATE VGAsset)
-target_link_libraries(VGEditorFramework PRIVATE HMedia)
-target_link_libraries(VGEditorFramework PRIVATE VGImgui)
-target_link_libraries(VGEditorFramework PRIVATE VGCore)
-target_link_libraries(VGEditorFramework PRIVATE VGAsset)
-target_link_libraries(VGEditorFramework PRIVATE VGUI)
-target_link_libraries(VGEditorFramework PRIVATE VGEngine)
+target_link_libraries(VGEditorFramework PUBLIC VGEngine)
+target_link_libraries(VGEditorFramework PUBLIC VGGalgame)

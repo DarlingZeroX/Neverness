@@ -134,4 +134,4 @@ target_include_directories(HCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 find_package(SDL3 CONFIG REQUIRED)
-target_link_libraries(HCore PRIVATE SDL3::SDL3)
+target_link_libraries(HCore PUBLIC SDL3::SDL3)

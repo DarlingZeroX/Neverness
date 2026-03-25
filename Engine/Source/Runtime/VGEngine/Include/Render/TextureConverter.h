@@ -17,7 +17,7 @@
 
 namespace VisionGal {
 
-	class TextureConverter {
+	class VG_ENGINE_API TextureConverter {
 	public:
 		// 现有方法...
 		static VGFX::TexturePixels ToRGB(const VGFX::TexturePixels& texture);

@@ -408,6 +408,12 @@ float HStringTools::StringToFloat(const wchar_t* inputStr)
 	return StringToFloat(inputStrNarrow.c_str());
 }
 
+bool HStringTools::EndWith(const string& str, const string& suffix)
+{
+	return str.size() >= suffix.size() && 
+		str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 int HStringTools::CompareNoCase(const wstring& left, const wstring& right)
 {
 	if (left.size() != right.size())

@@ -36,22 +36,5 @@ target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/
 target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
  
-# 寻找CMake包
-#find_package(glad CONFIG REQUIRED)
-find_package(SDL3 CONFIG REQUIRED)
-find_package(RmlUi REQUIRED)
-
 # 链接库
-#target_link_libraries(VGEditor PRIVATE glad::glad)
-target_link_libraries(VGEditor PRIVATE RmlUi::RmlUi)
-target_link_libraries(VGEditor PRIVATE SDL3::SDL3)
-target_link_libraries(VGEditor PRIVATE HCore)
-target_link_libraries(VGEditor PRIVATE HCorePlatform)
-target_link_libraries(VGEditor PRIVATE HFileSystem)
-target_link_libraries(VGEditor PRIVATE VGPackage)
-target_link_libraries(VGEditor PRIVATE VGImgui)
-target_link_libraries(VGEditor PRIVATE VGCore)
-target_link_libraries(VGEditor PRIVATE VGEngine)
 target_link_libraries(VGEditor PRIVATE VGEditorFramework)
-
-# TODO: 如有需要，请添加测试并安装目标。

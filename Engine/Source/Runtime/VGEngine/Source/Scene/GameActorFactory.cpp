@@ -15,7 +15,7 @@
 #include "Engine/Manager.h"
 #include "HCore/Interface/HLocalization.h"
 #include "VGCore/Interface/Loader.h"
-#include "Galgame/Components.h"
+//#include "Galgame/Components.h"
 #include "Engine/EngineResource.h"
 
 namespace VisionGal
@@ -87,14 +87,28 @@ namespace VisionGal
 
 			auto com = actor->AddComponent<RmlUIDocumentComponent>();
 		}
-		else if (type == "GalGameEngine")
-		{
-			actor->SetLabel(Horizon::GetTranslateText("GalGame Engine"));
+		//else if (type == "GalGameEngine")
+		//{
+		//	actor->SetLabel(Horizon::GetTranslateText("GalGame Engine"));
+		//
+		//	auto com = actor->AddComponent<GalGame::GalGameEngineComponent>();
+		//}
 
-			auto com = actor->AddComponent<GalGame::GalGameEngineComponent>();
+		for (const auto& creator : m_ActorCreators)
+		{
+			if (creator->GetType() == type)
+			{
+				creator->BuildActor(actor);
+			}
 		}
 
 		return actor;
+	}
+
+	void GameActorFactory::AddGameActorCreator(const Ref<IGameActorBuilder>& creator)
+	{
+		m_ActorCreators.push_back(creator);
+		m_ActorTypeList.push_back(creator->GetType());
 	}
 
 	std::vector<String>& GameActorFactory::GetActorTypeList()

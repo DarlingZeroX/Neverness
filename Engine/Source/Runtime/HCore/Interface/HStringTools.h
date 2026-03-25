@@ -132,6 +132,8 @@ namespace Horizon
 		static float                StringToFloat(const char* inputStr);
 		static float                StringToFloat(const wchar_t* inputStr);
 
+		static bool					EndWith(const string& inputStr, const string& suffix);
+
 		//static wstring              FromGUID(const GUID& id);
 
 		static void                 ReplaceAll(string& inoutStr, const string& searchStr, const string& replaceStr);

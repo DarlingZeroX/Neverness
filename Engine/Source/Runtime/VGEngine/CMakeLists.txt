@@ -42,13 +42,6 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/Manager/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Event/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/Core/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/Lua/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/DialogueSystem/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/UISystem/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/SceneSystem/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Galgame/ScriptSystem/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Game/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/*.cpp"
@@ -75,14 +68,6 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Data/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Engine/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Engine/Manager/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/Core/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/Lua/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/DialogueSystem/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/UISystem/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/SceneSystem/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Galgame/ScriptSystem/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Game/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/*.h"
@@ -121,26 +106,26 @@ find_package(RmlUi REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)
 
 # FFmpeg
-find_package(FFMPEG REQUIRED)
-target_include_directories(VGEngine PRIVATE ${FFMPEG_INCLUDE_DIRS})
-target_link_directories(VGEngine PRIVATE ${FFMPEG_LIBRARY_DIRS})
-target_link_libraries(VGEngine PRIVATE ${FFMPEG_LIBRARIES})
+#find_package(FFMPEG REQUIRED)
+#target_include_directories(VGEngine PUBLIC ${FFMPEG_INCLUDE_DIRS})
+#target_link_directories(VGEngine PUBLIC ${FFMPEG_LIBRARY_DIRS})
+#target_link_libraries(VGEngine PUBLIC ${FFMPEG_LIBRARIES})
 
 # 链接动态库
-target_link_libraries(VGEngine PRIVATE VGLua)
-target_link_libraries(VGEngine PRIVATE SDL3::SDL3)
-target_link_libraries(VGEngine PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
-target_link_libraries(VGEngine PRIVATE HCore)
-target_link_libraries(VGEngine PRIVATE HCorePlatform)
-target_link_libraries(VGEngine PRIVATE HFileSystem)
-target_link_libraries(VGEngine PRIVATE HMedia)
-target_link_libraries(VGEngine PRIVATE VGRHI)
-target_link_libraries(VGEngine PRIVATE VGPackage)
-target_link_libraries(VGEngine PRIVATE VGImgui)
-target_link_libraries(VGEngine PRIVATE RmlUi::RmlUi)
-target_link_libraries(VGEngine PRIVATE VGCore)
-target_link_libraries(VGEngine PRIVATE VGAsset)
-target_link_libraries(VGEngine PRIVATE VGUI)
+target_link_libraries(VGEngine PUBLIC SDL3::SDL3)
+target_link_libraries(VGEngine PUBLIC $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
+target_link_libraries(VGEngine PUBLIC RmlUi::RmlUi)
+target_link_libraries(VGEngine PUBLIC VGLua)
+target_link_libraries(VGEngine PUBLIC HCore)
+target_link_libraries(VGEngine PUBLIC HCorePlatform)
+target_link_libraries(VGEngine PUBLIC HFileSystem)
+target_link_libraries(VGEngine PUBLIC HMedia)
+target_link_libraries(VGEngine PUBLIC VGRHI)
+target_link_libraries(VGEngine PUBLIC VGPackage)
+target_link_libraries(VGEngine PUBLIC VGImgui)
+target_link_libraries(VGEngine PUBLIC VGCore)
+target_link_libraries(VGEngine PUBLIC VGAsset)
+target_link_libraries(VGEngine PUBLIC VGUI)
 
 # 链接OpenGL库
 if (APPLE)
@@ -154,8 +139,8 @@ elseif (WIN32)
     target_link_libraries(VGEngine PRIVATE opengl32)
 endif ()
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET VGEngine PROPERTY CXX_STANDARD 20)
-endif()
+#if (CMAKE_VERSION VERSION_GREATER 3.12)
+#  set_property(TARGET VGEngine PROPERTY CXX_STANDARD 20)
+#endif()
 
 # TODO: 如有需要，请添加测试并安装目标。

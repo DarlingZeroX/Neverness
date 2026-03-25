@@ -62,7 +62,7 @@ namespace VisionGal
 
 	LuaDataBridge* LuaDataBridgeManager::GetDataBridge(const std::string& name)
 	{
-		if (m_DateBridges.contains(name))
+		if (m_DateBridges.find(name) != m_DateBridges.end())
 		{
 			return m_DateBridges[name].get();
 		}

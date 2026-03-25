@@ -56,6 +56,8 @@ namespace VisionGal
 
         void OnUpdate(float deltaTime) override;
         void OnRender() override;
+		void AddSubGameEngine(const Ref<ISubGameEngine>& subEngine);
+		CoreGameEngineContext* GetContext() { return &m_EngineContext; }
 
         void Initialize(Horizon::SDL3::OpenGLWindow* window);
         Viewport* GetViewport() const { return m_Viewport; }
@@ -71,5 +73,5 @@ namespace VisionGal
         CoreGameEngineContext m_EngineContext;
     };
 
-
+	
 }

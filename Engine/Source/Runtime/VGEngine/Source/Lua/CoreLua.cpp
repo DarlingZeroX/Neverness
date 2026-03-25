@@ -11,7 +11,6 @@
 
 #include "CoreLua.h"
 #include "VGCore/Include/Core/EventBus.h"
-#include "Galgame/Lua/GameLua.h"
 #include "Lua/LuaInterface.h"
 #include "VGUI/Include/Sol/Sol.h"
 #include "VGUI/Source/Sol/SolPlugin.h"
@@ -62,13 +61,15 @@ namespace VisionGal
 				sol::lib::string,
 				sol::lib::table); // 默认已加载这些库
 
-			// 创建命名空间
-			sol::table galgameNS = g_CoreLuaState->create_named_table("GalGame");
-
+			// 绑定默认API
 			RmlSol::Initialise(g_CoreLuaState);
-			//sol::state* solState = RmlSol::SolPlugin::GetLuaState();
 			VGLuaInterface::Initialise(*g_CoreLuaState);
-			GalGame::GalGameLuaInterface::Initialise(galgameNS);
+
+			// 绑定注册 API
+			for (auto& api : g_GlobalLuaAPIs)
+			{
+				api(g_CoreLuaState.get());
+			}
 		}
 
 		void ResetLuaState()
@@ -80,15 +81,19 @@ namespace VisionGal
 				sol::lib::string,
 				sol::lib::table); // 默认已加载这些库
 
-			// 创建命名空间
-			sol::table galgameNS = g_CoreLuaState->create_named_table("GalGame");
-
+			// 重新绑定默认API
 			RmlSol::SolPlugin::RebindLuaState(g_CoreLuaState);
 			VGLuaInterface::Initialise(*g_CoreLuaState);
-			GalGame::GalGameLuaInterface::Initialise(galgameNS);
+
+			// 重新绑定注册 API
+			for (auto& api : g_GlobalLuaAPIs)
+			{
+				api(g_CoreLuaState.get());
+			}
 		}
 
 		Ref<sol::state> g_CoreLuaState = nullptr;
+		std::vector<std::function<void(sol::state*)>> g_GlobalLuaAPIs;
 	};
 
 	void CoreLua::Initialize()
@@ -103,5 +108,16 @@ namespace VisionGal
 
 	void CoreLua::Update()
 	{
+	}
+
+	void CoreLua::RegisterGlobalAPI(const std::function<void(sol::state*)>& api)
+	{
+		CoreLuaImp::Get()->g_GlobalLuaAPIs.push_back(api);
+		// 立即绑定到当前的 Lua 状态
+		if (CoreLuaImp::Get()->g_CoreLuaState != nullptr)
+		{
+			api(CoreLuaImp::Get()->g_CoreLuaState.get());
+		}
+
 	}
 }

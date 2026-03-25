@@ -10,13 +10,14 @@
 */
 
 #pragma once
+#include "../../EngineConfig.h"
 #include "VGCore/Include/Core/Core.h"
 //#include "../../Graphics/Interface/VGFX.h"
 #include <VGRHI/Interface/VGFX.h>
 
 namespace VisionGal
 {
-    class ShaderManager
+    class VG_ENGINE_API ShaderManager
     {
     public:
         enum class ShaderBlockType {

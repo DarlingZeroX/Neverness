@@ -16,8 +16,6 @@
 #include "VGCore/Interface/Loader.h"
 #include "Lua/LuaScript.h"
 #include "Render/Camera.h"
-
-#include "Galgame/Components.h"
 #include "Engine/AudioPlayer.h"
 #include "Engine/VideoPlayer.h"
 

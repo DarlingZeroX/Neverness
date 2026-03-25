@@ -74,7 +74,7 @@ namespace VisionGal
 
 		auto result = randEngine.NextUINT64();
 
-		while (m_EntityComponentID.contains(result))
+		while (m_EntityComponentID.find(result) != m_EntityComponentID.end())
 		{
 			result = randEngine.NextUINT64();
 		}

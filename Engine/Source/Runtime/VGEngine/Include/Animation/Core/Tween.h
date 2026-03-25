@@ -14,11 +14,12 @@
  */
 
 #pragma once
+#include "../../EngineConfig.h"
 #include "VGCore/Interface/GameInterface.h"
 
 namespace VisionGal {
 
-	class Tween {
+	class VG_ENGINE_API Tween {
 	public:
 		enum Type { None, Back, Bounce, Circular, Cubic, Elastic, Exponential, Linear, Quadratic, Quartic, Quintic, Sine, Callback, Count };
 		enum Direction { In = 1, Out = 2, InOut = 3 };

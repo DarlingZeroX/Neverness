@@ -490,7 +490,7 @@ namespace VisionGal {
 		Ref<RmlUIDocument> document = nullptr;
 	};
 
-	class AnimationScriptComponent : public IComponent
+	class VG_ENGINE_API AnimationScriptComponent : public IComponent
 	{
 	public:
 		AnimationScriptComponent() = default;

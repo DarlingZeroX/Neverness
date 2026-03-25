@@ -15,7 +15,7 @@
 #include "VGUI/Interface/UISystem.h"
 #include "Engine/Manager.h"
 #include "Scene/Components.h"
-#include "Galgame/GalGameEngine.h"
+//#include "Galgame/GalGameEngine.h"
 #include "Render/TransitionManager.h"
 #include "CoreLua.h"
 
@@ -263,6 +263,11 @@ namespace VisionGal
 		m_RenderEngine->OnRender();
 	}
 
+	void CoreGameEngine::AddSubGameEngine(const Ref<ISubGameEngine>& subEngine)
+	{
+		m_SubGameEngines.push_back(subEngine);
+	}
+
 	void CoreGameEngine::Initialize(Horizon::SDL3::OpenGLWindow* window)
 	{
 		// 创建视口
@@ -283,9 +288,9 @@ namespace VisionGal
 		Input::Get()->AttachViewport(m_Viewport);
 
 		// 放在最后创建GalGame子引擎，因为有些系统还没初始化，比如UI系统
-		auto galgameEngine = MakeRef<GalGame::GalGameEngine>();
-		galgameEngine->Initialize(&m_EngineContext);
-		m_SubGameEngines.push_back(galgameEngine);
+		//auto galgameEngine = MakeRef<GalGame::GalGameEngine>();
+		//galgameEngine->Initialize(&m_EngineContext);
+		//m_SubGameEngines.push_back(galgameEngine);
 
 		// 初始化 Core Lua
 		CoreLua::Initialize();
