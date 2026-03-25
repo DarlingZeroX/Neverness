@@ -11,7 +11,7 @@
 
 #include "EditorComponents/Viewport.h"
 #include "VGImgui/Include/ImGuiEx/ImGuiEx.h"
-#include <VGEngine/Include/UI/UISystem.h>
+//#include <VGUI/Interface/UISystem.h>
 #include "EditorCore/Localization.h"
 
 namespace VisionGal::Editor

@@ -16,7 +16,7 @@
 #include "../Engine/AudioPlayer.h"
 #include "../Engine/VideoPlayer.h"
 //#include "../Resource/Video.h"
-#include "../UI/UIDocument.h"
+#include "VGUI/Interface/UIDocument.h"
 #include "../Render/Material.h"
 #include "../Render/Transition.h"
 #include "VGCore/Interface/SceneInterface.h"

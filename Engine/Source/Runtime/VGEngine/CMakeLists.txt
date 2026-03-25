@@ -60,13 +60,6 @@ file(GLOB ENGINE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Texture/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Scene/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Utils/*.cpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Lua/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Sol/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Rml/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Sol/Elements/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UI/Lua/Elements/*.cpp"
 )
  
 file(GLOB ENGINE_HEADER_FILES 
@@ -102,12 +95,6 @@ file(GLOB ENGINE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Lua/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Sol/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Rml/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UI/Lua/Elements/*.h"
 )
 
 # 启用预编译头支持
@@ -153,6 +140,7 @@ target_link_libraries(VGEngine PRIVATE VGImgui)
 target_link_libraries(VGEngine PRIVATE RmlUi::RmlUi)
 target_link_libraries(VGEngine PRIVATE VGCore)
 target_link_libraries(VGEngine PRIVATE VGAsset)
+target_link_libraries(VGEngine PRIVATE VGUI)
 
 # 链接OpenGL库
 if (APPLE)

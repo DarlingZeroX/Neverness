@@ -15,6 +15,7 @@
 #include "VGAsset/Interface/SceneAccessor.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "Scene/GameActorFactory.h"
+#include "VGCore/Interface/EngineState.h"
 
 namespace VisionGal
 {
@@ -29,6 +30,7 @@ namespace VisionGal
 
 		// 开始播放场景事件
 		m_IsPlayMode = true;
+		EngineRuntimeState::Get().isPlayMode = true;
 		{
 			EngineEvent evt;
 			evt.EventType = EngineEventType::EnterScenePlayMode;
@@ -64,6 +66,7 @@ namespace VisionGal
 		EngineEventBus::Get().OnEngineEvent.Invoke(evt);
 
 		m_IsPlayMode = false;
+		EngineRuntimeState::Get().isPlayMode = false;
 		SetCurrentScene(m_EditorScene);
 
 		return true;

@@ -13,8 +13,8 @@
 #include "VGCore/Include/Core/EventBus.h"
 #include "Galgame/Lua/GameLua.h"
 #include "Lua/LuaInterface.h"
-#include "UI/Sol/Sol.h"
-#include "VGEngine/Source/UI/Sol/SolPlugin.h"
+#include "VGUI/Include/Sol/Sol.h"
+#include "VGUI/Source/Sol/SolPlugin.h"
 
 namespace VisionGal
 {

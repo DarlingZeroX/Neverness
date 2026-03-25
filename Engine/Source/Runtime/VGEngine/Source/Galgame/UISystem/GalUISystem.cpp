@@ -12,7 +12,7 @@
 #include "Galgame/UISystem/GalUISystem.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "Galgame/Components.h"
-#include "UI/UISystem.h"
+#include "VGUI/Interface/UISystem.h"
 
 namespace VisionGal::GalGame
 {

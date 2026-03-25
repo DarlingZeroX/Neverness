@@ -10,7 +10,7 @@
 */
 
 #include "Game/RenderEngine.h"
-#include "UI/UISystem.h"
+#include "VGUI/Interface/UISystem.h"
 #include "Engine/Manager.h"
 #include "Scene/Components.h"
 #include "Render/TransitionManager.h"

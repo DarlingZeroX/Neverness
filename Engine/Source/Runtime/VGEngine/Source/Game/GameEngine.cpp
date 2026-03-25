@@ -12,7 +12,7 @@
 #include "Game/GameEngine.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGCore/Include/Core/Input.h"
-#include "UI/UISystem.h"
+#include "VGUI/Interface/UISystem.h"
 #include "Engine/Manager.h"
 #include "Scene/Components.h"
 #include "Galgame/GalGameEngine.h"

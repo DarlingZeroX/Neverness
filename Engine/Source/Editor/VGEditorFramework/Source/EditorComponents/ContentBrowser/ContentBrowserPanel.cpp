@@ -110,7 +110,8 @@ namespace VisionGal::Editor {
 			//bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -3.0f, -region.y);
 			bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -0.0f, -region.y + 6);
 			bg.SetColTop(Horizon::float4(.0f, .0f, .0f, 0.731f));
-			bg.ForegroundDraw();
+			bg.WindowDraw();
+			//bg.ForegroundDraw();
 
 			// 左侧目录树
 			{

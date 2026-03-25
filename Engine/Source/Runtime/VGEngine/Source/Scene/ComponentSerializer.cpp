@@ -12,7 +12,7 @@
 #include "Scene/ComponentSerializer.h"
 
 #include "Engine/Manager.h"
-#include "UI/UISystem.h"
+#include "VGUI/Interface/UISystem.h"
 #include "VGCore/Interface/Loader.h"
 #include "Lua/LuaScript.h"
 #include "Render/Camera.h"
