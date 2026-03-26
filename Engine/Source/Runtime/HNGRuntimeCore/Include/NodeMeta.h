@@ -14,7 +14,7 @@ namespace Horizon::NodeGraphRuntime
 {
 	struct NodeMeta
 	{
-		NodeType type;
+		NodeTypeId typeId;
 		std::string name;
 
 		struct SlotMeta

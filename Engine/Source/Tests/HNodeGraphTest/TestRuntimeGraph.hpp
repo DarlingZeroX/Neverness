@@ -5,15 +5,15 @@
 using namespace NodeGraphRuntime;
 
 // Helper to build a small graph used by multiple tests
-static RuntimeGraph BuildBranchGraph(bool branchConditionTrue)
+static RuntimeGraph BuildBranchGraph(NodeTypeId entryTypeId, NodeTypeId branchTypeId, NodeTypeId dialogueTypeId, bool branchConditionTrue)
 {
     RuntimeGraph g;
 
     // nodes
-    RuntimeNode entry; entry.id = 1; entry.type = NodeType::Entry; entry.execute = nullptr;
-    RuntimeNode branch; branch.id = 2; branch.type = NodeType::Branch; branch.execute = nullptr;
-    RuntimeNode A; A.id = 3; A.type = NodeType::Dialogue; A.execute = nullptr;
-    RuntimeNode B; B.id = 4; B.type = NodeType::Dialogue; B.execute = nullptr;
+    RuntimeNode entry; entry.id = 1; entry.typeId = entryTypeId; entry.execute = nullptr;
+    RuntimeNode branch; branch.id = 2; branch.typeId = branchTypeId; branch.execute = nullptr;
+    RuntimeNode A; A.id = 3; A.typeId = dialogueTypeId; A.execute = nullptr;
+    RuntimeNode B; B.id = 4; B.typeId = dialogueTypeId; B.execute = nullptr;
 
     g.nodes.push_back(entry);
     g.nodes.push_back(branch);
@@ -142,13 +142,17 @@ static ExecResult DialogueFn(RuntimeContext& ctx, NODE_ID nodeIndex)
 // 测试：当分支条件为 true 时，应执行 A 而非 B
 TEST(HNodeGraphRuntime, BranchTrueRoutesToA)
 {
-	RuntimeGraph g = BuildBranchGraph(true);
+    NodeRegistry reg;
+    const NodeTypeId entryTypeId = reg.FindType("Entry");
+    const NodeTypeId branchTypeId = reg.FindType("Branch");
+    const NodeTypeId dialogueTypeId = reg.FindType("Dialogue");
+
+    RuntimeGraph g = BuildBranchGraph(entryTypeId, branchTypeId, dialogueTypeId, true);
 
 	// 注册执行函数
-	NodeRegistry reg;
-	reg.Register(NodeMeta{ NodeType::Entry, "Entry", {}, {}, EntryFn });
-	reg.Register(NodeMeta{ NodeType::Branch, "Branch", {}, {}, BranchFn });
-	reg.Register(NodeMeta{ NodeType::Dialogue, "Dialogue", {}, {}, DialogueFn });
+    reg.Register(NodeMeta{ entryTypeId, "Entry", {}, {}, EntryFn });
+    reg.Register(NodeMeta{ branchTypeId, "Branch", {}, {}, BranchFn });
+    reg.Register(NodeMeta{ dialogueTypeId, "Dialogue", {}, {}, DialogueFn });
 
 	// 运行
 	RuntimeContext ctx; ctx.graph = &g;
@@ -159,7 +163,7 @@ TEST(HNodeGraphRuntime, BranchTrueRoutesToA)
 		NODE_ID nid = ctx.execStack.back(); ctx.execStack.pop_back();
 		RuntimeNode* node = GetNodeById(g, nid);
 		ASSERT_NE(node, nullptr);
-		NodeExecuteFn fn = reg.Get(node->type);
+        NodeExecuteFn fn = reg.Get(node->typeId);
 		ASSERT_NE(fn, nullptr);
 		ExecResult r = fn(ctx, node->id);
 		if (r == ExecResult::Running)
@@ -177,13 +181,17 @@ TEST(HNodeGraphRuntime, BranchTrueRoutesToA)
 // 测试：当分支条件为 false 时，应执行 B 而非 A
 TEST(HNodeGraphRuntime, BranchFalseRoutesToB)
 {
-	RuntimeGraph g = BuildBranchGraph(false);
+    NodeRegistry reg;
+    const NodeTypeId entryTypeId = reg.FindType("Entry");
+    const NodeTypeId branchTypeId = reg.FindType("Branch");
+    const NodeTypeId dialogueTypeId = reg.FindType("Dialogue");
+
+    RuntimeGraph g = BuildBranchGraph(entryTypeId, branchTypeId, dialogueTypeId, false);
 
 	// 注册执行函数
-	NodeRegistry reg;
-	reg.Register(NodeMeta{ NodeType::Entry, "Entry", {}, {}, EntryFn });
-	reg.Register(NodeMeta{ NodeType::Branch, "Branch", {}, {}, BranchFn });
-	reg.Register(NodeMeta{ NodeType::Dialogue, "Dialogue", {}, {}, DialogueFn });
+    reg.Register(NodeMeta{ entryTypeId, "Entry", {}, {}, EntryFn });
+    reg.Register(NodeMeta{ branchTypeId, "Branch", {}, {}, BranchFn });
+    reg.Register(NodeMeta{ dialogueTypeId, "Dialogue", {}, {}, DialogueFn });
 
 	// 运行
 	RuntimeContext ctx; ctx.graph = &g;
@@ -194,7 +202,7 @@ TEST(HNodeGraphRuntime, BranchFalseRoutesToB)
 		NODE_ID nid = ctx.execStack.back(); ctx.execStack.pop_back();
 		RuntimeNode* node = GetNodeById(g, nid);
 		ASSERT_NE(node, nullptr);
-		NodeExecuteFn fn = reg.Get(node->type);
+        NodeExecuteFn fn = reg.Get(node->typeId);
 		ASSERT_NE(fn, nullptr);
 		ExecResult r = fn(ctx, node->id);
 		if (r == ExecResult::Running)

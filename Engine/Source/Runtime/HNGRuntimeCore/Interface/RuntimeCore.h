@@ -56,7 +56,7 @@ namespace Horizon::NodeGraphRuntime
 	struct RuntimeNode
 	{
 		NODE_ID id;
-		NodeType type;
+		NodeTypeId typeId;
 
 		// 输入输出槽的索引范围（在 graph.slots 中）
 		uint32_t inputsBegin;
@@ -84,7 +84,7 @@ namespace Horizon::NodeGraphRuntime
 
 		// 构造
 		RuntimeNode() noexcept
-			: id(0), type(NodeType::Invalid), inputsBegin(0), inputsCount(0), outputsBegin(0), outputsCount(0), execute(nullptr)
+			: id(0), typeId(NodeTypeIdInvalid), inputsBegin(0), inputsCount(0), outputsBegin(0), outputsCount(0), execute(nullptr)
 		{}
 	};
 }

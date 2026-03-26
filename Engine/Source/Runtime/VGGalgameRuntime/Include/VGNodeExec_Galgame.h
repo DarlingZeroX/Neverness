@@ -23,7 +23,18 @@ namespace VisionGal::Runtime
 		// 当前对白：角色名/对白文本
 		VG_GALGAME_RUNTIME_API extern const char* CurrentSpeaker;
 		VG_GALGAME_RUNTIME_API extern const char* CurrentText;
+
+		// 当前对白表现：立绘/表情（用于 Editor Preview 或后续渲染层对接）
+		VG_GALGAME_RUNTIME_API extern const char* CurrentCharacterId;
+		VG_GALGAME_RUNTIME_API extern const char* CurrentExpression;
+
+		// 当前对白音频（如果希望 Preview 播放/渲染层播放）
+		VG_GALGAME_RUNTIME_API extern const char* CurrentAudioClip;
 	}
+
+	// DialogueList 节点数据槽名（GraphCompiler -> RuntimeSlot）
+	// - 该槽存放 dialogueListJson（DialogueListNodeData 序列化后的 JSON 字符串）
+	static constexpr const char* PIN_LinesJson = "LinesJson";
 
 	// ----------------------------
 	// 节点执行函数（NodeExecuteFn）

@@ -20,12 +20,12 @@ namespace Horizon::NodeGraphEditor
 	public:
 		void Register(const NodeEditorMeta& meta)
 		{
-			metas[meta.type] = meta;
+			metas[meta.typeId] = meta;
 		}
 
-		const NodeEditorMeta* Get(NodeGraphRuntime::NodeType type) const
+		const NodeEditorMeta* Get(NodeGraphRuntime::NodeTypeId typeId) const
 		{
-			auto it = metas.find(type);
+			auto it = metas.find(typeId);
 			return (it != metas.end()) ? &it->second : nullptr;
 		}
 
@@ -40,16 +40,7 @@ namespace Horizon::NodeGraphEditor
 		}
 
 	private:
-		struct NodeTypeHash
-		{
-			size_t operator()(NodeGraphRuntime::NodeType t) const noexcept
-			{
-				using U = std::underlying_type_t<NodeGraphRuntime::NodeType>;
-				return std::hash<U>{}(static_cast<U>(t));
-			}
-		};
-
-		std::unordered_map<NodeGraphRuntime::NodeType, NodeEditorMeta, NodeTypeHash> metas;
+		std::unordered_map<NodeGraphRuntime::NodeTypeId, NodeEditorMeta> metas;
 	};
 }
 

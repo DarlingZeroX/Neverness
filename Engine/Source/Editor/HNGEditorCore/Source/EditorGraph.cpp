@@ -162,13 +162,13 @@ namespace Horizon::NodeGraphEditor
 		idGen.Reset(st);
 	}
 
-	EditorNode& EditorGraph::AddNode(Runtime::NodeType type)
+	EditorNode& EditorGraph::AddNode(Runtime::NodeTypeId typeId)
 	{
 		// 根据 NodeEditorMeta 初始化 EditorNode.properties 的默认值
 		auto initFromEditorMeta = [&](EditorNode& node)
 		{
 			if (!editorRegistry) return;
-			const NodeEditorMeta* meta = editorRegistry->Get(type);
+			const NodeEditorMeta* meta = editorRegistry->Get(typeId);
 			if (!meta) return;
 			for (const auto& prop : meta->properties)
 			{
@@ -181,7 +181,7 @@ namespace Horizon::NodeGraphEditor
 		{
 			EditorNode node;
 			node.id = idGen.NewNodeId();
-			node.type = type;
+			node.typeId = typeId;
 			node.name = "Missing Registry";
 			initFromEditorMeta(node);
 			nodes.push_back(std::move(node));
@@ -190,12 +190,12 @@ namespace Horizon::NodeGraphEditor
 		}
 
 		// 2) meta 缺失：创建占位节点，避免崩溃，并提示 type 未注册
-		const Runtime::NodeMeta* meta = registry->GetMeta(type);
+		const Runtime::NodeMeta* meta = registry->GetMeta(typeId);
 		if (!meta)
 		{
 			EditorNode node;
 			node.id = idGen.NewNodeId();
-			node.type = type;
+			node.typeId = typeId;
 			node.name = "Unregistered NodeType";
 			initFromEditorMeta(node);
 			nodes.push_back(std::move(node));

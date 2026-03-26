@@ -12,7 +12,7 @@ namespace Horizon::NodeGraphEditor
 		explicit GraphCommandAPI(EditorGraph& graph);
 
 		// Node
-		ax::NodeEditor::NodeId AddNode(Runtime::NodeType type, ImVec2 pos);
+		ax::NodeEditor::NodeId AddNode(Runtime::NodeTypeId typeId, ImVec2 pos);
 		void DeleteNode(ax::NodeEditor::NodeId id);
 		void MoveNode(ax::NodeEditor::NodeId id, ImVec2 oldPos, ImVec2 newPos);
 

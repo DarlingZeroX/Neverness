@@ -1,0 +1,35 @@
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+
+# 开启utf-8编码支持
+if (MSVC)
+    add_compile_options(/utf-8)
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()
+
+file(GLOB HNGRUNTIMENODES_HEADER_FILES
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+
+file(GLOB HNGRUNTIMENODES_SRC_FILES
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+)
+
+add_library (HNGRuntimeNodes SHARED ${HNGRUNTIMENODES_HEADER_FILES} ${HNGRUNTIMENODES_SRC_FILES})
+
+target_compile_definitions(HNGRuntimeNodes PRIVATE H_NG_RUNTIME_NODES_API_EXPORT)
+
+# 需要能包含到 Runtime 根路径（访问 HNGRuntimeCore 头）
+target_include_directories(HNGRuntimeNodes PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(HNGRuntimeNodes PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(HNGRuntimeNodes PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(HNGRuntimeNodes PUBLIC HNGRuntimeCore)
+

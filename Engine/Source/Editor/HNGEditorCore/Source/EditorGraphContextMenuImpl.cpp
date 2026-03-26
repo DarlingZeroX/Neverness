@@ -8,25 +8,6 @@
 
 namespace Horizon::NodeGraphEditor
 {
-	static const char* NodeTypeToString(Horizon::NodeGraphRuntime::NodeType type)
-	{
-		using NodeType = Horizon::NodeGraphRuntime::NodeType;
-		switch (type)
-		{
-		case NodeType::Invalid: return "Invalid";
-		case NodeType::Entry: return "Entry";
-		case NodeType::Dialogue: return "Dialogue";
-		case NodeType::Delay: return "Delay";
-		case NodeType::Branch: return "Branch";
-		case NodeType::SetVariable: return "SetVariable";
-		case NodeType::GetVariable: return "GetVariable";
-		case NodeType::Condition: return "Condition";
-		case NodeType::Custom0: return "Custom0";
-		case NodeType::Custom1: return "Custom1";
-		default: return "Unknown";
-		}
-	}
-
 	void HandleNodeLinkContextMenusImpl(
 		EditorGraph& graph,
 		bool& pendingDeleteNode,
@@ -72,9 +53,7 @@ namespace Horizon::NodeGraphEditor
 			if (node)
 			{
 				ImGui::Text("ID: %d", node->id.Get());
-				ImGui::Text("Type: %s (%u)",
-					NodeTypeToString(node->type),
-					static_cast<unsigned>(node->type));
+				ImGui::Text("TypeId: %u", static_cast<unsigned>(node->typeId));
 				ImGui::Text("Inputs: %d", static_cast<int>(node->inputs.size()));
 				ImGui::Text("Outputs: %d", static_cast<int>(node->outputs.size()));
 			}

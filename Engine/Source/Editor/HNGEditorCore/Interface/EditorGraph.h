@@ -104,7 +104,7 @@ namespace Horizon::NodeGraphEditor
 		// 注意：
 		// - 若 registry/meta 不存在，会创建一个最小的占位节点（无 pins），避免崩溃
 		// ----------------------------
-		EditorNode& AddNode(Runtime::NodeType type);
+		EditorNode& AddNode(Runtime::NodeTypeId typeId);
 
 		// 根据 NodeId 在线性表中查找 EditorNode
 		// 优先通过 nodeIndexById 做 O(1) 查找，发现不一致时会回退线性扫描并修正索引。

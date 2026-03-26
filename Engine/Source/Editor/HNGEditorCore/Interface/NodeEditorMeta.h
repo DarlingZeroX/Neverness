@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -43,7 +44,7 @@ namespace Horizon::NodeGraphEditor
 	// Editor 专用节点元数据（与 Runtime NodeMeta 完全独立）
 	struct NodeEditorMeta
 	{
-		NodeGraphRuntime::NodeType type;
+		NodeGraphRuntime::NodeTypeId typeId;
 
 		// UI 展示
 		std::string displayName;
@@ -51,6 +52,14 @@ namespace Horizon::NodeGraphEditor
 
 		// 属性描述
 		std::vector<PropertyMeta> properties;
+
+		// 自定义节点 UI（可选）：
+		// - 用于复杂节点（如 DialogueList / Timeline / SkillGraph）的专用编辑器面板
+		// - Core 不内置任何业务 UI；业务模块通过 NodeEditorRegistry 注册此回调
+		// - 回调内部可自由使用 ImGui，并在需要时设置 graph.dirty = true
+		//
+		// 注意：DrawSingleNodeImpl 会在 DrawNodePropertiesImpl 后调用它
+		std::function<void(class EditorGraph& graph, class EditorNode& node, const class Horizon::NodeGraphRuntime::RuntimeContext* runtimeCtx)> customDraw;
 	};
 }
 

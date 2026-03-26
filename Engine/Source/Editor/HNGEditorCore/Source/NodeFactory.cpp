@@ -20,7 +20,7 @@ namespace Horizon::NodeGraphEditor
 	{
 		EditorNode node;
 		node.id = idGen.NewNodeId();
-		node.type = meta.type;
+		node.typeId = meta.typeId;
 		node.name = meta.name;
 
 		for (const auto& in : meta.inputs)

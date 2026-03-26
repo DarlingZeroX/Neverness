@@ -114,7 +114,7 @@ namespace Horizon::NodeGraphEditor
 			{
 				json jn;
 				jn["id"] = ToInt(n.id);
-				jn["type"] = static_cast<int>(n.type);
+				jn["type"] = static_cast<int>(n.typeId);
 				jn["name"] = n.name;
 				jn["position"] = SerializeImVec2(n.position);
 
@@ -211,7 +211,7 @@ namespace Horizon::NodeGraphEditor
 				{
 					EditorNode n;
 					n.id = ToNodeId(jn.value("id", 0));
-					n.type = static_cast<NodeGraphRuntime::NodeType>(jn.value("type", 0));
+					n.typeId = static_cast<NodeGraphRuntime::NodeTypeId>(jn.value("type", 0));
 					n.name = jn.value("name", std::string{});
 					if (jn.contains("position"))
 						n.position = DeserializeImVec2(jn["position"]);

@@ -37,6 +37,7 @@ add_subdirectory ("Engine/Source/Runtime/HCore")
 add_subdirectory ("Engine/Source/Runtime/HCorePlatform")
 add_subdirectory ("Engine/Source/Runtime/HFileSystem")
 add_subdirectory ("Engine/Source/Runtime/HNGRuntimeCore")
+add_subdirectory ("Engine/Source/Runtime/HNGRuntimeNodes")
 add_subdirectory ("Engine/Source/Runtime/HMedia")
 # 引擎
 add_subdirectory ("Engine/Source/Runtime/VGLua")

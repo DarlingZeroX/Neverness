@@ -14,6 +14,7 @@
 
 #include "../VGGalEditorConfig.h"
 
+#include <memory>
 #include <string>
 
 #include <HNGEditorCore/Interface/EditorGraph.h>
@@ -22,6 +23,8 @@
 
 namespace VisionGal::Editor
 {
+	class DialogueListEditorPanel;
+
 	class VG_GALGAME_EDITOR_API NGEditorGalgame
 	{
 	public:
@@ -50,6 +53,9 @@ namespace VisionGal::Editor
 
 		// 统一的通用编辑器内核：所有 Copy/Paste/Undo/Redo/交互由它负责
 		Horizon::NodeGraph::HNodeGraphEditor m_CoreEditor;
+
+		// 复杂节点面板：对白编辑器（独立窗口）
+		std::unique_ptr<DialogueListEditorPanel> m_DialogueEditor;
 
 	private:
 		// 初始化

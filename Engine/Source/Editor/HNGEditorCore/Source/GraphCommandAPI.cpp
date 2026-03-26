@@ -13,10 +13,10 @@ namespace Horizon::NodeGraphEditor
 	{
 	}
 
-	ax::NodeEditor::NodeId GraphCommandAPI::AddNode(Runtime::NodeType type, ImVec2 pos)
+	ax::NodeEditor::NodeId GraphCommandAPI::AddNode(Runtime::NodeTypeId typeId, ImVec2 pos)
 	{
 		// 统一走 graph.AddNode，保证 NodeMeta 驱动创建与 idGen 行为一致
-		EditorNode& created = m_Graph.AddNode(type);
+		EditorNode& created = m_Graph.AddNode(typeId);
 		created.position = pos;
 		const EditorNode snapshot = created;
 

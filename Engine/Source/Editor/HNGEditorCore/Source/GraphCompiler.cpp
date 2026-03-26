@@ -10,7 +10,6 @@
 */
 
 #include "GraphCompiler.h"
-#include <HNGRuntimeCore/Include/Nodes.h>
 #include <HNGRuntimeCore/Include/NodeRegistry.h>
 #include <unordered_map>
 #include <sstream>
@@ -18,11 +17,6 @@
 #include <functional>
 
 #include <HNGRuntimeCore/Include/RuntimeGraph.h>
-#include <HNGRuntimeCore/Include/Nodes.h>
-#include <HNGRuntimeCore/Include/NodeRegistry.h>
-#include <unordered_map>
-// hash/== for ax::NodeEditor::NodeId
-#include <functional>
 
 namespace ax {
 	namespace NodeEditor {
@@ -65,6 +59,7 @@ namespace Horizon::NodeGraphEditor
 	{
 		using namespace NodeGraphRuntime;
 		RuntimeGraph g;
+		const NodeTypeId entryTypeId = registry.FindType("Entry");
 		auto ValueToString = [](const Value& v) -> std::string
 		{
 			switch (v.type)
@@ -114,8 +109,8 @@ namespace Horizon::NodeGraphEditor
 			NODE_ID nodeId = static_cast<NODE_ID>(enode.id.Get());
 			RuntimeNode rnode;
 			rnode.id = nodeId;
-			rnode.type = enode.type;
-			rnode.execute = registry.Get(enode.type);
+			rnode.typeId = enode.typeId;
+			rnode.execute = registry.Get(enode.typeId);
 			// inputs/outputsBegin 由后续填充
 			g.nodes.push_back(rnode);
 			nodeIdMap[enode.id] = nodeId;
@@ -148,52 +143,27 @@ namespace Horizon::NodeGraphEditor
 				slot.name = epin.name;
 				slot.type = epin.type;
 				slot.active = false;
-				// 将 editor 节点属性写入 runtime 槽值（基于 NodeType / 槽名 的约定）
-				//
-				// 1) Dialogue: Text 输出（多行对白文本）
-				if ( enode.type == NodeType::Dialogue
-					&& epin.type == SlotType::String
-					&& epin.name == "Text")
+				// 将 editor 节点属性写入 runtime 槽值（基于“输出槽名 -> properties key”的约定）
+				// 目的：避免依赖 NodeType（已被 NodeTypeId + 注册系统替换）
+				if (epin.type == SlotType::String)
 				{
-					auto pit = enode.properties.find("text");
-					if (pit != enode.properties.end())
+					const auto writeFromProp = [&](const char* propKey)
 					{
-						slot.value = Value::FromString(ValueToString(pit->second));
-					}
-				}
-				// 2) SetVariable: Name / Expression
-				else if (enode.type == NodeType::SetVariable && epin.type == SlotType::String)
-				{
-					if (epin.name == "Name")
-					{
-						auto pit = enode.properties.find("name");
+						auto pit = enode.properties.find(propKey);
 						if (pit != enode.properties.end())
 							slot.value = Value::FromString(ValueToString(pit->second));
-					}
-					else if (epin.name == "Expression")
-					{
-						auto pit = enode.properties.find("value");
-						if (pit != enode.properties.end())
-							slot.value = Value::FromString(ValueToString(pit->second));
-					}
-				}
-				// 3) GetVariable: Name
-				else if ( enode.type == NodeType::GetVariable
-					&& epin.type == SlotType::String
-					&& epin.name == "Name")
-				{
-					auto pit = enode.properties.find("name");
-					if (pit != enode.properties.end())
-						slot.value = Value::FromString(ValueToString(pit->second));
-				}
-				// 4) Condition: Condition 表达式
-				else if ( enode.type == NodeType::Condition
-					&& epin.type == SlotType::String
-					&& epin.name == "Condition")
-				{
-					auto pit = enode.properties.find("condition");
-					if (pit != enode.properties.end())
-						slot.value = Value::FromString(ValueToString(pit->second));
+					};
+
+					// DialogueList：LinesJson -> properties["dialogueListJson"]
+					if (epin.name == "LinesJson") writeFromProp("dialogueListJson");
+					// 兼容旧字段（若已有旧图）
+					else if (epin.name == "Text") writeFromProp("text");
+					else if (epin.name == "Name") writeFromProp("name");
+					else if (epin.name == "Expression") writeFromProp("value");
+					else if (epin.name == "Position") writeFromProp("position");
+					else if (epin.name == "Condition") writeFromProp("condition");
+					else if (epin.name == "BgmName") writeFromProp("bgmName");
+					else if (epin.name == "BackgroundName") writeFromProp("backgroundName");
 				}
 				const SLOT_ID slotId = PushSlot(g, std::move(slot));
 				g.slotToNode[slotId] = nodeId;
@@ -238,7 +208,7 @@ namespace Horizon::NodeGraphEditor
 
 		// 5. 设置入口节点（第一个 Entry 类型节点）
 		for (const auto& n : g.nodes)
-			if (n.type == NodeType::Entry) { g.entryNodeId = n.id; break; }
+			if (entryTypeId != 0 && n.typeId == entryTypeId) { g.entryNodeId = n.id; break; }
 
 		return g;
 	}

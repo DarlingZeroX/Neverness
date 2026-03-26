@@ -9,13 +9,11 @@
 * See the LICENSE file in the project root for details.
 */
 
-#pragma once
-#include <cstdint>
-#include "Nodes.h"
+#include "../Include/HNGRuntimeNodes.h"
 
 #include <iostream>
 
-#include "ExpressionEvaluator.h"
+#include "../../HNGRuntimeCore/Include/ExpressionEvaluator.h"
 
 namespace Horizon::NodeGraphRuntime
 {
@@ -36,7 +34,7 @@ namespace Horizon::NodeGraphRuntime
 		return ExecResult::Finished;
 	}
 
-    // Branch 节点执行函数：根据输入条件激活 True/False 路径
+	// Branch 节点执行函数：根据输入条件激活 True/False 路径
 	ExecResult BranchNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
 		if (!ctx.graph) return ExecResult::Finished;
@@ -70,13 +68,6 @@ namespace Horizon::NodeGraphRuntime
 		return ExecResult::Finished;
 	}
 
-	// Entry 节点执行函数：无状态，直接推进到下一个节点
-	//ExecResult EntryNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
-	//{
-	//	AdvanceToNextNode(ctx);
-	//	return ExecResult::Finished;
-	//}
-
 	// Dialogue 节点执行函数：支持多行对白和 Flow 等待
 	ExecResult DialogueNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
@@ -94,7 +85,7 @@ namespace Horizon::NodeGraphRuntime
 		// 状态通过 RuntimeContext::GetOrCreateState<T> 绑定到 nodeIndex，
 		// 因此在多次调用 DialogueNodeExecute 之间会自动保持。
 		// ------------------------------------------------------------------
-		struct DialogueState
+		struct DialogueStateInternal
 		{
 			int currentLine = 0;
 			std::vector<std::string> lines;
@@ -102,7 +93,7 @@ namespace Horizon::NodeGraphRuntime
 			bool shownThisLine = false;
 		};
 
-		DialogueState& state = ctx.GetOrCreateState<DialogueState>(nodeIndex);
+		DialogueStateInternal& state = ctx.GetOrCreateState<DialogueStateInternal>(nodeIndex);
 
 		// Text：从字符串输出槽读取完整对白文本（由编译器从 editor properties["text"] 写入）
 		SLOT_ID textSlotId = FindOutputSlot(*ctx.graph, *node, "Text");
@@ -237,20 +228,6 @@ namespace Horizon::NodeGraphRuntime
 		}
 	}
 
-	// ------------------------------------------------------------------
-	// SetVariable 节点：执行表达式并写入全局变量表
-	//
-	// 设计意图：
-	// - 为图形化节点图提供“赋值语句”，形如：
-	//     name   = "hp"
-	//     value  = "hp + 10"
-	//   运行时求值后相当于：ctx.variables["hp"] = EvaluateExpression("hp + 10", ctx);
-	//
-	// 槽约定：
-	// - 输出 "Name"      : string，存放变量名
-	// - 输出 "Expression": string，存放表达式源码
-	// - 输出 "Next"      : Exec，赋值完成后激活的控制流输出
-	// ------------------------------------------------------------------
 	ExecResult SetVariableNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
 		if (!ctx.graph) return ExecResult::Finished;
@@ -295,18 +272,6 @@ namespace Horizon::NodeGraphRuntime
 		return ExecResult::Finished;
 	}
 
-	// ------------------------------------------------------------------
-	// GetVariable 节点：从全局变量表读取变量值并输出到数据槽
-	//
-	// 设计意图：
-	// - 作为 SetVariable 的“反向操作”，让后续节点可以把变量当作普通输入使用
-	//
-	// 槽约定：
-	// - 输出 "Name" : string，存放变量名
-	// - 输出 "Value": 任意类型（SlotType 可设为 String 以便在 Editor 中显示），
-	//                 实际运行时将 Value 整体写入 RuntimeSlot.value
-	// - 输出 "Next" : Exec，读取完成后激活的控制流输出
-	// ------------------------------------------------------------------
 	ExecResult GetVariableNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
 		if (!ctx.graph) return ExecResult::Finished;
@@ -347,19 +312,6 @@ namespace Horizon::NodeGraphRuntime
 		return ExecResult::Finished;
 	}
 
-	// ------------------------------------------------------------------
-	// Condition 节点：基于表达式的条件分支（升级版 Branch）
-	//
-	// 设计意图：
-	// - 替代传统“Bool 输入 + True/False 输出”的 Branch 设计，
-	//   直接在 Editor 中写逻辑表达式：
-	//     condition = "hp > 10 && hasKey == true"
-	//
-	// 槽约定：
-	// - 输出 "Condition" : string，存放条件表达式
-	// - 输出 "True"      : Exec，条件为 true 时激活
-	// - 输出 "False"     : Exec，条件为 false 时激活
-	// ------------------------------------------------------------------
 	ExecResult ConditionNodeExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
 		if (!ctx.graph) return ExecResult::Finished;
@@ -393,3 +345,4 @@ namespace Horizon::NodeGraphRuntime
 		return ExecResult::Finished;
 	}
 }
+

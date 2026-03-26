@@ -29,20 +29,12 @@ namespace Horizon::NodeGraphRuntime
 		Object // reserved
 	};
 
-	// 节点类型：由用户定义的枚举（引擎端需要扩展）
-	enum class NodeType : uint16_t
-	{
-		Invalid = 0,
-		Entry,
-		Dialogue,
-		Delay,
-		Branch,
-		SetVariable,
-		GetVariable,
-		Condition,
-		Custom0,
-		Custom1
-	};
+	// 节点类型：由注册系统分配的稳定数值 ID
+	// 注意：
+	// - Editor/GraphCompiler 负责通过 NodeRegistry 完成“类型名 -> typeId -> execute/pins”等编译期绑定
+	// - 运行时执行只依赖 RuntimeNode::execute（函数指针），不需要做任何字符串比较
+	using NodeTypeId = std::uint16_t;
+	static constexpr NodeTypeId NodeTypeIdInvalid = 0;
 
 	// 节点执行函数指针签名
 	// 执行函数接收上下文和节点索引（节点在 graph.nodes 向量中的索引）

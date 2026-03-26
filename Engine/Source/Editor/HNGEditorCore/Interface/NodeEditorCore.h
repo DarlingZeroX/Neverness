@@ -104,7 +104,7 @@ namespace Horizon::NodeGraphEditor
 	{
 		EditorNodeID id;
 
-		NodeGraphRuntime::NodeType type;
+		NodeGraphRuntime::NodeTypeId typeId;
 		std::string name;
 
 		std::vector<EditorPin> inputs;

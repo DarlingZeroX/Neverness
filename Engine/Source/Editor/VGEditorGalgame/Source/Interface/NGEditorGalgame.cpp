@@ -15,27 +15,33 @@
 
 #include <algorithm>
 
-#include <VGGalgameRuntime/Include/VGNodeExec_Galgame.h>
+#include <VGEditorGalgame/Interface/GalgameNodeRegistry.h>
+#include "DialogueListEditorPanel.h"
+
+#include "VGGalgameRuntime/Include/VGNodeExec_Galgame.h"
 
 namespace VisionGal::Editor
 {
 	using namespace Horizon::NodeGraphRuntime;
 	using namespace Horizon::NodeGraphEditor;
-	using namespace VisionGal::Runtime;
+	//using namespace VisionGal::Runtime;
 
-	// Galgame 节点映射到现有 NodeType（不修改 Core 枚举/编译器）。
-	static constexpr NodeType NODETYPE_DialogueList = NodeType::Dialogue;
-	static constexpr NodeType NODETYPE_Choice = NodeType::Branch;
-	static constexpr NodeType NODETYPE_ShowCharacter = NodeType::SetVariable;
-	static constexpr NodeType NODETYPE_PlayBGM = NodeType::Delay;
-	static constexpr NodeType NODETYPE_SetBackground = NodeType::Condition;
-	static constexpr const char* PIN_Text = "Text"; // DialogueList -> Text
+	// Galgame 节点：使用 NodeRegistry 的动态类型注册（TypeId + 注册系统）。
 
 	NGEditorGalgame::NGEditorGalgame() = default;
-	NGEditorGalgame::~NGEditorGalgame() = default;
+	NGEditorGalgame::~NGEditorGalgame()
+	{
+		// 清理业务侧面板桥接，避免静态指针悬挂
+		if (m_DialogueEditor && GetDialogueListEditorPanelInstance() == m_DialogueEditor.get())
+			SetDialogueListEditorPanelInstance(nullptr);
+	}
 
 	void NGEditorGalgame::Initialize()
 	{
+		// 复杂节点面板（业务层 UI）
+		m_DialogueEditor = std::make_unique<DialogueListEditorPanel>();
+		SetDialogueListEditorPanelInstance(m_DialogueEditor.get());
+
 		// 绑定图数据：EditorGraph -> NodeRegistry/NodeEditorRegistry/CommandManager
 		m_Graph.context = MakeRef<IMNEEditorContext>();
 		m_Graph.registry = &m_Registry;
@@ -51,134 +57,7 @@ namespace VisionGal::Editor
 
 	void NGEditorGalgame::RegisterGalgameNodes()
 	{
-		m_Registry.Register(NodeMeta{
-			NodeType::Entry,
-			"Entry",
-			{},
-			{
-				{ "Next", SlotType::Exec, false }
-			},
-			VisionGal::Runtime::EntryExecute
-		});
-
-		m_NodeEditorRegistry.Register(NodeEditorMeta{
-			NodeType::Entry,
-			"Entry",
-			"Core",
-			{}
-		});
-
-		m_Registry.Register(NodeMeta{
-			NODETYPE_DialogueList,
-			"DialogueList",
-			{
-				{ "In", SlotType::Exec, true }
-			},
-			{
-				{ "Next", SlotType::Exec, false },
-				{ PIN_Text, SlotType::String, false }
-			},
-			VisionGal::Runtime::DialogueListExecute
-		});
-
-		m_NodeEditorRegistry.Register(NodeEditorMeta{
-			NODETYPE_DialogueList,
-			"DialogueList",
-			"Galgame",
-			{
-				PropertyMeta{ "text", "dialogueList", ValueType::String, PropertyWidgetType::MultilineText, Value::FromString(""), {} }
-			}
-		});
-
-		m_Registry.Register(NodeMeta{
-			NODETYPE_Choice,
-			"Choice",
-			{
-				{ "In", SlotType::Exec, true }
-			},
-			{
-				{ "Option1", SlotType::Exec, false },
-				{ "Option2", SlotType::Exec, false }
-			},
-			VisionGal::Runtime::ChoiceExecute
-		});
-
-		m_NodeEditorRegistry.Register(NodeEditorMeta{
-			NODETYPE_Choice,
-			"Choice",
-			"Galgame",
-			{}
-		});
-
-		m_Registry.Register(NodeMeta{
-			NODETYPE_ShowCharacter,
-			"ShowCharacter",
-			{
-				{ "In", SlotType::Exec, true }
-			},
-			{
-				{ "Out", SlotType::Exec, false },
-				{ "Name", SlotType::String, false },
-				{ "Expression", SlotType::String, false },
-				{ "Position", SlotType::String, false }
-			},
-			VisionGal::Runtime::ShowCharacterExecute
-		});
-
-		m_NodeEditorRegistry.Register(NodeEditorMeta{
-			NODETYPE_ShowCharacter,
-			"ShowCharacter",
-			"Galgame",
-			{
-				PropertyMeta{ "name", "name", ValueType::String, PropertyWidgetType::InputText, Value::FromString(""), {} },
-				PropertyMeta{ "value", "expression", ValueType::String, PropertyWidgetType::InputText, Value::FromString(""), {} },
-				PropertyMeta{ "position", "position", ValueType::String, PropertyWidgetType::InputText, Value::FromString(""), {} }
-			}
-		});
-
-		m_Registry.Register(NodeMeta{
-			NODETYPE_PlayBGM,
-			"PlayBGM",
-			{
-				{ "In", SlotType::Exec, true }
-			},
-			{
-				{ "Out", SlotType::Exec, false },
-				{ "BgmName", SlotType::String, false }
-			},
-			VisionGal::Runtime::PlayBGMExecute
-		});
-
-		m_NodeEditorRegistry.Register(NodeEditorMeta{
-			NODETYPE_PlayBGM,
-			"PlayBGM",
-			"Galgame",
-			{
-				PropertyMeta{ "bgmName", "bgmName", ValueType::String, PropertyWidgetType::InputText, Value::FromString(""), {} }
-			}
-		});
-
-		m_Registry.Register(NodeMeta{
-			NODETYPE_SetBackground,
-			"SetBackground",
-			{
-				{ "In", SlotType::Exec, true }
-			},
-			{
-				{ "Out", SlotType::Exec, false },
-				{ "BackgroundName", SlotType::String, false }
-			},
-			VisionGal::Runtime::SetBackgroundExecute
-		});
-
-		m_NodeEditorRegistry.Register(NodeEditorMeta{
-			NODETYPE_SetBackground,
-			"SetBackground",
-			"Galgame",
-			{
-				PropertyMeta{ "backgroundName", "backgroundName", ValueType::String, PropertyWidgetType::InputText, Value::FromString(""), {} }
-			}
-		});
+		GalgameNodeRegistry::RegisterAll(m_Registry, m_NodeEditorRegistry);
 	}
 
 	void NGEditorGalgame::SetupInitialGraph()
@@ -192,8 +71,8 @@ namespace VisionGal::Editor
 
 		m_Graph.idGen.Reset(m_Graph.idGen.GetState());
 
-		const ax::NodeEditor::NodeId entryId = m_Graph.AddNode(NodeType::Entry).id;
-		const ax::NodeEditor::NodeId dlgId = m_Graph.AddNode(NODETYPE_DialogueList).id;
+		const ax::NodeEditor::NodeId entryId = m_Graph.AddNode(m_Registry.FindType("Entry")).id;
+		const ax::NodeEditor::NodeId dlgId = m_Graph.AddNode(m_Registry.FindType("DialogueList")).id;
 
 		auto* entryNode = m_Graph.FindNode(entryId);
 		auto* dlgNode = m_Graph.FindNode(dlgId);
@@ -268,6 +147,10 @@ namespace VisionGal::Editor
 		ImGui::End();
 
 		m_CoreEditor.Draw();
+
+		// 独立窗口：复杂节点面板（例如 DialogueList Editor）
+		if (m_DialogueEditor)
+			m_DialogueEditor->Draw(m_Graph);
 
 		DrawPreviewWindow();
 	}

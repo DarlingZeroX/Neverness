@@ -12,6 +12,8 @@
 
 #include <HNGRuntimeCore/Include/RuntimeGraph.h>
 
+#include "DialogueListNodeData.h"
+
 namespace VisionGal::Runtime
 {
 	using namespace Horizon::NodeGraphRuntime;
@@ -20,54 +22,25 @@ namespace VisionGal::Runtime
 	{
 		const char* CurrentSpeaker = "__CurrentSpeaker";
 		const char* CurrentText = "__CurrentText";
+		const char* CurrentCharacterId = "__CurrentCharacterId";
+		const char* CurrentExpression = "__CurrentExpression";
+		const char* CurrentAudioClip = "__CurrentAudioClip";
 	}
 
-	static constexpr const char* PIN_Text = "Text"; // DialogueList -> Text
-
 	// ----------------------------
-	// DialogueListState（封装在 Runtime 模块）
+	// DialogueListState：逐帧/可中断播放状态
 	// ----------------------------
-	struct DialogueListLine
-	{
-		std::string speaker;
-		std::string text;
-	};
-
 	struct DialogueListState
 	{
 		bool initialized = false;
-		size_t currentLine = 0;
-		std::vector<DialogueListLine> lines;
+		size_t index = 0;
+
+		// typewriter progress
+		size_t typedChars = 0;
+		bool linePresented = false; // 当前行表现是否已“触发”（变量写入）
+
+		DialogueListNode nodeData;
 	};
-
-	// 将一行解析为：speaker + text
-	// 约定：
-	// - 优先支持 "speaker|text"
-	// - 其次支持 "speaker:text"
-	// - 若无分隔符：speaker 为空，text 为整行
-	static DialogueListLine ParseDialogueLine(const std::string& line)
-	{
-		DialogueListLine out;
-
-		auto pos = line.find('|');
-		if (pos != std::string::npos)
-		{
-			out.speaker = line.substr(0, pos);
-			out.text = line.substr(pos + 1);
-			return out;
-		}
-
-		pos = line.find(':');
-		if (pos != std::string::npos)
-		{
-			out.speaker = line.substr(0, pos);
-			out.text = line.substr(pos + 1);
-			return out;
-		}
-
-		out.text = line;
-		return out;
-	}
 
 	ExecResult EntryExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
 	{
@@ -95,77 +68,117 @@ namespace VisionGal::Runtime
 
 		DialogueListState& state = ctx.GetOrCreateState<DialogueListState>(nodeIndex);
 
-		// 读取 Text
-		const SLOT_ID textSlotId = FindOutputSlot(*ctx.graph, *node, PIN_Text);
-		if (textSlotId == 0 || textSlotId >= ctx.graph->slots.size())
-			return ExecResult::Finished;
-
-		const RuntimeSlot& textSlot = ctx.graph->slots[textSlotId];
-		if (textSlot.value.type != ValueType::String)
-			return ExecResult::Finished;
-
-		const std::string& fullText = textSlot.value.AsString();
-
-		// 初始化：拆分多行
+		// 1) 初始化：解析 DialogueListNodeData（JSON 字符串）
 		if (!state.initialized)
 		{
-			state.lines.clear();
-			std::string current;
-			for (char c : fullText)
-			{
-				if (c == '\n')
-				{
-					state.lines.push_back(ParseDialogueLine(current));
-					current.clear();
-				}
-				else if (c != '\r')
-				{
-					current.push_back(c);
-				}
-			}
-			state.lines.push_back(ParseDialogueLine(current));
+			const SLOT_ID linesSlotId = FindOutputSlot(*ctx.graph, *node, PIN_LinesJson);
+			if (linesSlotId == 0 || linesSlotId >= ctx.graph->slots.size())
+				return ExecResult::Finished;
 
-			state.currentLine = 0;
+			const RuntimeSlot& linesSlot = ctx.graph->slots[linesSlotId];
+			if (linesSlot.value.type != ValueType::String)
+				return ExecResult::Finished;
+
+			const DialogueListNode data =
+				DeserializeDialogueListNodeFromString(linesSlot.value.AsString());
+			state.nodeData = std::move(data);
+			state.index = 0;
+			state.typedChars = 0;
+			state.linePresented = false;
 			state.initialized = true;
 		}
 
-		if (state.lines.empty())
+		const auto& lines = state.nodeData.lines;
+		if (lines.empty() || state.index >= lines.size())
+		{
+			// 空对话：直接触发 Next
+			const SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
+			if (nextSlotId != 0) PushExec(ctx, nextSlotId);
 			return ExecResult::Finished;
+		}
 
-		// 是否准备推进
+		const DialogueLine& curLine = lines[state.index];
+
+		// 2) 读取 Next（玩家点击继续/跳过）
 		bool readyNext = false;
 		auto itNext = ctx.variables.find("Next");
 		if (itNext != ctx.variables.end() && itNext->second.type == ValueType::Bool)
 			readyNext = itNext->second.AsBool();
 
-		// 写入当前行到 RuntimeContext.variables（供 Preview/UI 读取）
-		auto writeCurrent = [&]()
+		// 3) 如果这一行尚未触发表现：写入运行时变量（供 Preview/Renders/扩展层读取）
+		if (!state.linePresented)
 		{
-			if (state.currentLine >= state.lines.size()) return;
-			const auto& ln = state.lines[state.currentLine];
-			ctx.variables[Vars::CurrentSpeaker] = Value::FromString(ln.speaker);
-			ctx.variables[Vars::CurrentText] = Value::FromString(ln.text);
-		};
+			ctx.variables[Vars::CurrentSpeaker] = Value::FromString(curLine.speakerId);
+			ctx.variables[Vars::CurrentCharacterId] = Value::FromString(curLine.characterId);
+			ctx.variables[Vars::CurrentExpression] = Value::FromString(curLine.expression);
+			ctx.variables[Vars::CurrentAudioClip] = Value::FromString(curLine.audioClip);
 
-		if (!readyNext)
-		{
-			writeCurrent();
-			return ExecResult::Running;
+			// 行级事件：以 JSON 字符串形式挂到变量，便于后续渲染层/脚本层取用
+			if (!curLine.events.empty())
+			{
+				nlohmann::json ev = curLine.events;
+				ctx.variables["__CurrentDialogueEventsJson"] = Value::FromString(ev.dump());
+			}
+			else
+			{
+				ctx.variables["__CurrentDialogueEventsJson"] = Value::FromString(std::string{});
+			}
+
+			state.typedChars = 0;
+			state.linePresented = true;
 		}
 
-		// 消费 Next 并推进
-		ctx.variables["Next"] = Value::FromBool(false);
-		if (state.currentLine + 1 < state.lines.size())
+		const size_t fullLen = curLine.text.size();
+
+		// 4) 自动打字机推进（每帧）
+		if (state.typedChars < fullLen && !readyNext)
 		{
-			++state.currentLine;
-			writeCurrent();
-			return ExecResult::Running;
+			// chars per second：可按 presentation/duration 扩展（此处用固定值）
+			const float charsPerSecond = 40.0f;
+			const float dt = (ctx.deltaTime > 0.0f) ? ctx.deltaTime : 0.016f;
+			const size_t add = static_cast<size_t>(dt * charsPerSecond);
+			if (add > 0) state.typedChars = std::min(fullLen, state.typedChars + add);
 		}
 
-		// 播放完毕：激活输出 Exec "Next"
-		const SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
-		if (nextSlotId != 0) PushExec(ctx, nextSlotId);
-		return ExecResult::Finished;
+		// 5) 写入当前可见文本（typewriter）
+		const std::string visible = curLine.text.substr(0, static_cast<size_t>(state.typedChars));
+		ctx.variables[Vars::CurrentText] = Value::FromString(visible);
+
+		// 6) 若玩家按了 Next：先跳过打字机，再进入下一行；最后触发 Next exec
+		if (readyNext)
+		{
+			// 消费 Next
+			ctx.variables["Next"] = Value::FromBool(false);
+
+			// 1) 若当前行未打完：直接补全文本，不推进 index
+			if (state.typedChars < fullLen)
+			{
+				state.typedChars = fullLen;
+				const std::string fullVisible = curLine.text;
+				ctx.variables[Vars::CurrentText] = Value::FromString(fullVisible);
+				return ExecResult::Running;
+			}
+
+			// 2) 已打完：推进到下一行或结束
+			state.index++;
+			state.typedChars = 0;
+			state.linePresented = false;
+
+			if (state.index < lines.size())
+			{
+				// 继续运行，让下一帧触发表现/显示
+				return ExecResult::Running;
+			}
+
+			// 结束：激活输出 Exec "Next"
+			const SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
+			if (nextSlotId != 0) PushExec(ctx, nextSlotId);
+			// 可选：重置 index 以便 Stop/Play 后的行为更一致
+			state.index = 0;
+			return ExecResult::Finished;
+		}
+
+		return ExecResult::Running;
 	}
 
 	ExecResult ChoiceExecute(RuntimeContext& ctx, NODE_ID nodeIndex)
