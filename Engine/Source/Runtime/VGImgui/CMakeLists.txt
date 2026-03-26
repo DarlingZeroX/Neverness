@@ -31,6 +31,7 @@ file(GLOB IMGUI_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Imgui/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Imgui/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Imgui/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/ImGuiColorTextEdit/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/ImGuiColorTextEdit/*.cpp"

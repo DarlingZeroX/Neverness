@@ -1,4 +1,4 @@
-// dear imgui, v1.92.2 WIP
+// dear imgui, v1.92.3
 // (demo code)
 
 // Help:
@@ -121,6 +121,7 @@ Index of this file:
 // [SECTION] Example App: Docking, DockSpace / ShowExampleAppDockSpace()
 // [SECTION] Example App: Documents Handling / ShowExampleAppDocuments()
 // [SECTION] Example App: Assets Browser / ShowExampleAppAssetsBrowser()
+// [SECTION] IMGUI_DEMO_MARKER utilities
 
 */
 
@@ -128,7 +129,7 @@ Index of this file:
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "imgui/imgui.h"
+#include "imgui.h"
 #ifndef IMGUI_DISABLE
 
 // System includes
@@ -294,12 +295,41 @@ static void ShowDockingDisabledMessage()
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 }
 
+ImVec2           GImGuiDemoWindowPos = ImVec2(-1.f, -1.f); // if x < 0, will use default position defined inside ImGui::ShowDemoWindow()
+ImVec2           GImGuiDemoWindowSize = ImVec2(-1.f, -1.f);
+ImGuiCond        GImGuiDemoWindowCond = ImGuiCond_Appearing;
+
+// Enables to position the ImGui Demo window. Not referred anywhere in imgui.h: you need to copy this declaration if you want to use it.
+void SetImGuiDemoWindowPos(ImVec2 pos, ImVec2 size, ImGuiCond cond)
+{
+    GImGuiDemoWindowPos = pos;
+    GImGuiDemoWindowSize = size;
+    GImGuiDemoWindowCond = cond;
+}
+
+ImVec2           GImGuiDemoCodeWindowPos = ImVec2(-1.f, -1.f);
+ImVec2           GImGuiDemoCodeWindowSize = ImVec2(-1.f, -1.f);
+ImGuiCond        GImGuiDemoCodeWindowCond = ImGuiCond_Appearing;
+
+// Enable to position the ImGui Demo code window. Not referred anywhere in imgui.h: you need to copy this declaration if you want to use it.
+void SetImGuiDemoCodeWindowPos(ImVec2 pos, ImVec2 size, ImGuiCond cond)
+{
+    GImGuiDemoCodeWindowPos = pos;
+    GImGuiDemoCodeWindowSize = size;
+    GImGuiDemoCodeWindowCond = cond;
+}
+
+
 // Helper to wire demo markers located in code to an interactive browser
 typedef void (*ImGuiDemoMarkerCallback)(const char* file, int line, const char* section, void* user_data);
+void ImGuiDemoMarkerCallback_Default(const char* file, int line, const char* section, void* user_data);
 extern ImGuiDemoMarkerCallback      GImGuiDemoMarkerCallback;
 extern void*                        GImGuiDemoMarkerCallbackUserData;
-ImGuiDemoMarkerCallback             GImGuiDemoMarkerCallback = NULL;
+ImGuiDemoMarkerCallback         GImGuiDemoMarkerCallback = ImGuiDemoMarkerCallback_Default;
 void*                               GImGuiDemoMarkerCallbackUserData = NULL;
+extern bool                     GImGuiDemoMarker_IsActive;
+bool                            GImGuiDemoMarker_IsActive = false;
+void                            ImGuiDemoMarker_GuiToggle();
 #define IMGUI_DEMO_MARKER(section)  do { if (GImGuiDemoMarkerCallback != NULL) GImGuiDemoMarkerCallback(__FILE__, __LINE__, section, GImGuiDemoMarkerCallbackUserData); } while (0)
 
 //-----------------------------------------------------------------------------
@@ -415,8 +445,16 @@ void ImGui::ShowDemoWindow(bool* p_open)
     // We specify a default position/size in case there's no data in the .ini file.
     // We only do it to make the demo applications a little more welcoming, but typically this isn't required.
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+    if (GImGuiDemoWindowPos.x >= 0.f)
+    {
+        ImGui::SetNextWindowPos(GImGuiDemoWindowPos, GImGuiDemoWindowCond);
+        ImGui::SetNextWindowSize(GImGuiDemoWindowSize, GImGuiDemoWindowCond);
+    }
+    else
+    {
+        ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+    }
 
     // Main body of the Demo window starts here.
     if (!ImGui::Begin("Dear ImGui Demo", p_open, window_flags))
@@ -445,6 +483,8 @@ void ImGui::ShowDemoWindow(bool* p_open)
 
     ImGui::Text("dear imgui says hello! (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
     ImGui::Spacing();
+    ImGuiDemoMarker_GuiToggle();
+    ImGui::BeginChild("Demos");
 
     IMGUI_DEMO_MARKER("Help");
     if (ImGui::CollapsingHeader("Help"))
@@ -556,6 +596,8 @@ void ImGui::ShowDemoWindow(bool* p_open)
                 ImGui::SameLine(); HelpMarker("Toggling this at runtime is normally unsupported (most platform backends won't refresh the decoration right away).");
                 ImGui::Checkbox("io.ConfigViewportsNoDefaultParent", &io.ConfigViewportsNoDefaultParent);
                 ImGui::SameLine(); HelpMarker("Toggling this at runtime is normally unsupported (most platform backends won't refresh the parenting right away).");
+                ImGui::Checkbox("io.ConfigViewportPlatformFocusSetsImGuiFocus", &io.ConfigViewportPlatformFocusSetsImGuiFocus);
+                ImGui::SameLine(); HelpMarker("When a platform window is focused (e.g. using Alt+Tab, clicking Platform Title Bar), apply corresponding focus on imgui windows (may clear focus/active id from imgui windows location in other platform windows). In principle this is better enabled but we provide an opt-out, because some Linux window managers tend to eagerly focus windows (e.g. on mouse hover, or even a simple window pos/size change).");
                 ImGui::Unindent();
             }
 
@@ -706,6 +748,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
     DemoWindowInputs();
 
     // End of ShowDemoWindow()
+    ImGui::EndChild(); // </ImGui::BeginChild("Demos");>
     ImGui::PopItemWidth();
     ImGui::End();
 }
@@ -2236,7 +2279,7 @@ static void DemoWindowWidgetsQueryingStatuses()
         );
         ImGui::BulletText(
             "with Hovering Delay or Stationary test:\n"
-            "IsItemHovered() = = %d\n"
+            "IsItemHovered() = %d\n"
             "IsItemHovered(_Stationary) = %d\n"
             "IsItemHovered(_DelayShort) = %d\n"
             "IsItemHovered(_DelayNormal) = %d\n"
@@ -3310,7 +3353,7 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                     ImGui::BeginTable("##Split", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoPadOuterX);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 0.70f);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 0.30f);
-                    //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacingY, 0.0f);
+                    //ImGui::PushStyleVarY(ImGuiStyleVar_ItemSpacing, 0.0f);
                 }
 
                 ImGuiListClipper clipper;
@@ -3460,6 +3503,18 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
 // [SECTION] DemoWindowWidgetsTabs()
 //-----------------------------------------------------------------------------
 
+static void EditTabBarFittingPolicyFlags(ImGuiTabBarFlags* p_flags)
+{
+    if ((*p_flags & ImGuiTabBarFlags_FittingPolicyMask_) == 0)
+        *p_flags |= ImGuiTabBarFlags_FittingPolicyDefault_;
+    if (ImGui::CheckboxFlags("ImGuiTabBarFlags_FittingPolicyMixed", p_flags, ImGuiTabBarFlags_FittingPolicyMixed))
+        *p_flags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyMixed);
+    if (ImGui::CheckboxFlags("ImGuiTabBarFlags_FittingPolicyShrink", p_flags, ImGuiTabBarFlags_FittingPolicyShrink))
+        *p_flags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyShrink);
+    if (ImGui::CheckboxFlags("ImGuiTabBarFlags_FittingPolicyScroll", p_flags, ImGuiTabBarFlags_FittingPolicyScroll))
+        *p_flags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyScroll);
+}
+
 static void DemoWindowWidgetsTabs()
 {
     IMGUI_DEMO_MARKER("Widgets/Tabs");
@@ -3502,12 +3557,7 @@ static void DemoWindowWidgetsTabs()
             ImGui::CheckboxFlags("ImGuiTabBarFlags_TabListPopupButton", &tab_bar_flags, ImGuiTabBarFlags_TabListPopupButton);
             ImGui::CheckboxFlags("ImGuiTabBarFlags_NoCloseWithMiddleMouseButton", &tab_bar_flags, ImGuiTabBarFlags_NoCloseWithMiddleMouseButton);
             ImGui::CheckboxFlags("ImGuiTabBarFlags_DrawSelectedOverline", &tab_bar_flags, ImGuiTabBarFlags_DrawSelectedOverline);
-            if ((tab_bar_flags & ImGuiTabBarFlags_FittingPolicyMask_) == 0)
-                tab_bar_flags |= ImGuiTabBarFlags_FittingPolicyDefault_;
-            if (ImGui::CheckboxFlags("ImGuiTabBarFlags_FittingPolicyResizeDown", &tab_bar_flags, ImGuiTabBarFlags_FittingPolicyResizeDown))
-                tab_bar_flags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyResizeDown);
-            if (ImGui::CheckboxFlags("ImGuiTabBarFlags_FittingPolicyScroll", &tab_bar_flags, ImGuiTabBarFlags_FittingPolicyScroll))
-                tab_bar_flags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyScroll);
+            EditTabBarFittingPolicyFlags(&tab_bar_flags);
 
             // Tab Bar
             ImGui::AlignTextToFramePadding();
@@ -3556,12 +3606,8 @@ static void DemoWindowWidgetsTabs()
             ImGui::Checkbox("Show Trailing TabItemButton()", &show_trailing_button);
 
             // Expose some other flags which are useful to showcase how they interact with Leading/Trailing tabs
-            static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyResizeDown;
-            ImGui::CheckboxFlags("ImGuiTabBarFlags_TabListPopupButton", &tab_bar_flags, ImGuiTabBarFlags_TabListPopupButton);
-            if (ImGui::CheckboxFlags("ImGuiTabBarFlags_FittingPolicyResizeDown", &tab_bar_flags, ImGuiTabBarFlags_FittingPolicyResizeDown))
-                tab_bar_flags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyResizeDown);
-            if (ImGui::CheckboxFlags("ImGuiTabBarFlags_FittingPolicyScroll", &tab_bar_flags, ImGuiTabBarFlags_FittingPolicyScroll))
-                tab_bar_flags &= ~(ImGuiTabBarFlags_FittingPolicyMask_ ^ ImGuiTabBarFlags_FittingPolicyScroll);
+            static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_AutoSelectNewTabs | ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_FittingPolicyShrink;
+            EditTabBarFittingPolicyFlags(&tab_bar_flags);
 
             if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
             {
@@ -3786,6 +3832,8 @@ static void DemoWindowWidgetsTextInput()
             static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
             HelpMarker("You can use the ImGuiInputTextFlags_CallbackResize facility if you need to wire InputTextMultiline() to a dynamic string type. See misc/cpp/imgui_stdlib.h for an example. (This is not demonstrated in imgui_demo.cpp because we don't want to include <string> in here)");
             ImGui::CheckboxFlags("ImGuiInputTextFlags_ReadOnly", &flags, ImGuiInputTextFlags_ReadOnly);
+            ImGui::CheckboxFlags("ImGuiInputTextFlags_WordWrap", &flags, ImGuiInputTextFlags_WordWrap);
+            ImGui::SameLine(); HelpMarker("Feature is currently in Beta. Please read comments in imgui.h");
             ImGui::CheckboxFlags("ImGuiInputTextFlags_AllowTabInput", &flags, ImGuiInputTextFlags_AllowTabInput);
             ImGui::SameLine(); HelpMarker("When _AllowTabInput is set, passing through the widget with Tabbing doesn't automatically activate it, in order to also cycling through subsequent widgets.");
             ImGui::CheckboxFlags("ImGuiInputTextFlags_CtrlEnterForNewLine", &flags, ImGuiInputTextFlags_CtrlEnterForNewLine);
@@ -3933,10 +3981,13 @@ static void DemoWindowWidgetsTextInput()
             // For this demo we are using ImVector as a string container.
             // Note that because we need to store a terminating zero character, our size/capacity are 1 more
             // than usually reported by a typical string class.
+            static ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
+            ImGui::CheckboxFlags("ImGuiInputTextFlags_WordWrap", &flags, ImGuiInputTextFlags_WordWrap);
+
             static ImVector<char> my_str;
             if (my_str.empty())
                 my_str.push_back(0);
-            Funcs::MyInputTextMultiline("##MyStr", &my_str, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16));
+            Funcs::MyInputTextMultiline("##MyStr", &my_str, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags);
             ImGui::Text("Data: %p\nSize: %d\nCapacity: %d", (void*)my_str.begin(), my_str.size(), my_str.capacity());
             ImGui::TreePop();
         }
@@ -5235,6 +5286,156 @@ static void DemoWindowLayout()
 
         ImGui::TreePop();
     }
+
+#if IMGUI_HAS_STACK_LAYOUT
+    IMGUI_DEMO_MARKER("Layout/Stack Layout");
+    if (ImGui::TreeNode("Stack Layout"))
+    {
+        static bool widget_a = true, widget_b = true, widget_c = true;
+        static bool spring_a = true, spring_ab = true, spring_bc = true, spring_c = true;
+        static bool minimize_width = false, minimize_height = true;
+        static bool horizontal = true, draw_springs = true;
+        static ImVec2 item_spacing = ImGui::GetStyle().ItemSpacing;
+        static float a_c_spring_weight = 0.0f;
+        static float ab_spring_weight = 0.5f;
+        static float alignment = 0.5f;
+
+        struct funcs
+        {
+            static void VisibleSpring(float spring_weight)
+            {
+                ImGui::Spring(spring_weight);
+                if (!draw_springs)
+                    return;
+
+                ImVec2 rect_min = ImGui::GetItemRectMin();
+                ImVec2 rect_max = ImGui::GetItemRectMax();
+
+                ImVec2 rect_size = ImGui::GetItemRectSize();
+                if (rect_size.x <= 0.0f && rect_size.y <= 0.0f)
+                    return;
+
+                // Draw zig-zag
+                float width = 0.0f, spacing = 0.0f;
+                ImVec2 direction, origin;
+                ImVec2 spacing_min, spring_max;
+
+                if (horizontal)
+                {
+                    spacing     = floorf(item_spacing.x);
+                    width       = rect_size.x - spacing;
+                    origin      = ImVec2(floorf(rect_min.x), floorf(rect_min.y + (rect_max.y - rect_min.y) / 2));
+                    direction   = ImVec2(1.0f, 0.0f);
+                    spring_max  = ImVec2(rect_min.x + width, rect_max.y);
+                    spacing_min = ImVec2(rect_min.x + width, rect_min.y);
+                }
+                else
+                {
+                    spacing     = floorf(item_spacing.y);
+                    width       = rect_size.y - spacing;
+                    origin      = ImVec2(floorf(rect_min.x + (rect_max.x - rect_min.x) / 2), floorf(rect_min.y));
+                    direction   = ImVec2(0.0f, 1.0f);
+                    spring_max  = ImVec2(rect_max.x, rect_min.y + width);
+                    spacing_min = ImVec2(rect_min.x, rect_min.y + width);
+                }
+
+                if (spring_weight <= 0.0f && spacing <= 0.0f)
+                    return;
+
+                ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+                draw_list->PushClipRect(rect_min, rect_max, true);
+
+                draw_list->AddRectFilled(rect_min, spring_max, ImColor(80, 20, 80));
+                draw_list->AddRectFilled(spacing_min, rect_max, ImColor(80, 20, 20));
+
+                const float zig_zag_size = 3;
+                ImVec2 normal = ImVec2(-direction.y, direction.x);
+
+                draw_list->PathClear();
+                origin.x += 0.5f;
+                origin.y += 0.5f;
+                draw_list->PathLineTo(origin);
+                for (float x = zig_zag_size * 0.5f; x <= width; x += zig_zag_size)
+                {
+                    ImVec2 p;
+                    p.x = origin.x + direction.x * x + normal.x * zig_zag_size;
+                    p.y = origin.y + direction.y * x + normal.y * zig_zag_size;
+                    draw_list->PathLineTo(p);
+                    normal = ImVec2(-normal.x, -normal.y);
+                }
+                draw_list->PathStroke(ImColor(255, 255, 255, 190), false, 1.0f);
+
+                draw_list->PopClipRect();
+            }
+        };
+
+        ImGui::Checkbox("Widget A",  &widget_a);  ImGui::SameLine();
+        ImGui::Checkbox("Widget B",  &widget_b);  ImGui::SameLine();
+        ImGui::Checkbox("Widget C",  &widget_c);
+        ImGui::Checkbox("Spring A",  &spring_a);  ImGui::SameLine();
+        ImGui::Checkbox("Spring AB", &spring_ab); ImGui::SameLine();
+        ImGui::Checkbox("Spring BC", &spring_bc); ImGui::SameLine();
+        ImGui::Checkbox("Spring C",  &spring_c);
+        ImGui::Checkbox("Horizontal", &horizontal);            ImGui::SameLine();
+        ImGui::Checkbox("Minimize Width", &minimize_width);     ImGui::SameLine();
+        ImGui::Checkbox("Minimize Height",  &minimize_height);
+        ImGui::Checkbox("Draw Springs", &draw_springs); ImGui::SameLine();
+        ImGui::TextUnformatted(" "); ImGui::SameLine();
+        ImGui::ColorButton("- Spring", ImColor(80, 20, 80), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoPicker); ImGui::SameLine();
+        ImGui::TextUnformatted("Spring"); ImGui::SameLine();
+        ImGui::TextUnformatted(" "); ImGui::SameLine();
+        ImGui::ColorButton("- Spacing", ImColor(80, 20, 20), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoPicker); ImGui::SameLine();
+        ImGui::TextUnformatted("Item Spacing");
+        ImGui::DragFloat("Item Spacing", horizontal ? &item_spacing.x : &item_spacing.y, 0.1f, 0.0f, 50.0f);
+        ImGui::DragFloat("A & C Spring Weight", &a_c_spring_weight, 0.002f, 0.0f, 1.0f);
+        ImGui::DragFloat("AB Spring Weight", &ab_spring_weight, 0.002f, 0.0f, 1.0f);
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("BC Spring Weight = 1 - AB Spring Weight");
+        ImGui::DragFloat("Minor Axis Alignment", &alignment, 0.002f, 0.0f, 1.0f);
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("This is vertical alignment for horizontal layouts and horizontal alignment for vertical layouts.");
+        ImGui::Text("Layout widgets:");
+        ImGui::Text("| Spring A | Widget A | Spring AB | Widget B | Spring BC | Widget C | Spring C |");
+
+        ImGui::Spacing();
+
+        ImVec2 widget_size;
+        widget_size.x = floorf(ImGui::GetContentRegionAvail().x / 4);
+        widget_size.y = horizontal ? floorf(widget_size.x / 3) : widget_size.x;
+
+        ImVec2 small_widget_size = widget_size;
+        if (horizontal)
+            small_widget_size.y = floorf(small_widget_size.y / 2);
+        else
+            small_widget_size.x = floorf(small_widget_size.x / 2);
+
+        ImVec2 layout_size = ImVec2(widget_size.x * 4, widget_size.y * 4);
+        if (minimize_width)  layout_size.x = 0.0f;
+        if (minimize_height) layout_size.y = 0.0f;
+
+        // Minor axis alignment can be set by style or directly in BeginHorizontal/BeginVertical
+        // Example:
+        //    ImGui::PushStyleVar(ImGuiStyleVar_LayoutAlign, alignment);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(floorf(item_spacing.x), floorf(item_spacing.y)));
+
+        if (horizontal) { ImGui::BeginHorizontal("h1", layout_size, alignment); } else { ImGui::BeginVertical("v1", layout_size, alignment); }
+        if (spring_a)   { funcs::VisibleSpring(a_c_spring_weight); }
+        if (widget_a)   { ImGui::Button("Widget A", widget_size); }
+        if (spring_ab)  { funcs::VisibleSpring(ab_spring_weight); }
+        if (widget_b)   { ImGui::Button("Widget B", small_widget_size); }
+        if (spring_bc)  { funcs::VisibleSpring(1.0f - ab_spring_weight); }
+        if (widget_c)   { ImGui::Button("Widget C", widget_size); }
+        if (spring_c)   { funcs::VisibleSpring(a_c_spring_weight); }
+        if (horizontal) { ImGui::EndHorizontal(); } else { ImGui::EndVertical(); }
+
+        ImGui::PopStyleVar();
+
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        draw_list->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImGui::GetColorU32(ImGuiCol_Border));
+
+        ImGui::TreePop();
+    }
+#endif // IMGUI_HAS_STACK_LAYOUT
 }
 
 //-----------------------------------------------------------------------------
@@ -5260,7 +5461,7 @@ static void DemoWindowPopups()
     // Typical use for regular windows:
     //   bool my_tool_is_active = false; if (ImGui::Button("Open")) my_tool_is_active = true; [...] if (my_tool_is_active) Begin("My Tool", &my_tool_is_active) { [...] } End();
     // Typical use for popups:
-    //   if (ImGui::Button("Open")) ImGui::OpenPopup("MyPopup"); if (ImGui::BeginPopup("MyPopup") { [...] EndPopup(); }
+    //   if (ImGui::Button("Open")) ImGui::OpenPopup("MyPopup"); if (ImGui::BeginPopup("MyPopup")) { [...] EndPopup(); }
 
     // With popups we have to go through a library call (here OpenPopup) to manipulate the visibility state.
     // This may be a bit confusing at first but it should quickly make sense. Follow on the examples below.
@@ -5846,7 +6047,7 @@ static void DemoWindowTables()
         ImGui::SameLine(); ImGui::RadioButton("Text", &contents_type, CT_Text);
         ImGui::SameLine(); ImGui::RadioButton("FillButton", &contents_type, CT_FillButton);
         ImGui::Checkbox("Display headers", &display_headers);
-        ImGui::CheckboxFlags("ImGuiTableFlags_NoBordersInBody", &flags, ImGuiTableFlags_NoBordersInBody); ImGui::SameLine(); HelpMarker("Disable vertical borders in columns Body (borders will always appear in Headers");
+        ImGui::CheckboxFlags("ImGuiTableFlags_NoBordersInBody", &flags, ImGuiTableFlags_NoBordersInBody); ImGui::SameLine(); HelpMarker("Disable vertical borders in columns Body (borders will always appear in Headers)");
         PopStyleCompact();
 
         if (ImGui::BeginTable("table1", 3, flags))
@@ -7339,7 +7540,7 @@ static void DemoWindowTables()
                 ImGui::CheckboxFlags("ImGuiTableFlags_BordersH", &flags, ImGuiTableFlags_BordersH);
                 ImGui::CheckboxFlags("ImGuiTableFlags_BordersOuterH", &flags, ImGuiTableFlags_BordersOuterH);
                 ImGui::CheckboxFlags("ImGuiTableFlags_BordersInnerH", &flags, ImGuiTableFlags_BordersInnerH);
-                ImGui::CheckboxFlags("ImGuiTableFlags_NoBordersInBody", &flags, ImGuiTableFlags_NoBordersInBody); ImGui::SameLine(); HelpMarker("Disable vertical borders in columns Body (borders will always appear in Headers");
+                ImGui::CheckboxFlags("ImGuiTableFlags_NoBordersInBody", &flags, ImGuiTableFlags_NoBordersInBody); ImGui::SameLine(); HelpMarker("Disable vertical borders in columns Body (borders will always appear in Headers)");
                 ImGui::CheckboxFlags("ImGuiTableFlags_NoBordersInBodyUntilResize", &flags, ImGuiTableFlags_NoBordersInBodyUntilResize); ImGui::SameLine(); HelpMarker("Disable vertical borders in columns Body until hovered for resize (borders will always appear in Headers)");
                 ImGui::TreePop();
             }
@@ -8177,6 +8378,9 @@ void ImGui::ShowAboutWindow(bool* p_open)
         ImGui::Separator();
         ImGui::Text("sizeof(size_t): %d, sizeof(ImDrawIdx): %d, sizeof(ImDrawVert): %d", (int)sizeof(size_t), (int)sizeof(ImDrawIdx), (int)sizeof(ImDrawVert));
         ImGui::Text("define: __cplusplus=%d", (int)__cplusplus);
+#ifdef IMGUI_ENABLE_TEST_ENGINE
+        ImGui::Text("define: IMGUI_ENABLE_TEST_ENGINE");
+#endif
 #ifdef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
         ImGui::Text("define: IMGUI_DISABLE_OBSOLETE_FUNCTIONS");
 #endif
@@ -8320,22 +8524,34 @@ void ImGui::ShowAboutWindow(bool* p_open)
 //-----------------------------------------------------------------------------
 
 // Demo helper function to select among default colors. See ShowStyleEditor() for more advanced options.
-// Here we use the simplified Combo() api that packs items into a single literal string.
-// Useful for quick combo boxes where the choices are known locally.
 bool ImGui::ShowStyleSelector(const char* label)
 {
+    // FIXME: This is a bit tricky to get right as style are functions, they don't register a name nor the fact that one is active.
+    // So we keep track of last active one among our limited selection.
     static int style_idx = -1;
-    if (ImGui::Combo(label, &style_idx, "Dark\0Light\0Classic\0"))
+    const char* style_names[] = { "Dark", "Light", "Classic" };
+    bool ret = false;
+    if (ImGui::BeginCombo(label, (style_idx >= 0 && style_idx < IM_ARRAYSIZE(style_names)) ? style_names[style_idx] : ""))
     {
-        switch (style_idx)
+        for (int n = 0; n < IM_ARRAYSIZE(style_names); n++)
         {
-        case 0: ImGui::StyleColorsDark(); break;
-        case 1: ImGui::StyleColorsLight(); break;
-        case 2: ImGui::StyleColorsClassic(); break;
+            if (ImGui::Selectable(style_names[n], style_idx == n, ImGuiSelectableFlags_SelectOnNav))
+            {
+                style_idx = n;
+                ret = true;
+                switch (style_idx)
+                {
+                case 0: ImGui::StyleColorsDark(); break;
+                case 1: ImGui::StyleColorsLight(); break;
+                case 2: ImGui::StyleColorsClassic(); break;
+                }
+            }
+            else if (style_idx == n)
+                ImGui::SetItemDefaultFocus();
         }
-        return true;
+        ImGui::EndCombo();
     }
-    return false;
+    return ret;
 }
 
 static const char* GetTreeLinesFlagsName(ImGuiTreeNodeFlags flags)
@@ -8421,7 +8637,6 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
             SliderFloat2("ItemInnerSpacing", (float*)&style.ItemInnerSpacing, 0.0f, 20.0f, "%.0f");
             SliderFloat2("TouchExtraPadding", (float*)&style.TouchExtraPadding, 0.0f, 10.0f, "%.0f");
             SliderFloat("IndentSpacing", &style.IndentSpacing, 0.0f, 30.0f, "%.0f");
-            SliderFloat("ScrollbarSize", &style.ScrollbarSize, 1.0f, 20.0f, "%.0f");
             SliderFloat("GrabMinSize", &style.GrabMinSize, 1.0f, 20.0f, "%.0f");
 
             SeparatorText("Borders");
@@ -8435,16 +8650,22 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
             SliderFloat("ChildRounding", &style.ChildRounding, 0.0f, 12.0f, "%.0f");
             SliderFloat("FrameRounding", &style.FrameRounding, 0.0f, 12.0f, "%.0f");
             SliderFloat("PopupRounding", &style.PopupRounding, 0.0f, 12.0f, "%.0f");
-            SliderFloat("ScrollbarRounding", &style.ScrollbarRounding, 0.0f, 12.0f, "%.0f");
             SliderFloat("GrabRounding", &style.GrabRounding, 0.0f, 12.0f, "%.0f");
+
+            SeparatorText("Scrollbar");
+            SliderFloat("ScrollbarSize", &style.ScrollbarSize, 1.0f, 20.0f, "%.0f");
+            SliderFloat("ScrollbarRounding", &style.ScrollbarRounding, 0.0f, 12.0f, "%.0f");
+            SliderFloat("ScrollbarPadding", &style.ScrollbarPadding, 0.0f, 10.0f, "%.0f");
 
             SeparatorText("Tabs");
             SliderFloat("TabBorderSize", &style.TabBorderSize, 0.0f, 1.0f, "%.0f");
             SliderFloat("TabBarBorderSize", &style.TabBarBorderSize, 0.0f, 2.0f, "%.0f");
             SliderFloat("TabBarOverlineSize", &style.TabBarOverlineSize, 0.0f, 3.0f, "%.0f");
             SameLine(); HelpMarker("Overline is only drawn over the selected tab when ImGuiTabBarFlags_DrawSelectedOverline is set.");
-            DragFloat("TabCloseButtonMinWidthSelected", &style.TabCloseButtonMinWidthSelected, 0.1f, -1.0f, 100.0f, (style.TabCloseButtonMinWidthSelected < 0.0f) ? "%.0f (Always)" : "%.0f");
-            DragFloat("TabCloseButtonMinWidthUnselected", &style.TabCloseButtonMinWidthUnselected, 0.1f, -1.0f, 100.0f, (style.TabCloseButtonMinWidthUnselected < 0.0f) ? "%.0f (Always)" : "%.0f");
+            DragFloat("TabMinWidthBase", &style.TabMinWidthBase, 0.5f, 1.0f, 500.0f, "%.0f");
+            DragFloat("TabMinWidthShrink", &style.TabMinWidthShrink, 0.5f, 1.0f, 500.0f, "%0.f");
+            DragFloat("TabCloseButtonMinWidthSelected", &style.TabCloseButtonMinWidthSelected, 0.5f, -1.0f, 100.0f, (style.TabCloseButtonMinWidthSelected < 0.0f) ? "%.0f (Always)" : "%.0f");
+            DragFloat("TabCloseButtonMinWidthUnselected", &style.TabCloseButtonMinWidthUnselected, 0.5f, -1.0f, 100.0f, (style.TabCloseButtonMinWidthUnselected < 0.0f) ? "%.0f (Always)" : "%.0f");
             SliderFloat("TabRounding", &style.TabRounding, 0.0f, 12.0f, "%.0f");
 
             SeparatorText("Tables");
@@ -8487,6 +8708,8 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
             SliderFloat("ImageBorderSize", &style.ImageBorderSize, 0.0f, 1.0f, "%.0f");
 
             SeparatorText("Docking");
+            //SetCursorPosX(GetCursorPosX() + CalcItemWidth() - GetFrameHeight());
+            Checkbox("DockingNodeHasCloseButton", &style.DockingNodeHasCloseButton);
             SliderFloat("DockingSeparatorSize", &style.DockingSeparatorSize, 0.0f, 12.0f, "%.0f");
 
             SeparatorText("Tooltips");
@@ -8751,6 +8974,7 @@ static void ShowExampleAppMainMenuBar()
 // (future version will add explicit flags to BeginMenu() to request processing shortcuts)
 static void ShowExampleMenuFile()
 {
+    IMGUI_DEMO_MARKER("Examples");
     IMGUI_DEMO_MARKER("Examples/Menu");
     ImGui::MenuItem("(demo menu)", NULL, false, false);
     if (ImGui::MenuItem("New")) {}
@@ -9382,10 +9606,9 @@ static void ShowExampleAppLayout(bool* p_open)
             ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
             for (int i = 0; i < 100; i++)
             {
-                // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
                 char label[128];
                 sprintf(label, "MyObject %d", i);
-                if (ImGui::Selectable(label, selected == i))
+                if (ImGui::Selectable(label, selected == i, ImGuiSelectableFlags_SelectOnNav))
                     selected = i;
             }
             ImGui::EndChild();
@@ -9737,7 +9960,7 @@ static void ShowExampleAppConstrainedResize(bool* p_open)
         IMGUI_DEMO_MARKER("Examples/Constrained Resizing window");
         if (ImGui::GetIO().KeyShift)
         {
-            // Display a dummy viewport (in your real app you would likely use ImageButton() to display a texture.
+            // Display a dummy viewport (in your real app you would likely use ImageButton() to display a texture)
             ImVec2 avail_size = ImGui::GetContentRegionAvail();
             ImVec2 pos = ImGui::GetCursorScreenPos();
             ImGui::ColorButton("viewport", ImVec4(0.5f, 0.2f, 0.5f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, avail_size);
@@ -11118,6 +11341,694 @@ void ShowExampleAppAssetsBrowser(bool* p_open)
     static ExampleAssetsBrowser assets_browser;
     assets_browser.Draw("Example: Assets Browser", p_open);
 }
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] IMGUI_DEMO_MARKER utilities
+// Utilities that provide an interactive "code lookup" via the IMGUI_DEMO_MARKER macro
+//-----------------------------------------------------------------------------
+
+// Forward declarations
+bool ImGuiDemoMarkerHighlightZone(int line_number);
+namespace ImGuiDemoMarkerCodeViewer
+{
+    void ShowCodeViewer();
+    void NavigateTo(int line_number, const char* section);
+}
+#define IMGUI_DEMO_GITHUB_URL "https://github.com/pthom/imgui/blob/imgui_bundle/imgui_demo.cpp#L"
+#define IMGUI_DEMO_GITHUB_URL_PYTHON "https://github.com/pthom/imgui/blob/imgui_bundle/imgui_demo.py#L"
+void ImBrowseToUrl(const char *url);
+
+// [sub section] ImGuiDemoMarker_GuiToggle()
+// Display a "Code Lookup" checkbox that toggles interactive code browsing
+void ImGuiDemoMarker_GuiToggle()
+{
+    if (GImGuiDemoMarkerCallback == NULL)
+        return;
+    ImGui::Checkbox("Code Lookup", &GImGuiDemoMarker_IsActive);
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip(
+            "Check this box and hover any demo to pinpoint its location inside the code.\n"
+            "\n"
+            "(you can also press \"Ctrl-Alt-C\" at any time to toggle this mode)"
+        );
+
+    if (ImGui::IsKeyPressed(ImGuiKey_C) && ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyAlt)
+        GImGuiDemoMarker_IsActive = !GImGuiDemoMarker_IsActive;
+    if (GImGuiDemoMarker_IsActive && ImGui::IsKeyPressed(ImGuiKey_Escape))
+        GImGuiDemoMarker_IsActive = false;
+}
+
+// [sub section] ImGuiDemoMarkerCallback_Default()
+// ImGuiDemoMarkerCallback_Default is the default callback used by IMGUI_DEMO_MARKER,
+// but this can be overriden via GImGuiDemoMarkerCallback
+void ImGuiDemoMarkerCallback_Default(const char* /*file*/, int line, const char* section, void* /*user_data*/)
+{
+    static ImGuiOnceUponAFrame oaf; if (oaf) ImGuiDemoMarkerCodeViewer::ShowCodeViewer();
+    if (!GImGuiDemoMarker_IsActive)
+        return;
+    if (ImGuiDemoMarkerHighlightZone(line))
+    {
+        ImGui::SetTooltip(
+            "Code Lookup\n"
+            "IMGUI_DEMO_MARKER(\"%s\") at imgui_demo.cpp:%d\n\n"
+            "Press \"Esc\" to exit this mode",
+            section, line);
+        ImGuiDemoMarkerCodeViewer::NavigateTo(line, section);
+    }
+}
+
+// [sub section] ImGuiDemoMarkerHighlightZone()
+// `bool ImGuiDemoMarkerHighlightZone(int line_number)` is able to graphically highlight a *hovered* section
+// of the demo (it keeps track of graphical location of each section).
+// Each zone is identified by its source code line number, and ImGuiDemoMarkerHighlightZone will return true if
+// it is currently highlighted.
+#include "imgui_internal.h" //  we import GetCurrentWindow() (which is defined in imgui_internal)
+namespace ImGuiDemoMarkerHighlight_Impl
+{
+    // The DemoMarkersRegistry class stores the boundings for the different calls to the IMGUI_DEMO_MARKER macro.
+    // It handles the display and handling of the "Help/Code lookup" button.
+    class DemoMarkersRegistry
+    {
+    private:
+        // A ZoneBoundings specifies a rectangular bounding for the widgets whose code is given
+        // *after* a call to IMGUI_DEMO_MARKER. This bounding will extend down to the next IMGUI_DEMO_MARKER macro call.
+        // It always occupies the full width of the current window.
+        struct ZoneBoundings
+        {
+            ZoneBoundings() : SourceLineNumber(-1), MinY(-1.0f), MaxY(-1.0f), Window(NULL) {}
+            int SourceLineNumber; // Source code location
+            float MinY, MaxY;     // Location of this zone inside its parent window
+            ImGuiWindow* Window;  // Current window when IMGUI_DEMO_MARKER was called
+        };
+
+    public:
+        DemoMarkersRegistry() :
+            AllZonesBoundings(),
+            PreviousZoneSourceLine(-1)
+        {
+        }
+
+        // Highlight starts a demo marker zone.
+        // If the highlight mode is active and the demo marker zone is hovered, it will highlight it,
+        // display a tooltip and return true. Otherwise it will return false.
+        bool Highlight(int line_number)
+        {
+            // This will store the bounding for the next widgets, and this bounding will extend until the next call to DemoMarker
+            StoreZoneBoundings(line_number);
+            ZoneBoundings& zone_boundings = GetZoneBoundingsForLine(line_number);
+
+            // Handle mouse and keyboard actions if the zone is hovered
+            bool is_mouve_hovering_zone = IsMouseHoveringZoneBoundings(zone_boundings);
+            if (! is_mouve_hovering_zone)
+                return false;
+
+            HighlightZone(zone_boundings);
+            return true;
+        }
+
+    private:
+        void StoreZoneBoundings(int line_number)
+        {
+            // Store info about marker
+            ZoneBoundings current_zone_boundings;
+            {
+                if (HasZoneBoundingsForLine(line_number))
+                    current_zone_boundings = GetZoneBoundingsForLine(line_number);
+                else
+                    current_zone_boundings.SourceLineNumber = line_number;
+            }
+
+            // Store min_y position for current marker
+            current_zone_boundings.Window = ImGui::GetCurrentWindow();
+            current_zone_boundings.MinY = ImGui::GetCursorScreenPos().y;
+
+            // Store current marker in list
+            SetZoneBoundingsForLine(line_number, current_zone_boundings);
+
+            // Store Max position for previous marker
+            if (HasZoneBoundingsForLine(PreviousZoneSourceLine))
+            {
+                ZoneBoundings& previous_zone_boundings = GetZoneBoundingsForLine(PreviousZoneSourceLine);
+                if (previous_zone_boundings.Window == ImGui::GetCurrentWindow())
+                    previous_zone_boundings.MaxY = ImGui::GetCursorScreenPos().y;
+            }
+
+            PreviousZoneSourceLine = line_number;
+        }
+
+        bool IsMouseHoveringZoneBoundings(const ZoneBoundings& zone_boundings)
+        {
+            if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_RootAndChildWindows | ImGuiHoveredFlags_NoPopupHierarchy))
+                return false;
+            float y_mouse = ImGui::GetMousePos().y;
+            float x_mouse = ImGui::GetMousePos().x;
+            return (
+                (y_mouse >= zone_boundings.MinY)
+                && ( (y_mouse < zone_boundings.MaxY) || (zone_boundings.MaxY < 0.f) )
+                && ( (x_mouse >= ImGui::GetWindowPos().x) && ( x_mouse < ImGui::GetWindowPos().x + ImGui::GetWindowSize().x ))
+            );
+        }
+
+        void HighlightZone(const ZoneBoundings zone_boundings)
+        {
+            // tl_dim / br_dim : top_left and bottom_right corners of the dimmed zone.
+            ImVec2 tl_dim = ImGui::GetWindowPos();
+            ImVec2 br_dim(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y);
+
+            // tl_zone / br_zone: top_left and bottom_right corner of the highlighted zone
+            float minY = zone_boundings.MinY < ImGui::GetWindowPos().y ? ImGui::GetWindowPos().y : zone_boundings.MinY;
+            ImVec2 tl_zone(ImGui::GetWindowPos().x, minY);
+            float maxY = zone_boundings.MaxY > 0.f ? zone_boundings.MaxY : ImGui::GetWindowPos().y + ImGui::GetWindowHeight();
+            ImVec2 br_zone(ImGui::GetWindowPos().x + ImGui::GetWindowWidth(), maxY);
+
+            ImDrawList* draw_list = ImGui::GetForegroundDrawList();
+            ImU32 dim_color = IM_COL32(127, 127, 127, 100);
+
+            draw_list->AddRectFilled(tl_dim, ImVec2(br_dim.x, tl_zone.y), dim_color);
+
+            draw_list->AddRectFilled(ImVec2(tl_dim.x, tl_zone.y), ImVec2(tl_zone.x, br_zone.y), dim_color);
+            draw_list->AddRectFilled(ImVec2(br_zone.x, tl_zone.y), ImVec2(br_dim.x, br_zone.y), dim_color);
+
+            draw_list->AddRectFilled(ImVec2(tl_dim.x, br_zone.y), ImVec2(br_dim.x, br_dim.y), dim_color);
+        }
+
+        bool HasZoneBoundingsForLine(int line_number)
+        {
+            for (int i = 0; i < AllZonesBoundings.size(); ++i)
+                if (AllZonesBoundings[i].SourceLineNumber == line_number)
+                    return true;
+            return false;
+        }
+
+        ZoneBoundings& GetZoneBoundingsForLine(int line_number)
+        {
+            IM_ASSERT(HasZoneBoundingsForLine(line_number)); // Please call HasZoneBoundingsForLine before!
+            for (int i = 0; i < AllZonesBoundings.size(); ++i)
+            {
+                ZoneBoundings& zone = AllZonesBoundings[i];
+                if (zone.SourceLineNumber == line_number)
+                    return zone;
+            }
+
+            IM_ASSERT(false);       // We should never get there!
+            static ZoneBoundings dummy; return dummy; // Make the compiler happy
+        }
+
+        void SetZoneBoundingsForLine(int line_number, const ZoneBoundings& zone_boundings)
+        {
+            if (HasZoneBoundingsForLine(line_number))
+            {
+                ZoneBoundings& old_boundings = GetZoneBoundingsForLine(line_number);
+                old_boundings = zone_boundings;
+            }
+            else
+            {
+                AllZonesBoundings.push_back(zone_boundings);
+            }
+        }
+
+        // Members
+        ImVector<ZoneBoundings> AllZonesBoundings;    // All boundings for all the calls to DEMO_MARKERS
+        int PreviousZoneSourceLine;                   // Location of the previous call to DEMO_MARKERS (used to end the previous bounding)
+    };
+    static DemoMarkersRegistry GDemoMarkersRegistry;  // Global instance used by the IMGUI_DEMO_MARKER macro
+} // namespace ImGuiDemoMarkerHighlight_Impl
+bool ImGuiDemoMarkerHighlightZone(int line_number)
+{
+    return ImGuiDemoMarkerHighlight_Impl::GDemoMarkersRegistry.Highlight(line_number);
+}
+
+// [sub section] ImGuiDemoMarkerCodeViewer
+// ImGuiDemoMarkerCodeViewer is the external API which enables to display a basic code viewer
+// when hovering demos that are marked with IMGUI_DEMO_MARKER.
+// This is a basic code viewer, with is also able to parse the IMGUI_DEMO_MARKERS calls inside imgui_demo.cpp `
+// in order to also provide a searchable index.
+// The code is presented as a read-only multiline text (and it is not selectable).
+#ifdef __EMSCRIPTEN__
+#define IMGUI_DEMO_SOURCE_FILE "code/imgui/imgui_demo.cpp"
+#else
+#define IMGUI_DEMO_SOURCE_FILE __FILE__
+#endif
+
+namespace ImGuiDemoMarkerCodeViewer
+{
+    void ShowCodeViewer();
+    void NavigateTo(int line_number);
+}
+
+namespace ImGuiDemoMarkerCodeViewer_Impl
+{
+    // Simple CString utilities (only used for DemoMarkers titles parsing)
+    namespace ImCStringUtils
+    {
+        int CountCharOccurences(const char *str, char needle)
+        {
+            int nb = 0;
+            for (const char *c = str; *c; ++c)
+            {
+                if (*c == needle)
+                    ++nb;
+            }
+            return nb;
+        }
+
+        bool CodeLineStartsWith(const char *haystack, const char *needle_prefix)
+        {
+            const char* first_non_space_char = haystack;
+            while ((*first_non_space_char) && isspace(*first_non_space_char))
+                ++first_non_space_char;
+            return strncmp(first_non_space_char, needle_prefix, strlen(needle_prefix)) == 0;
+        }
+
+        void CopyTextRange(const char *begin, const char *end, char *dst, size_t dst_len)
+        {
+            IM_ASSERT(end >= begin);
+            size_t src_len = (size_t) (end - begin);
+            size_t len = IM_MIN(src_len, dst_len - 1);
+            strncpy(dst, begin, len);
+            dst[len] = '\0';
+        }
+    } // namespace ImCStringUtils
+
+    namespace DemoMarkerTagsParser
+    {
+#define IMGUI_DEMO_MARKER_MAX_TAG_LENGTH 256
+
+        struct DemoMarkerTag
+        {
+            DemoMarkerTag(const char *tag, int lineNumber, int level)
+                : LineNumber(lineNumber), Level(level)
+            {
+                strncpy(Tag, tag, IMGUI_DEMO_MARKER_MAX_TAG_LENGTH);
+                Tag[IMGUI_DEMO_MARKER_MAX_TAG_LENGTH - 1] = '\0';
+            }
+
+            char Tag[IMGUI_DEMO_MARKER_MAX_TAG_LENGTH];     // tag can be an Id or a title
+            int LineNumber;
+            int Level; // title level
+        };
+
+        // Given a line like
+        //     IMGUI_DEMO_MARKER ("Widget/Basic/Button");
+        // ExtractDemoMarkerTag will fill dst_tag with "Widget/Basic/Button"
+        void ExtractDemoMarkerTag(const char *code_line, char *dst_tag, size_t dst_tag_len)
+        {
+            const char *marker_position = strstr(code_line, "IMGUI_DEMO_MARKER");
+            IM_ASSERT(marker_position != NULL);
+            const char *opening_quote = strchr(marker_position, '"');
+            IM_ASSERT(opening_quote != NULL);
+            const char *closing_quote = strrchr(marker_position, '"');
+            IM_ASSERT(closing_quote != NULL);
+            ++opening_quote;
+
+            IM_ASSERT((closing_quote - opening_quote) > 0);
+            size_t len = IM_MIN((size_t) (closing_quote - opening_quote), dst_tag_len);
+            strncpy(dst_tag, opening_quote, (size_t) len);
+            dst_tag[len] = '\0';
+        }
+
+        ImVector<DemoMarkerTag> ParseDemoMarkerTags(const char *source_code)
+        {
+            ImGuiTextFilter::ImGuiTextRange text_range(source_code, source_code + strlen(source_code));
+            ImVector<ImGuiTextFilter::ImGuiTextRange> lines;
+            text_range.split('\n', &lines);
+
+            ImVector<DemoMarkerTag> r;
+            {
+                char line_buffer[2048];
+                memset(line_buffer, 0, 2048);
+                char tag_buffer[IMGUI_DEMO_MARKER_MAX_TAG_LENGTH];
+                for (int line_number = 0; line_number < lines.size(); ++line_number)
+                {
+                    ImCStringUtils::CopyTextRange(lines[line_number].b, lines[line_number].e, line_buffer, 2048);
+                    if (ImCStringUtils::CodeLineStartsWith(line_buffer, "IMGUI_DEMO_MARKER("))
+                    {
+                        ExtractDemoMarkerTag(line_buffer, tag_buffer, IMGUI_DEMO_MARKER_MAX_TAG_LENGTH);
+                        int level = ImCStringUtils::CountCharOccurences(line_buffer, '/') + 1;
+                        DemoMarkerTag v(tag_buffer, line_number, level);
+                        r.push_back(v);
+                    }
+                }
+            }
+            return r;
+        }
+    } // namespace DemoMarkerTagsParser
+
+
+    // DemoCodeWindow: simple code viewer for imgui_demo.cpp (reads imgui_demo.cpp from its compile time location)
+    class DemoCodeWindow
+    {
+    public:
+        DemoCodeWindow() :
+            SourceCode(NULL),
+            SourceLineNumbersStr(NULL),
+            EditorLine_NavigateTo(0),
+            EditorLine_LastSelected(0),
+            IsWindowOpened(false),
+            ShowFilterResults(false)
+        {
+            ReadSource(IMGUI_DEMO_SOURCE_FILE);
+        }
+
+        ~DemoCodeWindow()
+        {
+            if (SourceCode)
+                IM_FREE(SourceCode);
+            if (SourceLineNumbersStr)
+                IM_FREE(SourceLineNumbersStr);
+        }
+
+        void NavigateTo(int line_number, const char* section)
+        {
+            IsWindowOpened = true;
+            EditorLine_NavigateTo = line_number;
+
+            // [Bundle]
+            if (ShowPythonCode)
+            {
+                for(const auto& tag: TagsPython)
+                {
+                    if (strcmp(tag.Tag, section) == 0)
+                    {
+                        EditorLine_NavigateTo = tag.LineNumber;
+                        break;
+                    }
+                }
+            }
+        }
+
+        void Gui()
+        {
+            if (SourceCode == NULL)
+                return;
+            if (!IsWindowOpened)
+                return;
+
+            // Default position/size of the code window case there's no data in the .ini file.
+            // By default, it appears to the left of the demo window.
+            if (GImGuiDemoCodeWindowPos.x >= 0.f)
+            {
+                ImGui::SetNextWindowPos(GImGuiDemoCodeWindowPos, GImGuiDemoCodeWindowCond);
+                ImGui::SetNextWindowSize(GImGuiDemoCodeWindowSize, GImGuiDemoCodeWindowCond);
+            }
+            else
+            {
+                ImGuiViewport *main_viewport = ImGui::GetMainViewport();
+                ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 100, main_viewport->WorkPos.y + 20),
+                                        ImGuiCond_FirstUseEver);
+                ImGui::SetNextWindowSize(ImVec2(520.f, 680), ImGuiCond_FirstUseEver);
+            }
+            if (ImGui::Begin("imgui_demo - code", &IsWindowOpened))
+            {
+                ImGui::Checkbox("Show Python Code", &ShowPythonCode);
+
+                GuiSearch();
+
+                if (ImGui::Button("Open Github"))
+                {
+                    char url[1024];
+                    if (ShowPythonCode)
+                        snprintf(url, 1024, "%s%i", IMGUI_DEMO_GITHUB_URL_PYTHON, EditorLine_LastSelected);
+                    else
+                        snprintf(url, 1024, "%s%i", IMGUI_DEMO_GITHUB_URL, EditorLine_LastSelected);
+                    ImBrowseToUrl(url);
+                }
+                ImGui::SameLine();
+                ImGui::TextDisabled("(view imgui_demo on github at line %i)", EditorLine_LastSelected);
+
+                ImGui::BeginChild("Code Child");
+                if (EditorLine_NavigateTo >= 0)
+                {
+                    ImGui::SetScrollY(EditorLine_NavigateTo * ImGui::GetFontSize() - ImGui::GetFontSize());
+                    ImGui::SetScrollX(0.f);
+                    EditorLine_LastSelected = EditorLine_NavigateTo;
+                    EditorLine_NavigateTo = -1;
+                }
+
+                //[Bundle]
+                if (ShowPythonCode && SourceCodePython != NULL)
+                {
+                    ImGui::TextUnformatted(SourceLineNumbersPythonStr);
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(SourceCodePython);
+                }
+                else
+                {
+                    ImGui::TextUnformatted(SourceLineNumbersStr);
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(SourceCode);
+                }
+
+                ImGui::EndChild();
+            }
+            ImGui::End();
+        }
+
+        // [Bundle]
+        void SetShowPythonCode(bool showPythonCode)
+        {
+            ShowPythonCode = showPythonCode;
+        }
+
+    private:
+        void ReadSource(const char* source_file)
+        {
+            SourceCode = ReadSourceCodeContent(source_file);
+            if (SourceCode != NULL)
+            {
+                Tags = DemoMarkerTagsParser::ParseDemoMarkerTags(SourceCode);
+                MakeSourceLineNumbersStr();
+            }
+
+            // [Bundle]
+            // Read python code in imgui_demo.py
+            {
+                // we replace source_file extension by .py
+                char source_file_python[256];
+                strncpy(source_file_python, source_file, 256);
+                strcpy(strrchr(source_file_python, '.'), ".py");
+                SourceCodePython = ReadSourceCodeContent(source_file_python);
+                if (SourceCodePython != NULL)
+                {
+                    TagsPython = DemoMarkerTagsParser::ParseDemoMarkerTags(SourceCodePython);
+                    MakeSourceLineNumbersStrPython();
+                }
+            }
+        }
+
+        void GuiSearch()
+        {
+            const char *tooltip_text =
+                "Filter usage:[-excl],incl\n"
+                "For example:\n"
+                "   \"button\" will search for \"button\"\n"
+                "   \"-widget,button\" will search for \"button\" without \"widget\"";
+            const char *filter_label =
+                "Filter usage:[-excl],incl";
+
+            bool show_tooltip = false;
+
+            ImGui::Text("Search for demos:");
+            ImGui::SameLine();
+            if (ImGui::IsItemHovered())
+                show_tooltip = true;
+            ImGui::TextDisabled("?");
+            ImGui::SameLine();
+            if (ImGui::IsItemHovered())
+                show_tooltip = true;
+
+            ImGui::SetNextItemWidth(200.f);
+            Filter.Draw(filter_label);
+
+            if (show_tooltip)
+            {
+                ImGui::BeginTooltip();
+                ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                ImGui::TextUnformatted(tooltip_text);
+                ImGui::PopTextWrapPos();
+                ImGui::EndTooltip();
+            }
+
+            if (Filter.IsActive() && ImGui::IsItemFocused())
+                ShowFilterResults = true;
+
+            // [Bundle]
+            auto & currentTags = ShowPythonCode ? TagsPython : Tags;
+
+            if (ShowFilterResults)
+            {
+                for (int i = 0; i < currentTags.size(); ++i)
+                {
+                    const DemoMarkerTagsParser::DemoMarkerTag &tag = currentTags[i];
+                    if (Filter.PassFilter(tag.Tag))
+                    {
+                        if (ImGui::Button(tag.Tag))
+                        {
+                            printf("Clicked tag %s\n", tag.Tag);
+                            EditorLine_NavigateTo = tag.LineNumber;
+                            ShowFilterResults = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        char* ReadSourceCodeContent(const char* source_file)
+        {
+            FILE *f = fopen(source_file, "rb"); // binary mode for windows (do not translate \n)
+            if (f == NULL)
+            {
+                return NULL;
+            }
+            fseek(f, 0, SEEK_END);
+            size_t file_size = (size_t) ftell(f);
+            char * source_code = (char *) IM_ALLOC((file_size + 1)* sizeof(char));
+            rewind(f);
+            size_t nb_bytes_read = fread(source_code, sizeof(char), file_size, f);
+            if (nb_bytes_read != file_size)
+            {
+                IM_FREE(source_code);
+                return NULL;
+            }
+            else
+                source_code[file_size] = '\0';
+            fclose(f);
+            return source_code;
+        }
+
+        void MakeSourceLineNumbersStr()
+        {
+            size_t nb_source_lines = 0;
+            {
+                char *c = SourceCode;
+                while (*c != '\0')
+                {
+                    if (*c == '\n')
+                        ++nb_source_lines;
+                    ++c;
+                }
+            }
+
+            size_t line_length = 6;
+            SourceLineNumbersStr = (char *) IM_ALLOC((nb_source_lines * line_length + 1) * sizeof(char));
+            SourceLineNumbersStr[0] = '\0';
+            for (size_t i = 0; i < nb_source_lines; ++i)
+            {
+                char line_content[100];
+                snprintf(line_content, line_length + 1, "%5i\n", (int) (i + 1));
+                strcat(SourceLineNumbersStr, line_content);
+            }
+        }
+
+        // [Bundle] / dumb copy-paste, for ease of future maintenance (rebase)
+        void MakeSourceLineNumbersStrPython()
+        {
+            size_t nb_source_lines = 0;
+            {
+                char *c = SourceCodePython;
+                while (*c != '\0')
+                {
+                    if (*c == '\n')
+                        ++nb_source_lines;
+                    ++c;
+                }
+            }
+
+            size_t line_length = 6;
+            SourceLineNumbersPythonStr = (char *) IM_ALLOC((nb_source_lines * line_length + 1) * sizeof(char));
+            SourceLineNumbersPythonStr[0] = '\0';
+            for (size_t i = 0; i < nb_source_lines; ++i)
+            {
+                char line_content[100];
+                snprintf(line_content, line_length + 1, "%5i\n", (int) (i + 1));
+                strcat(SourceLineNumbersPythonStr, line_content);
+            }
+        }
+
+    private:
+        char *SourceCode;                // Full source code of imgui_demo.cpp, read from its compile time location
+        char *SourceLineNumbersStr;      // A String that contains line numbers, displayed to the left of the source code
+        int EditorLine_NavigateTo;       // Will be >= 0 when navigating via callback (this value is transient)
+        int EditorLine_LastSelected;     // Last line to which we navigated
+        bool IsWindowOpened;             // Is the code window opened?
+
+        ImVector<DemoMarkerTagsParser::DemoMarkerTag> Tags;
+        ImGuiTextFilter Filter;
+        bool ShowFilterResults;
+
+        // [Bundle]
+        bool ShowPythonCode = false;
+        char *SourceCodePython;
+        char *SourceLineNumbersPythonStr;
+        ImVector<DemoMarkerTagsParser::DemoMarkerTag> TagsPython;
+    };
+
+    DemoCodeWindow& GDemoCodeWindow()
+    {
+        static DemoCodeWindow demoCodeWindow;
+        return demoCodeWindow;
+    }
+
+} // namespace ImGuiDemoMarkerCodeViewer_Impl
+
+namespace ImGuiDemoMarkerCodeViewer
+{
+    void ShowCodeViewer()
+    {
+        ImGuiDemoMarkerCodeViewer_Impl::GDemoCodeWindow().Gui();
+    }
+    void NavigateTo(int line_number, const char* section)
+    {
+        ImGuiDemoMarkerCodeViewer_Impl::GDemoCodeWindow().NavigateTo(line_number, section);
+    }
+}
+
+// [Bundle]
+void ImGuiDemoSetShowPythonCode(bool showPythonCode)
+{
+    ImGuiDemoMarkerCodeViewer_Impl::GDemoCodeWindow().SetShowPythonCode(showPythonCode);
+}
+
+
+// [sub section]  BrowseToUrl()
+// A platform specific utility to open an url in a browser
+// (especially useful with emscripten version)
+// Specific per platform includes for BrowseToUrl
+#if defined(__EMSCRIPTEN__)
+#include <emscripten.h>
+#elif defined(_WIN32)
+#include <windows.h>
+#include <Shellapi.h>
+#elif defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+void ImBrowseToUrl(const char *url)
+{
+    IM_ASSERT(strncmp(url, "http", strlen("http")) == 0);
+#if defined(__EMSCRIPTEN__)
+    char js_command[1024];
+        snprintf(js_command, 1024, "window.open(\"%s\");", url);
+        emscripten_run_script(js_command);
+#elif defined(_WIN32)
+    ShellExecuteA( NULL, "open", url, NULL, NULL, SW_SHOWNORMAL );
+#elif TARGET_OS_IPHONE
+    // Nothing on iOS
+#elif TARGET_OS_OSX
+    char cmd[1024];
+    snprintf(cmd, 1024, "open %s", url);
+    int result = system(cmd);
+    if (result != 0)
+        fprintf(stderr, "Error when calling system(%s)\n", cmd);
+#elif defined(__linux__)
+    char cmd[1024];
+    snprintf(cmd, 1024, "xdg-open %s", url);
+    int result = system(cmd);
+    if (result != 0)
+        fprintf(stderr, "Please install xdg-open to open links\n");
+#endif
+}
+
 
 // End of Demo code
 #else

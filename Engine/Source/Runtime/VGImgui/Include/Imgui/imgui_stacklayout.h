@@ -11,18 +11,15 @@ Index of this file:
 #pragma once
 
 #include "imgui.h"
-#include "imgui_internal.h"
 
+#ifndef IMGUI_DISABLE
 
-struct ImGuiWindow;
-typedef int ImGuiLayoutType;
+//-----------------------------------------------------------------------------
+// [SECTION] Stack Layout API
+//-----------------------------------------------------------------------------
 
-namespace ImGui {
-
-    IMGUI_API ImGuiLayoutType GetCurrentStackLayoutType(ImGuiID window_id);
-    IMGUI_API void UpdateStackLayoutItemRect(ImGuiID window_id, const ImVec2& min, const ImVec2& max);
-    IMGUI_API bool ImGui_ItemSize_StackLayoutHorizontal(ImGuiWindow* window, const ImVec2& size, float text_baseline_y);
-
+namespace ImGui
+{
     IMGUI_API void BeginHorizontal(const char* str_id, const ImVec2& size = ImVec2(0, 0), float align = -1.0f);
     IMGUI_API void BeginHorizontal(const void* ptr_id, const ImVec2& size = ImVec2(0, 0), float align = -1.0f);
     IMGUI_API void BeginHorizontal(int id, const ImVec2& size = ImVec2(0, 0), float align = -1);
@@ -38,3 +35,4 @@ namespace ImGui {
 } // namespace ImGui
 
 
+#endif // #ifndef IMGUI_DISABLE

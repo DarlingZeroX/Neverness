@@ -256,9 +256,7 @@ namespace Horizon::NodeGraphEditor
 		BlueprintNodeBuilder builder;
 		builder.Begin(node.id);
 		builder.HeaderGradient(headerLeftColor, headerRightColor);
-		//ImGui::BeginHorizontal("header");
 		ImGui::TextUnformatted(node.name.c_str());
-		//ImGui::EndHorizontal();
 		builder.EndHeader();
 		builder.BeginBody();
 

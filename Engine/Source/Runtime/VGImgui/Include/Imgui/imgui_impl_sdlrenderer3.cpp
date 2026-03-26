@@ -34,9 +34,9 @@
 //  2024-02-12: Amend to query SDL_RenderViewportSet() and restore viewport accordingly.
 //  2023-05-30: Initial version.
 
-#include "imgui/imgui.h"
+#include "imgui.h"
 #ifndef IMGUI_DISABLE
-#include "imgui/imgui_impl_sdlrenderer3.h"
+#include "imgui_impl_sdlrenderer3.h"
 #include <stdint.h>     // intptr_t
 
 // Clang warnings with -Weverything
