@@ -31,6 +31,7 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <utility>
 #include "../HNGEditorCoreConfig.h"
 
 namespace Horizon::NodeGraphEditor
@@ -44,6 +45,41 @@ namespace Horizon::NodeGraphEditor
 		virtual ~ICommand() = default;
 		virtual void Execute() = 0;
 		virtual void Undo() = 0;
+	};
+
+	// ----------------------------
+	// CompositeCommand：把多条命令组合成“一条命令”
+	// - Execute：按顺序执行
+	// - Undo   ：按逆序撤销（保证依赖关系正确）
+	// 用于 Batch 模式，把一次用户操作里触发的多条命令合并为一次 Undo/Redo。
+	// ----------------------------
+	class HNG_EDITOR_CORE_API CompositeCommand final : public ICommand
+	{
+	public:
+		explicit CompositeCommand(std::vector<std::unique_ptr<ICommand>>&& commands) noexcept
+			: m_Commands(std::move(commands))
+		{
+		}
+
+		CompositeCommand(const CompositeCommand&) = delete;
+		CompositeCommand& operator=(const CompositeCommand&) = delete;
+		CompositeCommand(CompositeCommand&&) noexcept = default;
+		CompositeCommand& operator=(CompositeCommand&&) noexcept = default;
+
+		void Execute() override
+		{
+			for (auto& c : m_Commands)
+				if (c) c->Execute();
+		}
+
+		void Undo() override
+		{
+			for (auto it = m_Commands.rbegin(); it != m_Commands.rend(); ++it)
+				if (*it) (*it)->Undo();
+		}
+
+	private:
+		std::vector<std::unique_ptr<ICommand>> m_Commands;
 	};
 
 	// ----------------------------
@@ -66,6 +102,17 @@ namespace Horizon::NodeGraphEditor
 		// 执行一个命令（会清空 redo 栈）
 		void ExecuteCommand(std::unique_ptr<ICommand> cmd);
 
+		// ----------------------------
+		// Batch：把多个命令合并成一次 Undo/Redo
+		// 约定：
+		// - 支持嵌套（BeginBatch/EndBatch 成对）
+		// - 在 batch 内执行的命令不会立即入 undo 栈，而是暂存，最终打包为 CompositeCommand 入栈
+		// - 若 batch 为空则不入栈；若仅 1 条命令则直接入栈（不额外包一层）
+		// ----------------------------
+		void BeginBatch();
+		void EndBatch();
+		bool IsInBatch() const { return m_BatchDepth > 0; }
+
 		// 撤销/重做
 		bool CanUndo() const { return !m_UndoStack.empty(); }
 		bool CanRedo() const { return !m_RedoStack.empty(); }
@@ -76,8 +123,35 @@ namespace Horizon::NodeGraphEditor
 		void Clear();
 
 	private:
+		void PushToUndoStack(std::unique_ptr<ICommand> cmd);
+
 		std::vector<std::unique_ptr<ICommand>> m_UndoStack;
 		std::vector<std::unique_ptr<ICommand>> m_RedoStack;
+
+		int m_BatchDepth = 0;
+		bool m_BatchClearedRedo = false;
+		std::vector<std::unique_ptr<ICommand>> m_BatchCommands;
+	};
+
+	// RAII：保证 Begin/End 配对（可用于 UI 回调早退/异常安全）
+	class HNG_EDITOR_CORE_API ScopedCommandBatch final
+	{
+	public:
+		explicit ScopedCommandBatch(CommandManager* mgr)
+			: m_Mgr(mgr)
+		{
+			if (m_Mgr) m_Mgr->BeginBatch();
+		}
+		~ScopedCommandBatch()
+		{
+			if (m_Mgr) m_Mgr->EndBatch();
+		}
+
+		ScopedCommandBatch(const ScopedCommandBatch&) = delete;
+		ScopedCommandBatch& operator=(const ScopedCommandBatch&) = delete;
+
+	private:
+		CommandManager* m_Mgr = nullptr;
 	};
 }
 

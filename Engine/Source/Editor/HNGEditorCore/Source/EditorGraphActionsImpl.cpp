@@ -4,11 +4,14 @@
 
 #include "EditorGraphActionsImpl.h"
 
+#include <algorithm>
+#include <vector>
 #include <unordered_set>
 
 #include "CommandInGraph.h"
 #include "GraphCommandAPI.h"
 
+#include <VGImgui/IncludeImGui.h>
 #include <HNGRuntimeCore/Include/RuntimeContext.h>
 
 namespace Horizon::NodeGraphEditor
@@ -55,9 +58,93 @@ namespace Horizon::NodeGraphEditor
 	{
 		using namespace ax::NodeEditor;
 
+		// ------------------------------------------------------------
+		// 选择集删除（关键）
+		// ------------------------------------------------------------
+		// 需求：
+		// - 使用 selection system 得到 graph.selectedNodes
+		// - 按 Delete 键时，对所有选中的节点执行 DeleteNodeCommand
+		// - 删除后清空 selection（graph + ImNodeEditor），避免下一帧 selection 残留导致重复删除/重复入栈
+		//
+		// 注意：
+		// - 现有 ImNodeEditor 的 BeginDelete/QueryDeleted... 也会处理 Delete，
+		//   为了避免“同一帧重复执行两套删除逻辑”，我们在已处理 selection-delete 后直接 return。
+		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false) &&
+			(!graph.selectedNodes.empty() || !graph.selectedLinks.empty()))
+		{
+			GraphCommandAPI api(graph);
+			api.BeginBatch(); // 一次 Delete = 一次 Undo/Redo
+
+			// 1) 删除 selected nodes（确定性排序，保证可复现）
+			std::vector<ax::NodeEditor::NodeId> nodeIds;
+			nodeIds.reserve(graph.selectedNodes.size());
+			for (const auto& id : graph.selectedNodes)
+				nodeIds.push_back(id);
+
+			std::sort(nodeIds.begin(), nodeIds.end(),
+				[](const ax::NodeEditor::NodeId& a, const ax::NodeEditor::NodeId& b)
+				{
+					return a.Get() < b.Get();
+				});
+
+			// 预收集：将要被删除节点的 pins，用于过滤 selected links（避免重复删除入栈）
+			std::unordered_set<ax::NodeEditor::PinId, EditorIdHash> pinsBelongToDeletedNodes;
+			pinsBelongToDeletedNodes.reserve(nodeIds.size() * 4);
+			for (const auto& nodeId : nodeIds)
+			{
+				auto* node = graph.FindNode(nodeId);
+				if (!node) continue;
+				for (const auto& p : node->inputs)  pinsBelongToDeletedNodes.insert(p.id);
+				for (const auto& p : node->outputs) pinsBelongToDeletedNodes.insert(p.id);
+			}
+
+			for (const auto& id : nodeIds)
+				api.DeleteNode(id);
+
+			// 2) 删除 selected links（过滤掉已被 DeleteNode 级联删除的 link）
+			std::vector<EditorLink> selectedLinkSnaps;
+			selectedLinkSnaps.reserve(graph.selectedLinks.size());
+			for (const auto& l : graph.links)
+			{
+				if (graph.selectedLinks.find(l.id) != graph.selectedLinks.end())
+					selectedLinkSnaps.push_back(l);
+			}
+
+			std::sort(selectedLinkSnaps.begin(), selectedLinkSnaps.end(),
+				[](const EditorLink& a, const EditorLink& b)
+				{
+					return a.id.Get() < b.id.Get();
+				});
+
+			for (const auto& l : selectedLinkSnaps)
+			{
+				const bool connectedToDeletedNode =
+					!pinsBelongToDeletedNodes.empty() &&
+					(pinsBelongToDeletedNodes.find(l.startPinId) != pinsBelongToDeletedNodes.end() ||
+					 pinsBelongToDeletedNodes.find(l.endPinId) != pinsBelongToDeletedNodes.end());
+
+				if (connectedToDeletedNode)
+					continue;
+
+				api.DeleteLink(l.id);
+			}
+
+			api.EndBatch();
+
+			// 删除后清空 selection（同时清 ImNodeEditor 内部 selection 状态）
+			graph.selectedNodes.clear();
+			graph.selectedLinks.clear();
+			ax::NodeEditor::ClearSelection();
+			return;
+		}
+
 		// BeginDelete 会在用户按 Delete/Backspace 或断开连接等“删除动作”激活时返回 true
 		if (!BeginDelete())
 			return;
+
+		// 本次 BeginDelete..EndDelete 视为一次用户操作：合并为一次 Undo/Redo
+		GraphCommandAPI api(graph);
+		api.BeginBatch();
 
 		// 记录已经“将要/已经”删除的节点 pin。
 		// 当 ImNodeEditor 返回 DeleteLink 候选项时，如果该 link 的 start/end pin 属于被删节点，
@@ -86,7 +173,7 @@ namespace Horizon::NodeGraphEditor
 					for (const auto& p : node->outputs) deletedPins.insert(p.id);
 				}
 
-				GraphCommandAPI(graph).DeleteNode(nodeId);
+				api.DeleteNode(nodeId);
 
 				// deleteDependencies=false，避免级联删除依赖导致其他 link 显示/消失异常
 				AcceptDeletedItem(false);
@@ -108,7 +195,7 @@ namespace Horizon::NodeGraphEditor
 
 				if (!relatedToDeletedNode)
 				{
-					GraphCommandAPI(graph).DeleteLink(linkId);
+					api.DeleteLink(linkId);
 				}
 
 				AcceptDeletedItem(false);
@@ -122,6 +209,7 @@ namespace Horizon::NodeGraphEditor
 		if (!didProcessAny)
 			RejectDeletedItem();
 
+		api.EndBatch();
 		EndDelete();
 	}
 }

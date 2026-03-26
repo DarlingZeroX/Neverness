@@ -12,6 +12,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <HNGRuntimeCore/Include/NodeRegistry.h>
 #include "../HNGEditorCoreConfig.h"
 #include "NodeEditorCore.h"
@@ -81,6 +82,16 @@ namespace Horizon::NodeGraphEditor
 		//   从而支持 Undo/Redo。
 		// - 由上层（例如 HNodeGraphEditor）负责设置与生命周期管理。
 		CommandManager* commandManager = nullptr;
+
+		// ----------------------------
+		// Selection System 状态（节点/连线）
+		// ----------------------------
+		// 说明：
+		// - “多选 / 框选 / Ctrl+Click”由 ax::NodeEditor 内部交互负责
+		// - 每帧在 DrawEditorGraph 中把 ax::NodeEditor 的 selection 状态同步到这两个集合
+		// - UI highlight 和 Delete 逻辑只依赖本集合（而不是直接查询 ax::NodeEditor）
+		std::unordered_set<ax::NodeEditor::NodeId> selectedNodes;
+		std::unordered_set<ax::NodeEditor::LinkId> selectedLinks;
 
 		// ----------------------------
 		// AddNode：以 NodeType 为输入，自动构建 EditorNode

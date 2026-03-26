@@ -109,10 +109,12 @@ namespace Horizon::NodeGraphEditor
 	void GraphCommandAPI::BeginBatch()
 	{
 		m_InBatch = true;
+		if (m_Cmd) m_Cmd->BeginBatch();
 	}
 
 	void GraphCommandAPI::EndBatch()
 	{
+		if (m_Cmd) m_Cmd->EndBatch();
 		m_InBatch = false;
 	}
 }

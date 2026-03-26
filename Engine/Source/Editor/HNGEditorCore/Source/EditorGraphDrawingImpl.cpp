@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <cctype>
+#include <unordered_map>
 #include <map>
 #include <sstream>
+#include <vector>
 
 #include "Utilities/builders.h"
 #include <HNGRuntimeCore/Include/ExpressionEvaluator.h>
@@ -16,6 +18,12 @@
 
 namespace Horizon::NodeGraphEditor
 {
+	// 多选拖拽合并用的临时缓存：
+	// - 在鼠标左键释放那一帧里，所有被拖动的选中节点都会进入 DrawSingleNodeImpl
+	// - 我们把每个节点的 oldPos/newPos 记录下来
+	// - 然后只在“最后一个被绘制的 selected node”上创建 MultiMoveNodesCommand
+	static std::unordered_map<ax::NodeEditor::NodeId, MultiMoveNodesCommand::MoveEntry, EditorIdHash> s_MultiMoveEntries;
+
 	// ------------------------------------------------------------
 	// 字符串匹配（忽略大小写，子串匹配）
 	// ------------------------------------------------------------
@@ -58,6 +66,7 @@ namespace Horizon::NodeGraphEditor
 			{
 				char buf[1024];
 				std::snprintf(buf, sizeof(buf), "%s", v.AsString().c_str());
+				ImGui::SetNextItemWidth(200);
 				if (ImGui::InputText(label, buf, sizeof(buf)))
 				{
 					v = NodeGraphRuntime::Value::FromString(buf);
@@ -227,15 +236,29 @@ namespace Horizon::NodeGraphEditor
 			}
 		}
 
+		// ----------------------------
+		// Selection highlight（关键）
+		// ----------------------------
+		// selection 状态来自 DrawEditorGraph 中对 ax::NodeEditor 的同步：
+		// graph.selectedNodes / graph.selectedLinks
+		//
+		// 这里根据 selectedNodes 改变 Header 颜色，让“选中状态”视觉明确。
+		if (graph.selectedNodes.find(node.id) != graph.selectedNodes.end())
+		{
+			// 选择高亮：接近 ImNodeEditor 默认 Selected Node Border 的橙色风格
+			headerLeftColor = ImVec4(255.0f / 255.0f, 176.0f / 255.0f, 50.0f / 255.0f, 0.95f);
+			headerRightColor = ImVec4(255.0f / 255.0f, 176.0f / 255.0f, 50.0f / 255.0f, 0.95f);
+		}
+
 		// 记录移动前的位置，用于 MoveNodeCommand
 		ImVec2 oldPos = node.position;
 
 		BlueprintNodeBuilder builder;
 		builder.Begin(node.id);
 		builder.HeaderGradient(headerLeftColor, headerRightColor);
-
+		//ImGui::BeginHorizontal("header");
 		ImGui::TextUnformatted(node.name.c_str());
-
+		//ImGui::EndHorizontal();
 		builder.EndHeader();
 		builder.BeginBody();
 
@@ -294,9 +317,59 @@ namespace Horizon::NodeGraphEditor
 		const bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
 		ImVec2 newPos = GetNodePosition(node.id);
 		node.position = newPos;
+
 		if (mouseReleased && graph.commandManager && (newPos.x != oldPos.x || newPos.y != oldPos.y))
 		{
-			GraphCommandAPI(graph).MoveNode(node.id, oldPos, newPos);
+			// 多节点拖拽合并：
+			// - 当一次拖动涉及多个 selectedNodes 时，每个节点都会在这一帧检测到位置变化
+			// - 如果仍对每个节点都执行 MoveNodeCommand，将导致 Undo/Redo 变得很“碎”
+			// - 我们改为：记录每个节点的 old/new，然后只在最后一个 selected node 上执行一次 MultiMoveNodesCommand
+			if (graph.selectedNodes.size() > 1 && graph.selectedNodes.find(node.id) != graph.selectedNodes.end())
+			{
+				MultiMoveNodesCommand::MoveEntry entry;
+				entry.nodeId = node.id;
+				entry.oldPos = oldPos;
+				entry.newPos = newPos;
+
+				s_MultiMoveEntries[node.id] = entry;
+
+				// 判定当前 node 是否是“在 graph.nodes 绘制顺序中最后出现的 selected node”
+				ax::NodeEditor::NodeId lastSelected{};
+				for (auto& n : graph.nodes)
+				{
+					if (graph.selectedNodes.find(n.id) != graph.selectedNodes.end())
+						lastSelected = n.id;
+				}
+
+				if (lastSelected == node.id)
+				{
+					std::vector<MultiMoveNodesCommand::MoveEntry> allEntries;
+					allEntries.reserve(graph.selectedNodes.size());
+
+					for (const auto& id : graph.selectedNodes)
+					{
+						auto it = s_MultiMoveEntries.find(id);
+						if (it != s_MultiMoveEntries.end())
+							allEntries.push_back(it->second);
+					}
+
+					// 防御：理论上 allEntries 应该包含全部 selected nodes
+					// 若为空则直接跳过（避免创建空命令破坏历史栈）。
+					if (!allEntries.empty())
+					{
+						graph.commandManager->ExecuteCommand(
+							std::make_unique<MultiMoveNodesCommand>(graph, std::move(allEntries))
+						);
+					}
+
+					s_MultiMoveEntries.clear();
+				}
+			}
+			else
+			{
+				// 单节点移动：维持原有 MoveNodeCommand 行为
+				GraphCommandAPI(graph).MoveNode(node.id, oldPos, newPos);
+			}
 		}
 	}
 

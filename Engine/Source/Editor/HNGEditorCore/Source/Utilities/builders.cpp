@@ -1,5 +1,5 @@
 #include "Utilities/builders.h"
-
+#include "VGImgui/Include/ImGui/imgui_stacklayout.h"
 // 注意：
 // 该 cpp 文件用于承载 BlueprintNodeBuilder 的具体实现。
 // 把实现从 builders.h 拆出，能降低头文件编译开销，并避免过多 inline 代码膨胀。
@@ -92,6 +92,8 @@ void BlueprintNodeBuilder::Header(const ImVec4& color, float height)
 	m_HeaderStartCursorLocalY = ImGui::GetCursorPos().y;
 	m_HeaderFinalHeightScreen = 0.0f;
 	m_HeaderActive = true;
+
+	//ImGui::BeginHorizontal("header");
 }
 
 void BlueprintNodeBuilder::HeaderGradient(const ImVec4& leftColor, const ImVec4& rightColor, float height)
@@ -106,6 +108,8 @@ void BlueprintNodeBuilder::HeaderGradient(const ImVec4& leftColor, const ImVec4&
 	m_HeaderStartCursorLocalY = ImGui::GetCursorPos().y;
 	m_HeaderFinalHeightScreen = 0.0f;
 	m_HeaderActive = true;
+
+	//ImGui::BeginHorizontal("header");
 }
 
 void BlueprintNodeBuilder::EndHeader()
@@ -116,6 +120,13 @@ void BlueprintNodeBuilder::EndHeader()
 		// 避免为了“强行补齐到 requested height”在拖拽过程中触发布局抖动。
 		const float finalScreenH = ImGui::GetCursorScreenPos().y - m_HeaderStartScreenPos.y;
 		m_HeaderFinalHeightScreen = finalScreenH;
+
+		//ImGui::EndHorizontal();
+		//HeaderMin = ImGui::GetItemRectMin();
+		//HeaderMax = ImGui::GetItemRectMax();
+
+		// spacing between header and content
+		//ImGui::Spring(0, ImGui::GetStyle().ItemSpacing.y * 2.0f);
 	}
 
 	m_HeaderActive = false;

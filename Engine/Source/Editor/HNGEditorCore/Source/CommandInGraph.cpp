@@ -4,6 +4,7 @@
 
 #include "CommandInGraph.h"
 #include <algorithm>
+#include <unordered_map>
 
 namespace Horizon::NodeGraphEditor
 {
@@ -264,6 +265,192 @@ namespace Horizon::NodeGraphEditor
 		if (!n) return;
 		n->position = m_OldPos;
 		m_Graph.dirty = true;
+	}
+
+	// ---------------- MultiMoveNodesCommand ----------------
+
+	MultiMoveNodesCommand::MultiMoveNodesCommand(EditorGraph& graph, std::vector<MoveEntry> entries)
+		: m_Graph(graph)
+		, m_Entries(std::move(entries))
+	{
+	}
+
+	void MultiMoveNodesCommand::Execute()
+	{
+		for (auto& e : m_Entries)
+		{
+			EditorNode* n = m_Graph.FindNode(e.nodeId);
+			if (!n) continue;
+			n->position = e.newPos;
+		}
+		m_Graph.dirty = true;
+	}
+
+	void MultiMoveNodesCommand::Undo()
+	{
+		for (auto& e : m_Entries)
+		{
+			EditorNode* n = m_Graph.FindNode(e.nodeId);
+			if (!n) continue;
+			n->position = e.oldPos;
+		}
+		m_Graph.dirty = true;
+	}
+
+	// ---------------- PasteNodesCommand ----------------
+
+	PasteNodesCommand::PasteNodesCommand(EditorGraph& graph, const NodeGraphCopyBuffer& buffer, ImVec2 offset)
+		: m_Graph(graph)
+		, m_Buffer(buffer)
+		, m_Offset(offset)
+	{
+	}
+
+	void PasteNodesCommand::GenerateIfNeeded()
+	{
+		if (m_Generated)
+			return;
+
+		// 生成节点/Pins 的 id 映射，并把结果写入 m_PastedNodes/m_PastedLinks
+		// 重要：m_Buffer 里保存的是“旧 id”，粘贴到图里时必须生成“新 id”避免冲突。
+
+		std::unordered_map<ax::NodeEditor::NodeId, ax::NodeEditor::NodeId, EditorIdHash> nodeMap;
+		std::unordered_map<ax::NodeEditor::PinId, ax::NodeEditor::PinId, EditorIdHash> pinMap;
+
+		// 1) 生成 nodes（新 NodeId、新 PinId，并平移位置）
+		m_PastedNodes.clear();
+		m_PastedNodeIds.clear();
+		m_PastedPinIds.clear();
+
+		m_PastedNodes.reserve(m_Buffer.nodes.size());
+		for (const auto& oldNode : m_Buffer.nodes)
+		{
+			EditorNode newNode = oldNode; // 先拷贝一份：type/name/properties/...都在
+
+			// 新 NodeId
+			const ax::NodeEditor::NodeId newNodeId = m_Graph.idGen.NewNodeId();
+			nodeMap[oldNode.id] = newNodeId;
+			newNode.id = newNodeId;
+
+			// 新位置：复制组平移 offset
+			newNode.position = ImVec2(
+				oldNode.position.x + m_Offset.x,
+				oldNode.position.y + m_Offset.y
+			);
+
+			// inputs pins：新 PinId
+			for (auto& pin : newNode.inputs)
+			{
+				const ax::NodeEditor::PinId oldPinId = pin.id;
+				const ax::NodeEditor::PinId newPinId = m_Graph.idGen.NewPinId();
+				pinMap[oldPinId] = newPinId;
+				pin.id = newPinId;
+				m_PastedPinIds.insert(newPinId);
+			}
+
+			// outputs pins：新 PinId
+			for (auto& pin : newNode.outputs)
+			{
+				const ax::NodeEditor::PinId oldPinId = pin.id;
+				const ax::NodeEditor::PinId newPinId = m_Graph.idGen.NewPinId();
+				pinMap[oldPinId] = newPinId;
+				pin.id = newPinId;
+				m_PastedPinIds.insert(newPinId);
+			}
+
+			m_PastedNodes.push_back(std::move(newNode));
+			m_PastedNodeIds.push_back(m_PastedNodes.back().id);
+		}
+
+		// 2) 生成 links（新 LinkId，新 start/end PinId）
+		m_PastedLinks.clear();
+		m_PastedLinks.reserve(m_Buffer.links.size());
+
+		for (const auto& oldLink : m_Buffer.links)
+		{
+			EditorLink newLink = oldLink;
+			newLink.id = m_Graph.idGen.NewLinkId();
+
+			// 把旧 PinId 映射到新 PinId
+			const auto itStart = pinMap.find(oldLink.startPinId);
+			const auto itEnd = pinMap.find(oldLink.endPinId);
+			if (itStart == pinMap.end() || itEnd == pinMap.end())
+				continue; // 数据不一致：跳过
+
+			newLink.startPinId = itStart->second;
+			newLink.endPinId = itEnd->second;
+			m_PastedLinks.push_back(std::move(newLink));
+		}
+
+		m_Generated = true;
+	}
+
+	void PasteNodesCommand::Execute()
+	{
+		if (m_Buffer.nodes.empty())
+			return;
+
+		GenerateIfNeeded();
+
+		// 插入 nodes（如果已存在则跳过，保证 redo 的稳定性）
+		for (const auto& n : m_PastedNodes)
+		{
+			if (m_Graph.FindNode(n.id))
+				continue;
+			m_Graph.nodes.push_back(n);
+		}
+
+		// 插入 links（如果已存在则跳过）
+		for (const auto& l : m_PastedLinks)
+		{
+			auto it = std::find_if(
+				m_Graph.links.begin(),
+				m_Graph.links.end(),
+				[&](const EditorLink& x) { return x.id == l.id; });
+			if (it != m_Graph.links.end())
+				continue;
+
+			m_Graph.links.push_back(l);
+		}
+
+		m_Graph.dirty = true;
+		m_Graph.RebuildIndices();
+	}
+
+	void PasteNodesCommand::Undo()
+	{
+		if (m_PastedNodeIds.empty())
+			return;
+
+		// 删除 nodes
+		m_Graph.nodes.erase(
+			std::remove_if(
+				m_Graph.nodes.begin(),
+				m_Graph.nodes.end(),
+				[&](const EditorNode& n)
+				{
+					return std::find(m_PastedNodeIds.begin(), m_PastedNodeIds.end(), n.id) != m_PastedNodeIds.end();
+				}
+			),
+			m_Graph.nodes.end()
+		);
+
+		// 删除 links：只要 start/end Pin 属于粘贴来的 pins，就删掉
+		m_Graph.links.erase(
+			std::remove_if(
+				m_Graph.links.begin(),
+				m_Graph.links.end(),
+				[&](const EditorLink& l)
+				{
+					return m_PastedPinIds.find(l.startPinId) != m_PastedPinIds.end() ||
+						m_PastedPinIds.find(l.endPinId) != m_PastedPinIds.end();
+				}
+			),
+			m_Graph.links.end()
+		);
+
+		m_Graph.dirty = true;
+		m_Graph.RebuildIndices();
 	}
 }
 

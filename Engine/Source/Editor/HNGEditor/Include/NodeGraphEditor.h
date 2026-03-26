@@ -14,6 +14,7 @@
 #include "HNGEditorCore/Interface/EditorGraph.h"
 #include "HNGEditorCore/Include/CommandSystem.h"
 #include "HNGEditorCore/Include/NodeEditorRegistry.h"
+#include "HNGEditorCore/Include/CommandInGraph.h"
 #include <HNGRuntimeCore/Include/RuntimeContext.h>
 #include <HNGRuntimeCore/Include/RuntimeGraph.h>
 #include <HNGRuntimeCore/Include/NodeRegistry.h>
@@ -37,6 +38,11 @@ namespace Horizon::NodeGraph
 		Horizon::NodeGraphRuntime::NodeRegistry m_Registry;
 		NodeGraphEditor::NodeEditorRegistry m_NodeEditorRegistry;
 		NodeGraphEditor::CommandManager m_CommandManager;
+
+		// Copy/Paste：最近一次复制得到的节点/连线快照
+		// - Copy 本身不修改图状态
+		// - Paste 必须走 CommandSystem（Undo/Redo）
+		NodeGraphEditor::NodeGraphCopyBuffer m_CopyBuffer;
 		//ax::NodeEditor::EditorContext* m_EditorContext;
 	};
 

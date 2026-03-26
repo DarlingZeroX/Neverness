@@ -31,12 +31,24 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <unordered_set>
 #include "../HNGEditorCoreConfig.h"
 #include "../Interface/EditorGraph.h"
 #include "CommandSystem.h"
 
 namespace Horizon::NodeGraphEditor
 {
+	// ----------------------------
+	// Copy / Paste 数据快照
+	// ----------------------------
+	// CopyBuffer 只是一份“内存快照”，不走 CommandSystem（Copy 本身不改变图状态）。
+	// Paste 必须走 Command，确保 Undo/Redo 可恢复“插入的 nodes + links”。
+	struct NodeGraphCopyBuffer
+	{
+		std::vector<EditorNode> nodes;
+		std::vector<EditorLink> links;
+	};
+
 	// ----------------------------
 	// 具体命令
 	// ----------------------------
@@ -135,6 +147,68 @@ namespace Horizon::NodeGraphEditor
 		ImVec2 m_OldPos{};
 		ImVec2 m_NewPos{};
 		bool m_Executed = false;
+	};
+
+	// MultiMoveNodesCommand：批量移动多个节点（可撤销）
+	// - Execute：把多个 node 的 position 同时更新为 newPos
+	// - Undo：把 position 同时恢复为 oldPos
+	//
+	// 用于“拖拽多个选中节点”时，把本来会生成 N 次 MoveNodeCommand 的行为
+	// 合并为一次 Undo/Redo 友好的批量命令。
+	class HNG_EDITOR_CORE_API MultiMoveNodesCommand final : public ICommand
+	{
+	public:
+		struct MoveEntry
+		{
+			ax::NodeEditor::NodeId nodeId{};
+			ImVec2 oldPos{};
+			ImVec2 newPos{};
+		};
+
+		MultiMoveNodesCommand(EditorGraph& graph, std::vector<MoveEntry> entries);
+		void Execute() override;
+		void Undo() override;
+
+	private:
+		EditorGraph& m_Graph;
+		std::vector<MoveEntry> m_Entries;
+	};
+
+	// PasteNodesCommand：把 CopyBuffer 里的节点/连线复制到图中（可撤销）
+	// - Execute：
+	//   1) 生成“新 NodeId/PinId/LinkId”映射（只在第一次生成）
+	//   2) 根据 offset 平移节点位置
+	//   3) 插入 nodes/links，并重建索引
+	// - Undo：
+	//   1) 删除插入过的 nodes 与其相关 links
+	//   2) 重建索引
+	class HNG_EDITOR_CORE_API PasteNodesCommand final : public ICommand
+	{
+	public:
+		PasteNodesCommand(EditorGraph& graph, const NodeGraphCopyBuffer& buffer, ImVec2 offset);
+
+		void Execute() override;
+		void Undo() override;
+
+		// 供 UI 层（Ctrl+V 后）把选择高亮到新粘贴的节点
+		const std::vector<ax::NodeEditor::NodeId>& GetPastedNodeIds() const { return m_PastedNodeIds; }
+
+	private:
+		void GenerateIfNeeded();
+
+		EditorGraph& m_Graph;
+		const NodeGraphCopyBuffer& m_Buffer;
+		ImVec2 m_Offset{};
+
+		bool m_Generated = false;
+
+		// 生成后的“插入物”（new ids 已经就绪）
+		std::vector<EditorNode> m_PastedNodes;
+		std::vector<EditorLink> m_PastedLinks;
+		std::vector<ax::NodeEditor::NodeId> m_PastedNodeIds;
+
+		// Undo 删除用：存 pin 集合（由 pasted nodes 派生）
+		std::unordered_set<ax::NodeEditor::PinId> m_PastedPinIds;
 	};
 }
 

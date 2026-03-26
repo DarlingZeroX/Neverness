@@ -12,6 +12,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <functional>
 
 #include "../HNGEditorCoreConfig.h"
 
@@ -30,6 +31,54 @@ namespace Horizon::NodeGraphEditor
 			return std::hash<int>()(id.Get());
 		}
 	};
+
+	// ---------------------------------------------------------------------
+	// 允许在项目中直接写：
+	//   std::unordered_set<ax::NodeEditor::NodeId>
+	//   std::unordered_set<ax::NodeEditor::LinkId>
+	//   std::unordered_set<ax::NodeEditor::PinId>
+	//
+	// 原因：ax::NodeEditor 的 NodeId/LinkId/PinId 是自定义 struct，
+	// 默认 std::unordered_set 无法自动推导 hash，需要提供 std::hash 特化。
+	// ---------------------------------------------------------------------
+
+} // namespace Horizon::NodeGraphEditor
+
+// ---------------------------------------------------------------------
+// std::hash 特化（让 EditorGraph 能使用 unordered_set<NodeId> 的“纯类型”写法）
+// ---------------------------------------------------------------------
+namespace std
+{
+	template<>
+	struct hash<ax::NodeEditor::NodeId>
+	{
+		size_t operator()(const ax::NodeEditor::NodeId& id) const noexcept
+		{
+			return std::hash<int>()(id.Get());
+		}
+	};
+
+	template<>
+	struct hash<ax::NodeEditor::LinkId>
+	{
+		size_t operator()(const ax::NodeEditor::LinkId& id) const noexcept
+		{
+			return std::hash<int>()(id.Get());
+		}
+	};
+
+	template<>
+	struct hash<ax::NodeEditor::PinId>
+	{
+		size_t operator()(const ax::NodeEditor::PinId& id) const noexcept
+		{
+			return std::hash<int>()(id.Get());
+		}
+	};
+}
+
+namespace Horizon::NodeGraphEditor
+{
 
 	using EditorNodeID = ax::NodeEditor::NodeId;
 	using EditorLinkID = ax::NodeEditor::LinkId;
@@ -88,3 +137,4 @@ namespace Horizon::NodeGraphEditor
 		EditorPinID endPinId;
 	};
 }
+

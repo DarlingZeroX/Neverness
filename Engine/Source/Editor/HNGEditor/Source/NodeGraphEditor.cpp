@@ -12,6 +12,8 @@
 #include "NodeGraphEditor.h"
 #include "HNGEditorCore/Include/NodeFactory.h"
 #include "HNGEditorCore/Interface/GraphCompiler.h"
+#include "HNGEditorCore/Include/CommandInGraph.h"
+#include <unordered_set>
 #include <HNGRuntimeCore/Include/Nodes.h>
 #include <VGImgui/IncludeImGui.h>
 #include <cstdio>
@@ -74,7 +76,7 @@ namespace Horizon::NodeGraph
 		link1.endPinId   = editor.nodes[dlgIndex].inputs[0].id;
 		editor.links.push_back(link1);
 		
-		EditorLink link2;
+		EditorLink link2; 
 		link2.id = ax::NodeEditor::LinkId(2);
 		link2.startPinId = editor.nodes[dlgIndex].outputs[0].id;
 		link2.endPinId   = editor.nodes[branchIndex].inputs[0].id;
@@ -373,9 +375,96 @@ namespace Horizon::NodeGraph
 
 	void HNodeGraphEditor::DrawNodeGraphWindow()
 	{
-		// 处理 Undo / Redo 快捷键（Ctrl+Z / Ctrl+Y）
 		ImGuiIO& io = ImGui::GetIO();
+
+		// Ctrl 相关快捷键：Copy / Paste（以及 Undo/Redo）
+		// 说明：
+		// - Copy：只生成内存快照（不修改图状态），不需要走 CommandSystem
+		// - Paste：修改图状态，必须走 CommandSystem，确保 Undo/Redo 可恢复
 		const bool ctrlDown = io.KeyCtrl;
+
+		// ----------------------------
+		// Ctrl+C：Copy
+		// ----------------------------
+		if (ctrlDown && ImGui::IsKeyPressed(ImGuiKey_C, false))
+		{
+			// Copy 的策略：
+			// 1) 只复制 selectedNodes 内的节点
+			// 2) 复制“节点集合内部”的连线（startPin/endPin 都属于被复制的节点）
+			m_CopyBuffer.nodes.clear();
+			m_CopyBuffer.links.clear();
+
+			if (!m_EditorGraph.selectedNodes.empty())
+			{
+				// 收集被复制节点对应的 pin 集合，便于判断 link 是否“在集合内部”
+				std::unordered_set<ax::NodeEditor::PinId> pinsInSelection;
+
+				// 1) 复制节点快照
+				for (const auto& node : m_EditorGraph.nodes)
+				{
+					if (m_EditorGraph.selectedNodes.find(node.id) == m_EditorGraph.selectedNodes.end())
+						continue;
+
+					m_CopyBuffer.nodes.push_back(node);
+
+					for (const auto& p : node.inputs)
+						pinsInSelection.insert(p.id);
+					for (const auto& p : node.outputs)
+						pinsInSelection.insert(p.id);
+				}
+
+				// 2) 复制集合内部的连线快照
+				for (const auto& l : m_EditorGraph.links)
+				{
+					if (pinsInSelection.find(l.startPinId) != pinsInSelection.end() &&
+						pinsInSelection.find(l.endPinId) != pinsInSelection.end())
+					{
+						m_CopyBuffer.links.push_back(l);
+					}
+				}
+			}
+		}
+
+		// ----------------------------
+		// Ctrl+V：Paste（走 CommandSystem）
+		// ----------------------------
+		if (ctrlDown && ImGui::IsKeyPressed(ImGuiKey_V, false))
+		{
+			// 如果没有任何复制内容则无操作
+			if (m_EditorGraph.commandManager && !m_CopyBuffer.nodes.empty())
+			{
+				// Paste 偏移：
+				// - 当前实现用固定偏移（确保粘贴结果可见）
+				// - 后续可扩展：根据鼠标位置或 selection bbox 计算 offset
+				const ImVec2 pasteOffset{ 40.0f, 40.0f };
+
+				auto cmd = std::make_unique<Horizon::NodeGraphEditor::PasteNodesCommand>(
+					m_EditorGraph,
+					m_CopyBuffer,
+					pasteOffset
+				);
+				auto* cmdPtr = cmd.get();
+
+				m_EditorGraph.commandManager->ExecuteCommand(std::move(cmd));
+
+				// 把粘贴出来的节点同时设置为 ax::NodeEditor 的 selection
+				// 这样后续拖拽（MultiMoveNodesCommand）才能正确工作。
+				ax::NodeEditor::ClearSelection();
+
+				m_EditorGraph.selectedNodes.clear();
+				m_EditorGraph.selectedLinks.clear();
+
+				bool first = true;
+				for (const auto& nodeId : cmdPtr->GetPastedNodeIds())
+				{
+					m_EditorGraph.selectedNodes.insert(nodeId);
+					ax::NodeEditor::SelectNode(nodeId, !first);
+					first = false;
+				}
+			}
+		}
+
+		// 处理 Undo / Redo 快捷键（Ctrl+Z / Ctrl+Y）
 		if (ctrlDown && ImGui::IsKeyPressed(ImGuiKey_Z, false))
 		{
 			m_CommandManager.Undo();

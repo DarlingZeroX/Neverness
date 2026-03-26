@@ -18,11 +18,13 @@
 #include <cstdio>
 #include <map>
 #include <sstream>
+#include <vector>
 #include <unordered_set>
 
 #include "EditorGraphDrawingImpl.h"
 #include "EditorGraphActionsImpl.h"
 #include "EditorGraphContextMenuImpl.h"
+#include "../Include/SelectionSystem.h"
 
 #include "Utilities/builders.h"
 #include <HNGRuntimeCore/Include/ExpressionEvaluator.h>
@@ -236,6 +238,65 @@ namespace Horizon::NodeGraphEditor
 		Begin("Node Graph");
 
 		// ----------------------------
+		// 选择状态同步（关键）
+		// ----------------------------
+		// ImNodeEditor 内部完成：
+		// - 单击选择节点
+		// - Ctrl 多选
+		// - 框选（drag marquee）
+		//
+		// 我们只负责把“ImNodeEditor 的当前 selection 状态”
+		// 同步到 EditorGraph.selectedNodes/selectedLinks，供：
+		// - DrawSingleNode 的 UI highlight 使用
+		// - Delete 等批量操作使用
+		SelectionSystem selection(graph);
+		// 每帧同步 selection：
+		// - ax::NodeEditor 内部完成单选/Ctrl 多选/框选
+		// - 我们从 ax::NodeEditor 读取结果，并写回 graph.selectedNodes/graph.selectedLinks
+		//
+		// 关键：如果我们在本帧通过 Paste/Delete 手动维护了 graph.selectedNodes，
+		// 则不应立刻被“旧的 ax selection”覆盖掉。
+		auto SyncSelectionFromImNodes = [&]()
+		{
+			selection.ClearSelection();
+
+			const int selectedCount = ax::NodeEditor::GetSelectedObjectCount();
+			if (selectedCount <= 0)
+				return;
+
+			// Node
+			{
+				std::vector<ax::NodeEditor::NodeId> nodeIds(static_cast<size_t>(selectedCount));
+				const int filled = ax::NodeEditor::GetSelectedNodes(nodeIds.data(), selectedCount);
+				for (int i = 0; i < filled; ++i)
+				{
+					const ax::NodeEditor::NodeId id = nodeIds[static_cast<size_t>(i)];
+					// 防御：Undo/Redo 后 ax::NodeEditor selection 可能残留幽灵 id，
+					// 这里过滤，避免把不存在的 node 写回 selectedNodes。
+					if (graph.FindNode(id))
+						selection.SelectNode(id, true);
+				}
+			}
+
+			// Link
+			{
+				std::vector<ax::NodeEditor::LinkId> linkIds(static_cast<size_t>(selectedCount));
+				const int filled = ax::NodeEditor::GetSelectedLinks(linkIds.data(), selectedCount);
+				for (int i = 0; i < filled; ++i)
+				{
+					graph.selectedLinks.insert(linkIds[static_cast<size_t>(i)]);
+				}
+			}
+		};
+
+		// 首次进入本帧：仅在
+		// - ax selection 确实发生变化；或
+		// - graph.selectedNodes 为空（初始化/清空后）
+		// 时才同步，避免覆盖 Paste 后的手动 selection。
+		if (ax::NodeEditor::HasSelectionChanged() || graph.selectedNodes.empty())
+			SyncSelectionFromImNodes();
+
+		// ----------------------------
 		// 删除请求缓存（pending）
 		// ----------------------------
 		// 关键原因：我们在同一帧内会遍历：
@@ -285,6 +346,11 @@ namespace Horizon::NodeGraphEditor
 		{
 			// 节点绘制与拖拽记录逻辑已封装在 DrawSingleNode
 			DrawSingleNode(graph, node, runtimeCtx);
+
+			// 如果本帧期间 selection 发生改变（例如用户正在拖框选），
+			// 则在后续节点绘制前立刻刷新 selectedNodes，保证 highlight 更及时。
+			if (ax::NodeEditor::HasSelectionChanged())
+				SyncSelectionFromImNodes();
 		}
 
 		// 绘制所有连线
@@ -313,8 +379,23 @@ namespace Horizon::NodeGraphEditor
 				onPath = executedPairs.find(key) != executedPairs.end();
 			}
 
-			// 在执行路径上的连线：使用不同颜色高亮
-			if (onPath)
+			// ----------------------------
+			// Link 渲染（选择/执行路径优先级）
+			// ----------------------------
+			// 选择高亮优先级最高：
+			// - graph.selectedLinks 中的 link：使用 SelLinkBorder 颜色
+			// 执行路径高亮是次级：
+			// - onPath=true 的 link：保持当前逻辑（如未来你想打开 PushStyleColor 可在此扩展）
+			const bool isSelectedLink =
+				graph.selectedLinks.find(link.id) != graph.selectedLinks.end();
+
+			if (isSelectedLink)
+			{
+				PushStyleColor(StyleColor_SelLinkBorder, ImColor(255, 176, 50, 255));
+				Link(link.id, link.startPinId, link.endPinId);
+				PopStyleColor();
+			}
+			else if (onPath)
 			{
 				//PushStyleColor(StyleColor_HovLinkBorder, ImColor(255, 220, 120, 255));
 				Link(link.id, link.startPinId, link.endPinId);

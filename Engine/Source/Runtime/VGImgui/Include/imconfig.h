@@ -29,6 +29,9 @@
 #define IMGUI_USE_WCHAR32
 #define IMGUI_ENABLE_FREETYPE // Enable FreeType font builder (requires FreeType 2.6+)
 
+//#define IMGUI_INCLUDE_IMGUI_USER_H
+//#define IMGUI_USER_H_FILENAME "imgui_stacklayout.h" // 启用堆栈布局扩展
+
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
 //#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)
