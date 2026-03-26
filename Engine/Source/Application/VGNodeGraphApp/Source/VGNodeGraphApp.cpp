@@ -112,6 +112,12 @@ namespace VisionGal::Editor
 
 	void VGNodeGraphApp::OnApplicationUpdate(float deltaTime)
 	{
+		// 修复编辑器UI残影：始终在渲染编辑器UI之前清空默认帧缓冲，否则透明/部分重绘的ImGui可能会暴露前一帧的残影。
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDisable(GL_SCISSOR_TEST);
+		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		OnFixedUpdate();
 		OnUpdate(deltaTime);
 		OnRender();

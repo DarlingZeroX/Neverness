@@ -16,6 +16,9 @@
 #include "CommandInGraph.h"
 #include "GraphCommandAPI.h"
 
+// DialogueList 演示需要使用 StackLayout 的水平容器与 Spring。
+#include "VGImgui/Include/ImGui/imgui_stacklayout.h"
+
 namespace Horizon::NodeGraphEditor
 {
 	// 多选拖拽合并用的临时缓存：
@@ -177,6 +180,154 @@ namespace Horizon::NodeGraphEditor
 	// ------------------------------------------------------------
 	// DrawSingleNode：使用 BlueprintNodeBuilder 结构化绘制节点 UI
 	// ------------------------------------------------------------
+	static void DrawDialogueListUI(EditorGraph& graph, EditorNode& node)
+	{
+		// Dialogue 节点的运行时读取约定：把 properties["text"] 以 '\n' 拆分为多行对白。
+		// 因此这里将编辑对象设计成“可重排的行列表”，最后再重新 join 回 properties["text"]。
+		using namespace Horizon::NodeGraphRuntime;
+
+		Value& textValue = node.GetProperty("text");
+		if (textValue.type != ValueType::String)
+		{
+			textValue = Value::FromString(textValue.AsString());
+		}
+
+		std::string text = textValue.AsString();
+
+		auto SplitLines = [](const std::string& s)
+		{
+			std::vector<std::string> out;
+			std::string current;
+			for (char c : s)
+			{
+				if (c == '\n')
+				{
+					// 兼容 Windows CRLF：去掉末尾 '\r'
+					if (!current.empty() && current.back() == '\r')
+						current.pop_back();
+					out.push_back(current);
+					current.clear();
+				}
+				else
+				{
+					current.push_back(c);
+				}
+			}
+			if (!current.empty() || s.empty())
+				out.push_back(current);
+			return out;
+		};
+
+		auto JoinLines = [](const std::vector<std::string>& lines)
+		{
+			std::string out;
+			for (size_t i = 0; i < lines.size(); ++i)
+			{
+				if (i != 0) out.push_back('\n');
+				out += lines[i];
+			}
+			return out;
+		};
+
+		std::vector<std::string> lines = SplitLines(text);
+		if (lines.empty())
+			lines.push_back(std::string{});
+
+		bool dirty = false;
+
+		// 顶部：新增/连接事件
+		ImGui::BeginHorizontal("dlg_controls", ImVec2(0, 0), 0.0f);
+		if (ImGui::Button("+"))
+		{
+			lines.push_back(std::string{});
+			dirty = true;
+		}
+		ImGui::Spring(1.0f);
+		if (ImGui::Button("连接事件"))
+		{
+			// 这是展示性的 UI：这里不对运行时执行做硬绑定，
+			// 但通过属性写入可验证“Middle 支持复杂交互 UI”。
+			Value& v = node.GetProperty("connectEvent");
+			const bool cur = (v.type == ValueType::Bool) ? v.AsBool() : false;
+			v = Value::FromBool(!cur);
+			dirty = true;
+		}
+		ImGui::EndHorizontal();
+
+		ImGui::Spacing();
+
+		// 行列表（可重排）
+		for (int i = 0; i < static_cast<int>(lines.size()); ++i)
+		{
+			ImGui::PushID(i);
+			ImGui::BeginHorizontal("dlg_row", ImVec2(0, 0), 0.0f);
+
+			// ↑
+			if (ImGui::Button("↑"))
+			{
+				if (i > 0)
+				{
+					std::swap(lines[i], lines[i - 1]);
+					dirty = true;
+				}
+			}
+
+			// ↓
+			if (ImGui::Button("↓"))
+			{
+				if (i + 1 < static_cast<int>(lines.size()))
+				{
+					std::swap(lines[i], lines[i + 1]);
+					dirty = true;
+				}
+			}
+
+			// [-] 删除（至少保留 1 行：避免 Dialogue 节点运行时 lines 为空直接 Finished）
+			if (ImGui::Button("-"))
+			{
+				if (lines.size() > 1)
+				{
+					lines.erase(lines.begin() + i);
+					dirty = true;
+					ImGui::EndHorizontal();
+					ImGui::PopID();
+					--i;
+					continue;
+				}
+				else
+				{
+					lines[i].clear();
+					dirty = true;
+				}
+			}
+
+			ImGui::Spring(1.0f);
+
+			// 编辑该行文本（单行输入：\n 作为分隔符由列表/重排按钮管理）
+			ImGui::PushItemWidth(-1.0f);
+			char buf[512];
+			std::snprintf(buf, sizeof(buf), "%s", lines[i].c_str());
+			if (ImGui::InputText("##line", buf, sizeof(buf)))
+			{
+				lines[i] = buf;
+				dirty = true;
+			}
+			ImGui::PopItemWidth();
+
+			ImGui::EndHorizontal();
+			ImGui::PopID();
+		}
+
+		// 下方：最小提示
+		ImGui::TextUnformatted("提示：运行时用 '\\n' 拆分这些行。");
+
+		if (dirty)
+		{
+			textValue = Value::FromString(JoinLines(lines));
+			graph.dirty = true;
+		}
+	}
+
 	void DrawSingleNodeImpl(
 		EditorGraph& graph,
 		EditorNode& node,
@@ -258,21 +409,19 @@ namespace Horizon::NodeGraphEditor
 		builder.HeaderGradient(headerLeftColor, headerRightColor);
 		ImGui::TextUnformatted(node.name.c_str());
 		builder.EndHeader();
-		builder.BeginBody();
 
 		// 左列：Inputs
 		for (auto& pin : node.inputs)
 			builder.Input(pin.id, pin.name.c_str(), pin.type);
-		builder.NextColumn();
-		// 右列：Outputs
-		for (auto& pin : node.outputs)
-			builder.Output(pin.id, pin.name.c_str(), pin.type);
-		builder.EndBody();
+		builder.EndInput();
 
-		// 中间内容：属性 UI + Debug 信息
-		builder.MiddleContent([&]
+		// 中间内容：属性 UI + DialogueList（可选） + Debug 信息
+		builder.Middle([&]
 		{
 			DrawNodePropertiesImpl(graph, node);
+
+			if (node.type == Horizon::NodeGraphRuntime::NodeType::Dialogue)
+				DrawDialogueListUI(graph, node);
 
 			if (!runtimeCtx)
 				return;
@@ -308,6 +457,11 @@ namespace Horizon::NodeGraphEditor
 				}
 			}
 		});
+
+		// 右列：Outputs
+		for (auto& pin : node.outputs)
+			builder.Output(pin.id, pin.name.c_str(), pin.type);
+		builder.EndOutput();
 
 		builder.End();
 

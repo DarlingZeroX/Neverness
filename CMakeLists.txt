@@ -48,12 +48,13 @@ add_subdirectory ("Engine/Source/Runtime/VGAsset")
 add_subdirectory ("Engine/Source/Runtime/VGUI")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
 add_subdirectory ("Engine/Source/Runtime/VGGalgame")
+add_subdirectory ("Engine/Source/Runtime/VGGalgameRuntime")
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
-add_subdirectory ("Engine/Source/Editor/HNGEditor")
+#add_subdirectory ("Engine/Source/Editor/HNGEditor")
 add_subdirectory ("Engine/Source/Editor/VGEditorCore")
 add_subdirectory ("Engine/Source/Editor/VGEditorComponent")
-add_subdirectory ("Engine/Source/Editor/VGEditorComGalgame")
+add_subdirectory ("Engine/Source/Editor/VGEditorGalgame")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 
 add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器

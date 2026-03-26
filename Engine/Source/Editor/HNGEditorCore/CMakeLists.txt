@@ -39,11 +39,11 @@ target_include_directories(HNGEditorCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Inc
 target_include_directories(HNGEditorCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 # 寻找CMake包
-find_package(SDL3 CONFIG REQUIRED)
+#find_package(SDL3 CONFIG REQUIRED)
 
 # 链接库
-target_link_libraries(HNGEditorCore PRIVATE SDL3::SDL3)
-target_link_libraries(HNGEditorCore PRIVATE HCore)
-target_link_libraries(HNGEditorCore PRIVATE VGImgui)
-target_link_libraries(HNGEditorCore PRIVATE HNGRuntimeCore)
+#target_link_libraries(HNGEditorCore PRIVATE SDL3::SDL3)
+target_link_libraries(HNGEditorCore PUBLIC HCore)
+target_link_libraries(HNGEditorCore PUBLIC VGImgui)
+target_link_libraries(HNGEditorCore PUBLIC HNGRuntimeCore)
 

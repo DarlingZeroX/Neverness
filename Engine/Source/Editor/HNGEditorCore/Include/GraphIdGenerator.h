@@ -14,7 +14,7 @@ namespace Horizon::NodeGraphEditor
 		int nextLinkId = 10000;
 	};
 
-	class GraphIdGenerator
+	class HNG_EDITOR_CORE_API GraphIdGenerator
 	{
 	public:
 		ax::NodeEditor::NodeId NewNodeId();

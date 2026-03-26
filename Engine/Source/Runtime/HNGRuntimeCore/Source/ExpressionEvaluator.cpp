@@ -13,7 +13,7 @@ namespace Horizon::NodeGraphRuntime
 	static std::unordered_map<std::string, CompiledExpression> g_ExpressionCache;
 
 	// ---------------- Lexer ----------------
-
+	
 	class Lexer
 	{
 	public:

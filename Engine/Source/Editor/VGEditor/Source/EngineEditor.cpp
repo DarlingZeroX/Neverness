@@ -18,7 +18,7 @@
 //#include <VGEngine/Include/UI/UISystem.h>
 #include <VGEditorCore/IncludeCore.h>
 #include "VGCore/Include/Core/VFS.h"
-#include "VGEditorComGalgame/Interface/VGEditorGalgame.h"
+#include "VGEditorGalgame/Interface/VGEditorGalgame.h"
 #include "VGGalgame/Interface/GalgameSystem.h"
 
 namespace VisionGal::Editor
@@ -180,7 +180,13 @@ namespace VisionGal::Editor
 
 	void VGEditorApplication::OnApplicationUpdate(float deltaTime)
 	{
+		// Always clear the default framebuffer before rendering editor UI.
+		// Otherwise, transparent/partial ImGui redraws can reveal previous-frame leftovers.
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glDisable(GL_SCISSOR_TEST);
+		//glClearColor(0.f, 0.f, 0.f, 1.f);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		OnFixedUpdate();
 		OnUpdate(deltaTime);
 		m_ImguiOpengl3Layer->BeginFrame();

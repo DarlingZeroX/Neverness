@@ -17,6 +17,7 @@ namespace VisionGal::Editor
 {
 	VGNodeGraphMainWindow::VGNodeGraphMainWindow()
 	{
+		m_NodeGraphEditor.Initialize();
 	}
 
 	void VGNodeGraphMainWindow::OnGUI()
@@ -71,6 +72,8 @@ namespace VisionGal::Editor
 
 	void VGNodeGraphMainWindow::OnGUIInternal()
 	{
-		m_NodeGraphEditor.DrawNodeGraphWindow();
+		m_NodeGraphEditor.DrawEditorWindow();
+		m_NodeGraphEditor.Update();
+		//m_NodeGraphEditor.DrawNodeGraphWindow();
 	}
 }

@@ -38,4 +38,4 @@ target_include_directories(VGEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
  
 # 链接库
 target_link_libraries(VGEditor PRIVATE VGEditorComponent)
-target_link_libraries(VGEditor PRIVATE VGEditorComGalgame)
+target_link_libraries(VGEditor PRIVATE VGEditorGalgame)
