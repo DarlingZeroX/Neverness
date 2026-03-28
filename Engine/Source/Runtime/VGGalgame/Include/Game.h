@@ -10,11 +10,8 @@
  */
 
 #pragma once
-#include "Interface/GalgameInterface.h"
-#include "Core/GalGameRuntimeState.h"
-#include "VGEngine/Include/Animation/Interface/Animation2DScript.h"
-#include "VGEngine/Include/Scene/Components.h"
-#include <sol/function.hpp>
+#include "VGGalgameCore/Interface/IGameObject.h"
+#include "VGGalgameCore/Include/GalGameRuntimeState.h"
 
 namespace VisionGal::GalGame
 {
@@ -25,7 +22,7 @@ namespace VisionGal::GalGame
 		Right,
 	};
 
-	class GalSprite : public IGalGameSprite
+	class GalSprite : public IGalSprite
 	{
 	public:
 		GalSprite(const std::string& layer, const std::string& path);
@@ -40,33 +37,31 @@ namespace VisionGal::GalGame
 		const std::string& GetResourceLayer() override;
 		void SetResourceLayer(const std::string& layer) override;
 
-		virtual GalSprite* Show();
-		virtual GalSprite* With(const std::string& transform);
+		IGalSprite* Show() override;
+		IGalSprite* With(const std::string& transform) override;
 
-		Animation2DScript* Animate(const sol::table& targetValue, float duration, std::string tween, int numIterations = 1, bool alternateDirection = true);
+		Animation2DScript* Animate(const sol::table& targetValue, float duration, std::string tween, int numIterations = 1, bool alternateDirection = true) override;
 
-		virtual GalSprite* SetPosX(float offset);
-		virtual GalSprite* SetPosY(float offset);
+		IGalSprite* SetPosX(float offset) override;
+		IGalSprite* SetPosY(float offset) override;
 
-		virtual float GetPosX();
-		virtual float GetPosY();
+		float GetPosX() override;
+		float GetPosY() override;
 
-		virtual GalSprite* SetPosOffsetX(float offset);
-		virtual GalSprite* SetPosOffsetY(float offset);
+		IGalSprite* SetPosOffsetX(float offset) override;
+		IGalSprite* SetPosOffsetY(float offset) override;
+		IGalSprite* SetScale(float scale) override;
+		IGalSprite* SetScaleWidth(float scale) override;
+		IGalSprite* SetScaleHeight(float scale) override;
 
-		virtual GalSprite* SetScale(float scale);
-		virtual GalSprite* SetScaleWidth(float scale);
-		virtual GalSprite* SetScaleHeight(float scale);
+		float GetScaleWidth() override;
+		float GetScaleHeight() override;
 
-		virtual float GetScaleWidth();
-		virtual float GetScaleHeight();
+		IGalSprite* AlignBottom() override;
+		IGalSprite* AlignBottomWithTexture(Texture2D* tex) override;
+		TransformComponent* GetTransformComponent() override;
 
-		virtual GalSprite* AlignBottom();
-		virtual GalSprite* AlignBottomWithTexture(Texture2D* tex);
-
-		virtual TransformComponent* GetTransformComponent();
-
-		void Cut(const std::string& cut);
+		void Cut(const std::string& cut) override;
 
 		std::string m_Path;
 		std::string m_Layer;
@@ -74,7 +69,7 @@ namespace VisionGal::GalGame
 		GalGameRuntimeState* m_GalState = nullptr;
 	};
 
-	class GalAudio: public IGalGameAudio
+	class GalAudio: public IGalAudio
 	{
 	public:
 		GalAudio(const std::string& layer, const std::string& path);
@@ -88,28 +83,22 @@ namespace VisionGal::GalGame
 		IGameActor* GetResourceActor() override;
 		const std::string& GetResourceLayer() override;
 		void SetResourceLayer(const std::string& layer) override;
-		 
-		// 循环播放
-		GalAudio* SetLoop(bool enable);
-		// 停止播放
-		GalAudio* Stop();
-		// 是否正在播放音频
-		bool IsPlayingAudio();
-		// 是否循环播放
-		bool IsLooping();
-		// 设置音量
-		GalAudio* SetVolume(float v);
-		// 获取音量
-		float GetVolume();
 
-		virtual GalAudio* With(const std::string& transform);
+		IGalAudio* SetLoop(bool enable) override;
+		IGalAudio* Stop() override;
+		bool IsPlayingAudio() override;
+		bool IsLooping() override;
+		IGalAudio* SetVolume(float v) override;
+		float GetVolume() override;
+
+		IGalAudio* With(const std::string& transform) override;
 
 		std::string m_Path;
 		std::string m_Layer;
 		IGameActor* m_Actor = nullptr;
 	};
 
-	class GalVideo: public IGalGameVideo
+	class GalVideo: public IGalVideo
 	{
 	public:
 		GalVideo(const std::string& layer, const std::string& path);
@@ -124,18 +113,12 @@ namespace VisionGal::GalGame
 		const std::string& GetResourceLayer() override;
 		void SetResourceLayer(const std::string& layer) override;
 
-		// 循环播放
-		GalVideo* SetLoop(bool enable);
-		// 停止播放
-		GalVideo* Stop();
-		// 是否正在播放音频
-		bool IsPlaying();
-		// 是否循环播放
-		bool IsLooping();
-		// 设置音量
-		GalVideo* SetVolume(float v);
-		// 获取音量
-		float GetVolume();
+		IGalVideo* SetLoop(bool enable) override;
+		IGalVideo* Stop() override;
+		bool IsPlaying() override;
+		bool IsLooping() override;
+		IGalVideo* SetVolume(float v) override;
+		float GetVolume() override;
 
 		//virtual GalAudio* With(const std::string& transform);
 
@@ -151,8 +134,8 @@ namespace VisionGal::GalGame
 		{
 			bool IsHide = false;
 			String State = "";
-			GalSprite* Sprite = nullptr;
-			GalAudio* Voice = nullptr;
+			IGalSprite* Sprite = nullptr;
+			IGalAudio* Voice = nullptr;
 		};
 
 		GalCharacter(const std::string& name);
@@ -162,21 +145,21 @@ namespace VisionGal::GalGame
 		GalCharacter& operator=(GalCharacter&&) noexcept = default;
 		~GalCharacter() override = default;
 
-		static GalCharacter Create(const std::string& name);
+		std::string GetName() override;
+		void SetName(const std::string& name) override;
+		void Say(const std::string& text) override;
+		IGalAudio* Voice(const std::string& path) override;
+		IGalAudio* GetCurrentVoice() override;
+		void AddFigure(const String& state, const String& spritePath) override;
 
-		void Say(const std::string& text);
-		GalAudio* Voice(const std::string& path);
-		GalAudio* GetCurrentVoice();
-		void AddFigure(const String& state, const String& spritePath);
-
-		GalSprite* ShowFigure(const String& stateOrPath);
-		void HideFigure();
-		GalSprite* GetCurrentFigure();
+		IGalSprite* ShowFigure(const String& stateOrPath) override;
+		void HideFigure() override;
+		IGalSprite* GetCurrentFigure() override;
 		
-		void AddShowFigureCallback(sol::function callback);
-		void AddHideFigureCallback(sol::function callback);
-		void ClearShowFigureCallbacks();
-		void ClearHideFigureCallbacks();
+		void AddShowFigureCallback(sol::function callback) override;
+		void AddHideFigureCallback(sol::function callback) override;
+		void ClearShowFigureCallbacks() override;
+		void ClearHideFigureCallbacks() override;
 
 		std::unordered_map<String, String> m_CharacterSpriteStates;
 		FigureState m_CurrentState;

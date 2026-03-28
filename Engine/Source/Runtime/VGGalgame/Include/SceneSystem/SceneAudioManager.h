@@ -10,9 +10,9 @@
  */
 
 #pragma once
-#include "../Interface/GalgameInterface.h"
+#include "VGGalgameCore/Interface/IGameSystem.h"
 #include "../Game.h" 
-#include "../Core/GalGameContext.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 
 namespace VisionGal::GalGame
 {
@@ -21,14 +21,14 @@ namespace VisionGal::GalGame
 		struct AudioLayer : public ISceneAudioLayer
 		{
 			String name;
-			std::vector<IGalGameAudio*> audios;
+			std::vector<IGalAudio*> audios;
 
 			void SetVolume(float volume) override;
 			float GetVolume() override;
 			void Clear() override;
-			void Add(IGalGameAudio* audio) override;
+			void Add(IGalAudio* audio) override;
 			void StopPlay() override;
-			bool Remove(IGalGameAudio* audio) override;
+			bool Remove(IGalAudio* audio) override;
 			bool IsPlayFinished() override;
 		private:
 			float m_Volume = 1.0f;
@@ -37,13 +37,13 @@ namespace VisionGal::GalGame
 		SceneAudioManager();
 		~SceneAudioManager() override = default;
 
-		void AddAudio(IGalGameAudio* audio) override;
-		bool RemoveAudio(IGalGameAudio* audio) override;
+		void AddAudio(IGalAudio* audio) override;
+		bool RemoveAudio(IGalAudio* audio) override;
 		void ClearSoundLayer(const String& layer) override;
 		void ClearAllAudio() override;
 
-		void TraverseAudioLayer(const String& layer, const std::function<void(IGalGameAudio* audio)>& callback) override;
-		void TraverseAudio(const std::function<void(IGalGameAudio* audio)>& callback) override;
+		void TraverseAudioLayer(const String& layer, const std::function<void(IGalAudio* audio)>& callback) override;
+		void TraverseAudio(const std::function<void(IGalAudio* audio)>& callback) override;
 		void AddAudioLayer(const String& layer) override;
 		ISceneAudioLayer* GetAudioLayer(const String& layer) override;
 

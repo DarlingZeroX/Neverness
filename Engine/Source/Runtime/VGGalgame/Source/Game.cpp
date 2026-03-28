@@ -11,7 +11,7 @@
 
 #include "Game.h"
 #include "GalGameEngine.h"
-#include "GameEngineCore.h"
+#include "VGGalgameCore/Interface/GameEngineCore.h"
 #include "SpriteAnimationScript.h"
 #include "SpriteAnimationScriptManager.h"
 #include "VGEngine/Include/Animation/Audio/AudioAnimationScriptManager.h"
@@ -61,12 +61,12 @@ namespace VisionGal::GalGame
 		m_Layer = layer;
 	}
 
-	GalSprite* GalSprite::Show()
+	IGalSprite* GalSprite::Show()
 	{
 		return this;
 	}
 
-	GalSprite* GalSprite::With(const std::string& transform)
+	IGalSprite* GalSprite::With(const std::string& transform)
 	{
 		SpriteTransformScriptManager::StartSpriteTransformWithCommand(m_Actor, transform);
 
@@ -92,7 +92,7 @@ namespace VisionGal::GalGame
 		return nullptr;
 	}
 
-	GalSprite* GalSprite::SetPosX(float offset)
+	IGalSprite* GalSprite::SetPosX(float offset)
 	{
 		if (auto* transform = GetTransformComponent())
 		{
@@ -103,7 +103,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalSprite* GalSprite::SetPosY(float offset)
+	IGalSprite* GalSprite::SetPosY(float offset)
 	{
 		if (auto* transform = GetTransformComponent())
 		{
@@ -134,7 +134,7 @@ namespace VisionGal::GalGame
 		return 0.f;
 	}
 
-	GalSprite* GalSprite::SetPosOffsetX(float offset)
+	IGalSprite* GalSprite::SetPosOffsetX(float offset)
 	{
 		if (auto* transform = GetTransformComponent())
 		{
@@ -145,7 +145,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalSprite* GalSprite::SetPosOffsetY(float offset)
+	IGalSprite* GalSprite::SetPosOffsetY(float offset)
 	{
 		if (auto* transform = GetTransformComponent())
 		{
@@ -156,7 +156,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalSprite* GalSprite::SetScale(float scale)
+	IGalSprite* GalSprite::SetScale(float scale)
 	{
 		if (auto* transform = GetTransformComponent())
 		{
@@ -167,7 +167,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalSprite* GalSprite::SetScaleWidth(float scale)
+	IGalSprite* GalSprite::SetScaleWidth(float scale)
 	{
 		if (auto* transform = GetTransformComponent())
 		{
@@ -178,7 +178,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalSprite* GalSprite::SetScaleHeight(float scale)
+	IGalSprite* GalSprite::SetScaleHeight(float scale)
 	{
 		if (auto* transform = GetTransformComponent())
 		{
@@ -209,7 +209,7 @@ namespace VisionGal::GalGame
 		return 1.0f;
 	}
 
-	GalSprite* GalSprite::AlignBottom()
+	IGalSprite* GalSprite::AlignBottom()
 	{
 		if (GetResourceActor())
 		{
@@ -226,7 +226,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalSprite* GalSprite::AlignBottomWithTexture(Texture2D* tex)
+	IGalSprite* GalSprite::AlignBottomWithTexture(Texture2D* tex)
 	{
 		if (tex == nullptr)
 			return this;
@@ -314,7 +314,7 @@ namespace VisionGal::GalGame
 		m_Layer = layer;
 	}
 
-	GalAudio* GalAudio::SetLoop(bool enable)
+	IGalAudio* GalAudio::SetLoop(bool enable)
 	{
 		auto* com = GetResourceActor()->GetComponent<AudioSourceComponent>();
 		if (com)
@@ -325,7 +325,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalAudio* GalAudio::Stop()
+	IGalAudio* GalAudio::Stop()
 	{
 		auto* com = GetResourceActor()->GetComponent<AudioSourceComponent>();
 		if (com)
@@ -358,7 +358,7 @@ namespace VisionGal::GalGame
 		return false;
 	}
 
-	GalAudio* GalAudio::SetVolume(float v)
+	IGalAudio* GalAudio::SetVolume(float v)
 	{
 		auto* com = GetResourceActor()->GetComponent<AudioSourceComponent>();
 		if (com)
@@ -380,7 +380,7 @@ namespace VisionGal::GalGame
 		return 0.f;
 	}
 
-	GalAudio* GalAudio::With(const std::string& transform)
+	IGalAudio* GalAudio::With(const std::string& transform)
 	{
 		AudioAnimationScriptManager::StartAudioAnimationWithCommand(m_Actor, transform);
 
@@ -433,7 +433,7 @@ namespace VisionGal::GalGame
 		m_Layer = layer;
 	}
 
-	GalVideo* GalVideo::SetLoop(bool enable)
+	IGalVideo* GalVideo::SetLoop(bool enable)
 	{
 		auto* com = GetResourceActor()->GetComponent<VideoPlayerComponent>();
 		if (com)
@@ -444,7 +444,7 @@ namespace VisionGal::GalGame
 		return this;
 	}
 
-	GalVideo* GalVideo::Stop()
+	IGalVideo* GalVideo::Stop()
 	{
 		auto* com = GetResourceActor()->GetComponent<VideoPlayerComponent>();
 		if (com)
@@ -477,7 +477,7 @@ namespace VisionGal::GalGame
 		return false;
 	}
 
-	GalVideo* GalVideo::SetVolume(float v)
+	IGalVideo* GalVideo::SetVolume(float v)
 	{
 		return this;
 	}
@@ -492,9 +492,14 @@ namespace VisionGal::GalGame
 		this->m_Name = name;
 	}
 
-	GalCharacter GalCharacter::Create(const std::string& name)
+	std::string GalCharacter::GetName()
 	{
-		return GalCharacter(name);
+		return m_Name;
+	}
+
+	void GalCharacter::SetName(const std::string& name)
+	{
+		m_Name = name;
 	}
 
 	void GalCharacter::Say(const std::string& text)
@@ -502,14 +507,14 @@ namespace VisionGal::GalGame
 		GameEngineCore::GetCurrentEngine()->GetDialogueSystem()->CharacterSay(m_Name,text);
 	}
 
-	GalAudio* GalCharacter::Voice(const std::string& path)
+	IGalAudio* GalCharacter::Voice(const std::string& path)
 	{
 		if (GameEngineCore::GetCurrentEngine()->GetDialogueSystem()->IsFastForward())
 		{
 			return nullptr;
 		}
 
-		auto* engine = GameEngineCore::GetCurrentEngine();
+		auto* engine = dynamic_cast<GalGameEngine*>(GameEngineCore::GetCurrentEngine());
 
 		auto* voice = engine->PlayAudio("Voice", path);
 
@@ -538,7 +543,7 @@ namespace VisionGal::GalGame
 		return voice;
 	}
 
-	GalAudio* GalCharacter::GetCurrentVoice()
+	IGalAudio* GalCharacter::GetCurrentVoice()
 	{
 		return m_CurrentState.Voice;
 	}
@@ -548,9 +553,9 @@ namespace VisionGal::GalGame
 		m_CharacterSpriteStates[state] = spritePath;
 	}
 
-	GalSprite* GalCharacter::ShowFigure(const String& stateOrPath)
+	IGalSprite* GalCharacter::ShowFigure(const String& stateOrPath)
 	{
-		auto* engine = GameEngineCore::GetCurrentEngine();
+		auto* engine = dynamic_cast<GalGameEngine*>(GameEngineCore::GetCurrentEngine());
 
 		// 隐藏当前立绘
 		HideFigure();
@@ -642,7 +647,7 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	GalSprite* GalCharacter::GetCurrentFigure()
+	IGalSprite* GalCharacter::GetCurrentFigure()
 	{
 		return m_CurrentState.Sprite;
 	}

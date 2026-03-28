@@ -10,7 +10,8 @@
  */ 
 
 #pragma once
-#include "../Interface/IGalGameEngine.h"
+#include "../../VGGalgameConfig.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGCore/Include/Core/Core.h"
 #include <sol/state.hpp>
 #include <sol/coroutine.hpp>

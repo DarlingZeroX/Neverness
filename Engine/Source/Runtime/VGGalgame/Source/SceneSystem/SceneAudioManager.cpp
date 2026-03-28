@@ -47,7 +47,7 @@ namespace VisionGal::GalGame
 		audios.clear();
 	}
 
-	void SceneAudioManager::AudioLayer::Add(IGalGameAudio* audio)
+	void SceneAudioManager::AudioLayer::Add(IGalAudio* audio)
 	{
 		H_ASSERT_NOT_NULL(audio);
 
@@ -69,7 +69,7 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	bool SceneAudioManager::AudioLayer::Remove(IGalGameAudio* audio)
+	bool SceneAudioManager::AudioLayer::Remove(IGalAudio* audio)
 	{
 		for (auto& ad : audios)
 		{
@@ -107,7 +107,7 @@ namespace VisionGal::GalGame
 		AddAudioLayer("System");
 	}
 
-	void SceneAudioManager::AddAudio(IGalGameAudio* audio)
+	void SceneAudioManager::AddAudio(IGalAudio* audio)
 	{
 		if (audio == nullptr)
 			return;
@@ -130,7 +130,7 @@ namespace VisionGal::GalGame
 		audioLayer.Add(audio);
 	}
 
-	bool SceneAudioManager::RemoveAudio(IGalGameAudio* audio)
+	bool SceneAudioManager::RemoveAudio(IGalAudio* audio)
 	{
 		if (audio == nullptr)
 			return false;
@@ -152,7 +152,7 @@ namespace VisionGal::GalGame
 	}
 
 	void SceneAudioManager::TraverseAudioLayer(const String& layer,
-		const std::function<void(IGalGameAudio* audio)>& callback)
+		const std::function<void(IGalAudio* audio)>& callback)
 	{
 		auto& audioLayer = m_AudioLayers[m_AudioLayerIndexer[layer]];
 
@@ -165,7 +165,7 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	void SceneAudioManager::TraverseAudio(const std::function<void(IGalGameAudio* audio)>& callback)
+	void SceneAudioManager::TraverseAudio(const std::function<void(IGalAudio* audio)>& callback)
 	{
 		for (auto& layer : m_AudioLayers)
 		{

@@ -10,10 +10,10 @@
  */
 
 #pragma once
-#include "../Interface/GalgameInterface.h"
+#include "VGGalgameCore/Interface/IGameSystem.h"
 #include "VGEngine/Include/Render/RenderCore.h"
 #include "../Game.h" 
-#include "../Core/GalGameContext.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 #include <deque>
 
 namespace VisionGal::GalGame
@@ -24,14 +24,14 @@ namespace VisionGal::GalGame
 		struct VideoLayer : ISceneVideoLayer
 		{
 			String name;
-			std::vector<IGalGameVideo*> videos;
+			std::vector<IGalVideo*> videos;
 
 			void SetVolume(float volume) override;
 			float GetVolume() override;
 			void Clear() override;
-			void Add(IGalGameVideo* audio) override;
+			void Add(IGalVideo* audio) override;
 			void StopPlay() override;
-			bool Remove(IGalGameVideo* audio) override;
+			bool Remove(IGalVideo* audio) override;
 			bool IsPlayFinished() override;
 		private:
 			float m_Volume = 1.0f;
@@ -40,13 +40,13 @@ namespace VisionGal::GalGame
 		SceneVideoManager();
 		~SceneVideoManager() override = default;
 
-		void AddVideo(IGalGameVideo* video) override;
-		bool RemoveVideo(IGalGameVideo* video) override;
+		void AddVideo(IGalVideo* video) override;
+		bool RemoveVideo(IGalVideo* video) override;
 		void ClearVideoLayer(const String& layer) override;
 		void ClearAllVideo() override;
 
-		void TraverseVideoLayer(const String& layer, const std::function<void(IGalGameVideo* audio)>& callback) override;
-		void TraverseVideo(const std::function<void(IGalGameVideo* audio)>& callback) override;
+		void TraverseVideoLayer(const String& layer, const std::function<void(IGalVideo* audio)>& callback) override;
+		void TraverseVideo(const std::function<void(IGalVideo* audio)>& callback) override;
 		void AddVideoLayer(const String& layer) override;
 		ISceneVideoLayer* GetVideoLayer(const String& layer) override;
 	private:

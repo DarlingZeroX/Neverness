@@ -10,11 +10,12 @@
 */
 
 #pragma once
+#include "../VGGalCoreConfig.h"
 #include "VGCore/Include/Data/DataContainer.h"
 
 namespace VisionGal::GalGame
 {
-	class ArchiveDataContainer: public VGDataContainer
+	class VG_GALGAME_CORE_API ArchiveDataContainer: public VGDataContainer
 	{
 	public:
 		ArchiveDataContainer() = default;

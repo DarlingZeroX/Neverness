@@ -11,11 +11,11 @@
 
 #pragma once
 #include "StoryScript.h"
-#include "../Interface/IStoryScriptSystem.h"
-#include "../Interface/IGalGameEngine.h"
+#include "VGGalgameCore/Interface/IStoryScriptSystem.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Utils/TransitionHelper.h"
-#include "../Core/GalGameContext.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 
 namespace VisionGal::GalGame
 {

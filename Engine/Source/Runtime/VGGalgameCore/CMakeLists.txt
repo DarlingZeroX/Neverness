@@ -8,11 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
-#开启MSVC多线程编译	# windows 并行编译选项
-add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/Gm->) #高版本已被废弃，但是低版本的Gm会影响并行
-cmake_host_system_information(RESULT CPU_NUMBER_OF_LOGICAL_CORES QUERY NUMBER_OF_LOGICAL_CORES)
-add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_NUMBER_OF_LOGICAL_CORES}>)
-
 # 大对象模版文件需要开启
 if (MSVC)
     add_compile_options(/bigobj)
@@ -57,15 +52,15 @@ file(GLOB HCORE_SRC_FILES
 ) 
 
 # 库
-add_library (VGGalgame SHARED ${HCORE_INTERFACE_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_FILES})
+add_library (VGGalgameCore SHARED ${HCORE_INTERFACE_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_FILES})
 
 # 仅对动态库目标定义 CORE_MODULE_EXPORT
-target_compile_definitions(VGGalgame PRIVATE VG_GALGAME_EXPORT)
+target_compile_definitions(VGGalgameCore PRIVATE VG_GALGAME_CORE_EXPORT)
 
 # 添加头文件搜索路径
-target_include_directories(VGGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(VGGalgame PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)
-target_include_directories(VGGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-target_include_directories(VGGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
+target_include_directories(VGGalgameCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGGalgameCore PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)
+target_include_directories(VGGalgameCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(VGGalgameCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-target_link_libraries(VGGalgame PUBLIC VGGalgameRuntime)
+target_link_libraries(VGGalgameCore PUBLIC VGEngine)

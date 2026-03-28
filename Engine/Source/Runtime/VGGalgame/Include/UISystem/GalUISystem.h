@@ -10,17 +10,17 @@
  */
 
 #pragma once
-#include "../Interface/IGalGameEngine.h"
 #include "../../VGGalgameConfig.h"
-#include "../Core/GalGameContext.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 
 namespace VisionGal::GalGame
 {
-	class VG_GALGAME_API GalGameUISystem
+	class VG_GALGAME_API GalGameUISystem : public IGalGameUISystem
 	{
 	public:
 		GalGameUISystem();
-		~GalGameUISystem() = default;
+		~GalGameUISystem() override = default;
 		GalGameUISystem(const GalGameUISystem&) = delete;
 		GalGameUISystem& operator=(const GalGameUISystem&) = delete;
 		GalGameUISystem(GalGameUISystem&&) noexcept = default;
@@ -29,21 +29,21 @@ namespace VisionGal::GalGame
 		void Initialize(const Ref<GalGameContext>& galCtx, IGameEngineContext* context);
 
 		// 剧情选择UI
-		void ShowChoiceUI(const std::string& id, const std::vector<std::string>& options);
-		std::string GetChoiceOptionByIndex(int index);
-		int GetChoiceOptionSize() const;
-		void SelectCurrentChoice(int index);
+		void ShowChoiceUI(const std::string& id, const std::vector<std::string>& options) override;
+		std::string GetChoiceOptionByIndex(int index) override;
+		int GetChoiceOptionSize() const override;
+		void SelectCurrentChoice(int index) override;
 
 		// 全屏文字UI
-		void ShowFullScreenTextUI(const std::vector<std::string>& texts);
-		std::string GetFullScreenTextItem(int index);
-		int GetFullScreenTextSize() const;
+		void ShowFullScreenTextUI(const std::vector<std::string>& texts) override;
+		std::string GetFullScreenTextItem(int index) override;
+		int GetFullScreenTextSize() const override;
 
 		// 玩家输入UI
-		void ShowInputUI(const std::string& id, const std::string& title, const std::string& button);
-		void InputSubmitted(const std::string& text);
-		std::string GetInputTitle();
-		std::string GetInputButtonText();
+		void ShowInputUI(const std::string& id, const std::string& title, const std::string& button) override;
+		void InputSubmitted(const std::string& text) override;
+		std::string GetInputTitle() override;
+		std::string GetInputButtonText() override;
 	private:
 		IScene* m_Scene = nullptr;
 

@@ -10,7 +10,7 @@
  */
 
 #include "SpriteAnimationScriptManager.h"
-#include "GameEngineCore.h"
+#include "VGGalgameCore/Interface/GameEngineCore.h"
 #include "SpriteAnimationScript.h"
 #include "HCore/Interface/HLocalization.h"
 #include "HCore/Interface/HStringTools.h"

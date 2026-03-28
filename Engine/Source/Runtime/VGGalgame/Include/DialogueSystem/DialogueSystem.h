@@ -10,8 +10,9 @@
  */
 
 #pragma once
-#include "../Interface/GalgameInterface.h"
-#include "../Core/GalGameContext.h"
+#include "../../VGGalgameConfig.h"
+#include "VGGalgameCore/Interface/IGameSystem.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 #include "TypingEffect.h"
 #include <RmlUi/Core.h>
 
@@ -34,9 +35,9 @@ namespace VisionGal::GalGame
 		void EnableTyping(bool enable = true) override;			// 开启打字机效果
 		void FinishTyping() override;							// 完成打字效果
 		bool IsTypingText() override;							// 是否正在打字
-		void ContinueDialogue();								// 继续对话，通常用于脚本中调用
-		float GetTypingDelay();									// 获取打字延迟
-		void SetTypingDelay(float delay);						// 设置打字延迟
+		void ContinueDialogue() override;								// 继续对话，通常用于脚本中调用
+		float GetTypingDelay() override;									// 获取打字延迟
+		void SetTypingDelay(float delay) override;						// 设置打字延迟
 
 		uint GetCurrentDialogLine() const override;				// 获取当前对话从开始是第几个对话
 		uint GetDialogNumber() const override;					// 获取对话数量
@@ -53,18 +54,18 @@ namespace VisionGal::GalGame
 		void SetFastForwardDelay(float delay) override;			// 设置快进间隔
 		float GetFastForwardDelay() const override;				// 获取快进间隔
 
-		bool IsVoicing();										// 是否正在播放语音
+		bool IsVoicing() override;										// 是否正在播放语音
 
-		void AddTypingCallback(sol::function callback);
-		void ClearAllTypingCallbacks();
+		void AddTypingCallback(sol::function callback) override;
+		void ClearAllTypingCallbacks() override;
 
 		// 跳到对话
-		void JumpToDialog(const std::string& text);
+		void JumpToDialog(const std::string& text) override;
 
-		void Reset();
-		void Clear();
+		void Reset() override;
+		void Clear() override;
 		void Update() override;
-		void ClearDialogList();
+		void ClearDialogList() override;
 	private:
 		void ProcessFastForward();
 		void ProcessAutoDialogue();

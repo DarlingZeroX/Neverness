@@ -47,7 +47,7 @@ namespace VisionGal::GalGame
 		videos.clear();
 	}
 
-	void SceneVideoManager::VideoLayer::Add(IGalGameVideo* audio)
+	void SceneVideoManager::VideoLayer::Add(IGalVideo* audio)
 	{
 		H_ASSERT_NOT_NULL(audio);
 
@@ -69,7 +69,7 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	bool SceneVideoManager::VideoLayer::Remove(IGalGameVideo* video)
+	bool SceneVideoManager::VideoLayer::Remove(IGalVideo* video)
 	{
 		for (auto& vd : videos)
 		{
@@ -104,7 +104,7 @@ namespace VisionGal::GalGame
 		Initialize();
 	}
 
-	void SceneVideoManager::AddVideo(IGalGameVideo* video)
+	void SceneVideoManager::AddVideo(IGalVideo* video)
 	{
 		if (video == nullptr)
 			return;
@@ -121,7 +121,7 @@ namespace VisionGal::GalGame
 		videoLayer.Add(video);
 	}
 
-	bool SceneVideoManager::RemoveVideo(IGalGameVideo* video)
+	bool SceneVideoManager::RemoveVideo(IGalVideo* video)
 	{
 		if (video == nullptr)
 			return false;
@@ -143,7 +143,7 @@ namespace VisionGal::GalGame
 	}
 
 	void SceneVideoManager::TraverseVideoLayer(const String& layer,
-		const std::function<void(IGalGameVideo* audio)>& callback)
+		const std::function<void(IGalVideo* audio)>& callback)
 	{
 		auto& videoLayer = m_VideoLayers[m_VideoLayerIndexer[layer]];
 
@@ -156,7 +156,7 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	void SceneVideoManager::TraverseVideo(const std::function<void(IGalGameVideo* audio)>& callback)
+	void SceneVideoManager::TraverseVideo(const std::function<void(IGalVideo* audio)>& callback)
 	{
 		for (auto& layer : m_VideoLayers)
 		{

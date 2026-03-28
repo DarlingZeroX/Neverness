@@ -10,10 +10,10 @@
  */
 
 #pragma once
-#include "../Interface/GalgameInterface.h"
+#include "VGGalgameCore/Interface/IGameSystem.h"
 #include "VGEngine/Include/Render/RenderCore.h"
 #include "../Game.h" 
-#include "../Core/GalGameContext.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 #include <deque>
 
 namespace VisionGal::GalGame
@@ -24,24 +24,24 @@ namespace VisionGal::GalGame
 		struct SpriteLayer : public ISceneSpriteLayer
 		{
 			String name;
-			std::vector<IGalGameSprite*> sprites;
+			std::vector<IGalSprite*> sprites;
 
 			void Clear() override;
-			bool Add(IGalGameSprite* sprite) override;
-			bool Remove(IGalGameSprite* sprite) override;
+			bool Add(IGalSprite* sprite) override;
+			bool Remove(IGalSprite* sprite) override;
 		};
 
 		SceneSpriteManager();
 		~SceneSpriteManager() override = default;
 
-		void AddSprite(IGalGameSprite* sprite) override;
-		bool RemoveSprite(IGalGameSprite* sprite) override;
-		bool MoveSpriteToLayer(IGalGameSprite* sprite, const String& layer) override;
+		void AddSprite(IGalSprite* sprite) override;
+		bool RemoveSprite(IGalSprite* sprite) override;
+		bool MoveSpriteToLayer(IGalSprite* sprite, const String& layer) override;
 		void ClearSpriteLayer(const String& layer) override;
 		void ClearAllSprite() override;
 
-		void TraverseSpriteLayer(const String& layer, const std::function<void(IGalGameSprite* sprite)>& callback) override;
-		void TraverseSprite(const std::function<void(IGalGameSprite* sprite)>& callback) override;
+		void TraverseSpriteLayer(const String& layer, const std::function<void(IGalSprite* sprite)>& callback) override;
+		void TraverseSprite(const std::function<void(IGalSprite* sprite)>& callback) override;
 		void AddSpriteLayer(const String& layer) override;
 		ISceneSpriteLayer* GetSpriteLayer(const String& layer) override;
 	private:

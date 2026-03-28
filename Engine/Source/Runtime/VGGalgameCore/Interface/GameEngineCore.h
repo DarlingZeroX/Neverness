@@ -10,12 +10,12 @@
  */
 
 #pragma once
-#include "Interface/IGalGameEngine.h"
+#include "IGameEngine.h"
 #include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal::GalGame
 {
-	struct VG_GALGAME_API GameEngineCore
+	struct VG_GALGAME_CORE_API GameEngineCore
 	{
 		static void SetDesignSize(float2 size);
 		static float2 GetDesignSize();

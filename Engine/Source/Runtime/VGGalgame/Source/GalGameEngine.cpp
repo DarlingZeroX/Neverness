@@ -10,7 +10,7 @@
  */
 
 #include "GalGameEngine.h"
-#include "GameEngineCore.h"
+#include "VGGalgameCore/Interface/GameEngineCore.h"
 #include "Components.h"
 #include "SpriteAnimationScriptManager.h"
 #include "VGCore/Include/Core/EventBus.h"
@@ -174,27 +174,27 @@ namespace VisionGal::GalGame
 		return m_ResourceSystem->PreLoadResource(path);
 	}
 
-	GalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)
+	IGalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)
 	{
 		return m_ResourceSystem->ShowSprite(layer, path);
 	}
 
-	GalSprite* GalGameEngine::ShowColor(const std::string& layer, const float4& color)
+	IGalSprite* GalGameEngine::ShowColor(const std::string& layer, const float4& color)
 	{
 		return m_ResourceSystem->ShowColor(layer, color);
 	}
 
-	GalAudio* GalGameEngine::PlayAudio(const std::string& layer, const std::string& path)
+	IGalAudio* GalGameEngine::PlayAudio(const std::string& layer, const std::string& path)
 	{
 		return m_ResourceSystem->PlayAudio(layer, path);
 	}
 
-	GalVideo* GalGameEngine::PlayVideo(const std::string& layer, const std::string& path)
+	IGalVideo* GalGameEngine::PlayVideo(const std::string& layer, const std::string& path)
 	{
 		return m_ResourceSystem->PlayVideo(layer, path);
 	}
 
-	GalCharacter* GalGameEngine::CreateCharacter(const String& name)
+	IGalCharacter* GalGameEngine::CreateCharacter(const String& name)
 	{
 		GalCharacter* character = new GalCharacter(name);
 
@@ -212,12 +212,12 @@ namespace VisionGal::GalGame
 			});
 	}
 
-	bool GalGameEngine::RemoveSprite(GalSprite* sprite)
+	bool GalGameEngine::RemoveSprite(IGalSprite* sprite)
 	{
 		return m_LayeredSceneManager->GetSpriteManager()->RemoveSprite(sprite);
 	}
 
-	bool GalGameEngine::RemoveAudio(GalAudio* audio)
+	bool GalGameEngine::RemoveAudio(IGalAudio* audio)
 	{
 		return m_LayeredSceneManager->GetAudioManager()->RemoveAudio(audio);
 	}
@@ -242,7 +242,7 @@ namespace VisionGal::GalGame
 		return m_StoryScriptSystem.get();
 	}
 
-	GalGameUISystem* GalGameEngine::GetGalGameUISystem()
+	IGalGameUISystem* GalGameEngine::GetGalGameUISystem()
 	{
 		return m_GalGameUISystem.get();
 	}

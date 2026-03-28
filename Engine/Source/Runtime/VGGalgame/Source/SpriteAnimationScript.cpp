@@ -10,7 +10,7 @@
  */
  
 #include "SpriteAnimationScript.h"
-#include "GameEngineCore.h"
+#include "VGGalgameCore/Interface/GameEngineCore.h"
 
 namespace VisionGal::GalGame
 {

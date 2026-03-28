@@ -16,7 +16,7 @@
 #include "VGEditorComponent/Interface/ComponentDrawerRegistry.h"
 #include "VGEditorCore/Include/EditorCore/AssetWatcher.h"
 #include "VGGalgame/Include/GalGameEngine.h"
-#include "VGGalgame/Include/GameEngineCore.h"
+#include "VGGalgameCore/Interface/GameEngineCore.h"
 
 namespace VisionGal::Editor
 {

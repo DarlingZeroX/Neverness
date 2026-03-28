@@ -103,7 +103,7 @@ namespace VisionGal::GalGame
 	{
 		// 渲染背景层
 		m_BackgroundRT->GetFrameBuffer()->Bind();
-		galScene->GetSpriteManager()->TraverseSpriteLayer("Background", [this, camera](IGalGameSprite* sprite)
+		galScene->GetSpriteManager()->TraverseSpriteLayer("Background", [this, camera](IGalSprite* sprite)
 			{
 				RenderSprite(sprite->GetResourceActor(), camera);
 			});
@@ -140,7 +140,7 @@ namespace VisionGal::GalGame
 			// 清除颜色缓冲区（和深度缓冲区，若启用了深度测试）
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT);
-			galScene->GetSpriteManager()->TraverseSpriteLayer("SceneCharacterSpritePrev", [this, camera](IGalGameSprite* sprite)
+			galScene->GetSpriteManager()->TraverseSpriteLayer("SceneCharacterSpritePrev", [this, camera](IGalSprite* sprite)
 				{
 					RenderSprite(sprite->GetResourceActor(), camera);
 				});
@@ -150,7 +150,7 @@ namespace VisionGal::GalGame
 			m_SceneCharacterSpriteCurrentRT->GetFrameBuffer()->Bind();
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT);
-			galScene->GetSpriteManager()->TraverseSpriteLayer("SceneCharacterSpriteCurrent", [this, camera](IGalGameSprite* sprite)
+			galScene->GetSpriteManager()->TraverseSpriteLayer("SceneCharacterSpriteCurrent", [this, camera](IGalSprite* sprite)
 				{
 					RenderSprite(sprite->GetResourceActor(), camera);
 				});
@@ -165,7 +165,7 @@ namespace VisionGal::GalGame
 
 		// 渲染前景层
 		m_SceneRT->GetFrameBuffer()->Bind();
-		galScene->GetSpriteManager()->TraverseSpriteLayer("Foreground", [this, camera](IGalGameSprite* sprite)
+		galScene->GetSpriteManager()->TraverseSpriteLayer("Foreground", [this, camera](IGalSprite* sprite)
 			{
 				RenderSprite(sprite->GetResourceActor(), camera);
 			});

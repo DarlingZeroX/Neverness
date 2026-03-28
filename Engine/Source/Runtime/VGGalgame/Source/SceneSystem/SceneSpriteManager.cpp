@@ -28,7 +28,7 @@ namespace VisionGal::GalGame
 		sprites.clear();
 	}
 
-	bool SceneSpriteManager::SpriteLayer::Add(IGalGameSprite* sprite)
+	bool SceneSpriteManager::SpriteLayer::Add(IGalSprite* sprite)
 	{
 		for (auto& sp : sprites)
 		{
@@ -44,7 +44,7 @@ namespace VisionGal::GalGame
 		return true;
 	}
 
-	bool SceneSpriteManager::SpriteLayer::Remove(IGalGameSprite* sprite)
+	bool SceneSpriteManager::SpriteLayer::Remove(IGalSprite* sprite)
 	{
 		for (auto& sp : sprites)
 		{
@@ -65,7 +65,7 @@ namespace VisionGal::GalGame
 		Initialize();
 	}
 
-	void SceneSpriteManager::AddSprite(IGalGameSprite* sprite)
+	void SceneSpriteManager::AddSprite(IGalSprite* sprite)
 	{
 		if (sprite == nullptr)
 			return;
@@ -82,7 +82,7 @@ namespace VisionGal::GalGame
 		spriteLayer.Add(sprite);
 	}
 
-	bool SceneSpriteManager::RemoveSprite(IGalGameSprite* sprite)
+	bool SceneSpriteManager::RemoveSprite(IGalSprite* sprite)
 	{
 		if (sprite == nullptr)
 			return false;
@@ -101,7 +101,7 @@ namespace VisionGal::GalGame
 		AddSpriteLayer("Screen");
 	}
 
-	bool SceneSpriteManager::MoveSpriteToLayer(IGalGameSprite* sprite, const String& layer)
+	bool SceneSpriteManager::MoveSpriteToLayer(IGalSprite* sprite, const String& layer)
 	{
 		if (sprite == nullptr)
 			return false;
@@ -141,7 +141,7 @@ namespace VisionGal::GalGame
 	}
 
 	void SceneSpriteManager::TraverseSpriteLayer(const String& layer,
-		const std::function<void(IGalGameSprite* sprite)>& callback)
+		const std::function<void(IGalSprite* sprite)>& callback)
 	{
 		auto& spriteLayer = m_SpriteLayers[m_SpriteLayerIndexer[layer]];
 
@@ -154,7 +154,7 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	void SceneSpriteManager::TraverseSprite(const std::function<void(IGalGameSprite* sprite)>& callback)
+	void SceneSpriteManager::TraverseSprite(const std::function<void(IGalSprite* sprite)>& callback)
 	{
 		for (auto& layer : m_SpriteLayers)
 		{

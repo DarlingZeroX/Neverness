@@ -18,7 +18,7 @@
 #include <HCore/Interface/HLog.h>
 #include "VGCore/Include/Core/VFS.h"
 #include "GalGameEngine.h"
-#include "GameEngineCore.h"
+#include "VGGalgameCore/Interface/GameEngineCore.h"
 #include <sol/state.hpp>
 
 #include "VGCore/Include/Core/EventBus.h"
@@ -53,8 +53,8 @@ namespace VisionGal::GalGame
 
         //m_LuaState["Engine"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
         //m_LuaState["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
-		m_LuaState["GalGame"]["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
-		m_LuaState["VG"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
+		m_LuaState["GalGame"]["引擎"] = sol::object(m_LuaState, sol::in_place, engine);
+		m_LuaState["VG"] = sol::object(m_LuaState, sol::in_place, engine);
 
         if (!LoadScript(GetResourcePath()))
             return false;

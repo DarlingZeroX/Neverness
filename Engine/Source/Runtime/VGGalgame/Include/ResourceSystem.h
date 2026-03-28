@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include "Interface/IGalGameEngine.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 #include "SceneSystem/LayeredSceneSystem.h"
 #include "../VGGalgameConfig.h"
 #include "VGEngine/Include/Scene/Scene.h"

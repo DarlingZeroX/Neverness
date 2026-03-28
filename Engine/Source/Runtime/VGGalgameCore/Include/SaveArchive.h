@@ -10,14 +10,14 @@
  */
 
 #pragma once
-#include "../Interface/GalgameInterface.h"
+#include "../VGGalCoreConfig.h"
 #include <VGRHI/Interface/Texture.h>
 #include <HCore/Include/File/nlohmann/json.hpp>
 #include "ArchiveDataContainer.h"
 
 namespace VisionGal::GalGame
 {
-	struct SaveArchive
+	struct VG_GALGAME_CORE_API SaveArchive
 	{
 		bool isGalGameArchive = true;
 		bool isValid = true;

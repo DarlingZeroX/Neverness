@@ -17,7 +17,7 @@
 #include <VGGalgame/Include/Components.h>
 #include <VGAsset/Interface/Package.h>
 #include <VGUI/Interface/UISystem.h>
-#include <VGGalgame/Include/GameEngineCore.h>
+#include <VGGalgameCore/Interface/GameEngineCore.h>
 #include <VGCore/Interface/Loader.h>
 #include <VGEngine/Include/Lua/LuaScript.h>
 #include <VGEngine/Include/Engine/AudioPlayer.h>

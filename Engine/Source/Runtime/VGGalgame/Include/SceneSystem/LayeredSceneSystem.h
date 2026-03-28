@@ -10,6 +10,7 @@
  */
 
 #pragma once
+#include "../../VGGalgameConfig.h"
 #include "SceneAudioManager.h"
 #include "SceneSpriteManager.h"
 #include "SceneVideoManager.h"
@@ -26,15 +27,15 @@ namespace VisionGal::GalGame
 		LayeredSceneSystem(LayeredSceneSystem&&) noexcept = default;
 		LayeredSceneSystem& operator=(LayeredSceneSystem&&) noexcept = default;
 
-		void AddCharacter(IGalCharacter* character);
+		void AddCharacter(IGalCharacter* character) override;
 		void ClearAll() override;
-		void ClearAllCharacter();
+		void ClearAllCharacter() override;
 		void TraverseScene(std::function<void(IGalGameResource* actor)> callback) override;
-		void TraverseCharacter(const std::function<void(IGalCharacter* character)>& callback);
-		void OnUpdate();
+		void TraverseCharacter(const std::function<void(IGalCharacter* character)>& callback) override;
+		void OnUpdate() override;
 		
-		ISceneAudioLayer* GetAudioLayer(const String& layer);
-		ISceneSpriteLayer* GetSpriteLayer(const String& layer);
+		ISceneAudioLayer* GetAudioLayer(const String& layer) override;
+		ISceneSpriteLayer* GetSpriteLayer(const String& layer) override;
 
 		ISceneSpriteManager* GetSpriteManager() override { return &m_SpriteManager; }
 		ISceneAudioManager* GetAudioManager() override { return &m_AudioManager; }

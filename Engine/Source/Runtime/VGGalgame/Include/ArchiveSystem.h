@@ -10,11 +10,11 @@
  */ 
 
 #pragma once
-#include "Interface/GalgameInterface.h"
+#include "VGGalgameCore/Interface/IGameSystem.h"
 #include "../VGGalgameConfig.h"
 #include "VGCore/Include/Core/Core.h"
-#include "Core/SaveArchive.h"
-#include "Core/GalGameContext.h"
+#include "VGGalgameCore/Include/SaveArchive.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 #include <HCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
@@ -31,9 +31,9 @@ namespace VisionGal::GalGame
 
 		bool Initialise(const Ref<GalGameContext>& ctx);
 
-		SaveArchive SaveArchiveByNumber(const String& number);
-		SaveArchive GetArchiveByNumber(const String& number);
-		bool HasArchiveByNumber(const String& number);
+		SaveArchive SaveArchiveByNumber(const String& number) override;
+		SaveArchive GetArchiveByNumber(const String& number) override;
+		bool HasArchiveByNumber(const String& number) override;
 
 		std::string GetCurrentDateFormat();
 		std::string GetCurrentTimeFormat();

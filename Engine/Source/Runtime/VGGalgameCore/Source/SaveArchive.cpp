@@ -9,7 +9,7 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "Core/SaveArchive.h"
+#include "SaveArchive.h"
 
 namespace VisionGal::GalGame
 {

@@ -9,7 +9,7 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "Core/ArchiveDataContainer.h"
+#include "ArchiveDataContainer.h"
 #include <sol/sol.hpp>
 
 namespace VisionGal::GalGame

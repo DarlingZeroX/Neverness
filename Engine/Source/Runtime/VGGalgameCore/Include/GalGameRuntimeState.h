@@ -11,7 +11,8 @@
 
 #pragma once
 #include "VGCore/Include/Core/Core.h"
-#include "../Interface/GalgameInterface.h"
+#include <VGRHI/Interface/Texture.h>
+//#include "../Interface/GalgameInterface.h"
 
 namespace VisionGal::GalGame
 {
