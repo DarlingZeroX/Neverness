@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../../Interface/IComponentDrawer.h"
-#include <VGGalgame/Include/Components.h>
+#include <VGGalgameCore/Include/Components.h>
 #include <VGEngine/Include/Scene/Components.h>
 
 namespace VisionGal::Editor

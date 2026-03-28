@@ -11,7 +11,7 @@
 
 #pragma once
 //#include "VGEditorComponent/Interface.h"
-#include <VGGalgame/Include/Components.h>
+#include <VGGalgameCore/Include/Components.h>
 #include <VGEngine/Include/Scene/Components.h>
 #include <VGEditorComponent/Interface/IComponentDrawer.h>
 

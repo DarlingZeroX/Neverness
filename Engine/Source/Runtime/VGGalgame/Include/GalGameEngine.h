@@ -16,7 +16,7 @@
 #include "ArchiveSystem.h"
 #include "DialogueSystem/DialogueSystem.h"
 #include "SceneSystem/LayeredSceneSystem.h"
-#include "ScriptSystem/StoryScriptSystem.h"
+#include "VGGalgameRuntime/Interface/StoryScriptSystem.h"
 #include "UISystem/GalUISystem.h"
 #include "ResourceSystem.h"
 #include "VGEngine/Include/Scene/Scene.h"

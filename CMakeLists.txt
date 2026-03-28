@@ -50,6 +50,7 @@ add_subdirectory ("Engine/Source/Runtime/VGUI")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameCore")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameRuntime")
+add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptLua")
 add_subdirectory ("Engine/Source/Runtime/VGGalgame")
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")

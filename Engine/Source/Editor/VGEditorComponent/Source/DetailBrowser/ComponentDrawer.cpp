@@ -14,7 +14,7 @@
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiEx/ImGuiVector.h>
 #include <VGGalgame/Include/GalGameEngine.h>
-#include <VGGalgame/Include/Components.h>
+#include <VGGalgameCore/Include/Components.h>
 #include <VGAsset/Interface/Package.h>
 #include <VGUI/Interface/UISystem.h>
 #include <VGGalgameCore/Interface/GameEngineCore.h>

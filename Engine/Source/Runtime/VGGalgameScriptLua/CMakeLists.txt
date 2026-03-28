@@ -10,6 +10,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
+# 大对象模版文件需要开启
+if (MSVC)
+    add_compile_options(/bigobj)
+endif()
+
 if (MSVC)
     add_compile_options(/utf-8)
 endif()
@@ -26,20 +31,23 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_NUMBER_OF_LOGICAL_CORES}>
 file(GLOB RUNTIME_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
 file(GLOB RUNTIME_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
 )
 
-add_library(VGGalgameRuntime SHARED ${RUNTIME_HEADERS} ${RUNTIME_SOURCES})
+add_library(VGGalgameScriptLua SHARED ${RUNTIME_HEADERS} ${RUNTIME_SOURCES})
 
-target_compile_definitions(VGGalgameRuntime PRIVATE VG_GALGAME_RUNTIME_EXPORT)
+target_compile_definitions(VGGalgameScriptLua PRIVATE VG_GALGAME_SCRIPT_LUA_EXPORT)
 
-target_include_directories(VGGalgameRuntime PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(VGGalgameRuntime PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-target_include_directories(VGGalgameRuntime PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
+target_include_directories(VGGalgameScriptLua PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGGalgameScriptLua PUBLIC  ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)
+target_include_directories(VGGalgameScriptLua PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(VGGalgameScriptLua PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-target_link_libraries(VGGalgameRuntime PUBLIC HNGRuntimeCore)
-target_link_libraries(VGGalgameRuntime PUBLIC VGGalgameCore)
+target_link_libraries(VGGalgameScriptLua PUBLIC VGGalgameCore)
+target_link_libraries(VGGalgameScriptLua PUBLIC VGGalgameRuntime)
 

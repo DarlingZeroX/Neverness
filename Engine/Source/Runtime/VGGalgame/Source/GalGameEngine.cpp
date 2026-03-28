@@ -11,7 +11,7 @@
 
 #include "GalGameEngine.h"
 #include "VGGalgameCore/Interface/GameEngineCore.h"
-#include "Components.h"
+#include "VGGalgameCore/Include/Components.h"
 #include "SpriteAnimationScriptManager.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGEngine/Include/Render/TransitionManager.h"

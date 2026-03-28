@@ -8,11 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
-# 大对象模版文件需要开启
-if (MSVC)
-    add_compile_options(/bigobj)
-endif()
-
 # 开启utf-8编码支持
 if (MSVC)
     add_compile_options(/utf-8)

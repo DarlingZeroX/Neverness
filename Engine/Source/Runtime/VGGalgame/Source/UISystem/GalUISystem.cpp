@@ -11,7 +11,7 @@
 
 #include "UISystem/GalUISystem.h"
 #include "VGCore/Include/Core/EventBus.h"
-#include "Components.h"
+#include "VGGalgameCore/Include/Components.h"
 #include "VGUI/Interface/UISystem.h"
 
 namespace VisionGal::GalGame

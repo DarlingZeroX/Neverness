@@ -9,10 +9,9 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "ScriptSystem/StoryScriptSystem.h"
-#include "Components.h"
+#include "StoryScriptSystem.h"
+#include "VGGalgameCore/Include/Components.h"
 #include "VGCore/Include/Core/EventBus.h"
-#include "Lua/StoryScriptLuaInterface.h"
 
 namespace VisionGal::GalGame
 {
@@ -40,13 +39,17 @@ namespace VisionGal::GalGame
 
 	bool StoryScriptSystem::LoadStoryScript(const String& path)
 	{
-		StoryScriptLuaInterface::ResetStoryScript();
+		//StoryScriptLuaInterface::ResetStoryScript();
 
 		// 加载脚本
-		auto storyScript = LuaStoryScript::LoadFromFile(path);
+		//auto storyScript = LuaStoryScript::LoadFromFile(path);
+		auto storyScript = StoryScriptExecutorFactory::GetInstance().LoadStoryScriptExecutorFromFile("lua", path);
 
 		if (storyScript == nullptr)
+		{
+			H_LOG_WARN("加载剧情脚本失败: %s", path.c_str());
 			return false;
+		}
 
 		// 初始化当前对话行
 		m_GalGameContext->runtimeState.currentDialogLine = 0;
@@ -285,7 +288,11 @@ namespace VisionGal::GalGame
 		// 保存选择结果到存档数据
 		m_GalGameContext->archiveData->GetChoicesNamespace()->SetVariable(id, options[currentChoice]);
 
-		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, options[currentChoice]);
+		H_ASSERT_NOT_NULL(m_StoryScript);
+		if (m_StoryScript != nullptr)
+		{
+			m_StoryScript->OnChoiceSelected(id, options, currentChoice);
+		}
 	}
 
 	void StoryScriptSystem::OnInputSubmitted(const std::string& id, const std::string& text)
@@ -293,12 +300,20 @@ namespace VisionGal::GalGame
 		// 保存输入结果到存档数据
 		m_GalGameContext->archiveData->GetInputNamespace()->SetVariable(id, text);
 
-		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, text);
+		H_ASSERT_NOT_NULL(m_StoryScript);
+		if (m_StoryScript != nullptr)
+		{
+			m_StoryScript->OnInputSubmitted(id, text);
+		}
 	}
 
 	void StoryScriptSystem::ContinueDialogue()
 	{
-		StoryScriptLuaInterface::Continue();
+		H_ASSERT_NOT_NULL(m_StoryScript);
+		if (m_StoryScript != nullptr)
+		{
+			m_StoryScript->ContinueDialogue();
+		}
 	}
 
 	void StoryScriptSystem::AddUpdateCallback(const std::function<void()>& callback)
@@ -314,7 +329,11 @@ namespace VisionGal::GalGame
 			if (m_Wait.Timer.IsFinished())
 			{
 				m_Wait.IsWait = false;
-				StoryScriptLuaInterface::Continue();
+				if (m_StoryScript != nullptr)
+				{
+					m_StoryScript->ContinueDialogue();
+				}
+				//StoryScriptLuaInterface::Continue();
 			}
 		}
 	}

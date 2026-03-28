@@ -24,5 +24,15 @@ namespace VisionGal::GalGame
 
 		virtual std::string GetCurrentStoryScriptPath() = 0;
 		virtual std::filesystem::file_time_type GetScriptLastWriteTime() const = 0;
+
+		virtual void DoChoice(const std::string& id, const std::vector<std::string>& options) = 0;	/// 处理剧情选择事件。
+		virtual void DoInput(const std::string& id, const std::string& title, const std::string& button) = 0;	/// 处理输入事件。
+
+		virtual bool LoadSceneStoryScript(IScene* scene) = 0;
+		virtual bool LoadSceneStoryScriptOnUpdate(IScene* scene) = 0;
+
+		virtual void Wait(float duration) = 0;	/// 等待指定的时间长度。
+
+		virtual bool LoadArchive(const SaveArchive& archive) = 0;
 	};
 }

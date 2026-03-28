@@ -10,16 +10,17 @@
  */
 
 #pragma once
-#include "StoryScript.h"
-#include "VGGalgameCore/Interface/IStoryScriptSystem.h"
-#include "VGGalgameCore/Interface/IGameEngine.h"
+#include "../VGGalgameRuntimeConfig.h"
+#include "IStoryScript.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Utils/TransitionHelper.h"
+#include "VGGalgameCore/Interface/IStoryScriptSystem.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
 
 namespace VisionGal::GalGame
 {
-	class VG_GALGAME_API StoryScriptSystem : public IStoryScriptSystem
+	class VG_GALGAME_RUNTIME_API StoryScriptSystem : public IStoryScriptSystem
 	{
 	public:
 		// 剧情脚本相关接口
@@ -30,15 +31,15 @@ namespace VisionGal::GalGame
 		std::string GetCurrentStoryScriptPath() override;
 		std::filesystem::file_time_type GetScriptLastWriteTime() const override;
 
-		void DoChoice(const std::string& id, const std::vector<std::string>& options);	/// 处理剧情选择事件。
-		void DoInput(const std::string& id, const std::string& title, const std::string& button);	/// 处理输入事件。
+		void DoChoice(const std::string& id, const std::vector<std::string>& options) override;	/// 处理剧情选择事件。
+		void DoInput(const std::string& id, const std::string& title, const std::string& button) override;	/// 处理输入事件。
 
-		bool LoadSceneStoryScript(IScene* scene);
-		bool LoadSceneStoryScriptOnUpdate(IScene* scene);
+		bool LoadSceneStoryScript(IScene* scene) override;
+		bool LoadSceneStoryScriptOnUpdate(IScene* scene) override;
 
-		void Wait(float duration);	/// 等待指定的时间长度。
+		void Wait(float duration) override;	/// 等待指定的时间长度。
 
-		bool LoadArchive(const SaveArchive& archive);
+		bool LoadArchive(const SaveArchive& archive) override;
 
 		void Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context);
 		void Update();
@@ -56,7 +57,7 @@ namespace VisionGal::GalGame
 		IGameEngineContext* m_GameEngineContext = nullptr;
 		IGalGameEngine* m_GalGameEngine = nullptr;
 
-		Ref<LuaStoryScript> m_StoryScript = nullptr;			// 当前加载的剧情脚本对象，使用 Lua 脚本语言编写。
+		Ref<IStoryScriptExecutor> m_StoryScript = nullptr;			// 当前加载的剧情脚本对象，使用 Lua 脚本语言编写。
 
 		struct WaitStruct
 		{

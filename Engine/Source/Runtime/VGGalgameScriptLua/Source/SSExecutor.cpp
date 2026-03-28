@@ -9,28 +9,29 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "ScriptSystem/StoryScript.h"
+#include "SSExecutor.h"
 #include "VGCore/Include/Core/Core.h"
-#include "Lua/StoryScriptLuaInterface.h"
+#include "VGGalgameScriptLua/Interface/StoryScriptLuaInterface.h"
 #include <iostream>
 #include <fstream>
 #include <regex>
 #include <HCore/Interface/HLog.h>
 #include "VGCore/Include/Core/VFS.h"
-#include "GalGameEngine.h"
+//#include "GalGameEngine.h"
 #include "VGGalgameCore/Interface/GameEngineCore.h"
 #include <sol/state.hpp>
 
 #include "VGCore/Include/Core/EventBus.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "VGEngine/Include/Lua/LuaInterface.h"
+#include "VGGalgameScriptLua/Interface/LuaBinding.h"
 #include "VGLuaCore/LuaErrorManager.h"
 
 namespace VisionGal::GalGame
 {
     LuaStoryScript::LuaStoryScript()
     {
-        StoryScriptLuaInterface::Initialise(m_LuaState);
+		GalGame::GalGameLuaBinding::RegisterScript(m_LuaState);
     } 
 
     Ref<LuaStoryScript> LuaStoryScript::LoadFromFile(const std::string& path)
@@ -111,6 +112,22 @@ namespace VisionGal::GalGame
         for (const auto& path : resourcePaths) {
             GameEngineCore::GetCurrentEngine()->PreLoadResource(path);
         }
+    }
+
+    void LuaStoryScript::ContinueDialogue()
+    {
+		StoryScriptLuaInterface::Continue();
+    }
+
+    void LuaStoryScript::OnChoiceSelected(const std::string& id, const std::vector<std::string>& options,
+	    int currentChoice)
+    {
+		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, options[currentChoice]);
+    }
+
+    void LuaStoryScript::OnInputSubmitted(const std::string& id, const std::string& text)
+    {
+		StoryScriptLuaInterface::Continue(StoryScriptLuaInterface::ContinueType::String, 0, text);
     }
 
     bool LuaStoryScript::LoadScript(const String& file)

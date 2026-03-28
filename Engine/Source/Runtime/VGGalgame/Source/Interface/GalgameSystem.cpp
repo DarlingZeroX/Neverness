@@ -10,12 +10,13 @@
 */
 
 #include "GalgameSystem.h"
-#include "Components.h"
+#include "VGGalgameCore/Include/Components.h"
 #include "GalGameEngine.h"
-#include "Lua/GameLua.h"
 #include "VGAsset/Interface/SceneSerializerFactory.h"
 #include "VGEngine/Include/Scene/GameActorFactory.h"
 #include "VGEngine/Interface/CoreLua.h"
+#include "VGGalgameScriptLua/Interface/LuaBinding.h"
+#include "VGGalgameScriptLua/Interface/GalgameScriptLua.h"
 
 namespace VisionGal
 {
@@ -33,7 +34,7 @@ namespace VisionGal
 
 	void GalGameSystem::Initialize(CoreGameEngine& engine)
 	{		
-		// 放在最后创建GalGame子引擎，因为有些系统还没初始化，比如UI系统
+		// 创建GalGame子引擎，因为有些系统还没初始化，比如UI系统
 		auto galgameEngine = MakeRef<GalGame::GalGameEngine>();
 		galgameEngine->Initialize(engine.GetContext());
 		engine.AddSubGameEngine(galgameEngine);
@@ -51,8 +52,10 @@ namespace VisionGal
 		CoreLua::RegisterGlobalAPI([](sol::state* luaState)
 		{
 			// 在这里注册GalGame相关的Lua API
-			sol::table galNamespace = luaState->create_named_table("GalGame");
-			GalGame::GalGameLuaInterface::Initialise(galNamespace);
+			GalGame::GalGameLuaBinding::Register(*luaState);
 		});
+
+		// 注册Lua脚本模块
+		GalGame::GalGameScriptLua::Initialize();
 	}
 }

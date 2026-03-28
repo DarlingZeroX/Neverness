@@ -10,11 +10,12 @@
  */ 
 
 #pragma once
+#include "../VGGalgameScriptLuaConfig.h"
 #include <sol/state.hpp>
 
 namespace VisionGal::GalGame
 {
-	struct StoryScriptLuaInterface
+	struct VG_GALGAME_SCRIPT_LUA_API StoryScriptLuaInterface
 	{
 		enum class ContinueType
 		{
@@ -33,6 +34,6 @@ namespace VisionGal::GalGame
 		//
 		//	static void Initialise(lua_State* L);
 		//
-		static void Initialise(sol::state& lua);
+		//static void Initialise(sol::state& lua);
 	};
 }

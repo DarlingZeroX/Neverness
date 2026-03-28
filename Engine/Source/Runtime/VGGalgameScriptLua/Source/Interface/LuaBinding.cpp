@@ -1,21 +1,22 @@
 /*
- * This source file is part of VisionGal, the Visual Novel Engine
- *
- * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
- * GitHub page: https://github.com/DarlingZeroX/VisionGal
- *
- * Copyright (c) 2025-present 梦旅缘心
- *
- * See the LICENSE file in the project root for details.
- */
+* This source file is part of VisionGal, the Visual Novel Engine
+*
+* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+* GitHub page: https://github.com/DarlingZeroX/VisionGal
+*
+* Copyright (c) 2025-present 梦旅缘心
+*
+* See the LICENSE file in the project root for details.
+*/
 
-#include "Lua/GameLua.h"
-#include <string>
-#include "GalGameEngine.h"
-#include "Game.h"
+#include "LuaBinding.h"
+
 #include "VGGalgameCore/Interface/GameEngineCore.h"
-#include "ArchiveSystem.h"
 #include "VGEngine/Include/Lua/LuaDataBridge.h"
+#include "VGEngine/Include/Lua/LuaInterface.h"
+#include "VGGalgameCore/Interface/IGameObject.h"
+#include "VGGalgameCore/Interface/IGameSystem.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 
 namespace VisionGal::GalGame
 {
@@ -29,7 +30,7 @@ namespace VisionGal::GalGame
 				options.push_back(value.as<std::string>());
 				});
 
-			dynamic_cast<StoryScriptSystem*>(self.GetStoryScriptSystem())->DoChoice(name, options);
+			self.GetStoryScriptSystem()->DoChoice(name, options);
 		}
 
 		static void FullScreenText(IGalGameEngine& self, const sol::table& texts)
@@ -45,23 +46,128 @@ namespace VisionGal::GalGame
 
 		static void InputText(IGalGameEngine& self, const std::string& id, const std::string& title, const std::string& button)
 		{
-			dynamic_cast<StoryScriptSystem*>(self.GetStoryScriptSystem())->DoInput(id, title, button);
+			self.GetStoryScriptSystem()->DoInput(id, title, button);
 		}
 	};
 
-	void GalGameLuaInterface::Initialise(sol::table& galgame)
+	void GalGameLuaBinding::Register(sol::state& state)
 	{
+		sol::table galgame = state.create_named_table("GalGame");
+
 		// 引擎
-		{
-			galgame.set("GetEngine", []() -> IGalGameEngine*
-				{
-					return GameEngineCore::GetCurrentEngine();
-				});
-			galgame.set("获取引擎", []() -> IGalGameEngine*
-				{
-					return GameEngineCore::GetCurrentEngine();
-				});
-		}
+		galgame.set("GetEngine", []() -> IGalGameEngine*
+			{
+				return GameEngineCore::GetCurrentEngine();
+			});
+		galgame.set("获取引擎", []() -> IGalGameEngine*
+			{
+				return GameEngineCore::GetCurrentEngine();
+			});
+
+		galgame.new_usertype<IGalCharacter>("IGalCharacter",
+			"说", sol::yielding(&IGalCharacter::Say),
+			"语音", &IGalCharacter::Voice,
+			"添加立绘", &IGalCharacter::AddFigure,
+			"显示立绘", &IGalCharacter::ShowFigure,
+			"隐藏立绘", &IGalCharacter::HideFigure,
+			"添加立绘显示回调", &IGalCharacter::AddShowFigureCallback,
+			"清除全部立绘显示回调", &IGalCharacter::ClearShowFigureCallbacks,
+			"添加立绘隐藏回调", &IGalCharacter::AddHideFigureCallback,
+			"清除全部立绘隐藏回调", &IGalCharacter::ClearHideFigureCallbacks,
+			"名称", sol::property(
+				[](IGalCharacter& self) -> std::string { return self.GetName(); },
+				[](IGalCharacter& self, const std::string& value) { self.SetName(value); }
+			),
+			"当前立绘", sol::property(
+				[](IGalCharacter& self) -> IGalSprite* { return self.GetCurrentFigure(); }
+			),
+			"当前语音", sol::property(
+				[](IGalCharacter& self) -> IGalAudio* { return self.GetCurrentVoice(); }
+			)
+		);
+
+		galgame.new_usertype<Animation2DScript>("Animation2DScript",
+			"添加动画关键帧", &Animation2DScript::AddAnimationKeyLua
+		);
+
+		galgame.new_usertype<IGalSprite>("IGalSprite",
+			//中文
+			"随着", &IGalSprite::With,
+			"开始动画", sol::overload(
+				[](IGalSprite& self, const sol::table& targetValue, float duration, std::string tween) { return self.Animate(targetValue, duration, tween); },
+				[](IGalSprite& self, const sol::table& targetValue, float duration, std::string tween, int numIterations) { return self.Animate(targetValue, duration, tween, numIterations); },
+				[](IGalSprite& self, const sol::table& targetValue, float duration, std::string tween, int numIterations, bool alternateDirection) { return self.Animate(targetValue, duration, tween, numIterations, alternateDirection); }
+			),
+			"转场", &IGalSprite::Cut,
+			"设置缩放", &IGalSprite::SetScale,
+			"设置位置偏移X", &IGalSprite::SetPosOffsetX,
+			"设置位置偏移Y", &IGalSprite::SetPosOffsetY,
+			"设置位置X", &IGalSprite::SetPosX,
+			"设置位置Y", &IGalSprite::SetPosY,
+			"底部对齐", & IGalSprite::AlignBottom,
+			//属性
+			"位置X", sol::property(
+				[](IGalSprite& self) -> float { return self.GetPosX(); },
+				[](IGalSprite& self, float value) { self.SetPosX(value); }
+			),
+			"位置Y", sol::property(
+				[](IGalSprite& self) -> float { return self.GetPosY(); },
+				[](IGalSprite& self, float value) { self.SetPosY(value); }
+			),
+			"宽度缩放", sol::property(
+				[](IGalSprite& self) -> float { return self.GetScaleWidth(); },
+				[](IGalSprite& self, float value) { self.SetScaleWidth(value); }
+			),
+			"高度缩放", sol::property(
+				[](IGalSprite& self) -> float { return self.GetScaleHeight(); },
+				[](IGalSprite& self, float value) { self.SetScaleHeight(value); }
+			),
+			"路径",sol::property(
+				[](IGalSprite& self) -> const std::string& { return self.GetResourcePath(); }
+			)
+		);
+
+		galgame.new_usertype<IGalAudio>("IGalAudio",
+			"设置循环播放", &IGalAudio::SetLoop,
+			"停止播放", &IGalAudio::Stop,
+			"是否正在播放", &IGalAudio::IsPlayingAudio,
+			"是否循环播放", &IGalAudio::IsLooping,
+			"设置音量", &IGalAudio::SetVolume,
+			"获取音量", &IGalAudio::GetVolume,
+			"随着", &IGalAudio::With,
+			"循环播放", sol::property(
+				[](IGalAudio& self) -> bool { return self.IsLooping(); },
+				[](IGalAudio& self, bool value) { self.SetLoop(value); }
+			),
+			"音量", sol::property(
+				[](IGalAudio& self) -> float { return self.GetVolume(); },
+				[](IGalAudio& self, float value) { self.SetVolume(value); }
+			),
+			"路径", sol::property(
+				[](IGalAudio& self) -> const std::string& { return self.GetResourcePath(); }
+			)
+		);
+
+		galgame.new_usertype<IGalVideo>("IGalVideo",
+			"设置循环播放", &IGalVideo::SetLoop,
+			"停止播放", &IGalVideo::Stop,
+			"是否正在播放", &IGalVideo::IsPlaying,
+			"是否循环播放", &IGalVideo::IsLooping,
+			"设置音量", &IGalVideo::SetVolume,
+			"获取音量", &IGalVideo::GetVolume,
+
+			"循环播放", sol::property(
+				[](IGalVideo& self) -> bool { return self.IsLooping(); },
+				[](IGalVideo& self, bool value) { self.SetLoop(value); }
+			),
+			"音量", sol::property(
+				[](IGalVideo& self) -> float { return self.GetVolume(); },
+				[](IGalVideo& self, float value) { self.SetVolume(value); }
+			),
+			"路径", sol::property(
+				[](IGalVideo& self) -> const std::string& { return self.GetResourcePath(); }
+			)
+		);
 
 		// 注册引擎存档类
 		galgame.new_usertype<IDialogueSystem>("GalGameDialogueSystem",
@@ -117,7 +223,7 @@ namespace VisionGal::GalGame
 			"获取当前玩家输入标题", &IGalGameUISystem::GetInputTitle,
 			"获取当前玩家输入按键文本", &IGalGameUISystem::GetInputButtonText,
 			"确定当前输入",&IGalGameUISystem::InputSubmitted
-			);
+		);
 
 		// 注册存档系统
 		galgame.new_usertype<IArchiveSystem>("GalGameArchiveSystem",
@@ -133,7 +239,7 @@ namespace VisionGal::GalGame
 				[](ISceneAudioLayer& self) -> float { return self.GetVolume(); },
 				[](ISceneAudioLayer& self, float value) { self.SetVolume(value); }
 			)
-			);
+		);
 		galgame.new_usertype<ISceneSpriteLayer>("GalGameSceneSpriteManagerSpriteLayer");
 
 		galgame.new_usertype<ILayeredSceneManager>("GalGameLayeredSceneManager",
@@ -147,25 +253,25 @@ namespace VisionGal::GalGame
 		galgame.new_usertype<IGalGameEngine>("IGalGameEngine",
 			"LoadArchive", &IGalGameEngine::LoadArchive,
 			"IDialogueSystem", sol::property(
-				[](IGalGameEngine& self) -> IDialogueSystem* { return dynamic_cast<IDialogueSystem*>(self.GetDialogueSystem()); }
+				[](IGalGameEngine& self) -> IDialogueSystem* { return self.GetDialogueSystem(); }
 			),
 			"ArchiveSystem", sol::property(
-				[](IGalGameEngine& self) -> ArchiveSystem* { return dynamic_cast<ArchiveSystem*>(self.GetArchiveSystem()); }
+				[](IGalGameEngine& self) -> IArchiveSystem* { return self.GetArchiveSystem(); }
 			),
 
 			//中文
 			"剧情选择", sol::yielding([](IGalGameEngine& self, const std::string& name, const sol::table& choices) -> void
-			{
-				GalGameLuaInterfaceImp::Choice(self, name, choices);
-			}),
+				{
+					GalGameLuaInterfaceImp::Choice(self, name, choices);
+				}),
 			"全屏文字", [](IGalGameEngine& self, const sol::table& text) -> void
 			{
 				GalGameLuaInterfaceImp::FullScreenText(self, text);
 			},
 			"文本输入", sol::yielding([](IGalGameEngine& self, const std::string& id, const std::string& title, const std::string button) -> void
-			{
-				GalGameLuaInterfaceImp::InputText(self, id, title, button);
-			}),
+				{
+					GalGameLuaInterfaceImp::InputText(self, id, title, button);
+				}),
 			"等待", sol::yielding(&IGalGameEngine::Wait),
 			"转场命令", &IGalGameEngine::TransitionCommand,
 			"图片转场命令", &IGalGameEngine::TransitionCommandWithCustomImage,
@@ -239,5 +345,15 @@ namespace VisionGal::GalGame
 			"截图路径", &SaveArchive::screenshotPath
 		);
 	}
-}
 
+	void GalGameLuaBinding::RegisterScript(sol::state& state)
+	{
+		state.open_libraries(sol::lib::base,
+			sol::lib::math,
+			sol::lib::string,
+			sol::lib::table); // 默认已加载这些库
+
+		VGLuaInterface::Initialise(state);
+		Register(state);
+	}
+}
