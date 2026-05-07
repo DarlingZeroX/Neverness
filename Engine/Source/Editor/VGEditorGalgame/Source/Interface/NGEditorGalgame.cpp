@@ -28,15 +28,15 @@ namespace VisionGal::Editor
 
 	// Galgame 节点：使用 NodeRegistry 的动态类型注册（TypeId + 注册系统）。
 
-	NGEditorGalgame::NGEditorGalgame() = default;
-	NGEditorGalgame::~NGEditorGalgame()
+	VisualGalgame::VisualGalgame() = default;
+	VisualGalgame::~VisualGalgame()
 	{
 		// 清理业务侧面板桥接，避免静态指针悬挂
 		if (m_DialogueEditor && GetDialogueListEditorPanelInstance() == m_DialogueEditor.get())
 			SetDialogueListEditorPanelInstance(nullptr);
 	}
 
-	void NGEditorGalgame::Initialize()
+	void VisualGalgame::Initialize()
 	{
 		// 复杂节点面板（业务层 UI）
 		m_DialogueEditor = std::make_unique<DialogueListEditorPanel>();
@@ -55,12 +55,12 @@ namespace VisionGal::Editor
 		SetupInitialGraph();
 	}
 
-	void NGEditorGalgame::RegisterGalgameNodes()
+	void VisualGalgame::RegisterGalgameNodes()
 	{
 		GalgameNodeRegistry::RegisterAll(m_Registry, m_NodeEditorRegistry);
 	}
 
-	void NGEditorGalgame::SetupInitialGraph()
+	void VisualGalgame::SetupInitialGraph()
 	{
 		m_Graph.nodes.clear();
 		m_Graph.links.clear();
@@ -97,7 +97,7 @@ namespace VisionGal::Editor
 		m_Graph.RebuildIndices();
 	}
 
-	void NGEditorGalgame::DrawToolbar()
+	void VisualGalgame::DrawToolbar()
 	{
 		ImGui::Separator();
 		ImGui::TextUnformatted("Galgame Toolbar");
@@ -111,7 +111,7 @@ namespace VisionGal::Editor
 		if (ImGui::Button("Recompile")) m_CoreEditor.Recompile();
 	}
 
-	void NGEditorGalgame::DrawPreviewWindow()
+	void VisualGalgame::DrawPreviewWindow()
 	{
 		ImGui::Separator();
 		ImGui::Begin("Preview");
@@ -138,7 +138,7 @@ namespace VisionGal::Editor
 		ImGui::End();
 	}
 
-	void NGEditorGalgame::DrawEditorWindow()
+	void VisualGalgame::DrawEditorWindow()
 	{
 		ImGui::Begin("Galgame NodeGraph Editor");
 
@@ -155,18 +155,18 @@ namespace VisionGal::Editor
 		DrawPreviewWindow();
 	}
 
-	void NGEditorGalgame::Update()
+	void VisualGalgame::Update()
 	{
 		Update(0.016f);
 	}
 
-	void NGEditorGalgame::Update(float deltaTime)
+	void VisualGalgame::Update(float deltaTime)
 	{
 		// 运行时编译/执行由 CoreEditor 统一处理
 		m_CoreEditor.Update(deltaTime);
 	}
 
-	void NGEditorGalgame::OpenDialogueEditor(ax::NodeEditor::NodeId nodeId)
+	void VisualGalgame::OpenDialogueEditor(ax::NodeEditor::NodeId nodeId)
 	{
 		// 预留：独立对白编辑窗口
 		// 当前实现为最小可用占位（便于后续扩展 speaker/text 结构化编辑）

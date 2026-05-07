@@ -14,6 +14,7 @@
 #include <HNGEditorCore/Interface/NodeGraphEditor.h>
 
 #include "VGEditorGalgame/Interface/NGEditorGalgame.h"
+#include "VGEditorGalgame/Interface/VisualGalgame.h"
 
 namespace VisionGal::Editor
 {
@@ -43,7 +44,10 @@ namespace VisionGal::Editor
 		void RenderRightUI();
 	private:
 		//Horizon::NodeGraph::HNodeGraphEditor m_NodeGraphEditor;
-		NGEditorGalgame m_NodeGraphEditor;
+		VisualGalgame m_NodeGraphEditor;
+
+		VisualGalEditor m_VisualGalEditor;
+
 		//Horizon::NodeGraph::NodeGraphWindow m_NodeGraphWindow{ "VGPackageTool Node Graph" };
 	};
 }

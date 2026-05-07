@@ -84,6 +84,20 @@ namespace VisionGal::Editor
 			return 0;
 			});
 
+		VFS::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const VFS::DataRef& data) {
+			ImGuiIO& io = ImGui::GetIO();
+			static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+
+			ImFontConfig icons_config;
+			icons_config.MergeMode = true;
+			icons_config.PixelSnapH = true;
+			icons_config.GlyphOffset = ImVec2(0, 2);
+			icons_config.FontDataOwnedByAtlas = false;
+
+			io.Fonts->AddFontFromMemoryTTF(data->data(), data->size(), 20, &icons_config, icons_ranges);
+			return 0;
+			});
+
 		ImGui::GetIO().Fonts->Build();
 	}
 

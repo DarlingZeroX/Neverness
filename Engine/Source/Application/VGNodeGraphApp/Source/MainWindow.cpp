@@ -36,11 +36,18 @@ namespace VisionGal::Editor
 		//ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
 
 		// 开始绘制窗口
-		if (ImGui::Begin("VGNodeGraphApp Main Editor", nullptr))
-		{
+		//if (ImGui::Begin("VGNodeGraphApp Main Editor", nullptr))
+		//{
 			OnGUIInternal();
-		}
-		ImGui::End();
+		//}
+		//ImGui::End();
+
+		//if (ImGui::Begin("VGNodeGraphApp Main Editor", nullptr))
+		//{
+		//	m_NodeGraphEditor.DrawEditorWindow();
+		//	m_NodeGraphEditor.Update();
+		//}
+		//ImGui::End();
 	}
 
 	void VGNodeGraphMainWindow::OnUpdate(float delta)
@@ -72,8 +79,10 @@ namespace VisionGal::Editor
 
 	void VGNodeGraphMainWindow::OnGUIInternal()
 	{
-		m_NodeGraphEditor.DrawEditorWindow();
-		m_NodeGraphEditor.Update();
+		//m_NodeGraphEditor.DrawEditorWindow();
+		//m_NodeGraphEditor.Update();
 		//m_NodeGraphEditor.DrawNodeGraphWindow();
+
+		m_VisualGalEditor.DrawEditorWindow();
 	}
 }

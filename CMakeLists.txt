@@ -39,6 +39,7 @@ add_subdirectory ("Engine/Source/Runtime/HFileSystem")
 add_subdirectory ("Engine/Source/Runtime/HNGRuntimeCore")
 add_subdirectory ("Engine/Source/Runtime/HNGRuntimeNodes")
 add_subdirectory ("Engine/Source/Runtime/HMedia")
+
 # 引擎
 add_subdirectory ("Engine/Source/Runtime/VGLua")
 add_subdirectory ("Engine/Source/Runtime/VGRHI")
@@ -48,10 +49,14 @@ add_subdirectory ("Engine/Source/Runtime/VGCore")
 add_subdirectory ("Engine/Source/Runtime/VGAsset")
 add_subdirectory ("Engine/Source/Runtime/VGUI")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
+
+# GalGame Runtime
 add_subdirectory ("Engine/Source/Runtime/VGGalgameCore")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameRuntime")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptLua")
+add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptVisual")
 add_subdirectory ("Engine/Source/Runtime/VGGalgame")
+
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
 #add_subdirectory ("Engine/Source/Editor/HNGEditor")
@@ -60,6 +65,7 @@ add_subdirectory ("Engine/Source/Editor/VGEditorComponent")
 add_subdirectory ("Engine/Source/Editor/VGEditorGalgame")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 
+# 应用
 add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器
 add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
 add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具

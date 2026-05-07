@@ -412,7 +412,8 @@ namespace VisionGal::Editor {
 				//Invisible clip
 				if (p0.y > windowEndPos.y || p1.y < windowPos.y)
 				{
-					ImGui::NextColumn();
+					//ImGui::InvisibleButton(item.AbsolutePathStr.c_str(), thumbnial.Size);
+					//ImGui::NextColumn();
 					return;
 				}
 
@@ -577,6 +578,12 @@ namespace VisionGal::Editor {
 			}
 
 			if (ImGui::MenuItem(EditorText{ "Create GalGame Story Script" }.c_str()))
+			{
+				factory.CreateAsset(path, "GalGameStoryScript");
+				RefreshDirectory();
+			}
+
+			if (ImGui::MenuItem(EditorText{ "Create GalGame Visual Story Script" }.c_str()))
 			{
 				factory.CreateAsset(path, "GalGameStoryScript");
 				RefreshDirectory();

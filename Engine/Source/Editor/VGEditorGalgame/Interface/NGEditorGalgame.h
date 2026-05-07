@@ -25,11 +25,11 @@ namespace VisionGal::Editor
 {
 	class DialogueListEditorPanel;
 
-	class VG_GALGAME_EDITOR_API NGEditorGalgame
+	class VG_GALGAME_EDITOR_API VisualGalgame
 	{
 	public:
-		NGEditorGalgame();
-		~NGEditorGalgame();
+		VisualGalgame();
+		~VisualGalgame();
 
 		// 初始化：绑定图、注册节点、生成初始图
 		void Initialize();
