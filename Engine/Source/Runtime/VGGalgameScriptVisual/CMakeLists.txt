@@ -31,11 +31,17 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_NUMBER_OF_LOGICAL_CORES}>
 file(GLOB RUNTIME_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include/RuntimeSystem/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include/VisualSequence/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
 file(GLOB RUNTIME_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/RuntimeSystem/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/VisualSequence/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
 )
 

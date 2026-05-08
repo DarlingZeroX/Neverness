@@ -11,7 +11,7 @@
 
 #include "Sequence/EntryUIData.h"
 #include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
-#include "VGGalgameScriptVisual/Interface/VGSSequenceComponents.h"
+#include "VGGalgameScriptVisual/Include/VisualSequence/SequenceComponents.h"
 
 namespace VisionGal::Editor
 {
@@ -46,5 +46,9 @@ namespace VisionGal::Editor
 		SequenceEntryUIData changeFigure(ICON_FA_USER, "切换立绘");
 		changeFigure.TypeNameID = VGSSC_ChangeFigure::StaticGetTypeNameID();
 		DataMap[changeFigure.TypeNameID] = changeFigure;
+
+		SequenceEntryUIData changeBackground(ICON_FA_IMAGES, "切换背景");
+		changeBackground.TypeNameID = VGSSC_ChangeBackground::StaticGetTypeNameID();
+		DataMap[changeBackground.TypeNameID] = changeBackground;
 	}
 }

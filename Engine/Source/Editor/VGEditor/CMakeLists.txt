@@ -27,7 +27,10 @@ file(GLOB EDITOR_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
 )
 
-add_executable (VGEditor ${EDITOR_HEADER_FILES} ${EDITOR_SRC_FILES})
+if(WIN32)
+     set(APP_RESOURCES resources.rc)
+endif()
+add_executable (VGEditor ${EDITOR_HEADER_FILES} ${EDITOR_SRC_FILES} ${APP_RESOURCES})
 
 target_compile_definitions(VGEditor PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")
 

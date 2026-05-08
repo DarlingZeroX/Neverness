@@ -13,7 +13,7 @@
 #include "../EngineConfig.h"
 #include "Manager/ViewportManager.h"
 #include "Manager/ShaderManager.h"
-#include "Manager/AssetManager.h"
+#include "VGAsset/Interface/AssetManager.h"
 #include "Manager/SceneManager.h"
 
 namespace VisionGal

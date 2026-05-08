@@ -10,17 +10,17 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
 #ifdef VG_GALGAME_SCRIPT_VISUAL_EXPORT
-#define VG_GALGAME_SCRIPT_VISUAL_API __declspec(dllexport)
+#define VG_GALGAME_VISUAL_SCRIPT_API __declspec(dllexport)
 #else
-#define VG_GALGAME_SCRIPT_VISUAL_API __declspec(dllimport)
+#define VG_GALGAME_VISUAL_SCRIPT_API __declspec(dllimport)
 #endif
 
 #else
 
 #ifdef VG_GALGAME_SCRIPT_VISUAL_EXPORT
-#define VG_GALGAME_SCRIPT_VISUAL_API __attribute__((visibility("default")))
+#define VG_GALGAME_VISUAL_SCRIPT_API __attribute__((visibility("default")))
 #else
-#define VG_GALGAME_SCRIPT_VISUAL_API
+#define VG_GALGAME_VISUAL_SCRIPT_API
 #endif
 
 #endif

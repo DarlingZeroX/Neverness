@@ -41,4 +41,12 @@ namespace VisionGal::Editor {
 		virtual void OnSideBarUI() = 0;
 	};
 
+	template<typename T>
+	struct IComponentUIRenderer
+	{
+		virtual ~IComponentUIRenderer() = default;
+
+		virtual void OnGUI(T* obj) = 0;
+		virtual const std::string GetBindType() const = 0;
+	};
 }

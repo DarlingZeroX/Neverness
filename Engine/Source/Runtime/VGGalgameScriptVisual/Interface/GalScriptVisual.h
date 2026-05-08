@@ -14,7 +14,7 @@
 
 namespace VisionGal::GalGame
 {
-	struct VG_GALGAME_SCRIPT_VISUAL_API GalGameScriptVisual
+	struct VG_GALGAME_VISUAL_SCRIPT_API GalGameScriptVisual
 	{
 		static void LoadModule();
 	};

@@ -20,6 +20,7 @@ namespace VisionGal::Editor
 
 		m_IconLabels[0].push_back(SequenceEntryUIDataManager::GetDataByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
 		m_IconLabels[0].push_back(SequenceEntryUIDataManager::GetDataByTypeNameID(VGSSC_ChangeFigure::StaticGetTypeNameID()));
+		m_IconLabels[0].push_back(SequenceEntryUIDataManager::GetDataByTypeNameID(VGSSC_ChangeBackground::StaticGetTypeNameID()));
 
 		const char* icons[][4] = {
 			{ ICON_FA_COMMENT_ALT " 普通对话", ICON_FA_MUSIC " 背景音乐", ICON_FA_IMAGES " 切换背景", ICON_FA_FILM " 播放视频" },

@@ -13,18 +13,18 @@
 #include "Sequence/SequenceComponentTableUI.h"
 #include <VGImgui/IncludeImGui.h>
 
+#include "HFileSystem/Interface/HFileSystem.h"
+#include "Sequence/ComponentDrawerRegistry.h"
+#include "VGGalgameScriptVisual/Include/VisualSequence/SequenceDataContainerSerialization.h"
+
 namespace VisionGal::Editor
 {
 	VGScriptSequenceUI::VGScriptSequenceUI()
 	{
 		m_SequenceData = MakeRef<VGSSequenceDataContainer>();
 		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
-		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
-		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
 		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_ChangeFigure::StaticGetTypeNameID()));
-		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
-		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
-		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
+		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_ChangeBackground::StaticGetTypeNameID()));
 		m_SequenceData->AppendEntry(CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
 
 		m_EntryUI.OnIconClicked.Subscribe([this](const std::string& typeNameID) {
@@ -32,6 +32,7 @@ namespace VisionGal::Editor
 			auto entry = CreateSequenceEntryByTypeNameID(typeNameID);
 			m_SequenceData->AppendEntry(entry);
 			});
+
 	}
 
 	VGScriptSequenceUI::~VGScriptSequenceUI()
@@ -51,21 +52,21 @@ namespace VisionGal::Editor
 
 		unsigned int index = 0;
 		std::vector<unsigned> removeIndices;
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | 
-			ImGuiTreeNodeFlags_FramePadding | 
-			ImGuiTreeNodeFlags_Framed;
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 
 		int dragSourceIndex = -1;
 		int dragTargetIndex = -1;
 
 		for (auto& entry : m_SequenceData->m_Sequence)
 		{
-			std::string header = std::to_string(index) + " " + entry->GetTypeNameID() + std::to_string(entry->SequenceIndex);
+			std::string header = entry->GetTypeNameID() + std::to_string(entry->SequenceIndex);
 			bool show = true;
 
 			// Begin drag-drop target before header
 			ImGui::PushID(index);
 
+			ImGui::Button(std::to_string(index).c_str());
+			ImGui::SameLine();
 			bool showContent = ImGui::CollapsingHeader(header.c_str(), &show, flags);
 
 			// Drag source
@@ -97,7 +98,7 @@ namespace VisionGal::Editor
 
 			if (showContent)
 			{
-				ImGui::Text("Sequence Entry Details:");
+				GalSeqComDrawerRegistry::GetInstance().GetDrawer(entry->GetTypeNameID())->OnGUI(index, entry.get());
 			}
 
 			if (!show)
@@ -118,5 +119,10 @@ namespace VisionGal::Editor
 		}
 
 		m_SequenceData->RemoveEntries(removeIndices);
+	}
+
+	void VGScriptSequenceUI::SaveTest()
+	{
+		Horizon::HFileSystem::WriteTextToFile("E:/TestSequence.json", SerializeVGSSequenceDataContainerToString(*m_SequenceData, 4));
 	}
 }

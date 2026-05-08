@@ -72,7 +72,8 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 	{
 		if (m_RendererID != NULL)
 		{
-			GL_THROW_INFO(glDeleteTextures(1, &m_RendererID));
+			//GL_THROW_INFO(glDeleteTextures(1, &m_RendererID));
+			glDeleteTextures(1, &m_RendererID);
 			m_RendererID = NULL;
 		}
 	}

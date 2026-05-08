@@ -13,9 +13,9 @@
 #include <memory>
 #include <string>
 
-#include "../VGGalEditorConfig.h"
+#include "../../VGGalEditorConfig.h"
 #include "SequenceComponentTableUI.h"
-#include "VGGalgameScriptVisual/Interface/VGSSequenceDataContainer.h"
+#include "VGGalgameScriptVisual/Include/VisualSequence/SequenceDataContainer.h"
 
 namespace VisionGal::Editor
 {
@@ -27,6 +27,7 @@ namespace VisionGal::Editor
 
 		void RenderSequenceUI();
 
+		void SaveTest();
 	private:
 		Ref<VGSSequenceDataContainer> m_SequenceData;
 

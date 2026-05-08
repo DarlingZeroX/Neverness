@@ -28,8 +28,21 @@ namespace VisionGal::Editor
 
 	void VisualGalEditor::DrawEditorWindow()
 	{
-		if (ImGui::Begin("Visual GalGame Editor"))
+		if (ImGui::Begin("Visual GalGame Editor",nullptr ,ImGuiWindowFlags_MenuBar))
 		{
+			if (ImGui::BeginMenuBar())
+			{
+				if (ImGui::BeginMenu("File"))
+				{
+					if (ImGui::MenuItem("Save"))
+					{
+						m_ScriptSequence.SaveTest();
+					}
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenuBar();
+			}
+
 			m_ScriptSequence.RenderSequenceUI();
 		}
 

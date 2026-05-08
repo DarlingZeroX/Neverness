@@ -10,15 +10,20 @@
 */
 
 #include "IVGSSequenceComponent.h"
-#include "VGSSequenceComponents.h"
+#include "VisualSequence/SequenceComponents.h"
 
 namespace VisionGal
 {
 	IVGSSequenceComponentManager::IVGSSequenceComponentManager()
 	{
-		RegisteredComponents.emplace(VGSSC_CommonDialogue::StaticGetTypeNameID(), MakeRef<VGSSC_CommonDialogue>());
-		RegisteredComponents.emplace(VGSSC_ChangeFigure::StaticGetTypeNameID(), MakeRef<VGSSC_ChangeFigure>());
-		RegisteredComponents.emplace(VGSSC_ShowPicture::StaticGetTypeNameID(), MakeRef<VGSSC_ShowPicture>());
+		//RegisteredComponents.emplace(VGSSC_CommonDialogue::StaticGetTypeNameID(), MakeRef<VGSSC_CommonDialogue>());
+		//RegisteredComponents.emplace(VGSSC_ChangeFigure::StaticGetTypeNameID(), MakeRef<VGSSC_ChangeFigure>());
+		////RegisteredComponents.emplace(VGSSC_ShowPicture::StaticGetTypeNameID(), MakeRef<VGSSC_ShowPicture>());
+		//RegisteredComponents.emplace(VGSSC_ChangeBackground::StaticGetTypeNameID(), MakeRef<VGSSC_ChangeBackground>());
+
+		EmplaceComponentType<VGSSC_CommonDialogue>();
+		EmplaceComponentType<VGSSC_ChangeFigure>();
+		EmplaceComponentType<VGSSC_ChangeBackground>();
 	}
 
 	IVGSSequenceComponentManager& IVGSSequenceComponentManager::Get()

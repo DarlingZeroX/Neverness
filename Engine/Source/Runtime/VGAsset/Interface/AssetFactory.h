@@ -40,10 +40,6 @@ namespace VisionGal
     struct SceneAssetFactory: public IAssetFactoryInstance
     {
         SceneAssetFactory() = default;
-        SceneAssetFactory(const SceneAssetFactory&) = default;
-        SceneAssetFactory& operator=(const SceneAssetFactory&) = default;
-        SceneAssetFactory(SceneAssetFactory&&) noexcept = default;
-        SceneAssetFactory& operator=(SceneAssetFactory&&) noexcept = default;
     	~SceneAssetFactory() override = default;
 
         std::string GetFactoryType() override;
@@ -56,10 +52,6 @@ namespace VisionGal
     struct UIDocumentAssetFactory : public IAssetFactoryInstance
     {
         UIDocumentAssetFactory() = default;
-        UIDocumentAssetFactory(const UIDocumentAssetFactory&) = default;
-        UIDocumentAssetFactory& operator=(const UIDocumentAssetFactory&) = default;
-        UIDocumentAssetFactory(UIDocumentAssetFactory&&) noexcept = default;
-        UIDocumentAssetFactory& operator=(UIDocumentAssetFactory&&) noexcept = default;
         ~UIDocumentAssetFactory() override = default;
 
         std::string GetFactoryType() override;
@@ -72,10 +64,6 @@ namespace VisionGal
     struct UICssAssetFactory : public IAssetFactoryInstance
     {
         UICssAssetFactory() = default;
-        UICssAssetFactory(const UICssAssetFactory&) = default;
-        UICssAssetFactory& operator=(const UICssAssetFactory&) = default;
-        UICssAssetFactory(UICssAssetFactory&&) noexcept = default;
-        UICssAssetFactory& operator=(UICssAssetFactory&&) noexcept = default;
         ~UICssAssetFactory() override = default;
 
         std::string GetFactoryType() override;
@@ -88,10 +76,6 @@ namespace VisionGal
     struct LuaScriptAssetFactory : public IAssetFactoryInstance
     {
         LuaScriptAssetFactory() = default;
-        LuaScriptAssetFactory(const LuaScriptAssetFactory&) = default;
-        LuaScriptAssetFactory& operator=(const LuaScriptAssetFactory&) = default;
-        LuaScriptAssetFactory(LuaScriptAssetFactory&&) noexcept = default;
-        LuaScriptAssetFactory& operator=(LuaScriptAssetFactory&&) noexcept = default;
         ~LuaScriptAssetFactory() override = default;
 
         std::string GetFactoryType() override;
@@ -104,10 +88,6 @@ namespace VisionGal
     struct GalGameStoryScriptFactory : public IAssetFactoryInstance
     {
         GalGameStoryScriptFactory() = default;
-        GalGameStoryScriptFactory(const GalGameStoryScriptFactory&) = default;
-        GalGameStoryScriptFactory& operator=(const GalGameStoryScriptFactory&) = default;
-        GalGameStoryScriptFactory(GalGameStoryScriptFactory&&) noexcept = default;
-        GalGameStoryScriptFactory& operator=(GalGameStoryScriptFactory&&) noexcept = default;
         ~GalGameStoryScriptFactory() override = default;
 
         std::string GetFactoryType() override;

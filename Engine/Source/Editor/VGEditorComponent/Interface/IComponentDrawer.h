@@ -12,14 +12,12 @@
 #pragma once
 #include "../Config.h"
 #include <VGCore/Interface/SceneInterface.h>
+#include <VGEditorCore/Interface/UIInterface.h>
 
 namespace VisionGal::Editor {
 
-	struct IComponentDrawer
+	struct IComponentDrawer : public IComponentUIRenderer<IEntity>
 	{
-		virtual ~IComponentDrawer() = default;
-
-		virtual void OnGUI(IEntity* entity) = 0;
-		virtual const String GetBindType() const = 0;
+		~IComponentDrawer() override = default;
 	};
 }

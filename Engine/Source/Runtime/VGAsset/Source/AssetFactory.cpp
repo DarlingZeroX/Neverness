@@ -17,11 +17,8 @@
 #include "VGAsset/Include/UIAsset.h"
 #include "VGAsset/Interface/SceneAccessor.h"
 #include "VGCore/Include/Core/VFS.h"
-//#include "Engine/Manager.h"
 #include "HFileSystem/Interface/HFileSystem.h"
-#include "HCore/Include/Utils/HStringGenerator.h"
 #include "VGCore/Interface/ISceneFactory.h"
-//#include "Scene/GameActorFactory.h"
 
 namespace VisionGal
 {
@@ -45,22 +42,6 @@ namespace VisionGal
 		}
 
 		return nullptr;
-	}
-
-	VGPath IAssetFactoryInstance::GenerateAssetPath(const VGPath& path, const std::string& name, const std::string& ext)
-	{
-		Horizon::HSequenceStringGenerator gen(name);
-
-		std::filesystem::path fsPath = path;
-		auto nextName = gen.GetNext();
-		auto fullPath = fsPath / (nextName + ext);
-		while (Horizon::HFileSystem::ExistsDirectory(fullPath))
-		{
-			nextName = gen.GetNext();
-			fullPath = fsPath / (nextName + ext);
-		}
-
-		return fullPath.string();
 	}
 
 	std::string SceneAssetFactory::GetFactoryType()

@@ -10,6 +10,7 @@
 */
 
 #pragma once
+#include "../VGCoreConfig.h"
 #include "VGAsset.h"
 #include "../Include/Core/Core.h"
 
@@ -28,7 +29,7 @@ namespace VisionGal
 
         virtual std::string GetFactoryType() = 0;
         virtual Ref<VGAsset> CreateAsset(const String& path) = 0;
-
-        static VGPath GenerateAssetPath(const VGPath& path, const std::string& name, const std::string& ext);
     };
+
+	VG_CORE_API VGPath GenerateAssetPath(const VGPath& path, const std::string& name, const std::string& ext);
 }
