@@ -42,4 +42,4 @@ target_include_directories(VGDesktopApplication PRIVATE ${PROJECT_SOURCE_DIR}/En
 target_include_directories(VGDesktopApplication PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 # 链接库
-target_link_libraries(VGDesktopApplication PRIVATE VGEditorComponent)
+target_link_libraries(VGDesktopApplication PRIVATE VGEditorFramework)

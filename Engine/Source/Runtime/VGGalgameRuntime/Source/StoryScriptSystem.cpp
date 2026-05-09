@@ -10,6 +10,8 @@
  */
 
 #include "StoryScriptSystem.h"
+
+#include "VGAsset/Interface/Package.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "VGCore/Include/Core/EventBus.h"
 
@@ -39,11 +41,11 @@ namespace VisionGal::GalGame
 
 	bool StoryScriptSystem::LoadStoryScript(const String& path)
 	{
-		//StoryScriptLuaInterface::ResetStoryScript();
-
 		// 加载脚本
-		//auto storyScript = LuaStoryScript::LoadFromFile(path);
-		auto storyScript = StoryScriptExecutorFactory::GetInstance().LoadStoryScriptExecutorFromFile("lua", path);
+		auto storyScript = GalGameScriptExecutorFactory::Get().LoadAssetExecutor(
+			GetAssetTypeNameID(path), 
+			path
+		);
 
 		if (storyScript == nullptr)
 		{
@@ -270,6 +272,11 @@ namespace VisionGal::GalGame
 		for (auto& callback : m_UpdateCallback)
 			callback();
 		m_UpdateCallback.clear();
+
+		if (m_StoryScript != nullptr)
+		{
+			m_StoryScript->Tick(0);
+		}
 
 		UpdateWaitState();
 	}

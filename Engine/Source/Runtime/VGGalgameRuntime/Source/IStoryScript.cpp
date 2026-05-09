@@ -12,7 +12,7 @@
 
 namespace VisionGal::GalGame
 {
-	Ref<IStoryScriptExecutor> StoryScriptExecutorFactory::LoadStoryScriptExecutorFromFile(const String& type, const String& path)
+	Ref<IStoryScriptExecutor> GalGameScriptExecutorFactory::LoadAssetExecutor(const String& type, const String& path)
 	{
 		if (path.empty())
 		{
@@ -26,10 +26,10 @@ namespace VisionGal::GalGame
 			return nullptr;
 		}
 
-		return m_FactoryFunctions[type]->LoadFromFile(path);
+		return m_FactoryFunctions[type]->LoadFromAsset(path);
 	}
 
-	void StoryScriptExecutorFactory::RegisterStoryScriptExecutorType(
+	void GalGameScriptExecutorFactory::RegisterAssetExecutor(
 		const String& type,
 		Ref<IStoryScriptExecutorCreator> factoryFunction
 	)
@@ -38,10 +38,24 @@ namespace VisionGal::GalGame
 	}
 
 
-	StoryScriptExecutorFactory& StoryScriptExecutorFactory::GetInstance()
+	GalGameScriptExecutorFactory& GalGameScriptExecutorFactory::Get()
 	{
-		static StoryScriptExecutorFactory instance;
+		static GalGameScriptExecutorFactory instance;
 		return instance;
 	}
 
+	std::vector<std::string> GalGameScriptExecutorFactory::GetRegisterTypes()
+	{
+		std::vector<std::string> types;
+		for (const auto& pair : m_FactoryFunctions)
+		{
+			types.push_back(pair.first);
+		}
+		return types;
+	}
+
+	bool GalGameScriptExecutorFactory::HasExecutor(const String& type)
+	{
+		return m_FactoryFunctions.find(type) != m_FactoryFunctions.end();
+	}
 }

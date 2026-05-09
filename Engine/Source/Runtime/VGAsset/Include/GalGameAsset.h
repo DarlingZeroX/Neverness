@@ -15,12 +15,17 @@
 
 namespace VisionGal
 {
-	struct GalGameStoryScriptAsset : public VGAsset
+	struct GLuaScriptAssetType: public VGAssetType
+	{
+		std::string GetNameID() const override { return "GalGameLuaScript"; }
+	};
+
+	struct GalGameLuaScriptAsset : public VGAsset
 	{
 		std::string Text;
 
-		GalGameStoryScriptAsset()
-			: VGAsset("GalGameStoryScript")
+		GalGameLuaScriptAsset()
+			: VGAsset(GLuaScriptAssetType{}.GetNameID())
 		{
 		}
 	};

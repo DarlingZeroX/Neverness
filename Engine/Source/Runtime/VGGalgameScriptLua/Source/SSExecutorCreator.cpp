@@ -15,7 +15,7 @@
 
 namespace VisionGal::GalGame
 {
-	Ref<IStoryScriptExecutor> LuaStoryScriptExecutorCreator::LoadFromFile(const String& path)
+	Ref<IStoryScriptExecutor> LuaStoryScriptExecutorCreator::LoadFromAsset(const String& path)
 	{
 		StoryScriptLuaInterface::ResetStoryScript();
 

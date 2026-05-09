@@ -19,7 +19,7 @@ namespace VisionGal::GalGame
 	{
 		~LuaStoryScriptExecutorCreator() override = default;
 
-		virtual Ref<IStoryScriptExecutor> LoadFromFile(const String& path);
+		virtual Ref<IStoryScriptExecutor> LoadFromAsset(const String& path);
 	};
 
 }

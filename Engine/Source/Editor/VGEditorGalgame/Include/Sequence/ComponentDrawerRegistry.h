@@ -12,7 +12,7 @@
 #pragma once
 #include <unordered_map>
 #include <HCore/Interface/HConfig.h>
-#include <VGEditorCore/Interface/UIInterface.h>
+#include <VGEditorFramework/Interface/UIInterface.h>
 #include "../../VGGalEditorConfig.h"
 #include "ComponentDrawerInterface.h"
 

@@ -14,12 +14,12 @@
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <VGImgui/Include/Imgui/imgui_impl_opengl3.h>
-#include <VGEditorComponent/Framework.h>
-//#include <VGEngine/Include/UI/UISystem.h>
-#include <VGEditorCore/IncludeCore.h>
+#include <VGEditorFramework/Framework.h>
 #include "VGCore/Include/Core/VFS.h"
-#include "VGEditorGalgame/Interface/VGEditorGalgame.h"
 #include "VGGalgame/Interface/GalgameSystem.h"
+
+#include "VGEditorGalgame/Interface/ModuleEditorGalgame.h"
+#include "VGEditorFramework/Interface/ModuleEditorFramework.h"
 
 namespace VisionGal::Editor
 {
@@ -51,41 +51,13 @@ namespace VisionGal::Editor
 		AddImguiLayer();
 		InitializeEditorUI();
 
-		// 初始化内容浏览器
-		String contentPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
-		ContentBrowser::Create(contentPath);
-
-		// 初始化资源导入管理器
-		AssetImporterManager::GetInstance().Initialize(m_EditorWindow);
-
-		// 初始化GalGame编辑器组件
-		VGEditorGalGame::Initialize();
+		// 挂载编辑器模块
+		ModuleEditorFramework::MountToEditor(m_EditorWindow, m_GameEngine);
+		ModuleEditorGalGame::MountToEditor();
 	}
 
 	void VGEditorApplication::AddApplicationLayer(IEngineApplicationLayer* layer)
 	{
-	}
-
-	void VGEditorApplication::InitializeEditorPanels()
-	{
-		auto* editor = PanelManager::GetInstance();
-
-		auto mainWindow = MakeRef<EditorMainWindow>();
-		//auto editorSidebar = MakeRef<EditorSideBar>();
-
-		editor->AddPanelWithID("EditorMenuBar", MakeRef<EditorMenuBar>(m_EditorWindow.get()));
-		//editor->AddPanelWithID("EditorSideBar", editorSidebar);
-		editor->AddPanelWithID("EditorMainWindow", mainWindow);
-		editor->AddPanelWithID("EditorPreferences", MakeRef<PreferencesPanel>());
-		editor->AddPanelWithID("ProjectSetting", MakeRef<ProjectSettingPanel>());
-		editor->AddPanelWithID("BuildSettings", MakeRef<BuildSettingsPanel>());
-
-		mainWindow->AddPanelWithID("ContentBrowserPanel", MakeRef<ContentBrowserPanel>());
-		mainWindow->AddPanelWithID("ConsolePanel", MakeRef<ConsolePanel>());
-		mainWindow->AddPanelWithID("SceneBrowserPanel", MakeRef<SceneBrowserPanel>());
-		mainWindow->AddPanelWithID("DetailBrowserPanel", MakeRef<DetailBrowserPanel>());
-		mainWindow->AddPanelWithID("EditorViewport", MakeRef<EditorViewport>(m_GameEngine->GetViewport()));
-		mainWindow->AddPanelWithID("CodeStudioPanel", MakeRef<CodeStudioPanel>());
 	}
 
 	void VGEditorApplication::InitializeEditorUI()
@@ -94,12 +66,8 @@ namespace VisionGal::Editor
 
 		// 设置本地语言
 		EditorLoadLanguage(editorConfig.EditorLanguage);
-
 		// 设置主题
 		EditorStyle::SetTheme(editorConfig.EditorTheme);
-
-		// 创建Imgui的UI任务执行器
-		ImGuiEx::ImTaskManager::CreateManager();
 	}
 
 	void VGEditorApplication::AddImguiLayer()
@@ -159,9 +127,6 @@ namespace VisionGal::Editor
 	{
 		m_GameEngine->OnUpdate(deltaTime);
 		PanelManager::GetInstance()->OnUpdate(deltaTime);
-
-		//auto size =m_EditorWindow->GetWindowSize();
-		//std::cout << "W: " << size.x << " H: " << size.y << std::endl;
 	}
 
 	void VGEditorApplication::OnFixedUpdate()
@@ -173,20 +138,13 @@ namespace VisionGal::Editor
 	{
 		//m_ImguiOpengl3Layer->BeginFrame();
 		PanelManager::GetInstance()->OnGUI();
-		ImGuiEx::ImTaskManager::GetInstance().RenderUITask();
+		ImGuiEx::ImTaskManager::Get().RenderUITask();
 		ImGuiEx::RenderNotifications();
 		//m_ImguiOpengl3Layer->EndFrame();
 	}
 
 	void VGEditorApplication::OnApplicationUpdate(float deltaTime)
 	{
-		// Always clear the default framebuffer before rendering editor UI.
-		// Otherwise, transparent/partial ImGui redraws can reveal previous-frame leftovers.
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//glDisable(GL_SCISSOR_TEST);
-		//glClearColor(0.f, 0.f, 0.f, 1.f);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		OnFixedUpdate();
 		OnUpdate(deltaTime);
 		m_ImguiOpengl3Layer->BeginFrame();

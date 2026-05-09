@@ -119,7 +119,7 @@
     "ComponentNumber": 1,
     "GalGameEngine": {
         "EntityComponentID": 5300828898657221247,
-        "m_ScriptPath": "/assets/剧情脚本\\Demo\\操场.lua",
+        "m_ScriptPath": "/assets/GalGameVisualScript0.vgasset",
         "m_ChoiceUIPath": "/assets/UI\\游戏\\剧情选择.html",
         "m_FullScreenTextUIPath": "/assets/UI\\游戏\\全屏文字.html",
         "m_InputUIPath": "/assets/UI\\游戏\\获取输入.html"

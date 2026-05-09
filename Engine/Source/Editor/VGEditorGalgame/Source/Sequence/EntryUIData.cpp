@@ -11,7 +11,7 @@
 
 #include "Sequence/EntryUIData.h"
 #include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
-#include "VGGalgameScriptVisual/Include/VisualSequence/SequenceComponents.h"
+#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 
 namespace VisionGal::Editor
 {

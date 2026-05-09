@@ -20,7 +20,7 @@ namespace VisionGal
 		if (asset == nullptr)
 			return false;
 
-		GalGameStoryScriptAsset* uiAsset = dynamic_cast<GalGameStoryScriptAsset*>(asset);
+		GalGameLuaScriptAsset* uiAsset = dynamic_cast<GalGameLuaScriptAsset*>(asset);
 
 		if (uiAsset == nullptr)
 			return false;

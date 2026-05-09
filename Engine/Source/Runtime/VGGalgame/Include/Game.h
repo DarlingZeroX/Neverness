@@ -11,6 +11,7 @@
 
 #pragma once
 #include "VGGalgameCore/Interface/IGameObject.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGGalgameCore/Include/GalGameRuntimeState.h"
 
 namespace VisionGal::GalGame
@@ -138,7 +139,7 @@ namespace VisionGal::GalGame
 			IGalAudio* Voice = nullptr;
 		};
 
-		GalCharacter(const std::string& name);
+		GalCharacter(IGalGameEngine* engine, const std::string& name);
 		GalCharacter(const GalCharacter&) = delete;
 		GalCharacter& operator=(const GalCharacter&) = delete;
 		GalCharacter(GalCharacter&&) noexcept = default;
@@ -161,6 +162,7 @@ namespace VisionGal::GalGame
 		void ClearShowFigureCallbacks() override;
 		void ClearHideFigureCallbacks() override;
 
+		IGalGameEngine* m_Engine;
 		std::unordered_map<String, String> m_CharacterSpriteStates;
 		FigureState m_CurrentState;
 		FigureState m_LastState;

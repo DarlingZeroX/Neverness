@@ -11,7 +11,7 @@
 
 #pragma once
 #include <string>
-#include <VGEditorCore/Include/EditorCore/EditorCore.h>
+#include <VGEditorFramework/Include/EditorCore/EditorCore.h>
 
 struct EditorVFSPath
 {

@@ -14,6 +14,12 @@
 
 namespace VisionGal
 {
+	struct VGAssetType
+	{
+		virtual ~VGAssetType() = default;
+		virtual std::string GetNameID() const = 0;
+	};
+
 	struct VGAssetMetaData
 	{
 		VGAssetMetaData() : UUID(0), AssetType("None") {}
@@ -40,6 +46,11 @@ namespace VisionGal
 
 		VGAsset(const String& asset_type)
 			: FilePathLength(0), FileSize(0), MetaData(asset_type)
+		{
+		}
+
+		VGAsset(const VGAssetType& assetType)
+			: FilePathLength(0), FileSize(0), MetaData(assetType.GetNameID())
 		{
 		}
 

@@ -34,13 +34,11 @@ namespace ImGuiEx
 
 	void Initialize()
 	{
-		// 创建Imgui的UI任务执行器
-		ImTaskManager::CreateManager();
 	}
 
 	void Render()
 	{
-		ImTaskManager::GetInstance().RenderUITask();
+		ImTaskManager::Get().RenderUITask();
 		RenderNotifications();
 	}
 

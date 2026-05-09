@@ -13,7 +13,7 @@
 #include <VGCore/Include/Core/Core.h>
 #include <VGCore/Include/Core/VFS.h>
 #include <VGEngine/Include/Engine/VGEngine.h>
-#include <VGEditorCore/Include/EditorCore/EditorCore.h>
+#include <VGEditorFramework/Include/EditorCore/EditorCore.h>
 
 /// @brief 表示程序虚拟文件系统（VFS）中各类资源和设置的路径。
 struct ApplicationVFSPath

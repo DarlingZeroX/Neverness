@@ -27,7 +27,7 @@ namespace ImGuiEx {
         UseThreadPool = (1 << 1),                     // this will spawn the task using a limited pool of threads (with somewhere between 'cores-1' and 'logical threads-1' thread count) which means the thread might have to wait before it will start running so be careful not to cause deadlocks with any internal dependencies 
     };
 
-	class IMGUI_API ImTaskManager: public Horizon::HSingletonBase<ImTaskManager>
+	class IMGUI_API ImTaskManager
 	{
         struct TaskInternal : ImTaskInterface::Task
         {
@@ -48,9 +48,9 @@ namespace ImGuiEx {
 	private:
         ImTaskManager() = default;
 	public:
-		~ImTaskManager() override = default;
+		~ImTaskManager() = default;
 
-		static void CreateManager();
+		static ImTaskManager& Get();
 
         Ref<ImTaskInterface::Task> NewTask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags = ImTaskFlags::None);
 

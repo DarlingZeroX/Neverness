@@ -176,7 +176,8 @@ namespace VisionGal::GalGame
 
 	GalSprite* ResourceSystem::ShowSprite(const std::string& layer, const std::string& path)
 	{
-		String resPath = Core::GetAssetsPathVFS() + path;
+		//String resPath = Core::GetAssetsPathVFS() + path;
+		String resPath = path;
 		IGameActor* actor = CreateSpriteImp(resPath);
 
 		if (actor == nullptr)
@@ -204,7 +205,7 @@ namespace VisionGal::GalGame
 
 	GalAudio* ResourceSystem::PlayAudio(const std::string& layer, const std::string& path)
 	{
-		String resPath = Core::GetAssetsPathVFS() + path;
+		String resPath = path;
 		IGameActor* actor = CreateAudioImp(resPath);
 
 		if (actor == nullptr)
@@ -218,7 +219,7 @@ namespace VisionGal::GalGame
 
 	GalVideo* ResourceSystem::PlayVideo(const std::string& layer, const std::string& path)
 	{
-		String resPath = Core::GetAssetsPathVFS() + path;
+		String resPath = path;
 		IGameActor* actor = CreateVideoImp(resPath);
 
 		if (actor == nullptr)

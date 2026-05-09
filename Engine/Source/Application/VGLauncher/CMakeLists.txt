@@ -27,7 +27,11 @@ file(GLOB EDITOR_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
 )
 
-add_executable (VGLauncher ${EDITOR_HEADER_FILES} ${EDITOR_SRC_FILES})
+# 文件图标
+if(WIN32)
+     set(APP_RESOURCES resources.rc)
+endif()
+add_executable (VGLauncher ${EDITOR_HEADER_FILES} ${EDITOR_SRC_FILES} ${APP_RESOURCES})
 
 # 设置为Windows应用程序
 set_target_properties(VGLauncher PROPERTIES
@@ -42,5 +46,5 @@ target_include_directories(VGLauncher PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Sourc
 target_include_directories(VGLauncher PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 # 链接库
-target_link_libraries(VGLauncher PRIVATE VGEditorComponent)
+target_link_libraries(VGLauncher PRIVATE VGEditorFramework)
 

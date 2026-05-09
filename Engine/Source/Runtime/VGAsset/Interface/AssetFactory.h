@@ -21,14 +21,16 @@ namespace VisionGal
     /// </summary>
     class VG_ASSET_API EngineAssetFactory : public IEngineAssetFactory
     {
+		EngineAssetFactory();
     public:
-        EngineAssetFactory();
         ~EngineAssetFactory() override = default;
         EngineAssetFactory(const EngineAssetFactory&) = delete;
         EngineAssetFactory& operator=(const EngineAssetFactory&) = delete;
         EngineAssetFactory(EngineAssetFactory&&) noexcept = default;
         EngineAssetFactory& operator=(EngineAssetFactory&&) noexcept = default;
 
+    	static EngineAssetFactory& Get();
+		void RegisterFactory(Scope<IAssetFactoryInstance> factoryInstance);
         Ref<VGAsset> CreateAsset(const String& path, const String& type) override;
     private:
         std::vector<Scope<IAssetFactoryInstance>> m_AssetFactoryInstances;
@@ -93,6 +95,4 @@ namespace VisionGal
         std::string GetFactoryType() override;
         Ref<VGAsset> CreateAsset(const String& path) override;
     };
-
-	VG_ASSET_API EngineAssetFactory* GetEngineAssetFactory();
 }

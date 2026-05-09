@@ -63,12 +63,18 @@ namespace VisionGal::GalGame
 			{
 				return GameEngineCore::GetCurrentEngine();
 			});
-
+		
 		galgame.new_usertype<IGalCharacter>("IGalCharacter",
 			"说", sol::yielding(&IGalCharacter::Say),
 			"语音", &IGalCharacter::Voice,
-			"添加立绘", &IGalCharacter::AddFigure,
-			"显示立绘", &IGalCharacter::ShowFigure,
+			"添加立绘", [](IGalCharacter& self, const String& state, const String& spritePath) -> void
+			{
+				return self.AddFigure(state, Core::GetAssetsPathVFS() + spritePath);
+			},
+			"显示立绘", [](IGalCharacter& self, const String& stateOrPath) -> IGalSprite*
+			{
+				return self.ShowFigure(stateOrPath);
+			},
 			"隐藏立绘", &IGalCharacter::HideFigure,
 			"添加立绘显示回调", &IGalCharacter::AddShowFigureCallback,
 			"清除全部立绘显示回调", &IGalCharacter::ClearShowFigureCallbacks,
@@ -279,22 +285,22 @@ namespace VisionGal::GalGame
 			"加载存档", &IGalGameEngine::LoadArchive,
 			"创建人物", &IGalGameEngine::CreateCharacter,
 			"显示背景", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Background", path); },
+				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Background", Core::GetAssetsPathVFS() + path); },
 				[](IGalGameEngine& self, const float4& color) ->IGalSprite* { return self.ShowColor("Background", color); }
 			),
 			"显示前景", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Foreground", path); },
+				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Foreground", Core::GetAssetsPathVFS() + path); },
 				[](IGalGameEngine& self, const float4& color) ->IGalSprite* { return self.ShowColor("Foreground", color); }
 			),
 			"显示屏幕", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Screen", path); },
+				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Screen", Core::GetAssetsPathVFS() + path); },
 				[](IGalGameEngine& self, const float4& color) ->IGalSprite* { return self.ShowColor("Screen", color); }
 			),
 			"播放背景视频", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalVideo* { return self.PlayVideo("Background", path); }
+				[](IGalGameEngine& self, const std::string& path) ->IGalVideo* { return self.PlayVideo("Background", Core::GetAssetsPathVFS() + path); }
 			),
-			"播放背景音乐", [](IGalGameEngine& self, const std::string& path) ->IGalAudio* { return self.PlayAudio("BGM", path); },
-			"播放效果音乐", [](IGalGameEngine& self, const std::string& path) ->IGalAudio* { return self.PlayAudio("Effect", path); },
+			"播放背景音乐", [](IGalGameEngine& self, const std::string& path) ->IGalAudio* { return self.PlayAudio("BGM", Core::GetAssetsPathVFS() + path); },
+			"播放效果音乐", [](IGalGameEngine& self, const std::string& path) ->IGalAudio* { return self.PlayAudio("Effect", Core::GetAssetsPathVFS() + path); },
 			"隐藏全部人物立绘", &IGalGameEngine::HideAllCharacterSprite,
 			"场景截图", &IGalGameEngine::CaptureSceneImage,
 			"获取数据桥", [](IGalGameEngine & self, const std::string& name)-> LuaDataBridge* { return LuaDataBridgeManager::GetInstance()->GetDataBridge(name); },

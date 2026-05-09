@@ -32,8 +32,6 @@ namespace VisionGal::Editor
 		void OnApplicationUpdate(float deltaTime) override;
 		int ProcessEvent(const SDL_Event& event) override;
 		void MakeCurrentRenderContext() override;
-
-		void InitializeEditorPanels();
 	private:
 		void InitializeEditorUI();
 		void AddImguiLayer();
@@ -47,6 +45,4 @@ namespace VisionGal::Editor
 		Scope<ImguiOpengl3Layer> m_ImguiOpengl3Layer;
 		Ref<CoreGameEngine> m_GameEngine;
 	};
-
-
 }

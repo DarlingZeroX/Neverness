@@ -36,5 +36,7 @@ namespace VisionGal::Editor
 
 		void OnGUI(unsigned int index,IVGSSequenceComponent* entry) override;
 		const std::string GetBindType() const override;
+
+		void TextureBeginDropTarget(IVGSSequenceComponent* entry);
 	};
 }

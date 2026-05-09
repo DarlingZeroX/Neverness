@@ -87,6 +87,10 @@ namespace VisionGal::GalGame
         return true;
     }
 
+    void LuaStoryScript::Tick(float deltaTime)
+    {
+    }
+
     void LuaStoryScript::PreLoadScriptResource()
     {
         std::istringstream inputStream(m_ScriptCode);

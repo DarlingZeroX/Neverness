@@ -10,9 +10,10 @@
 */
 
 #include "Sequence/ComponentDrawers.h"
-#include <VGGalgameScriptVisual/Include/VisualSequence/SequenceComponents.h>
+#include <VGGalgameScriptSequence/Include/Sequence/Components.h>
 #include <VGImgui/Include/Imgui/imgui.h>
 #include <VGImgui/IncludeImGuiEx.h>
+#include <VGCore/Interface/Loader.h>
 
 namespace VisionGal::Editor
 {
@@ -24,11 +25,11 @@ namespace VisionGal::Editor
 
 		ImGuiEx::InputText(
 			"##DialogueCharacterName", 
-			com->dialogueCharacterName
+			com->DialogueCharacterName
 		);
 		ImGuiEx::InputTextMultiline(
 			"##DialogueText", 
-			com->dialogueText, 
+			com->DialogueText, 
 			ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 4)
 		);
 	}
@@ -44,14 +45,14 @@ namespace VisionGal::Editor
 		if (com == nullptr)
 			return;
 
-		if (com->showState)
+		if (com->ShowState)
 		{
 			ImGui::ImageButton("Background", ImTextureRef(), ImVec2(100, 100));
 			ImGui::SameLine();
 		}
-		ImGui::Checkbox("Show Figure", &com->showState);
+		ImGui::Checkbox("Show Figure", &com->ShowState);
 		ImGui::SameLine();
-		ImGui::Checkbox("Wait", &com->wait);
+		ImGui::Checkbox("Wait", &com->Wait);
 	}
 
 	const std::string GSCD_ChangeFigure::GetBindType() const
@@ -64,19 +65,56 @@ namespace VisionGal::Editor
 		VGSSC_ChangeBackground* com = dynamic_cast<VGSSC_ChangeBackground*>(entry);
 		if (com == nullptr)
 			return;
-		
-		if (com->showState)
+
+		if (com->Temp.PreviewTexture == nullptr && com->TextureResourcePath.empty() == false)
+		if (auto tex = LoadObject<Texture2D>(com->TextureResourcePath))
 		{
-			ImGui::ImageButton("Background", ImTextureRef(), ImVec2(100, 100));
+			com->Temp.PreviewTexture = tex;
+		}
+		
+		if (com->ShowState)
+		{
+			ImTextureRef previewTexture;
+			if (com->Temp.PreviewTexture != nullptr){
+				previewTexture = com->Temp.PreviewTexture->GetTexture()->GetShaderResourceView();
+			}
+
+			ImGui::ImageButton("Background", previewTexture, ImVec2(100, 100));
+			TextureBeginDropTarget(com);
 			ImGui::SameLine();
 		}
-		ImGui::Checkbox("Show Figure", &com->showState);
+		ImGui::Checkbox("Show Figure", &com->ShowState);
 		ImGui::SameLine();
-		ImGui::Checkbox("Wait", &com->wait);
+		ImGui::Checkbox("Wait", &com->Wait);
 	}
 
 	const std::string GSCD_ChangeBackground::GetBindType() const
 	{
 		return VGSSC_ChangeBackground::StaticGetTypeNameID();
+	}
+
+	void GSCD_ChangeBackground::TextureBeginDropTarget(IVGSSequenceComponent* entry)
+	{
+		VGSSC_ChangeBackground* com = dynamic_cast<VGSSC_ChangeBackground*>(entry);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
+			{
+				std::string path = static_cast<char*>(payload->Data);
+
+				if (auto tex = LoadObject<Texture2D>(path))
+				{
+					com->Temp.PreviewTexture = tex;
+					com->TextureResourcePath = path;
+					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置视频成功!" });
+				}
+				else
+				{
+					ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置视频失败!" });
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
 	}
 }

@@ -16,7 +16,7 @@
 #include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 #include <VGEngine/Include/Engine/VGEngine.h>
-#include <VGEditorCore/Include/EditorCore/Localization.h>
+#include <VGEditorFramework/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor
 {

@@ -16,7 +16,8 @@
 #include "VGEngine/Include/Scene/GameActorFactory.h"
 #include "VGEngine/Interface/CoreLua.h"
 #include "VGGalgameScriptLua/Interface/LuaBinding.h"
-#include "VGGalgameScriptLua/Interface/GalgameScriptLua.h"
+#include "VGGalgameScriptLua/Module.h"
+#include "VGGalgameScriptSequence/Module.h"
 
 namespace VisionGal
 {
@@ -56,6 +57,7 @@ namespace VisionGal
 		});
 
 		// 注册Lua脚本模块
-		GalGame::GalGameScriptLua::Initialize();
+		GalGame::GalGameLuaScriptModule::MountEngineRuntime();
+		GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 	}
 }

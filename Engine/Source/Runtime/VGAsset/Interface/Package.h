@@ -17,6 +17,8 @@
 
 namespace VisionGal
 {
+	VG_ASSET_API std::string GetAssetTypeNameID(const String& path);
+
 	struct VG_ASSET_API VGPackage
 	{
 		VGPackage() = default;

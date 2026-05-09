@@ -487,9 +487,10 @@ namespace VisionGal::GalGame
 		return 0.f;
 	}
 
-	GalCharacter::GalCharacter(const std::string& name)
+	GalCharacter::GalCharacter(IGalGameEngine* engine, const std::string& name)
 	{
-		this->m_Name = name;
+		m_Engine = engine;
+		m_Name = name;
 	}
 
 	std::string GalCharacter::GetName()
@@ -578,7 +579,7 @@ namespace VisionGal::GalGame
 		// 显示立绘
 		//auto& path = result->second;
 		//auto* sprite = engine->ShowSprite("Scene", path);
-		auto* sprite = engine->ShowSprite("SceneCharacterSpriteCurrent", path);
+		auto* sprite = engine->ShowSprite("SceneCharacterSpriteCurrent", Core::GetAssetsPathVFS() + path);
 
 		if (sprite == nullptr)
 			return nullptr;

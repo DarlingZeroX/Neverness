@@ -38,6 +38,6 @@ target_include_directories(VGNodeGraphApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/In
 #find_package(SDL3 CONFIG REQUIRED)
 
 # 链接库
-target_link_libraries(VGNodeGraphApp PRIVATE VGEditorComponent)
+target_link_libraries(VGNodeGraphApp PRIVATE VGEditorFramework)
 #target_link_libraries(VGNodeGraphApp PRIVATE HNGEditorCore)
 target_link_libraries(VGNodeGraphApp PRIVATE VGEditorGalgame)

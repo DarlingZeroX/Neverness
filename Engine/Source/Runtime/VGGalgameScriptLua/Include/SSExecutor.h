@@ -27,14 +27,13 @@ namespace VisionGal::GalGame
 
 		static Ref<LuaStoryScript> LoadFromFile(const String& file);
 		bool Run(IGalGameEngine* engine) override;
+		void Tick(float deltaTime) override;
 
 		sol::coroutine GetCoroutine() { return m_Coroutine; }
 		void PreLoadScriptResource() override;
-
 		std::filesystem::file_time_type GetScriptLastWriteTime() const override { return m_ScriptLastWriteTime; }
 
 		void ContinueDialogue() override;
-
 		void OnChoiceSelected(const std::string& id,const std::vector<std::string>& options,int currentChoice) override; 
 		void OnInputSubmitted(const std::string& id, const std::string& text) override; 
 	private:

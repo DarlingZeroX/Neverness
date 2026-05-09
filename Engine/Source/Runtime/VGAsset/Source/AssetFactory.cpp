@@ -31,6 +31,17 @@ namespace VisionGal
 		m_AssetFactoryInstances.push_back(MakeScope<GalGameStoryScriptFactory>());
 	}
 
+	EngineAssetFactory& EngineAssetFactory::Get()
+	{
+		static EngineAssetFactory factory;
+		return factory;
+	}
+
+	void EngineAssetFactory::RegisterFactory(Scope<IAssetFactoryInstance> factoryInstance)
+	{
+		m_AssetFactoryInstances.push_back(std::move(factoryInstance));
+	}
+
 	Ref<VGAsset> EngineAssetFactory::CreateAsset(const String& path, const String& type)
 	{
 		for (auto& factory: m_AssetFactoryInstances)
@@ -187,7 +198,7 @@ namespace VisionGal
 
 	std::string GalGameStoryScriptFactory::GetFactoryType()
 	{
-		return "GalGameStoryScript";
+		return GLuaScriptAssetType{}.GetNameID();
 	}
 
 	Ref<VGAsset> GalGameStoryScriptFactory::CreateAsset(const String& path)
@@ -195,7 +206,7 @@ namespace VisionGal
 		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
-		Ref<GalGameStoryScriptAsset> asset = MakeRef<GalGameStoryScriptAsset>();
+		Ref<GalGameLuaScriptAsset> asset = MakeRef<GalGameLuaScriptAsset>();
 
 		// 获取UI模版文档
 		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/galgameStoryScript.lua";
@@ -204,7 +215,7 @@ namespace VisionGal
 		if (VFS::ReadTextFromFile(templatePath, templateText))
 		{
 			// 先得到保存路径
-			auto aPath = GenerateAssetPath(absolutePath, "storyScript", ".lua");
+			auto aPath = GenerateAssetPath(absolutePath, "GalGameScript", ".lua");
 			auto rPath = VFS::GetResourcePathVFS(aPath);
 
 			// 写入资产数据
@@ -219,11 +230,5 @@ namespace VisionGal
 		}
 
 		return nullptr;
-	}
-
-	EngineAssetFactory* GetEngineAssetFactory()
-	{
-		static EngineAssetFactory factory;
-		return &factory;
 	}
 }

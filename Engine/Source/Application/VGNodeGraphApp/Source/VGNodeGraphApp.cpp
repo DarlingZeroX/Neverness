@@ -14,8 +14,7 @@
 #include <HFileSystem/Interface/HFileSystem.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
-#include <VGEditorCore/IncludeCore.h>
-#include "VGEditorComponent/Framework.h"
+#include "VGEditorFramework/Framework.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGEngine/Include/Engine/Manager.h"
 #include "VGEngine/Include/Project/ProjectSettings.h"
@@ -62,9 +61,6 @@ namespace VisionGal::Editor
 
 		// 设置主题
 		EditorStyle::DarkTheme();
-
-		// 创建Imgui的UI任务执行器
-		ImGuiEx::ImTaskManager::CreateManager();
 	}
 
 	void VGNodeGraphApp::AddImguiLayer()
@@ -119,7 +115,7 @@ namespace VisionGal::Editor
 	{
 		m_ImguiOpengl3Layer->BeginFrame();
 		PanelManager::GetInstance()->OnGUI();
-		ImGuiEx::ImTaskManager::GetInstance().RenderUITask();
+		ImGuiEx::ImTaskManager::Get().RenderUITask();
 		ImGuiEx::RenderNotifications();
 		m_ImguiOpengl3Layer->EndFrame();
 	}

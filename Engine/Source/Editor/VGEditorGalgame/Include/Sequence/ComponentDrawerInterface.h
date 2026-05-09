@@ -10,8 +10,8 @@
 */
 
 #pragma once
-#include <VGEditorCore/Interface/UIInterface.h>
-#include <VGGalgameScriptVisual/Interface/IVGSSequenceComponent.h>
+#include <VGEditorFramework/Interface/UIInterface.h>
+#include <VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h>
 
 namespace VisionGal::Editor
 {

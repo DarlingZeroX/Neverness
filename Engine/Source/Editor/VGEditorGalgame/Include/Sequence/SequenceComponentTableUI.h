@@ -15,7 +15,7 @@
 #include <vector>
 #include <string>
 #include "EntryUIData.h"
-#include "VGGalgameScriptVisual/Include/VisualSequence/SequenceComponents.h"
+#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 
 namespace VisionGal::Editor
 {

@@ -11,7 +11,7 @@
 
 #include "MainWindow.h"
 #include <VGImgui/IncludeImGui.h>
-#include <VGEditorCore/Include/EditorCore/Localization.h>
+#include <VGEditorFramework/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor
 {

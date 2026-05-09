@@ -196,7 +196,7 @@ namespace VisionGal::GalGame
 
 	IGalCharacter* GalGameEngine::CreateCharacter(const String& name)
 	{
-		GalCharacter* character = new GalCharacter(name);
+		GalCharacter* character = new GalCharacter(this, name);
 
 		m_LayeredSceneManager->AddCharacter(character);
 

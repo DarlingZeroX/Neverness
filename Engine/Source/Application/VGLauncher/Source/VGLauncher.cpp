@@ -17,8 +17,7 @@
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <VGCore/Include/Core/VFS.h>
 #include <VGUI/Interface/UISystem.h>
-#include <VGEditorComponent/Framework.h>
-#include <VGEditorCore/IncludeCore.h>
+#include <VGEditorFramework/Framework.h>
 
 namespace VisionGal::Editor
 {

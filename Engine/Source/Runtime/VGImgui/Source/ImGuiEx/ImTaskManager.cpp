@@ -2,9 +2,11 @@
 #include "ImGuiEx/ImTaskManager.h"
 
 namespace ImGuiEx {
-	void ImTaskManager::CreateManager()
+
+	ImTaskManager& ImTaskManager::Get()
 	{
-		new ImTaskManager();
+		static ImTaskManager s_TaskManager;
+		return s_TaskManager;
 	}
 
 	std::shared_ptr<ImTaskInterface::Task> ImTaskManager::NewTask(
@@ -67,7 +69,7 @@ namespace ImGuiEx {
 
 	Ref<ImTaskInterface::Task> NewUITask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags)
 	{
-		return ImTaskManager::GetInstance().NewTask(
+		return ImTaskManager::Get().NewTask(
 			task,
 			taskName,
 			flags

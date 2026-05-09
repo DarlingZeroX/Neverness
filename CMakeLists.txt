@@ -54,14 +54,12 @@ add_subdirectory ("Engine/Source/Runtime/VGEngine")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameCore")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameRuntime")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptLua")
-add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptVisual")
+add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptSequence")
 add_subdirectory ("Engine/Source/Runtime/VGGalgame")
 
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
-#add_subdirectory ("Engine/Source/Editor/HNGEditor")
-add_subdirectory ("Engine/Source/Editor/VGEditorCore")
-add_subdirectory ("Engine/Source/Editor/VGEditorComponent")
+add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
 add_subdirectory ("Engine/Source/Editor/VGEditorGalgame")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 

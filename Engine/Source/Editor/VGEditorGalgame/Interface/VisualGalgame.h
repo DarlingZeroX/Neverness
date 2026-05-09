@@ -13,8 +13,7 @@
 #include <memory>
 #include <string>
 #include "../VGGalEditorConfig.h"
-#include "../Include/Sequence/ScriptSequenceUI.h"
-
+#include "SequenceEditor.h"
 
 namespace VisionGal::Editor
 {
@@ -29,6 +28,6 @@ namespace VisionGal::Editor
 		void DrawEditorWindow();
 
 	private:
-		VGScriptSequenceUI m_ScriptSequence;
+		VGScriptSequenceEditor m_ScriptSequence;
 	};
 }

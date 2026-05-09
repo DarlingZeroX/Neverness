@@ -143,7 +143,7 @@ namespace VisionGal::Editor
 	{
 		m_ImguiOpengl3Layer->BeginFrame();
 		PanelManager::GetInstance()->OnGUI();
-		ImGuiEx::ImTaskManager::GetInstance().RenderUITask();
+		ImGuiEx::ImTaskManager::Get().RenderUITask();
 		ImGuiEx::RenderNotifications();
 		m_ImguiOpengl3Layer->EndFrame();
 	}

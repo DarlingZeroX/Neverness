@@ -17,6 +17,15 @@
 
 namespace VisionGal
 {
+	std::string GetAssetTypeNameID(const String& path)
+	{
+		VGAssetMetaData data;
+		if (VGPackage::GetMeatData(path, data))
+			return  data.AssetType;
+
+		return "";
+	}
+
 	VGPackage::VGPackage(const String& path)
 	{
 		m_VirtualDataFilePath = path;

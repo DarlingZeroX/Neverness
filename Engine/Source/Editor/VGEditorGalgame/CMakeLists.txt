@@ -42,7 +42,7 @@ target_include_directories(VGEditorGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/
 target_include_directories(VGEditorGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGEditorGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-target_link_libraries(VGEditorGalgame PUBLIC VGEditorComponent)
+target_link_libraries(VGEditorGalgame PUBLIC VGEditorFramework)
 target_link_libraries(VGEditorGalgame PUBLIC HNGEditorCore)
 target_link_libraries(VGEditorGalgame PUBLIC VGGalgame)
 target_link_libraries(VGEditorGalgame PUBLIC VGGalgameRuntime)

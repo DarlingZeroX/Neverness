@@ -1,0 +1,45 @@
+{
+  "formatVersion": 1,
+  "sequence": [
+    {
+      "data": {
+        "showState": true,
+        "textureID": 0,
+        "textureResourcePath": "/assets/图片\\背景\\学校操场.png",
+        "wait": false
+      },
+      "sequenceIndex": 1,
+      "type": "ChangeBackground"
+    },
+    {
+      "data": {
+        "characterID": 0,
+        "dialogueCharacterName": "梦旅缘心",
+        "dialogueText": "”谁想进步了？”超长古风dj合集 速听！",
+        "wait": true
+      },
+      "sequenceIndex": 0,
+      "type": "CommonDialogue"
+    },
+    {
+      "data": {
+        "characterID": 0,
+        "dialogueCharacterName": "缘心",
+        "dialogueText": "各位领导，新年好，您们看我升6级的这个事……我实在太想进步了！",
+        "wait": true
+      },
+      "sequenceIndex": 2,
+      "type": "CommonDialogue"
+    },
+    {
+      "data": {
+        "characterID": 0,
+        "dialogueCharacterName": "梦旅",
+        "dialogueText": "天下英雄如过江之鲫.”|《麒麟dj》Remix | 高燃小曲",
+        "wait": true
+      },
+      "sequenceIndex": 3,
+      "type": "CommonDialogue"
+    }
+  ]
+}

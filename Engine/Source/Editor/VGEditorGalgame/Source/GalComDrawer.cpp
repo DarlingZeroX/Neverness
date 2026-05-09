@@ -10,13 +10,16 @@
  */
 
 #include "GalComDrawer.h"
-#include <VGEditorCore/Include/EditorCore/Localization.h>
+#include <VGEditorFramework/Include/EditorCore/Localization.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiEx/ImGuiVector.h>
 #include <VGGalgame/Include/GalGameEngine.h>
 #include <VGGalgameCore/Include/Components.h>
 #include <VGAsset/Interface/Package.h>
 #include <VGGalgameCore/Interface/GameEngineCore.h>
+
+#include "VGAsset/Include/GalGameAsset.h"
+#include "VGGalgameScriptSequence/Include/Asset/Asset.h"
 
 namespace VisionGal::Editor
 {
@@ -120,7 +123,7 @@ namespace VisionGal::Editor
 
 				// 检查文件类型
 				auto assetType = VGPackage::GetAssetType(path);
-				if (assetType != "GalGameStoryScript" && assetType != "LuaScript")
+				if (!GalGame::GalGameScriptExecutorFactory::Get().HasExecutor(assetType))
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Error, "错误文件类型!" });
 					ImGui::EndDragDropTarget();
