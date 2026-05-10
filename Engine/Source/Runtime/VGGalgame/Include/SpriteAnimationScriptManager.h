@@ -11,6 +11,7 @@
  
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Interface/GameInterface.h"
+#include <VGGalgameCore/Interface/IGameEngine.h>
 
 namespace VisionGal::GalGame {
 
@@ -19,9 +20,9 @@ namespace VisionGal::GalGame {
 	public:
 		static SpriteTransformScriptManager* GetInstance();
 
-		static Ref<IAnimationScript> CreateSpriteTransformWithCommand(IGameActor* actor, const String& cmd);
+		static Ref<IAnimationScript> CreateSpriteTransformWithCommand(IGalGameEngine* engine, IGameActor* actor, const String& cmd);
 
-		static bool StartSpriteTransformWithCommand(IGameActor* actor, const String& cmd);
+		static bool StartSpriteTransformWithCommand(IGalGameEngine* engine, IGameActor* actor, const String& cmd);
 	};
 
 }

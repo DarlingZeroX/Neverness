@@ -13,7 +13,7 @@
 #include <VGEditorFramework/Interface/UIInterface.h>
 #include <HNGEditorCore/Interface/NodeGraphEditor.h>
 
-#include "VGEditorGalgame/Interface/NGEditorGalgame.h"
+#include "VGEditorGalgame/Module.h"
 #include "VGEditorGalgame/Interface/VisualGalgame.h"
 
 namespace VisionGal::Editor

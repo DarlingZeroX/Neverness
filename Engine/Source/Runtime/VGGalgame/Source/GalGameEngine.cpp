@@ -102,6 +102,7 @@ namespace VisionGal::GalGame
 	void GalGameEngine::CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext)
 	{
 		m_GalGameContext = MakeRef<GalGameContext>();
+		m_GalGameContext->Engine = this;
 
 		// 初始化对话系统
 		m_DialogueSystem = MakeRef<DialogueSystem>();

@@ -60,6 +60,7 @@ add_subdirectory ("Engine/Source/Runtime/VGGalgame")
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
 add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
+add_subdirectory ("Engine/Source/Editor/VGEditorGalgameSequence")
 add_subdirectory ("Engine/Source/Editor/VGEditorGalgame")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 
@@ -74,6 +75,7 @@ add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应
 ########## 加载 Tests 目录下所有子测试项目
 if (ENABLE_TESTS)
     enable_testing()
+    add_subdirectory("Engine/Source/Tests/VGEditorGalgameSequenceTest")
       
     # add_subdirectory("Tests/VGLauncherTest")
     # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")

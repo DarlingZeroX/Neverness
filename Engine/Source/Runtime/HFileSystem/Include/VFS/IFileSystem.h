@@ -1,11 +1,13 @@
 #ifndef IFILESYSTEM_H
 #define IFILESYSTEM_H
 
+#undef CreateFile // windows.h define CreateFile macro which cause compile error
+
 #include "IFile.h"
 
 namespace vfspp
 {
-
+	
 using IFileSystemPtr = std::shared_ptr<class IFileSystem>;
 using IFileSystemWeakPtr = std::weak_ptr<class IFileSystem>;
 

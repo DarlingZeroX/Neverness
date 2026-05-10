@@ -23,7 +23,6 @@
 #include <exception>
 #include <iostream>
 #include <sstream>
-
 #include "Scene/SceneSystem.h"
 
 namespace VisionGal

@@ -12,7 +12,7 @@
 
 #include <memory>
 #include <string>
-#include "../VGGalEditorConfig.h"
+#include "../VGEGExport.h"
 #include "SequenceEditor.h"
 
 namespace VisionGal::Editor

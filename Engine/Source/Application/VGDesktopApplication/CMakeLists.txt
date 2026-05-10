@@ -40,6 +40,7 @@ target_compile_definitions(VGDesktopApplication PRIVATE EDITOR_PROJECT_ROOT_DIR=
 target_include_directories(VGDesktopApplication PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(VGDesktopApplication PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGDesktopApplication PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-
+ 
 # 链接库
 target_link_libraries(VGDesktopApplication PRIVATE VGEditorFramework)
+target_link_libraries(VGDesktopApplication PRIVATE VGEditorGalgame)

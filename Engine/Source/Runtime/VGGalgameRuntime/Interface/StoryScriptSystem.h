@@ -17,6 +17,7 @@
 #include "VGGalgameCore/Interface/IStoryScriptSystem.h"
 #include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
+#include "StoryExecutionInstance.h"
 
 namespace VisionGal::GalGame
 {
@@ -27,6 +28,8 @@ namespace VisionGal::GalGame
 		bool ReloadStoryScript() override;	/// 重新加载剧情脚本
 		bool LoadStoryScript(const String& path) override;	/// 加载指定路径的剧情脚本
 		bool LoadStoryScriptOnUpdate(const String& path) override;	/// 在更新时加载指定路径的剧情脚本
+
+		IStoryExecutionInstance* GetExecutionInstance(unsigned int id = 0) const override;
 
 		std::string GetCurrentStoryScriptPath() override;
 		std::filesystem::file_time_type GetScriptLastWriteTime() const override;
@@ -57,7 +60,8 @@ namespace VisionGal::GalGame
 		IGameEngineContext* m_GameEngineContext = nullptr;
 		IGalGameEngine* m_GalGameEngine = nullptr;
 
-		Ref<IStoryScriptExecutor> m_StoryScript = nullptr;			// 当前加载的剧情脚本对象，使用 Lua 脚本语言编写。
+		Ref<IStoryScriptExecutor> m_StoryScript = nullptr;	
+		Ref<StoryExecutionInstance> m_ExecutionInstance = nullptr;	// 当前的剧情执行实例，负责管理剧情脚本的执行状态和相关数据。
 
 		struct WaitStruct
 		{

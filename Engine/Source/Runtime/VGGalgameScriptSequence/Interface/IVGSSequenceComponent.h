@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include <HCore/Interface/HConfig.h>
 #include "../GSSExport.h"
 #include "VGSTypeDefine.h"
@@ -68,6 +69,9 @@ namespace VisionGal
 		}
 
 		Ref<IVGSSequenceComponent> CreateSequenceEntryByTypeNameID(const std::string& typeNameID);
+
+		/// Fills `outSorted` with registered type name IDs (sorted) for editor bootstrap / tooling.
+		void EnumerateRegisteredTypeNameIDs(std::vector<std::string>& outSorted) const;
 
 		std::unordered_map<std::string, Ref<IVGSSequenceComponent>> RegisteredComponents;
 	};

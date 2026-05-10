@@ -7,6 +7,7 @@
 #include "MemoryFile.hpp"
 
 namespace fs = std::filesystem;
+#undef CreateFile // windows.h define CreateFile macro which cause compile error
 
 namespace vfspp
 {

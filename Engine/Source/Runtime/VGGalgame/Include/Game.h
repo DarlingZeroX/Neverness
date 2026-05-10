@@ -26,7 +26,7 @@ namespace VisionGal::GalGame
 	class GalSprite : public IGalSprite
 	{
 	public:
-		GalSprite(const std::string& layer, const std::string& path);
+		GalSprite(IGalGameEngine* engine, const std::string& layer, const std::string& path);
 		GalSprite(const GalSprite&) = delete;
 		GalSprite& operator=(const GalSprite&) = delete;
 		GalSprite(GalSprite&&) noexcept = default;
@@ -64,6 +64,7 @@ namespace VisionGal::GalGame
 
 		void Cut(const std::string& cut) override;
 
+		IGalGameEngine* m_Engine;
 		std::string m_Path;
 		std::string m_Layer;
 		IGameActor* m_Actor = nullptr;
@@ -73,7 +74,7 @@ namespace VisionGal::GalGame
 	class GalAudio: public IGalAudio
 	{
 	public:
-		GalAudio(const std::string& layer, const std::string& path);
+		GalAudio(IGalGameEngine* engine, const std::string& layer, const std::string& path);
 		GalAudio(const GalAudio&) = delete;
 		GalAudio& operator=(const GalAudio&) = delete;
 		GalAudio(GalAudio&&) noexcept = default;
@@ -94,6 +95,7 @@ namespace VisionGal::GalGame
 
 		IGalAudio* With(const std::string& transform) override;
 
+		IGalGameEngine* m_Engine;
 		std::string m_Path;
 		std::string m_Layer;
 		IGameActor* m_Actor = nullptr;
@@ -102,7 +104,7 @@ namespace VisionGal::GalGame
 	class GalVideo: public IGalVideo
 	{
 	public:
-		GalVideo(const std::string& layer, const std::string& path);
+		GalVideo(IGalGameEngine* engine, const std::string& layer, const std::string& path);
 		GalVideo(const GalVideo&) = delete;
 		GalVideo& operator=(const GalVideo&) = delete;
 		GalVideo(GalVideo&&) noexcept = default;
@@ -123,6 +125,7 @@ namespace VisionGal::GalGame
 
 		//virtual GalAudio* With(const std::string& transform);
 
+		IGalGameEngine* m_Engine;
 		std::string m_Path;
 		std::string m_Layer;
 		IGameActor* m_Actor = nullptr;

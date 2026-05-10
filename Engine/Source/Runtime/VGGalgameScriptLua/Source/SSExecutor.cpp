@@ -45,6 +45,8 @@ namespace VisionGal::GalGame
 
     bool LuaStoryScript::Run(IGalGameEngine* engine)
     {
+		m_Engine = engine;
+
 		// 记录脚本最后修改时间 
 		auto absPath = VFS::GetInstance()->AbsolutePath(GetResourcePath());
 		if (Horizon::HFileSystem::ExistsFile(absPath))
@@ -91,8 +93,16 @@ namespace VisionGal::GalGame
     {
     }
 
+    IRuntimeInterface* LuaStoryScript::QueryInterface(InterfaceID id)
+    {
+		return nullptr;
+    }
+
     void LuaStoryScript::PreLoadScriptResource()
     {
+		if (m_Engine == nullptr)
+			return;
+
         std::istringstream inputStream(m_ScriptCode);
         std::string line;
 
@@ -114,7 +124,7 @@ namespace VisionGal::GalGame
 
         // 预加载资源
         for (const auto& path : resourcePaths) {
-            GameEngineCore::GetCurrentEngine()->PreLoadResource(path);
+			m_Engine->PreLoadResource(path);
         }
     }
 

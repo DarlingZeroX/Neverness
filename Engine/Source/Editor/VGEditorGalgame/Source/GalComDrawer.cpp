@@ -65,7 +65,7 @@ namespace VisionGal::Editor
 				ImGui::TableSetColumnIndex(1);
 				if (ImGui::Button(ICON_FA_REDO "##Reload Story Script"))
 				{
-					dynamic_cast<GalGame::GalGameEngine*>(GalGame::GameEngineCore::GetCurrentEngine())->ReloadStoryScript();
+					GalGame::GameEngineCore::GetCurrentEngine()->ReloadStoryScript();
 				}
 			}
 

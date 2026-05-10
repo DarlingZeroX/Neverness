@@ -13,6 +13,7 @@
 #include "GalGameRuntimeState.h"
 #include "GalGameEvent.h"
 #include "ArchiveDataContainer.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 
 namespace VisionGal::GalGame
 {
@@ -23,10 +24,13 @@ namespace VisionGal::GalGame
 			archiveData = MakeRef<ArchiveDataContainer>();
 		}
 
+		IGalGameEngine* Engine = nullptr;
+
 		GalEngineEventBus engineEventBus;
 		GalGameUIEventBus uiEventBus;
 
 		GalGameRuntimeState runtimeState;
 		Ref<ArchiveDataContainer> archiveData = nullptr;
+
 	};
 }

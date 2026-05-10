@@ -83,7 +83,7 @@ namespace VisionGal::GalGame
 			return nullptr;
 
 		// 创建GalGame的图片类
-		GalSprite* sprite = new GalSprite(layer, path);
+		GalSprite* sprite = new GalSprite(m_GalGameContext->Engine, layer, path);
 		sprite->m_Actor = actor;
 		sprite->m_GalState = &m_GalGameContext->runtimeState;
 
@@ -132,7 +132,7 @@ namespace VisionGal::GalGame
 	GalAudio* ResourceSystem::AddAudio(IGameActor* actor, const std::string& layer, const std::string& path)
 	{
 		// 创建GalGame的音频类
-		GalAudio* audio = new GalAudio(layer, path);
+		GalAudio* audio = new GalAudio(m_GalGameContext->Engine, layer, path);
 		audio->m_Actor = actor;
 
 		// 添加到管理器
@@ -165,7 +165,7 @@ namespace VisionGal::GalGame
 	GalVideo* ResourceSystem::AddVideo(IGameActor* actor, const std::string& layer, const std::string& path)
 	{
 		// 创建GalGame的视频类
-		GalVideo* video = new GalVideo(layer, path);
+		GalVideo* video = new GalVideo(m_GalGameContext->Engine, layer, path);
 		video->m_Actor = actor;
 
 		// 添加到管理器

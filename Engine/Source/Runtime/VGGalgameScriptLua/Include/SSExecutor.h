@@ -28,6 +28,7 @@ namespace VisionGal::GalGame
 		static Ref<LuaStoryScript> LoadFromFile(const String& file);
 		bool Run(IGalGameEngine* engine) override;
 		void Tick(float deltaTime) override;
+		IRuntimeInterface* QueryInterface(InterfaceID id) override;
 
 		sol::coroutine GetCoroutine() { return m_Coroutine; }
 		void PreLoadScriptResource() override;
@@ -39,6 +40,7 @@ namespace VisionGal::GalGame
 	private:
 		bool LoadScript(const String& file);
 	private:
+		IGalGameEngine* m_Engine = nullptr;
 		String m_ScriptCode;
 		sol::state m_LuaState;
 		sol::coroutine m_Coroutine;

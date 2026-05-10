@@ -8,7 +8,7 @@
 */
 #pragma once
 
-#include "../VGGalEditorConfig.h"
+#include "../VGEGExport.h"
 
 #include <HNGRuntimeCore/Include/NodeRegistry.h>
 #include <HNGEditorCore/Include/NodeEditorRegistry.h>

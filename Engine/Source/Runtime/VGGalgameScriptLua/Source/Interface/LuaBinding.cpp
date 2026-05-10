@@ -69,7 +69,7 @@ namespace VisionGal::GalGame
 			"语音", &IGalCharacter::Voice,
 			"添加立绘", [](IGalCharacter& self, const String& state, const String& spritePath) -> void
 			{
-				return self.AddFigure(state, Core::GetAssetsPathVFS() + spritePath);
+				return self.AddFigure(state, spritePath);
 			},
 			"显示立绘", [](IGalCharacter& self, const String& stateOrPath) -> IGalSprite*
 			{

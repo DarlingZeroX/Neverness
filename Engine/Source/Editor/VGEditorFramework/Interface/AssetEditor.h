@@ -22,6 +22,7 @@ namespace VisionGal::Editor
 	struct VG_EDITOR_FRAMEWORK_API AssetEditor
 	{
 		void OpenAsset(const VGPath& path, const VGAssetMetaData& metaData);
+		void OpenAsset(const VGPath& path);
 
 		void RegisterHandler(std::string type, std::function<void(const VGPath&)> handle);
 

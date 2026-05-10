@@ -17,32 +17,10 @@
 #include "../GSSExport.h"
 #include "../Interface/IVGSSequenceRuntimeSystem.h"
 #include "SequenceExecutionContext.h"
+#include "SequenceRuntimeTypes.h"
 
 namespace VisionGal::GalGame
 {
-	//struct IVGSSequenceComponent;
-
-	/**
-	 * @brief Sequence 播放器生命周期状态。
-	 */
-	enum class ESSSequenceExecutorState
-	{
-		Stopped,
-		Playing,
-		Paused,
-		Finished
-	};
-
-	/**
-	 * @brief 轻量调试快照（Editor / Debugger / Runtime Inspector）。
-	 */
-	struct VG_GSS_API SSSequenceRuntimeDebugInfo
-	{
-		std::size_t CurrentIndex = 0;
-		std::string CurrentComponentType;
-		bool Waiting = false;
-	};
-
 	/**
 	 * @brief Visual Sequence 执行器 —— 数据驱动 + 可扩展 RuntimeSystem 注册表。
 	 */
@@ -62,6 +40,8 @@ namespace VisionGal::GalGame
 
 		/// 注册运行时域（查找时逆序遍历 CanExecute：后注册者可覆盖内置系统的匹配）。
 		void RegisterRuntimeSystem(std::unique_ptr<IVGSSequenceRuntimeSystem> system);
+
+		IRuntimeInterface* QueryInterface(InterfaceID id);
 
 		void Play();
 		void Pause();
@@ -105,5 +85,7 @@ namespace VisionGal::GalGame
 
 		/// 由 RuntimeSystem 报告的播放栅栏（对话 / 动画 / 异步等）。
 		bool m_PlaybackWaiting = false;
+
+		SSSequenceRuntimeDebugInfo m_RuntimeDebugInfo;
 	};
 }

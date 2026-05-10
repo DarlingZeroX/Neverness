@@ -1,6 +1,8 @@
 #ifndef NATIVEFILESYSTEM_HPP
 #define NATIVEFILESYSTEM_HPP
 
+#undef CreateFile // windows.h define CreateFile macro which cause compile error
+
 #include "IFileSystem.h"
 #include "Global.h"
 #include "StringUtils.hpp"

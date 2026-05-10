@@ -32,6 +32,7 @@ namespace VisionGal::GalGame
 
 		bool Run(IGalGameEngine* engine) override;
 		void Tick(float deltaTime) override;
+		IRuntimeInterface* QueryInterface(InterfaceID id) override;
 
 		void ContinueDialogue() override;
 		void OnChoiceSelected(const std::string& id,const std::vector<std::string>& options,int currentChoice) override; 

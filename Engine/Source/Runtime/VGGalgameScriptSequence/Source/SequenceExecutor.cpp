@@ -43,6 +43,17 @@ namespace VisionGal::GalGame
 		m_RuntimeSystems.push_back(std::move(system));
 	}
 
+	IRuntimeInterface* SSSequenceExecutor::QueryInterface(InterfaceID id)
+	{
+		if (id == typeid(SSSequenceRuntimeDebugInfo))
+		{
+			m_RuntimeDebugInfo = BuildRuntimeDebugInfo();
+			return &m_RuntimeDebugInfo;
+		}
+
+		return nullptr;
+	}
+
 	void SSSequenceExecutor::Play()
 	{
 		if (!HasValidSequenceBinding(m_ExecutionContext))

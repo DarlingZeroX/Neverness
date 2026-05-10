@@ -11,13 +11,31 @@
 
 #pragma once
 #include <string>
+#include <VGCore/Include/Data/DataVariant.h>
+#include <VGCore/Interface/Interface.h>
 
 namespace VisionGal::GalGame
 {
+	struct IStoryExecutionInstance
+	{
+		virtual ~IStoryExecutionInstance() = default;
+
+		virtual void Tick(float deltaTime) = 0;
+		virtual void Continue() = 0;
+		virtual IRuntimeInterface* QueryInterface(InterfaceID id) = 0;
+
+		template<typename T>
+		T* ExecutionQuery() {
+			return static_cast<T*>(QueryInterface(typeid(T)));
+		}
+	};
+
 	struct IStoryScriptSystem
 	{
-	public:
+		virtual ~IStoryScriptSystem() = default;
+
 		// 剧情脚本相关接口
+		virtual IStoryExecutionInstance* GetExecutionInstance(unsigned int id = 0) const = 0;
 		virtual bool ReloadStoryScript() = 0;	/// 重新加载剧情脚本
 		virtual bool LoadStoryScript(const std::string& path) = 0;	/// 加载指定路径的剧情脚本
 		virtual bool LoadStoryScriptOnUpdate(const std::string& path) = 0;	/// 在更新时加载指定路径的剧情脚本

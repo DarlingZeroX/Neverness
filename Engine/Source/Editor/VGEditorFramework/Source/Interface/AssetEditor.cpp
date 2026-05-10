@@ -67,6 +67,11 @@ namespace VisionGal::Editor
 		}
 	}
 
+	void AssetEditor::OpenAsset(const VGPath& path)
+	{
+		return OpenAsset(path, GetAssetTypeNameID(path));
+	}
+
 	void AssetEditor::RegisterHandler(std::string type, std::function<void(const VGPath&)> handle)
 	{
 		m_Handlers[type] = handle;

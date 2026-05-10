@@ -88,6 +88,8 @@ namespace VisionGal::GalGame
 			evt.EventType = GalGameScriptEventType::OnScriptFinishedLoad;
 			m_GalGameContext->engineEventBus.OnStoryScriptEvent.Invoke(evt);
 		}
+
+		m_ExecutionInstance = MakeRef<StoryExecutionInstance>(m_StoryScript);
 	}
 
 	bool StoryScriptSystem::LoadStoryScriptOnUpdate(const String& path)
@@ -97,6 +99,14 @@ namespace VisionGal::GalGame
 				LoadStoryScript(path);
 			});
 		return true;
+	}
+
+	IStoryExecutionInstance* StoryScriptSystem::GetExecutionInstance(unsigned int id) const
+	{
+		if (!m_ExecutionInstance)
+			return nullptr;
+
+		return m_ExecutionInstance.get();
 	}
 
 	std::string StoryScriptSystem::GetCurrentStoryScriptPath()

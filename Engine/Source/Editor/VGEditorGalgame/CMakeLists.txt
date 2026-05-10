@@ -21,14 +21,12 @@ file(GLOB EDITOR_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Sequence/*.h"
 )
 
 file(GLOB EDITOR_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Sequence/*.cpp"
 )
 
 add_library (VGEditorGalgame SHARED ${EDITOR_HEADER_FILES} ${EDITOR_SRC_FILES})
@@ -42,6 +40,7 @@ target_include_directories(VGEditorGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/
 target_include_directories(VGEditorGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGEditorGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
+target_link_libraries(VGEditorGalgame PUBLIC VGEditorGalgameSequence)
 target_link_libraries(VGEditorGalgame PUBLIC VGEditorFramework)
 target_link_libraries(VGEditorGalgame PUBLIC HNGEditorCore)
 target_link_libraries(VGEditorGalgame PUBLIC VGGalgame)

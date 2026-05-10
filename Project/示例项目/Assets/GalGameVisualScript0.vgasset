@@ -8,7 +8,7 @@
         "textureResourcePath": "/assets/图片\\背景\\学校操场.png",
         "wait": false
       },
-      "sequenceIndex": 1,
+      "sequenceIndex": 0,
       "type": "ChangeBackground"
     },
     {
@@ -18,7 +18,7 @@
         "dialogueText": "”谁想进步了？”超长古风dj合集 速听！",
         "wait": true
       },
-      "sequenceIndex": 0,
+      "sequenceIndex": 1,
       "type": "CommonDialogue"
     },
     {

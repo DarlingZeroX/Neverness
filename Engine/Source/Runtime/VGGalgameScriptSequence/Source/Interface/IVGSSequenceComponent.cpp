@@ -12,6 +12,8 @@
 #include "IVGSSequenceComponent.h"
 #include "Sequence/Components.h"
 
+#include <algorithm>
+
 namespace VisionGal
 {
 	IVGSSequenceComponentManager::IVGSSequenceComponentManager()
@@ -41,6 +43,15 @@ namespace VisionGal
 			return it->second->Clone();
 		}
 		return nullptr;
+	}
+
+	void IVGSSequenceComponentManager::EnumerateRegisteredTypeNameIDs(std::vector<std::string>& outSorted) const
+	{
+		outSorted.clear();
+		outSorted.reserve(RegisteredComponents.size());
+		for (const auto& kv : RegisteredComponents)
+			outSorted.push_back(kv.first);
+		std::sort(outSorted.begin(), outSorted.end());
 	}
 
 	Ref<IVGSSequenceComponent> CreateSequenceEntryByTypeNameID(const std::string& typeNameID)

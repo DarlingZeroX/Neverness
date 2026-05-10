@@ -9,7 +9,7 @@
 * See the LICENSE file in the project root for details.
 */
 #pragma once
-#include "../VGGalEditorConfig.h"
+#include "../VGEGExport.h"
 
 namespace VisionGal::Editor
 {

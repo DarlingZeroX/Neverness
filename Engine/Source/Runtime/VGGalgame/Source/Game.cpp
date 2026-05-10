@@ -21,8 +21,10 @@
 namespace VisionGal::GalGame
 {
 
-	GalSprite::GalSprite(const std::string& layer, const std::string& path)
-		:m_Layer(layer),
+	GalSprite::GalSprite(IGalGameEngine* engine, const std::string& layer, const std::string& path)
+		:
+		m_Engine(engine),
+		m_Layer(layer),
 		m_Path(path)
 	{
 		
@@ -68,7 +70,7 @@ namespace VisionGal::GalGame
 
 	IGalSprite* GalSprite::With(const std::string& transform)
 	{
-		SpriteTransformScriptManager::StartSpriteTransformWithCommand(m_Actor, transform);
+		SpriteTransformScriptManager::StartSpriteTransformWithCommand(m_Engine, m_Actor, transform);
 
 		return this;
 	}
@@ -253,7 +255,7 @@ namespace VisionGal::GalGame
 
 	void GalSprite::Cut(const std::string& cmd)
 	{
-		if (GameEngineCore::GetCurrentEngine()->GetDialogueSystem()->IsFastForward())
+		if (m_Engine->GetDialogueSystem()->IsFastForward())
 		{
 			return;
 		}
@@ -268,11 +270,12 @@ namespace VisionGal::GalGame
 		}
 	}
 
-	GalAudio::GalAudio(const std::string& layer, const std::string& path)
+	GalAudio::GalAudio(IGalGameEngine* engine, const std::string& layer, const std::string& path)
 	{
+		m_Engine = engine;
 		m_Layer = layer;
 		m_Path = path;
-		GameEngineCore::GetCurrentEngine()->PreLoadResource(path);
+		m_Engine->PreLoadResource(path);
 	}
 
 	GalAudio::~GalAudio()
@@ -387,8 +390,9 @@ namespace VisionGal::GalGame
 		return nullptr;
 	}
 
-	GalVideo::GalVideo(const std::string& layer, const std::string& path)
+	GalVideo::GalVideo(IGalGameEngine* engine, const std::string& layer, const std::string& path)
 	{
+		m_Engine = engine;
 		m_Layer = layer;
 		m_Path = path;
 		//GameEngineCore::GetCurrentEngine()->PreLoadResource(path);
@@ -505,18 +509,17 @@ namespace VisionGal::GalGame
 
 	void GalCharacter::Say(const std::string& text)
 	{
-		GameEngineCore::GetCurrentEngine()->GetDialogueSystem()->CharacterSay(m_Name,text);
+		m_Engine->GetDialogueSystem()->CharacterSay(m_Name,text);
 	}
 
 	IGalAudio* GalCharacter::Voice(const std::string& path)
 	{
-		if (GameEngineCore::GetCurrentEngine()->GetDialogueSystem()->IsFastForward())
+		if (m_Engine->GetDialogueSystem()->IsFastForward())
 		{
 			return nullptr;
 		}
 
-		auto* engine = dynamic_cast<GalGameEngine*>(GameEngineCore::GetCurrentEngine());
-
+		auto* engine = m_Engine;
 		auto* voice = engine->PlayAudio("Voice", path);
 
 		if (voice == nullptr)
@@ -556,7 +559,7 @@ namespace VisionGal::GalGame
 
 	IGalSprite* GalCharacter::ShowFigure(const String& stateOrPath)
 	{
-		auto* engine = dynamic_cast<GalGameEngine*>(GameEngineCore::GetCurrentEngine());
+		auto* engine = m_Engine;
 
 		// 隐藏当前立绘
 		HideFigure();

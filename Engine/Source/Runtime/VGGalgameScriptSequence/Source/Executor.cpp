@@ -58,6 +58,16 @@ namespace VisionGal::GalGame
 		}
     }
 
+    IRuntimeInterface* SSExecutorSequence::QueryInterface(InterfaceID id)
+    {
+		if (m_Executor != nullptr)
+		{
+			return m_Executor->QueryInterface(id);
+		}
+
+		return nullptr;
+    }
+
     void SSExecutorSequence::PreLoadScriptResource()
     {
 

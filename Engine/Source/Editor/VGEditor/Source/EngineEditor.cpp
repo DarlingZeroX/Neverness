@@ -16,6 +16,7 @@
 #include <VGImgui/Include/Imgui/imgui_impl_opengl3.h>
 #include <VGEditorFramework/Framework.h>
 #include "VGCore/Include/Core/VFS.h"
+#include "VGEditorFramework/Interface/AssetEditor.h"
 #include "VGGalgame/Interface/GalgameSystem.h"
 
 #include "VGEditorGalgame/Interface/ModuleEditorGalgame.h"
@@ -54,6 +55,8 @@ namespace VisionGal::Editor
 		// 挂载编辑器模块
 		ModuleEditorFramework::MountToEditor(m_EditorWindow, m_GameEngine);
 		ModuleEditorGalGame::MountToEditor();
+
+		AssetEditor::Get().OpenAsset("/assets/GalGameVisualScript0.vgasset");
 	}
 
 	void VGEditorApplication::AddApplicationLayer(IEngineApplicationLayer* layer)

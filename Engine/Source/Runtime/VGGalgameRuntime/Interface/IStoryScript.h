@@ -22,6 +22,7 @@ namespace VisionGal::GalGame
 
 		virtual bool Run(IGalGameEngine* engine) = 0;
 		virtual void Tick(float deltaTime) = 0;
+		virtual IRuntimeInterface* QueryInterface(InterfaceID id) = 0;
 
 		virtual void PreLoadScriptResource() = 0;
 		virtual std::filesystem::file_time_type GetScriptLastWriteTime() const = 0;

@@ -26,7 +26,7 @@ namespace VisionGal::GalGame {
 		return &s_Manager;
 	}
 
-	Ref<IAnimationScript> SpriteTransformScriptManager::CreateSpriteTransformWithCommand(IGameActor* actor, const String& cmd)
+	Ref<IAnimationScript> SpriteTransformScriptManager::CreateSpriteTransformWithCommand(IGalGameEngine* engine, IGameActor* actor, const String& cmd)
 	{
 		if (actor == nullptr)
 			return nullptr;
@@ -45,7 +45,7 @@ namespace VisionGal::GalGame {
 		iss >> duration;
 		iss >> transition;
 
-		if (GameEngineCore::GetCurrentEngine()->GetDialogueSystem()->IsFastForward())
+		if (engine->GetDialogueSystem()->IsFastForward())
 		{
 			duration = 0.f;
 		}
@@ -101,9 +101,9 @@ namespace VisionGal::GalGame {
 		return nullptr;
 	}
 
-	bool SpriteTransformScriptManager::StartSpriteTransformWithCommand(IGameActor* actor, const String& cmd)
+	bool SpriteTransformScriptManager::StartSpriteTransformWithCommand(IGalGameEngine* engine, IGameActor* actor, const String& cmd)
 	{
-		auto script = CreateSpriteTransformWithCommand(actor, cmd);
+		auto script = CreateSpriteTransformWithCommand(engine, actor, cmd);
 
 		if (script != nullptr)
 		{
