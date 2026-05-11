@@ -16,6 +16,7 @@
 
 #include "Commands/AddSequenceEntryCommand.h"
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
+#include "Events/SequenceEditorEventBus.h"
 #include "Validation/SequenceValidationRegistriesBootstrap.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
@@ -42,19 +43,31 @@ namespace VisionGal::Editor
 		}
 	}
 
+	void VGScriptSequenceEditor::AccumulateDocMutationThunk(void* userData, const SequenceDocumentMutationSummary& summary)
+	{
+		static_cast<VGScriptSequenceEditor*>(userData)->MergePendingDocumentMutation(summary);
+	}
+
+	void VGScriptSequenceEditor::RequestPresentationRefreshThunk(void* userData)
+	{
+		static_cast<VGScriptSequenceEditor*>(userData)->m_needsPresentationTick = true;
+	}
+
+	void VGScriptSequenceEditor::MergePendingDocumentMutation(const SequenceDocumentMutationSummary& summary)
+	{
+		m_pendingDocMutation.StructuralChange = m_pendingDocMutation.StructuralChange || summary.StructuralChange;
+		m_pendingDocMutation.TouchedIndices.insert(
+			m_pendingDocMutation.TouchedIndices.end(), summary.TouchedIndices.begin(), summary.TouchedIndices.end());
+	}
+
 	bool VGScriptSequenceEditor::ExecuteToEntryThunk(void* userData, unsigned index)
 	{
 		auto* self = static_cast<VGScriptSequenceEditor*>(userData);
 		return self->ExecuteTo(index);
 	}
 
-	void VGScriptSequenceEditor::SyncContext()
+	void VGScriptSequenceEditor::FillContextPointers()
 	{
-		m_documentViewModel.Rebuild(*m_document, m_componentRegistry);
-		m_documentViewModel.ApplyValidation(m_validationRegistry, *m_document);
-		m_documentViewModel.ApplyRuntimeOverlay(m_runtimeObserver.GetOverlay());
-		m_documentViewModel.ApplySearchViewModel(m_searchWidget.GetSearchViewModel());
-
 		m_context.document = m_document.get();
 		m_context.execution = &m_executionController;
 		m_context.selection = &m_selectionModel;
@@ -63,11 +76,54 @@ namespace VisionGal::Editor
 		m_context.inspectorRegistry = &m_inspectorRegistry;
 		m_context.documentViewModel = &m_documentViewModel;
 		m_context.validationRegistry = &m_validationRegistry;
+		m_context.validationCache = &m_validationCache;
 		m_context.runtimeOverlay = &m_runtimeObserver.GetOverlay();
 		m_context.searchFilter = &m_searchWidget.GetFilter();
 		m_context.executeToEntry = &VGScriptSequenceEditor::ExecuteToEntryThunk;
 		m_context.executeToUserData = this;
 		m_context.lastExecutionSnapshot = &m_lastRuntimeSnapshot;
+		m_context.eventBus = &m_eventBus;
+		m_context.services = &m_serviceLocator;
+	}
+
+	void VGScriptSequenceEditor::TickEditorPresentation()
+	{
+		if (!m_needsPresentationTick && m_firstPresentationDone)
+			return;
+
+		m_needsPresentationTick = false;
+
+		const SequenceDocumentMutationSummary mut = std::move(m_pendingDocMutation);
+		m_pendingDocMutation = SequenceDocumentMutationSummary{};
+
+		const bool hasDocSignals = mut.StructuralChange || !mut.TouchedIndices.empty();
+		const bool seed = !m_firstPresentationDone;
+		m_firstPresentationDone = true;
+
+		if (seed || hasDocSignals)
+		{
+			if (seed || mut.StructuralChange)
+				m_documentViewModel.Rebuild(*m_document, m_componentRegistry);
+			else
+				m_documentViewModel.RebuildEntriesAtIndices(*m_document, m_componentRegistry, mut.TouchedIndices);
+			m_searchIndex.RebuildFromViewStorage(m_documentViewModel.GetEntryStorage());
+		}
+
+		const bool validationRefreshed = m_validationCache.ApplyIfStale(
+			*m_document, m_validationRegistry, m_document->GetGenerationId());
+		m_documentViewModel.ApplyValidationIssues(m_validationCache.GetIssues());
+
+		if (validationRefreshed && m_context.eventBus != nullptr)
+		{
+			SequenceEditorEvent ev;
+			ev.Type = SequenceEditorEventType::ValidationUpdated;
+			m_context.eventBus->Publish(ev);
+		}
+
+		m_documentViewModel.ApplyRuntimeOverlay(m_runtimeObserver.GetOverlay());
+		m_documentViewModel.ApplySearchViewModelWithIndex(m_searchIndex, m_searchWidget.GetSearchViewModel());
+
+		FillContextPointers();
 	}
 
 	void VGScriptSequenceEditor::InitializeChrome()
@@ -75,10 +131,31 @@ namespace VisionGal::Editor
 		BootstrapSequenceComponentRegistry(m_componentRegistry);
 		BootstrapSequenceValidationRegistry(m_validationRegistry);
 		BootstrapSequenceInspectorRegistry(m_inspectorRegistry, m_componentRegistry);
+
+		m_serviceLocator.validationCache = &m_validationCache;
+		m_serviceLocator.searchIndex = &m_searchIndex;
+		m_serviceLocator.runtimeSession = &m_runtimeSession;
+		m_serviceLocator.asyncTasks = &m_asyncTaskService;
+
+		m_runtimeSession.Bind(&m_executionController, &m_runtimeObserver, &m_eventBus);
+		m_selectionModel.SetEventBus(&m_eventBus);
+
+		m_context.eventBus = &m_eventBus;
+		m_context.services = &m_serviceLocator;
+		m_context.validationCache = &m_validationCache;
+		m_context.onDocumentMutationAccumulate = &VGScriptSequenceEditor::AccumulateDocMutationThunk;
+		m_context.onDocumentMutationAccumulateUserData = this;
+		m_context.requestPresentationRefresh = &VGScriptSequenceEditor::RequestPresentationRefreshThunk;
+		m_context.requestPresentationRefreshUserData = this;
+
+		FillContextPointers();
+		m_validationCache.InvalidateAll();
+		m_needsPresentationTick = true;
+		TickEditorPresentation();
+
 		m_paletteWidget.ReloadFromRegistry(m_componentRegistry);
-		SyncContext();
 		m_paletteWidget.OnComponentChosen.Subscribe([this](const std::string& typeNameID) {
-			SyncContext();
+			FillContextPointers();
 			m_context.ExecuteCommand(std::make_unique<AddSequenceEntryCommand>(typeNameID));
 		});
 	}
@@ -104,7 +181,16 @@ namespace VisionGal::Editor
 
 	bool VGScriptSequenceEditor::OpenAsset(const std::string& path)
 	{
-		return m_document->LoadFromAssetPath(path);
+		const bool ok = m_document->LoadFromAssetPath(path);
+		if (ok)
+		{
+			m_validationCache.InvalidateAll();
+			FillContextPointers();
+			SequenceDocumentMutationSummary summary;
+			summary.StructuralChange = true;
+			m_context.NotifyDocumentChanged(summary);
+		}
+		return ok;
 	}
 
 	bool VGScriptSequenceEditor::SaveAsset()
@@ -118,14 +204,14 @@ namespace VisionGal::Editor
 	{
 		(void)m_document->SaveToAssetPath();
 		m_lastRuntimeSnapshot = SequenceRuntimeSnapshot{};
-		const bool ok = m_executionController.ExecuteTo(m_document->GetAssetPath(), index, m_lastRuntimeSnapshot);
-		m_runtimeObserver.NotifyExecuteCompleted(m_lastRuntimeSnapshot, ok);
+		const bool ok = m_runtimeSession.RequestRunTo(m_document->GetAssetPath(), index, m_lastRuntimeSnapshot);
+		m_needsPresentationTick = true;
 		return ok;
 	}
 
 	void VGScriptSequenceEditor::RenderSequenceUI()
 	{
-		SyncContext();
+		FillContextPointers();
 		m_searchWidget.Render(m_context);
 		m_entryListWidget.Render(m_context);
 		m_inspectorWidget.Render(m_context);
@@ -133,7 +219,7 @@ namespace VisionGal::Editor
 
 	void VGScriptSequenceEditor::HandleEditorShortcuts()
 	{
-		SyncContext();
+		FillContextPointers();
 		if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
 			return;
 		ImGuiIO& io = ImGui::GetIO();
@@ -149,7 +235,10 @@ namespace VisionGal::Editor
 
 	void VGScriptSequenceEditor::RenderEditorBody(TaskContext* taskContext)
 	{
-		SyncContext();
+		m_asyncTaskService.PumpCompleted();
+		TickEditorPresentation();
+
+		FillContextPointers();
 		m_toolbarWidget.Render(m_context);
 		ImGui::Separator();
 		m_statusBarWidget.Render(m_context);
@@ -160,24 +249,27 @@ namespace VisionGal::Editor
 		if (ImGui::Begin(u8"组件调色板"))
 			m_paletteWidget.Render();
 		ImGui::End();
-
-		if (ImGui::Begin(u8"时间轴"))
+		
+		if (ImGui::Begin(u8"时间轴1"))
 			m_timelineWidget.Render(m_context);
 		ImGui::End();
-
+		
 		if (ImGui::Begin(u8"大纲"))
 			m_outlinerWidget.Render(m_context);
 		ImGui::End();
-
+		
 		if (ImGui::Begin(u8"校验面板"))
 			m_validationWidget.Render(m_context);
 		ImGui::End();
-
+		
 		if (ImGui::Begin(u8"序列"))
 			RenderSequenceUI();
 		ImGui::End();
 
 		HandleEditorShortcuts();
+
+		m_asyncTaskService.PumpCompleted();
+		TickEditorPresentation();
 
 		HandleDirtyClosePopup(taskContext);
 	}
@@ -231,6 +323,7 @@ namespace VisionGal::Editor
 
 	void VGScriptSequenceEditor::RenderUI(TaskContext& context)
 	{
+
 		std::string windowName = "Visual GalGame Editor##" + std::to_string(context.Index);
 		if (ImGui::Begin(windowName.c_str(), &m_windowOpen, ImGuiWindowFlags_MenuBar))
 		{
@@ -248,4 +341,3 @@ namespace VisionGal::Editor
 			context.IsFinished = true;
 	}
 }
-

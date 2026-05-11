@@ -28,6 +28,10 @@ file(GLOB SEQUENCE_EDITOR_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Validation/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Validation/Builtin/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Timeline/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Events/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Services/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Async/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/AssetMonitoring/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
@@ -44,6 +48,10 @@ file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Validation/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Validation/Builtin/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Timeline/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Events/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Services/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Async/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetMonitoring/*.cpp"
 )
 
 add_library(VGEditorGalgameSequence SHARED ${SEQUENCE_EDITOR_HEADERS} ${SEQUENCE_EDITOR_SOURCES})

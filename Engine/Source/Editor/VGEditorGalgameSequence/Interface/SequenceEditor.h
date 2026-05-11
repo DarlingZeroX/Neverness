@@ -14,16 +14,23 @@
 #include <string>
 
 #include "VGEGSExport.h"
+#include "Async/SequenceAsyncTaskService.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Core/SequenceClipboard.h"
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceSelectionModel.h"
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
+#include "Events/SequenceEditorEvent.h"
+#include "Events/SequenceEditorEventBus.h"
 #include "Inspector/SequenceInspectorRegistry.h"
 #include "Runtime/SequenceExecutionController.h"
 #include "Runtime/SequenceRuntimeObserver.h"
+#include "Runtime/SequenceRuntimeSession.h"
 #include "Runtime/SequenceRuntimeSnapshot.h"
+#include "Services/SequenceEditorServiceLocator.h"
+#include "Services/SequenceSearchIndexService.h"
+#include "Services/SequenceValidationCacheService.h"
 #include "Timeline/SequenceTimelineWidget.h"
 #include "Validation/SequenceValidationRegistry.h"
 #include "ViewModels/SequenceDocumentViewModel.h"
@@ -60,7 +67,13 @@ namespace VisionGal::Editor
 
 	private:
 		void InitializeChrome();
-		void SyncContext();
+		void TickEditorPresentation();
+		void FillContextPointers();
+		void MergePendingDocumentMutation(const SequenceDocumentMutationSummary& summary);
+
+		static void AccumulateDocMutationThunk(void* userData, const SequenceDocumentMutationSummary& summary);
+		static void RequestPresentationRefreshThunk(void* userData);
+
 		static bool ExecuteToEntryThunk(void* userData, unsigned index);
 		void RenderEditorBody(TaskContext* taskContext);
 		void HandleDirtyClosePopup(TaskContext* taskContext);
@@ -71,8 +84,14 @@ namespace VisionGal::Editor
 		SequenceComponentRegistry m_componentRegistry;
 		SequenceInspectorRegistry m_inspectorRegistry;
 		SequenceValidationRegistry m_validationRegistry;
+		SequenceValidationCacheService m_validationCache;
+		SequenceSearchIndexService m_searchIndex;
 		SequenceRuntimeObserver m_runtimeObserver;
 		SequenceExecutionController m_executionController;
+		SequenceRuntimeSession m_runtimeSession;
+		SequenceEditorEventBus m_eventBus;
+		SequenceEditorServiceLocator m_serviceLocator{};
+		SequenceAsyncTaskService m_asyncTaskService;
 		SequenceComponentPaletteWidget m_paletteWidget;
 		SequenceSelectionModel m_selectionModel;
 		SequenceUndoStack m_undoStack;
@@ -89,6 +108,9 @@ namespace VisionGal::Editor
 
 		bool m_windowOpen = true;
 		SequenceRuntimeSnapshot m_lastRuntimeSnapshot{};
-	};
 
+		bool m_needsPresentationTick = true;
+		bool m_firstPresentationDone = false;
+		SequenceDocumentMutationSummary m_pendingDocMutation{};
+	};
 }

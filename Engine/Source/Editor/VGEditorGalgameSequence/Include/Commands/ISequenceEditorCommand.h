@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include "Events/SequenceEditorEvent.h"
+
 #include <memory>
 #include <string>
 
@@ -24,5 +26,8 @@ namespace VisionGal::Editor
 		virtual void Redo(SequenceDocument& document) = 0;
 
 		virtual std::string GetDebugName() const = 0;
+
+		/// Summary of the last successful `Execute` (used after the command is pushed onto the undo stack).
+		[[nodiscard]] virtual SequenceDocumentMutationSummary DescribeExecutedMutation() const;
 	};
 }

@@ -25,5 +25,7 @@ namespace VisionGal::Editor
 
 	private:
 		SequenceSearchViewModel m_searchViewModel;
+		std::string m_prevPublishedFilter;
+		uint32_t m_prevPublishedDimensions = static_cast<uint32_t>(SequenceSearchViewModel::Dimension::TextMatch);
 	};
 }

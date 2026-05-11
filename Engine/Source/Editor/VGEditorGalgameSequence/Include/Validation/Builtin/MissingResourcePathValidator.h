@@ -15,6 +15,9 @@ namespace VisionGal::Editor
 	{
 	public:
 		[[nodiscard]] std::vector<SequenceValidationIssue> Validate(const SequenceDocument& document) const override;
+		[[nodiscard]] std::vector<SequenceValidationIssue> ValidateEntries(
+			const SequenceDocument& document,
+			const std::vector<unsigned>& entryIndices) const override;
 		[[nodiscard]] const char* GetRuleId() const override { return "Builtin.MissingResourcePath"; }
 	};
 }

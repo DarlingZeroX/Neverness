@@ -8,12 +8,24 @@
 
 #include "Core/SequenceSelectionModel.h"
 
+#include "Events/SequenceEditorEventBus.h"
+
 namespace VisionGal::Editor
 {
+	void SequenceSelectionModel::PublishSelectionChanged()
+	{
+		if (m_eventBus == nullptr)
+			return;
+		SequenceEditorEvent ev;
+		ev.Type = SequenceEditorEventType::SelectionChanged;
+		m_eventBus->Publish(ev);
+	}
+
 	void SequenceSelectionModel::SelectSingle(uint32_t index)
 	{
 		m_selected.clear();
 		m_selected.insert(index);
+		PublishSelectionChanged();
 	}
 
 	void SequenceSelectionModel::ToggleSelection(uint32_t index)
@@ -23,11 +35,13 @@ namespace VisionGal::Editor
 			m_selected.erase(it);
 		else
 			m_selected.insert(index);
+		PublishSelectionChanged();
 	}
 
 	void SequenceSelectionModel::Clear()
 	{
 		m_selected.clear();
+		PublishSelectionChanged();
 	}
 
 	bool SequenceSelectionModel::IsSelected(uint32_t index) const
@@ -37,6 +51,7 @@ namespace VisionGal::Editor
 
 	void SequenceSelectionModel::ClampToSize(size_t entryCount)
 	{
+		const size_t before = m_selected.size();
 		for (auto it = m_selected.begin(); it != m_selected.end();)
 		{
 			if (*it >= entryCount)
@@ -44,5 +59,7 @@ namespace VisionGal::Editor
 			else
 				++it;
 		}
+		if (before != m_selected.size())
+			PublishSelectionChanged();
 	}
 }

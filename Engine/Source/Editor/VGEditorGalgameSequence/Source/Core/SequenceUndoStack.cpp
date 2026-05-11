@@ -47,4 +47,9 @@ namespace VisionGal::Editor
 		m_undo.clear();
 		m_redo.clear();
 	}
+
+	const ISequenceEditorCommand* SequenceUndoStack::PeekUndoTop() const
+	{
+		return m_undo.empty() ? nullptr : m_undo.back().get();
+	}
 }

@@ -59,4 +59,13 @@ namespace VisionGal::Editor
 	{
 		return "PasteSequenceEntriesCommand(" + std::to_string(m_prototypes.size()) + ")";
 	}
+
+	SequenceDocumentMutationSummary PasteSequenceEntriesCommand::DescribeExecutedMutation() const
+	{
+		SequenceDocumentMutationSummary s;
+		s.StructuralChange = true;
+		for (unsigned i = 0; i < m_insertedCount; ++i)
+			s.TouchedIndices.push_back(m_insertIndex + i);
+		return s;
+	}
 }

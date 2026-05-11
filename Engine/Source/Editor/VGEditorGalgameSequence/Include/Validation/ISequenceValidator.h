@@ -23,6 +23,12 @@ namespace VisionGal::Editor
 		virtual ~ISequenceValidator() = default;
 
 		[[nodiscard]] virtual std::vector<SequenceValidationIssue> Validate(const SequenceDocument& document) const = 0;
+
+		/// Default runs full `Validate` (compatible); specialized validators may scan only `entryIndices`.
+		[[nodiscard]] virtual std::vector<SequenceValidationIssue> ValidateEntries(
+			const SequenceDocument& document,
+			const std::vector<unsigned>& entryIndices) const;
+
 		[[nodiscard]] virtual const char* GetRuleId() const = 0;
 	};
 }

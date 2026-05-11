@@ -43,4 +43,12 @@ namespace VisionGal::Editor
 	{
 		return "AddSequenceEntryCommand(" + m_typeNameId + ")";
 	}
+
+	SequenceDocumentMutationSummary AddSequenceEntryCommand::DescribeExecutedMutation() const
+	{
+		SequenceDocumentMutationSummary s;
+		s.StructuralChange = true;
+		s.TouchedIndices.push_back(m_insertedIndex);
+		return s;
+	}
 }

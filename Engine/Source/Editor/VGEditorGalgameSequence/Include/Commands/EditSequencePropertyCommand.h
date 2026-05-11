@@ -28,6 +28,7 @@ namespace VisionGal::Editor
 		void Undo(SequenceDocument& document) override;
 		void Redo(SequenceDocument& document) override;
 		std::string GetDebugName() const override;
+		[[nodiscard]] SequenceDocumentMutationSummary DescribeExecutedMutation() const override;
 
 	private:
 		bool TryReadCurrent(SequenceDocument& document, std::string& outCurrent) const;

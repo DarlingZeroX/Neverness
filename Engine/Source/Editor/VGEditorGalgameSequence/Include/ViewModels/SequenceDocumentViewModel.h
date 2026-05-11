@@ -19,6 +19,7 @@ namespace VisionGal::Editor
 	class SequenceValidationRegistry;
 	struct SequenceRuntimeOverlayState;
 	class SequenceSearchViewModel;
+	class SequenceSearchIndexService;
 
 	/// Read model for list / timeline / outliner; rebuilt from document + registry.
 	/// 列表 / 时间轴 / 大纲的只读模型；由文档与注册表重建。
@@ -26,12 +27,20 @@ namespace VisionGal::Editor
 	{
 	public:
 		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry);
+		void RebuildEntriesAtIndices(
+			SequenceDocument& document,
+			const SequenceComponentRegistry& registry,
+			const std::vector<unsigned>& indices);
+
+		[[nodiscard]] const std::vector<SequenceEntryViewModel>& GetEntryStorage() const { return m_storage; }
 
 		const std::vector<SequenceEntryViewModel>& GetVisibleEntries() const { return m_visibleRows; }
 
 		void ApplySearchFilter(const std::string& filter);
 		void ApplySearchViewModel(const SequenceSearchViewModel& search);
+		void ApplySearchViewModelWithIndex(const SequenceSearchIndexService& index, const SequenceSearchViewModel& search);
 
+		void ApplyValidationIssues(const std::vector<SequenceValidationIssue>& issues);
 		void ApplyValidation(const SequenceValidationRegistry& registry, const SequenceDocument& document);
 		void ApplyRuntimeOverlay(const SequenceRuntimeOverlayState& overlay);
 

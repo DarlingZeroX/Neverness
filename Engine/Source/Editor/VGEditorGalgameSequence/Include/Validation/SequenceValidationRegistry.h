@@ -24,6 +24,9 @@ namespace VisionGal::Editor
 	public:
 		void Register(std::unique_ptr<ISequenceValidator> validator);
 		[[nodiscard]] std::vector<SequenceValidationIssue> RunAll(const SequenceDocument& document) const;
+		[[nodiscard]] std::vector<SequenceValidationIssue> RunForEntries(
+			const SequenceDocument& document,
+			const std::vector<unsigned>& entryIndices) const;
 
 	private:
 		std::vector<std::unique_ptr<ISequenceValidator>> m_validators;

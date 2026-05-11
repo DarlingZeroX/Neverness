@@ -19,10 +19,22 @@ namespace VisionGal::Editor
 		m_sequence = MakeRef<VisionGal::VGSSequenceDataContainer>();
 	}
 
+	void SequenceDocument::BumpEditGeneration()
+	{
+		++m_generationId;
+	}
+
+	void SequenceDocument::BumpStructureRevision()
+	{
+		++m_structureRevision;
+		++m_generationId;
+	}
+
 	void SequenceDocument::ResetSequenceData()
 	{
 		m_sequence = MakeRef<VisionGal::VGSSequenceDataContainer>();
 		MarkDirty();
+		BumpStructureRevision();
 	}
 
 	void SequenceDocument::FillDefaultDemoEntries()
@@ -32,6 +44,7 @@ namespace VisionGal::Editor
 		m_sequence->AppendEntry(VisionGal::CreateSequenceEntryByTypeNameID(VGSSC_ChangeBackground::StaticGetTypeNameID()));
 		m_sequence->AppendEntry(VisionGal::CreateSequenceEntryByTypeNameID(VGSSC_CommonDialogue::StaticGetTypeNameID()));
 		MarkDirty();
+		BumpStructureRevision();
 	}
 
 	void SequenceDocument::MarkDirty()
@@ -60,6 +73,7 @@ namespace VisionGal::Editor
 		m_sequence = scriptAsset->ExecutionData->SequenceData;
 		m_assetPath = path;
 		ClearDirty();
+		BumpStructureRevision();
 		return true;
 	}
 
@@ -89,6 +103,7 @@ namespace VisionGal::Editor
 		m_assetPath.clear();
 		m_sequence = MakeRef<VisionGal::VGSSequenceDataContainer>();
 		MarkDirty();
+		BumpStructureRevision();
 	}
 
 	void SequenceDocument::AddEntryByTypeNameID(const std::string& typeNameID)

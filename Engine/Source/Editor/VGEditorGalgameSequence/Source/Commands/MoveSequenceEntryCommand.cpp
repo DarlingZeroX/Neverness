@@ -10,6 +10,8 @@
 
 #include "Document/SequenceDocument.h"
 
+#include <algorithm>
+
 namespace VisionGal::Editor
 {
 	MoveSequenceEntryCommand::MoveSequenceEntryCommand(unsigned sourceIndex, unsigned targetIndex)
@@ -46,5 +48,16 @@ namespace VisionGal::Editor
 	std::string MoveSequenceEntryCommand::GetDebugName() const
 	{
 		return "MoveSequenceEntryCommand";
+	}
+
+	SequenceDocumentMutationSummary MoveSequenceEntryCommand::DescribeExecutedMutation() const
+	{
+		SequenceDocumentMutationSummary s;
+		s.StructuralChange = true;
+		const unsigned lo = (std::min)(m_source, m_target);
+		const unsigned hi = (std::max)(m_source, m_target);
+		for (unsigned i = lo; i <= hi; ++i)
+			s.TouchedIndices.push_back(i);
+		return s;
 	}
 }

@@ -104,4 +104,12 @@ namespace VisionGal::Editor
 	{
 		return "EditSequencePropertyCommand";
 	}
+
+	SequenceDocumentMutationSummary EditSequencePropertyCommand::DescribeExecutedMutation() const
+	{
+		SequenceDocumentMutationSummary s;
+		s.StructuralChange = false;
+		s.TouchedIndices.push_back(m_index);
+		return s;
+	}
 }

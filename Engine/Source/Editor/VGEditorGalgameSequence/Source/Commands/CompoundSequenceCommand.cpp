@@ -48,4 +48,21 @@ namespace VisionGal::Editor
 	{
 		return "CompoundSequenceCommand";
 	}
+
+	SequenceDocumentMutationSummary CompoundSequenceCommand::DescribeExecutedMutation() const
+	{
+		SequenceDocumentMutationSummary merged;
+		merged.StructuralChange = false;
+		for (const auto& p : m_parts)
+		{
+			if (!p)
+				continue;
+			const SequenceDocumentMutationSummary part = p->DescribeExecutedMutation();
+			merged.StructuralChange = merged.StructuralChange || part.StructuralChange;
+			merged.TouchedIndices.insert(merged.TouchedIndices.end(), part.TouchedIndices.begin(), part.TouchedIndices.end());
+		}
+		if (merged.TouchedIndices.empty())
+			merged.StructuralChange = true;
+		return merged;
+	}
 }

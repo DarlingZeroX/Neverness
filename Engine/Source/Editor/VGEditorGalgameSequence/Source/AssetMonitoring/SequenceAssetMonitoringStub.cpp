@@ -5,6 +5,5 @@
  *
  * See the LICENSE file in the project root for details.
  */
-#pragma once
 
-#include "Events/SequenceEditorEvent.h"
+#include "AssetMonitoring/SequenceAssetMonitoringFwd.h"

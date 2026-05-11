@@ -28,6 +28,9 @@ namespace VisionGal::Editor
 		bool CanUndo() const { return !m_undo.empty(); }
 		bool CanRedo() const { return !m_redo.empty(); }
 
+		/// Top of undo stack after `ExecuteCommand` (the command just executed).
+		[[nodiscard]] const ISequenceEditorCommand* PeekUndoTop() const;
+
 	private:
 		std::vector<std::unique_ptr<ISequenceEditorCommand>> m_undo;
 		std::vector<std::unique_ptr<ISequenceEditorCommand>> m_redo;

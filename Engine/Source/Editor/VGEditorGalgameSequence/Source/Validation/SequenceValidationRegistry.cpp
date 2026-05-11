@@ -28,4 +28,19 @@ namespace VisionGal::Editor
 		}
 		return out;
 	}
+
+	std::vector<SequenceValidationIssue> SequenceValidationRegistry::RunForEntries(
+		const SequenceDocument& document,
+		const std::vector<unsigned>& entryIndices) const
+	{
+		std::vector<SequenceValidationIssue> out;
+		for (const auto& v : m_validators)
+		{
+			if (v == nullptr)
+				continue;
+			auto part = v->ValidateEntries(document, entryIndices);
+			out.insert(out.end(), part.begin(), part.end());
+		}
+		return out;
+	}
 }

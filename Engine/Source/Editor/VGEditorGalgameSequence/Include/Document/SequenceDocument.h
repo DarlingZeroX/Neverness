@@ -9,6 +9,7 @@
 
 #include <HCore/Interface/HConfig.h>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -29,6 +30,11 @@ namespace VisionGal::Editor
 		Ref<VisionGal::VGSSequenceDataContainer> GetSequence() const { return m_sequence; }
 
 		const std::string& GetAssetPath() const { return m_assetPath; }
+
+		[[nodiscard]] uint64_t GetGenerationId() const { return m_generationId; }
+		[[nodiscard]] uint64_t GetStructureRevision() const { return m_structureRevision; }
+		void BumpEditGeneration();
+		void BumpStructureRevision();
 
 		bool IsDirty() const { return m_dirty; }
 		void MarkDirty();
@@ -85,5 +91,7 @@ namespace VisionGal::Editor
 		std::string m_assetPath;
 		Ref<VisionGal::VGSSequenceDataContainer> m_sequence;
 		bool m_dirty = false;
+		uint64_t m_generationId = 1;
+		uint64_t m_structureRevision = 1;
 	};
 }

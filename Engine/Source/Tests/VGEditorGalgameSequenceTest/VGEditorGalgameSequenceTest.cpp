@@ -3,6 +3,10 @@
  */
 #include <gtest/gtest.h>
 
+#include <chrono>
+#include <memory>
+#include <thread>
+
 #include "Commands/AddSequenceEntryCommand.h"
 #include "Commands/PasteSequenceEntriesCommand.h"
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
@@ -11,7 +15,13 @@
 #include "Core/SequenceSelectionModel.h"
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
+#include "Async/SequenceAsyncTaskService.h"
+#include "Async/SequenceBackgroundValidationTask.h"
+#include "Events/SequenceEditorEventBus.h"
+#include "Services/SequenceValidationCacheService.h"
+#include "Validation/ISequenceValidator.h"
 #include "Validation/SequenceValidationRegistriesBootstrap.h"
+#include "Validation/SequenceValidationRegistry.h"
 #include "ViewModels/SequenceDocumentViewModel.h"
 
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
@@ -129,4 +139,110 @@ TEST(SequenceValidationRegistry, BuiltinValidatorsProduceIssuesOnDemoDocument)
 	vm.Rebuild(doc, components);
 	vm.ApplyValidation(registry, doc);
 	ASSERT_FALSE(vm.GetValidationIssues().empty());
+}
+
+namespace
+{
+	class CountingValidator final : public ISequenceValidator
+	{
+	public:
+		mutable int FullValidateCalls = 0;
+		mutable int EntryValidateCalls = 0;
+
+		[[nodiscard]] std::vector<SequenceValidationIssue> Validate(const SequenceDocument& document) const override
+		{
+			(void)document;
+			++FullValidateCalls;
+			return {};
+		}
+
+		[[nodiscard]] std::vector<SequenceValidationIssue> ValidateEntries(
+			const SequenceDocument& document,
+			const std::vector<unsigned>& entryIndices) const override
+		{
+			(void)document;
+			(void)entryIndices;
+			++EntryValidateCalls;
+			return {};
+		}
+
+		[[nodiscard]] const char* GetRuleId() const override { return "Test.CountingValidator"; }
+	};
+}
+
+TEST(SequenceEditorEventBus, DocumentChangedDelivery)
+{
+	SequenceEditorEventBus bus;
+	int hits = 0;
+	(void)bus.Subscribe(SequenceEditorEventType::DocumentChanged, [&](const SequenceEditorEvent&) { ++hits; });
+	SequenceEditorEvent ev;
+	ev.Type = SequenceEditorEventType::DocumentChanged;
+	bus.Publish(ev);
+	ASSERT_EQ(hits, 1);
+}
+
+TEST(SequenceDocument, GenerationIncrementsOnContextExecuteCommand)
+{
+	SequenceDocument doc;
+	doc.ResetToUntitledEmpty();
+	const uint64_t gen0 = doc.GetGenerationId();
+	SequenceUndoStack undo;
+	SequenceEditorContext ctx;
+	ctx.document = &doc;
+	ctx.undo = &undo;
+	ctx.ExecuteCommand(std::make_unique<AddSequenceEntryCommand>(VisionGal::VGSSC_CommonDialogue::StaticGetTypeNameID()));
+	ASSERT_GT(doc.GetGenerationId(), gen0);
+}
+
+TEST(SequenceValidationCacheService, SkipsRepeatedApplyWhenDocumentStable)
+{
+	SequenceDocument doc;
+	doc.FillDefaultDemoEntries();
+	SequenceValidationRegistry registry;
+	auto counter = std::make_unique<CountingValidator>();
+	CountingValidator* raw = counter.get();
+	registry.Register(std::move(counter));
+
+	SequenceValidationCacheService cache;
+	cache.InvalidateAll();
+	ASSERT_TRUE(cache.ApplyIfStale(doc, registry, doc.GetGenerationId()));
+	ASSERT_EQ(raw->FullValidateCalls, 1);
+	ASSERT_FALSE(cache.ApplyIfStale(doc, registry, doc.GetGenerationId()));
+	ASSERT_EQ(raw->FullValidateCalls, 1);
+}
+
+TEST(SequenceValidationCacheService, IncrementalPathUsesValidateEntries)
+{
+	SequenceDocument doc;
+	doc.FillDefaultDemoEntries();
+	SequenceValidationRegistry registry;
+	auto counter = std::make_unique<CountingValidator>();
+	CountingValidator* raw = counter.get();
+	registry.Register(std::move(counter));
+
+	SequenceValidationCacheService cache;
+	cache.InvalidateAll();
+	ASSERT_TRUE(cache.ApplyIfStale(doc, registry, doc.GetGenerationId()));
+	ASSERT_EQ(raw->FullValidateCalls, 1);
+
+	SequenceDocumentMutationSummary touch;
+	touch.StructuralChange = false;
+	touch.TouchedIndices.push_back(0);
+	cache.NotifyDocumentChanged(touch);
+	ASSERT_TRUE(cache.ApplyIfStale(doc, registry, doc.GetGenerationId()));
+	ASSERT_EQ(raw->EntryValidateCalls, 1);
+	ASSERT_EQ(raw->FullValidateCalls, 1);
+}
+
+TEST(SequenceAsyncTaskService, PumpInvokesMergeCallback)
+{
+	SequenceAsyncTaskService async;
+	int merged = 0;
+	SequenceBackgroundValidationTask::Schedule(
+		async,
+		[] { return std::vector<SequenceValidationIssue>{}; },
+		[&](std::vector<SequenceValidationIssue> /*issues*/) { ++merged; });
+	std::this_thread::sleep_for(std::chrono::milliseconds(30));
+	async.PumpCompleted();
+	ASSERT_EQ(merged, 1);
 }

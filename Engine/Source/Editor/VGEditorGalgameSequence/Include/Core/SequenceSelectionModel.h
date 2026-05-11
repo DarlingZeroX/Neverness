@@ -13,9 +13,13 @@
 
 namespace VisionGal::Editor
 {
+	class SequenceEditorEventBus;
+
 	class SequenceSelectionModel
 	{
 	public:
+		void SetEventBus(SequenceEditorEventBus* bus) { m_eventBus = bus; }
+
 		void SelectSingle(uint32_t index);
 		void ToggleSelection(uint32_t index);
 		void Clear();
@@ -27,6 +31,9 @@ namespace VisionGal::Editor
 		void ClampToSize(size_t entryCount);
 
 	private:
+		void PublishSelectionChanged();
+
 		std::unordered_set<uint32_t> m_selected;
+		SequenceEditorEventBus* m_eventBus = nullptr;
 	};
 }

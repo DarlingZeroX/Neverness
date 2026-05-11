@@ -11,6 +11,7 @@
 #include "Core/SequenceClipboard.h"
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceSelectionModel.h"
+#include "Events/SequenceEditorEvent.h"
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
 #include "Runtime/SequenceExecutionController.h"
@@ -52,6 +53,9 @@ namespace VisionGal::Editor
 				ctx.undo->Clear();
 				ctx.document->ResetToUntitledEmpty();
 				ctx.selection->Clear();
+				SequenceDocumentMutationSummary summary;
+				summary.StructuralChange = true;
+				ctx.NotifyDocumentChanged(summary);
 			}
 			if (ImGui::MenuItem("Save", nullptr, false, ctx.document != nullptr))
 			{
@@ -70,9 +74,9 @@ namespace VisionGal::Editor
 			const bool canUndo = ctx.undo != nullptr && ctx.document != nullptr && ctx.undo->CanUndo();
 			const bool canRedo = ctx.undo != nullptr && ctx.document != nullptr && ctx.undo->CanRedo();
 			if (ImGui::MenuItem("Undo", nullptr, false, canUndo))
-				ctx.undo->Undo(*ctx.document);
+				ctx.UndoDocument();
 			if (ImGui::MenuItem("Redo", nullptr, false, canRedo))
-				ctx.undo->Redo(*ctx.document);
+				ctx.RedoDocument();
 			ImGui::Separator();
 			const bool canCopy = ctx.clipboard != nullptr && ctx.document != nullptr && ctx.selection != nullptr
 				&& !ctx.selection->GetSelection().empty();

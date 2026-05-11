@@ -10,6 +10,8 @@
 
 #include "Document/SequenceDocument.h"
 
+#include <unordered_set>
+
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 #include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
 
@@ -43,6 +45,26 @@ namespace VisionGal::Editor
 			else if (auto* bg = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(entry.get()))
 				PushIfEmptyPath(out, i, bg->TextureResourcePath.empty(), u8"切换背景缺少纹理资源路径", GetRuleId());
 			++i;
+		}
+		return out;
+	}
+
+	std::vector<SequenceValidationIssue> MissingResourcePathValidator::ValidateEntries(
+		const SequenceDocument& document,
+		const std::vector<unsigned>& entryIndices) const
+	{
+		std::unordered_set<unsigned> want(entryIndices.begin(), entryIndices.end());
+		std::vector<SequenceValidationIssue> out;
+		const auto seq = document.GetSequence();
+		for (unsigned i : want)
+		{
+			if (i >= seq->m_Sequence.size())
+				continue;
+			const auto& entry = seq->m_Sequence[i];
+			if (auto* fig = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(entry.get()))
+				PushIfEmptyPath(out, i, fig->TextureResourcePath.empty(), u8"切换立绘缺少纹理资源路径", GetRuleId());
+			else if (auto* bg = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(entry.get()))
+				PushIfEmptyPath(out, i, bg->TextureResourcePath.empty(), u8"切换背景缺少纹理资源路径", GetRuleId());
 		}
 		return out;
 	}

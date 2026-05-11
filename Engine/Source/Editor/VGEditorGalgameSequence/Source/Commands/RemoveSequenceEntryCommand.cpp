@@ -59,4 +59,12 @@ namespace VisionGal::Editor
 	{
 		return "RemoveSequenceEntryCommand";
 	}
+
+	SequenceDocumentMutationSummary RemoveSequenceEntryCommand::DescribeExecutedMutation() const
+	{
+		SequenceDocumentMutationSummary s;
+		s.StructuralChange = true;
+		s.TouchedIndices = m_indices;
+		return s;
+	}
 }

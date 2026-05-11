@@ -7,4 +7,10 @@
  */
 #pragma once
 
-#include "Events/SequenceEditorEvent.h"
+/// Placeholder for future asset dependency / hot-reload hooks (phase 4 extension point).
+namespace VisionGal::Editor::AssetMonitoring
+{
+	struct SequenceAssetMonitoringPlaceholder
+	{
+	};
+}

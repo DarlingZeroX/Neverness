@@ -9,6 +9,7 @@
 #include "Widgets/SequenceSearchWidget.h"
 
 #include "Core/SequenceEditorContext.h"
+#include "Events/SequenceEditorEventBus.h"
 
 #include <VGImgui/IncludeImGui.h>
 #include <VGImgui/IncludeImGuiEx.h>
@@ -32,7 +33,7 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void SequenceSearchWidget::Render(SequenceEditorContext& /*ctx*/)
+	void SequenceSearchWidget::Render(SequenceEditorContext& ctx)
 	{
 		ImGuiEx::InputText(u8"搜索##seqSearchPlaceholder", m_searchViewModel.TextFilter());
 		ImGui::SameLine();
@@ -42,5 +43,20 @@ namespace VisionGal::Editor
 		CheckboxDimension(u8"仅错误##seqDimVal", m_searchViewModel, D::ValidationErrorsOnly);
 		ImGui::SameLine();
 		CheckboxDimension(u8"仅运行行##seqDimRt", m_searchViewModel, D::RuntimeLineOnly);
+
+		const uint32_t dim = m_searchViewModel.ActiveDimensions();
+		const std::string& tf = m_searchViewModel.TextFilter();
+		if (tf != m_prevPublishedFilter || dim != m_prevPublishedDimensions)
+		{
+			m_prevPublishedFilter = tf;
+			m_prevPublishedDimensions = dim;
+			if (ctx.eventBus != nullptr)
+			{
+				SequenceEditorEvent ev;
+				ev.Type = SequenceEditorEventType::SearchFilterChanged;
+				ctx.eventBus->Publish(ev);
+			}
+			ctx.RequestPresentationRefresh();
+		}
 	}
 }
