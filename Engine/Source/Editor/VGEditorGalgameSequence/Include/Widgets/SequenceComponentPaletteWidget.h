@@ -7,12 +7,13 @@
  */
 #pragma once
 
-#include "Sequence/ComponentAdderUI.h"
+#include "Widgets/ComponentAdderUI.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 
 namespace VisionGal::Editor
 {
 	/// Palette UI with independent render entry; composes `ComponentAdderUI` fed from `SequenceComponentRegistry`.
+	/// 带独立渲染入口的调色板 UI；组合由 `SequenceComponentRegistry` 驱动的 `ComponentAdderUI`。
 	class SequenceComponentPaletteWidget
 	{
 	public:

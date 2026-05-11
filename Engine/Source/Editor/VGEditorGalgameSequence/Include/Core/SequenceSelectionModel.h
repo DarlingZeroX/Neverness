@@ -23,6 +23,7 @@ namespace VisionGal::Editor
 		const std::unordered_set<uint32_t>& GetSelection() const { return m_selected; }
 
 		/// Drops indices >= entryCount; if empty after clamp, clears selection.
+		/// 丢弃大于等于 entryCount 的索引；夹紧后若为空则清空选择。
 		void ClampToSize(size_t entryCount);
 
 	private:

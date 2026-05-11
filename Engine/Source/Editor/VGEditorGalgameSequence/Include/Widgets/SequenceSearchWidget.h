@@ -7,21 +7,23 @@
  */
 #pragma once
 
-#include <string>
+#include "ViewModels/SequenceSearchViewModel.h"
 
 namespace VisionGal::Editor
 {
 	struct SequenceEditorContext;
 
-	/// Phase-2 placeholder search bar; filter string is exposed for future list filtering.
+	/// Search bar + dimension flags; `SequenceDocumentViewModel` consumes `GetSearchViewModel()`.
+	/// 搜索栏与维度开关；`SequenceDocumentViewModel` 消费 `GetSearchViewModel()`。
 	class SequenceSearchWidget
 	{
 	public:
-		std::string& GetFilter() { return m_filter; }
+		std::string& GetFilter() { return m_searchViewModel.TextFilter(); }
+		SequenceSearchViewModel& GetSearchViewModel() { return m_searchViewModel; }
 
 		void Render(SequenceEditorContext& ctx);
 
 	private:
-		std::string m_filter;
+		SequenceSearchViewModel m_searchViewModel;
 	};
 }

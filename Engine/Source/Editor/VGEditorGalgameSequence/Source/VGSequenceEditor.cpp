@@ -16,6 +16,7 @@
 
 #include "Commands/AddSequenceEntryCommand.h"
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
+#include "Validation/SequenceValidationRegistriesBootstrap.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "HFileSystem/Interface/HFileSystem.h"
@@ -49,12 +50,20 @@ namespace VisionGal::Editor
 
 	void VGScriptSequenceEditor::SyncContext()
 	{
+		m_documentViewModel.Rebuild(*m_document, m_componentRegistry);
+		m_documentViewModel.ApplyValidation(m_validationRegistry, *m_document);
+		m_documentViewModel.ApplyRuntimeOverlay(m_runtimeObserver.GetOverlay());
+		m_documentViewModel.ApplySearchViewModel(m_searchWidget.GetSearchViewModel());
+
 		m_context.document = m_document.get();
 		m_context.execution = &m_executionController;
 		m_context.selection = &m_selectionModel;
 		m_context.undo = &m_undoStack;
 		m_context.clipboard = &m_clipboard;
 		m_context.inspectorRegistry = &m_inspectorRegistry;
+		m_context.documentViewModel = &m_documentViewModel;
+		m_context.validationRegistry = &m_validationRegistry;
+		m_context.runtimeOverlay = &m_runtimeObserver.GetOverlay();
 		m_context.searchFilter = &m_searchWidget.GetFilter();
 		m_context.executeToEntry = &VGScriptSequenceEditor::ExecuteToEntryThunk;
 		m_context.executeToUserData = this;
@@ -64,6 +73,7 @@ namespace VisionGal::Editor
 	void VGScriptSequenceEditor::InitializeChrome()
 	{
 		BootstrapSequenceComponentRegistry(m_componentRegistry);
+		BootstrapSequenceValidationRegistry(m_validationRegistry);
 		BootstrapSequenceInspectorRegistry(m_inspectorRegistry, m_componentRegistry);
 		m_paletteWidget.ReloadFromRegistry(m_componentRegistry);
 		SyncContext();
@@ -108,7 +118,9 @@ namespace VisionGal::Editor
 	{
 		(void)m_document->SaveToAssetPath();
 		m_lastRuntimeSnapshot = SequenceRuntimeSnapshot{};
-		return m_executionController.ExecuteTo(m_document->GetAssetPath(), index, m_lastRuntimeSnapshot);
+		const bool ok = m_executionController.ExecuteTo(m_document->GetAssetPath(), index, m_lastRuntimeSnapshot);
+		m_runtimeObserver.NotifyExecuteCompleted(m_lastRuntimeSnapshot, ok);
+		return ok;
 	}
 
 	void VGScriptSequenceEditor::RenderSequenceUI()
@@ -139,11 +151,32 @@ namespace VisionGal::Editor
 	{
 		SyncContext();
 		m_toolbarWidget.Render(m_context);
+		ImGui::Separator();
+		m_statusBarWidget.Render(m_context);
 
-		if (ImGui::CollapsingHeader(u8"组件调色板", ImGuiTreeNodeFlags_DefaultOpen))
+		ImGuiID classId = ImHashStr("VGScriptSequenceEditor");
+		ImGui::DockSpace(classId, ImVec2(0, 0));
+
+		if (ImGui::Begin(u8"组件调色板"))
 			m_paletteWidget.Render();
+		ImGui::End();
 
-		RenderSequenceUI();
+		if (ImGui::Begin(u8"时间轴"))
+			m_timelineWidget.Render(m_context);
+		ImGui::End();
+
+		if (ImGui::Begin(u8"大纲"))
+			m_outlinerWidget.Render(m_context);
+		ImGui::End();
+
+		if (ImGui::Begin(u8"校验面板"))
+			m_validationWidget.Render(m_context);
+		ImGui::End();
+
+		if (ImGui::Begin(u8"序列"))
+			RenderSequenceUI();
+		ImGui::End();
+
 		HandleEditorShortcuts();
 
 		HandleDirtyClosePopup(taskContext);

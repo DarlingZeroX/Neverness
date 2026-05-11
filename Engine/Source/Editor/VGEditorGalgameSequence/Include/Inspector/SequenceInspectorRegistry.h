@@ -28,6 +28,7 @@ namespace VisionGal::Editor
 		ISequenceInspector* Lookup(const std::string& typeNameID) const;
 
 		/// Returns false if no inspector or draw failed (null component).
+		/// 若无对应检查器、绘制失败或组件为空指针则返回 false。
 		bool DrawInspector(const std::string& typeNameID, unsigned int index, VisionGal::IVGSSequenceComponent* component, SequenceEditorContext* context = nullptr);
 
 	private:

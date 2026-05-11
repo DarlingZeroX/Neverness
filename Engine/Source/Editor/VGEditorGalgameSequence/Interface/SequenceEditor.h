@@ -22,12 +22,19 @@
 #include "Document/SequenceDocument.h"
 #include "Inspector/SequenceInspectorRegistry.h"
 #include "Runtime/SequenceExecutionController.h"
+#include "Runtime/SequenceRuntimeObserver.h"
 #include "Runtime/SequenceRuntimeSnapshot.h"
+#include "Timeline/SequenceTimelineWidget.h"
+#include "Validation/SequenceValidationRegistry.h"
+#include "ViewModels/SequenceDocumentViewModel.h"
 #include "Widgets/SequenceComponentPaletteWidget.h"
 #include "Widgets/SequenceEntryListWidget.h"
 #include "Widgets/SequenceInspectorWidget.h"
+#include "Widgets/SequenceOutlinerWidget.h"
 #include "Widgets/SequenceSearchWidget.h"
+#include "Widgets/SequenceStatusBarWidget.h"
 #include "Widgets/SequenceToolbarWidget.h"
+#include "Widgets/SequenceValidationWidget.h"
 #include "VGEditorFramework/Interface/UITaskInterface.h"
 
 namespace VisionGal::Editor
@@ -43,6 +50,7 @@ namespace VisionGal::Editor
 		bool OpenAsset(const std::string& path);
 
 		/// Same editor chrome as the task panel, for hosts that embed the editor (e.g. `VisualGalEditor`).
+		/// 与任务面板相同的编辑器外壳，供嵌入编辑器的宿主使用（例如 `VisualGalEditor`）。
 		void RenderEmbeddedUI();
 
 		void RenderSequenceUI();
@@ -59,8 +67,11 @@ namespace VisionGal::Editor
 		void HandleEditorShortcuts();
 
 		std::unique_ptr<SequenceDocument> m_document;
+		SequenceDocumentViewModel m_documentViewModel;
 		SequenceComponentRegistry m_componentRegistry;
 		SequenceInspectorRegistry m_inspectorRegistry;
+		SequenceValidationRegistry m_validationRegistry;
+		SequenceRuntimeObserver m_runtimeObserver;
 		SequenceExecutionController m_executionController;
 		SequenceComponentPaletteWidget m_paletteWidget;
 		SequenceSelectionModel m_selectionModel;
@@ -71,6 +82,10 @@ namespace VisionGal::Editor
 		SequenceInspectorWidget m_inspectorWidget;
 		SequenceToolbarWidget m_toolbarWidget;
 		SequenceSearchWidget m_searchWidget;
+		SequenceTimelineWidget m_timelineWidget;
+		SequenceOutlinerWidget m_outlinerWidget;
+		SequenceValidationWidget m_validationWidget;
+		SequenceStatusBarWidget m_statusBarWidget;
 
 		bool m_windowOpen = true;
 		SequenceRuntimeSnapshot m_lastRuntimeSnapshot{};

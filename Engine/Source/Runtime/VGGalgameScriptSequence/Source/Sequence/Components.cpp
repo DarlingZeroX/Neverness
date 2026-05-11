@@ -15,6 +15,7 @@ namespace VisionGal
 {
 	VGSSC_CommonDialogue::VGSSC_CommonDialogue()
 	{
+		//Cate
 	}
 
 	VGSSC_ChangeFigure::VGSSC_ChangeFigure()

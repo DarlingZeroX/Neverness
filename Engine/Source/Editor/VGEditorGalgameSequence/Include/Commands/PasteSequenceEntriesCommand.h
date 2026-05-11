@@ -20,6 +20,7 @@ namespace VisionGal
 namespace VisionGal::Editor
 {
 	/// Inserts deep-copied sequence entries at `insertIndex` (each prototype cloned on Execute/Redo).
+	/// 在 `insertIndex` 处插入深拷贝的序列条目（每个原型在 Execute/Redo 时克隆）。
 	class PasteSequenceEntriesCommand final : public ISequenceEditorCommand
 	{
 	public:

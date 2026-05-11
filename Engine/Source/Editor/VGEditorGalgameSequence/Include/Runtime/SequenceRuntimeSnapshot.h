@@ -13,6 +13,7 @@
 namespace VisionGal::Editor
 {
 	/// Value-type view of runtime execution state after a controller operation (no engine pointers).
+	/// 控制器操作后的运行时执行状态值类型视图（不含引擎指针）。
 	struct SequenceRuntimeSnapshot
 	{
 		uint32_t CurrentIndex = 0;

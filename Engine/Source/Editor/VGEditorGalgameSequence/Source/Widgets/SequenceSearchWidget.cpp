@@ -15,8 +15,32 @@
 
 namespace VisionGal::Editor
 {
+	namespace
+	{
+		void CheckboxDimension(const char* label, SequenceSearchViewModel& vm, SequenceSearchViewModel::Dimension dim)
+		{
+			bool on = vm.HasDimension(dim);
+			if (ImGui::Checkbox(label, &on))
+			{
+				uint32_t bits = vm.ActiveDimensions();
+				if (on)
+					bits |= static_cast<uint32_t>(dim);
+				else
+					bits &= ~static_cast<uint32_t>(dim);
+				vm.SetActiveDimensions(bits);
+			}
+		}
+	}
+
 	void SequenceSearchWidget::Render(SequenceEditorContext& /*ctx*/)
 	{
-		ImGuiEx::InputText(u8"搜索##seqSearchPlaceholder", m_filter);
+		ImGuiEx::InputText(u8"搜索##seqSearchPlaceholder", m_searchViewModel.TextFilter());
+		ImGui::SameLine();
+		using D = SequenceSearchViewModel::Dimension;
+		CheckboxDimension(u8"文本##seqDimText", m_searchViewModel, D::TextMatch);
+		ImGui::SameLine();
+		CheckboxDimension(u8"仅错误##seqDimVal", m_searchViewModel, D::ValidationErrorsOnly);
+		ImGui::SameLine();
+		CheckboxDimension(u8"仅运行行##seqDimRt", m_searchViewModel, D::RuntimeLineOnly);
 	}
 }

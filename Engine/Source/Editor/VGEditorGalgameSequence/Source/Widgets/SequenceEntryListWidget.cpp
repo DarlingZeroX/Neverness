@@ -13,8 +13,8 @@
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceSelectionModel.h"
 #include "Document/SequenceDocument.h"
-
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "ViewModels/SequenceDocumentViewModel.h"
+#include "ViewModels/SequenceEntryViewModel.h"
 
 #include <VGImgui/IncludeImGui.h>
 
@@ -22,64 +22,106 @@
 
 namespace VisionGal::Editor
 {
+	namespace
+	{
+		constexpr size_t kVirtualizeThreshold = 48;
+
+		std::string RowHeaderLabel(const SequenceEntryViewModel& row)
+		{
+			std::string header = row.Icon.empty() ? row.DisplayName : (row.Icon + " " + row.DisplayName);
+			if (!row.Subtitle.empty())
+				header += u8" — ";
+			if (!row.Subtitle.empty())
+				header += row.Subtitle;
+			return header;
+		}
+
+		void PushRowAccentColors(const SequenceEntryViewModel& row)
+		{
+			if (row.RuntimeHighlight)
+				ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.55f, 0.38f, 1.f));
+			else if (row.HasValidationError)
+				ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.22f, 0.22f, 1.f));
+		}
+
+		void PopRowAccentColors(const SequenceEntryViewModel& row)
+		{
+			if (row.RuntimeHighlight || row.HasValidationError)
+				ImGui::PopStyleColor();
+		}
+	}
+
 	void SequenceEntryListWidget::Render(SequenceEditorContext& ctx)
 	{
 		if (ctx.document == nullptr || ctx.selection == nullptr || ctx.undo == nullptr)
 			return;
+		if (ctx.documentViewModel == nullptr)
+			return;
 
-		unsigned int index = 0;
+		const auto& visible = ctx.documentViewModel->GetVisibleEntries();
+		const auto seq = ctx.document->GetSequence();
+
 		std::vector<unsigned> removeIndices;
 		const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 
 		int dragSourceIndex = -1;
 		int dragTargetIndex = -1;
 
-		const auto seq = ctx.document->GetSequence();
-		for (auto& entry : seq->m_Sequence)
-		{
-			std::string header = entry->GetTypeNameID() + std::to_string(entry->SequenceIndex);
+		const bool useClipper = visible.size() >= kVirtualizeThreshold;
+
+		const auto drawRow = [&](const SequenceEntryViewModel& row) {
+			const unsigned realIndex = row.EntryIndex;
+			const int payloadIndex = static_cast<int>(realIndex);
 			bool show = true;
+			const std::string header = RowHeaderLabel(row);
 
-			const bool filterActive = ctx.searchFilter != nullptr && !ctx.searchFilter->empty();
-			bool pushedDim = false;
-			if (filterActive)
-			{
-				const std::string& f = *ctx.searchFilter;
-				if (header.find(f) == std::string::npos && entry->GetTypeNameID().find(f) == std::string::npos)
-				{
-					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.35f);
-					pushedDim = true;
-				}
-			}
+			ImGui::PushID(payloadIndex);
 
-			ImGui::PushID(static_cast<int>(index));
-
-			ImGui::Button(std::to_string(index).c_str());
+			ImGui::Button(std::to_string(realIndex).c_str());
 			ImGui::SameLine();
 			if (ImGui::Button("Exec") && ctx.executeToEntry != nullptr)
-				(void)ctx.executeToEntry(ctx.executeToUserData, index);
+				(void)ctx.executeToEntry(ctx.executeToUserData, realIndex);
 			ImGui::SameLine();
 
 			const bool heldCtrl = ImGui::GetIO().KeyCtrl;
-			if (ImGui::CollapsingHeader(header.c_str(), &show, flags))
+
+			if (useClipper)
 			{
-				if (heldCtrl)
+				PushRowAccentColors(row);
+				const bool sel = ctx.selection->IsSelected(realIndex);
+				if (ImGui::Selectable(header.c_str(), sel, ImGuiSelectableFlags_AllowOverlap))
 				{
-					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-						ctx.selection->ToggleSelection(static_cast<uint32_t>(index));
+					if (heldCtrl)
+						ctx.selection->ToggleSelection(realIndex);
+					else
+						ctx.selection->SelectSingle(realIndex);
 				}
-				else if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-					ctx.selection->SelectSingle(static_cast<uint32_t>(index));
+				PopRowAccentColors(row);
 			}
 			else
 			{
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				PushRowAccentColors(row);
+				if (ImGui::CollapsingHeader(header.c_str(), &show, flags))
 				{
 					if (heldCtrl)
-						ctx.selection->ToggleSelection(static_cast<uint32_t>(index));
-					else
-						ctx.selection->SelectSingle(static_cast<uint32_t>(index));
+					{
+						if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+							ctx.selection->ToggleSelection(realIndex);
+					}
+					else if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+						ctx.selection->SelectSingle(realIndex);
 				}
+				else
+				{
+					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+					{
+						if (heldCtrl)
+							ctx.selection->ToggleSelection(realIndex);
+						else
+							ctx.selection->SelectSingle(realIndex);
+					}
+				}
+				PopRowAccentColors(row);
 			}
 
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -88,7 +130,7 @@ namespace VisionGal::Editor
 				if (ImGui::IsKeyDown(ImGuiKey_Space))
 					payloadInfo = header + " (Space to copy)";
 
-				ImGui::SetDragDropPayload("SEQ_ENTRY_INDEX", &index, sizeof(int));
+				ImGui::SetDragDropPayload("SEQ_ENTRY_INDEX", &payloadIndex, sizeof(int));
 				ImGui::Selectable(payloadInfo.c_str());
 				ImGui::EndDragDropSource();
 			}
@@ -97,24 +139,37 @@ namespace VisionGal::Editor
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SEQ_ENTRY_INDEX"))
 				{
-					const int payloadIndex = *(const int*)payload->Data;
-					if (payloadIndex != static_cast<int>(index))
+					const int src = *static_cast<const int*>(payload->Data);
+					if (src != payloadIndex)
 					{
-						dragSourceIndex = payloadIndex;
-						dragTargetIndex = static_cast<int>(index);
+						dragSourceIndex = src;
+						dragTargetIndex = payloadIndex;
 					}
 				}
 				ImGui::EndDragDropTarget();
 			}
 
 			if (!show)
-				removeIndices.push_back(index);
+				removeIndices.push_back(realIndex);
 
 			ImGui::PopID();
-			index++;
+		};
 
-			if (pushedDim)
-				ImGui::PopStyleVar();
+		if (useClipper)
+		{
+			const float lineH = ImGui::GetFrameHeightWithSpacing() * 2.25f;
+			ImGuiListClipper clipper;
+			clipper.Begin(static_cast<int>(visible.size()), lineH);
+			while (clipper.Step())
+			{
+				for (int line = clipper.DisplayStart; line < clipper.DisplayEnd; ++line)
+					drawRow(visible[static_cast<size_t>(line)]);
+			}
+		}
+		else
+		{
+			for (const auto& row : visible)
+				drawRow(row);
 		}
 
 		if (dragSourceIndex != -1 && dragTargetIndex != -1 && dragSourceIndex != dragTargetIndex)

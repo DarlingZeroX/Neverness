@@ -9,7 +9,7 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "Sequence/ComponentAdderUI.h"
+#include "Widgets/ComponentAdderUI.h"
 
 #include <algorithm>
 
@@ -18,24 +18,26 @@ namespace VisionGal::Editor
 	namespace
 	{
 		constexpr float kWideGridThresholdPx = 450.f;
-		constexpr float kListSidebarMinWidthPx = 260.f;
+		constexpr float kListSidebarMinWidthPx = 200.f;
 	}
 
-	bool ComponentAdderUI::EntryMatchesFilter(const SequenceEntryUIData& entry) const
+	bool ComponentAdderUI::EntryMatchesFilter(const SequenceComponentMetadata& entry) const
 	{
 		if (!m_SearchFilter.IsActive())
 			return true;
 
-		std::string blob = entry.Label;
-		blob.reserve(blob.size() + entry.FullLabel.size() + entry.TypeNameID.size() + entry.Description.size() + 4);
+		const std::string primary = entry.PrimaryLabel();
+		const std::string palette = entry.PaletteButtonText();
+		std::string blob = primary;
+		blob.reserve(blob.size() + palette.size() + entry.TypeNameID.size() + entry.Description.size() + entry.Icon.size() + 4);
 		blob += ' ';
-		blob += entry.FullLabel;
+		blob += palette;
 		blob += ' ';
 		blob += entry.TypeNameID;
 		blob += ' ';
 		blob += entry.Description;
 		blob += ' ';
-		blob += entry.IconLabel;
+		blob += entry.Icon;
 		return m_SearchFilter.PassFilter(blob.c_str());
 	}
 
@@ -50,7 +52,9 @@ namespace VisionGal::Editor
 			copy.TabIcon = cat.TabIcon;
 			for (const auto& item : cat.Items)
 			{
-				if (item.FullLabel.empty() && item.Label.empty())
+				if (item.TypeNameID.empty())
+					continue;
+				if (item.PaletteButtonText().empty() && item.PrimaryLabel().empty())
 					continue;
 				if (!EntryMatchesFilter(item))
 					continue;
@@ -61,11 +65,9 @@ namespace VisionGal::Editor
 		return out;
 	}
 
-	void ComponentAdderUI::RenderComponentEntryButton(const SequenceEntryUIData& entry)
+	void ComponentAdderUI::RenderComponentEntryButton(const SequenceComponentMetadata& entry)
 	{
-		const std::string& label = entry.FullLabel.empty()
-			? (entry.IconLabel.empty() ? entry.Label : entry.IconLabel + " " + entry.Label)
-			: entry.FullLabel;
+		const std::string label = entry.PaletteButtonText();
 		if (label.empty())
 			return;
 
@@ -142,9 +144,7 @@ namespace VisionGal::Editor
 							continue;
 
 						const auto& entry = colItems[static_cast<std::size_t>(row)];
-						const std::string& label = entry.FullLabel.empty()
-							? (entry.IconLabel.empty() ? entry.Label : entry.IconLabel + " " + entry.Label)
-							: entry.FullLabel;
+						const std::string label = entry.PaletteButtonText();
 						if (label.empty())
 							continue;
 

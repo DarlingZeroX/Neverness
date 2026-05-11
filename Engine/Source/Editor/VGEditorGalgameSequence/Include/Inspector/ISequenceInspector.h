@@ -21,6 +21,7 @@ namespace VisionGal
 namespace VisionGal::Editor
 {
 	/// Extensible inspector surface (property panel, later timeline row / graph node).
+	/// 可扩展的检查器界面（属性面板，后续可扩展时间轴行/图节点等）。
 	class ISequenceInspector
 	{
 	public:

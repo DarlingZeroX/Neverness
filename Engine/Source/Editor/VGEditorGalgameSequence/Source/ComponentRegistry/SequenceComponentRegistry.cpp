@@ -8,7 +8,6 @@
 
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 
-#include "Sequence/EntryUIData.h"
 #include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 
 #include <algorithm>
@@ -88,11 +87,9 @@ namespace VisionGal::Editor
 
 		for (const SequenceComponentMetadata& meta : EnumerateOrdered())
 		{
-			SequenceEntryUIData row = SequenceEntryUIDataManager::GetDataByTypeNameID(meta.TypeNameID);
-
 			std::size_t targetIndex = 0;
 			bool matched = false;
-			for (std::size_t i = 0; i < defaultCount; ++i)
+			for (std::size_t i = 0; i < categories.size(); ++i)
 			{
 				if (categories[i].Name == meta.Category)
 				{
@@ -106,11 +103,11 @@ namespace VisionGal::Editor
 				CategoryData extra;
 				extra.Name = meta.Category;
 				extra.TabIcon = meta.Icon.empty() ? ICON_FA_CUBE : meta.Icon;
-				extra.Items.push_back(std::move(row));
+				extra.Items.push_back(meta);
 				categories.push_back(std::move(extra));
 			}
 			else
-				categories[targetIndex].Items.push_back(std::move(row));
+				categories[targetIndex].Items.push_back(meta);
 		}
 
 		return categories;

@@ -17,21 +17,22 @@ endif()
 file(GLOB SEQUENCE_EDITOR_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Sequence/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Document/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/ComponentRegistry/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Runtime/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Inspector/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Inspector/Builtin/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Widgets/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Core/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Commands/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/ViewModels/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Validation/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Validation/Builtin/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Timeline/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
 file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Sequence/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Document/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/ComponentRegistry/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime/*.cpp"
@@ -39,6 +40,10 @@ file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Widgets/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Commands/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/ViewModels/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Validation/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Validation/Builtin/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Timeline/*.cpp"
 )
 
 add_library(VGEditorGalgameSequence SHARED ${SEQUENCE_EDITOR_HEADERS} ${SEQUENCE_EDITOR_SOURCES})

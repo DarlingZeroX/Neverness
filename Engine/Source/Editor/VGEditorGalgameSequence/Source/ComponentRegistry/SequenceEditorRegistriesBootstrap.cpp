@@ -9,12 +9,12 @@
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
 
 #include "ComponentRegistry/SequenceComponentRegistry.h"
-#include "Inspector/Builtin/LegacyDrawerInspectorAdapter.h"
+#include "Inspector/BuiltinSequenceInspectors.h"
 #include "Inspector/SequenceInspectorRegistry.h"
-#include "Sequence/EntryUIData.h"
 
 #include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 
+#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 #include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
 
 #include <memory>
@@ -23,6 +23,37 @@
 
 namespace VisionGal::Editor
 {
+	namespace
+	{
+		void FillPresentationForTypeNameID(const std::string& id, SequenceComponentMetadata& m)
+		{
+			if (id == VGSSC_CommonDialogue::StaticGetTypeNameID())
+			{
+				m.DisplayName = u8"普通对话";
+				m.Icon = ICON_FA_COMMENT_ALT;
+				m.Category = u8"常规演出";
+				return;
+			}
+			if (id == VGSSC_ChangeFigure::StaticGetTypeNameID())
+			{
+				m.DisplayName = u8"切换立绘";
+				m.Icon = ICON_FA_USER;
+				m.Category = u8"常规演出";
+				return;
+			}
+			if (id == VGSSC_ChangeBackground::StaticGetTypeNameID())
+			{
+				m.DisplayName = u8"切换背景";
+				m.Icon = ICON_FA_IMAGES;
+				m.Category = u8"常规演出";
+				return;
+			}
+			m.DisplayName = id;
+			m.Category = u8"序列组件";
+			m.Icon = ICON_FA_CUBE;
+		}
+	}
+
 	void BootstrapSequenceComponentRegistry(SequenceComponentRegistry& registry)
 	{
 		std::vector<std::string> types;
@@ -33,9 +64,7 @@ namespace VisionGal::Editor
 		{
 			SequenceComponentMetadata m;
 			m.TypeNameID = id;
-			const SequenceEntryUIData ui = SequenceEntryUIDataManager::GetDataByTypeNameID(id);
-			m.Category = ui.Category.empty() ? std::string(u8"序列组件") : ui.Category;
-			m.Icon = ui.IconLabel.empty() ? std::string(ICON_FA_CUBE) : ui.IconLabel;
+			FillPresentationForTypeNameID(id, m);
 			m.Priority = priority++;
 			registry.Register(std::move(m));
 		}
@@ -44,14 +73,6 @@ namespace VisionGal::Editor
 	void BootstrapSequenceInspectorRegistry(SequenceInspectorRegistry& inspectors, const SequenceComponentRegistry& components)
 	{
 		for (const SequenceComponentMetadata& meta : components.EnumerateOrdered())
-		{
-			std::string display = meta.DisplayName;
-			if (display.empty())
-			{
-				const SequenceEntryUIData ui = SequenceEntryUIDataManager::GetDataByTypeNameID(meta.TypeNameID);
-				display = ui.Label.empty() ? meta.TypeNameID : ui.Label;
-			}
-			inspectors.Register(std::make_unique<LegacyDrawerInspectorAdapter>(meta.TypeNameID, std::move(display)));
-		}
+			inspectors.Register(MakeSequenceInspectorForMetadata(meta));
 	}
 }

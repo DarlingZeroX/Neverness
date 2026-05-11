@@ -10,6 +10,7 @@
 namespace VisionGal::Editor
 {
 	/// Placeholder for future editor preferences (theme, snap, etc.).
+	/// 预留结构体，用于后续编辑器偏好（主题、吸附等）。
 	struct SequenceEditorSettings
 	{
 	};

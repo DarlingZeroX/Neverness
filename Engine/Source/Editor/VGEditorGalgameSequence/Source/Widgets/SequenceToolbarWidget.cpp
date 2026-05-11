@@ -14,7 +14,6 @@
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
 #include "Runtime/SequenceExecutionController.h"
-#include "Runtime/SequenceRuntimeSnapshot.h"
 
 #include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "HFileSystem/Interface/HFileSystem.h"
@@ -100,26 +99,5 @@ namespace VisionGal::Editor
 		}
 
 		ImGui::EndMenuBar();
-
-		// Status strip (below menu bar, same window)
-		if (ctx.document != nullptr)
-		{
-			const std::string& p = ctx.document->GetAssetPath();
-			if (p.empty())
-				ImGui::TextUnformatted(u8"(未命名)");
-			else
-				ImGui::TextUnformatted(p.c_str());
-			if (ctx.document->IsDirty())
-			{
-				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(1.f, 0.85f, 0.4f, 1.f), "*");
-			}
-		}
-
-		if (ctx.lastExecutionSnapshot != nullptr && !ctx.lastExecutionSnapshot->LastError.empty())
-		{
-			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1.f, 0.35f, 0.35f, 1.f), "Run error: %s", ctx.lastExecutionSnapshot->LastError.c_str());
-		}
 	}
 }

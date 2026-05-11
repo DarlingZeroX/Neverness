@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
-#include "EntryUIData.h"
+#include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 
 namespace VisionGal::Editor
@@ -24,8 +24,9 @@ namespace VisionGal::Editor
 	{
 		std::string Name;
 		/// FontAwesome UTF-8 glyph(s) shown on the category strip / headers
+		/// 显示在分类条/标题上的 FontAwesome UTF-8 字形。
 		std::string TabIcon;
-		std::vector<SequenceEntryUIData> Items;
+		std::vector<SequenceComponentMetadata> Items;
 	};
 
 	enum class SequenceComponentLayoutMode : std::uint8_t
@@ -51,8 +52,8 @@ namespace VisionGal::Editor
 		void RenderListView();
 
 		std::vector<CategoryData> BuildFilteredCategories() const;
-		bool EntryMatchesFilter(const SequenceEntryUIData& entry) const;
-		void RenderComponentEntryButton(const SequenceEntryUIData& entry);
+		bool EntryMatchesFilter(const SequenceComponentMetadata& entry) const;
+		void RenderComponentEntryButton(const SequenceComponentMetadata& entry);
 
 		std::vector<CategoryData> m_Categories;
 

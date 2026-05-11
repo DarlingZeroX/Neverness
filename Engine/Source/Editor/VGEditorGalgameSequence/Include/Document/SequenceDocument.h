@@ -18,12 +18,14 @@
 namespace VisionGal::Editor
 {
 	/// Owns asset path, dirty flag, and the edited sequence (thin wrapper over `VGSSequenceDataContainer`).
+	/// 持有资源路径、脏标记与正在编辑的序列（对 `VGSSequenceDataContainer` 的薄封装）。
 	class SequenceDocument
 	{
 	public:
 		SequenceDocument();
 
 		/// LEGACY: direct access for UI not yet migrated behind commands.
+		/// 遗留接口：尚未迁移到命令模式之前的 UI 直接访问序列数据。
 		Ref<VisionGal::VGSSequenceDataContainer> GetSequence() const { return m_sequence; }
 
 		const std::string& GetAssetPath() const { return m_assetPath; }
@@ -33,18 +35,22 @@ namespace VisionGal::Editor
 		void ClearDirty();
 
 		/// Creates a new empty sequence container.
+		/// 创建新的空序列容器。
 		void ResetSequenceData();
 
 		/// Fills default demo entries (matches previous editor ctor behaviour).
+		/// 填充默认演示条目（与旧版编辑器构造函数行为一致）。
 		void FillDefaultDemoEntries();
 
 		bool LoadFromAssetPath(const std::string& path);
 		bool SaveToAssetPath();
 
 		/// Sets `m_assetPath` then saves. Returns false if `path` is empty or write fails.
+		/// 设置 `m_assetPath` 后保存；若 `path` 为空或写入失败则返回 false。
 		bool SaveAsToAssetPath(const std::string& path);
 
 		/// Clears asset path and replaces sequence with an empty container (untitled new document).
+		/// 清空资源路径并将序列替换为空容器（未命名新文档）。
 		void ResetToUntitledEmpty();
 
 		void AddEntryByTypeNameID(const std::string& typeNameID);
@@ -53,6 +59,7 @@ namespace VisionGal::Editor
 		bool ReorderInsertBehind(unsigned sourceIndex, unsigned targetIndex);
 
 		/// Restores full ordered entry list (undo helpers / move snapshot).
+		/// 恢复完整有序条目列表（撤销辅助 / 移动快照）。
 		void SetSequenceEntries(const std::vector<Ref<VisionGal::IVGSSequenceComponent>>& entries)
 		{
 			m_sequence->m_Sequence = entries;
@@ -62,6 +69,7 @@ namespace VisionGal::Editor
 		}
 
 		/// Inserts a single entry at `index` (clamped to end). Reindexes `SequenceIndex`.
+		/// 在 `index` 处插入单条条目（越界则夹到末尾），并重新编号 `SequenceIndex`。
 		void InsertEntryAt(unsigned index, Ref<VisionGal::IVGSSequenceComponent> entry)
 		{
 			auto& vec = m_sequence->m_Sequence;
