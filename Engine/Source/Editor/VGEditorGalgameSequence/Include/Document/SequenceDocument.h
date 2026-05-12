@@ -13,13 +13,13 @@
 #include <string>
 #include <utility>
 #include <vector>
-
+#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
 #include "VGGalgameScriptSequence/Include/Sequence/DataContainer.h"
 
-namespace VisionGal
-{
-	class IVGSSequenceComponent;
-}
+//namespace VisionGal
+//{
+//	class IVGSSequenceComponent;
+//}
 
 namespace VisionGal::Editor
 {

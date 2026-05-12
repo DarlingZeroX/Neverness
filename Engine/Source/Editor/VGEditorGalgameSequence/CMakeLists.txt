@@ -17,7 +17,7 @@ endif()
 file(GLOB SEQUENCE_EDITOR_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Document/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/EditorSession/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/ComponentRegistry/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Runtime/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Inspector/*.h"
@@ -32,21 +32,24 @@ file(GLOB SEQUENCE_EDITOR_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Services/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Async/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Transactions/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Transactions/Patches/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Reactive/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Reactive/DerivedState/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Projection/ProjectionEvents/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/DirtyRegions/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Projection/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Properties/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Projection/Graph/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Workspace/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Diff/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Document/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Inspector/PropertyEditing/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
 file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Document/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorSession/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/ComponentRegistry/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Inspector/*.cpp"
@@ -62,8 +65,13 @@ file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Async/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetMonitoring/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Transactions/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Transactions/Patches/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Reactive/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Reactive/DerivedState/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime/SequenceRuntimeBridgeRecorder.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorSession/SequenceEditorSession.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/DirtyRegions/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Document/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Projection/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Workspace/*.cpp"
 )
@@ -84,3 +92,7 @@ target_link_libraries(VGEditorGalgameSequence PUBLIC VGGalgame)
 target_link_libraries(VGEditorGalgameSequence PRIVATE HCorePlatform)
 target_link_libraries(VGEditorGalgameSequence PRIVATE HFileSystem)
 target_link_libraries(VGEditorGalgameSequence PRIVATE VGCore)
+target_link_libraries(VGEditorGalgameSequence PUBLIC VGEditorReactive)
+target_link_libraries(VGEditorGalgameSequence PUBLIC VGEditorAuthoringGraph)
+target_link_libraries(VGEditorGalgameSequence PUBLIC VGEditorExtensions)
+target_link_libraries(VGEditorGalgameSequence PUBLIC VGEditorRuntimeBridge)

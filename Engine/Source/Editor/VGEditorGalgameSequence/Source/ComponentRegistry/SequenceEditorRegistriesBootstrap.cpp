@@ -9,6 +9,8 @@
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
 
 #include "ComponentRegistry/SequenceComponentRegistry.h"
+#include "Extensions/ISequenceEditorExtension.h"
+#include "Extensions/SequenceExtensionRegistry.h"
 #include "Inspector/BuiltinSequenceInspectors.h"
 #include "Inspector/SequenceInspectorRegistry.h"
 #include "Properties/SequencePropertyDescriptor.h"
@@ -116,6 +118,22 @@ namespace VisionGal::Editor
 			m.Priority = priority++;
 			registry.Register(std::move(m));
 		}
+	}
+
+	namespace
+	{
+		class NoopSequenceEditorExtension final : public ISequenceEditorExtension
+		{
+		public:
+			[[nodiscard]] const char* GetExtensionId() const override { return "visiongal.sequence.phase8.noop"; }
+		};
+	}
+
+	void BootstrapSequenceExtensions(SequenceExtensionRegistry& registry)
+	{
+		if (!registry.GetExtensions().empty())
+			return;
+		registry.Register(std::make_unique<NoopSequenceEditorExtension>());
 	}
 
 	void BootstrapSequenceInspectorRegistry(SequenceInspectorRegistry& inspectors, const SequenceComponentRegistry& components)

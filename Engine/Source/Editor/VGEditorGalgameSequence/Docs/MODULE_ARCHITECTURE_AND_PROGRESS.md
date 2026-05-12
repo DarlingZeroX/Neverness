@@ -8,15 +8,21 @@
 
 ## 1. 模块定位
 
-`VGEditorGalgameSequence` 提供面向 **`.vgasset` 序列脚本资源** 的 ImGui 编辑体验：条目列表、组件调色板、属性检查器、撤销/重做、剪贴板、保存与「执行到某条目」及 **Phase 7 起调试器（单步 / 继续 / 断点 / 运行时事件流）** 的步进体验。对外主入口为 `VisionGal::Editor::VGScriptSequenceEditor`（`Interface/SequenceEditor.h`），实现编辑器框架的 `IEditorTaskPanel`，并可由宿主通过 `RenderEmbeddedUI()` 嵌入同一套 UI。
+`VGEditorGalgameSequence` 提供面向 **`.vgasset` 序列脚本资源** 的 ImGui 编辑体验：条目列表、组件调色板、属性检查器、撤销/重做、剪贴板、保存与「执行到某条目」及 **Phase 7 起调试器**；**Phase 8** 起引入 **Reactive 派生图、投影事件总线、Authoring 图数据层、Patch 事务雏形、Runtime 事件时间线、扩展注册表** 及四个静态链接子模块（见 §1 依赖与 §6.9）。
+
+序列数据本身来自 **`VGGalgameScriptSequence`**（`VGSSequenceDataContainer`、`IVGSSequenceComponent` 等）；本模块不重复定义运行时组件类型，而是通过 `IVGSSequenceComponentManager::EnumerateRegisteredTypeNameIDs` 与运行时注册表对齐。
 
 **主要链接依赖**（见 `CMakeLists.txt`）：
 
 - `VGEditorFramework`、`HNGEditorCore`：编辑器任务面板与基础设施。
 - `VGGalgame`：Galgame 侧资源与引擎集成。
 - `VGCore`、`HCorePlatform`、`HFileSystem`：核心服务、原生保存对话框、路径与 VFS。
+- **`VGEditorReactive`**（STATIC）：无业务 `DerivedStateGraph`（失效传播 + 拓扑 flush）。
+- **`VGEditorAuthoringGraph`**（STATIC）：`SequenceAuthoringGraph`（布局 / 边 / 注释，与线性文档解耦）。
+- **`VGEditorExtensions`**（STATIC）：`ISequenceEditorExtension`、`SequenceExtensionRegistry`。
+- **`VGEditorRuntimeBridge`**（STATIC）：`SequenceRuntimeEventFrame`、`SequenceRuntimeEventTimeline`。
 
-序列数据本身来自 **`VGGalgameScriptSequence`**（`VGSSequenceDataContainer`、`IVGSSequenceComponent` 等）；本模块不重复定义运行时组件类型，而是通过 `IVGSSequenceComponentManager::EnumerateRegisteredTypeNameIDs` 与运行时注册表对齐。
+对外主入口为 `VisionGal::Editor::VGScriptSequenceEditor`（`Interface/SequenceEditor.h`），实现编辑器框架的 `IEditorTaskPanel`，并可由宿主通过 `RenderEmbeddedUI()` 嵌入同一套 UI。
 
 ---
 
@@ -26,29 +32,33 @@
 |------|------|
 | `Interface/` | 对外 API：`SequenceEditor.h`（`VGScriptSequenceEditor`）、`VGEGSExport.h`。 |
 | `Include/Document/` | `SequenceDocument`：资源路径、脏标记、对 `VGSSequenceDataContainer` 的封装与读写。 |
-| `Include/Core/` | `SequenceEditorContext`、选择、撤销栈、剪贴板；`SequenceEditorEvents.h` 转发至 `Events/SequenceEditorEvent.h`。 |
+| `Include/Core/` | `SequenceEditorContext`、选择、**`SequenceSelectionTypes` / `SequenceSelectionProjectionController`**、撤销栈、剪贴板；`SequenceEditorEvents.h` 转发至 `Events/SequenceEditorEvent.h`。 |
 | `Include/Events/` | `SequenceEditorEvent`、`SequenceEditorEventType`、`SequenceEditorEventBus`（编辑器主线程发布/订阅）。 |
 | `Include/Services/` | `SequenceEditorServiceLocator`、`SequenceValidationCacheService`、`SequenceSearchIndexService`、**`SequenceAssetDependencyService`**（资源变更 → 依赖图 + 校验脏区）。 |
 | `Include/Async/` | `SequenceAsyncTaskService`、`SequenceBackgroundValidationTask`；**`SequenceTaskToken`**（与 debounced 全量校验取消协同）。 |
 | `Include/AssetMonitoring/` | 资源依赖：`SequenceDependencyGraph`（scheduler 内在文档信号时 `RebuildFromDocument`）；**`SequenceAssetDependencyService`** 在保存等路径显式 `OnAssetChanged` 时重建图并按引用条目刷新校验缓存。 |
 | `Include/Transactions/` | Transaction v1：`SequenceTransactionTypes`、`SequenceTransactionBuilder`、`SequenceMutationSummary` 等（与 `SequenceDocumentMutationSummary` 并存）。 |
+| `Include/Transactions/Patches/` | **Phase 8**：`SequenceDocumentPatch`（`variant`）、`SequencePatchTransactionV2`、`SequencePatchApplier`（Patch → `SequenceDirtyRegion`）。 |
 | `Include/DirtyRegions/` | `SequenceDirtyRegionFlags`、`SequenceDirtyRegion`、与 summary/transaction 的归一化构建。 |
 | `Include/Projection/` | `ISequenceProjection`（**`Rebuild` + `ApplyDirtyRegion`**）、`SequenceListProjection`、`SequenceTimelineProjection`、`SequenceGraphProjection`。 |
-| `Include/Projection/Graph/` | **`SequenceGraphReadModel.h`**：`SequenceGraphNodeVM`、`SequenceGraphEdgeVM`（仅 Authoring 线性流 + 边，非执行 VM）。 |
-| `Include/Reactive/` | `SequenceDirtyRegionTracker`、`SequencePresentationScheduler`、**`SequenceEditorMetrics`**；**`Include/Reactive/DerivedState/`** 占位 **`SequenceDerivedStatePlaceholders.h`**（Selection/Validation/Runtime/Search 派生状态锚点）。 |
+| `Include/Projection/Graph/` | **`SequenceGraphReadModel.h`**：`SequenceGraphNodeVM`（含 **LayoutX/Y**）、`SequenceGraphEdgeVM`（仅 Authoring 线性流 + 边，非执行 VM）。 |
+| `Include/Projection/ProjectionEvents/` | **Phase 8**：`SequenceProjectionEvent`（`variant`）、`SequenceProjectionEventBus`；选择 / 导航 / 视口事件头文件。 |
+| `Include/Reactive/` | `SequenceDirtyRegionTracker`、`SequencePresentationScheduler`、**`SequenceEditorMetrics`**。 |
+| `Include/Reactive/DerivedState/` | **Phase 8**：`SequenceDerivedStateId`、`SequenceDerivedStateGraph`（装配 `VGEditorReactive::DerivedStateGraph`，包装校验 / Overlay / 搜索派生 Pass）。 |
+| `Include/EditorSession/` | **Phase 8**：`SequenceEditorSession`（Authoring 图 + 投影总线 + 扩展注册表 + 运行时时间线聚合，减轻宿主 God Object）。 |
 | `Include/Diff/` | 文档/条目 diff 占位（`SequenceDocumentDiff.h` 等）。 |
 | `Include/Inspector/PropertyEditing/` | `SequencePropertyPath`、`SequencePropertyBinding`、`SequencePropertyBindingRegistry` 等。 |
 | `Include/Commands/` | `ISequenceEditorCommand` 及增删改、移动、粘贴、属性编辑、复合命令。 |
 | `Include/ComponentRegistry/` | 组件元数据、注册表、Bootstrap 声明；**`SequenceComponentMetadata::PropertyDescriptors`**（Phase 7 属性描述）。 |
 | `Include/Properties/` | **`SequencePropertyDescriptor`**（`SequencePropertyKind` + 可选 `SequenceEditFieldId` 映射）。 |
 | `Include/Inspector/` | `ISequenceInspector`、内置实现工厂、注册表、**`SequenceAutoInspectorDrawer`**（descriptor 回退绘制）。 |
-| `Include/Runtime/` | **`SequenceDebuggerSession`**（替代原 `SequenceRuntimeSession`）、`SequenceExecutionController`（调试会话 / `StepOnce` / `ContinueExecution`）、`SequenceRuntimeSnapshot`、`SequenceRuntimeObserver`、`SequenceRuntimeOverlayState`（含断点索引）。 |
+| `Include/Runtime/` | **`SequenceDebuggerSession`**、`SequenceExecutionController`、`SequenceRuntimeSnapshot`、`SequenceRuntimeObserver`（含 **`GetOverlayRevision`**）、**`SequenceRuntimeBridgeRecorder`**（订阅 `RuntimeDebugStream` → 时间线）。 |
 | `Include/ViewModels/` | `SequenceDocumentViewModel`、`SequenceEntryViewModel`、`SequenceSearchViewModel`（展示层只读模型）。 |
 | `Include/Validation/` | `SequenceValidationRegistry`、`ISequenceValidator`、`SequenceValidationIssue` 及 `Builtin/` 内置规则。 |
 | `Include/Timeline/` | 线性时间轴 v1：`SequenceTimelineLayout`、`SequenceTimelineController`、`SequenceTimelineWidget`。 |
-| `Include/Widgets/` | 工具栏、条目列表、调色板、搜索、Inspector、校验面板、大纲、状态栏、时间轴、**`SequenceGraphWidget`** 等。 |
+| `Include/Widgets/` | 工具栏、条目列表、调色板、搜索、Inspector、校验面板、大纲、状态栏、时间轴、**`SequenceGraphWidget`**、**`SequenceRuntimeBridgePanelWidget`**（运行时事件 Dock）等。 |
 | `Include/Workspace/` | **`SequenceWorkspaceState`**：窗口可见性 INI（`%APPDATA%\VisionGal\`）持久化。 |
-| `Source/` | 与上述头文件对应的 `.cpp` 实现；含 `Events/`、`Services/`、`Async/`、`AssetMonitoring/`、`Transactions/`、`Reactive/`、`DirtyRegions/`、`Projection/`、**`Workspace/`**；`VGSequenceEditor.cpp` 为宿主级编排逻辑。 |
+| `Source/` | 与上述头文件对应的 `.cpp`；含 **`Reactive/DerivedState/`**、**`Projection/ProjectionEvents/`**（总线实现于头内，无单独 cpp）、**`EditorSession/`**、**`Transactions/Patches/`**、**`Runtime/SequenceRuntimeBridgeRecorder.cpp`**、`VGSequenceEditor.cpp` 等。 |
 
 ---
 
@@ -326,6 +336,52 @@ flowchart TB
 - **撤销合并**：**`ISequenceEditorCommand::TryMergeWith`**（如 **`EditSequencePropertyCommand`** 合并连续编辑）；**`SequenceUndoStack`** 在 push 前尝试合并。
 - **校验缓存扩展**：**`NotifyEntriesPropertyTouch`** 供依赖服务与精确脏区路径复用（与 §4.9 一致）。
 
+### 6.9 第八阶段（Reactive Authoring Platform — 首批落地）
+
+本小节概括 **Phase 8** 已在主干代码中落地的架构切片；更细的子模块边界与演进记录见各库同名的 **`Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`**。
+
+#### 6.9.1 子 CMake 目标（`CMakeLists.txt` 顶层已 `add_subdirectory`）
+
+| 目标 | 说明 |
+|------|------|
+| [VGEditorReactive](../../VGEditorReactive/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `ReactiveCore::DerivedStateGraph`：单线程 `Invalidate` + 拓扑 `FlushDirty`。 |
+| [VGEditorAuthoringGraph](../../VGEditorAuthoringGraph/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `SequenceAuthoringGraph`：与 **`SequenceDocument`** 解耦的布局 / 边 / 注释数据。 |
+| [VGEditorExtensions](../../VGEditorExtensions/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 扩展 SDK 雏形：`ISequenceEditorExtension`、`SequenceExtensionRegistry`。 |
+| [VGEditorRuntimeBridge](../../VGEditorRuntimeBridge/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `SequenceRuntimeEventFrame`、`SequenceRuntimeEventTimeline`（环形缓冲）。 |
+
+#### 6.9.2 派生状态图（P8-1）
+
+- **`SequenceDerivedStateGraph`** 将 **`ApplyIfStale` / `ApplyRuntimeOverlay` / `ApplySearchViewModelWithIndex`** 包装为 `ReactiveCore::DerivedStateGraph` 上的 **Compute 节点**；**`SequencePresentationScheduler::Tick`** 在投影与索引更新后调用 **`InvalidateForPresentationTick`** + **`Flush`**。
+- **依赖拓扑**：`SearchResults` 依赖 `Validation` 与 `RuntimeOverlay`，保证搜索 VM 在校验或叠加层变化后一致刷新。
+- **`SequenceRuntimeObserver::GetOverlayRevision`**：Overlay 变化时递增，用于 **仅失效 Runtime 子图**，减少无谓的全链路重算。
+
+#### 6.9.3 投影事件与统一选择（P8-2 / P8-3）
+
+- **`SequenceProjectionEventBus`** + **`SequenceProjectionEvent`（`std::variant`）**；**`SequenceSelectionProjectionController`** 将 **`SequenceProjectionSelectionChangedEvent`** 收敛为对 **`SequenceSelectionModel`** 的单一写入。
+- **`SequenceSelectionKind` / `SequenceSelectionHandle`**：为 Graph 边、时间轴 Clip 等扩展预留；当前 **Entry** 路径使用 **`MakeEntrySelectionHandle`**。
+- **列表 / 时间轴 / 序列图** 在存在 **`projectionEventBus`** 时通过事件发布选择变更，避免 Widget 间直接互调。
+
+#### 6.9.4 Authoring 图编辑（P8-4）
+
+- **`SequenceGraphProjection::SetAuthoringGraph`** + **`SequenceEditorSession::GetAuthoringGraph`**：**Rebuild** 时 **`EnsureNodeForEntry`** 并写回 **`LayoutX/Y`** 到 **`SequenceGraphNodeVM`**。
+- **`SequenceGraphWidget`**：**ImGuiListClipper** 虚拟化行；拖拽节点时 **`SetNodePositionForEntry`** 并 **`RequestPresentationRefresh`**（仍无执行 VM / Pin）。
+
+#### 6.9.5 Patch 事务雏形（P8-5）
+
+- **`Include/Transactions/Patches/`**：`SequenceDocumentPatch`、`SequencePatchTransactionV2`；**`BuildDirtyRegionFromPatchTransaction`** 将 Patch 批次映射为 **`SequenceDirtyRegion`**（与 v1 命令路径 **双轨并存**，后续可在 `ExecuteCommand` 提交点挂接 Patch 生成）。
+
+#### 6.9.6 Runtime Bridge（P8-6）
+
+- **`SequenceRuntimeBridgeRecorder`**：订阅 **`SequenceEditorEventType::RuntimeDebugStream`**，写入 **`SequenceRuntimeEventTimeline`**。
+- **`SequenceRuntimeBridgePanelWidget`**：Dock **`RuntimeBridge`**（工作区键同名）展示最近事件帧。
+
+#### 6.9.7 大文档与可扩展性（P8-7 / P8-8）
+
+- **列表投影**：`Rebuild` 按 **2048 条一批** 推送行 VM，降低瞬时分配尖峰。
+- **搜索索引**：**`RebuildFromViewStorageOrIncremental`** 在小范围 **`TouchedIndices` / `dirty.Entries`** 下按行更新；**`SearchIndexDirty`** 时全量重建。
+- **时间轴 / 自动 Inspector**：**>64 行** 或 **>40 个描述符** 时启用 **`ImGuiListClipper`**。
+- **扩展**：**`BootstrapSequenceExtensions`** 注册 **Noop** 演示扩展；**`NotifySessionBegin/End`** 与宿主生命周期对齐。
+
 ---
 
 ## 7. 相关文档与代码入口
@@ -336,6 +392,7 @@ flowchart TB
 | 宿主编排与 UI 布局 | `Source/VGSequenceEditor.cpp`、`Interface/SequenceEditor.h` |
 | 事件与服务 | `Include/Events/`、`Include/Services/`、`Include/Async/` |
 | 运行时组件定义 | `Engine/Source/Runtime/VGGalgameScriptSequence/`（及 `IVGSSequenceComponentManager` 注册） |
+| Phase 8 子模块文档 | `Engine/Source/Editor/VGEditorReactive/`、`VGEditorAuthoringGraph/`、`VGEditorExtensions/`、`VGEditorRuntimeBridge/` 各自 **`Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`** |
 
 ---
 
@@ -349,3 +406,4 @@ flowchart TB
 | 2026-05-12 | 第六阶段（首批）：Transaction 类型与事件载荷、`SequenceDirtyRegion`、`SequencePresentationScheduler`、List/Timeline/Graph Projection stub、`SequenceDependencyGraph` 实现、`SequenceTaskToken`、PropertyBinding 注册表与测试。 |
 | 2026-05-12 | 第六阶段（收尾）：`Phase6_PresentationScheduler` 单测、`SequenceDependencyGraph::RebuildFromDocument` const 组件扫描、文档目录表与 §6.5/§6.6/§6.7/§8 对齐。 |
 | 2026-05-12 | 第七阶段：投影 `Rebuild`/`ApplyDirtyRegion`、List 投影持有行 VM、`SequenceDebuggerSession` 与调试事件流、**`SequenceGraphProjection`** 与 **`SequenceGraphWidget`**、属性描述符与自动 Inspector、**`SequenceAssetDependencyService`**、**`SequenceWorkspaceState`**、撤销 **`TryMergeWith`**、**`SequenceEditorMetrics`**；更新 §2/§4/§5/§6.7/§6.8/§4.11 与数据流。 |
+| 2026-05-12 | **第八阶段（首批）**：四子模块 CMake 与文档；**`SequenceDerivedStateGraph`** + `VGEditorReactive`；投影事件总线与 **`SequenceSelectionProjectionController`**；**`SequenceEditorSession`**；**`SequenceAuthoringGraph`** 与 Graph 布局/拖拽；**Patch → DirtyRegion**；**`SequenceRuntimeBridgeRecorder`** 与时间线面板；搜索索引增量与多面板虚拟化入口；**`BootstrapSequenceExtensions`**；**§6.9**；`Phase8_*` 单测。 |

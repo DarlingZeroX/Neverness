@@ -16,6 +16,10 @@
 #include "ViewModels/SequenceDocumentViewModel.h"
 #include "ViewModels/SequenceEntryViewModel.h"
 
+#include "Core/SequenceSelectionTypes.h"
+#include "Projection/ProjectionEvents/SequenceProjectionEvent.h"
+#include "Projection/ProjectionEvents/SequenceProjectionEventBus.h"
+
 #include <VGImgui/IncludeImGui.h>
 
 #include <vector>
@@ -50,6 +54,23 @@ namespace VisionGal::Editor
 		{
 			if (row.RuntimeHighlight || row.HasValidationError || row.EntryBreakpoint)
 				ImGui::PopStyleColor();
+		}
+
+		void PublishOrSelectEntry(SequenceEditorContext& ctx, const unsigned realIndex, const bool toggle)
+		{
+			if (toggle)
+			{
+				ctx.selection->ToggleSelection(static_cast<uint32_t>(realIndex));
+				return;
+			}
+			if (ctx.projectionEventBus != nullptr)
+			{
+				SequenceProjectionSelectionChangedEvent ev;
+				ev.Primary = MakeEntrySelectionHandle(realIndex);
+				ctx.projectionEventBus->Publish(ev);
+			}
+			else
+				ctx.selection->SelectSingle(static_cast<uint32_t>(realIndex));
 		}
 	}
 
@@ -91,12 +112,7 @@ namespace VisionGal::Editor
 				PushRowAccentColors(row);
 				const bool sel = ctx.selection->IsSelected(realIndex);
 				if (ImGui::Selectable(header.c_str(), sel, ImGuiSelectableFlags_AllowOverlap))
-				{
-					if (heldCtrl)
-						ctx.selection->ToggleSelection(realIndex);
-					else
-						ctx.selection->SelectSingle(realIndex);
-				}
+					PublishOrSelectEntry(ctx, realIndex, heldCtrl);
 				PopRowAccentColors(row);
 			}
 			else
@@ -104,23 +120,13 @@ namespace VisionGal::Editor
 				PushRowAccentColors(row);
 				if (ImGui::CollapsingHeader(header.c_str(), &show, flags))
 				{
-					if (heldCtrl)
-					{
-						if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-							ctx.selection->ToggleSelection(realIndex);
-					}
-					else if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-						ctx.selection->SelectSingle(realIndex);
+					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+						PublishOrSelectEntry(ctx, realIndex, heldCtrl);
 				}
 				else
 				{
 					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-					{
-						if (heldCtrl)
-							ctx.selection->ToggleSelection(realIndex);
-						else
-							ctx.selection->SelectSingle(realIndex);
-					}
+						PublishOrSelectEntry(ctx, realIndex, heldCtrl);
 				}
 				PopRowAccentColors(row);
 			}

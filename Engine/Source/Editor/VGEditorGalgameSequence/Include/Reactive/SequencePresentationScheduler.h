@@ -12,9 +12,11 @@
 #include "Projection/SequenceGraphProjection.h"
 #include "Projection/SequenceListProjection.h"
 #include "Projection/SequenceTimelineProjection.h"
+#include "Reactive/DerivedState/SequenceDerivedStateGraph.h"
 
 namespace VisionGal::Editor
 {
+	class SequenceAuthoringGraph;
 	class SequenceComponentRegistry;
 	class SequenceDependencyGraph;
 	class SequenceDocument;
@@ -39,6 +41,8 @@ namespace VisionGal::Editor
 
 		[[nodiscard]] const SequenceEditorMetrics& GetLastMetrics() const { return m_metrics; }
 
+		void SetAuthoringGraph(SequenceAuthoringGraph* graph);
+
 		[[nodiscard]] bool Tick(
 			bool& inOutFirstPresentationDone,
 			const SequenceDocumentMutationSummary& mutSummary,
@@ -58,6 +62,7 @@ namespace VisionGal::Editor
 		SequenceListProjection m_listProjection;
 		SequenceTimelineProjection m_timelineProjection;
 		SequenceGraphProjection m_graphProjection;
+		SequenceDerivedStateGraph m_derivedStateGraph;
 		SequenceEditorMetrics m_metrics{};
 	};
 }

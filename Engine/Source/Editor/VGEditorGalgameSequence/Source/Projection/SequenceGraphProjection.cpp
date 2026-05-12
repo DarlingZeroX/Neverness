@@ -8,6 +8,7 @@
 
 #include "Projection/SequenceGraphProjection.h"
 
+#include "AuthoringGraph/SequenceAuthoringGraph.h"
 #include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
@@ -57,6 +58,18 @@ namespace VisionGal::Editor
 			else
 				node.Title = node.TypeNameID;
 			node.Subtitle = BuildSubtitle(entry);
+			node.LayoutX = static_cast<float>(i) * 200.f;
+			node.LayoutY = static_cast<float>((i % 8) * 72.f);
+			if (m_authoringGraph != nullptr)
+			{
+				m_authoringGraph->EnsureNodeForEntry(i, node.LayoutX, node.LayoutY);
+				SequenceAuthoringNode an;
+				if (m_authoringGraph->TryGetNodeForEntry(i, an))
+				{
+					node.LayoutX = an.posX;
+					node.LayoutY = an.posY;
+				}
+			}
 			m_nodes.push_back(std::move(node));
 		}
 		for (unsigned i = 0; i + 1 < n; ++i)

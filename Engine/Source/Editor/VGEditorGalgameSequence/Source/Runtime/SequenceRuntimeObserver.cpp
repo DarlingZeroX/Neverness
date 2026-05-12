@@ -15,6 +15,7 @@ namespace VisionGal::Editor
 	void SequenceRuntimeObserver::SetBreakpointMarkers(std::vector<uint32_t> indices)
 	{
 		m_overlay.BreakpointIndices = std::move(indices);
+		++m_overlayRevision;
 	}
 
 	void SequenceRuntimeObserver::NotifyExecuteCompleted(const SequenceRuntimeSnapshot& snapshot, bool controllerReturnedOk)
@@ -25,5 +26,6 @@ namespace VisionGal::Editor
 		m_overlay.ShowExecutionLine = snapshot.HasValidDebugInfo && controllerReturnedOk;
 		if (!snapshot.LastError.empty())
 			m_overlay.ShowExecutionLine = snapshot.HasValidDebugInfo;
+		++m_overlayRevision;
 	}
 }

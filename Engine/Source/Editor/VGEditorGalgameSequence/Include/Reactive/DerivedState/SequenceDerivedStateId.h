@@ -7,22 +7,15 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace VisionGal::Editor
 {
-	/// Phase 7: anchors for derived read-models (filled as debugger / search evolve).
-	struct SelectionDerivedState
+	/// 与 `ReactiveCore::DerivedStateId` 数值对齐的业务派生状态 ID（Phase 8）。
+	enum class SequenceDerivedStateId : uint32_t
 	{
-	};
-
-	struct ValidationDerivedState
-	{
-	};
-
-	struct RuntimeDerivedState
-	{
-	};
-
-	struct SearchDerivedState
-	{
+		Validation = 1,
+		RuntimeOverlay = 2,
+		SearchResults = 3,
 	};
 }

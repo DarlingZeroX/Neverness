@@ -26,8 +26,10 @@ namespace VisionGal::Editor
 		void SetBreakpointMarkers(std::vector<uint32_t> indices);
 
 		const SequenceRuntimeOverlayState& GetOverlay() const { return m_overlay; }
+		[[nodiscard]] uint64_t GetOverlayRevision() const { return m_overlayRevision; }
 
 	private:
 		SequenceRuntimeOverlayState m_overlay{};
+		uint64_t m_overlayRevision = 0;
 	};
 }

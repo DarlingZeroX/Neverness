@@ -34,6 +34,9 @@
 #include "Runtime/SequenceRuntimeObserver.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Transactions/SequenceTransactionBuilder.h"
+#include "ReactiveCore/DerivedStateGraph.h"
+#include "Transactions/Patches/SequenceDocumentPatch.h"
+#include "Transactions/Patches/SequencePatchApplier.h"
 #include "ViewModels/SequenceSearchViewModel.h"
 
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
@@ -327,4 +330,25 @@ TEST(Phase6_PresentationScheduler, FirstTickRebuildsViewModel)
 
 	ASSERT_TRUE(firstPresentationDone);
 	ASSERT_EQ(viewModel.GetVisibleEntries().size(), doc.GetEntryCount());
+}
+
+TEST(Phase8_ReactiveCoreGraph, InvalidatePropagatesDependents)
+{
+	VisionGal::Editor::ReactiveCore::DerivedStateGraph graph;
+	int aRuns = 0;
+	int bRuns = 0;
+	graph.RegisterNode(1, {}, [&] { ++aRuns; });
+	graph.RegisterNode(2, { 1 }, [&] { ++bRuns; });
+	graph.Invalidate(1);
+	graph.FlushDirty();
+	EXPECT_EQ(aRuns, 1);
+	EXPECT_EQ(bRuns, 1);
+}
+
+TEST(Phase8_PatchTransaction, BuildDirtyRegionFromPatchTransactionStructural)
+{
+	SequencePatchTransactionV2 tx;
+	tx.Patches.push_back(SequenceInsertEntryPatch{ 0u, "X" });
+	const SequenceDirtyRegion d = BuildDirtyRegionFromPatchTransaction(tx);
+	EXPECT_TRUE(d.StructureChanged);
 }

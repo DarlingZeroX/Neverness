@@ -8,6 +8,11 @@
 
 #include "Services/SequenceSearchIndexService.h"
 
+#include "DirtyRegions/SequenceDirtyRegion.h"
+#include "DirtyRegions/SequenceDirtyRegionFlags.h"
+#include "Document/SequenceDocument.h"
+#include "Events/SequenceEditorEvent.h"
+
 #include <cctype>
 
 namespace VisionGal::Editor
@@ -31,6 +36,45 @@ namespace VisionGal::Editor
 			std::string blob = row.TypeNameID + " " + row.DisplayName + " " + row.Subtitle + " " + row.Category;
 			m_normalizedLines.push_back(ToLowerAscii(std::move(blob)));
 		}
+	}
+
+	void SequenceSearchIndexService::RebuildFromViewStorageOrIncremental(
+		const SequenceDocument& /*document*/,
+		const std::vector<SequenceEntryViewModel>& rows,
+		const SequenceDocumentMutationSummary& mutSummary,
+		const SequenceDirtyRegion& dirty)
+	{
+		if (dirty.SearchIndexDirty)
+		{
+			RebuildFromViewStorage(rows);
+			return;
+		}
+		const bool structural = mutSummary.StructuralChange
+			|| (dirty.Flags & SequenceDirtyRegionFlags::Structure) != SequenceDirtyRegionFlags::None;
+		const size_t touchCount = mutSummary.TouchedIndices.size() + dirty.Entries.size();
+		if (structural || touchCount > 512 || m_normalizedLines.size() != rows.size())
+		{
+			RebuildFromViewStorage(rows);
+			return;
+		}
+		if (touchCount == 0 && m_normalizedLines.size() == rows.size())
+			return;
+		if (m_normalizedLines.size() != rows.size())
+		{
+			RebuildFromViewStorage(rows);
+			return;
+		}
+		auto rebuildLine = [&](const unsigned idx) {
+			if (idx >= rows.size())
+				return;
+			std::string blob =
+				rows[idx].TypeNameID + " " + rows[idx].DisplayName + " " + rows[idx].Subtitle + " " + rows[idx].Category;
+			m_normalizedLines[idx] = ToLowerAscii(std::move(blob));
+		};
+		for (const unsigned idx : mutSummary.TouchedIndices)
+			rebuildLine(idx);
+		for (const unsigned idx : dirty.Entries)
+			rebuildLine(idx);
 	}
 
 	std::vector<unsigned> SequenceSearchIndexService::QueryTextIndices(const std::string& needle) const

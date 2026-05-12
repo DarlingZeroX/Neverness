@@ -20,6 +20,8 @@ namespace VisionGal::Editor
 		std::string Title;
 		std::string Subtitle;
 		std::string TypeNameID;
+		float LayoutX = 0.f;
+		float LayoutY = 0.f;
 	};
 
 	enum class SequenceGraphEdgeKind : uint8_t

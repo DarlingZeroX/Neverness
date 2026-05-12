@@ -92,11 +92,11 @@ namespace VisionGal::Editor
 			return false;
 
 		bool drew = false;
-		for (const SequencePropertyDescriptor& d : meta.PropertyDescriptors)
-		{
+		const auto& props = meta.PropertyDescriptors;
+		auto drawOne = [&](const SequencePropertyDescriptor& d) -> bool {
 			if (!d.HasEditField
 				|| (d.Kind != SequencePropertyKind::String && d.Kind != SequencePropertyKind::AssetRef))
-				continue;
+				return false;
 
 			const StagingKey key = MakeKey(index, d.EditField);
 			std::string& staging = StagingStrings()[key];
@@ -111,7 +111,29 @@ namespace VisionGal::Editor
 			if (ImGui::IsItemDeactivatedAfterEdit())
 				context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(index, d.EditField, staging));
 			ImGui::PopID();
-			drew = true;
+			return true;
+		};
+
+		if (props.size() <= 40)
+		{
+			for (const SequencePropertyDescriptor& d : props)
+			{
+				if (drawOne(d))
+					drew = true;
+			}
+		}
+		else
+		{
+			ImGuiListClipper clipper;
+			clipper.Begin(static_cast<int>(props.size()));
+			while (clipper.Step())
+			{
+				for (int ri = clipper.DisplayStart; ri < clipper.DisplayEnd; ++ri)
+				{
+					if (drawOne(props[static_cast<size_t>(ri)]))
+						drew = true;
+				}
+			}
 		}
 		return drew;
 	}

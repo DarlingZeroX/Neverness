@@ -19,6 +19,7 @@
 #include "DirtyRegions/SequenceDirtyRegion.h"
 #include "Events/SequenceEditorEventBus.h"
 #include "Validation/SequenceValidationRegistriesBootstrap.h"
+#include "Widgets/SequenceRuntimeBridgePanelWidget.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "HFileSystem/Interface/HFileSystem.h"
@@ -133,6 +134,9 @@ namespace VisionGal::Editor
 		m_context.debuggerSession = &m_debuggerSession;
 		m_context.graphProjection = &m_presentationScheduler.GetGraphProjection();
 		m_context.services = &m_serviceLocator;
+		m_context.authoringGraph = &m_editorSession.GetAuthoringGraph();
+		m_context.projectionEventBus = &m_editorSession.GetProjectionEventBus();
+		m_context.runtimeEventTimeline = &m_editorSession.GetRuntimeEventTimeline();
 	}
 
 	void VGScriptSequenceEditor::TickEditorPresentation()
@@ -186,6 +190,12 @@ namespace VisionGal::Editor
 			this);
 
 		m_selectionModel.SetEventBus(&m_eventBus);
+
+		m_selectionProjectionController.Bind(m_editorSession.GetProjectionEventBus(), m_selectionModel, &m_eventBus);
+		m_runtimeBridgeRecorder.Bind(&m_eventBus, &m_editorSession.GetRuntimeEventTimeline());
+		BootstrapSequenceExtensions(m_editorSession.GetExtensionRegistry());
+		m_editorSession.GetExtensionRegistry().NotifySessionBegin();
+		m_presentationScheduler.SetAuthoringGraph(&m_editorSession.GetAuthoringGraph());
 
 		m_context.eventBus = &m_eventBus;
 		m_context.services = &m_serviceLocator;
@@ -248,7 +258,11 @@ namespace VisionGal::Editor
 		return ok;
 	}
 
-	VGScriptSequenceEditor::~VGScriptSequenceEditor() = default;
+	VGScriptSequenceEditor::~VGScriptSequenceEditor()
+	{
+		m_runtimeBridgeRecorder.Unbind();
+		m_editorSession.GetExtensionRegistry().NotifySessionEnd();
+	}
 
 	bool VGScriptSequenceEditor::ExecuteTo(unsigned int index)
 	{
@@ -336,6 +350,13 @@ namespace VisionGal::Editor
 		{
 			if (ImGui::Begin(u8"序列图"))
 				m_graphWidget.Render(m_context);
+			ImGui::End();
+		}
+
+		if (m_workspace.IsWindowVisible("RuntimeBridge"))
+		{
+			if (ImGui::Begin(u8"运行时事件桥"))
+				SequenceRuntimeBridgePanelWidget::Render(m_context);
 			ImGui::End();
 		}
 

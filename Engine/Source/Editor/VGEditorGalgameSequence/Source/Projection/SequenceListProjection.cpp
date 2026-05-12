@@ -69,8 +69,14 @@ namespace VisionGal::Editor
 	{
 		m_entryRows.clear();
 		const unsigned count = document.GetEntryCount();
-		for (unsigned i = 0; i < count; ++i)
-			m_entryRows.push_back(BuildRow(i, document, registry));
+		m_entryRows.reserve(count);
+		constexpr unsigned kChunk = 2048;
+		for (unsigned base = 0; base < count; base += kChunk)
+		{
+			const unsigned end = (base + kChunk < count) ? (base + kChunk) : count;
+			for (unsigned i = base; i < end; ++i)
+				m_entryRows.push_back(BuildRow(i, document, registry));
+		}
 	}
 
 	void SequenceListProjection::ApplyDirtyRegion(

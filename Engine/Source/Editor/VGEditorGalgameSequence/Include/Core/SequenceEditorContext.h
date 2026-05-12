@@ -31,6 +31,9 @@ namespace VisionGal::Editor
 	class SequenceComponentRegistry;
 	class SequenceDebuggerSession;
 	class SequenceGraphProjection;
+	class SequenceAuthoringGraph;
+	class SequenceProjectionEventBus;
+	class SequenceRuntimeEventTimeline;
 
 	using SequenceDocumentMutationSink = void (*)(void* userData, const SequenceDocumentMutationSummary& summary);
 
@@ -66,6 +69,10 @@ namespace VisionGal::Editor
 
 		SequenceEditorEventBus* eventBus = nullptr;
 		SequenceEditorServiceLocator* services = nullptr;
+
+		SequenceAuthoringGraph* authoringGraph = nullptr;
+		SequenceProjectionEventBus* projectionEventBus = nullptr;
+		SequenceRuntimeEventTimeline* runtimeEventTimeline = nullptr;
 
 		SequenceDocumentMutationSink onDocumentMutationAccumulate = nullptr;
 		void* onDocumentMutationAccumulateUserData = nullptr;

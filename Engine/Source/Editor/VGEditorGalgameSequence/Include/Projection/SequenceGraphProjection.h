@@ -14,9 +14,13 @@
 
 namespace VisionGal::Editor
 {
+	class SequenceAuthoringGraph;
+
 	class SequenceGraphProjection final : public ISequenceProjection
 	{
 	public:
+		void SetAuthoringGraph(SequenceAuthoringGraph* graph) { m_authoringGraph = graph; }
+
 		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) override;
 
 		void ApplyDirtyRegion(
@@ -28,6 +32,7 @@ namespace VisionGal::Editor
 		[[nodiscard]] const std::vector<SequenceGraphEdgeVM>& GetEdges() const { return m_edges; }
 
 	private:
+		SequenceAuthoringGraph* m_authoringGraph = nullptr;
 		std::vector<SequenceGraphNodeVM> m_nodes;
 		std::vector<SequenceGraphEdgeVM> m_edges;
 	};

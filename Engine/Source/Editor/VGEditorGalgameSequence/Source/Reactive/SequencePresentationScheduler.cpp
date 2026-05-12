@@ -9,13 +9,11 @@
 #include "Reactive/SequencePresentationScheduler.h"
 
 #include "AssetMonitoring/SequenceDependencyGraph.h"
+#include "AuthoringGraph/SequenceAuthoringGraph.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
 #include "DirtyRegions/SequenceDirtyRegionFlags.h"
 #include "Document/SequenceDocument.h"
-#include "Events/SequenceEditorEvent.h"
-#include "Events/SequenceEditorEventBus.h"
-#include "Reactive/DerivedState/SequenceDerivedStatePlaceholders.h"
 #include "Runtime/SequenceRuntimeObserver.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Services/SequenceValidationCacheService.h"
@@ -74,36 +72,11 @@ namespace VisionGal::Editor
 				graph.ApplyDirtyRegion(dirty, document, registry);
 			}
 		}
+	}
 
-		void RunDerivedStatePass(
-			SelectionDerivedState& /*selectionDerived*/,
-			ValidationDerivedState& /*validationDerived*/,
-			RuntimeDerivedState& /*runtimeDerived*/,
-			SearchDerivedState& /*searchDerived*/,
-			SequenceValidationCacheService& validationCache,
-			SequenceValidationRegistry& validationRegistry,
-			SequenceDocument& document,
-			SequenceDocumentViewModel& viewModel,
-			SequenceRuntimeObserver& runtimeObserver,
-			SequenceSearchIndexService& searchIndex,
-			SequenceSearchViewModel& searchViewModel,
-			SequenceEditorEventBus* eventBus,
-			bool& outValidationRefreshed)
-		{
-			outValidationRefreshed = validationCache.ApplyIfStale(
-				document, validationRegistry, document.GetGenerationId());
-			viewModel.ApplyValidationIssues(validationCache.GetIssues());
-
-			if (outValidationRefreshed && eventBus != nullptr)
-			{
-				SequenceEditorEvent ev;
-				ev.Type = SequenceEditorEventType::ValidationUpdated;
-				eventBus->Publish(ev);
-			}
-
-			viewModel.ApplyRuntimeOverlay(runtimeObserver.GetOverlay());
-			viewModel.ApplySearchViewModelWithIndex(searchIndex, searchViewModel);
-		}
+	void SequencePresentationScheduler::SetAuthoringGraph(SequenceAuthoringGraph* graph)
+	{
+		m_graphProjection.SetAuthoringGraph(graph);
 	}
 
 	bool SequencePresentationScheduler::Tick(
@@ -129,15 +102,6 @@ namespace VisionGal::Editor
 		const bool hasDocSignals = firstFrame || mutSummary.StructuralChange || !mutSummary.TouchedIndices.empty()
 			|| (dirty.Flags != SequenceDirtyRegionFlags::None);
 
-		SelectionDerivedState selectionDerived;
-		ValidationDerivedState validationDerived;
-		RuntimeDerivedState runtimeDerived;
-		SearchDerivedState searchDerived;
-		(void)selectionDerived;
-		(void)validationDerived;
-		(void)runtimeDerived;
-		(void)searchDerived;
-
 		++m_metrics.PresentationTickCount;
 		{
 			const auto t0 = std::chrono::steady_clock::now();
@@ -158,7 +122,7 @@ namespace VisionGal::Editor
 		{
 			const auto t0 = std::chrono::steady_clock::now();
 			dependencyGraph.RebuildFromDocument(document);
-			searchIndex.RebuildFromViewStorage(viewModel.GetEntryStorage());
+			searchIndex.RebuildFromViewStorageOrIncremental(document, viewModel.GetEntryStorage(), mutSummary, dirty);
 			m_metrics.LastSearchRebuildMicros = static_cast<uint64_t>(
 				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
 		}
@@ -166,20 +130,23 @@ namespace VisionGal::Editor
 		bool validationRefreshed = false;
 		{
 			const auto t0 = std::chrono::steady_clock::now();
-			RunDerivedStatePass(
-				selectionDerived,
-				validationDerived,
-				runtimeDerived,
-				searchDerived,
-				validationCache,
-				validationRegistry,
-				document,
-				viewModel,
-				runtimeObserver,
-				searchIndex,
-				searchViewModel,
-				eventBus,
-				validationRefreshed);
+			m_derivedStateGraph.InvalidateForPresentationTick(
+				firstFrame,
+				hasDocSignals,
+				mutSummary,
+				dirty,
+				runtimeObserver.GetOverlayRevision());
+			SequenceDerivedStateTickContext dctx;
+			dctx.document = &document;
+			dctx.viewModel = &viewModel;
+			dctx.validationCache = &validationCache;
+			dctx.validationRegistry = &validationRegistry;
+			dctx.searchIndex = &searchIndex;
+			dctx.runtimeObserver = &runtimeObserver;
+			dctx.searchViewModel = &searchViewModel;
+			dctx.eventBus = eventBus;
+			dctx.outValidationRefreshed = &validationRefreshed;
+			m_derivedStateGraph.Flush(dctx);
 			m_metrics.LastDerivedPassMicros = static_cast<uint64_t>(
 				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
 		}

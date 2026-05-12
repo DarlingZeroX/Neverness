@@ -52,6 +52,10 @@
 #include "VGEditorFramework/Interface/UITaskInterface.h"
 #include "Widgets/SequenceValidationWidget.h"
 
+#include "Core/SequenceSelectionProjectionController.h"
+#include "EditorSession/SequenceEditorSession.h"
+#include "Runtime/SequenceRuntimeBridgeRecorder.h"
+
 namespace VisionGal::Editor
 {
 	class VG_EDITOR_GALGAME_SEQUENCE_API VGScriptSequenceEditor : public IEditorTaskPanel
@@ -129,6 +133,9 @@ namespace VisionGal::Editor
 
 		SequencePresentationScheduler m_presentationScheduler{};
 		SequenceDependencyGraph m_dependencyGraph{};
+		SequenceEditorSession m_editorSession{};
+		SequenceSelectionProjectionController m_selectionProjectionController{};
+		SequenceRuntimeBridgeRecorder m_runtimeBridgeRecorder{};
 		std::shared_ptr<SequenceTaskToken> m_asyncValidationTaskToken;
 
 		bool m_asyncFullValidationArmed = false;
