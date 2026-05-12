@@ -4,6 +4,7 @@
 
 #include "RuntimeSystem/Background.h"
 
+#include "Runtime/SequenceComponentTypeId.h"
 #include "VGSTypeDefine.h"
 #include "Sequence/Components.h"
 #include "ExecutorResourceManager.h"
@@ -18,36 +19,43 @@ namespace VisionGal
 		constexpr const char* kDefaultBackgroundLayer = "Background";
 	}
 
+	bool VGSBackgroundRuntimeSystem::SupportsType(const SequenceComponentTypeID id) const
+	{
+		return id == MakeSequenceComponentTypeIDFromTypeName("ChangeBackground");
+	}
+
 	bool VGSBackgroundRuntimeSystem::CanExecute(IVGSSequenceComponent* component) const
 	{
 		return component != nullptr && dynamic_cast<VGSSC_ChangeBackground*>(component) != nullptr;
 	}
 
-	void VGSBackgroundRuntimeSystem::Execute(IVGSSequenceComponent* component, SSSequenceExecutionContext& context)
+	void VGSBackgroundRuntimeSystem::Execute(IVGSSequenceComponent* component, SequenceRuntimeExecutionContext& context)
 	{
 		auto* bg = dynamic_cast<VGSSC_ChangeBackground*>(component);
-		if (bg == nullptr || context.Engine == nullptr)
+		if (bg == nullptr || context.SharedContext == nullptr || context.SharedContext->Engine == nullptr)
 			return;
+
+		SSSequenceExecutionContext& shared = *context.SharedContext;
 
 		if (!bg->ShowState)
 		{
-			if (bg->TextureID != VGSS_INVALID_OBJECT_ID && context.ResourceManager != nullptr)
+			if (bg->TextureID != VGSS_INVALID_OBJECT_ID && shared.ResourceManager != nullptr)
 			{
-				if (GalGame::IGalSprite* sprite = context.ResourceManager->GetSprite(bg->TextureID))
-					context.Engine->RemoveSprite(sprite);
+				if (GalGame::IGalSprite* sprite = shared.ResourceManager->GetSprite(bg->TextureID))
+					shared.Engine->RemoveSprite(sprite);
 			}
 			return;
 		}
 
 		std::string path = bg->TextureResourcePath;
-		if (path.empty() && bg->TextureID != VGSS_INVALID_OBJECT_ID && context.ResourceManager != nullptr)
+		if (path.empty() && bg->TextureID != VGSS_INVALID_OBJECT_ID && shared.ResourceManager != nullptr)
 		{
-			if (GalGame::IGalSprite* sprite = context.ResourceManager->GetSprite(bg->TextureID))
+			if (GalGame::IGalSprite* sprite = shared.ResourceManager->GetSprite(bg->TextureID))
 				path = sprite->GetResourcePath();
 		}
 
 		if (!path.empty())
-			context.Engine->ShowSprite(kDefaultBackgroundLayer, path);
+			shared.Engine->ShowSprite(kDefaultBackgroundLayer, path);
 	}
 
 	bool VGSBackgroundRuntimeSystem::ShouldHoldPlaybackAfterExecute(IVGSSequenceComponent* component) const

@@ -43,9 +43,10 @@ namespace VisionGal::GalGame
 		m_ExecutionContext.ResourceManager = MakeRef<SSExecutorResourceManager>();
 		m_ExecutionContext.SequenceData = m_ExecutionData->SequenceData;
 
-		m_Executor = MakeRef<SSSequenceExecutor>();
-		m_Executor->SetExecutionContext(&m_ExecutionContext);
-		m_Executor->Play();
+		const Ref<SequenceExecutionInstance> kernel = MakeRef<SequenceExecutionInstance>();
+		kernel->SetExecutionContext(&m_ExecutionContext);
+		kernel->Play();
+		m_Executor = kernel;
 
         return true;
     }

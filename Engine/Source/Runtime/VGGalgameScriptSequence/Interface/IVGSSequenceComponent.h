@@ -16,6 +16,7 @@
 #include <vector>
 #include <HCore/Interface/HConfig.h>
 #include "../GSSExport.h"
+#include "../Include/Runtime/SequenceComponentTypeId.h"
 #include "VGSTypeDefine.h"
 
 namespace VisionGal
@@ -27,6 +28,10 @@ namespace VisionGal
 		virtual ~IVGSSequenceComponent() = default;
 
 		virtual std::string GetTypeNameID() = 0;
+
+		/// 与 JSON `type` / GetTypeNameID 字符串稳定对应的数值类型 ID（供 RuntimeSystem 分派）。
+		[[nodiscard]] virtual SequenceComponentTypeID GetComponentTypeID() = 0;
+
 		virtual Ref<IVGSSequenceComponent> Clone() = 0;
 
 		unsigned SequenceIndex; // 所属序列 ID
@@ -42,6 +47,12 @@ namespace VisionGal
 		static std::string StaticGetTypeNameID()
 		{
 			return T{}.GetTypeNameID();
+		}
+
+		[[nodiscard]] SequenceComponentTypeID GetComponentTypeID() override
+		{
+			static const SequenceComponentTypeID s_TypeId = MakeSequenceComponentTypeIDFromTypeName(StaticGetTypeNameID());
+			return s_TypeId;
 		}
 
 		Ref<IVGSSequenceComponent> Clone() override

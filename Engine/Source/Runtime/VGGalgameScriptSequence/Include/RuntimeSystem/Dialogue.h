@@ -15,8 +15,9 @@ namespace VisionGal
 	public:
 		~VGSDialogueRuntimeSystem() override = default;
 
+		[[nodiscard]] bool SupportsType(SequenceComponentTypeID id) const override;
 		[[nodiscard]] bool CanExecute(IVGSSequenceComponent* component) const override;
-		void Execute(IVGSSequenceComponent* component, SSSequenceExecutionContext& context) override;
+		void Execute(IVGSSequenceComponent* component, SequenceRuntimeExecutionContext& context) override;
 		[[nodiscard]] bool ShouldHoldPlaybackAfterExecute(IVGSSequenceComponent* component) const override;
 	};
 }

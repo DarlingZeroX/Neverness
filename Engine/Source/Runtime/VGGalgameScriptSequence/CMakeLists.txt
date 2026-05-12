@@ -32,6 +32,7 @@ file(GLOB RUNTIME_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include/Runtime/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Include/RuntimeSystem/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Include/Sequence/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
@@ -40,6 +41,7 @@ file(GLOB RUNTIME_HEADERS
 file(GLOB RUNTIME_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/RuntimeSystem/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/Sequence/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"

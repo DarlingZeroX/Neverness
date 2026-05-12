@@ -4,6 +4,7 @@
 
 #include "RuntimeSystem/Figure.h"
 
+#include "Runtime/SequenceComponentTypeId.h"
 #include "VGSTypeDefine.h"
 #include "Sequence/Components.h"
 #include "ExecutorResourceManager.h"
@@ -12,18 +13,25 @@
 
 namespace VisionGal
 {
+	bool VGSFigureRuntimeSystem::SupportsType(const SequenceComponentTypeID id) const
+	{
+		return id == MakeSequenceComponentTypeIDFromTypeName("ChangeFigure");
+	}
+
 	bool VGSFigureRuntimeSystem::CanExecute(IVGSSequenceComponent* component) const
 	{
 		return component != nullptr && dynamic_cast<VGSSC_ChangeFigure*>(component) != nullptr;
 	}
 
-	void VGSFigureRuntimeSystem::Execute(IVGSSequenceComponent* component, SSSequenceExecutionContext& context)
+	void VGSFigureRuntimeSystem::Execute(IVGSSequenceComponent* component, SequenceRuntimeExecutionContext& context)
 	{
 		auto* figure = dynamic_cast<VGSSC_ChangeFigure*>(component);
-		if (figure == nullptr || context.ResourceManager == nullptr)
+		if (figure == nullptr || context.SharedContext == nullptr || context.SharedContext->ResourceManager == nullptr)
 			return;
 
-		GalGame::IGalCharacter* character = context.ResourceManager->GetCharacter(figure->CharacterID);
+		SSSequenceExecutionContext& shared = *context.SharedContext;
+
+		GalGame::IGalCharacter* character = shared.ResourceManager->GetCharacter(figure->CharacterID);
 		if (character == nullptr)
 			return;
 
@@ -38,7 +46,7 @@ namespace VisionGal
 		if (pathToShow.empty() && figure->TextureID != VGSS_INVALID_OBJECT_ID)
 		{
 			if (std::shared_ptr<GalGame::IGalSprite> sprite =
-					context.ResourceManager->TryGetSpriteShared(figure->TextureID))
+					shared.ResourceManager->TryGetSpriteShared(figure->TextureID))
 				pathToShow = sprite->GetResourcePath();
 		}
 

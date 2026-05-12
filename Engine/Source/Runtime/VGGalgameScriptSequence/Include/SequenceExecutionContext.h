@@ -1,7 +1,7 @@
 /*
  * SSSequenceExecutionContext — Visual Sequence 运行时执行上下文（唯一数据源）
  *
- * 取代原先的 VisualSSExecutorRunningData：宿主填充本结构，Executor 与 IVGSSequenceRuntimeSystem
+ * 取代原先的 VisualSSExecutorRunningData：宿主填充本结构，SequenceExecutionInstance 与 IVGSSequenceRuntimeSystem
  * 仅依赖 Context，不再经由中间 RunningData 间接取值。
  *
  * 生命周期：
