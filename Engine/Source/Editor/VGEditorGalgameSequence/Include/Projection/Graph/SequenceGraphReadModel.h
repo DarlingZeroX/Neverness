@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "Schema/SequenceGraphPortSchema.h"
+
 namespace VisionGal::Editor
 {
 	/// Authoring-only graph node (linear sequence index); not an execution VM node.
@@ -22,6 +24,9 @@ namespace VisionGal::Editor
 		std::string TypeNameID;
 		float LayoutX = 0.f;
 		float LayoutY = 0.f;
+		/// Phase 10-D：来自 `SequenceComponentSchema` 的端口描述（当前 UI 可不绘制 Pin）。
+		std::vector<SequenceGraphPortSchema> InputPorts;
+		std::vector<SequenceGraphPortSchema> OutputPorts;
 	};
 
 	enum class SequenceGraphEdgeKind : uint8_t

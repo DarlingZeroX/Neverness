@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #include <string>
 
 namespace VisionGal::Editor
@@ -16,6 +17,10 @@ namespace VisionGal::Editor
 	struct SequenceRuntimeSnapshot
 	{
 		uint32_t CurrentIndex = 0;
+		/// 单步前索引（`StepOnce` 填充；未步进时为 `UINT_MAX`）。
+		uint32_t PreviousIndex = (std::numeric_limits<uint32_t>::max)();
+		std::string CurrentComponentType;
+		bool Waiting = false;
 		bool HasValidDebugInfo = false;
 		bool ReachedTarget = false;
 		bool BreakpointHit = false;

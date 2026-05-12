@@ -7,8 +7,11 @@
  */
 #pragma once
 
+#include "Runtime/SequenceRuntimePropertySnapshot.h"
+
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "Transactions/SequenceTransactionTypes.h"
@@ -53,6 +56,8 @@ namespace VisionGal::Editor
 		RuntimeFinished,
 		RuntimeError,
 		RuntimeBreakpointHit,
+		/// Phase 10-F：单属性变化观测（载荷见 `PropertyWatch`）。
+		RuntimePropertyChanged,
 	};
 
 	struct SequenceRuntimeStreamEventPayload
@@ -62,6 +67,7 @@ namespace VisionGal::Editor
 		std::string Message;
 		bool ControllerOk = false;
 		bool ReachedTarget = false;
+		std::optional<SequenceRuntimePropertySnapshot> PropertyWatch;
 	};
 
 	struct SequenceEditorEvent

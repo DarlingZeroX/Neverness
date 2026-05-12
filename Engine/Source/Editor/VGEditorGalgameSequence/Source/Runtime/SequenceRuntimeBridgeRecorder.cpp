@@ -30,6 +30,8 @@ namespace VisionGal::Editor
 				return SequenceRuntimeEventKind::Continue_;
 			case SequenceRuntimeStreamEventKind::RuntimeNodeEntered:
 				return SequenceRuntimeEventKind::Custom;
+			case SequenceRuntimeStreamEventKind::RuntimePropertyChanged:
+				return SequenceRuntimeEventKind::Custom;
 			default:
 				return SequenceRuntimeEventKind::Unknown;
 			}
@@ -65,6 +67,11 @@ namespace VisionGal::Editor
 		frame.kind = MapKind(ev.RuntimeStream.Kind);
 		frame.entryIndex = ev.RuntimeStream.Index;
 		frame.payload = ev.RuntimeStream.Message;
+		if (ev.RuntimeStream.PropertyWatch.has_value())
+		{
+			const SequenceRuntimePropertySnapshot& w = *ev.RuntimeStream.PropertyWatch;
+			frame.payload += " [" + w.OldValueText + " -> " + w.NewValueText + "]";
+		}
 		m_timeline->Push(std::move(frame));
 	}
 }

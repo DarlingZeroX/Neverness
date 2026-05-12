@@ -8,7 +8,7 @@
 
 ## 1. 模块定位
 
-`VGEditorGalgameSequence` 提供面向 **`.vgasset` 序列脚本资源** 的 ImGui 编辑体验：条目列表、组件调色板、属性检查器、撤销/重做、剪贴板、保存与「执行到某条目」及 **Phase 7 起调试器**；**Phase 8** 起引入 **Reactive 派生图、投影事件总线、Authoring 图数据层、Patch 事务雏形、Runtime 事件时间线、扩展注册表** 及四个静态链接子模块（见 §1 依赖与 §6.9）。
+`VGEditorGalgameSequence` 提供面向 **`.vgasset` 序列脚本资源** 的 ImGui 编辑体验：条目列表、组件调色板、属性检查器、撤销/重做、剪贴板、保存与「执行到某条目」及 **Phase 7 起调试器**；**Phase 8** 起引入 **Reactive 派生图、投影事件总线、Authoring 图数据层、Patch 事务雏形、Runtime 事件时间线、扩展注册表** 及四个静态链接子模块（见 §1 依赖与 §6.9）；**Phase 10** 起引入独立 **`VGEditorComponentSchema`**（见 §6.11），将组件元数据升级为 **Authoring Schema**（属性类型、访问器、图端口、通用校验与类型化 Patch 基础）。
 
 序列数据本身来自 **`VGGalgameScriptSequence`**（`VGSSequenceDataContainer`、`IVGSSequenceComponent` 等）；本模块不重复定义运行时组件类型，而是通过 `IVGSSequenceComponentManager::EnumerateRegisteredTypeNameIDs` 与运行时注册表对齐。
 
@@ -21,6 +21,7 @@
 - **`VGEditorAuthoringGraph`**（STATIC）：`SequenceAuthoringGraph`（布局 / 边 / 注释，与线性文档解耦）。
 - **`VGEditorExtensions`**（STATIC）：`ISequenceEditorExtension`、`SequenceExtensionRegistry`。
 - **`VGEditorRuntimeBridge`**（STATIC）：`SequenceRuntimeEventFrame`、`SequenceRuntimeEventTimeline`。
+- **`VGEditorComponentSchema`**（STATIC，Phase 10）：`SequenceComponentSchema` / `SequencePropertySchema` / `SequencePropertyValue` / `SequencePropertyAccessor`、**`SequenceGraphPortSchema`**、**`GenericSchemaValidator`**、**`SequenceRuntimePropertySnapshot`**；无 ImGui、不依赖 `VGGalgameScriptSequence`，供本模块与其它未来编辑器复用。
 
 对外主入口为 `VisionGal::Editor::VGScriptSequenceEditor`（`Interface/SequenceEditor.h`），实现编辑器框架的 `IEditorTaskPanel`，并可由宿主通过 `RenderEmbeddedUI()` 嵌入同一套 UI。
 
@@ -50,11 +51,11 @@
 | `Include/Diff/` | 文档/条目 diff 占位（`SequenceDocumentDiff.h` 等）。 |
 | `Include/Inspector/PropertyEditing/` | `SequencePropertyPath`、`SequencePropertyBinding`、`SequencePropertyBindingRegistry` 等。 |
 | `Include/Commands/` | `ISequenceEditorCommand` 及增删改、移动、粘贴、属性编辑、复合命令。 |
-| `Include/ComponentRegistry/` | 组件元数据、注册表、Bootstrap 声明；**`SequenceComponentMetadata::PropertyDescriptors`**（Phase 7 属性描述）。 |
-| `Include/Properties/` | **`SequencePropertyDescriptor`**（`SequencePropertyKind` + 可选 `SequenceEditFieldId` 映射）。 |
-| `Include/Inspector/` | `ISequenceInspector`、内置实现工厂、注册表、**`SequenceInspectorRenderer`**（Phase 9：描述符强制路径）。 |
+| `Include/ComponentRegistry/` | 组件 Schema 别名 **`SequenceComponentMetadata`**、注册表、Bootstrap；**`SequenceComponentSchema::Properties`**（Phase 10 属性 Schema + Accessor）。 |
+| `Include/Properties/` | **`SequencePropertyDescriptor`** 为 **`SequencePropertySchema`** 的兼容别名（Phase 10）。 |
+| `Include/Inspector/` | `ISequenceInspector`、内置工厂、注册表、**`SequenceInspectorRenderer`**（Schema 泛化绘制）、**`SequenceSchemaPropertyCommandDispatch`**（属性 → 撤销命令）。 |
 | `Include/Runtime/` | **`SequenceDebuggerSession`**（内含 **`SequenceRuntimeKernel`**）、`SequenceExecutionController`、`SequenceRuntimeSnapshot`、`SequenceRuntimeObserver`；**`SequenceRuntimeBridgeRecorder`**（遗留兼容）。 |
-| `Include/Runtime/Kernel/` | **Phase 9**：**`SequenceRuntimeKernel`**、`SequenceRuntimeExecutionState`、`SequenceRuntimeStepResult`；**`EmitDebugStream`** 写 **`SequenceRuntimeEventTimeline`** 并可选转发总线。 |
+| `Include/Runtime/Kernel/` | **Phase 9/10**：**`SequenceRuntimeKernel`**（**`EmitDebugStream`**、**`EmitPropertyWatch`**、`ExecuteTo`）；调试流与 **属性观测** 写入时间线 + 总线。 |
 | `Include/ViewModels/` | `SequenceDocumentViewModel`、`SequenceEntryViewModel`、`SequenceSearchViewModel`（展示层只读模型）。 |
 | `Include/Validation/` | `SequenceValidationRegistry`、`ISequenceValidator`、`SequenceValidationIssue` 及 `Builtin/` 内置规则。 |
 | `Include/Timeline/` | 线性时间轴 v1：`SequenceTimelineLayout`、`SequenceTimelineController`、`SequenceTimelineWidget`。 |
@@ -192,18 +193,16 @@ flowchart TB
 
 ### 4.6 组件注册：`SequenceComponentRegistry` 与 Bootstrap
 
-- `BootstrapSequenceComponentRegistry` 遍历运行时注册的所有 `TypeNameID`，填充 `SequenceComponentMetadata`（展示名、图标、分类、优先级）；**Phase 7** 起同路径调用 **`FillPropertyDescriptors`**，为内置三类写入 **`PropertyDescriptors`**（`SequencePropertyDescriptor`：字符串 / 资源引用 + `HasEditField` + `SequenceEditFieldId`），供自动 Inspector 与后续元数据驱动 UI。
+- `BootstrapSequenceComponentRegistry` 遍历运行时注册的所有 `TypeNameID`，填充 **`SequenceComponentSchema`**（经别名 **`SequenceComponentMetadata`** 暴露给旧调用点）：展示名、图标、分类、优先级、**`Properties`**（`SequencePropertySchema`：`Type` / `Flags` / `Accessor` 等）、**`InputPorts`/`OutputPorts`**（Phase 10-D 线性流默认 **Flow In/Out**）；**`SequenceEditorRegistriesBootstrap`** 为内置对话 / 立绘 / 背景写入完整 Schema 与 lambda 访问器。
 - 内置三种类型（普通对话、切换立绘、切换背景）在 `SequenceEditorRegistriesBootstrap.cpp` 的 `FillPresentationForTypeNameID` 中写中文名与 FontAwesome 图标；其余类型使用默认立方体图标与分类「序列组件」。
 - `BuildPaletteCategories()` 为调色板提供分类列数据。
 
 ### 4.7 检查器：`SequenceInspectorRegistry` / `ISequenceInspector`
 
 - `ISequenceInspector` 预留 `OnInspectorGUI`、`OnHeaderGUI`、`OnTimelineGUI`、`OnContextMenu` 等钩子，便于未来时间轴或图形式编辑。
-- `MakeSequenceInspectorForMetadata`（`BuiltinSequenceInspectors.cpp`）按类型分派内置专用 Inspector：
-  - **普通对话**：带 staging 字符串，失焦后通过 `EditSequencePropertyCommand` 写入（支持撤销）；无撤销栈时只读文本预览。
-  - **切换立绘 / 切换背景**：纹理路径经 `EditSequencePropertyCommand`；`ShowState`/`Wait` 经 `SetSequenceEntryBoolPropertyCommand`；背景预览 `Temp` 仅作编辑器派生状态；拖放纹理路径走命令后清空预览以触发重载。
-  - **其他类型**：`FallbackSequenceInspector`（空面板，但视为已注册）。
-- **`SequenceInspectorWidget`**：单选时优先 **`DrawInspector`**；否则要求 **`SequenceComponentMetadata::PropertyDescriptors`** 非空并由 **`SequenceInspectorRenderer::DrawFromDescriptors`** 绘制（无描述符时显示明确错误文案）；多选提示不显示属性。
+- `ISequenceInspector` 预留 `OnInspectorGUI`、`OnHeaderGUI`、`OnTimelineGUI`、`OnContextMenu` 等钩子，便于未来时间轴或图形式编辑。
+- **`MakeSequenceInspectorForMetadata`**（`BuiltinSequenceInspectors.cpp`）：**普通对话 / 切换立绘** 使用 **`SchemaBackedSequenceInspector`**（内部 **`SequenceInspectorRenderer::DrawFromSchema`**，经 **`TryDispatchSchemaPropertyEdit`** 提交撤销命令）；**切换背景** 保留专用 Inspector（纹理预览 + 拖放目标）；**其他类型**：`FallbackSequenceInspector`。
+- **`SequenceInspectorWidget`**：单选时优先 **`DrawInspector`**；否则要求 **`SequenceComponentMetadata::Properties`** 非空并由 **`SequenceInspectorRenderer::DrawFromSchema`** / **`DrawFromDescriptors`** 绘制；多选提示不显示属性。
 
 ### 4.8 运行时与调试：`SequenceExecutionController` 与 **`SequenceDebuggerSession`**
 
@@ -217,7 +216,7 @@ flowchart TB
 - **搜索**：**`ApplySearchViewModelWithIndex`** 在启用文本维度且过滤串非空时，先用 **`SequenceSearchIndexService::QueryTextIndices`** 得到候选行索引，再对候选行执行 `SequenceSearchViewModel::RowPassesFilters`（与旧版 `ApplySearchViewModel` 行为对齐，但减少全表字符串扫描）。
 - **校验展示**：**`ApplyValidationIssues`** 接受 issue 列表（来自缓存或全量）；**`ApplyValidation(registry, document)`** 仍直接 `RunAll`，供测试与降级路径。
 - **`SequenceValidationCacheService`**：合并多次 `NotifyDocumentChanged`；**`NotifyEntriesPropertyTouch`** 将条目索引列表并入待处理摘要（供 **`SequenceAssetDependencyService`** 等路径精确置脏）；`ApplyIfStale(document, registry, generationId)` 在文档代次未变且非 stale 时 **跳过**；结构变更或空 `touched` 时 **`RunAll`**，否则 **`RunForEntries`**（见下）。
-- **`SequenceValidationRegistry`**：`RunAll` 保留；新增 **`RunForEntries`**，对每个校验器调用 **`ISequenceValidator::ValidateEntries`**（默认实现回退为全量 `Validate`）。内置 **`EmptyDialogueValidator`**、**`MissingResourcePathValidator`** 已实现按行增量扫描。
+- **`SequenceValidationRegistry`**：`RunAll` 保留；新增 **`RunForEntries`**，对每个校验器调用 **`ISequenceValidator::ValidateEntries`**（默认实现回退为全量 `Validate`）。内置 **`EmptyDialogueValidator`**、**`MissingResourcePathValidator`** 在传入 **`SequenceComponentRegistry*`** 时按 Schema 与 **`GenericSchemaValidator`** 迭代属性；否则回退旧版 `dynamic_cast` 逻辑。
 
 ### 4.10 事件总线、服务定位与异步任务
 
@@ -240,7 +239,7 @@ flowchart TB
 | `SequenceTimelineWidget` | 线性行条、选中与拖拽重排（同命令）；无曲线与多轨道。 |
 | `SequenceOutlinerWidget` | 按 `Category` 分组展示当前可见行。 |
 | `SequenceValidationWidget` | 列出校验问题，点击跳转选中条目索引。 |
-| `SequenceInspectorWidget` | 单选：`DrawInspector` 或 **`SequenceInspectorRenderer`**（需 **PropertyDescriptors**）。 |
+| `SequenceInspectorWidget` | 单选：`DrawInspector` 或 **`SequenceInspectorRenderer`**（需 **Properties** Schema）。 |
 
 ### 4.12 集成入口
 
@@ -332,7 +331,7 @@ flowchart TB
 - **投影 API**：**`ISequenceProjection`** 统一 **`Rebuild` + `ApplyDirtyRegion`**；**`SequenceListProjection`** 独占列表行 **`SequenceEntryViewModel`** 存储；宿主经 **`SequencePresentationScheduler`** 持有 list / timeline / graph 实例并向 ViewModel 注入 list 绑定；调度路径可挂 **`SequenceEditorMetrics`**（轻量计时与可选调试叠加）。
 - **调试运行时**：移除 **`SequenceRuntimeSession`** 源文件；**`SequenceDebuggerSession`** + 扩展 **`SequenceExecutionController`**（调试会话、**`StepOnce`**、**`ContinueExecution`**、与快照字段 **断点 / 暂停 / 停滞** 等）；**`SequenceEditorEventType::RuntimeDebugStream`** 与 **`SequenceRuntimeStreamEventKind`** 载荷见 **`SequenceEditorEvent.h`**；Context / Locator 使用 **`debuggerSession`** 指针。
 - **序列图**：**`SequenceGraphProjection`** 真实重建；**`SequenceGraphWidget`** 嵌入宿主 Dock，读 **`graphProjection`** 并与 **`SequenceSelectionModel`** 同步。
-- **属性与 Inspector**：**`SequencePropertyDescriptor`**（含 **`Editable`**）、**`SequenceComponentMetadata::PropertyDescriptors`**、Bootstrap **`FillPropertyDescriptors`**；**`SequenceInspectorRenderer`** + **`SequenceInspectorWidget`** 在无专用 Inspector 时 **强制** 走描述符路径。
+- **属性与 Inspector**：Phase 10 起 **`SequenceComponentSchema::Properties`** + **`SequencePropertyAccessor`**；**`SequenceInspectorRenderer::DrawFromSchema`**；**`SequenceInspectorWidget`** 在无专用 Inspector 时走 Schema 回退路径。
 - **资源依赖**：**`SequenceAssetDependencyService`**；保存等钩子触发依赖图重建与 **`SequenceValidationCacheService::NotifyEntriesPropertyTouch`**，减少每帧全量 **`RebuildFromDocument`** 式无效刷新。
 - **工作区**：**`SequenceWorkspaceState`** 将窗口可见性序列化至 **`%APPDATA%\VisionGal\`** 下 INI。
 - **撤销合并**：**`ISequenceEditorCommand::TryMergeWith`**（如 **`EditSequencePropertyCommand`** 合并连续编辑）；**`SequenceUndoStack`** 在 push 前尝试合并。
@@ -350,6 +349,7 @@ flowchart TB
 | [VGEditorAuthoringGraph](../../VGEditorAuthoringGraph/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `SequenceAuthoringGraph`：与 **`SequenceDocument`** 解耦的布局 / 边 / 注释数据。 |
 | [VGEditorExtensions](../../VGEditorExtensions/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 扩展 SDK 雏形：`ISequenceEditorExtension`、`SequenceExtensionRegistry`。 |
 | [VGEditorRuntimeBridge](../../VGEditorRuntimeBridge/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `SequenceRuntimeEventFrame`、`SequenceRuntimeEventTimeline`（环形缓冲）。 |
+| [VGEditorComponentSchema](../../VGEditorComponentSchema/) | Phase 10：Authoring Schema 静态库（`SequenceComponentSchema`、`SequencePropertySchema`、`SequencePropertyValue`、Accessor、**`SequenceGraphPortSchema`**、**`GenericSchemaValidator`**、**`SequenceRuntimePropertySnapshot`**）；无 ImGui、无 `VGGalgameScriptSequence`。 |
 
 #### 6.9.2 派生状态图（P8-1）
 
@@ -392,8 +392,8 @@ flowchart TB
 | **投影单管线** | **`SequenceProjectionContext`** 统一只读依赖；**`SequenceProjectionPipeline::RunProjectionPass`** 取代调度器内 list/timeline/graph 分支；**`ISequenceProjection`** 签名接收 **Context**。 |
 | **数据一致性** | **`SequenceDataConsistencyPipeline::RunAfterProjections`** 封装依赖图 + 搜索索引 + **`SequenceDerivedStateGraph`**；**`SequenceAssetDependencyService`** 委托 **`InvalidateReferencingEntriesForAsset`**。 |
 | **变更提交** | **`SequenceMutationPipeline`** + **`SequenceMutationBatch`**；**`SequenceUndoStack::ExecuteBatch`**；**`SequenceEditorContext::mutationPipeline`** 非空时 **`ExecuteCommand`** 走管线；**`ExecutePatch`** 将 Patch 映射为命令（含 **`InsertSequenceEntryAtCommand`** 内部类于 `SequenceMutationPipeline.cpp`）。 |
-| **运行时内核** | **`Include/Runtime/Kernel/`**：**`SequenceRuntimeKernel`**（**`EmitDebugStream`**、**`ExecuteTo`**）；**`SequenceDebuggerSession`** 持有内核并 **`Bind(..., SequenceRuntimeEventTimeline*)`**。 |
-| **Inspector** | **`SequenceInspectorRenderer`**；移除 **`SequenceAutoInspectorDrawer`**；**`SequencePropertyDescriptor::Editable`**。 |
+| **运行时内核** | **`Include/Runtime/Kernel/`**：**`SequenceRuntimeKernel`**（**`EmitDebugStream`**、**`EmitPropertyWatch`**、**`ExecuteTo`**）；**`SequenceDebuggerSession`** 持有内核并 **`Bind(..., SequenceRuntimeEventTimeline*)`**。 |
+| **Inspector** | **`SequenceInspectorRenderer::DrawFromSchema`**（多类型控件 + **`SequenceSchemaPropertyCommandDispatch`**）；**`SequencePropertyDescriptor`** 为 Schema 别名。 |
 | **大规模列表** | **`SequenceEntryStoragePool`** 预留；**`SequenceEntryListWidget`** 降低虚拟化阈值并微调行高；**`Phase9_ListProjection`** 单测（10k **Rebuild** 完成）。 |
 | **会话聚合** | **`SequenceEditorSession`** 保存 **`SequenceProjectionPipeline`** 等指针（宿主 **`InitializeChrome`** 中 **`Set*`**）。 |
 
@@ -413,6 +413,22 @@ flowchart TB
   RK --> Timeline[SequenceRuntimeEventTimeline]
 ```
 
+### 6.11 第十阶段（Authoring Schema System — 组件语义层）
+
+**目标**：将「仅序列编辑器可用的 UI 描述符」升级为 **跨模块可复用的 Authoring Schema**，为 Graph 执行、分支、插件化组件与 Mod SDK 打基础。
+
+- **独立静态库 `VGEditorComponentSchema`**（根 `CMakeLists.txt` 已 `add_subdirectory`；`VGEditorGalgameSequence` **PUBLIC** 链接）：
+  - **无 ImGui**、**不 `#include` `VGGalgameScriptSequence`**，仅标准库 + 本库头；具体 `void*` 上的 Getter/Setter 由 **`SequenceEditorRegistriesBootstrap`** 注册 lambda（避免其它编辑器反向依赖 Galgame 序列 DLL）。
+  - 核心类型：`SequencePropertyType` / `SequencePropertyFlags` / `SequencePropertyRange` / **`SequencePropertyValue`（`std::variant`）** / **`SequencePropertyAccessor`** / **`SequencePropertySchema`** / **`SequenceComponentSchema`**；**`SequenceGraphPortSchema`** 与组件上 **`InputPorts`/`OutputPorts`**（Bootstrap 为所有类型附加默认 **Flow In/Out**）；**`GenericSchemaValidator`**；**`SequenceRuntimePropertySnapshot`**。
+- **本模块（`VGEditorGalgameSequence`）消费点**：
+  - **`SequenceComponentMetadata`** 为 **`SequenceComponentSchema`** 的别名（[`SequenceComponentMetadata.h`](Include/ComponentRegistry/SequenceComponentMetadata.h)）。
+  - **Inspector**：**`SequenceInspectorRenderer`** 按 `Type` 分派字符串 / 资源路径 / 布尔 / 数值 / 枚举；提交走 **`SequenceSchemaPropertyCommandDispatch`** → 现有 **`EditSequencePropertyCommand`** / **`SetSequenceEntryBoolPropertyCommand`**。
+  - **内置 Inspector 策略**：对话 / 立绘 → **`SchemaBackedSequenceInspector`**；背景保留预览 + 拖放专用面板。
+  - **校验**：**`BootstrapSequenceValidationRegistry(registry, &m_componentRegistry)`**；内置校验器在持有注册表时对 Schema 调用 **`ValidatePropertyValue`**，否则回退旧逻辑。
+  - **图投影**：**`SequenceGraphNodeVM`** 携带 **`InputPorts`/`OutputPorts`** 拷贝（当前 Widget 可不绘制 Pin）。
+  - **Patch**：**`SequenceSetPropertyPatch::Value`** 为 **`SequencePropertyValue`**；**`SequenceMutationPipeline::ExecutePatch`** 支持字符串与布尔分支及路径别名（如 **`dialogue`** / **`texture`** / **`showState`**）。
+  - **运行时属性观测（初版）**：**`SequenceRuntimeStreamEventKind::RuntimePropertyChanged`**；**`SequenceRuntimeKernel::EmitPropertyWatch`**；**`SequenceDebuggerSession::Step`** 在索引或 **`CurrentComponentType`** 变化时发射快照（**`SequenceRuntimeSnapshot`** 增补 **`PreviousIndex`/`CurrentComponentType`/`Waiting`**，由 **`StepOnce`** 填充）。
+
 ---
 
 ## 7. 相关文档与代码入口
@@ -424,6 +440,7 @@ flowchart TB
 | 事件与服务 | `Include/Events/`、`Include/Services/`、`Include/Async/` |
 | 运行时组件定义 | `Engine/Source/Runtime/VGGalgameScriptSequence/`（及 `IVGSSequenceComponentManager` 注册） |
 | Phase 8 子模块文档 | `Engine/Source/Editor/VGEditorReactive/`、`VGEditorAuthoringGraph/`、`VGEditorExtensions/`、`VGEditorRuntimeBridge/` 各自 **`Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`** |
+| Phase 10 Schema 库 | `Engine/Source/Editor/VGEditorComponentSchema/`（`CMakeLists.txt` + `Include/Schema/`、`Include/Validation/`、`Include/Runtime/`） |
 
 ---
 
@@ -439,3 +456,4 @@ flowchart TB
 | 2026-05-12 | 第七阶段：投影 `Rebuild`/`ApplyDirtyRegion`、List 投影持有行 VM、`SequenceDebuggerSession` 与调试事件流、**`SequenceGraphProjection`** 与 **`SequenceGraphWidget`**、属性描述符与自动 Inspector、**`SequenceAssetDependencyService`**、**`SequenceWorkspaceState`**、撤销 **`TryMergeWith`**、**`SequenceEditorMetrics`**；更新 §2/§4/§5/§6.7/§6.8/§4.11 与数据流。 |
 | 2026-05-12 | **第八阶段（首批）**：四子模块 CMake 与文档；**`SequenceDerivedStateGraph`** + `VGEditorReactive`；投影事件总线与 **`SequenceSelectionProjectionController`**；**`SequenceEditorSession`**；**`SequenceAuthoringGraph`** 与 Graph 布局/拖拽；**Patch → DirtyRegion**；**`SequenceRuntimeBridgeRecorder`** 与时间线面板；搜索索引增量与多面板虚拟化入口；**`BootstrapSequenceExtensions`**；**§6.9**；`Phase8_*` 单测。 |
 | 2026-05-12 | **第九阶段（生产加固）**：**`SequenceProjectionContext`/`SequenceProjectionPipeline`**、**`SequenceDataConsistencyPipeline`**、**`SequenceMutationPipeline`/`SequenceMutationBatch`/`SequenceUndoStack::ExecuteBatch`**、**`Runtime/Kernel/SequenceRuntimeKernel`** 与调试会话装配、**`SequenceInspectorRenderer`**（移除 **`SequenceAutoInspectorDrawer`**）、**`SequenceEntryStoragePool`**、列表虚拟化阈值、`Phase9_ListProjection` 单测；**`SequenceEditorSession`** 管线指针；文档 **§2/§6.9.6/§6.10/§8**。 |
+| 2026-05-12 | **第十阶段（Authoring Schema）**：新增 **`VGEditorComponentSchema`**；`SequenceComponentSchema`/`SequencePropertySchema`/`SequencePropertyValue`/`Accessor`/`GraphPort`/`GenericSchemaValidator`/运行时属性快照；Inspector 泛化、校验 Schema 化、图 VM 端口、`SetProperty` Patch 类型化、调试 **`EmitPropertyWatch`**；文档 **§1/§2/§4/§6.8/§6.9.1/§6.10/§6.11/§7/§8**。 |

@@ -7,37 +7,10 @@
  */
 #pragma once
 
-#include "Commands/EditSequencePropertyCommand.h"
-
-#include <string>
-#include <vector>
+#include "Schema/SequencePropertySchema.h"
 
 namespace VisionGal::Editor
 {
-	enum class SequencePropertyKind : uint8_t
-	{
-		String,
-		Bool,
-		Int,
-		Float,
-		Enum,
-		AssetRef,
-		Color,
-		NestedStruct,
-		Array,
-		CustomDrawer,
-	};
-
-	/// Declarative property for palette / auto-inspector (Phase 7).
-	struct SequencePropertyDescriptor
-	{
-		SequencePropertyKind Kind = SequencePropertyKind::String;
-		std::string Id;
-		std::string Label;
-		/// When Kind==String and mapped to undo, use this field id for `EditSequencePropertyCommand`.
-		SequenceEditFieldId EditField = SequenceEditFieldId::CommonDialogue_DialogueText;
-		bool HasEditField = false;
-		/// 若为 false，渲染器仅展示只读标签（当前实现仍跳过非可编辑项）。
-		bool Editable = true;
-	};
+	/// Phase 10：请优先使用 `SequencePropertySchema`；本别名仅为兼容旧源码与文档引用。
+	using SequencePropertyDescriptor = SequencePropertySchema;
 }

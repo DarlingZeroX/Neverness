@@ -8,28 +8,91 @@
 
 #include "Validation/Builtin/MissingResourcePathValidator.h"
 
+#include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Document/SequenceDocument.h"
 
-#include <unordered_set>
+#include "Schema/SequencePropertyFlags.h"
+#include "Schema/SequencePropertySchema.h"
+#include "Schema/SequencePropertyType.h"
+#include "Validation/GenericSchemaValidator.h"
 
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 #include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
 
+#include <unordered_set>
+
 namespace VisionGal::Editor
 {
+	MissingResourcePathValidator::MissingResourcePathValidator(const SequenceComponentRegistry* componentRegistry)
+		: m_componentRegistry(componentRegistry)
+	{
+	}
+
 	namespace
 	{
-		void PushIfEmptyPath(
-			std::vector<SequenceValidationIssue>& out, unsigned index, bool emptyPath, const char* label, const char* ruleId)
+		void PushSchemaOrLegacy(
+			const SequenceComponentRegistry* registry,
+			const unsigned i,
+			VisionGal::IVGSSequenceComponent* entry,
+			std::vector<SequenceValidationIssue>& out,
+			const char* ruleId)
 		{
-			if (!emptyPath)
+			if (entry == nullptr)
 				return;
-			SequenceValidationIssue issue;
-			issue.EntryIndex = index;
-			issue.Severity = SequenceValidationSeverity::Warning;
-			issue.Message = label;
-			issue.RuleId = ruleId;
-			out.push_back(std::move(issue));
+
+			if (registry != nullptr)
+			{
+				if (const SequenceComponentMetadata* meta = registry->Find(entry->GetTypeNameID()))
+				{
+					for (const SequencePropertySchema& prop : meta->Properties)
+					{
+						if (prop.Type != SequencePropertyType::ResourcePath)
+							continue;
+						if (!EnumHasAny(prop.Flags, SequencePropertyFlags::ResourcePathNotEmpty))
+							continue;
+						if (!prop.Accessor.Getter)
+							continue;
+						const SequencePropertyValue v = prop.Accessor.Getter(static_cast<void*>(entry));
+						for (const SequenceSchemaValidationNote& n : ValidatePropertyValue(prop, v))
+						{
+							SequenceValidationIssue issue;
+							issue.EntryIndex = i;
+							issue.Severity = SequenceValidationSeverity::Warning;
+							issue.Message = prop.DisplayName.empty() ? n.Message : (prop.DisplayName + std::string{": "} + n.Message);
+							if (issue.Message.empty())
+								issue.Message = u8"资源路径缺失";
+							issue.RuleId = ruleId;
+							out.push_back(std::move(issue));
+						}
+					}
+					return;
+				}
+			}
+
+			if (auto* fig = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(entry))
+			{
+				if (fig->TextureResourcePath.empty())
+				{
+					SequenceValidationIssue issue;
+					issue.EntryIndex = i;
+					issue.Severity = SequenceValidationSeverity::Warning;
+					issue.Message = u8"切换立绘缺少纹理资源路径";
+					issue.RuleId = ruleId;
+					out.push_back(std::move(issue));
+				}
+			}
+			else if (auto* bg = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(entry))
+			{
+				if (bg->TextureResourcePath.empty())
+				{
+					SequenceValidationIssue issue;
+					issue.EntryIndex = i;
+					issue.Severity = SequenceValidationSeverity::Warning;
+					issue.Message = u8"切换背景缺少纹理资源路径";
+					issue.RuleId = ruleId;
+					out.push_back(std::move(issue));
+				}
+			}
 		}
 	}
 
@@ -38,13 +101,7 @@ namespace VisionGal::Editor
 		std::vector<SequenceValidationIssue> out;
 		const unsigned n = document.GetEntryCount();
 		for (unsigned i = 0; i < n; ++i)
-		{
-			auto* entry = const_cast<SequenceDocument&>(document).GetEntryAt(i);
-			if (auto* fig = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(entry))
-				PushIfEmptyPath(out, i, fig->TextureResourcePath.empty(), u8"切换立绘缺少纹理资源路径", GetRuleId());
-			else if (auto* bg = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(entry))
-				PushIfEmptyPath(out, i, bg->TextureResourcePath.empty(), u8"切换背景缺少纹理资源路径", GetRuleId());
-		}
+			PushSchemaOrLegacy(m_componentRegistry, i, const_cast<SequenceDocument&>(document).GetEntryAt(i), out, GetRuleId());
 		return out;
 	}
 
@@ -59,11 +116,7 @@ namespace VisionGal::Editor
 		{
 			if (i >= n)
 				continue;
-			auto* entry = const_cast<SequenceDocument&>(document).GetEntryAt(i);
-			if (auto* fig = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(entry))
-				PushIfEmptyPath(out, i, fig->TextureResourcePath.empty(), u8"切换立绘缺少纹理资源路径", GetRuleId());
-			else if (auto* bg = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(entry))
-				PushIfEmptyPath(out, i, bg->TextureResourcePath.empty(), u8"切换背景缺少纹理资源路径", GetRuleId());
+			PushSchemaOrLegacy(m_componentRegistry, i, const_cast<SequenceDocument&>(document).GetEntryAt(i), out, GetRuleId());
 		}
 		return out;
 	}

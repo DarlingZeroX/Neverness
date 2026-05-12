@@ -9,7 +9,11 @@
 
 namespace VisionGal::Editor
 {
+	class SequenceComponentRegistry;
 	class SequenceValidationRegistry;
 
-	void BootstrapSequenceValidationRegistry(SequenceValidationRegistry& registry);
+	/// @param components 可为空；非空时内置校验器将按 Phase 10 Schema 迭代属性。
+	void BootstrapSequenceValidationRegistry(
+		SequenceValidationRegistry& registry,
+		const SequenceComponentRegistry* components = nullptr);
 }

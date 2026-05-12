@@ -9,7 +9,7 @@
 
 #include "Runtime/Kernel/SequenceRuntimeKernel.h"
 
-#include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -67,5 +67,7 @@ namespace VisionGal::Editor
 		SequenceDebuggerSessionState m_state = SequenceDebuggerSessionState::Idle;
 		std::vector<unsigned> m_breakpoints;
 		bool m_pauseRequested = false;
+		unsigned m_watchLastIndex = (std::numeric_limits<unsigned>::max)();
+		std::string m_watchLastComponentType;
 	};
 }

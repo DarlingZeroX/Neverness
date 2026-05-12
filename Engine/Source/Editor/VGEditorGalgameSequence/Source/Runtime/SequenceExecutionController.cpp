@@ -141,7 +141,7 @@ namespace VisionGal::Editor
 		}
 
 		out.HasValidDebugInfo = true;
-		const unsigned before = debugInfo->CurrentIndex;
+		const unsigned before = static_cast<unsigned>(debugInfo->CurrentIndex);
 
 		executionInstance->Continue();
 		executionInstance->Tick(0);
@@ -153,7 +153,10 @@ namespace VisionGal::Editor
 			return false;
 		}
 
-		out.CurrentIndex = debugInfo->CurrentIndex;
+		out.PreviousIndex = before;
+		out.CurrentIndex = static_cast<unsigned>(debugInfo->CurrentIndex);
+		out.CurrentComponentType = debugInfo->CurrentComponentType;
+		out.Waiting = debugInfo->Waiting;
 		if (debugInfo->CurrentIndex == before)
 			out.StalledNoAdvance = true;
 		return true;

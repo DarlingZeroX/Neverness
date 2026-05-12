@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include "Schema/SequencePropertyValue.h"
+
 #include <cstdint>
 #include <string>
 #include <variant>
@@ -43,7 +45,8 @@ namespace VisionGal::Editor
 	{
 		unsigned EntryIndex = 0;
 		std::string PropertyPath;
-		std::string Value;
+		/// Phase 10-E：类型化新值；字符串属性仍使用 `std::string` 分支。
+		SequencePropertyValue Value;
 	};
 
 	using SequenceDocumentPatch = std::variant<

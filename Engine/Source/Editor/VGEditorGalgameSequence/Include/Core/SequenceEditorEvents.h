@@ -7,4 +7,4 @@
  */
 #pragma once
 
-#include "Events/SequenceEditorEvent.h"
+#include "../Events/SequenceEditorEvent.h"

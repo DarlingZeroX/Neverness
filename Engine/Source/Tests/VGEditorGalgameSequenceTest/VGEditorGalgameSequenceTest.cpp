@@ -147,7 +147,7 @@ TEST(SequenceValidationRegistry, BuiltinValidatorsProduceIssuesOnDemoDocument)
 	SequenceDocument doc;
 	doc.FillDefaultDemoEntries();
 	SequenceValidationRegistry registry;
-	BootstrapSequenceValidationRegistry(registry);
+	BootstrapSequenceValidationRegistry(registry, nullptr);
 	SequenceComponentRegistry components;
 	BootstrapSequenceComponentRegistry(components);
 	SequenceDocumentViewModel vm;

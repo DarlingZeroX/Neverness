@@ -8,15 +8,16 @@
 
 #include "Validation/SequenceValidationRegistriesBootstrap.h"
 
+#include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Validation/Builtin/EmptyDialogueValidator.h"
 #include "Validation/Builtin/MissingResourcePathValidator.h"
 #include "Validation/SequenceValidationRegistry.h"
 
 namespace VisionGal::Editor
 {
-	void BootstrapSequenceValidationRegistry(SequenceValidationRegistry& registry)
+	void BootstrapSequenceValidationRegistry(SequenceValidationRegistry& registry, const SequenceComponentRegistry* components)
 	{
-		registry.Register(std::make_unique<EmptyDialogueValidator>());
-		registry.Register(std::make_unique<MissingResourcePathValidator>());
+		registry.Register(std::make_unique<EmptyDialogueValidator>(components));
+		registry.Register(std::make_unique<MissingResourcePathValidator>(components));
 	}
 }

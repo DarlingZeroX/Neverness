@@ -8,7 +8,8 @@
 
 #include "Inspector/BuiltinSequenceInspectors.h"
 
-#include "Inspector/PropertyEditing/SequencePropertyBindingRegistry.h"
+#include "Inspector/SequenceInspectorRenderer.h"
+
 #include "Commands/EditSequencePropertyCommand.h"
 #include "Commands/SetSequenceEntryBoolPropertyCommand.h"
 #include "Core/SequenceEditorContext.h"
@@ -24,11 +25,11 @@ namespace VisionGal::Editor
 {
 	namespace
 	{
-		class CommonDialogueSequenceInspector final : public ISequenceInspector
+		class SchemaBackedSequenceInspector final : public ISequenceInspector
 		{
 		public:
-			explicit CommonDialogueSequenceInspector(std::string displayName)
-				: m_displayName(std::move(displayName))
+			explicit SchemaBackedSequenceInspector(SequenceComponentMetadata meta)
+				: m_meta(std::move(meta))
 			{
 			}
 
@@ -36,108 +37,18 @@ namespace VisionGal::Editor
 			{
 				if (component == nullptr)
 					return;
-
-				auto* com = dynamic_cast<VisionGal::VGSSC_CommonDialogue*>(component);
-				if (com == nullptr)
-					return;
-
 				if (context != nullptr && context->document != nullptr && context->undo != nullptr)
-				{
-					(void)BuiltinBindingsForCommonDialogue();
-					if (m_commonStagingIndex != index)
-					{
-						m_commonStagingIndex = index;
-						m_commonStagingName = com->DialogueCharacterName;
-						m_commonStagingText = com->DialogueText;
-					}
-
-					ImGuiEx::InputText("##DialogueCharacterName", m_commonStagingName);
-					if (ImGui::IsItemDeactivatedAfterEdit())
-						context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(
-							index, SequenceEditFieldId::CommonDialogue_CharacterName, m_commonStagingName));
-
-					ImGuiEx::InputTextMultiline(
-						"##DialogueText",
-						m_commonStagingText,
-						ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 4));
-					if (ImGui::IsItemDeactivatedAfterEdit())
-						context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(
-							index, SequenceEditFieldId::CommonDialogue_DialogueText, m_commonStagingText));
-					return;
-				}
-
-				ImGui::TextUnformatted(u8"（无可写上下文，以下为只读预览）");
-				ImGui::TextUnformatted(com->DialogueCharacterName.c_str());
-				ImGui::TextUnformatted(com->DialogueText.c_str());
+					(void)SequenceInspectorRenderer::DrawFromSchema(m_meta, index, static_cast<void*>(component), context);
+				else
+					ImGui::TextUnformatted(u8"（无可写上下文，以下为只读预览：Schema 路径需撤销栈）");
 			}
 
-			std::string GetDisplayName() const override { return m_displayName; }
+			std::string GetDisplayName() const override { return m_meta.PrimaryLabel(); }
 
-			std::string GetBoundTypeNameID() const override
-			{
-				return VisionGal::VGSSC_CommonDialogue::StaticGetTypeNameID();
-			}
+			std::string GetBoundTypeNameID() const override { return m_meta.TypeNameID; }
 
 		private:
-			std::string m_displayName;
-			unsigned m_commonStagingIndex = 0xFFFFFFFFu;
-			std::string m_commonStagingName;
-			std::string m_commonStagingText;
-		};
-
-		class ChangeFigureSequenceInspector final : public ISequenceInspector
-		{
-		public:
-			explicit ChangeFigureSequenceInspector(std::string displayName)
-				: m_displayName(std::move(displayName))
-			{
-			}
-
-			void OnInspectorGUI(unsigned int index, VisionGal::IVGSSequenceComponent* component, SequenceEditorContext* context) override
-			{
-				auto* com = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(component);
-				if (com == nullptr)
-					return;
-
-				if (context == nullptr || context->document == nullptr || context->undo == nullptr)
-				{
-					ImGui::TextUnformatted(u8"（无可写上下文，属性只读）");
-					return;
-				}
-
-				if (m_figureStagingIndex != index)
-				{
-					m_figureStagingIndex = index;
-					m_figureStagingPath = com->TextureResourcePath;
-				}
-
-				ImGuiEx::InputText(u8"纹理路径##FigureTexPath", m_figureStagingPath);
-				if (ImGui::IsItemDeactivatedAfterEdit())
-					context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(
-						index, SequenceEditFieldId::ChangeFigure_TextureResourcePath, m_figureStagingPath));
-
-				bool show = com->ShowState;
-				if (ImGui::Checkbox(u8"显示立绘##FigureShow", &show))
-					context->ExecuteCommand(std::make_unique<SetSequenceEntryBoolPropertyCommand>(
-						index, SequenceEditBoolFieldId::ChangeFigure_ShowState, show));
-				ImGui::SameLine();
-				bool wait = com->Wait;
-				if (ImGui::Checkbox(u8"等待##FigureWait", &wait))
-					context->ExecuteCommand(std::make_unique<SetSequenceEntryBoolPropertyCommand>(
-						index, SequenceEditBoolFieldId::ChangeFigure_Wait, wait));
-			}
-
-			std::string GetDisplayName() const override { return m_displayName; }
-
-			std::string GetBoundTypeNameID() const override
-			{
-				return VisionGal::VGSSC_ChangeFigure::StaticGetTypeNameID();
-			}
-
-		private:
-			std::string m_displayName;
-			unsigned m_figureStagingIndex = 0xFFFFFFFFu;
-			std::string m_figureStagingPath;
+			SequenceComponentMetadata m_meta;
 		};
 
 		class ChangeBackgroundSequenceInspector final : public ISequenceInspector
@@ -267,9 +178,9 @@ namespace VisionGal::Editor
 		const std::string label = meta.PrimaryLabel();
 
 		if (id == VisionGal::VGSSC_CommonDialogue::StaticGetTypeNameID())
-			return std::make_unique<CommonDialogueSequenceInspector>(label);
+			return std::make_unique<SchemaBackedSequenceInspector>(meta);
 		if (id == VisionGal::VGSSC_ChangeFigure::StaticGetTypeNameID())
-			return std::make_unique<ChangeFigureSequenceInspector>(label);
+			return std::make_unique<SchemaBackedSequenceInspector>(meta);
 		if (id == VisionGal::VGSSC_ChangeBackground::StaticGetTypeNameID())
 			return std::make_unique<ChangeBackgroundSequenceInspector>(label);
 		return std::make_unique<FallbackSequenceInspector>(id, label);

@@ -7,10 +7,14 @@
  */
 #pragma once
 
-#include "Schema/SequenceComponentSchema.h"
+#include <optional>
 
 namespace VisionGal::Editor
 {
-	/// Phase 10：与 `SequenceComponentSchema` 同一类型，保留旧名以降低调用点改动量。
-	using SequenceComponentMetadata = SequenceComponentSchema;
+	/// 数值滑条与校验共用的 inclusive 范围（未设置表示无界）。
+	struct SequencePropertyRange
+	{
+		std::optional<double> Min;
+		std::optional<double> Max;
+	};
 }

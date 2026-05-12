@@ -59,7 +59,11 @@ namespace VisionGal::Editor
 			if (entry != nullptr)
 				node.TypeNameID = const_cast<VisionGal::IVGSSequenceComponent*>(entry)->GetTypeNameID();
 			if (const SequenceComponentMetadata* meta = registry.Find(node.TypeNameID))
+			{
 				node.Title = meta->PrimaryLabel();
+				node.InputPorts = meta->InputPorts;
+				node.OutputPorts = meta->OutputPorts;
+			}
 			else
 				node.Title = node.TypeNameID;
 			node.Subtitle = BuildSubtitle(entry);

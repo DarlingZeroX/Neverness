@@ -43,6 +43,9 @@ namespace VisionGal::Editor
 			bool ok,
 			bool reached);
 
+		/// Phase 10-F：发布单属性观测（时间线 + 总线 `RuntimeDebugStream`）。
+		void EmitPropertyWatch(const SequenceRuntimePropertySnapshot& snap);
+
 		[[nodiscard]] bool ExecuteTo(
 			const std::string& assetPath,
 			unsigned targetEntryIndex,

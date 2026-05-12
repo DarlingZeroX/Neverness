@@ -175,7 +175,7 @@ namespace VisionGal::Editor
 	void VGScriptSequenceEditor::InitializeChrome()
 	{
 		BootstrapSequenceComponentRegistry(m_componentRegistry);
-		BootstrapSequenceValidationRegistry(m_validationRegistry);
+		BootstrapSequenceValidationRegistry(m_validationRegistry, &m_componentRegistry);
 		BootstrapSequenceInspectorRegistry(m_inspectorRegistry, m_componentRegistry);
 
 		m_serviceLocator.validationCache = &m_validationCache;

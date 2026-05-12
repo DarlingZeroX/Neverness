@@ -15,6 +15,10 @@
 #include "RuntimeBridge/SequenceRuntimeEventFrame.h"
 #include "RuntimeBridge/SequenceRuntimeEventTimeline.h"
 
+#include "Runtime/SequenceRuntimePropertySnapshot.h"
+
+#include <optional>
+
 namespace VisionGal::Editor
 {
 	namespace
@@ -32,6 +36,8 @@ namespace VisionGal::Editor
 			case SequenceRuntimeStreamEventKind::RuntimeResumed:
 				return SequenceRuntimeEventKind::Continue_;
 			case SequenceRuntimeStreamEventKind::RuntimeNodeEntered:
+				return SequenceRuntimeEventKind::Custom;
+			case SequenceRuntimeStreamEventKind::RuntimePropertyChanged:
 				return SequenceRuntimeEventKind::Custom;
 			default:
 				return SequenceRuntimeEventKind::Unknown;
@@ -75,6 +81,7 @@ namespace VisionGal::Editor
 			ev.RuntimeStream.Message = message;
 			ev.RuntimeStream.ControllerOk = ok;
 			ev.RuntimeStream.ReachedTarget = reached;
+			ev.RuntimeStream.PropertyWatch = std::nullopt;
 			m_bus->Publish(ev);
 		}
 	}
@@ -87,6 +94,31 @@ namespace VisionGal::Editor
 		if (m_execution == nullptr)
 			return false;
 		return m_execution->ExecuteTo(assetPath, targetEntryIndex, out);
+	}
+
+	void SequenceRuntimeKernel::EmitPropertyWatch(const SequenceRuntimePropertySnapshot& snap)
+	{
+		if (m_timeline != nullptr)
+		{
+			SequenceRuntimeEventFrame frame;
+			frame.kind = SequenceRuntimeEventKind::Custom;
+			frame.entryIndex = snap.EntryIndex;
+			frame.payload = snap.PropertyPath + ": " + snap.OldValueText + " -> " + snap.NewValueText;
+			frame.timestampSeconds = snap.TimestampSeconds;
+			m_timeline->Push(std::move(frame));
+		}
+		if (m_bus != nullptr)
+		{
+			SequenceEditorEvent ev;
+			ev.Type = SequenceEditorEventType::RuntimeDebugStream;
+			ev.RuntimeStream.Kind = SequenceRuntimeStreamEventKind::RuntimePropertyChanged;
+			ev.RuntimeStream.Index = snap.EntryIndex;
+			ev.RuntimeStream.Message = snap.PropertyPath;
+			ev.RuntimeStream.ControllerOk = true;
+			ev.RuntimeStream.ReachedTarget = false;
+			ev.RuntimeStream.PropertyWatch = snap;
+			m_bus->Publish(ev);
+		}
 	}
 }
 

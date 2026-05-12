@@ -13,6 +13,7 @@
 #include "Commands/ISequenceEditorCommand.h"
 #include "Commands/MoveSequenceEntryCommand.h"
 #include "Commands/RemoveSequenceEntryCommand.h"
+#include "Commands/SetSequenceEntryBoolPropertyCommand.h"
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
@@ -64,7 +65,7 @@ namespace VisionGal::Editor
 			unsigned m_insertedIndex = 0;
 		};
 
-		bool TryMapPropertyPath(
+		bool TryMapStringPropertyPath(
 			const SequenceDocument& document,
 			const unsigned entryIndex,
 			const std::string& path,
@@ -73,7 +74,7 @@ namespace VisionGal::Editor
 			const VisionGal::IVGSSequenceComponent* comp = document.GetEntryAt(entryIndex);
 			if (comp == nullptr)
 				return false;
-			if (path.find("DialogueText") != std::string::npos || path == "DialogueText")
+			if (path == "dialogue" || path.find("DialogueText") != std::string::npos)
 			{
 				if (dynamic_cast<const VisionGal::VGSSC_CommonDialogue*>(comp) != nullptr)
 				{
@@ -81,7 +82,8 @@ namespace VisionGal::Editor
 					return true;
 				}
 			}
-			if (path.find("DialogueCharacterName") != std::string::npos || path.find("CharacterName") != std::string::npos)
+			if (path == "character" || path.find("DialogueCharacterName") != std::string::npos
+				|| path.find("CharacterName") != std::string::npos)
 			{
 				if (dynamic_cast<const VisionGal::VGSSC_CommonDialogue*>(comp) != nullptr)
 				{
@@ -89,7 +91,7 @@ namespace VisionGal::Editor
 					return true;
 				}
 			}
-			if (path.find("TextureResourcePath") != std::string::npos || path == "TextureResourcePath")
+			if (path == "texture" || path.find("TextureResourcePath") != std::string::npos)
 			{
 				if (dynamic_cast<const VisionGal::VGSSC_ChangeFigure*>(comp) != nullptr)
 				{
@@ -99,6 +101,44 @@ namespace VisionGal::Editor
 				if (dynamic_cast<const VisionGal::VGSSC_ChangeBackground*>(comp) != nullptr)
 				{
 					outField = SequenceEditFieldId::ChangeBackground_TextureResourcePath;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool TryMapBoolPropertyPath(
+			const SequenceDocument& document,
+			const unsigned entryIndex,
+			const std::string& path,
+			SequenceEditBoolFieldId& outField)
+		{
+			const VisionGal::IVGSSequenceComponent* comp = document.GetEntryAt(entryIndex);
+			if (comp == nullptr)
+				return false;
+			if (path == "showState" || path.find("ShowState") != std::string::npos)
+			{
+				if (dynamic_cast<const VisionGal::VGSSC_ChangeFigure*>(comp) != nullptr)
+				{
+					outField = SequenceEditBoolFieldId::ChangeFigure_ShowState;
+					return true;
+				}
+				if (dynamic_cast<const VisionGal::VGSSC_ChangeBackground*>(comp) != nullptr)
+				{
+					outField = SequenceEditBoolFieldId::ChangeBackground_ShowState;
+					return true;
+				}
+			}
+			if (path == "wait" || path.find("Wait") != std::string::npos)
+			{
+				if (dynamic_cast<const VisionGal::VGSSC_ChangeFigure*>(comp) != nullptr)
+				{
+					outField = SequenceEditBoolFieldId::ChangeFigure_Wait;
+					return true;
+				}
+				if (dynamic_cast<const VisionGal::VGSSC_ChangeBackground*>(comp) != nullptr)
+				{
+					outField = SequenceEditBoolFieldId::ChangeBackground_Wait;
 					return true;
 				}
 			}
@@ -148,14 +188,31 @@ namespace VisionGal::Editor
 				parts.push_back(std::make_unique<MoveSequenceEntryCommand>(mv->FromIndex, mv->ToIndex));
 			else if (const auto* sp = std::get_if<SequenceSetPropertyPatch>(&p))
 			{
-				SequenceEditFieldId field = SequenceEditFieldId::CommonDialogue_DialogueText;
-				if (!TryMapPropertyPath(*ctx.document, sp->EntryIndex, sp->PropertyPath, field))
+				if (const auto* str = std::get_if<std::string>(&sp->Value))
 				{
-					H_LOG_WARN("SequenceMutationPipeline::ExecutePatch: unmapped property path, skipped");
+					SequenceEditFieldId field = SequenceEditFieldId::CommonDialogue_DialogueText;
+					if (!TryMapStringPropertyPath(*ctx.document, sp->EntryIndex, sp->PropertyPath, field))
+					{
+						H_LOG_WARN("SequenceMutationPipeline::ExecutePatch: unmapped string property path, skipped");
+						continue;
+					}
+					parts.push_back(std::make_unique<EditSequencePropertyCommand>(sp->EntryIndex, field, *str));
+				}
+				else if (const auto* b = std::get_if<bool>(&sp->Value))
+				{
+					SequenceEditBoolFieldId field = SequenceEditBoolFieldId::ChangeFigure_ShowState;
+					if (!TryMapBoolPropertyPath(*ctx.document, sp->EntryIndex, sp->PropertyPath, field))
+					{
+						H_LOG_WARN("SequenceMutationPipeline::ExecutePatch: unmapped bool property path, skipped");
+						continue;
+					}
+					parts.push_back(std::make_unique<SetSequenceEntryBoolPropertyCommand>(sp->EntryIndex, field, *b));
+				}
+				else
+				{
+					H_LOG_WARN("SequenceMutationPipeline::ExecutePatch: unsupported property value type, skipped");
 					continue;
 				}
-				parts.push_back(
-					std::make_unique<EditSequencePropertyCommand>(sp->EntryIndex, field, sp->Value));
 			}
 		}
 		if (parts.empty())

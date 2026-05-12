@@ -14,8 +14,12 @@
 #include "Runtime/SequenceRuntimeObserver.h"
 #include "RuntimeBridge/SequenceRuntimeEventTimeline.h"
 
+#include "Runtime/SequenceRuntimePropertySnapshot.h"
+
 #include <algorithm>
+#include <chrono>
 #include <limits>
+#include <string>
 
 namespace VisionGal::Editor
 {
@@ -169,6 +173,37 @@ namespace VisionGal::Editor
 
 		PublishStream(SequenceRuntimeStreamEventKind::RuntimeNodeEntered, outSnapshot.CurrentIndex, {}, ok, false);
 		PublishStream(SequenceRuntimeStreamEventKind::RuntimeStepped, outSnapshot.CurrentIndex, err, ok, false);
+
+		if (ok && outSnapshot.HasValidDebugInfo)
+		{
+			const auto nowSec = []()
+			{
+				return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();
+			};
+			if (m_watchLastIndex != outSnapshot.CurrentIndex)
+			{
+				SequenceRuntimePropertySnapshot snap;
+				snap.EntryIndex = outSnapshot.CurrentIndex;
+				snap.PropertyPath = "runtime.CurrentIndex";
+				snap.OldValueText =
+					(m_watchLastIndex == (std::numeric_limits<unsigned>::max)()) ? "-" : std::to_string(m_watchLastIndex);
+				snap.NewValueText = std::to_string(outSnapshot.CurrentIndex);
+				snap.TimestampSeconds = nowSec();
+				m_kernel.EmitPropertyWatch(snap);
+				m_watchLastIndex = outSnapshot.CurrentIndex;
+			}
+			if (m_watchLastComponentType != outSnapshot.CurrentComponentType)
+			{
+				SequenceRuntimePropertySnapshot snap;
+				snap.EntryIndex = outSnapshot.CurrentIndex;
+				snap.PropertyPath = "runtime.CurrentComponentType";
+				snap.OldValueText = m_watchLastComponentType.empty() ? std::string{"-"} : m_watchLastComponentType;
+				snap.NewValueText = outSnapshot.CurrentComponentType;
+				snap.TimestampSeconds = nowSec();
+				m_kernel.EmitPropertyWatch(snap);
+				m_watchLastComponentType = outSnapshot.CurrentComponentType;
+			}
+		}
 
 		m_state = ok ? SequenceDebuggerSessionState::Paused : SequenceDebuggerSessionState::Error;
 		return ok;

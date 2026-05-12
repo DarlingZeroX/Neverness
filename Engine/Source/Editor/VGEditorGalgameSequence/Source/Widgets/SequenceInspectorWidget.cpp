@@ -54,10 +54,10 @@ namespace VisionGal::Editor
 			{
 				if (const SequenceComponentMetadata* meta = ctx.componentRegistry->Find(entry->GetTypeNameID()))
 				{
-					if (meta->PropertyDescriptors.empty())
+					if (meta->Properties.empty())
 					{
 						ImGui::TextUnformatted(
-							u8"（缺少 PropertyDescriptors：请为组件注册描述符或专用 Inspector）");
+							u8"（缺少 Properties：请为组件注册 Schema 或专用 Inspector）");
 						return;
 					}
 					if (SequenceInspectorRenderer::DrawFromDescriptors(*meta, idx, entry, &ctx))

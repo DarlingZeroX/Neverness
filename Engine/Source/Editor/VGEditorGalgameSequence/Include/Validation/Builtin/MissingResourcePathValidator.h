@@ -11,13 +11,20 @@
 
 namespace VisionGal::Editor
 {
+	class SequenceComponentRegistry;
+
 	class MissingResourcePathValidator final : public ISequenceValidator
 	{
 	public:
+		explicit MissingResourcePathValidator(const SequenceComponentRegistry* componentRegistry = nullptr);
+
 		[[nodiscard]] std::vector<SequenceValidationIssue> Validate(const SequenceDocument& document) const override;
 		[[nodiscard]] std::vector<SequenceValidationIssue> ValidateEntries(
 			const SequenceDocument& document,
 			const std::vector<unsigned>& entryIndices) const override;
 		[[nodiscard]] const char* GetRuleId() const override { return "Builtin.MissingResourcePath"; }
+
+	private:
+		const SequenceComponentRegistry* m_componentRegistry = nullptr;
 	};
 }
