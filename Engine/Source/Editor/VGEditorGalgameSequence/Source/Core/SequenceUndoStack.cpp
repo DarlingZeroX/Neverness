@@ -8,8 +8,10 @@
 
 #include "Core/SequenceUndoStack.h"
 
+#include "Commands/CompoundSequenceCommand.h"
 #include "Commands/ISequenceEditorCommand.h"
 #include "Document/SequenceDocument.h"
+#include "Transactions/Pipeline/SequenceMutationBatch.h"
 
 namespace VisionGal::Editor
 {
@@ -24,6 +26,21 @@ namespace VisionGal::Editor
 		}
 		command->Execute(document);
 		m_undo.push_back(std::move(command));
+		m_redo.clear();
+	}
+
+	void SequenceUndoStack::ExecuteBatch(SequenceMutationBatch&& batch, SequenceDocument& document)
+	{
+		if (batch.Commands.empty())
+			return;
+		if (batch.Commands.size() == 1)
+		{
+			ExecuteCommand(std::move(batch.Commands[0]), document);
+			return;
+		}
+		auto compound = std::make_unique<CompoundSequenceCommand>(std::move(batch.Commands));
+		compound->Execute(document);
+		m_undo.push_back(std::move(compound));
 		m_redo.clear();
 	}
 

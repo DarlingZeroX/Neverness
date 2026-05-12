@@ -8,25 +8,21 @@
 
 #include "Projection/SequenceTimelineProjection.h"
 
-#include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
-#include "Document/SequenceDocument.h"
+#include "Projection/SequenceProjectionContext.h"
 
 namespace VisionGal::Editor
 {
-	void SequenceTimelineProjection::Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry)
+	void SequenceTimelineProjection::Rebuild(const SequenceProjectionContext& ctx)
 	{
-		(void)document;
-		(void)registry;
+		(void)ctx;
 	}
 
 	void SequenceTimelineProjection::ApplyDirtyRegion(
 		const SequenceDirtyRegion& dirty,
-		SequenceDocument& document,
-		const SequenceComponentRegistry& registry)
+		const SequenceProjectionContext& ctx)
 	{
 		(void)dirty;
-		(void)document;
-		(void)registry;
+		(void)ctx;
 	}
 }

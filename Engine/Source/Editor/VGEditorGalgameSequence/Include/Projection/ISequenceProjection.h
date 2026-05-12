@@ -9,21 +9,17 @@
 
 namespace VisionGal::Editor
 {
-	class SequenceDocument;
-	class SequenceComponentRegistry;
 	struct SequenceDirtyRegion;
+	struct SequenceProjectionContext;
 
-	/// Document → visual read-model slice (Phase 7). Must not read widget state.
+	/// Phase 7/9：Document → 只读展示切片（统一投影上下文）。不得读取 Widget 状态。
 	class ISequenceProjection
 	{
 	public:
 		virtual ~ISequenceProjection() = default;
 
-		virtual void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) = 0;
+		virtual void Rebuild(const SequenceProjectionContext& ctx) = 0;
 
-		virtual void ApplyDirtyRegion(
-			const SequenceDirtyRegion& dirty,
-			SequenceDocument& document,
-			const SequenceComponentRegistry& registry) = 0;
+		virtual void ApplyDirtyRegion(const SequenceDirtyRegion& dirty, const SequenceProjectionContext& ctx) = 0;
 	};
 }

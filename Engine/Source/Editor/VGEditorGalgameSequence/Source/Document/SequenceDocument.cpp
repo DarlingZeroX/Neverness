@@ -152,6 +152,11 @@ namespace VisionGal::Editor
 		MarkDirty();
 	}
 
+	void SequenceDocument::InsertEntryByTypeNameID(const unsigned index, const std::string& typeNameID)
+	{
+		InsertEntryAt(index, VisionGal::CreateSequenceEntryByTypeNameID(typeNameID));
+	}
+
 	void SequenceDocument::RemoveEntries(const std::vector<unsigned>& indices)
 	{
 		m_sequence->RemoveEntries(indices);

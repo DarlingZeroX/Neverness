@@ -28,7 +28,7 @@ namespace VisionGal::Editor
 {
 	namespace
 	{
-		constexpr size_t kVirtualizeThreshold = 48;
+		constexpr size_t kVirtualizeThreshold = 24;
 
 		std::string RowHeaderLabel(const SequenceEntryViewModel& row)
 		{
@@ -164,7 +164,7 @@ namespace VisionGal::Editor
 
 		if (useClipper)
 		{
-			const float lineH = ImGui::GetFrameHeightWithSpacing() * 2.25f;
+			const float lineH = ImGui::GetFrameHeightWithSpacing() * 2.35f;
 			ImGuiListClipper clipper;
 			clipper.Begin(static_cast<int>(visible.size()), lineH);
 			while (clipper.Step())

@@ -12,7 +12,7 @@
 #include "Events/SequenceEditorEventBus.h"
 #include "Runtime/SequenceExecutionController.h"
 #include "Runtime/SequenceRuntimeObserver.h"
-#include "Runtime/SequenceRuntimeSnapshot.h"
+#include "RuntimeBridge/SequenceRuntimeEventTimeline.h"
 
 #include <algorithm>
 #include <limits>
@@ -22,11 +22,10 @@ namespace VisionGal::Editor
 	void SequenceDebuggerSession::Bind(
 		SequenceExecutionController* execution,
 		SequenceRuntimeObserver* observer,
-		SequenceEditorEventBus* bus)
+		SequenceEditorEventBus* bus,
+		SequenceRuntimeEventTimeline* runtimeTimeline)
 	{
-		m_execution = execution;
-		m_observer = observer;
-		m_bus = bus;
+		m_kernel.Bind(execution, observer, bus, runtimeTimeline);
 		PushBreakpointsToOverlay();
 	}
 
@@ -37,16 +36,7 @@ namespace VisionGal::Editor
 		const bool ok,
 		const bool reached)
 	{
-		if (m_bus == nullptr)
-			return;
-		SequenceEditorEvent ev;
-		ev.Type = SequenceEditorEventType::RuntimeDebugStream;
-		ev.RuntimeStream.Kind = kind;
-		ev.RuntimeStream.Index = index;
-		ev.RuntimeStream.Message = message;
-		ev.RuntimeStream.ControllerOk = ok;
-		ev.RuntimeStream.ReachedTarget = reached;
-		m_bus->Publish(ev);
+		m_kernel.EmitDebugStream(kind, index, message, ok, reached);
 	}
 
 	void SequenceDebuggerSession::SortBreakpointsUnique()
@@ -57,13 +47,14 @@ namespace VisionGal::Editor
 
 	void SequenceDebuggerSession::PushBreakpointsToOverlay()
 	{
-		if (m_observer == nullptr)
+		SequenceRuntimeObserver* observer = m_kernel.GetRuntimeObserver();
+		if (observer == nullptr)
 			return;
 		std::vector<uint32_t> v;
 		v.reserve(m_breakpoints.size());
 		for (const unsigned x : m_breakpoints)
 			v.push_back(static_cast<uint32_t>(x));
-		m_observer->SetBreakpointMarkers(std::move(v));
+		observer->SetBreakpointMarkers(std::move(v));
 	}
 
 	void SequenceDebuggerSession::Pause()
@@ -100,23 +91,23 @@ namespace VisionGal::Editor
 		const unsigned targetIndex,
 		SequenceRuntimeSnapshot& outSnapshot)
 	{
-		if (m_execution == nullptr || m_observer == nullptr)
+		if (m_kernel.GetExecutionController() == nullptr || m_kernel.GetRuntimeObserver() == nullptr)
 			return false;
 
 		m_state = SequenceDebuggerSessionState::Running;
 		PublishStream(SequenceRuntimeStreamEventKind::RuntimeStarted, targetIndex, {}, true, false);
 
-		const bool ok = m_execution->ExecuteTo(assetPath, targetIndex, outSnapshot);
-		m_observer->NotifyExecuteCompleted(outSnapshot, ok);
+		const bool ok = m_kernel.ExecuteTo(assetPath, targetIndex, outSnapshot);
+		m_kernel.GetRuntimeObserver()->NotifyExecuteCompleted(outSnapshot, ok);
 
-		if (m_bus != nullptr)
+		if (SequenceEditorEventBus* bus = m_kernel.GetEventBus())
 		{
 			SequenceEditorEvent ev;
 			ev.Type = SequenceEditorEventType::RuntimeStateChanged;
 			ev.Runtime.ControllerOk = ok;
 			ev.Runtime.ReachedTarget = outSnapshot.ReachedTarget;
 			ev.Runtime.HighlightIndex = outSnapshot.CurrentIndex;
-			m_bus->Publish(ev);
+			bus->Publish(ev);
 		}
 
 		if (ok)
@@ -144,11 +135,13 @@ namespace VisionGal::Editor
 
 	bool SequenceDebuggerSession::Step(const std::string& assetPath, SequenceRuntimeSnapshot& outSnapshot)
 	{
-		if (m_execution == nullptr || m_observer == nullptr)
+		SequenceExecutionController* execution = m_kernel.GetExecutionController();
+		SequenceRuntimeObserver* observer = m_kernel.GetRuntimeObserver();
+		if (execution == nullptr || observer == nullptr)
 			return false;
 
 		std::string err;
-		if (!m_execution->BeginDebugSession(assetPath, err))
+		if (!execution->BeginDebugSession(assetPath, err))
 		{
 			outSnapshot = SequenceRuntimeSnapshot{};
 			outSnapshot.LastError = err;
@@ -159,19 +152,19 @@ namespace VisionGal::Editor
 		m_state = SequenceDebuggerSessionState::Running;
 		PublishStream(SequenceRuntimeStreamEventKind::RuntimeStarted, 0, {}, true, false);
 
-		const bool ok = m_execution->StepOnce(outSnapshot, err);
+		const bool ok = execution->StepOnce(outSnapshot, err);
 		if (!ok)
 			outSnapshot.LastError = err;
 
-		m_observer->NotifyExecuteCompleted(outSnapshot, ok);
-		if (m_bus != nullptr)
+		observer->NotifyExecuteCompleted(outSnapshot, ok);
+		if (SequenceEditorEventBus* bus = m_kernel.GetEventBus())
 		{
 			SequenceEditorEvent ev;
 			ev.Type = SequenceEditorEventType::RuntimeStateChanged;
 			ev.Runtime.ControllerOk = ok;
 			ev.Runtime.ReachedTarget = false;
 			ev.Runtime.HighlightIndex = outSnapshot.CurrentIndex;
-			m_bus->Publish(ev);
+			bus->Publish(ev);
 		}
 
 		PublishStream(SequenceRuntimeStreamEventKind::RuntimeNodeEntered, outSnapshot.CurrentIndex, {}, ok, false);
@@ -186,11 +179,13 @@ namespace VisionGal::Editor
 		const unsigned targetIndex,
 		SequenceRuntimeSnapshot& outSnapshot)
 	{
-		if (m_execution == nullptr || m_observer == nullptr)
+		SequenceExecutionController* execution = m_kernel.GetExecutionController();
+		SequenceRuntimeObserver* observer = m_kernel.GetRuntimeObserver();
+		if (execution == nullptr || observer == nullptr)
 			return false;
 
 		std::string err;
-		if (!m_execution->BeginDebugSession(assetPath, err))
+		if (!execution->BeginDebugSession(assetPath, err))
 		{
 			outSnapshot = SequenceRuntimeSnapshot{};
 			outSnapshot.LastError = err;
@@ -208,7 +203,7 @@ namespace VisionGal::Editor
 		sortedBp.erase(std::unique(sortedBp.begin(), sortedBp.end()), sortedBp.end());
 		const std::vector<unsigned>* bpPtr = sortedBp.empty() ? nullptr : &sortedBp;
 
-		const bool ok = m_execution->ContinueExecution(
+		const bool ok = execution->ContinueExecution(
 			effectiveTarget,
 			bpPtr,
 			true,
@@ -218,15 +213,15 @@ namespace VisionGal::Editor
 		if (!ok)
 			outSnapshot.LastError = err;
 
-		m_observer->NotifyExecuteCompleted(outSnapshot, ok);
-		if (m_bus != nullptr)
+		observer->NotifyExecuteCompleted(outSnapshot, ok);
+		if (SequenceEditorEventBus* bus = m_kernel.GetEventBus())
 		{
 			SequenceEditorEvent ev;
 			ev.Type = SequenceEditorEventType::RuntimeStateChanged;
 			ev.Runtime.ControllerOk = ok;
 			ev.Runtime.ReachedTarget = outSnapshot.ReachedTarget;
 			ev.Runtime.HighlightIndex = outSnapshot.CurrentIndex;
-			m_bus->Publish(ev);
+			bus->Publish(ev);
 		}
 
 		if (outSnapshot.BreakpointHit)

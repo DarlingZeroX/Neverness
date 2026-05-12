@@ -8,12 +8,11 @@
 
 #include "Reactive/SequencePresentationScheduler.h"
 
-#include "AssetMonitoring/SequenceDependencyGraph.h"
-#include "AuthoringGraph/SequenceAuthoringGraph.h"
-#include "ComponentRegistry/SequenceComponentRegistry.h"
+#include "Core/SequenceSelectionModel.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
 #include "DirtyRegions/SequenceDirtyRegionFlags.h"
 #include "Document/SequenceDocument.h"
+#include "Projection/SequenceProjectionContext.h"
 #include "Runtime/SequenceRuntimeObserver.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Services/SequenceValidationCacheService.h"
@@ -25,58 +24,9 @@
 
 namespace VisionGal::Editor
 {
-	namespace
-	{
-		void RunProjectionPass(
-			const bool firstFrame,
-			const bool hasDocSignals,
-			const SequenceDirtyRegion& dirty,
-			SequenceDocument& document,
-			SequenceListProjection& list,
-			SequenceTimelineProjection& timeline,
-			SequenceGraphProjection& graph,
-			const SequenceComponentRegistry& registry)
-		{
-			if (!firstFrame && !hasDocSignals)
-				return;
-
-			if (firstFrame)
-			{
-				list.Rebuild(document, registry);
-				timeline.Rebuild(document, registry);
-				graph.Rebuild(document, registry);
-				return;
-			}
-
-			const bool structural =
-				(dirty.Flags & SequenceDirtyRegionFlags::Structure) != SequenceDirtyRegionFlags::None;
-			const bool property =
-				(dirty.Flags & SequenceDirtyRegionFlags::Property) != SequenceDirtyRegionFlags::None;
-
-			if (structural)
-			{
-				list.Rebuild(document, registry);
-				timeline.Rebuild(document, registry);
-				graph.Rebuild(document, registry);
-			}
-			else if (property && !dirty.Entries.empty())
-			{
-				list.ApplyDirtyRegion(dirty, document, registry);
-				timeline.ApplyDirtyRegion(dirty, document, registry);
-				graph.ApplyDirtyRegion(dirty, document, registry);
-			}
-			else
-			{
-				list.ApplyDirtyRegion(dirty, document, registry);
-				timeline.ApplyDirtyRegion(dirty, document, registry);
-				graph.ApplyDirtyRegion(dirty, document, registry);
-			}
-		}
-	}
-
 	void SequencePresentationScheduler::SetAuthoringGraph(SequenceAuthoringGraph* graph)
 	{
-		m_graphProjection.SetAuthoringGraph(graph);
+		m_projectionPipeline.SetAuthoringGraph(graph);
 	}
 
 	bool SequencePresentationScheduler::Tick(
@@ -91,10 +41,11 @@ namespace VisionGal::Editor
 		SequenceSearchIndexService& searchIndex,
 		SequenceRuntimeObserver& runtimeObserver,
 		SequenceSearchViewModel& searchViewModel,
+		SequenceSelectionModel& selectionModel,
 		SequenceDependencyGraph& dependencyGraph,
 		SequenceEditorEventBus* eventBus)
 	{
-		viewModel.SetListProjection(&m_listProjection);
+		viewModel.SetListProjection(&m_projectionPipeline.GetListProjection());
 
 		const bool firstFrame = !inOutFirstPresentationDone;
 		inOutFirstPresentationDone = true;
@@ -102,55 +53,37 @@ namespace VisionGal::Editor
 		const bool hasDocSignals = firstFrame || mutSummary.StructuralChange || !mutSummary.TouchedIndices.empty()
 			|| (dirty.Flags != SequenceDirtyRegionFlags::None);
 
+		SequenceProjectionContext projCtx;
+		projCtx.document = &document;
+		projCtx.validation = &validationCache;
+		projCtx.runtime = &runtimeObserver.GetOverlay();
+		projCtx.search = &searchIndex;
+		projCtx.selection = &selectionModel;
+		projCtx.registry = &componentRegistry;
+
 		++m_metrics.PresentationTickCount;
 		{
 			const auto t0 = std::chrono::steady_clock::now();
-			RunProjectionPass(
-				firstFrame,
-				hasDocSignals,
-				dirty,
-				document,
-				m_listProjection,
-				m_timelineProjection,
-				m_graphProjection,
-				componentRegistry);
+			m_projectionPipeline.RunProjectionPass(firstFrame, hasDocSignals, dirty, projCtx);
 			m_metrics.LastProjectionPassMicros = static_cast<uint64_t>(
 				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
 		}
 
-		if (firstFrame || hasDocSignals)
-		{
-			const auto t0 = std::chrono::steady_clock::now();
-			dependencyGraph.RebuildFromDocument(document);
-			searchIndex.RebuildFromViewStorageOrIncremental(document, viewModel.GetEntryStorage(), mutSummary, dirty);
-			m_metrics.LastSearchRebuildMicros = static_cast<uint64_t>(
-				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
-		}
-
-		bool validationRefreshed = false;
-		{
-			const auto t0 = std::chrono::steady_clock::now();
-			m_derivedStateGraph.InvalidateForPresentationTick(
-				firstFrame,
-				hasDocSignals,
-				mutSummary,
-				dirty,
-				runtimeObserver.GetOverlayRevision());
-			SequenceDerivedStateTickContext dctx;
-			dctx.document = &document;
-			dctx.viewModel = &viewModel;
-			dctx.validationCache = &validationCache;
-			dctx.validationRegistry = &validationRegistry;
-			dctx.searchIndex = &searchIndex;
-			dctx.runtimeObserver = &runtimeObserver;
-			dctx.searchViewModel = &searchViewModel;
-			dctx.eventBus = eventBus;
-			dctx.outValidationRefreshed = &validationRefreshed;
-			m_derivedStateGraph.Flush(dctx);
-			m_metrics.LastDerivedPassMicros = static_cast<uint64_t>(
-				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
-		}
-
-		return validationRefreshed;
+		return m_dataConsistencyPipeline.RunAfterProjections(
+			firstFrame,
+			hasDocSignals,
+			mutSummary,
+			dirty,
+			document,
+			viewModel,
+			validationCache,
+			validationRegistry,
+			searchIndex,
+			runtimeObserver,
+			searchViewModel,
+			dependencyGraph,
+			m_derivedStateGraph,
+			eventBus,
+			m_metrics);
 	}
 }

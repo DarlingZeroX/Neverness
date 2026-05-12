@@ -10,6 +10,7 @@
 
 #include "AssetMonitoring/SequenceDependencyGraph.h"
 #include "Document/SequenceDocument.h"
+#include "Services/SequenceDataConsistencyPipeline.h"
 #include "Services/SequenceValidationCacheService.h"
 
 namespace VisionGal::Editor
@@ -32,13 +33,13 @@ namespace VisionGal::Editor
 	{
 		if (m_document == nullptr || m_graph == nullptr || m_validationCache == nullptr)
 			return;
-		m_graph->RebuildFromDocument(*m_document);
-		const std::vector<unsigned> touched = m_graph->EntriesReferencing(assetPath);
-		if (touched.empty())
-			return;
-		m_validationCache->NotifyEntriesPropertyTouch(touched);
-		if (m_requestPresentationRefresh != nullptr)
-			m_requestPresentationRefresh(m_requestPresentationUserData);
+		SequenceDataConsistencyPipeline::InvalidateReferencingEntriesForAsset(
+			*m_document,
+			*m_graph,
+			assetPath,
+			*m_validationCache,
+			m_requestPresentationRefresh,
+			m_requestPresentationUserData);
 	}
 
 	void SequenceAssetDependencyService::OnAssetChanged(const std::string& assetPath)

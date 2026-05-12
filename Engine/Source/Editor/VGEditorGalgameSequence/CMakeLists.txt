@@ -20,6 +20,7 @@ file(GLOB SEQUENCE_EDITOR_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/EditorSession/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/ComponentRegistry/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Runtime/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Runtime/Kernel/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Inspector/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Widgets/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Core/*.h"
@@ -33,6 +34,7 @@ file(GLOB SEQUENCE_EDITOR_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Async/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Transactions/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Transactions/Patches/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Transactions/Pipeline/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Reactive/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Reactive/DerivedState/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Projection/ProjectionEvents/*.h"
@@ -52,6 +54,7 @@ file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorSession/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/ComponentRegistry/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime/Kernel/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Inspector/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Widgets/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
@@ -66,9 +69,9 @@ file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetMonitoring/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Transactions/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Transactions/Patches/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Transactions/Pipeline/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Reactive/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Reactive/DerivedState/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime/SequenceRuntimeBridgeRecorder.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorSession/SequenceEditorSession.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/DirtyRegions/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Document/*.cpp"
@@ -89,6 +92,8 @@ target_include_directories(VGEditorGalgameSequence PRIVATE ${PROJECT_SOURCE_DIR}
 target_link_libraries(VGEditorGalgameSequence PUBLIC VGEditorFramework)
 target_link_libraries(VGEditorGalgameSequence PUBLIC HNGEditorCore)
 target_link_libraries(VGEditorGalgameSequence PUBLIC VGGalgame)
+	# 显式链接脚本序列 DLL 的导入库，确保 `CreateSequenceEntryByTypeNameID` 等符号在编辑器模块链接阶段解析。
+target_link_libraries(VGEditorGalgameSequence PRIVATE VGGalgameScriptSequence)
 target_link_libraries(VGEditorGalgameSequence PRIVATE HCorePlatform)
 target_link_libraries(VGEditorGalgameSequence PRIVATE HFileSystem)
 target_link_libraries(VGEditorGalgameSequence PRIVATE VGCore)

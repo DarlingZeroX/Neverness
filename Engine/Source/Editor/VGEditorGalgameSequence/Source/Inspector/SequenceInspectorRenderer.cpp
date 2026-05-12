@@ -6,9 +6,10 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "Inspector/SequenceAutoInspectorDrawer.h"
+#include "Inspector/SequenceInspectorRenderer.h"
 
 #include "Commands/EditSequencePropertyCommand.h"
+#include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "Core/SequenceEditorContext.h"
 #include "Properties/SequencePropertyDescriptor.h"
 
@@ -16,11 +17,10 @@
 #include <VGImgui/IncludeImGuiEx.h>
 
 #include <cstdint>
+#include <unordered_map>
 
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 #include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
-
-#include <unordered_map>
 
 namespace VisionGal::Editor
 {
@@ -80,7 +80,7 @@ namespace VisionGal::Editor
 		}
 	}
 
-	bool TryDrawAutoInspectorFromDescriptors(
+	bool SequenceInspectorRenderer::DrawFromDescriptors(
 		const SequenceComponentMetadata& meta,
 		const unsigned index,
 		VisionGal::IVGSSequenceComponent* component,
@@ -94,7 +94,7 @@ namespace VisionGal::Editor
 		bool drew = false;
 		const auto& props = meta.PropertyDescriptors;
 		auto drawOne = [&](const SequencePropertyDescriptor& d) -> bool {
-			if (!d.HasEditField
+			if (!d.Editable || !d.HasEditField
 				|| (d.Kind != SequencePropertyKind::String && d.Kind != SequencePropertyKind::AssetRef))
 				return false;
 
@@ -106,8 +106,9 @@ namespace VisionGal::Editor
 					staging.clear();
 			}
 
+			const char* label = d.Label.empty() ? d.Id.c_str() : d.Label.c_str();
 			ImGui::PushID(static_cast<int>(reinterpret_cast<intptr_t>(&d) ^ static_cast<int>(index)));
-			ImGuiEx::InputText(d.Label.c_str(), staging);
+			ImGuiEx::InputText(label, staging);
 			if (ImGui::IsItemDeactivatedAfterEdit())
 				context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(index, d.EditField, staging));
 			ImGui::PopID();

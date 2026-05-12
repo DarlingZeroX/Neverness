@@ -13,6 +13,7 @@
 #include "Document/SequenceDocument.h"
 #include "Events/SequenceEditorEventBus.h"
 #include "Services/SequenceValidationCacheService.h"
+#include "Transactions/Pipeline/SequenceMutationPipeline.h"
 #include "Transactions/SequenceTransactionBuilder.h"
 
 #include "HCore/Interface/HLog.h"
@@ -49,6 +50,11 @@ namespace VisionGal::Editor
 	{
 		if (command == nullptr)
 			return;
+		if (mutationPipeline != nullptr)
+		{
+			mutationPipeline->ExecuteCommand(std::move(command), *this);
+			return;
+		}
 		if (undo == nullptr || document == nullptr)
 		{
 			H_LOG_WARN("SequenceEditorContext::ExecuteCommand ignored: missing undo stack or document");

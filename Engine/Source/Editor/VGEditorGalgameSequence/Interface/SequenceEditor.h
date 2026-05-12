@@ -54,7 +54,7 @@
 
 #include "Core/SequenceSelectionProjectionController.h"
 #include "EditorSession/SequenceEditorSession.h"
-#include "Runtime/SequenceRuntimeBridgeRecorder.h"
+#include "Transactions/Pipeline/SequenceMutationPipeline.h"
 
 namespace VisionGal::Editor
 {
@@ -135,7 +135,7 @@ namespace VisionGal::Editor
 		SequenceDependencyGraph m_dependencyGraph{};
 		SequenceEditorSession m_editorSession{};
 		SequenceSelectionProjectionController m_selectionProjectionController{};
-		SequenceRuntimeBridgeRecorder m_runtimeBridgeRecorder{};
+		SequenceMutationPipeline m_mutationPipeline{};
 		std::shared_ptr<SequenceTaskToken> m_asyncValidationTaskToken;
 
 		bool m_asyncFullValidationArmed = false;

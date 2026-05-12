@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include "Runtime/Kernel/SequenceRuntimeKernel.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -18,6 +20,7 @@ namespace VisionGal::Editor
 	class SequenceExecutionController;
 	class SequenceRuntimeObserver;
 	class SequenceEditorEventBus;
+	class SequenceRuntimeEventTimeline;
 	struct SequenceRuntimeSnapshot;
 
 	enum class SequenceDebuggerSessionState : uint8_t
@@ -30,13 +33,20 @@ namespace VisionGal::Editor
 		Error,
 	};
 
-	/// Editor-side debug session: step / continue / breakpoints + runtime event stream.
+	/// Editor-side debug session: step / continue / breakpoints + runtime event stream（经 `SequenceRuntimeKernel` 单核）。
 	class SequenceDebuggerSession
 	{
 	public:
-		void Bind(SequenceExecutionController* execution, SequenceRuntimeObserver* observer, SequenceEditorEventBus* bus);
+		void Bind(
+			SequenceExecutionController* execution,
+			SequenceRuntimeObserver* observer,
+			SequenceEditorEventBus* bus,
+			SequenceRuntimeEventTimeline* runtimeTimeline);
 
 		[[nodiscard]] SequenceDebuggerSessionState GetState() const { return m_state; }
+
+		[[nodiscard]] SequenceRuntimeKernel& GetRuntimeKernel() { return m_kernel; }
+		[[nodiscard]] const SequenceRuntimeKernel& GetRuntimeKernel() const { return m_kernel; }
 
 		bool RequestRunTo(const std::string& assetPath, unsigned targetIndex, SequenceRuntimeSnapshot& outSnapshot);
 
@@ -53,9 +63,7 @@ namespace VisionGal::Editor
 		void PushBreakpointsToOverlay();
 		void SortBreakpointsUnique();
 
-		SequenceExecutionController* m_execution = nullptr;
-		SequenceRuntimeObserver* m_observer = nullptr;
-		SequenceEditorEventBus* m_bus = nullptr;
+		SequenceRuntimeKernel m_kernel;
 		SequenceDebuggerSessionState m_state = SequenceDebuggerSessionState::Idle;
 		std::vector<unsigned> m_breakpoints;
 		bool m_pauseRequested = false;

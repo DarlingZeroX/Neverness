@@ -83,6 +83,8 @@ namespace VisionGal::Editor
 		void ResetToUntitledEmpty();
 
 		void AddEntryByTypeNameID(const std::string& typeNameID);
+		/// 在 `index` 处插入由 `typeNameID` 新建的条目（与 `AddEntryByTypeNameID` 相同工厂路径，供 Patch/命令复用）。
+		void InsertEntryByTypeNameID(unsigned index, const std::string& typeNameID);
 		void RemoveEntries(const std::vector<unsigned>& indices);
 		bool ReorderInsertBefore(unsigned sourceIndex, unsigned targetIndex);
 		bool ReorderInsertBehind(unsigned sourceIndex, unsigned targetIndex);

@@ -37,5 +37,7 @@ namespace VisionGal::Editor
 		/// When Kind==String and mapped to undo, use this field id for `EditSequencePropertyCommand`.
 		SequenceEditFieldId EditField = SequenceEditFieldId::CommonDialogue_DialogueText;
 		bool HasEditField = false;
+		/// 若为 false，渲染器仅展示只读标签（当前实现仍跳过非可编辑项）。
+		bool Editable = true;
 	};
 }

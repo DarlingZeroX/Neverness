@@ -34,6 +34,7 @@ namespace VisionGal::Editor
 	class SequenceAuthoringGraph;
 	class SequenceProjectionEventBus;
 	class SequenceRuntimeEventTimeline;
+	class SequenceMutationPipeline;
 
 	using SequenceDocumentMutationSink = void (*)(void* userData, const SequenceDocumentMutationSummary& summary);
 
@@ -73,6 +74,9 @@ namespace VisionGal::Editor
 		SequenceAuthoringGraph* authoringGraph = nullptr;
 		SequenceProjectionEventBus* projectionEventBus = nullptr;
 		SequenceRuntimeEventTimeline* runtimeEventTimeline = nullptr;
+
+		/// Phase 9：非空时 `ExecuteCommand` / `ExecutePatch` 经变更管线提交。
+		SequenceMutationPipeline* mutationPipeline = nullptr;
 
 		SequenceDocumentMutationSink onDocumentMutationAccumulate = nullptr;
 		void* onDocumentMutationAccumulateUserData = nullptr;

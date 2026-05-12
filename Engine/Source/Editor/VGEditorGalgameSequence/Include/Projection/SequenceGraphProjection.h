@@ -21,12 +21,9 @@ namespace VisionGal::Editor
 	public:
 		void SetAuthoringGraph(SequenceAuthoringGraph* graph) { m_authoringGraph = graph; }
 
-		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) override;
+		void Rebuild(const SequenceProjectionContext& ctx) override;
 
-		void ApplyDirtyRegion(
-			const SequenceDirtyRegion& dirty,
-			SequenceDocument& document,
-			const SequenceComponentRegistry& registry) override;
+		void ApplyDirtyRegion(const SequenceDirtyRegion& dirty, const SequenceProjectionContext& ctx) override;
 
 		[[nodiscard]] const std::vector<SequenceGraphNodeVM>& GetNodes() const { return m_nodes; }
 		[[nodiscard]] const std::vector<SequenceGraphEdgeVM>& GetEdges() const { return m_edges; }

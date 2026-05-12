@@ -11,8 +11,10 @@
 #include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
+#include "Projection/SequenceProjectionContext.h"
 #include "DirtyRegions/SequenceDirtyRegionFlags.h"
 #include "Document/SequenceDocument.h"
+#include "Document/SequenceEntryStoragePool.h"
 #include "Runtime/SequenceRuntimeOverlayState.h"
 #include "Validation/SequenceValidationIssue.h"
 
@@ -25,6 +27,7 @@ namespace VisionGal::Editor
 {
 	namespace
 	{
+		const SequenceEntryStoragePool g_entryRowPool;
 		std::string BuildSubtitle(const VisionGal::IVGSSequenceComponent* entry)
 		{
 			if (entry == nullptr)
@@ -65,11 +68,14 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void SequenceListProjection::Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry)
+	void SequenceListProjection::Rebuild(const SequenceProjectionContext& ctx)
 	{
-		m_entryRows.clear();
+		if (ctx.document == nullptr || ctx.registry == nullptr)
+			return;
+		SequenceDocument& document = *ctx.document;
+		const SequenceComponentRegistry& registry = *ctx.registry;
 		const unsigned count = document.GetEntryCount();
-		m_entryRows.reserve(count);
+		g_entryRowPool.PrepareRowVector(m_entryRows, count);
 		constexpr unsigned kChunk = 2048;
 		for (unsigned base = 0; base < count; base += kChunk)
 		{
@@ -81,9 +87,12 @@ namespace VisionGal::Editor
 
 	void SequenceListProjection::ApplyDirtyRegion(
 		const SequenceDirtyRegion& dirty,
-		SequenceDocument& document,
-		const SequenceComponentRegistry& registry)
+		const SequenceProjectionContext& ctx)
 	{
+		if (ctx.document == nullptr || ctx.registry == nullptr)
+			return;
+		SequenceDocument& document = *ctx.document;
+		const SequenceComponentRegistry& registry = *ctx.registry;
 		const bool structural =
 			(dirty.Flags & SequenceDirtyRegionFlags::Structure) != SequenceDirtyRegionFlags::None;
 		const bool property =
@@ -91,7 +100,7 @@ namespace VisionGal::Editor
 
 		if (structural)
 		{
-			Rebuild(document, registry);
+			Rebuild(ctx);
 			return;
 		}
 
@@ -99,7 +108,7 @@ namespace VisionGal::Editor
 		{
 			if (m_entryRows.size() != document.GetEntryCount())
 			{
-				Rebuild(document, registry);
+				Rebuild(ctx);
 				return;
 			}
 			std::unordered_set<unsigned> uniq(dirty.Entries.begin(), dirty.Entries.end());

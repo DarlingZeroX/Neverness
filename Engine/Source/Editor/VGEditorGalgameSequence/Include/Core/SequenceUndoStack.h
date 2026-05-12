@@ -14,11 +14,15 @@ namespace VisionGal::Editor
 {
 	class SequenceDocument;
 	class ISequenceEditorCommand;
+	struct SequenceMutationBatch;
 
 	class SequenceUndoStack
 	{
 	public:
 		void ExecuteCommand(std::unique_ptr<ISequenceEditorCommand> command, SequenceDocument& document);
+
+		/// Phase 9：统一压栈入口。单条命令时保留 `TryMergeWith`；多条时包装为 `CompoundSequenceCommand`。
+		void ExecuteBatch(SequenceMutationBatch&& batch, SequenceDocument& document);
 
 		void Undo(SequenceDocument& document);
 		void Redo(SequenceDocument& document);

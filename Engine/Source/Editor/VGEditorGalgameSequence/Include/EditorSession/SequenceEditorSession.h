@@ -14,7 +14,13 @@
 
 namespace VisionGal::Editor
 {
-	/// 将 Authoring 图、投影总线、扩展注册表与运行时时间线从宿主中拆出（Phase 8）。
+	class SequenceDataConsistencyPipeline;
+	class SequenceMutationPipeline;
+	class SequenceProjectionPipeline;
+	class SequenceRuntimeKernel;
+
+	/// Phase 8/9：将 Authoring 图、投影总线、扩展注册表与运行时时间线从宿主拆出；
+	/// Phase 9 起可挂载各「管线」指针，便于扩展与单测探测同一宿主上的活跃子系统。
 	class SequenceEditorSession
 	{
 	public:
@@ -23,10 +29,28 @@ namespace VisionGal::Editor
 		[[nodiscard]] SequenceExtensionRegistry& GetExtensionRegistry() { return m_extensionRegistry; }
 		[[nodiscard]] SequenceRuntimeEventTimeline& GetRuntimeEventTimeline() { return m_runtimeTimeline; }
 
+		void SetProjectionPipeline(SequenceProjectionPipeline* p) { m_projectionPipeline = p; }
+		void SetDataConsistencyPipeline(SequenceDataConsistencyPipeline* p) { m_dataConsistencyPipeline = p; }
+		void SetMutationPipeline(SequenceMutationPipeline* p) { m_mutationPipeline = p; }
+		void SetRuntimeKernel(SequenceRuntimeKernel* k) { m_runtimeKernel = k; }
+
+		[[nodiscard]] SequenceProjectionPipeline* GetProjectionPipeline() const { return m_projectionPipeline; }
+		[[nodiscard]] SequenceDataConsistencyPipeline* GetDataConsistencyPipeline() const
+		{
+			return m_dataConsistencyPipeline;
+		}
+		[[nodiscard]] SequenceMutationPipeline* GetMutationPipeline() const { return m_mutationPipeline; }
+		[[nodiscard]] SequenceRuntimeKernel* GetRuntimeKernel() const { return m_runtimeKernel; }
+
 	private:
 		SequenceAuthoringGraph m_authoringGraph;
 		SequenceProjectionEventBus m_projectionEventBus;
 		SequenceExtensionRegistry m_extensionRegistry;
 		SequenceRuntimeEventTimeline m_runtimeTimeline{ 8192 };
+
+		SequenceProjectionPipeline* m_projectionPipeline = nullptr;
+		SequenceDataConsistencyPipeline* m_dataConsistencyPipeline = nullptr;
+		SequenceMutationPipeline* m_mutationPipeline = nullptr;
+		SequenceRuntimeKernel* m_runtimeKernel = nullptr;
 	};
 }

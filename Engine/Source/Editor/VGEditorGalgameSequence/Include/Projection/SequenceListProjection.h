@@ -21,12 +21,9 @@ namespace VisionGal::Editor
 	class SequenceListProjection final : public ISequenceProjection
 	{
 	public:
-		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) override;
+		void Rebuild(const SequenceProjectionContext& ctx) override;
 
-		void ApplyDirtyRegion(
-			const SequenceDirtyRegion& dirty,
-			SequenceDocument& document,
-			const SequenceComponentRegistry& registry) override;
+		void ApplyDirtyRegion(const SequenceDirtyRegion& dirty, const SequenceProjectionContext& ctx) override;
 
 		[[nodiscard]] const std::vector<SequenceEntryViewModel>& GetEntryRows() const { return m_entryRows; }
 

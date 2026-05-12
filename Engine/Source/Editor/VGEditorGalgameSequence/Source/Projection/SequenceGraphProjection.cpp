@@ -14,6 +14,7 @@
 #include "DirtyRegions/SequenceDirtyRegion.h"
 #include "DirtyRegions/SequenceDirtyRegionFlags.h"
 #include "Document/SequenceDocument.h"
+#include "Projection/SequenceProjectionContext.h"
 
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 #include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
@@ -40,8 +41,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void SequenceGraphProjection::Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry)
+	void SequenceGraphProjection::Rebuild(const SequenceProjectionContext& ctx)
 	{
+		if (ctx.document == nullptr || ctx.registry == nullptr)
+			return;
+		SequenceDocument& document = *ctx.document;
+		const SequenceComponentRegistry& registry = *ctx.registry;
 		m_nodes.clear();
 		m_edges.clear();
 		const unsigned n = document.GetEntryCount();
@@ -84,14 +89,13 @@ namespace VisionGal::Editor
 
 	void SequenceGraphProjection::ApplyDirtyRegion(
 		const SequenceDirtyRegion& dirty,
-		SequenceDocument& document,
-		const SequenceComponentRegistry& registry)
+		const SequenceProjectionContext& ctx)
 	{
 		const bool structural =
 			(dirty.Flags & SequenceDirtyRegionFlags::Structure) != SequenceDirtyRegionFlags::None;
 		const bool property =
 			(dirty.Flags & SequenceDirtyRegionFlags::Property) != SequenceDirtyRegionFlags::None;
 		if (structural || (property && !dirty.Entries.empty()))
-			Rebuild(document, registry);
+			Rebuild(ctx);
 	}
 }

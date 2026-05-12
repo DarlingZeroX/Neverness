@@ -12,6 +12,7 @@
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Document/SequenceDocument.h"
 #include "Projection/SequenceListProjection.h"
+#include "Projection/SequenceProjectionContext.h"
 #include "Runtime/SequenceRuntimeOverlayState.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Validation/SequenceValidationRegistry.h"
@@ -82,7 +83,7 @@ namespace VisionGal::Editor
 
 		if (m_listProjection != nullptr)
 		{
-			m_listProjection->Rebuild(document, registry);
+			m_listProjection->Rebuild(MakeSequenceProjectionContext(document, registry));
 			m_visibleRows = m_listProjection->GetEntryRows();
 			return;
 		}
@@ -106,7 +107,7 @@ namespace VisionGal::Editor
 			SequenceDirtyRegion d{};
 			d.Flags = SequenceDirtyRegionFlags::Property;
 			d.Entries = indices;
-			m_listProjection->ApplyDirtyRegion(d, document, registry);
+			m_listProjection->ApplyDirtyRegion(d, MakeSequenceProjectionContext(document, registry));
 			SyncVisibleWithStorage();
 			return;
 		}

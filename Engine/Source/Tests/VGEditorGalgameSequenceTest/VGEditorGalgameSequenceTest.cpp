@@ -31,6 +31,8 @@
 #include "AssetMonitoring/SequenceDependencyGraph.h"
 #include "Events/SequenceEditorEvent.h"
 #include "Reactive/SequencePresentationScheduler.h"
+#include "Projection/SequenceListProjection.h"
+#include "Projection/SequenceProjectionContext.h"
 #include "Runtime/SequenceRuntimeObserver.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Transactions/SequenceTransactionBuilder.h"
@@ -306,6 +308,7 @@ TEST(Phase6_PresentationScheduler, FirstTickRebuildsViewModel)
 	SequenceSearchIndexService searchIndex;
 	SequenceRuntimeObserver runtimeObserver;
 	SequenceSearchViewModel searchViewModel;
+	SequenceSelectionModel selectionModel;
 	SequenceDependencyGraph dependencyGraph;
 	SequencePresentationScheduler scheduler;
 
@@ -325,6 +328,7 @@ TEST(Phase6_PresentationScheduler, FirstTickRebuildsViewModel)
 		searchIndex,
 		runtimeObserver,
 		searchViewModel,
+		selectionModel,
 		dependencyGraph,
 		nullptr);
 
@@ -351,4 +355,23 @@ TEST(Phase8_PatchTransaction, BuildDirtyRegionFromPatchTransactionStructural)
 	tx.Patches.push_back(SequenceInsertEntryPatch{ 0u, "X" });
 	const SequenceDirtyRegion d = BuildDirtyRegionFromPatchTransaction(tx);
 	EXPECT_TRUE(d.StructureChanged);
+}
+
+TEST(Phase9_ListProjection, RebuildTenThousandEntriesCompletes)
+{
+	SequenceDocument doc;
+	doc.ResetToUntitledEmpty();
+	const std::string dialogueType = VisionGal::VGSSC_CommonDialogue::StaticGetTypeNameID();
+	for (unsigned i = 0; i < 10000u; ++i)
+		doc.AddEntryByTypeNameID(dialogueType);
+
+	SequenceComponentRegistry registry;
+	BootstrapSequenceComponentRegistry(registry);
+	SequenceListProjection list;
+	const auto t0 = std::chrono::steady_clock::now();
+	list.Rebuild(MakeSequenceProjectionContext(doc, registry));
+	const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::steady_clock::now() - t0).count();
+	ASSERT_EQ(list.GetEntryRows().size(), 10000u);
+	ASSERT_LT(ms, 60000);
 }

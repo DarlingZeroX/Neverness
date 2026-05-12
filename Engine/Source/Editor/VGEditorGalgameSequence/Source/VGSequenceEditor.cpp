@@ -137,6 +137,7 @@ namespace VisionGal::Editor
 		m_context.authoringGraph = &m_editorSession.GetAuthoringGraph();
 		m_context.projectionEventBus = &m_editorSession.GetProjectionEventBus();
 		m_context.runtimeEventTimeline = &m_editorSession.GetRuntimeEventTimeline();
+		m_context.mutationPipeline = &m_mutationPipeline;
 	}
 
 	void VGScriptSequenceEditor::TickEditorPresentation()
@@ -164,6 +165,7 @@ namespace VisionGal::Editor
 			m_searchIndex,
 			m_runtimeObserver,
 			m_searchWidget.GetSearchViewModel(),
+			m_selectionModel,
 			m_dependencyGraph,
 			&m_eventBus);
 
@@ -181,7 +183,11 @@ namespace VisionGal::Editor
 		m_serviceLocator.debuggerSession = &m_debuggerSession;
 		m_serviceLocator.asyncTasks = &m_asyncTaskService;
 
-		m_debuggerSession.Bind(&m_executionController, &m_runtimeObserver, &m_eventBus);
+		m_debuggerSession.Bind(
+			&m_executionController,
+			&m_runtimeObserver,
+			&m_eventBus,
+			&m_editorSession.GetRuntimeEventTimeline());
 		m_assetDependency.Bind(
 			m_document.get(),
 			&m_dependencyGraph,
@@ -192,10 +198,14 @@ namespace VisionGal::Editor
 		m_selectionModel.SetEventBus(&m_eventBus);
 
 		m_selectionProjectionController.Bind(m_editorSession.GetProjectionEventBus(), m_selectionModel, &m_eventBus);
-		m_runtimeBridgeRecorder.Bind(&m_eventBus, &m_editorSession.GetRuntimeEventTimeline());
 		BootstrapSequenceExtensions(m_editorSession.GetExtensionRegistry());
 		m_editorSession.GetExtensionRegistry().NotifySessionBegin();
 		m_presentationScheduler.SetAuthoringGraph(&m_editorSession.GetAuthoringGraph());
+
+		m_editorSession.SetProjectionPipeline(&m_presentationScheduler.GetProjectionPipeline());
+		m_editorSession.SetDataConsistencyPipeline(&m_presentationScheduler.GetDataConsistencyPipeline());
+		m_editorSession.SetMutationPipeline(&m_mutationPipeline);
+		m_editorSession.SetRuntimeKernel(&m_debuggerSession.GetRuntimeKernel());
 
 		m_context.eventBus = &m_eventBus;
 		m_context.services = &m_serviceLocator;
@@ -260,7 +270,6 @@ namespace VisionGal::Editor
 
 	VGScriptSequenceEditor::~VGScriptSequenceEditor()
 	{
-		m_runtimeBridgeRecorder.Unbind();
 		m_editorSession.GetExtensionRegistry().NotifySessionEnd();
 	}
 

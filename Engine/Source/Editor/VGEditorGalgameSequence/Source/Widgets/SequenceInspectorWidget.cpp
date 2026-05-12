@@ -8,11 +8,12 @@
 
 #include "Widgets/SequenceInspectorWidget.h"
 
+#include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceSelectionModel.h"
 #include "Document/SequenceDocument.h"
-#include "Inspector/SequenceAutoInspectorDrawer.h"
+#include "Inspector/SequenceInspectorRenderer.h"
 #include "Inspector/SequenceInspectorRegistry.h"
 
 #include <VGImgui/IncludeImGui.h>
@@ -53,11 +54,19 @@ namespace VisionGal::Editor
 			{
 				if (const SequenceComponentMetadata* meta = ctx.componentRegistry->Find(entry->GetTypeNameID()))
 				{
-					if (TryDrawAutoInspectorFromDescriptors(*meta, idx, entry, &ctx))
+					if (meta->PropertyDescriptors.empty())
+					{
+						ImGui::TextUnformatted(
+							u8"（缺少 PropertyDescriptors：请为组件注册描述符或专用 Inspector）");
 						return;
+					}
+					if (SequenceInspectorRenderer::DrawFromDescriptors(*meta, idx, entry, &ctx))
+						return;
+					ImGui::TextUnformatted(u8"（描述符存在但无可绘制字段）");
+					return;
 				}
 			}
-			ImGui::TextUnformatted(u8"（未注册 Inspector）");
+			ImGui::TextUnformatted(u8"（未注册组件元数据与 Inspector）");
 		}
 	}
 }

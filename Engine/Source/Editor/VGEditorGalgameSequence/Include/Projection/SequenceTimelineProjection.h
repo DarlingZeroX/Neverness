@@ -14,11 +14,8 @@ namespace VisionGal::Editor
 	class SequenceTimelineProjection final : public ISequenceProjection
 	{
 	public:
-		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) override;
+		void Rebuild(const SequenceProjectionContext& ctx) override;
 
-		void ApplyDirtyRegion(
-			const SequenceDirtyRegion& dirty,
-			SequenceDocument& document,
-			const SequenceComponentRegistry& registry) override;
+		void ApplyDirtyRegion(const SequenceDirtyRegion& dirty, const SequenceProjectionContext& ctx) override;
 	};
 }

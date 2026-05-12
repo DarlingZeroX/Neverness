@@ -16,7 +16,9 @@ namespace VisionGal::Editor
 	class SequenceEditorEventBus;
 	class SequenceRuntimeEventTimeline;
 
-	/// 订阅 `RuntimeDebugStream` 并写入 `SequenceRuntimeEventTimeline`（Phase 8 Runtime Bridge）。
+	/// Phase 8：曾订阅 `RuntimeDebugStream` 写入时间线。
+	/// Phase 9 起时间线由 **`SequenceRuntimeKernel::EmitDebugStream`** 直接写入；本类保留以便外部工具链或
+	/// 旧代码编译兼容，宿主默认不再调用 **`Bind`**。
 	class SequenceRuntimeBridgeRecorder
 	{
 	public:
