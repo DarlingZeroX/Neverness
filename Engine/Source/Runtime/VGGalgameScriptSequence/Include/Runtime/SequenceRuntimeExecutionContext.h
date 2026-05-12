@@ -21,6 +21,9 @@ namespace VisionGal::GalGame
 {
 	class IStorySequenceExecutionInstance;
 	class SequenceRuntimeCommandAPI;
+	class SequenceVariableTable;
+	/// Phase 2D：信号总线，由 SequenceExecutionInstance 拥有；此处为非拥有指针。
+	class SequenceSignalBus;
 }
 
 namespace VisionGal
@@ -41,6 +44,12 @@ namespace VisionGal
 
 		/// 经内核授权的命令 API；RuntimeSystem 通过其发起 Continue / Jump 等。
 		GalGame::SequenceRuntimeCommandAPI* CommandAPI = nullptr;
+
+		/// Phase 2E：当前实例的变量表（可为 nullptr，表示未挂载内核或未启用变量）。
+		GalGame::SequenceVariableTable* Variables = nullptr;
+
+		/// Phase 2D：当前实例的信号总线（可为 nullptr）。
+		GalGame::SequenceSignalBus* SignalBus = nullptr;
 
 		/// 当前帧时间步长（秒），与 Tick(deltaTime) 入参一致。
 		float DeltaTime = 0.f;

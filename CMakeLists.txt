@@ -81,6 +81,7 @@ add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应
 if (ENABLE_TESTS)
     enable_testing()
     add_subdirectory("Engine/Source/Tests/VGEditorGalgameSequenceTest")
+    add_subdirectory("Engine/Source/Tests/VGGalgameScriptSequenceTest")
       
     # add_subdirectory("Tests/VGLauncherTest")
     # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")

@@ -5,6 +5,9 @@
 #include "Runtime/SequenceRuntimeCommandAPI.h"
 
 #include "Runtime/SequenceExecutionInstance.h"
+#include "Runtime/SequenceParallelGroup.h"
+#include "Runtime/SequenceSignalBus.h"
+#include "Runtime/SequenceValue.h"
 
 namespace VisionGal::GalGame
 {
@@ -17,6 +20,12 @@ namespace VisionGal::GalGame
 	{
 		if (m_Owner != nullptr)
 			m_Owner->ClearActiveFrameWaiting();
+	}
+
+	void SequenceRuntimeCommandAPI::ContinueWithResume(const ResumeToken& token)
+	{
+		if (m_Owner != nullptr)
+			m_Owner->ContinueWithResumeToken(token);
 	}
 
 	void SequenceRuntimeCommandAPI::JumpToSequenceIndex(const std::size_t index)
@@ -40,14 +49,46 @@ namespace VisionGal::GalGame
 
 	void SequenceRuntimeCommandAPI::EmitSignal(const std::string_view signalName)
 	{
-		// Phase 2D：SequenceSignalBus::Emit(signalName, payload...)
-		(void)signalName;
+		EmitSignal(signalName, SequenceValue::MakeString(std::string{}));
 	}
 
-	void SequenceRuntimeCommandAPI::SetVariable(const std::string_view key, const std::string_view value)
+	void SequenceRuntimeCommandAPI::EmitSignal(const std::string_view signalName, const SequenceValue& payload)
 	{
-		// Phase 2E：SequenceVariableTable::Set(key, Value{...})
-		(void)key;
-		(void)value;
+		if (m_Owner == nullptr)
+			return;
+		SequenceSignal sig;
+		sig.Name = std::string(signalName);
+		sig.Payload = payload;
+		m_Owner->m_SignalBus.Emit(std::move(sig));
+	}
+
+	void SequenceRuntimeCommandAPI::SetVariable(const std::string_view key, const SequenceValue& value)
+	{
+		if (m_Owner == nullptr)
+			return;
+		m_Owner->m_VariableTable.Set(std::string(key), value);
+	}
+
+	void SequenceRuntimeCommandAPI::SetVariable(const std::string_view key, const std::string_view stringValue)
+	{
+		SetVariable(key, SequenceValue::MakeString(std::string(stringValue)));
+	}
+
+	void SequenceRuntimeCommandAPI::BeginParallelClipGroup(const std::vector<std::size_t>& indices,
+		const SequenceBlockingPolicy policy, const std::size_t resumeIndex)
+	{
+		if (m_Owner == nullptr || indices.empty())
+			return;
+		if (m_Owner->m_Frames.empty())
+			return;
+		SequenceParallelGroup pg;
+		pg.ActiveIndices = indices;
+		pg.Policy = policy;
+		pg.ResumeSequenceIndex = resumeIndex;
+		pg.SlotHasDispatched.assign(pg.ActiveIndices.size(), false);
+		pg.SlotWaitTokens.assign(pg.ActiveIndices.size(), {});
+		m_Owner->m_Frames.back().ParallelGroup = std::move(pg);
+		m_Owner->m_Frames.back().HasDispatchedCurrentClip = false;
+		m_Owner->m_Frames.back().ActiveWaitTokenIds.clear();
 	}
 }

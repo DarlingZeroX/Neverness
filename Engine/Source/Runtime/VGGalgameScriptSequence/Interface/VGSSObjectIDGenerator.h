@@ -45,6 +45,27 @@ namespace VisionGal
 		/// 生成视频对象 ID。
 		VGSSVideoObjectID GenerateVideoID() noexcept;
 
+		/**
+		 * @brief 取「下一次将分配」的原始序号（用于存档；与 Generate* 共享同一计数器）。
+		 * @return 当前原子计数器值，即下一次 fetch_add 将返回的 ID。
+		 */
+		[[nodiscard]] uint32_t GetNextRawIdForSave() const noexcept
+		{
+			return m_NextRawId.load(std::memory_order_acquire);
+		}
+
+		/**
+		 * @brief 从存档恢复计数器（读档后调用，避免新 ID 与已持久化对象冲突）。
+		 * @param nextRawIdExclusive 与 GetNextRawIdForSave 保存的值相同；必须 >= 1。
+		 * @note 不恢复已注册 Gal 对象本体，仅恢复序号单调源；与 SSExecutorResourceManager 成对使用。
+		 */
+		void RestoreNextRawIdFromSave(uint32_t nextRawIdExclusive) noexcept
+		{
+			if (nextRawIdExclusive < 1u)
+				nextRawIdExclusive = 1u;
+			m_NextRawId.store(nextRawIdExclusive, std::memory_order_release);
+		}
+
 	private:
 		uint32_t GenerateUniqueRawId() noexcept;
 
