@@ -30,6 +30,7 @@ namespace VisionGal::Editor
 		SelectionChanged,
 		ValidationUpdated,
 		RuntimeStateChanged,
+		RuntimeDebugStream,
 		SearchFilterChanged,
 	};
 
@@ -40,6 +41,29 @@ namespace VisionGal::Editor
 		unsigned HighlightIndex = 0;
 	};
 
+	enum class SequenceRuntimeStreamEventKind : uint8_t
+	{
+		None = 0,
+		RuntimeStarted,
+		RuntimePaused,
+		RuntimeResumed,
+		RuntimeStepped,
+		RuntimeNodeEntered,
+		RuntimeNodeExited,
+		RuntimeFinished,
+		RuntimeError,
+		RuntimeBreakpointHit,
+	};
+
+	struct SequenceRuntimeStreamEventPayload
+	{
+		SequenceRuntimeStreamEventKind Kind = SequenceRuntimeStreamEventKind::None;
+		unsigned Index = 0;
+		std::string Message;
+		bool ControllerOk = false;
+		bool ReachedTarget = false;
+	};
+
 	struct SequenceEditorEvent
 	{
 		SequenceEditorEventType Type = SequenceEditorEventType::DocumentChanged;
@@ -47,5 +71,6 @@ namespace VisionGal::Editor
 		/// Phase 6: optional fine-grained transaction (coarse v1 from mutation summary).
 		std::optional<SequenceTransaction> CommittedTransaction{};
 		SequenceRuntimeStateEventPayload Runtime{};
+		SequenceRuntimeStreamEventPayload RuntimeStream{};
 	};
 }

@@ -8,24 +8,77 @@
 
 #include "Projection/SequenceGraphProjection.h"
 
+#include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
+#include "DirtyRegions/SequenceDirtyRegionFlags.h"
 #include "Document/SequenceDocument.h"
-#include "ViewModels/SequenceDocumentViewModel.h"
+
+#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
+#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
 
 namespace VisionGal::Editor
 {
-	void SequenceGraphProjection::Apply(
-		const bool seedPresentation,
+	namespace
+	{
+		std::string BuildSubtitle(const VisionGal::IVGSSequenceComponent* entry)
+		{
+			if (entry == nullptr)
+				return {};
+			if (auto* d = dynamic_cast<const VisionGal::VGSSC_CommonDialogue*>(entry))
+			{
+				if (!d->DialogueCharacterName.empty())
+					return d->DialogueCharacterName + " — " + d->DialogueText;
+				return d->DialogueText;
+			}
+			if (auto* f = dynamic_cast<const VisionGal::VGSSC_ChangeFigure*>(entry))
+				return f->TextureResourcePath;
+			if (auto* b = dynamic_cast<const VisionGal::VGSSC_ChangeBackground*>(entry))
+				return b->TextureResourcePath;
+			return {};
+		}
+	}
+
+	void SequenceGraphProjection::Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry)
+	{
+		m_nodes.clear();
+		m_edges.clear();
+		const unsigned n = document.GetEntryCount();
+		m_nodes.reserve(n);
+		for (unsigned i = 0; i < n; ++i)
+		{
+			const VisionGal::IVGSSequenceComponent* entry = document.GetEntryAt(i);
+			SequenceGraphNodeVM node;
+			node.EntryIndex = i;
+			if (entry != nullptr)
+				node.TypeNameID = const_cast<VisionGal::IVGSSequenceComponent*>(entry)->GetTypeNameID();
+			if (const SequenceComponentMetadata* meta = registry.Find(node.TypeNameID))
+				node.Title = meta->PrimaryLabel();
+			else
+				node.Title = node.TypeNameID;
+			node.Subtitle = BuildSubtitle(entry);
+			m_nodes.push_back(std::move(node));
+		}
+		for (unsigned i = 0; i + 1 < n; ++i)
+		{
+			SequenceGraphEdgeVM e;
+			e.FromEntryIndex = i;
+			e.ToEntryIndex = i + 1;
+			e.Kind = SequenceGraphEdgeKind::LinearNext;
+			m_edges.push_back(e);
+		}
+	}
+
+	void SequenceGraphProjection::ApplyDirtyRegion(
 		const SequenceDirtyRegion& dirty,
 		SequenceDocument& document,
-		SequenceDocumentViewModel& viewModel,
-		SequenceComponentRegistry& registry)
+		const SequenceComponentRegistry& registry)
 	{
-		(void)seedPresentation;
-		(void)dirty;
-		(void)document;
-		(void)viewModel;
-		(void)registry;
+		const bool structural =
+			(dirty.Flags & SequenceDirtyRegionFlags::Structure) != SequenceDirtyRegionFlags::None;
+		const bool property =
+			(dirty.Flags & SequenceDirtyRegionFlags::Property) != SequenceDirtyRegionFlags::None;
+		if (structural || (property && !dirty.Entries.empty()))
+			Rebuild(document, registry);
 	}
 }

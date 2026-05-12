@@ -7,7 +7,10 @@
  */
 #pragma once
 
+#include "Properties/SequencePropertyDescriptor.h"
+
 #include <string>
+#include <vector>
 
 namespace VisionGal::Editor
 {
@@ -25,6 +28,8 @@ namespace VisionGal::Editor
 		/// FontAwesome 图标的 UTF-8 字形（一个或多个）。
 		std::string Icon;
 		int Priority = 0;
+
+		std::vector<SequencePropertyDescriptor> PropertyDescriptors;
 
 		/// Human-readable name for lists / inspector title fallback.
 		[[nodiscard]] std::string PrimaryLabel() const

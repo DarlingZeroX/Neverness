@@ -7,18 +7,28 @@
  */
 #pragma once
 
+#include "Projection/Graph/SequenceGraphReadModel.h"
 #include "Projection/ISequenceProjection.h"
+
+#include <vector>
 
 namespace VisionGal::Editor
 {
 	class SequenceGraphProjection final : public ISequenceProjection
 	{
 	public:
-		void Apply(
-			bool seedPresentation,
+		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) override;
+
+		void ApplyDirtyRegion(
 			const SequenceDirtyRegion& dirty,
 			SequenceDocument& document,
-			SequenceDocumentViewModel& viewModel,
-			SequenceComponentRegistry& registry) override;
+			const SequenceComponentRegistry& registry) override;
+
+		[[nodiscard]] const std::vector<SequenceGraphNodeVM>& GetNodes() const { return m_nodes; }
+		[[nodiscard]] const std::vector<SequenceGraphEdgeVM>& GetEdges() const { return m_edges; }
+
+	private:
+		std::vector<SequenceGraphNodeVM> m_nodes;
+		std::vector<SequenceGraphEdgeVM> m_edges;
 	};
 }

@@ -10,16 +10,37 @@
 #include "Runtime/SequenceRuntimeSnapshot.h"
 
 #include <string>
+#include <vector>
 
 namespace VisionGal::Editor
 {
-	/// Encapsulates editor-driven playback / stepping. Does not cache engine execution pointers.
-	/// 封装编辑器驱动的播放与单步执行；不缓存引擎执行指针。
+	/// Encapsulates editor-driven playback / stepping. Optional debug session caches loaded script.
 	class SequenceExecutionController
 	{
 	public:
-		/// Persists asset, enters play mode if needed, loads script, advances until `targetEntryIndex`.
-		/// 持久化资源、必要时进入播放模式、加载脚本并推进到 `targetEntryIndex`。
 		bool ExecuteTo(const std::string& assetPath, unsigned int targetEntryIndex, SequenceRuntimeSnapshot& out);
+
+		bool BeginDebugSession(const std::string& assetPath, std::string& err);
+		void EndDebugSession();
+
+		[[nodiscard]] bool IsDebugSessionActive() const { return m_debugActive; }
+
+		bool StepOnce(SequenceRuntimeSnapshot& out, std::string& err);
+
+		/// Advances until `targetEntryIndex`, a breakpoint index, stall, optional user pause between steps, or step cap.
+		bool ContinueExecution(
+			unsigned targetEntryIndex,
+			const std::vector<unsigned>* sortedBreakpointsOrNull,
+			bool honorPauseFlag,
+			bool* inOutPauseRequested,
+			SequenceRuntimeSnapshot& out,
+			std::string& err);
+
+	private:
+		bool EnsurePlayModeAndStory(std::string& err) const;
+		bool LoadScriptAndBindDebug(const std::string& assetPath, std::string& err);
+
+		bool m_debugActive = false;
+		std::string m_debugAssetPath;
 	};
 }

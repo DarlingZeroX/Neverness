@@ -9,16 +9,17 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace VisionGal::Editor
 {
 	/// UI-facing overlay derived from execution snapshots (no engine pointers).
-	/// 由执行快照派生的 UI 叠加层（无引擎指针）。
 	struct SequenceRuntimeOverlayState
 	{
 		bool ShowExecutionLine = false;
 		uint32_t HighlightIndex = 0;
 		bool ReachedTarget = false;
 		std::string LastError;
+		std::vector<uint32_t> BreakpointIndices;
 	};
 }

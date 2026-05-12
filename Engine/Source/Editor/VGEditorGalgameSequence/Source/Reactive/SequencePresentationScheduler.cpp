@@ -15,9 +15,7 @@
 #include "Document/SequenceDocument.h"
 #include "Events/SequenceEditorEvent.h"
 #include "Events/SequenceEditorEventBus.h"
-#include "Projection/SequenceGraphProjection.h"
-#include "Projection/SequenceListProjection.h"
-#include "Projection/SequenceTimelineProjection.h"
+#include "Reactive/DerivedState/SequenceDerivedStatePlaceholders.h"
 #include "Runtime/SequenceRuntimeObserver.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Services/SequenceValidationCacheService.h"
@@ -25,8 +23,89 @@
 #include "ViewModels/SequenceDocumentViewModel.h"
 #include "ViewModels/SequenceSearchViewModel.h"
 
+#include <chrono>
+
 namespace VisionGal::Editor
 {
+	namespace
+	{
+		void RunProjectionPass(
+			const bool firstFrame,
+			const bool hasDocSignals,
+			const SequenceDirtyRegion& dirty,
+			SequenceDocument& document,
+			SequenceListProjection& list,
+			SequenceTimelineProjection& timeline,
+			SequenceGraphProjection& graph,
+			const SequenceComponentRegistry& registry)
+		{
+			if (!firstFrame && !hasDocSignals)
+				return;
+
+			if (firstFrame)
+			{
+				list.Rebuild(document, registry);
+				timeline.Rebuild(document, registry);
+				graph.Rebuild(document, registry);
+				return;
+			}
+
+			const bool structural =
+				(dirty.Flags & SequenceDirtyRegionFlags::Structure) != SequenceDirtyRegionFlags::None;
+			const bool property =
+				(dirty.Flags & SequenceDirtyRegionFlags::Property) != SequenceDirtyRegionFlags::None;
+
+			if (structural)
+			{
+				list.Rebuild(document, registry);
+				timeline.Rebuild(document, registry);
+				graph.Rebuild(document, registry);
+			}
+			else if (property && !dirty.Entries.empty())
+			{
+				list.ApplyDirtyRegion(dirty, document, registry);
+				timeline.ApplyDirtyRegion(dirty, document, registry);
+				graph.ApplyDirtyRegion(dirty, document, registry);
+			}
+			else
+			{
+				list.ApplyDirtyRegion(dirty, document, registry);
+				timeline.ApplyDirtyRegion(dirty, document, registry);
+				graph.ApplyDirtyRegion(dirty, document, registry);
+			}
+		}
+
+		void RunDerivedStatePass(
+			SelectionDerivedState& /*selectionDerived*/,
+			ValidationDerivedState& /*validationDerived*/,
+			RuntimeDerivedState& /*runtimeDerived*/,
+			SearchDerivedState& /*searchDerived*/,
+			SequenceValidationCacheService& validationCache,
+			SequenceValidationRegistry& validationRegistry,
+			SequenceDocument& document,
+			SequenceDocumentViewModel& viewModel,
+			SequenceRuntimeObserver& runtimeObserver,
+			SequenceSearchIndexService& searchIndex,
+			SequenceSearchViewModel& searchViewModel,
+			SequenceEditorEventBus* eventBus,
+			bool& outValidationRefreshed)
+		{
+			outValidationRefreshed = validationCache.ApplyIfStale(
+				document, validationRegistry, document.GetGenerationId());
+			viewModel.ApplyValidationIssues(validationCache.GetIssues());
+
+			if (outValidationRefreshed && eventBus != nullptr)
+			{
+				SequenceEditorEvent ev;
+				ev.Type = SequenceEditorEventType::ValidationUpdated;
+				eventBus->Publish(ev);
+			}
+
+			viewModel.ApplyRuntimeOverlay(runtimeObserver.GetOverlay());
+			viewModel.ApplySearchViewModelWithIndex(searchIndex, searchViewModel);
+		}
+	}
+
 	bool SequencePresentationScheduler::Tick(
 		bool& inOutFirstPresentationDone,
 		const SequenceDocumentMutationSummary& mutSummary,
@@ -42,9 +121,7 @@ namespace VisionGal::Editor
 		SequenceDependencyGraph& dependencyGraph,
 		SequenceEditorEventBus* eventBus)
 	{
-		static SequenceListProjection s_list;
-		static SequenceTimelineProjection s_timeline;
-		static SequenceGraphProjection s_graph;
+		viewModel.SetListProjection(&m_listProjection);
 
 		const bool firstFrame = !inOutFirstPresentationDone;
 		inOutFirstPresentationDone = true;
@@ -52,28 +129,60 @@ namespace VisionGal::Editor
 		const bool hasDocSignals = firstFrame || mutSummary.StructuralChange || !mutSummary.TouchedIndices.empty()
 			|| (dirty.Flags != SequenceDirtyRegionFlags::None);
 
+		SelectionDerivedState selectionDerived;
+		ValidationDerivedState validationDerived;
+		RuntimeDerivedState runtimeDerived;
+		SearchDerivedState searchDerived;
+		(void)selectionDerived;
+		(void)validationDerived;
+		(void)runtimeDerived;
+		(void)searchDerived;
+
+		++m_metrics.PresentationTickCount;
+		{
+			const auto t0 = std::chrono::steady_clock::now();
+			RunProjectionPass(
+				firstFrame,
+				hasDocSignals,
+				dirty,
+				document,
+				m_listProjection,
+				m_timelineProjection,
+				m_graphProjection,
+				componentRegistry);
+			m_metrics.LastProjectionPassMicros = static_cast<uint64_t>(
+				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
+		}
+
 		if (firstFrame || hasDocSignals)
 		{
-			s_list.Apply(firstFrame, dirty, document, viewModel, componentRegistry);
-			s_timeline.Apply(firstFrame, dirty, document, viewModel, componentRegistry);
-			s_graph.Apply(firstFrame, dirty, document, viewModel, componentRegistry);
+			const auto t0 = std::chrono::steady_clock::now();
 			dependencyGraph.RebuildFromDocument(document);
 			searchIndex.RebuildFromViewStorage(viewModel.GetEntryStorage());
+			m_metrics.LastSearchRebuildMicros = static_cast<uint64_t>(
+				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
 		}
 
-		const bool validationRefreshed = validationCache.ApplyIfStale(
-			document, validationRegistry, document.GetGenerationId());
-		viewModel.ApplyValidationIssues(validationCache.GetIssues());
-
-		if (validationRefreshed && eventBus != nullptr)
+		bool validationRefreshed = false;
 		{
-			SequenceEditorEvent ev;
-			ev.Type = SequenceEditorEventType::ValidationUpdated;
-			eventBus->Publish(ev);
+			const auto t0 = std::chrono::steady_clock::now();
+			RunDerivedStatePass(
+				selectionDerived,
+				validationDerived,
+				runtimeDerived,
+				searchDerived,
+				validationCache,
+				validationRegistry,
+				document,
+				viewModel,
+				runtimeObserver,
+				searchIndex,
+				searchViewModel,
+				eventBus,
+				validationRefreshed);
+			m_metrics.LastDerivedPassMicros = static_cast<uint64_t>(
+				std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t0).count());
 		}
-
-		viewModel.ApplyRuntimeOverlay(runtimeObserver.GetOverlay());
-		viewModel.ApplySearchViewModelWithIndex(searchIndex, searchViewModel);
 
 		return validationRefreshed;
 	}

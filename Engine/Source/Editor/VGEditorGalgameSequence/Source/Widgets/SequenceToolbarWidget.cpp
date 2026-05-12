@@ -14,13 +14,16 @@
 #include "Events/SequenceEditorEvent.h"
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
-#include "Runtime/SequenceExecutionController.h"
+#include "Runtime/SequenceDebuggerSession.h"
+#include "Runtime/SequenceRuntimeSnapshot.h"
 
 #include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Core/VFS.h"
 #include <VGImgui/IncludeImGui.h>
+
+#include <limits>
 
 namespace VisionGal::Editor
 {
@@ -98,6 +101,56 @@ namespace VisionGal::Editor
 			{
 				const unsigned idx = *ctx.selection->GetSelection().begin();
 				(void)ctx.executeToEntry(ctx.executeToUserData, idx);
+			}
+			ImGui::Separator();
+			const bool canDbg = ctx.document != nullptr && ctx.debuggerSession != nullptr && ctx.lastExecutionSnapshot != nullptr;
+			const bool canDbgSel = canDbg && ctx.selection != nullptr && ctx.selection->GetSelection().size() == 1;
+			if (ImGui::BeginMenu(u8"Debug", canDbg))
+			{
+				if (ImGui::MenuItem(u8"Step", nullptr, false, canDbgSel))
+				{
+					(void)ctx.document->SaveToAssetPath();
+					(void)ctx.debuggerSession->Step(ctx.document->GetAssetPath(), *ctx.lastExecutionSnapshot);
+					ctx.RequestPresentationRefresh();
+				}
+				if (ImGui::MenuItem(u8"Continue", nullptr, false, canDbgSel))
+				{
+					(void)ctx.document->SaveToAssetPath();
+					const unsigned idx = *ctx.selection->GetSelection().begin();
+					(void)ctx.debuggerSession->ContinueToSelectionOrBreakpoint(ctx.document->GetAssetPath(), idx, *ctx.lastExecutionSnapshot);
+					ctx.RequestPresentationRefresh();
+				}
+				if (ImGui::MenuItem(u8"Continue To Breakpoint / Stall", nullptr, false, canDbg))
+				{
+					(void)ctx.document->SaveToAssetPath();
+					(void)ctx.debuggerSession->ContinueToSelectionOrBreakpoint(
+						ctx.document->GetAssetPath(),
+						std::numeric_limits<unsigned>::max(),
+						*ctx.lastExecutionSnapshot);
+					ctx.RequestPresentationRefresh();
+				}
+				if (ImGui::MenuItem(u8"Pause", nullptr, false, canDbg))
+				{
+					ctx.debuggerSession->Pause();
+					ctx.RequestPresentationRefresh();
+				}
+				if (ImGui::MenuItem(u8"Resume", nullptr, false, canDbg))
+				{
+					ctx.debuggerSession->Resume();
+					ctx.RequestPresentationRefresh();
+				}
+				if (ImGui::MenuItem(u8"Toggle Breakpoint", nullptr, false, canDbgSel))
+				{
+					const unsigned idx = *ctx.selection->GetSelection().begin();
+					ctx.debuggerSession->ToggleBreakpoint(idx);
+					ctx.RequestPresentationRefresh();
+				}
+				if (ImGui::MenuItem(u8"Clear Breakpoints", nullptr, false, canDbg))
+				{
+					ctx.debuggerSession->ClearBreakpoints();
+					ctx.RequestPresentationRefresh();
+				}
+				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
 		}

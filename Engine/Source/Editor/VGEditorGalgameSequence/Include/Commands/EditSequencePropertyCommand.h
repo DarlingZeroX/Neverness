@@ -32,6 +32,8 @@ namespace VisionGal::Editor
 		std::string GetDebugName() const override;
 		[[nodiscard]] SequenceDocumentMutationSummary DescribeExecutedMutation() const override;
 
+		bool TryMergeWith(ISequenceEditorCommand& incoming, SequenceDocument& document) override;
+
 	private:
 		bool TryReadCurrent(SequenceDocument& document, std::string& outCurrent) const;
 		void WriteValue(SequenceDocument& document, const std::string& value) const;

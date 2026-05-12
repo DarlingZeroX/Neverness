@@ -16,23 +16,25 @@ namespace VisionGal::Editor
 {
 	class SequenceComponentRegistry;
 	class SequenceDocument;
+	class SequenceListProjection;
 	class SequenceValidationRegistry;
 	struct SequenceRuntimeOverlayState;
 	class SequenceSearchViewModel;
 	class SequenceSearchIndexService;
 
-	/// Read model for list / timeline / outliner; rebuilt from document + registry.
-	/// 列表 / 时间轴 / 大纲的只读模型；由文档与注册表重建。
+	/// Facade over list projection read-model + visible/filter + validation list.
 	class SequenceDocumentViewModel
 	{
 	public:
+		void SetListProjection(SequenceListProjection* listProjection) { m_listProjection = listProjection; }
+
 		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry);
 		void RebuildEntriesAtIndices(
 			SequenceDocument& document,
 			const SequenceComponentRegistry& registry,
 			const std::vector<unsigned>& indices);
 
-		[[nodiscard]] const std::vector<SequenceEntryViewModel>& GetEntryStorage() const { return m_storage; }
+		[[nodiscard]] const std::vector<SequenceEntryViewModel>& GetEntryStorage() const;
 
 		const std::vector<SequenceEntryViewModel>& GetVisibleEntries() const { return m_visibleRows; }
 
@@ -49,6 +51,7 @@ namespace VisionGal::Editor
 	private:
 		void SyncVisibleWithStorage();
 
+		SequenceListProjection* m_listProjection = nullptr;
 		std::vector<SequenceEntryViewModel> m_storage;
 		std::vector<SequenceEntryViewModel> m_visibleRows;
 		std::vector<SequenceValidationIssue> m_validationIssues;

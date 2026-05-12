@@ -38,6 +38,14 @@ namespace VisionGal::Editor
 			m_pendingSummary.TouchedIndices.end(), summary.TouchedIndices.begin(), summary.TouchedIndices.end());
 	}
 
+	void SequenceValidationCacheService::NotifyEntriesPropertyTouch(const std::vector<unsigned>& entryIndices)
+	{
+		SequenceDocumentMutationSummary s;
+		s.StructuralChange = false;
+		s.TouchedIndices = entryIndices;
+		NotifyDocumentChanged(s);
+	}
+
 	bool SequenceValidationCacheService::ApplyIfStale(
 		const SequenceDocument& document,
 		const SequenceValidationRegistry& registry,

@@ -11,7 +11,7 @@ namespace VisionGal::Editor
 {
 	class SequenceValidationCacheService;
 	class SequenceSearchIndexService;
-	class SequenceRuntimeSession;
+	class SequenceDebuggerSession;
 	class SequenceAsyncTaskService;
 
 	/// Host-owned services exposed to widgets through `SequenceEditorContext`.
@@ -19,7 +19,7 @@ namespace VisionGal::Editor
 	{
 		SequenceValidationCacheService* validationCache = nullptr;
 		SequenceSearchIndexService* searchIndex = nullptr;
-		SequenceRuntimeSession* runtimeSession = nullptr;
+		SequenceDebuggerSession* debuggerSession = nullptr;
 		SequenceAsyncTaskService* asyncTasks = nullptr;
 	};
 }

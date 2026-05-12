@@ -11,10 +11,14 @@
 #include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Document/SequenceDocument.h"
+#include "Projection/SequenceListProjection.h"
 #include "Runtime/SequenceRuntimeOverlayState.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Validation/SequenceValidationRegistry.h"
 #include "ViewModels/SequenceSearchViewModel.h"
+
+#include "DirtyRegions/SequenceDirtyRegion.h"
+#include "DirtyRegions/SequenceDirtyRegionFlags.h"
 
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 #include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
@@ -65,11 +69,26 @@ namespace VisionGal::Editor
 		}
 	}
 
+	const std::vector<SequenceEntryViewModel>& SequenceDocumentViewModel::GetEntryStorage() const
+	{
+		if (m_listProjection != nullptr)
+			return m_listProjection->GetEntryRows();
+		return m_storage;
+	}
+
 	void SequenceDocumentViewModel::Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry)
 	{
+		m_validationIssues.clear();
+
+		if (m_listProjection != nullptr)
+		{
+			m_listProjection->Rebuild(document, registry);
+			m_visibleRows = m_listProjection->GetEntryRows();
+			return;
+		}
+
 		m_storage.clear();
 		m_visibleRows.clear();
-		m_validationIssues.clear();
 
 		const unsigned count = document.GetEntryCount();
 		for (unsigned i = 0; i < count; ++i)
@@ -82,6 +101,16 @@ namespace VisionGal::Editor
 		const SequenceComponentRegistry& registry,
 		const std::vector<unsigned>& indices)
 	{
+		if (m_listProjection != nullptr)
+		{
+			SequenceDirtyRegion d{};
+			d.Flags = SequenceDirtyRegionFlags::Property;
+			d.Entries = indices;
+			m_listProjection->ApplyDirtyRegion(d, document, registry);
+			SyncVisibleWithStorage();
+			return;
+		}
+
 		if (m_storage.size() != document.GetEntryCount())
 		{
 			Rebuild(document, registry);
@@ -99,13 +128,15 @@ namespace VisionGal::Editor
 
 	void SequenceDocumentViewModel::SyncVisibleWithStorage()
 	{
+		const std::vector<SequenceEntryViewModel>& storage = GetEntryStorage();
 		for (auto& vis : m_visibleRows)
 		{
-			if (vis.EntryIndex >= m_storage.size())
+			if (vis.EntryIndex >= storage.size())
 				continue;
-			const SequenceEntryViewModel& src = m_storage[vis.EntryIndex];
+			const SequenceEntryViewModel& src = storage[vis.EntryIndex];
 			vis.HasValidationError = src.HasValidationError;
 			vis.RuntimeHighlight = src.RuntimeHighlight;
+			vis.EntryBreakpoint = src.EntryBreakpoint;
 		}
 	}
 
@@ -120,8 +151,9 @@ namespace VisionGal::Editor
 	void SequenceDocumentViewModel::ApplySearchViewModel(const SequenceSearchViewModel& search)
 	{
 		m_visibleRows.clear();
-		m_visibleRows.reserve(m_storage.size());
-		for (const auto& row : m_storage)
+		const std::vector<SequenceEntryViewModel>& storage = GetEntryStorage();
+		m_visibleRows.reserve(storage.size());
+		for (const auto& row : storage)
 		{
 			if (search.RowPassesFilters(row))
 				m_visibleRows.push_back(row);
@@ -133,14 +165,15 @@ namespace VisionGal::Editor
 		const SequenceSearchViewModel& search)
 	{
 		std::vector<unsigned> candidates;
+		const std::vector<SequenceEntryViewModel>& storage = GetEntryStorage();
 		const bool narrowByIndex = search.HasDimension(SequenceSearchViewModel::Dimension::TextMatch)
 			&& !search.TextFilter().empty();
 		if (narrowByIndex)
 			candidates = index.QueryTextIndices(search.TextFilter());
 		else
 		{
-			candidates.reserve(m_storage.size());
-			for (unsigned i = 0; i < m_storage.size(); ++i)
+			candidates.reserve(storage.size());
+			for (unsigned i = 0; i < storage.size(); ++i)
 				candidates.push_back(i);
 		}
 
@@ -148,9 +181,9 @@ namespace VisionGal::Editor
 		m_visibleRows.reserve(candidates.size());
 		for (unsigned entryIndex : candidates)
 		{
-			if (entryIndex >= m_storage.size())
+			if (entryIndex >= storage.size())
 				continue;
-			const SequenceEntryViewModel& row = m_storage[entryIndex];
+			const SequenceEntryViewModel& row = storage[entryIndex];
 			if (search.RowPassesFilters(row))
 				m_visibleRows.push_back(row);
 		}
@@ -159,6 +192,13 @@ namespace VisionGal::Editor
 	void SequenceDocumentViewModel::ApplyValidationIssues(const std::vector<SequenceValidationIssue>& issues)
 	{
 		m_validationIssues = issues;
+		if (m_listProjection != nullptr)
+		{
+			m_listProjection->ApplyValidationIssues(issues);
+			SyncVisibleWithStorage();
+			return;
+		}
+
 		for (auto& row : m_storage)
 			row.HasValidationError = false;
 		for (const auto& issue : m_validationIssues)
@@ -179,9 +219,22 @@ namespace VisionGal::Editor
 
 	void SequenceDocumentViewModel::ApplyRuntimeOverlay(const SequenceRuntimeOverlayState& overlay)
 	{
+		if (m_listProjection != nullptr)
+		{
+			m_listProjection->ApplyRuntimeOverlay(overlay);
+			SyncVisibleWithStorage();
+			return;
+		}
+
 		for (auto& row : m_storage)
 		{
 			row.RuntimeHighlight = overlay.ShowExecutionLine && row.EntryIndex == overlay.HighlightIndex;
+			row.EntryBreakpoint = false;
+		}
+		for (const uint32_t bi : overlay.BreakpointIndices)
+		{
+			if (bi < m_storage.size())
+				m_storage[static_cast<size_t>(bi)].EntryBreakpoint = true;
 		}
 		SyncVisibleWithStorage();
 	}

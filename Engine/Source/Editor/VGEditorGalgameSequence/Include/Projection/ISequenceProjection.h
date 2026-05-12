@@ -10,21 +10,20 @@
 namespace VisionGal::Editor
 {
 	class SequenceDocument;
-	class SequenceDocumentViewModel;
 	class SequenceComponentRegistry;
 	struct SequenceDirtyRegion;
 
-	/// Document → visual structure slice. Must not read widget state (Phase 6).
+	/// Document → visual read-model slice (Phase 7). Must not read widget state.
 	class ISequenceProjection
 	{
 	public:
 		virtual ~ISequenceProjection() = default;
 
-		virtual void Apply(
-			bool seedPresentation,
+		virtual void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) = 0;
+
+		virtual void ApplyDirtyRegion(
 			const SequenceDirtyRegion& dirty,
 			SequenceDocument& document,
-			SequenceDocumentViewModel& viewModel,
-			SequenceComponentRegistry& registry) = 0;
+			const SequenceComponentRegistry& registry) = 0;
 	};
 }

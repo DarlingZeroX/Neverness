@@ -29,5 +29,8 @@ namespace VisionGal::Editor
 
 		/// Summary of the last successful `Execute` (used after the command is pushed onto the undo stack).
 		[[nodiscard]] virtual SequenceDocumentMutationSummary DescribeExecutedMutation() const;
+
+		/// If true, `incoming` is not pushed; top-of-stack command absorbed the edit (typing merge).
+		virtual bool TryMergeWith(ISequenceEditorCommand& incoming, SequenceDocument& document);
 	};
 }

@@ -16,4 +16,11 @@ namespace VisionGal::Editor
 		s.StructuralChange = true;
 		return s;
 	}
+
+	bool ISequenceEditorCommand::TryMergeWith(ISequenceEditorCommand& incoming, SequenceDocument& document)
+	{
+		(void)incoming;
+		(void)document;
+		return false;
+	}
 }

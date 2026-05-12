@@ -7,6 +7,12 @@
  */
 #pragma once
 
+#include "Reactive/SequenceEditorMetrics.h"
+
+#include "Projection/SequenceGraphProjection.h"
+#include "Projection/SequenceListProjection.h"
+#include "Projection/SequenceTimelineProjection.h"
+
 namespace VisionGal::Editor
 {
 	class SequenceComponentRegistry;
@@ -22,10 +28,17 @@ namespace VisionGal::Editor
 	struct SequenceDirtyRegion;
 	struct SequenceDocumentMutationSummary;
 
-	/// Centralizes presentation pipeline (Phase 6): projections → validation → overlay → search index.
+	/// Presentation pipeline (Phase 7): reactive pass → projections → derived read-models → services.
 	class SequencePresentationScheduler
 	{
 	public:
+		[[nodiscard]] SequenceListProjection& GetListProjection() { return m_listProjection; }
+		[[nodiscard]] const SequenceListProjection& GetListProjection() const { return m_listProjection; }
+		[[nodiscard]] SequenceGraphProjection& GetGraphProjection() { return m_graphProjection; }
+		[[nodiscard]] SequenceTimelineProjection& GetTimelineProjection() { return m_timelineProjection; }
+
+		[[nodiscard]] const SequenceEditorMetrics& GetLastMetrics() const { return m_metrics; }
+
 		[[nodiscard]] bool Tick(
 			bool& inOutFirstPresentationDone,
 			const SequenceDocumentMutationSummary& mutSummary,
@@ -40,5 +53,11 @@ namespace VisionGal::Editor
 			SequenceSearchViewModel& searchViewModel,
 			SequenceDependencyGraph& dependencyGraph,
 			SequenceEditorEventBus* eventBus);
+
+	private:
+		SequenceListProjection m_listProjection;
+		SequenceTimelineProjection m_timelineProjection;
+		SequenceGraphProjection m_graphProjection;
+		SequenceEditorMetrics m_metrics{};
 	};
 }

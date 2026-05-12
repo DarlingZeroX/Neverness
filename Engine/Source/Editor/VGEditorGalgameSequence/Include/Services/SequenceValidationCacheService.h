@@ -24,6 +24,8 @@ namespace VisionGal::Editor
 		void InvalidateAll();
 		void NotifyDocumentChanged(const SequenceDocumentMutationSummary& summary);
 
+		void NotifyEntriesPropertyTouch(const std::vector<unsigned>& entryIndices);
+
 		/// Applies pending work when `m_stale` is set. No-op if document generation unchanged and not stale.
 		[[nodiscard]] bool ApplyIfStale(
 			const SequenceDocument& document,

@@ -14,11 +14,11 @@ namespace VisionGal::Editor
 	class SequenceTimelineProjection final : public ISequenceProjection
 	{
 	public:
-		void Apply(
-			bool seedPresentation,
+		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) override;
+
+		void ApplyDirtyRegion(
 			const SequenceDirtyRegion& dirty,
 			SequenceDocument& document,
-			SequenceDocumentViewModel& viewModel,
-			SequenceComponentRegistry& registry) override;
+			const SequenceComponentRegistry& registry) override;
 	};
 }

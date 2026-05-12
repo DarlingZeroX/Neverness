@@ -8,26 +8,76 @@
 
 #include "Projection/SequenceListProjection.h"
 
+#include "ComponentRegistry/SequenceComponentMetadata.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
+#include "DirtyRegions/SequenceDirtyRegionFlags.h"
 #include "Document/SequenceDocument.h"
-#include "ViewModels/SequenceDocumentViewModel.h"
+#include "Runtime/SequenceRuntimeOverlayState.h"
+#include "Validation/SequenceValidationIssue.h"
+
+#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
+#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+
+#include <unordered_set>
 
 namespace VisionGal::Editor
 {
-	void SequenceListProjection::Apply(
-		const bool seedPresentation,
-		const SequenceDirtyRegion& dirty,
-		SequenceDocument& document,
-		SequenceDocumentViewModel& viewModel,
-		SequenceComponentRegistry& registry)
+	namespace
 	{
-		if (seedPresentation)
+		std::string BuildSubtitle(const VisionGal::IVGSSequenceComponent* entry)
 		{
-			viewModel.Rebuild(document, registry);
-			return;
+			if (entry == nullptr)
+				return {};
+			if (auto* d = dynamic_cast<const VisionGal::VGSSC_CommonDialogue*>(entry))
+			{
+				if (!d->DialogueCharacterName.empty())
+					return d->DialogueCharacterName + " — " + d->DialogueText;
+				return d->DialogueText;
+			}
+			if (auto* f = dynamic_cast<const VisionGal::VGSSC_ChangeFigure*>(entry))
+				return f->TextureResourcePath;
+			if (auto* b = dynamic_cast<const VisionGal::VGSSC_ChangeBackground*>(entry))
+				return b->TextureResourcePath;
+			return {};
 		}
 
+		SequenceEntryViewModel BuildRow(
+			unsigned i,
+			const SequenceDocument& document,
+			const SequenceComponentRegistry& registry)
+		{
+			const VisionGal::IVGSSequenceComponent* entry = document.GetEntryAt(i);
+			SequenceEntryViewModel row;
+			row.EntryIndex = i;
+			if (entry != nullptr)
+				row.TypeNameID = const_cast<VisionGal::IVGSSequenceComponent*>(entry)->GetTypeNameID();
+			if (const SequenceComponentMetadata* meta = registry.Find(row.TypeNameID))
+			{
+				row.DisplayName = meta->PrimaryLabel();
+				row.Category = meta->Category;
+				row.Icon = meta->Icon;
+			}
+			else
+				row.DisplayName = row.TypeNameID;
+			row.Subtitle = BuildSubtitle(entry);
+			return row;
+		}
+	}
+
+	void SequenceListProjection::Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry)
+	{
+		m_entryRows.clear();
+		const unsigned count = document.GetEntryCount();
+		for (unsigned i = 0; i < count; ++i)
+			m_entryRows.push_back(BuildRow(i, document, registry));
+	}
+
+	void SequenceListProjection::ApplyDirtyRegion(
+		const SequenceDirtyRegion& dirty,
+		SequenceDocument& document,
+		const SequenceComponentRegistry& registry)
+	{
 		const bool structural =
 			(dirty.Flags & SequenceDirtyRegionFlags::Structure) != SequenceDirtyRegionFlags::None;
 		const bool property =
@@ -35,14 +85,52 @@ namespace VisionGal::Editor
 
 		if (structural)
 		{
-			viewModel.Rebuild(document, registry);
+			Rebuild(document, registry);
 			return;
 		}
 
 		if (property && !dirty.Entries.empty())
 		{
-			std::vector<unsigned> indices = dirty.Entries;
-			viewModel.RebuildEntriesAtIndices(document, registry, indices);
+			if (m_entryRows.size() != document.GetEntryCount())
+			{
+				Rebuild(document, registry);
+				return;
+			}
+			std::unordered_set<unsigned> uniq(dirty.Entries.begin(), dirty.Entries.end());
+			for (unsigned i : uniq)
+			{
+				if (i >= m_entryRows.size())
+					continue;
+				m_entryRows[i] = BuildRow(i, document, registry);
+			}
+		}
+	}
+
+	void SequenceListProjection::ApplyValidationIssues(const std::vector<SequenceValidationIssue>& issues)
+	{
+		for (auto& row : m_entryRows)
+			row.HasValidationError = false;
+		for (const auto& issue : issues)
+		{
+			if (issue.Severity == SequenceValidationSeverity::Info)
+				continue;
+			if (issue.EntryIndex >= m_entryRows.size())
+				continue;
+			m_entryRows[issue.EntryIndex].HasValidationError = true;
+		}
+	}
+
+	void SequenceListProjection::ApplyRuntimeOverlay(const SequenceRuntimeOverlayState& overlay)
+	{
+		for (auto& row : m_entryRows)
+		{
+			row.RuntimeHighlight = overlay.ShowExecutionLine && row.EntryIndex == overlay.HighlightIndex;
+			row.EntryBreakpoint = false;
+		}
+		for (const uint32_t bi : overlay.BreakpointIndices)
+		{
+			if (bi < m_entryRows.size())
+				m_entryRows[static_cast<size_t>(bi)].EntryBreakpoint = true;
 		}
 	}
 }

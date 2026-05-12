@@ -11,22 +11,22 @@
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "DirtyRegions/SequenceDirtyRegion.h"
 #include "Document/SequenceDocument.h"
-#include "ViewModels/SequenceDocumentViewModel.h"
 
 namespace VisionGal::Editor
 {
-	void SequenceTimelineProjection::Apply(
-		const bool seedPresentation,
+	void SequenceTimelineProjection::Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry)
+	{
+		(void)document;
+		(void)registry;
+	}
+
+	void SequenceTimelineProjection::ApplyDirtyRegion(
 		const SequenceDirtyRegion& dirty,
 		SequenceDocument& document,
-		SequenceDocumentViewModel& viewModel,
-		SequenceComponentRegistry& registry)
+		const SequenceComponentRegistry& registry)
 	{
-		(void)seedPresentation;
 		(void)dirty;
 		(void)document;
-		(void)viewModel;
 		(void)registry;
-		/// Phase 6 stub: timeline shares list rows today; multi-track will consume dirty.TimelineLayout.
 	}
 }

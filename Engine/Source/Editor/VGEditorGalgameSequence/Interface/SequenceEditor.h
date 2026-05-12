@@ -30,9 +30,10 @@
 #include "Inspector/SequenceInspectorRegistry.h"
 #include "Reactive/SequencePresentationScheduler.h"
 #include "Runtime/SequenceRuntimeObserver.h"
-#include "Runtime/SequenceRuntimeSession.h"
+#include "Runtime/SequenceDebuggerSession.h"
 #include "Runtime/SequenceRuntimeSnapshot.h"
 #include "Runtime/SequenceExecutionController.h"
+#include "Services/SequenceAssetDependencyService.h"
 #include "Services/SequenceEditorServiceLocator.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Services/SequenceValidationCacheService.h"
@@ -41,13 +42,15 @@
 #include "ViewModels/SequenceDocumentViewModel.h"
 #include "Widgets/SequenceComponentPaletteWidget.h"
 #include "Widgets/SequenceEntryListWidget.h"
+#include "Widgets/SequenceGraphWidget.h"
 #include "Widgets/SequenceInspectorWidget.h"
 #include "Widgets/SequenceOutlinerWidget.h"
 #include "Widgets/SequenceSearchWidget.h"
 #include "Widgets/SequenceStatusBarWidget.h"
 #include "Widgets/SequenceToolbarWidget.h"
-#include "Widgets/SequenceValidationWidget.h"
+#include "Workspace/SequenceWorkspaceState.h"
 #include "VGEditorFramework/Interface/UITaskInterface.h"
+#include "Widgets/SequenceValidationWidget.h"
 
 namespace VisionGal::Editor
 {
@@ -94,7 +97,7 @@ namespace VisionGal::Editor
 		SequenceSearchIndexService m_searchIndex;
 		SequenceRuntimeObserver m_runtimeObserver;
 		SequenceExecutionController m_executionController;
-		SequenceRuntimeSession m_runtimeSession;
+		SequenceDebuggerSession m_debuggerSession;
 		SequenceEditorEventBus m_eventBus;
 		SequenceEditorServiceLocator m_serviceLocator{};
 		SequenceAsyncTaskService m_asyncTaskService;
@@ -104,6 +107,7 @@ namespace VisionGal::Editor
 		SequenceClipboard m_clipboard;
 		SequenceEditorContext m_context{};
 		SequenceEntryListWidget m_entryListWidget;
+		SequenceGraphWidget m_graphWidget;
 		SequenceInspectorWidget m_inspectorWidget;
 		SequenceToolbarWidget m_toolbarWidget;
 		SequenceSearchWidget m_searchWidget;
@@ -111,6 +115,9 @@ namespace VisionGal::Editor
 		SequenceOutlinerWidget m_outlinerWidget;
 		SequenceValidationWidget m_validationWidget;
 		SequenceStatusBarWidget m_statusBarWidget;
+
+		SequenceWorkspaceState m_workspace;
+		SequenceAssetDependencyService m_assetDependency;
 
 		bool m_windowOpen = true;
 		SequenceRuntimeSnapshot m_lastRuntimeSnapshot{};

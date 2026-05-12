@@ -26,5 +26,6 @@ namespace VisionGal::Editor
 		std::string Icon;
 		bool HasValidationError = false;
 		bool RuntimeHighlight = false;
+		bool EntryBreakpoint = false;
 	};
 }

@@ -17,6 +17,11 @@ namespace VisionGal::Editor
 	{
 		if (command == nullptr)
 			return;
+		if (!m_undo.empty() && m_undo.back()->TryMergeWith(*command, document))
+		{
+			m_redo.clear();
+			return;
+		}
 		command->Execute(document);
 		m_undo.push_back(std::move(command));
 		m_redo.clear();

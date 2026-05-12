@@ -42,11 +42,13 @@ namespace VisionGal::Editor
 				ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.55f, 0.38f, 1.f));
 			else if (row.HasValidationError)
 				ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.22f, 0.22f, 1.f));
+			else if (row.EntryBreakpoint)
+				ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.25f, 0.35f, 0.65f, 1.f));
 		}
 
 		void PopRowAccentColors(const SequenceEntryViewModel& row)
 		{
-			if (row.RuntimeHighlight || row.HasValidationError)
+			if (row.RuntimeHighlight || row.HasValidationError || row.EntryBreakpoint)
 				ImGui::PopStyleColor();
 		}
 	}

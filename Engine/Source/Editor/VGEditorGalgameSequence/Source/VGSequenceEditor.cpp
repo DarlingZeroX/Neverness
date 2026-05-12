@@ -120,6 +120,7 @@ namespace VisionGal::Editor
 		m_context.undo = &m_undoStack;
 		m_context.clipboard = &m_clipboard;
 		m_context.inspectorRegistry = &m_inspectorRegistry;
+		m_context.componentRegistry = &m_componentRegistry;
 		m_context.documentViewModel = &m_documentViewModel;
 		m_context.validationRegistry = &m_validationRegistry;
 		m_context.validationCache = &m_validationCache;
@@ -129,6 +130,8 @@ namespace VisionGal::Editor
 		m_context.executeToUserData = this;
 		m_context.lastExecutionSnapshot = &m_lastRuntimeSnapshot;
 		m_context.eventBus = &m_eventBus;
+		m_context.debuggerSession = &m_debuggerSession;
+		m_context.graphProjection = &m_presentationScheduler.GetGraphProjection();
 		m_context.services = &m_serviceLocator;
 	}
 
@@ -171,10 +174,17 @@ namespace VisionGal::Editor
 
 		m_serviceLocator.validationCache = &m_validationCache;
 		m_serviceLocator.searchIndex = &m_searchIndex;
-		m_serviceLocator.runtimeSession = &m_runtimeSession;
+		m_serviceLocator.debuggerSession = &m_debuggerSession;
 		m_serviceLocator.asyncTasks = &m_asyncTaskService;
 
-		m_runtimeSession.Bind(&m_executionController, &m_runtimeObserver, &m_eventBus);
+		m_debuggerSession.Bind(&m_executionController, &m_runtimeObserver, &m_eventBus);
+		m_assetDependency.Bind(
+			m_document.get(),
+			&m_dependencyGraph,
+			&m_validationCache,
+			&VGScriptSequenceEditor::RequestPresentationRefreshThunk,
+			this);
+
 		m_selectionModel.SetEventBus(&m_eventBus);
 
 		m_context.eventBus = &m_eventBus;
@@ -232,7 +242,10 @@ namespace VisionGal::Editor
 
 	bool VGScriptSequenceEditor::SaveAsset()
 	{
-		return m_document->SaveToAssetPath();
+		const bool ok = m_document->SaveToAssetPath();
+		if (ok && m_document != nullptr && !m_document->GetAssetPath().empty())
+			m_assetDependency.OnAssetChanged(m_document->GetAssetPath());
+		return ok;
 	}
 
 	VGScriptSequenceEditor::~VGScriptSequenceEditor() = default;
@@ -241,7 +254,7 @@ namespace VisionGal::Editor
 	{
 		(void)m_document->SaveToAssetPath();
 		m_lastRuntimeSnapshot = SequenceRuntimeSnapshot{};
-		const bool ok = m_runtimeSession.RequestRunTo(m_document->GetAssetPath(), index, m_lastRuntimeSnapshot);
+		const bool ok = m_debuggerSession.RequestRunTo(m_document->GetAssetPath(), index, m_lastRuntimeSnapshot);
 		m_needsPresentationTick = true;
 		return ok;
 	}
@@ -284,25 +297,47 @@ namespace VisionGal::Editor
 		ImGuiID classId = ImHashStr("VGScriptSequenceEditor");
 		ImGui::DockSpace(classId, ImVec2(0, 0));
 
-		if (ImGui::Begin(u8"组件调色板"))
-			m_paletteWidget.Render();
-		ImGui::End();
-		
-		if (ImGui::Begin(u8"时间轴1"))
-			m_timelineWidget.Render(m_context);
-		ImGui::End();
-		
-		if (ImGui::Begin(u8"大纲"))
-			m_outlinerWidget.Render(m_context);
-		ImGui::End();
-		
-		if (ImGui::Begin(u8"校验面板"))
-			m_validationWidget.Render(m_context);
-		ImGui::End();
-		
-		if (ImGui::Begin(u8"序列"))
-			RenderSequenceUI();
-		ImGui::End();
+		if (m_workspace.IsWindowVisible("Palette"))
+		{
+			if (ImGui::Begin(u8"组件调色板"))
+				m_paletteWidget.Render();
+			ImGui::End();
+		}
+
+		if (m_workspace.IsWindowVisible("Timeline"))
+		{
+			if (ImGui::Begin(u8"时间轴1"))
+				m_timelineWidget.Render(m_context);
+			ImGui::End();
+		}
+
+		if (m_workspace.IsWindowVisible("Outliner"))
+		{
+			if (ImGui::Begin(u8"大纲"))
+				m_outlinerWidget.Render(m_context);
+			ImGui::End();
+		}
+
+		if (m_workspace.IsWindowVisible("Validation"))
+		{
+			if (ImGui::Begin(u8"校验面板"))
+				m_validationWidget.Render(m_context);
+			ImGui::End();
+		}
+
+		if (m_workspace.IsWindowVisible("Sequence"))
+		{
+			if (ImGui::Begin(u8"序列"))
+				RenderSequenceUI();
+			ImGui::End();
+		}
+
+		if (m_workspace.IsWindowVisible("Graph"))
+		{
+			if (ImGui::Begin(u8"序列图"))
+				m_graphWidget.Render(m_context);
+			ImGui::End();
+		}
 
 		HandleEditorShortcuts();
 

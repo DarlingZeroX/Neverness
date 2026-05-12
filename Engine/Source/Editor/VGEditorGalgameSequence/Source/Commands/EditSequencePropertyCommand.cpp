@@ -134,4 +134,14 @@ namespace VisionGal::Editor
 		s.TouchedIndices.push_back(m_index);
 		return s;
 	}
+
+	bool EditSequencePropertyCommand::TryMergeWith(ISequenceEditorCommand& incoming, SequenceDocument& document)
+	{
+		auto* next = dynamic_cast<EditSequencePropertyCommand*>(&incoming);
+		if (next == nullptr || next->m_index != m_index || next->m_field != m_field)
+			return false;
+		m_newValue = std::move(next->m_newValue);
+		WriteValue(document, m_newValue);
+		return true;
+	}
 }

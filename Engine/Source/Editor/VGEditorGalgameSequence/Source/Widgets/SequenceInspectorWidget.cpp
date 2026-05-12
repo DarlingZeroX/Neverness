@@ -8,9 +8,11 @@
 
 #include "Widgets/SequenceInspectorWidget.h"
 
+#include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceSelectionModel.h"
 #include "Document/SequenceDocument.h"
+#include "Inspector/SequenceAutoInspectorDrawer.h"
 #include "Inspector/SequenceInspectorRegistry.h"
 
 #include <VGImgui/IncludeImGui.h>
@@ -46,6 +48,16 @@ namespace VisionGal::Editor
 		}
 
 		if (!ctx.inspectorRegistry->DrawInspector(entry->GetTypeNameID(), idx, entry, &ctx))
+		{
+			if (ctx.componentRegistry != nullptr)
+			{
+				if (const SequenceComponentMetadata* meta = ctx.componentRegistry->Find(entry->GetTypeNameID()))
+				{
+					if (TryDrawAutoInspectorFromDescriptors(*meta, idx, entry, &ctx))
+						return;
+				}
+			}
 			ImGui::TextUnformatted(u8"（未注册 Inspector）");
+		}
 	}
 }

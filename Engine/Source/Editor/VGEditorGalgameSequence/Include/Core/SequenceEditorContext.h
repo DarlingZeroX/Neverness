@@ -28,6 +28,9 @@ namespace VisionGal::Editor
 	class SequenceEditorEventBus;
 	struct SequenceEditorServiceLocator;
 	class SequenceValidationCacheService;
+	class SequenceComponentRegistry;
+	class SequenceDebuggerSession;
+	class SequenceGraphProjection;
 
 	using SequenceDocumentMutationSink = void (*)(void* userData, const SequenceDocumentMutationSummary& summary);
 
@@ -54,6 +57,12 @@ namespace VisionGal::Editor
 
 		bool (*executeToEntry)(void* userData, unsigned index) = nullptr;
 		void* executeToUserData = nullptr;
+
+		const SequenceGraphProjection* graphProjection = nullptr;
+
+		SequenceComponentRegistry* componentRegistry = nullptr;
+
+		SequenceDebuggerSession* debuggerSession = nullptr;
 
 		SequenceEditorEventBus* eventBus = nullptr;
 		SequenceEditorServiceLocator* services = nullptr;

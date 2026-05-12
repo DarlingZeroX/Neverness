@@ -8,17 +8,32 @@
 #pragma once
 
 #include "Projection/ISequenceProjection.h"
+#include "Validation/SequenceValidationIssue.h"
+#include "ViewModels/SequenceEntryViewModel.h"
+
+#include <vector>
 
 namespace VisionGal::Editor
 {
+	struct SequenceRuntimeOverlayState;
+
+	/// List read-model: owns entry rows; scheduler applies dirty / derived overlays.
 	class SequenceListProjection final : public ISequenceProjection
 	{
 	public:
-		void Apply(
-			bool seedPresentation,
+		void Rebuild(SequenceDocument& document, const SequenceComponentRegistry& registry) override;
+
+		void ApplyDirtyRegion(
 			const SequenceDirtyRegion& dirty,
 			SequenceDocument& document,
-			SequenceDocumentViewModel& viewModel,
-			SequenceComponentRegistry& registry) override;
+			const SequenceComponentRegistry& registry) override;
+
+		[[nodiscard]] const std::vector<SequenceEntryViewModel>& GetEntryRows() const { return m_entryRows; }
+
+		void ApplyValidationIssues(const std::vector<SequenceValidationIssue>& issues);
+		void ApplyRuntimeOverlay(const SequenceRuntimeOverlayState& overlay);
+
+	private:
+		std::vector<SequenceEntryViewModel> m_entryRows;
 	};
 }

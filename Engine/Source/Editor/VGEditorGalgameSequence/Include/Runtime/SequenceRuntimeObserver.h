@@ -9,6 +9,9 @@
 
 #include "Runtime/SequenceRuntimeOverlayState.h"
 
+#include <cstdint>
+#include <vector>
+
 namespace VisionGal::Editor
 {
 	struct SequenceRuntimeSnapshot;
@@ -19,6 +22,8 @@ namespace VisionGal::Editor
 	{
 	public:
 		void NotifyExecuteCompleted(const SequenceRuntimeSnapshot& snapshot, bool controllerReturnedOk);
+
+		void SetBreakpointMarkers(std::vector<uint32_t> indices);
 
 		const SequenceRuntimeOverlayState& GetOverlay() const { return m_overlay; }
 
