@@ -24,10 +24,7 @@ namespace VisionGal::Editor
 
 	bool EditSequencePropertyCommand::TryReadCurrent(SequenceDocument& document, std::string& outCurrent) const
 	{
-		const auto seq = document.GetSequence();
-		if (m_index >= seq->m_Sequence.size())
-			return false;
-		auto* comp = seq->m_Sequence[m_index].get();
+		auto* comp = document.GetEntryAt(m_index);
 		if (comp == nullptr)
 			return false;
 		switch (m_field)
@@ -46,6 +43,20 @@ namespace VisionGal::Editor
 				return true;
 			}
 			return false;
+		case SequenceEditFieldId::ChangeFigure_TextureResourcePath:
+			if (auto* f = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(comp))
+			{
+				outCurrent = f->TextureResourcePath;
+				return true;
+			}
+			return false;
+		case SequenceEditFieldId::ChangeBackground_TextureResourcePath:
+			if (auto* b = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(comp))
+			{
+				outCurrent = b->TextureResourcePath;
+				return true;
+			}
+			return false;
 		default:
 			return false;
 		}
@@ -53,10 +64,7 @@ namespace VisionGal::Editor
 
 	void EditSequencePropertyCommand::WriteValue(SequenceDocument& document, const std::string& value) const
 	{
-		const auto seq = document.GetSequence();
-		if (m_index >= seq->m_Sequence.size())
-			return;
-		auto* comp = seq->m_Sequence[m_index].get();
+		auto* comp = document.GetEntryAt(m_index);
 		if (comp == nullptr)
 			return;
 		switch (m_field)
@@ -72,6 +80,20 @@ namespace VisionGal::Editor
 			if (auto* d = dynamic_cast<VisionGal::VGSSC_CommonDialogue*>(comp))
 			{
 				d->DialogueCharacterName = value;
+				document.MarkDirty();
+			}
+			break;
+		case SequenceEditFieldId::ChangeFigure_TextureResourcePath:
+			if (auto* f = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(comp))
+			{
+				f->TextureResourcePath = value;
+				document.MarkDirty();
+			}
+			break;
+		case SequenceEditFieldId::ChangeBackground_TextureResourcePath:
+			if (auto* b = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(comp))
+			{
+				b->TextureResourcePath = value;
 				document.MarkDirty();
 			}
 			break;

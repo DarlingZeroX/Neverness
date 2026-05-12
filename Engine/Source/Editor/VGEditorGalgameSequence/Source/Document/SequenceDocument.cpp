@@ -19,6 +19,46 @@ namespace VisionGal::Editor
 		m_sequence = MakeRef<VisionGal::VGSSequenceDataContainer>();
 	}
 
+	SequenceDocument::SequenceDocument(
+		Ref<VisionGal::VGSSequenceDataContainer> sequence,
+		SequenceDocumentValidationSnapshotTag)
+		: m_sequence(std::move(sequence))
+	{
+	}
+
+	unsigned SequenceDocument::GetEntryCount() const
+	{
+		return static_cast<unsigned>(m_sequence->m_Sequence.size());
+	}
+
+	VisionGal::IVGSSequenceComponent* SequenceDocument::GetEntryAt(unsigned index)
+	{
+		if (index >= m_sequence->m_Sequence.size())
+			return nullptr;
+		return m_sequence->m_Sequence[index].get();
+	}
+
+	const VisionGal::IVGSSequenceComponent* SequenceDocument::GetEntryAt(unsigned index) const
+	{
+		if (index >= m_sequence->m_Sequence.size())
+			return nullptr;
+		return m_sequence->m_Sequence[index].get();
+	}
+
+	Ref<VisionGal::VGSSequenceDataContainer> SequenceDocument::CloneSequenceDeepForValidation() const
+	{
+		auto out = MakeRef<VisionGal::VGSSequenceDataContainer>();
+		out->m_Sequence.reserve(m_sequence->m_Sequence.size());
+		for (const auto& e : m_sequence->m_Sequence)
+		{
+			if (e)
+				out->m_Sequence.push_back(e->Clone());
+			else
+				out->m_Sequence.push_back(nullptr);
+		}
+		return out;
+	}
+
 	void SequenceDocument::BumpEditGeneration()
 	{
 		++m_generationId;

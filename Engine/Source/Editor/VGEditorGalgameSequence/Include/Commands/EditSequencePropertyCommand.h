@@ -17,6 +17,8 @@ namespace VisionGal::Editor
 	{
 		CommonDialogue_DialogueText,
 		CommonDialogue_CharacterName,
+		ChangeFigure_TextureResourcePath,
+		ChangeBackground_TextureResourcePath,
 	};
 
 	class EditSequencePropertyCommand final : public ISequenceEditorCommand

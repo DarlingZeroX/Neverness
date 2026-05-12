@@ -16,8 +16,17 @@
 
 #include "VGGalgameScriptSequence/Include/Sequence/DataContainer.h"
 
+namespace VisionGal
+{
+	class IVGSSequenceComponent;
+}
+
 namespace VisionGal::Editor
 {
+	struct SequenceDocumentValidationSnapshotTag
+	{
+	};
+
 	/// Owns asset path, dirty flag, and the edited sequence (thin wrapper over `VGSSequenceDataContainer`).
 	/// 持有资源路径、脏标记与正在编辑的序列（对 `VGSSequenceDataContainer` 的薄封装）。
 	class SequenceDocument
@@ -25,9 +34,23 @@ namespace VisionGal::Editor
 	public:
 		SequenceDocument();
 
-		/// LEGACY: direct access for UI not yet migrated behind commands.
-		/// 遗留接口：尚未迁移到命令模式之前的 UI 直接访问序列数据。
-		Ref<VisionGal::VGSSequenceDataContainer> GetSequence() const { return m_sequence; }
+		/// Ephemeral document for validation on a cloned sequence (worker thread). Not for undo stack.
+		explicit SequenceDocument(
+			Ref<VisionGal::VGSSequenceDataContainer> sequence,
+			SequenceDocumentValidationSnapshotTag);
+
+		[[nodiscard]] unsigned GetEntryCount() const;
+		[[nodiscard]] VisionGal::IVGSSequenceComponent* GetEntryAt(unsigned index);
+		[[nodiscard]] const VisionGal::IVGSSequenceComponent* GetEntryAt(unsigned index) const;
+
+		/// Shallow copy of current entry list (shared component ownership), e.g. move-order undo snapshot.
+		[[nodiscard]] std::vector<Ref<VisionGal::IVGSSequenceComponent>> CopyEntryRefVector() const
+		{
+			return m_sequence->m_Sequence;
+		}
+
+		/// Deep clone of all entries for async validation (worker must not touch the live document).
+		[[nodiscard]] Ref<VisionGal::VGSSequenceDataContainer> CloneSequenceDeepForValidation() const;
 
 		const std::string& GetAssetPath() const { return m_assetPath; }
 
@@ -86,6 +109,9 @@ namespace VisionGal::Editor
 				vec[i]->SequenceIndex = i;
 			MarkDirty();
 		}
+
+		/// Internal: asset I/O and command implementations in this module.
+		[[nodiscard]] Ref<VisionGal::VGSSequenceDataContainer> GetSequenceDataMutable() const { return m_sequence; }
 
 	private:
 		std::string m_assetPath;

@@ -9,25 +9,35 @@
 
 #include "Commands/AddSequenceEntryCommand.h"
 #include "Commands/PasteSequenceEntriesCommand.h"
+#include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
 #include "Core/SequenceClipboard.h"
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceSelectionModel.h"
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
+#include "DirtyRegions/SequenceDirtyRegion.h"
 #include "Async/SequenceAsyncTaskService.h"
 #include "Async/SequenceBackgroundValidationTask.h"
 #include "Events/SequenceEditorEventBus.h"
+#include "Inspector/PropertyEditing/SequencePropertyBindingRegistry.h"
 #include "Services/SequenceValidationCacheService.h"
+#include "Transactions/SequenceTransactionTypes.h"
 #include "Validation/ISequenceValidator.h"
 #include "Validation/SequenceValidationRegistriesBootstrap.h"
 #include "Validation/SequenceValidationRegistry.h"
 #include "ViewModels/SequenceDocumentViewModel.h"
 
+#include "AssetMonitoring/SequenceDependencyGraph.h"
+#include "Events/SequenceEditorEvent.h"
+#include "Reactive/SequencePresentationScheduler.h"
+#include "Runtime/SequenceRuntimeObserver.h"
+#include "Services/SequenceSearchIndexService.h"
+#include "Transactions/SequenceTransactionBuilder.h"
+#include "ViewModels/SequenceSearchViewModel.h"
+
 #include "VGGalgameScriptSequence/Include/Sequence/Components.h"
 #include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
-
-#include "ComponentRegistry/SequenceComponentRegistry.h"
 
 using namespace VisionGal::Editor;
 
@@ -42,10 +52,10 @@ TEST(SequenceDocument, ResetToUntitledEmptyClearsSequence)
 {
 	SequenceDocument doc;
 	doc.FillDefaultDemoEntries();
-	ASSERT_FALSE(doc.GetSequence()->m_Sequence.empty());
+	ASSERT_NE(doc.GetEntryCount(), 0u);
 	doc.ResetToUntitledEmpty();
 	ASSERT_TRUE(doc.GetAssetPath().empty());
-	ASSERT_TRUE(doc.GetSequence()->m_Sequence.empty());
+	ASSERT_EQ(doc.GetEntryCount(), 0u);
 }
 
 TEST(SequenceUndo, AddThenUndoRestoresCount)
@@ -57,11 +67,11 @@ TEST(SequenceUndo, AddThenUndoRestoresCount)
 	ctx.document = &doc;
 	ctx.undo = &undo;
 
-	const size_t before = doc.GetSequence()->m_Sequence.size();
+	const unsigned before = doc.GetEntryCount();
 	ctx.ExecuteCommand(std::make_unique<AddSequenceEntryCommand>(VisionGal::VGSSC_CommonDialogue::StaticGetTypeNameID()));
-	ASSERT_EQ(doc.GetSequence()->m_Sequence.size(), before + 1);
+	ASSERT_EQ(doc.GetEntryCount(), before + 1u);
 	undo.Undo(doc);
-	ASSERT_EQ(doc.GetSequence()->m_Sequence.size(), before);
+	ASSERT_EQ(doc.GetEntryCount(), before);
 }
 
 TEST(SequenceClipboard, DeepCopyPasteIncreasesCount)
@@ -84,9 +94,9 @@ TEST(SequenceClipboard, DeepCopyPasteIncreasesCount)
 	clip.CopySelection(ctx);
 	ASSERT_TRUE(clip.HasContent());
 
-	const size_t n = doc.GetSequence()->m_Sequence.size();
+	const unsigned n = doc.GetEntryCount();
 	clip.TryPaste(ctx);
-	ASSERT_EQ(doc.GetSequence()->m_Sequence.size(), n + 1);
+	ASSERT_EQ(doc.GetEntryCount(), n + 1u);
 }
 
 TEST(PasteSequenceEntriesCommand, UndoRemovesInserted)
@@ -99,9 +109,9 @@ TEST(PasteSequenceEntriesCommand, UndoRemovesInserted)
 	protos.push_back(VisionGal::CreateSequenceEntryByTypeNameID(VisionGal::VGSSC_CommonDialogue::StaticGetTypeNameID()));
 
 	undo.ExecuteCommand(std::make_unique<PasteSequenceEntriesCommand>(0, std::move(protos)), doc);
-	ASSERT_FALSE(doc.GetSequence()->m_Sequence.empty());
+	ASSERT_NE(doc.GetEntryCount(), 0u);
 	undo.Undo(doc);
-	ASSERT_TRUE(doc.GetSequence()->m_Sequence.empty());
+	ASSERT_EQ(doc.GetEntryCount(), 0u);
 }
 
 TEST(SequenceDocumentViewModel, RebuildVisibleMatchesSequenceSize)
@@ -112,7 +122,7 @@ TEST(SequenceDocumentViewModel, RebuildVisibleMatchesSequenceSize)
 	BootstrapSequenceComponentRegistry(registry);
 	SequenceDocumentViewModel vm;
 	vm.Rebuild(doc, registry);
-	ASSERT_EQ(vm.GetVisibleEntries().size(), doc.GetSequence()->m_Sequence.size());
+	ASSERT_EQ(vm.GetVisibleEntries().size(), doc.GetEntryCount());
 }
 
 TEST(SequenceDocumentViewModel, SearchFilterCanHideAllRows)
@@ -245,4 +255,76 @@ TEST(SequenceAsyncTaskService, PumpInvokesMergeCallback)
 	std::this_thread::sleep_for(std::chrono::milliseconds(30));
 	async.PumpCompleted();
 	ASSERT_EQ(merged, 1);
+}
+
+TEST(Phase6_TransactionBuilder, StructuralSummaryProducesStructureMutation)
+{
+	SequenceDocumentMutationSummary s;
+	s.StructuralChange = true;
+	const auto tx = BuildTransactionFromMutationSummary(s, 7, SequenceTransactionSource::Command);
+	ASSERT_EQ(tx.Generation, 7u);
+	ASSERT_FALSE(tx.Mutations.empty());
+	ASSERT_EQ(tx.Mutations.front().Type, SequenceMutationType::Structure);
+}
+
+TEST(Phase6_DirtyRegion, PropertySummarySetsFlags)
+{
+	SequenceDocumentMutationSummary s;
+	s.StructuralChange = false;
+	s.TouchedIndices.push_back(2);
+	const auto d = BuildDirtyRegionFromMutationSummary(s);
+	ASSERT_NE(d.Flags & SequenceDirtyRegionFlags::Property, SequenceDirtyRegionFlags::None);
+	ASSERT_FALSE(d.Entries.empty());
+}
+
+TEST(Phase6_PropertyBindingRegistry, CommonDialogueHasBindings)
+{
+	ASSERT_GE(BuiltinBindingsForCommonDialogue().size(), 2u);
+}
+
+TEST(Phase6_DependencyGraph, RebuildFromDemoDocument)
+{
+	SequenceDocument doc;
+	doc.FillDefaultDemoEntries();
+	SequenceDependencyGraph graph;
+	graph.RebuildFromDocument(doc);
+	(void)graph;
+}
+
+TEST(Phase6_PresentationScheduler, FirstTickRebuildsViewModel)
+{
+	SequenceDocument doc;
+	doc.FillDefaultDemoEntries();
+	SequenceComponentRegistry registry;
+	BootstrapSequenceComponentRegistry(registry);
+	SequenceDocumentViewModel viewModel;
+	SequenceValidationCacheService validationCache;
+	SequenceValidationRegistry validationRegistry;
+	SequenceSearchIndexService searchIndex;
+	SequenceRuntimeObserver runtimeObserver;
+	SequenceSearchViewModel searchViewModel;
+	SequenceDependencyGraph dependencyGraph;
+	SequencePresentationScheduler scheduler;
+
+	bool firstPresentationDone = false;
+	SequenceDocumentMutationSummary mutSummary{};
+	SequenceDirtyRegion dirty{};
+
+	(void)scheduler.Tick(
+		firstPresentationDone,
+		mutSummary,
+		dirty,
+		doc,
+		viewModel,
+		registry,
+		validationCache,
+		validationRegistry,
+		searchIndex,
+		runtimeObserver,
+		searchViewModel,
+		dependencyGraph,
+		nullptr);
+
+	ASSERT_TRUE(firstPresentationDone);
+	ASSERT_EQ(viewModel.GetVisibleEntries().size(), doc.GetEntryCount());
 }

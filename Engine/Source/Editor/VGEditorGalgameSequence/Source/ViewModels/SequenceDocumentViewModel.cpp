@@ -25,19 +25,19 @@ namespace VisionGal::Editor
 {
 	namespace
 	{
-		std::string BuildSubtitle(const Ref<VisionGal::IVGSSequenceComponent>& entry)
+		std::string BuildSubtitle(const VisionGal::IVGSSequenceComponent* entry)
 		{
 			if (entry == nullptr)
 				return {};
-			if (auto* d = dynamic_cast<VisionGal::VGSSC_CommonDialogue*>(entry.get()))
+			if (auto* d = dynamic_cast<const VisionGal::VGSSC_CommonDialogue*>(entry))
 			{
 				if (!d->DialogueCharacterName.empty())
 					return d->DialogueCharacterName + " — " + d->DialogueText;
 				return d->DialogueText;
 			}
-			if (auto* f = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(entry.get()))
+			if (auto* f = dynamic_cast<const VisionGal::VGSSC_ChangeFigure*>(entry))
 				return f->TextureResourcePath;
-			if (auto* b = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(entry.get()))
+			if (auto* b = dynamic_cast<const VisionGal::VGSSC_ChangeBackground*>(entry))
 				return b->TextureResourcePath;
 			return {};
 		}
@@ -47,15 +47,11 @@ namespace VisionGal::Editor
 			const SequenceDocument& document,
 			const SequenceComponentRegistry& registry)
 		{
-			const auto seq = document.GetSequence();
+			const VisionGal::IVGSSequenceComponent* entry = document.GetEntryAt(i);
 			SequenceEntryViewModel row;
 			row.EntryIndex = i;
-			if (i < seq->m_Sequence.size())
-			{
-				const auto& entry = seq->m_Sequence[i];
-				if (entry != nullptr)
-					row.TypeNameID = entry->GetTypeNameID();
-			}
+			if (entry != nullptr)
+				row.TypeNameID = const_cast<VisionGal::IVGSSequenceComponent*>(entry)->GetTypeNameID();
 			if (const SequenceComponentMetadata* meta = registry.Find(row.TypeNameID))
 			{
 				row.DisplayName = meta->PrimaryLabel();
@@ -64,8 +60,7 @@ namespace VisionGal::Editor
 			}
 			else
 				row.DisplayName = row.TypeNameID;
-			if (i < seq->m_Sequence.size())
-				row.Subtitle = BuildSubtitle(seq->m_Sequence[i]);
+			row.Subtitle = BuildSubtitle(entry);
 			return row;
 		}
 	}
@@ -76,14 +71,9 @@ namespace VisionGal::Editor
 		m_visibleRows.clear();
 		m_validationIssues.clear();
 
-		const auto seq = document.GetSequence();
-		unsigned i = 0;
-		for (const auto& entry : seq->m_Sequence)
-		{
-			(void)entry;
+		const unsigned count = document.GetEntryCount();
+		for (unsigned i = 0; i < count; ++i)
 			m_storage.push_back(BuildRow(i, document, registry));
-			++i;
-		}
 		m_visibleRows = m_storage;
 	}
 
@@ -92,8 +82,7 @@ namespace VisionGal::Editor
 		const SequenceComponentRegistry& registry,
 		const std::vector<unsigned>& indices)
 	{
-		const auto seq = document.GetSequence();
-		if (m_storage.size() != seq->m_Sequence.size())
+		if (m_storage.size() != document.GetEntryCount())
 		{
 			Rebuild(document, registry);
 			return;

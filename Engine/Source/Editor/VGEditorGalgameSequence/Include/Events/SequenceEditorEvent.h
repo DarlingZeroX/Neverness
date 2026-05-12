@@ -8,7 +8,10 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <vector>
+
+#include "Transactions/SequenceTransactionTypes.h"
 
 namespace VisionGal::Editor
 {
@@ -41,6 +44,8 @@ namespace VisionGal::Editor
 	{
 		SequenceEditorEventType Type = SequenceEditorEventType::DocumentChanged;
 		SequenceDocumentMutationSummary DocumentChanged{};
+		/// Phase 6: optional fine-grained transaction (coarse v1 from mutation summary).
+		std::optional<SequenceTransaction> CommittedTransaction{};
 		SequenceRuntimeStateEventPayload Runtime{};
 	};
 }

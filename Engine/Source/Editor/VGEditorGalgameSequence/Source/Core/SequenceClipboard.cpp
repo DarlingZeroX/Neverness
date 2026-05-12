@@ -30,14 +30,12 @@ namespace VisionGal::Editor
 		m_entries.clear();
 		if (context.document == nullptr)
 			return;
-		const auto seq = context.document->GetSequence();
 		for (uint32_t idx : sortedUniqueIndices)
 		{
-			if (idx >= seq->m_Sequence.size())
+			auto* comp = context.document->GetEntryAt(static_cast<unsigned>(idx));
+			if (comp == nullptr)
 				continue;
-			if (seq->m_Sequence[idx] == nullptr)
-				continue;
-			m_entries.push_back(seq->m_Sequence[idx]->Clone());
+			m_entries.push_back(comp->Clone());
 		}
 	}
 
@@ -75,8 +73,7 @@ namespace VisionGal::Editor
 	{
 		if (context.document == nullptr)
 			return 0;
-		const auto seq = context.document->GetSequence();
-		const size_t n = seq->m_Sequence.size();
+		const size_t n = context.document->GetEntryCount();
 		if (context.selection == nullptr || context.selection->GetSelection().empty())
 			return static_cast<unsigned>(n);
 		unsigned maxSel = 0;

@@ -59,7 +59,6 @@ namespace VisionGal::Editor
 			return;
 
 		const auto& visible = ctx.documentViewModel->GetVisibleEntries();
-		const auto seq = ctx.document->GetSequence();
 
 		std::vector<unsigned> removeIndices;
 		const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
@@ -181,6 +180,6 @@ namespace VisionGal::Editor
 		if (!removeIndices.empty())
 			ctx.ExecuteCommand(std::make_unique<RemoveSequenceEntryCommand>(std::move(removeIndices)));
 
-		ctx.selection->ClampToSize(seq->m_Sequence.size());
+		ctx.selection->ClampToSize(ctx.document->GetEntryCount());
 	}
 }

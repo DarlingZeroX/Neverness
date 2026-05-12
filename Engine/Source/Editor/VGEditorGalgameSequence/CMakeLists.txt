@@ -31,7 +31,12 @@ file(GLOB SEQUENCE_EDITOR_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Events/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Services/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Async/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/AssetMonitoring/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Transactions/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Reactive/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/DirtyRegions/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Projection/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Diff/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Inspector/PropertyEditing/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 )
 
@@ -52,6 +57,10 @@ file(GLOB SEQUENCE_EDITOR_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Services/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Async/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetMonitoring/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Transactions/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Reactive/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/DirtyRegions/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Projection/*.cpp"
 )
 
 add_library(VGEditorGalgameSequence SHARED ${SEQUENCE_EDITOR_HEADERS} ${SEQUENCE_EDITOR_SOURCES})

@@ -16,6 +16,7 @@
 
 #include "Commands/AddSequenceEntryCommand.h"
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
+#include "DirtyRegions/SequenceDirtyRegion.h"
 #include "Events/SequenceEditorEventBus.h"
 #include "Validation/SequenceValidationRegistriesBootstrap.h"
 #include "VGCore/Include/Core/EventBus.h"
@@ -58,6 +59,51 @@ namespace VisionGal::Editor
 		m_pendingDocMutation.StructuralChange = m_pendingDocMutation.StructuralChange || summary.StructuralChange;
 		m_pendingDocMutation.TouchedIndices.insert(
 			m_pendingDocMutation.TouchedIndices.end(), summary.TouchedIndices.begin(), summary.TouchedIndices.end());
+
+		const SequenceDirtyRegion chunk = BuildDirtyRegionFromMutationSummary(summary);
+		m_pendingDirtyRegion.Merge(chunk);
+
+		if (!summary.StructuralChange && !summary.TouchedIndices.empty())
+		{
+			m_asyncFullValidationArmed = true;
+			m_asyncFullValidationDue = std::chrono::steady_clock::now() + std::chrono::milliseconds(100);
+		}
+	}
+
+	void VGScriptSequenceEditor::PumpDebouncedAsyncFullValidation()
+	{
+		if (!m_asyncFullValidationArmed)
+			return;
+		if (std::chrono::steady_clock::now() < m_asyncFullValidationDue)
+			return;
+		m_asyncFullValidationArmed = false;
+		if (m_asyncValidationTaskToken != nullptr)
+			m_asyncValidationTaskToken->Cancel();
+		m_asyncValidationTaskToken = std::make_shared<SequenceTaskToken>();
+		const std::shared_ptr<SequenceTaskToken> token = m_asyncValidationTaskToken;
+		const uint64_t gen = m_document->GetGenerationId();
+		auto clone = m_document->CloneSequenceDeepForValidation();
+		auto* reg = &m_validationRegistry;
+		m_asyncTaskService.EnqueueValidation(
+			[clone = std::move(clone), reg]() {
+				SequenceDocument snapshot(std::move(clone), SequenceDocumentValidationSnapshotTag{});
+				return reg->RunAll(snapshot);
+			},
+			[this, gen, token](std::vector<SequenceValidationIssue> issues) {
+				if (token->IsCancelled())
+					return;
+				if (m_document == nullptr || m_document->GetGenerationId() != gen)
+					return;
+				m_validationCache.ReplaceIssues(std::move(issues));
+				m_documentViewModel.ApplyValidationIssues(m_validationCache.GetIssues());
+				if (m_context.eventBus != nullptr)
+				{
+					SequenceEditorEvent ev;
+					ev.Type = SequenceEditorEventType::ValidationUpdated;
+					m_context.eventBus->Publish(ev);
+				}
+				m_needsPresentationTick = true;
+			});
 	}
 
 	bool VGScriptSequenceEditor::ExecuteToEntryThunk(void* userData, unsigned index)
@@ -96,32 +142,23 @@ namespace VisionGal::Editor
 		const SequenceDocumentMutationSummary mut = std::move(m_pendingDocMutation);
 		m_pendingDocMutation = SequenceDocumentMutationSummary{};
 
-		const bool hasDocSignals = mut.StructuralChange || !mut.TouchedIndices.empty();
-		const bool seed = !m_firstPresentationDone;
-		m_firstPresentationDone = true;
+		SequenceDirtyRegion dirty = std::move(m_pendingDirtyRegion);
+		m_pendingDirtyRegion.Reset();
 
-		if (seed || hasDocSignals)
-		{
-			if (seed || mut.StructuralChange)
-				m_documentViewModel.Rebuild(*m_document, m_componentRegistry);
-			else
-				m_documentViewModel.RebuildEntriesAtIndices(*m_document, m_componentRegistry, mut.TouchedIndices);
-			m_searchIndex.RebuildFromViewStorage(m_documentViewModel.GetEntryStorage());
-		}
-
-		const bool validationRefreshed = m_validationCache.ApplyIfStale(
-			*m_document, m_validationRegistry, m_document->GetGenerationId());
-		m_documentViewModel.ApplyValidationIssues(m_validationCache.GetIssues());
-
-		if (validationRefreshed && m_context.eventBus != nullptr)
-		{
-			SequenceEditorEvent ev;
-			ev.Type = SequenceEditorEventType::ValidationUpdated;
-			m_context.eventBus->Publish(ev);
-		}
-
-		m_documentViewModel.ApplyRuntimeOverlay(m_runtimeObserver.GetOverlay());
-		m_documentViewModel.ApplySearchViewModelWithIndex(m_searchIndex, m_searchWidget.GetSearchViewModel());
+		(void)m_presentationScheduler.Tick(
+			m_firstPresentationDone,
+			mut,
+			dirty,
+			*m_document,
+			m_documentViewModel,
+			m_componentRegistry,
+			m_validationCache,
+			m_validationRegistry,
+			m_searchIndex,
+			m_runtimeObserver,
+			m_searchWidget.GetSearchViewModel(),
+			m_dependencyGraph,
+			&m_eventBus);
 
 		FillContextPointers();
 	}
@@ -236,6 +273,7 @@ namespace VisionGal::Editor
 	void VGScriptSequenceEditor::RenderEditorBody(TaskContext* taskContext)
 	{
 		m_asyncTaskService.PumpCompleted();
+		PumpDebouncedAsyncFullValidation();
 		TickEditorPresentation();
 
 		FillContextPointers();
@@ -269,9 +307,8 @@ namespace VisionGal::Editor
 		HandleEditorShortcuts();
 
 		m_asyncTaskService.PumpCompleted();
+		PumpDebouncedAsyncFullValidation();
 		TickEditorPresentation();
-
-		HandleDirtyClosePopup(taskContext);
 	}
 
 	void VGScriptSequenceEditor::HandleDirtyClosePopup(TaskContext* taskContext)

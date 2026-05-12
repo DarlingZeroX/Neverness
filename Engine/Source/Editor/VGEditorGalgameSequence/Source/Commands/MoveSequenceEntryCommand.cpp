@@ -30,8 +30,7 @@ namespace VisionGal::Editor
 
 	void MoveSequenceEntryCommand::Execute(SequenceDocument& document)
 	{
-		const auto seq = document.GetSequence();
-		m_beforeOrder = seq->m_Sequence;
+		m_beforeOrder = document.CopyEntryRefVector();
 		DoReorder(document);
 	}
 

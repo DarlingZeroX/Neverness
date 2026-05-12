@@ -29,8 +29,14 @@
 | `Include/Core/` | `SequenceEditorContext`、选择、撤销栈、剪贴板；`SequenceEditorEvents.h` 转发至 `Events/SequenceEditorEvent.h`。 |
 | `Include/Events/` | `SequenceEditorEvent`、`SequenceEditorEventType`、`SequenceEditorEventBus`（编辑器主线程发布/订阅）。 |
 | `Include/Services/` | `SequenceEditorServiceLocator`、`SequenceValidationCacheService`、`SequenceSearchIndexService`。 |
-| `Include/Async/` | `SequenceAsyncTaskService`、`SequenceBackgroundValidationTask`（后台校验任务封装）。 |
-| `Include/AssetMonitoring/` | 资源依赖/热更占位（`SequenceAssetMonitoringFwd.h` 等，后续迭代）。 |
+| `Include/Async/` | `SequenceAsyncTaskService`、`SequenceBackgroundValidationTask`；**`SequenceTaskToken`**（与 debounced 全量校验取消协同）。 |
+| `Include/AssetMonitoring/` | 资源依赖/热更：`SequenceDependencyGraph`（presentation tick 内 `RebuildFromDocument`；与校验/监听深度联动可续）。 |
+| `Include/Transactions/` | Transaction v1：`SequenceTransactionTypes`、`SequenceTransactionBuilder`、`SequenceMutationSummary` 等（与 `SequenceDocumentMutationSummary` 并存）。 |
+| `Include/DirtyRegions/` | `SequenceDirtyRegionFlags`、`SequenceDirtyRegion`、与 summary/transaction 的归一化构建。 |
+| `Include/Projection/` | `ISequenceProjection`、`SequenceListProjection`、时间轴/图 stub。 |
+| `Include/Reactive/` | `SequenceDirtyRegionTracker`、`SequencePresentationScheduler`（presentation 管线编排）。 |
+| `Include/Diff/` | 文档/条目 diff 占位（`SequenceDocumentDiff.h` 等）。 |
+| `Include/Inspector/PropertyEditing/` | `SequencePropertyPath`、`SequencePropertyBinding`、`SequencePropertyBindingRegistry` 等。 |
 | `Include/Commands/` | `ISequenceEditorCommand` 及增删改、移动、粘贴、属性编辑、复合命令。 |
 | `Include/ComponentRegistry/` | 组件元数据、注册表、Bootstrap 声明。 |
 | `Include/Inspector/` | `ISequenceInspector`、内置实现工厂、注册表。 |
@@ -39,7 +45,7 @@
 | `Include/Validation/` | `SequenceValidationRegistry`、`ISequenceValidator`、`SequenceValidationIssue` 及 `Builtin/` 内置规则。 |
 | `Include/Timeline/` | 线性时间轴 v1：`SequenceTimelineLayout`、`SequenceTimelineController`、`SequenceTimelineWidget`。 |
 | `Include/Widgets/` | 工具栏、条目列表、调色板、搜索、Inspector、校验面板、大纲、状态栏、时间轴等 ImGui 控件。 |
-| `Source/` | 与上述头文件对应的 `.cpp` 实现；含 `Events/`、`Services/`、`Async/`、`AssetMonitoring/`；`VGSequenceEditor.cpp` 为宿主级编排逻辑。 |
+| `Source/` | 与上述头文件对应的 `.cpp` 实现；含 `Events/`、`Services/`、`Async/`、`AssetMonitoring/`、`Transactions/`、`Reactive/`、`DirtyRegions/`、`Projection/`；`VGSequenceEditor.cpp` 为宿主级编排逻辑。 |
 
 ---
 
@@ -134,7 +140,7 @@ flowchart TB
 - **编辑代次**：`GetGenerationId()` / `BumpEditGeneration()`（由 `SequenceEditorContext` 在成功 `ExecuteCommand` / `UndoDocument` / `RedoDocument` 后调用，用于校验缓存等与文档版本对齐）。
 - **结构修订**：`GetStructureRevision()` / `BumpStructureRevision()`（加载、重置、演示填充、清空为新文档等路径 bump，与代次一并递增），便于后续区分「仅内容变更」与「条目集合/顺序变化」。
 - 加载/保存通过 `GalGame::SequenceScriptAssetLoader` / `SequenceScriptAssetWriter` 与 `SequenceScriptAsset` 交互。
-- 仍提供 `GetSequence()` 及若干直接修改序列的 API，头文件中标注为 **LEGACY**（尚未全部迁移到命令的 UI 路径仍可能使用）。
+- 对外不再暴露 `GetSequence()`；使用 **`GetEntryCount` / `GetEntryAt`** 只读遍历条目；**`GetSequenceDataMutable()`** 仅供本模块内资源保存与命令实现；**`CloneSequenceDeepForValidation`** 供 worker 线程校验快照；**`SequenceDocument(..., SequenceDocumentValidationSnapshotTag)`** 包装克隆容器。
 - 辅助：`InsertEntryAt`、`SetSequenceEntries`、重排接口等供命令与剪贴板使用。
 
 ### 4.3 编辑上下文：`SequenceEditorContext`
@@ -153,7 +159,8 @@ flowchart TB
 | `RemoveSequenceEntryCommand` | 按索引集合删除。 |
 | `MoveSequenceEntryCommand` | 拖拽重排。 |
 | `PasteSequenceEntriesCommand` | 在指定位置插入克隆条目列表。 |
-| `EditSequencePropertyCommand` | 配合 `SequenceEditFieldId` 做可撤销字段编辑（当前主要用于普通对话 Inspector）。 |
+| `EditSequencePropertyCommand` | 可撤销字符串字段（对话文本/角色名、立绘与背景 **`TextureResourcePath`**）。 |
+| `SetSequenceEntryBoolPropertyCommand` | 立绘/背景 **`ShowState` / `Wait`** 等布尔字段可撤销编辑。 |
 | `CompoundSequenceCommand` | 组合多条命令为一次撤销单元。 |
 
 标准三操作：`Execute` / `Undo` / `Redo` 均接收 `SequenceDocument&`。
@@ -176,8 +183,8 @@ flowchart TB
 
 - `ISequenceInspector` 预留 `OnInspectorGUI`、`OnHeaderGUI`、`OnTimelineGUI`、`OnContextMenu` 等钩子，便于未来时间轴或图形式编辑。
 - `MakeSequenceInspectorForMetadata`（`BuiltinSequenceInspectors.cpp`）按类型分派：
-  - **普通对话**：带 staging 字符串，失焦后通过 `EditSequencePropertyCommand` 写入（支持撤销）。
-  - **切换立绘 / 切换背景**：直接 ImGui 绑定组件字段；背景支持从内容浏览器拖入纹理路径。
+- **普通对话**：带 staging 字符串，失焦后通过 `EditSequencePropertyCommand` 写入（支持撤销）；无撤销栈时只读文本预览。
+- **切换立绘 / 切换背景**：纹理路径经 `EditSequencePropertyCommand`；`ShowState`/`Wait` 经 `SetSequenceEntryBoolPropertyCommand`；背景预览 `Temp` 仅作编辑器派生状态；拖放纹理路径走命令后清空预览以触发重载。
   - **其他类型**：`FallbackSequenceInspector`（空面板，但视为已注册）。
 
 ### 4.8 运行时步进：`SequenceExecutionController` 与 `SequenceRuntimeSession`
@@ -241,7 +248,7 @@ flowchart TB
 - 序列文档的加载、保存、另存为、未命名重置与脏标记跟踪。
 - 与运行时类型列表对齐的组件调色板；内置三类组件的展示信息与专用 Inspector；其余类型有 Fallback。
 - 条目列表与时间轴：基于 ViewModel 可见行、搜索维度、校验高亮与运行时高亮；选择、逐行执行、拖拽排序、删除；调色板添加条目。
-- 撤销栈与命令对象覆盖增删、移动、粘贴、对话字段编辑；工具栏与 Ctrl+C/X/V 剪贴板流程。
+- 撤销栈与命令对象覆盖增删、移动、粘贴、对话与立绘/背景属性编辑（字符串 + 布尔）、复合命令；工具栏与 Ctrl+C/X/V 剪贴板流程。
 - 工具栏「Execute To 选中项」与列表行「Exec」：`ExecuteTo` 前自动保存，快照反馈错误信息。
 - 关闭带脏文档时的确认弹窗（任务面板模式）。
 - 单元测试 `VGEditorGalgameSequenceTest`：文档 SaveAs/Reset、撤销添加、剪贴板复制粘贴、粘贴命令撤销；**事件总线投递**、**ExecuteCommand 后代次递增**、**校验缓存稳定代次跳过与增量 `ValidateEntries`**、**异步任务 Pump 合并回调**（见同目录测试源文件）。
@@ -249,11 +256,11 @@ flowchart TB
 
 ### 6.2 部分完成或过渡状态
 
-- `SequenceDocument::GetSequence()` 等 **LEGACY** 直接访问仍存在，部分 Inspector（立绘/背景）仍直接改组件指针字段，**未全部**走 `EditSequencePropertyCommand`，与「全字段可撤销」目标不一致。
-- **`SequenceAsyncTaskService`** 已就绪，但编辑器 **尚未** 在默认路径自动调度后台全量校验（需 debounce、与缓存合并策略及 UI 提示一并设计）。
+- 内置立绘/背景 Inspector 已改为 **`ExecuteCommand`**（`EditSequencePropertyCommand` 扩展纹理路径 + **`SetSequenceEntryBoolPropertyCommand`**）；**无撤销栈**时对话/属性为只读提示，不再直接写组件字段。
+- **`SequenceAsyncTaskService`**：宿主在 **非结构** 变更合并后 **100ms debounce**，对克隆文档 **`RunAll`**，主线程 **`ReplaceIssues`** 且 **`generation` 不一致则丢弃**；与现有同步 `ApplyIfStale` 并存（即时增量仍由 presentation tick 内同步路径完成）。
 - **`SequenceEditorSettings`** 仍为独立设置占位，与总线无直接耦合。
 - `ISequenceInspector` 的 Header / Timeline / ContextMenu 钩子多数未实现具体 UI。
-- **`AssetMonitoring`** 仅占位目录，未实现依赖图与热更。
+- **`AssetMonitoring`**：`SequenceDependencyGraph` 已在 presentation tick 内 **`RebuildFromDocument`**；与校验/Overlay 的规则级联动仍可增强。
 
 ### 6.3 第三阶段（Presentation Layer）已落地要点
 
@@ -272,15 +279,34 @@ flowchart TB
 - **校验缓存与增量 API**：`RunForEntries` + `ISequenceValidator::ValidateEntries`（默认回退全量）；内置校验器已实现按行扫描。
 - **搜索索引**：`SequenceSearchIndexService` + `ApplySearchViewModelWithIndex`。
 - **运行时会话**：`SequenceRuntimeSession` 包装 `ExecuteTo` 与 overlay 更新并发布 `RuntimeStateChanged`。
-- **构建**：`CMakeLists.txt` 已 GLOB `Events`、`Services`、`Async`、`AssetMonitoring` 子目录。
+- **构建**：`CMakeLists.txt` 已 GLOB `Events`、`Services`、`Async`、`AssetMonitoring`、`Transactions`、`Reactive`、`DirtyRegions`、`Projection`、`Diff`、`Inspector/PropertyEditing` 及对应 `Source/` 子目录。
 
 ### 6.5 建议后续工作（非承诺路线图，仅反映代码缺口）
 
-- 将立绘、背景等 Inspector 字段逐步改为命令式编辑，并补齐多选/批量操作策略。
-- 在编辑路径接入 **后台校验**（debounce、`ReplaceIssues`、与增量缓存一致性、进行中状态 UI）。
-- 深化 **AssetMonitoring**：资源路径变更 → 标记受影响 entry 校验脏。
+- 多选 / 批量属性编辑与 **PropertyBinding** 完全泛化（已有 **`BuiltinBindingsForCommonDialogue`** 与 `SequencePropertyBinding` 描述符，Inspector 仍以专用 UI 为主）。
+- 异步全量校验与同步 **`ApplyIfStale`** 的策略收敛（避免重复 `RunAll`、可选「仅异步」大文档模式）及进行中 UI。
+- 深化 **AssetMonitoring**：`SequenceDependencyGraph` 与 `DocumentChanged` / 校验 / Overlay 联动。
 - 扩展测试覆盖：移动命令、复合命令、执行控制器错误分支等（需可 mock 引擎时更易维护）。
 - 多面板（如未来节点图）订阅总线事件，进一步减少宿主硬编码依赖。
+
+### 6.6 第五阶段（Transaction & Reactive Editor）落地要点（与第六阶段交叉演进）
+
+- **P1 数据流**：移除公共 **`GetSequence()`**；Widget / ViewModel / Validator / Clipboard 统一 **`GetEntryCount` / `GetEntryAt`**；文档修改仍仅经 **`SequenceEditorContext::ExecuteCommand`**（及 Undo/Redo）。
+- **P2 属性**：`SequenceEditFieldId` 扩展立绘/背景纹理路径；新增 **`SetSequenceEntryBoolPropertyCommand`**；**`Include/Inspector/PropertyEditing/SequencePropertyPath.h`** 提供逻辑路径常量。
+- **P3 脏区 / 调度**：**`SequenceDirtyRegionTracker`** 与 **`SequenceDirtyRegionFlags`** 为早期入口；第六阶段起 **`SequenceDirtyRegion`** 归一化与 **`SequencePresentationScheduler::Tick`** 已接入宿主（详见 **§6.7**）。
+- **P4–P5 异步校验**：debounce 全量校验仍在 **`VGScriptSequenceEditor::PumpDebouncedAsyncFullValidation`**；与 **`SequenceTaskToken`**、**generation-safe** 丢弃协同（详见 **§6.7**）。
+- **P6–P7**：**`SequenceDependencyGraph`**、**Projection** 等在第六阶段继续充实；仍非最终 Graph/Timeline 运行时。
+- **仍禁止**：Branch Runtime、Pin Execution、Dialogue Graph Runtime、Graph Serializer、ECS Timeline、Cinematic Sequencer Clone（与阶段目标一致）。
+
+### 6.7 第六阶段（Reactive Transaction Pipeline + Multi Projection）落地要点
+
+- **Transaction v1**：`SequenceTransaction` / `SequenceMutationRecord` / `SequenceTransactionBuilder`；`SequenceEditorContext::NotifyDocumentChanged` 在总线载荷中附加 **`std::optional<SequenceTransaction> CommittedTransaction`**（与 `SequenceDocumentMutationSummary` 并存）。
+- **DirtyRegion**：`SequenceDirtyRegion` + `BuildDirtyRegionFromMutationSummary` / `BuildDirtyRegionFromTransaction`；`SequenceDirtyRegionFlags` 独立头 **`Include/DirtyRegions/SequenceDirtyRegionFlags.h`**；宿主 **`MergePendingDocumentMutation`** 合并 `m_pendingDirtyRegion`。
+- **Scheduler**：**`SequencePresentationScheduler::Tick`** 接管原 **`TickEditorPresentation`** 内「投影 → 依赖图 → 搜索索引 → 校验 → Overlay → 搜索 VM」顺序；宿主仅搬运 pending 状态并 **`FillContextPointers`**。
+- **Projection**：**`SequenceListProjection`** 驱动 `SequenceDocumentViewModel` 增量/全量；**`SequenceTimelineProjection` / `SequenceGraphProjection`** 为 stub，仅参与脏区接口。
+- **PropertyEditing**：**`SequencePropertyBinding`** + **`SequencePropertyBindingRegistry`**（CommonDialogue 描述符表）；Inspector 侧已引用注册表（渐进替换）。
+- **Async**：**`SequenceTaskToken`** 与 debounced 全量校验合并回调协同取消（**generation** 仍为主丢弃条件）。
+- **单测**：`Phase6_*` 覆盖 Transaction 构建、DirtyRegion、Binding 表、DependencyGraph 重建、**`SequencePresentationScheduler` 首帧 ViewModel 对齐**。
 
 ---
 
@@ -302,3 +328,5 @@ flowchart TB
 | 2026-05-11 | 初版：完整架构说明与进展对齐当前代码树。 |
 | 2026-05-11 | 补充第三阶段 Presentation：ViewModel、校验、运行时 Overlay、时间轴与相关测试说明。 |
 | 2026-05-12 | 第四阶段：事件总线、帧编排 `TickEditorPresentation`、文档代次、校验缓存与 `ValidateEntries`、搜索索引、运行时会话、异步任务占位；更新目录表、数据流与测试说明。 |
+| 2026-05-12 | 第六阶段（首批）：Transaction 类型与事件载荷、`SequenceDirtyRegion`、`SequencePresentationScheduler`、List/Timeline/Graph Projection stub、`SequenceDependencyGraph` 实现、`SequenceTaskToken`、PropertyBinding 注册表与测试。 |
+| 2026-05-12 | 第六阶段（收尾）：`Phase6_PresentationScheduler` 单测、`SequenceDependencyGraph::RebuildFromDocument` const 组件扫描、文档目录表与 §6.5/§6.6/§6.7/§8 对齐。 |

@@ -27,13 +27,13 @@ namespace VisionGal::Editor
 	{
 		if (m_hasSnapshot)
 			return;
-		const auto seq = document.GetSequence();
 		m_undoPairs.clear();
 		for (unsigned idx : m_indices)
 		{
-			if (idx >= seq->m_Sequence.size() || seq->m_Sequence[idx] == nullptr)
+			auto* comp = document.GetEntryAt(idx);
+			if (comp == nullptr)
 				continue;
-			m_undoPairs.push_back({idx, seq->m_Sequence[idx]->Clone()});
+			m_undoPairs.push_back({idx, comp->Clone()});
 		}
 		m_hasSnapshot = true;
 	}

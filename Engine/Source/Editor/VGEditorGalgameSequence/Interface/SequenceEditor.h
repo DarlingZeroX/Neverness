@@ -10,24 +10,29 @@
 */
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <string>
 
 #include "VGEGSExport.h"
+#include "AssetMonitoring/SequenceDependencyGraph.h"
 #include "Async/SequenceAsyncTaskService.h"
+#include "Async/SequenceTaskToken.h"
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 #include "Core/SequenceClipboard.h"
 #include "Core/SequenceEditorContext.h"
 #include "Core/SequenceSelectionModel.h"
 #include "Core/SequenceUndoStack.h"
 #include "Document/SequenceDocument.h"
+#include "DirtyRegions/SequenceDirtyRegion.h"
 #include "Events/SequenceEditorEvent.h"
 #include "Events/SequenceEditorEventBus.h"
 #include "Inspector/SequenceInspectorRegistry.h"
-#include "Runtime/SequenceExecutionController.h"
+#include "Reactive/SequencePresentationScheduler.h"
 #include "Runtime/SequenceRuntimeObserver.h"
 #include "Runtime/SequenceRuntimeSession.h"
 #include "Runtime/SequenceRuntimeSnapshot.h"
+#include "Runtime/SequenceExecutionController.h"
 #include "Services/SequenceEditorServiceLocator.h"
 #include "Services/SequenceSearchIndexService.h"
 #include "Services/SequenceValidationCacheService.h"
@@ -70,6 +75,7 @@ namespace VisionGal::Editor
 		void TickEditorPresentation();
 		void FillContextPointers();
 		void MergePendingDocumentMutation(const SequenceDocumentMutationSummary& summary);
+		void PumpDebouncedAsyncFullValidation();
 
 		static void AccumulateDocMutationThunk(void* userData, const SequenceDocumentMutationSummary& summary);
 		static void RequestPresentationRefreshThunk(void* userData);
@@ -112,5 +118,13 @@ namespace VisionGal::Editor
 		bool m_needsPresentationTick = true;
 		bool m_firstPresentationDone = false;
 		SequenceDocumentMutationSummary m_pendingDocMutation{};
+		SequenceDirtyRegion m_pendingDirtyRegion{};
+
+		SequencePresentationScheduler m_presentationScheduler{};
+		SequenceDependencyGraph m_dependencyGraph{};
+		std::shared_ptr<SequenceTaskToken> m_asyncValidationTaskToken;
+
+		bool m_asyncFullValidationArmed = false;
+		std::chrono::steady_clock::time_point m_asyncFullValidationDue{};
 	};
 }

@@ -13,6 +13,7 @@
 #include "Document/SequenceDocument.h"
 #include "Events/SequenceEditorEventBus.h"
 #include "Services/SequenceValidationCacheService.h"
+#include "Transactions/SequenceTransactionBuilder.h"
 
 #include "HCore/Interface/HLog.h"
 
@@ -24,7 +25,9 @@ namespace VisionGal::Editor
 			requestPresentationRefresh(requestPresentationRefreshUserData);
 	}
 
-	void SequenceEditorContext::NotifyDocumentChanged(const SequenceDocumentMutationSummary& summary)
+	void SequenceEditorContext::NotifyDocumentChanged(
+		const SequenceDocumentMutationSummary& summary,
+		const SequenceTransactionSource transactionSource)
 	{
 		if (validationCache != nullptr)
 			validationCache->NotifyDocumentChanged(summary);
@@ -35,6 +38,8 @@ namespace VisionGal::Editor
 			SequenceEditorEvent ev;
 			ev.Type = SequenceEditorEventType::DocumentChanged;
 			ev.DocumentChanged = summary;
+			if (document != nullptr)
+				ev.CommittedTransaction = BuildTransactionFromMutationSummary(summary, document->GetGenerationId(), transactionSource);
 			eventBus->Publish(ev);
 		}
 		RequestPresentationRefresh();
@@ -54,7 +59,7 @@ namespace VisionGal::Editor
 		SequenceDocumentMutationSummary summary;
 		if (const ISequenceEditorCommand* top = undo->PeekUndoTop())
 			summary = top->DescribeExecutedMutation();
-		NotifyDocumentChanged(summary);
+		NotifyDocumentChanged(summary, SequenceTransactionSource::Command);
 	}
 
 	void SequenceEditorContext::UndoDocument()
@@ -65,7 +70,7 @@ namespace VisionGal::Editor
 		document->BumpEditGeneration();
 		SequenceDocumentMutationSummary summary;
 		summary.StructuralChange = true;
-		NotifyDocumentChanged(summary);
+		NotifyDocumentChanged(summary, SequenceTransactionSource::Undo);
 	}
 
 	void SequenceEditorContext::RedoDocument()
@@ -76,6 +81,6 @@ namespace VisionGal::Editor
 		document->BumpEditGeneration();
 		SequenceDocumentMutationSummary summary;
 		summary.StructuralChange = true;
-		NotifyDocumentChanged(summary);
+		NotifyDocumentChanged(summary, SequenceTransactionSource::Redo);
 	}
 }

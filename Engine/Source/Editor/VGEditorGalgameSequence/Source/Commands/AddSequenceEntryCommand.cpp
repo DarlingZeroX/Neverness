@@ -20,8 +20,8 @@ namespace VisionGal::Editor
 	void AddSequenceEntryCommand::DoAdd(SequenceDocument& document)
 	{
 		document.AddEntryByTypeNameID(m_typeNameId);
-		const auto seq = document.GetSequence();
-		m_insertedIndex = seq->m_Sequence.empty() ? 0u : static_cast<unsigned>(seq->m_Sequence.size() - 1);
+		const unsigned n = document.GetEntryCount();
+		m_insertedIndex = n > 0 ? n - 1u : 0u;
 	}
 
 	void AddSequenceEntryCommand::Execute(SequenceDocument& document)

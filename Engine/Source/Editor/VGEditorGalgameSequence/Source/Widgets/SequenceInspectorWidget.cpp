@@ -38,16 +38,12 @@ namespace VisionGal::Editor
 		}
 
 		const unsigned idx = *sel.begin();
-		const auto seq = ctx.document->GetSequence();
-		if (idx >= seq->m_Sequence.size())
+		auto* entry = ctx.document->GetEntryAt(idx);
+		if (entry == nullptr)
 		{
 			ImGui::TextUnformatted(u8"选中索引无效。");
 			return;
 		}
-
-		auto* entry = seq->m_Sequence[idx].get();
-		if (entry == nullptr)
-			return;
 
 		if (!ctx.inspectorRegistry->DrawInspector(entry->GetTypeNameID(), idx, entry, &ctx))
 			ImGui::TextUnformatted(u8"（未注册 Inspector）");

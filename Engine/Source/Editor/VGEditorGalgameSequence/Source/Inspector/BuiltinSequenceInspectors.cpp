@@ -8,7 +8,9 @@
 
 #include "Inspector/BuiltinSequenceInspectors.h"
 
+#include "Inspector/PropertyEditing/SequencePropertyBindingRegistry.h"
 #include "Commands/EditSequencePropertyCommand.h"
+#include "Commands/SetSequenceEntryBoolPropertyCommand.h"
 #include "Core/SequenceEditorContext.h"
 
 #include <VGImgui/IncludeImGui.h>
@@ -41,6 +43,7 @@ namespace VisionGal::Editor
 
 				if (context != nullptr && context->document != nullptr && context->undo != nullptr)
 				{
+					(void)BuiltinBindingsForCommonDialogue();
 					if (m_commonStagingIndex != index)
 					{
 						m_commonStagingIndex = index;
@@ -63,11 +66,9 @@ namespace VisionGal::Editor
 					return;
 				}
 
-				ImGuiEx::InputText("##DialogueCharacterName", com->DialogueCharacterName);
-				ImGuiEx::InputTextMultiline(
-					"##DialogueText",
-					com->DialogueText,
-					ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 4));
+				ImGui::TextUnformatted(u8"（无可写上下文，以下为只读预览）");
+				ImGui::TextUnformatted(com->DialogueCharacterName.c_str());
+				ImGui::TextUnformatted(com->DialogueText.c_str());
 			}
 
 			std::string GetDisplayName() const override { return m_displayName; }
@@ -94,20 +95,36 @@ namespace VisionGal::Editor
 
 			void OnInspectorGUI(unsigned int index, VisionGal::IVGSSequenceComponent* component, SequenceEditorContext* context) override
 			{
-				(void)index;
-				(void)context;
 				auto* com = dynamic_cast<VisionGal::VGSSC_ChangeFigure*>(component);
 				if (com == nullptr)
 					return;
 
-				if (com->ShowState)
+				if (context == nullptr || context->document == nullptr || context->undo == nullptr)
 				{
-					ImGui::ImageButton("Background", ImTextureRef(), ImVec2(100, 100));
-					ImGui::SameLine();
+					ImGui::TextUnformatted(u8"（无可写上下文，属性只读）");
+					return;
 				}
-				ImGui::Checkbox("Show Figure", &com->ShowState);
+
+				if (m_figureStagingIndex != index)
+				{
+					m_figureStagingIndex = index;
+					m_figureStagingPath = com->TextureResourcePath;
+				}
+
+				ImGuiEx::InputText(u8"纹理路径##FigureTexPath", m_figureStagingPath);
+				if (ImGui::IsItemDeactivatedAfterEdit())
+					context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(
+						index, SequenceEditFieldId::ChangeFigure_TextureResourcePath, m_figureStagingPath));
+
+				bool show = com->ShowState;
+				if (ImGui::Checkbox(u8"显示立绘##FigureShow", &show))
+					context->ExecuteCommand(std::make_unique<SetSequenceEntryBoolPropertyCommand>(
+						index, SequenceEditBoolFieldId::ChangeFigure_ShowState, show));
 				ImGui::SameLine();
-				ImGui::Checkbox("Wait", &com->Wait);
+				bool wait = com->Wait;
+				if (ImGui::Checkbox(u8"等待##FigureWait", &wait))
+					context->ExecuteCommand(std::make_unique<SetSequenceEntryBoolPropertyCommand>(
+						index, SequenceEditBoolFieldId::ChangeFigure_Wait, wait));
 			}
 
 			std::string GetDisplayName() const override { return m_displayName; }
@@ -119,6 +136,8 @@ namespace VisionGal::Editor
 
 		private:
 			std::string m_displayName;
+			unsigned m_figureStagingIndex = 0xFFFFFFFFu;
+			std::string m_figureStagingPath;
 		};
 
 		class ChangeBackgroundSequenceInspector final : public ISequenceInspector
@@ -131,17 +150,25 @@ namespace VisionGal::Editor
 
 			void OnInspectorGUI(unsigned int index, VisionGal::IVGSSequenceComponent* component, SequenceEditorContext* context) override
 			{
-				(void)index;
-				(void)context;
 				auto* com = dynamic_cast<VisionGal::VGSSC_ChangeBackground*>(component);
 				if (com == nullptr)
 					return;
 
-				if (com->Temp.PreviewTexture == nullptr && com->TextureResourcePath.empty() == false)
-				if (auto tex = LoadObject<Texture2D>(com->TextureResourcePath))
+				if (context == nullptr || context->document == nullptr || context->undo == nullptr)
 				{
-					com->Temp.PreviewTexture = tex;
+					ImGui::TextUnformatted(u8"（无可写上下文，属性只读）");
+					return;
 				}
+
+				if (m_bgStagingIndex != index)
+				{
+					m_bgStagingIndex = index;
+					m_bgStagingPath = com->TextureResourcePath;
+				}
+
+				if (com->Temp.PreviewTexture == nullptr && com->TextureResourcePath.empty() == false)
+					if (auto tex = LoadObject<Texture2D>(com->TextureResourcePath))
+						com->Temp.PreviewTexture = tex;
 
 				if (com->ShowState)
 				{
@@ -150,12 +177,24 @@ namespace VisionGal::Editor
 						previewTexture = com->Temp.PreviewTexture->GetTexture()->GetShaderResourceView();
 
 					ImGui::ImageButton("Background", previewTexture, ImVec2(100, 100));
-					TextureBeginDropTarget(com);
+					TextureBeginDropTarget(com, index, context);
 					ImGui::SameLine();
 				}
-				ImGui::Checkbox("Show Figure", &com->ShowState);
+
+				ImGuiEx::InputText(u8"纹理路径##BgTexPath", m_bgStagingPath);
+				if (ImGui::IsItemDeactivatedAfterEdit())
+					context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(
+						index, SequenceEditFieldId::ChangeBackground_TextureResourcePath, m_bgStagingPath));
+
+				bool show = com->ShowState;
+				if (ImGui::Checkbox(u8"显示背景##BgShow", &show))
+					context->ExecuteCommand(std::make_unique<SetSequenceEntryBoolPropertyCommand>(
+						index, SequenceEditBoolFieldId::ChangeBackground_ShowState, show));
 				ImGui::SameLine();
-				ImGui::Checkbox("Wait", &com->Wait);
+				bool wait = com->Wait;
+				if (ImGui::Checkbox(u8"等待##BgWait", &wait))
+					context->ExecuteCommand(std::make_unique<SetSequenceEntryBoolPropertyCommand>(
+						index, SequenceEditBoolFieldId::ChangeBackground_Wait, wait));
 			}
 
 			std::string GetDisplayName() const override { return m_displayName; }
@@ -166,7 +205,10 @@ namespace VisionGal::Editor
 			}
 
 		private:
-			static void TextureBeginDropTarget(VisionGal::VGSSC_ChangeBackground* com)
+			static void TextureBeginDropTarget(
+				VisionGal::VGSSC_ChangeBackground* com,
+				unsigned index,
+				SequenceEditorContext* context)
 			{
 				if (ImGui::BeginDragDropTarget())
 				{
@@ -174,20 +216,23 @@ namespace VisionGal::Editor
 					{
 						std::string path = static_cast<char*>(payload->Data);
 
-						if (auto tex = LoadObject<Texture2D>(path))
+						if (LoadObject<Texture2D>(path))
 						{
-							com->Temp.PreviewTexture = tex;
-							com->TextureResourcePath = path;
-							ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置视频成功!" });
+							context->ExecuteCommand(std::make_unique<EditSequencePropertyCommand>(
+								index, SequenceEditFieldId::ChangeBackground_TextureResourcePath, path));
+							com->Temp.PreviewTexture = nullptr;
+							ImGuiEx::PushNotification({ ImGuiExToastType::Info, u8"已设置背景纹理路径" });
 						}
 						else
-							ImGuiEx::PushNotification({ ImGuiExToastType::Warning, "设置视频失败!" });
+							ImGuiEx::PushNotification({ ImGuiExToastType::Warning, u8"设置背景纹理失败" });
 					}
 					ImGui::EndDragDropTarget();
 				}
 			}
 
 			std::string m_displayName;
+			unsigned m_bgStagingIndex = 0xFFFFFFFFu;
+			std::string m_bgStagingPath;
 		};
 
 		class FallbackSequenceInspector final : public ISequenceInspector

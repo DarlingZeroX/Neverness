@@ -20,11 +20,10 @@ namespace VisionGal::Editor
 	std::vector<SequenceValidationIssue> EmptyDialogueValidator::Validate(const SequenceDocument& document) const
 	{
 		std::vector<SequenceValidationIssue> out;
-		const auto seq = document.GetSequence();
-		unsigned i = 0;
-		for (const auto& entry : seq->m_Sequence)
+		const unsigned n = document.GetEntryCount();
+		for (unsigned i = 0; i < n; ++i)
 		{
-			auto* dialogue = dynamic_cast<VisionGal::VGSSC_CommonDialogue*>(entry.get());
+			auto* dialogue = dynamic_cast<VisionGal::VGSSC_CommonDialogue*>(const_cast<SequenceDocument&>(document).GetEntryAt(i));
 			if (dialogue != nullptr && dialogue->DialogueText.empty())
 			{
 				SequenceValidationIssue issue;
@@ -34,7 +33,6 @@ namespace VisionGal::Editor
 				issue.RuleId = GetRuleId();
 				out.push_back(std::move(issue));
 			}
-			++i;
 		}
 		return out;
 	}
@@ -45,12 +43,12 @@ namespace VisionGal::Editor
 	{
 		std::unordered_set<unsigned> want(entryIndices.begin(), entryIndices.end());
 		std::vector<SequenceValidationIssue> out;
-		const auto seq = document.GetSequence();
+		const unsigned n = document.GetEntryCount();
 		for (unsigned i : want)
 		{
-			if (i >= seq->m_Sequence.size())
+			if (i >= n)
 				continue;
-			auto* dialogue = dynamic_cast<VisionGal::VGSSC_CommonDialogue*>(seq->m_Sequence[i].get());
+			auto* dialogue = dynamic_cast<VisionGal::VGSSC_CommonDialogue*>(const_cast<SequenceDocument&>(document).GetEntryAt(i));
 			if (dialogue != nullptr && dialogue->DialogueText.empty())
 			{
 				SequenceValidationIssue issue;

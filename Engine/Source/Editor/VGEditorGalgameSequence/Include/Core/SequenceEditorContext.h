@@ -68,7 +68,9 @@ namespace VisionGal::Editor
 		void UndoDocument();
 		void RedoDocument();
 
-		void NotifyDocumentChanged(const SequenceDocumentMutationSummary& summary);
+		void NotifyDocumentChanged(
+			const SequenceDocumentMutationSummary& summary,
+			SequenceTransactionSource transactionSource = SequenceTransactionSource::ExternalNotify);
 		void RequestPresentationRefresh();
 	};
 }
