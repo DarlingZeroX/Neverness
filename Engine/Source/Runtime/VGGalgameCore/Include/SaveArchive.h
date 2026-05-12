@@ -11,6 +11,7 @@
 
 #pragma once
 #include "../VGGalCoreConfig.h"
+#include <cstdint>
 #include <VGRHI/Interface/Texture.h>
 #include <HCore/Include/File/nlohmann/json.hpp>
 #include "ArchiveDataContainer.h"
@@ -19,6 +20,9 @@ namespace VisionGal::GalGame
 {
 	struct VG_GALGAME_CORE_API SaveArchive
 	{
+		/// Phase 7：顶层 JSON schema 整数版本（与 `version` 字符串独立演进）。
+		static constexpr int kSaveArchiveSchemaVersion = 1;
+
 		bool isGalGameArchive = true;
 		bool isValid = true;
 		String version = "0.1";
@@ -35,7 +39,13 @@ namespace VisionGal::GalGame
 		Ref<VGFX::TexturePixels> screenshotPixels = nullptr;
 		Ref<ArchiveDataContainer> archiveData = nullptr;
 
+		/// 预留：与 Choices/Inputs 命名空间内容校验相关（当前可为 0）。
+		std::uint64_t schemaHash = 0;
+
 		void WriteToJson(nlohmann::json& json);
 		void ReadFromJson(nlohmann::json& json);
+
+		/// 中文：反序列化前调用；不通过则 `isValid` 置 false，由调用方拒绝加载。
+		static bool ValidateArchiveSchema(const nlohmann::json& root);
 	};
 }

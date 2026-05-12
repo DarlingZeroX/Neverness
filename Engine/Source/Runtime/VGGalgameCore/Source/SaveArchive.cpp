@@ -11,11 +11,27 @@
 
 #include "SaveArchive.h"
 
+#include <cstdint>
+
 namespace VisionGal::GalGame
 {
+	bool SaveArchive::ValidateArchiveSchema(const nlohmann::json& root)
+	{
+		if (!root.is_object())
+			return false;
+		const int schema = root.value("saveArchiveSchemaVersion", 1);
+		if (schema < 1 || schema > kSaveArchiveSchemaVersion)
+			return false;
+		if (!root.contains("Base") || !root["Base"].is_object())
+			return false;
+		return true;
+	}
+
 	void SaveArchive::WriteToJson(nlohmann::json& json)
 	{
-		// 序列化到json
+		json["saveArchiveSchemaVersion"] = kSaveArchiveSchemaVersion;
+		json["schemaHash"] = schemaHash;
+
 		json["Base"]["IsGalGameArchive"] = isGalGameArchive;
 		json["Base"]["Version"] = version;
 		json["Base"]["ScriptPath"] = scriptPath;
@@ -28,17 +44,31 @@ namespace VisionGal::GalGame
 		json["Base"]["Description"] = description;
 		json["Base"]["ScreenshotPath"] = screenshotPath;
 
-		// 序列化存档数据
 		nlohmann::json data;
-		archiveData->Serialize(data);
+		if (archiveData)
+		{
+			archiveData->Serialize(data);
+			data["archiveSchemaVersion"] = archiveData->schemaVersion;
+			data["archiveSchemaHash"] = archiveData->schemaHash;
+		}
 		json["Data"] = data;
+
+		json["contextSnapshot"] = nlohmann::json::object();
+		json["runtimeState"] = nlohmann::json::object();
 	}
 
 	void SaveArchive::ReadFromJson(nlohmann::json& json)
 	{
+		if (!ValidateArchiveSchema(json))
+		{
+			isValid = false;
+			return;
+		}
+
+		schemaHash = json.value("schemaHash", std::uint64_t{0});
+
 		auto base = json.value("Base", nlohmann::json({}));
 
-		// 反序列化本地数据到存档
 		isValid = false;
 		isGalGameArchive = base.value("IsGalGameArchive", false);
 		version = base.value("Version", "");
@@ -58,7 +88,12 @@ namespace VisionGal::GalGame
 		{
 			auto& data = json["Data"];
 			archiveData = MakeRef<ArchiveDataContainer>();
+			archiveData->schemaVersion = data.value("archiveSchemaVersion", 1);
+			archiveData->schemaHash = data.value("archiveSchemaHash", std::uint64_t{0});
 			archiveData->Deserialize(data);
 		}
+
+		(void)json.value("contextSnapshot", nlohmann::json::object());
+		(void)json.value("runtimeState", nlohmann::json::object());
 	}
 }

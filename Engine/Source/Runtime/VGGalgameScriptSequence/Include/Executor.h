@@ -13,8 +13,9 @@
 
 #include "../GSSExport.h"
 #include "VGCore/Include/Core/Core.h"
-#include "VGGalgameCore/Interface/IGameEngine.h"
-#include "VGGalgameRuntime/Interface/IStoryScript.h"
+#include "VGGalgameCore/Interface/IGalGameContext.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
+#include "VGGalgameCore/Interface/IStoryScriptExecutor.h"
 
 #include "Runtime/IStoryExecutionInstance.h"
 #include "Runtime/SequenceExecutionInstance.h"
@@ -31,7 +32,7 @@ namespace VisionGal::GalGame
 
 		static Ref<SSExecutorSequence> LoadFromAsset(const String& file);
 
-		bool Run(IGalGameEngine* engine) override;
+		bool Run(ISubsystemBus* bus, IGalGameContext* gameContext) override;
 		void Tick(float deltaTime) override;
 		IRuntimeInterface* QueryInterface(InterfaceID id) override;
 

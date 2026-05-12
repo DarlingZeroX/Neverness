@@ -10,7 +10,7 @@
  */
 
 #include "GalGameEngine.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
+#include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "SpriteAnimationScriptManager.h"
 #include "VGCore/Include/Core/EventBus.h"
@@ -21,6 +21,7 @@
 namespace VisionGal::GalGame
 {
 	GalGameEngine::GalGameEngine()
+		: m_SubsystemBus(this)
 	{
 		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
 			{
@@ -56,6 +57,8 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::Reset()
 	{
+		if (m_GalGameContext)
+			m_GalGameContext->Engine = nullptr;
 	}
 
 	void GalGameEngine::Wait(float duration)
@@ -72,6 +75,16 @@ namespace VisionGal::GalGame
 	ArchiveDataContainer* GalGameEngine::GetArchiveDataContainer() const
 	{
 		return m_GalGameContext->archiveData.get();
+	}
+
+	ISubsystemBus* GalGameEngine::GetSubsystemBus()
+	{
+		return &m_SubsystemBus;
+	}
+
+	IGalGameContext* GalGameEngine::GetContext()
+	{
+		return m_GalGameContext.get();
 	}
 
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)
@@ -101,8 +114,7 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext)
 	{
-		m_GalGameContext = MakeRef<GalGameContext>();
-		m_GalGameContext->Engine = this;
+		m_GalGameContext = GalGameContext::Create(this, &m_SubsystemBus);
 
 		// 初始化对话系统
 		m_DialogueSystem = MakeRef<DialogueSystem>();
@@ -138,7 +150,7 @@ namespace VisionGal::GalGame
 	void GalGameEngine::Initialize(IGameEngineContext* context)
 	{
 		m_EngineContext = context;
-		GameEngineCore::SetCurrentEngine(this);
+		GalGameEngineAccess::SetCurrent(this);
 		auto* rmlContext = static_cast<Rml::Context*>(context->GetUISystem()->GetContext());
 		CreateSubsystem(context, rmlContext);
 
@@ -225,27 +237,42 @@ namespace VisionGal::GalGame
 
 	IArchiveSystem* GalGameEngine::GetArchiveSystem()
 	{
-		return m_ArchiveSystem.get();
+		if (auto* bus = GetSubsystemBus())
+			if (auto* ar = bus->Archive())
+				return ar->GetArchiveSystem();
+		return nullptr;
 	}
 
 	IDialogueSystem* GalGameEngine::GetDialogueSystem()
 	{
-		return m_DialogueSystem.get();
+		if (auto* bus = GetSubsystemBus())
+			if (auto* d = bus->Dialogue())
+				return d->GetDialogueSystem();
+		return nullptr;
 	}
 
 	ILayeredSceneManager* GalGameEngine::GetLayeredSceneManager()
 	{
-		return m_LayeredSceneManager.get();
+		if (auto* bus = GetSubsystemBus())
+			if (auto* s = bus->Scene())
+				return s->GetLayeredSceneManager();
+		return nullptr;
 	}
 
 	IStoryScriptSystem* GalGameEngine::GetStoryScriptSystem()
 	{
-		return m_StoryScriptSystem.get();
+		if (auto* bus = GetSubsystemBus())
+			if (auto* sc = bus->Script())
+				return sc->GetStoryScriptSystem();
+		return nullptr;
 	}
 
 	IGalGameUISystem* GalGameEngine::GetGalGameUISystem()
 	{
-		return m_GalGameUISystem.get();
+		if (auto* bus = GetSubsystemBus())
+			if (auto* ui = bus->UI())
+				return ui->GetGalGameUISystem();
+		return nullptr;
 	}
 
 	void GalGameEngine::OnRender()
@@ -274,7 +301,7 @@ namespace VisionGal::GalGame
 
 		m_LayeredSceneManager->OnUpdate();
 		// 更新对话系统
-		GetDialogueSystem()->Update();
+		m_DialogueSystem->Update();
 		// 更新脚本系统
 		m_StoryScriptSystem->Update();
 	}

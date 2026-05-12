@@ -134,8 +134,8 @@ namespace VisionGal::GalGame
 		archive.screenshotPath = screenshotPath.string();
 
 		archive.scriptPath = m_GalGameContext->runtimeState.currentScriptPath;	//脚本路径
-		archive.line = m_GalGameContext->runtimeState.currentDialogLine;	//对话当前行
-		archive.description = m_GalGameContext->runtimeState.currentDialogText; //对话描述
+		archive.line = m_GalGameContext->runtimeState.dialogue.currentDialogLine;	//对话当前行
+		archive.description = m_GalGameContext->runtimeState.dialogue.currentDialogText; //对话描述
 
 		// 先引用
 		archive.archiveData = m_GalGameContext->archiveData;

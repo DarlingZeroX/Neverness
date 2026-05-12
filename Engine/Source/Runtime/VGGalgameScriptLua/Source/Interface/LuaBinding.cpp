@@ -11,12 +11,20 @@
 
 #include "LuaBinding.h"
 
-#include "VGGalgameCore/Interface/GameEngineCore.h"
+#include "VGGalgameCore/Include/GalGameEngineAccess.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
+#include "VGCore/Include/Core/Core.h"
 #include "VGEngine/Include/Lua/LuaDataBridge.h"
 #include "VGEngine/Include/Lua/LuaInterface.h"
 #include "VGGalgameCore/Interface/IGameObject.h"
 #include "VGGalgameCore/Interface/IGameSystem.h"
 #include "VGGalgameCore/Interface/IGameEngine.h"
+#include "VGGalgameCore/Interface/IScriptSubsystem.h"
+#include "VGGalgameCore/Interface/IUISubsystem.h"
+#include "VGGalgameCore/Interface/ISceneSubsystem.h"
+#include "VGGalgameCore/Interface/IAudioSubsystem.h"
+#include "VGGalgameCore/Interface/IDialogueSubsystem.h"
+#include "VGGalgameCore/Interface/IArchiveSubsystem.h"
 
 namespace VisionGal::GalGame
 {
@@ -30,7 +38,7 @@ namespace VisionGal::GalGame
 				options.push_back(value.as<std::string>());
 				});
 
-			self.GetStoryScriptSystem()->DoChoice(name, options);
+			self.GetSubsystemBus()->Script()->GetStoryScriptSystem()->DoChoice(name, options);
 		}
 
 		static void FullScreenText(IGalGameEngine& self, const sol::table& texts)
@@ -41,12 +49,12 @@ namespace VisionGal::GalGame
 				textV.push_back(value.as<std::string>());
 				});
 
-			self.GetGalGameUISystem()->ShowFullScreenTextUI(textV);
+			self.GetSubsystemBus()->UI()->GetGalGameUISystem()->ShowFullScreenTextUI(textV);
 		}
 
 		static void InputText(IGalGameEngine& self, const std::string& id, const std::string& title, const std::string& button)
 		{
-			self.GetStoryScriptSystem()->DoInput(id, title, button);
+			self.GetSubsystemBus()->Script()->GetStoryScriptSystem()->DoInput(id, title, button);
 		}
 	};
 
@@ -57,13 +65,87 @@ namespace VisionGal::GalGame
 		// 引擎
 		galgame.set("GetEngine", []() -> IGalGameEngine*
 			{
-				return GameEngineCore::GetCurrentEngine();
+				return GalGameEngineAccess::Current();
 			});
 		galgame.set("获取引擎", []() -> IGalGameEngine*
 			{
-				return GameEngineCore::GetCurrentEngine();
+				return GalGameEngineAccess::Current();
 			});
-		
+		galgame.set_function("引擎", []() -> IGalGameEngine* {
+			return GalGameEngineAccess::Current();
+		});
+
+		galgame.new_usertype<ISubsystemBus>("GalSubsystemBus",
+			"Scene", &ISubsystemBus::Scene,
+			"UI", &ISubsystemBus::UI,
+			"Audio", &ISubsystemBus::Audio,
+			"Script", &ISubsystemBus::Script,
+			"Archive", &ISubsystemBus::Archive,
+			"Dialogue", &ISubsystemBus::Dialogue
+		);
+
+		{
+			const auto bus = []() -> ISubsystemBus* {
+				IGalGameEngine* e = GalGameEngineAccess::Current();
+				return e ? e->GetSubsystemBus() : nullptr;
+			};
+			sol::table engineScene = state.create_table();
+			engineScene.set_function("ShowSprite", [bus](const std::string& layer, const std::string& path) -> IGalSprite* {
+				auto* b = bus();
+				return b ? b->Scene()->ShowSprite(layer, path) : nullptr;
+			});
+			engineScene.set_function("ShowColor", [bus](const std::string& layer, const float4& color) -> IGalSprite* {
+				auto* b = bus();
+				return b ? b->Scene()->ShowColor(layer, color) : nullptr;
+			});
+			engineScene.set_function("PlayVideo", [bus](const std::string& layer, const std::string& path) -> IGalVideo* {
+				auto* b = bus();
+				return b ? b->Scene()->PlayVideo(layer, path) : nullptr;
+			});
+			engineScene.set_function("RemoveSprite", [bus](IGalSprite* s) -> bool {
+				auto* b = bus();
+				return b ? b->Scene()->RemoveSprite(s) : false;
+			});
+			engineScene.set_function("TransitionCommand", [bus](const String& layer, const String& cmd) -> bool {
+				auto* b = bus();
+				return b ? b->Scene()->TransitionCommand(layer, cmd) : false;
+			});
+			engineScene.set_function("CreateCharacter", [bus](const String& name) -> IGalCharacter* {
+				auto* b = bus();
+				return b ? b->Scene()->CreateCharacter(name) : nullptr;
+			});
+			sol::table engineAudio = state.create_table();
+			engineAudio.set_function("PlayAudio", [bus](const std::string& layer, const std::string& path) -> IGalAudio* {
+				auto* b = bus();
+				return b ? b->Audio()->PlayAudio(layer, path) : nullptr;
+			});
+			engineAudio.set_function("RemoveAudio", [bus](IGalAudio* a) -> bool {
+				auto* b = bus();
+				return b ? b->Audio()->RemoveAudio(a) : false;
+			});
+			sol::table engineScript = state.create_table();
+			engineScript.set_function("LoadStoryScript", [bus](const String& path) -> bool {
+				auto* b = bus();
+				return b ? b->Script()->LoadStoryScript(path) : false;
+			});
+			engineScript.set_function("LoadStoryScriptOnUpdate", [bus](const String& path) {
+				if (auto* b = bus())
+					b->Script()->LoadStoryScriptOnUpdate(path);
+			});
+			engineScript.set_function("ReloadStoryScript", [bus]() {
+				if (auto* b = bus())
+					b->Script()->ReloadStoryScript();
+			});
+			engineScript.set_function("Wait", [bus](float d) {
+				if (auto* b = bus())
+					b->Script()->Wait(d);
+			});
+			sol::table engineRoot = state.create_table();
+			engineRoot["Scene"] = engineScene;
+			engineRoot["Audio"] = engineAudio;
+			engineRoot["Script"] = engineScript;
+			galgame["Engine"] = engineRoot;
+		}
 		galgame.new_usertype<IGalCharacter>("IGalCharacter",
 			"说", sol::yielding(&IGalCharacter::Say),
 			"语音", &IGalCharacter::Voice,
@@ -216,6 +298,160 @@ namespace VisionGal::GalGame
 			//"跳到对话", & IDialogueSystem::JumpToDialog
 		);
 
+		/// Phase 7：Lua 侧优先通过子系统总线门面访问对白；与 GalGameDialogueSystem 键名对齐。
+		galgame.new_usertype<IDialogueSubsystem>("GalDialogueSubsystem",
+			"继续对话", [](IDialogueSubsystem& s) {
+				if (auto* d = s.GetDialogueSystem())
+					d->ContinueDialogue();
+			},
+			"完成打印对话", [](IDialogueSubsystem& s) {
+				if (auto* d = s.GetDialogueSystem())
+					d->FinishTyping();
+			},
+			"获取对话人物", [](IDialogueSubsystem& s, uint idx) -> String {
+				auto* d = s.GetDialogueSystem();
+				return d ? d->GetDialogCharacter(idx) : String{};
+			},
+			"获取对话文本", [](IDialogueSubsystem& s, uint idx) -> String {
+				auto* d = s.GetDialogueSystem();
+				return d ? d->GetDialogText(idx) : String{};
+			},
+			"添加打印回调", [](IDialogueSubsystem& s, sol::function cb) {
+				if (auto* d = s.GetDialogueSystem())
+					d->AddTypingCallback(cb);
+			},
+			"清除全部打印回调", [](IDialogueSubsystem& s) {
+				if (auto* d = s.GetDialogueSystem())
+					d->ClearAllTypingCallbacks();
+			},
+			"当前对话人物", sol::property(
+				[](IDialogueSubsystem& s) -> std::string {
+					auto* d = s.GetDialogueSystem();
+					return d ? std::string(d->GetCurrentCharacter()) : std::string{};
+				}
+			),
+			"当前对话文本", sol::property(
+				[](IDialogueSubsystem& s) -> std::string {
+					auto* d = s.GetDialogueSystem();
+					return d ? std::string(d->GetCurrentDialogText()) : std::string{};
+				}
+			),
+			"是否正在打印对话", sol::property(
+				[](IDialogueSubsystem& s) -> bool {
+					auto* d = s.GetDialogueSystem();
+					return d && d->IsTypingText();
+				}
+			),
+			"对话数目", sol::property(
+				[](IDialogueSubsystem& s) -> unsigned int {
+					auto* d = s.GetDialogueSystem();
+					return d ? d->GetDialogNumber() : 0u;
+				}
+			),
+			"自动对话", sol::property(
+				[](IDialogueSubsystem& s) -> bool {
+					auto* d = s.GetDialogueSystem();
+					return d && d->IsAutoDialogue();
+				},
+				[](IDialogueSubsystem& s, bool v) {
+					if (auto* d = s.GetDialogueSystem())
+						d->AutoDialogue(v);
+				}
+			),
+			"快进", sol::property(
+				[](IDialogueSubsystem& s) -> bool {
+					auto* d = s.GetDialogueSystem();
+					return d && d->IsFastForward();
+				},
+				[](IDialogueSubsystem& s, bool v) {
+					if (auto* d = s.GetDialogueSystem())
+						d->FastForward(v);
+				}
+			),
+			"快进间隔时间", sol::property(
+				[](IDialogueSubsystem& s) -> float {
+					auto* d = s.GetDialogueSystem();
+					return d ? d->GetFastForwardDelay() : 0.f;
+				},
+				[](IDialogueSubsystem& s, float v) {
+					if (auto* d = s.GetDialogueSystem())
+						d->SetFastForwardDelay(v);
+				}
+			),
+			"文字显示速度", sol::property(
+				[](IDialogueSubsystem& s) -> float {
+					auto* d = s.GetDialogueSystem();
+					return d ? d->GetTypingDelay() : 0.f;
+				},
+				[](IDialogueSubsystem& s, float v) {
+					if (auto* d = s.GetDialogueSystem())
+						d->SetTypingDelay(v);
+				}
+			)
+		);
+
+		galgame.new_usertype<IArchiveSubsystem>("GalArchiveSubsystem",
+			"保存存档", [](IArchiveSubsystem& s, const String& n) -> SaveArchive {
+				auto* a = s.GetArchiveSystem();
+				return a ? a->SaveArchiveByNumber(n) : SaveArchive{};
+			},
+			"获取存档", [](IArchiveSubsystem& s, const String& n) -> SaveArchive {
+				auto* a = s.GetArchiveSystem();
+				return a ? a->GetArchiveByNumber(n) : SaveArchive{};
+			},
+			"是否存在存档", [](IArchiveSubsystem& s, const String& n) -> bool {
+				auto* a = s.GetArchiveSystem();
+				return a && a->HasArchiveByNumber(n);
+			}
+		);
+
+		galgame.new_usertype<IUISubsystem>("GalUISubsystem",
+			"获取当前剧情选项文本", [](IUISubsystem& s, int i) {
+				auto* u = s.GetGalGameUISystem();
+				return u ? u->GetChoiceOptionByIndex(i) : std::string{};
+			},
+			"获取当前剧情选项数量", [](IUISubsystem& s) {
+				auto* u = s.GetGalGameUISystem();
+				return u ? u->GetChoiceOptionSize() : 0;
+			},
+			"选择当前剧情选项", [](IUISubsystem& s, int i) {
+				if (auto* u = s.GetGalGameUISystem())
+					u->SelectCurrentChoice(i);
+			},
+			"获取当前全屏文本项", [](IUISubsystem& s, int i) {
+				auto* u = s.GetGalGameUISystem();
+				return u ? u->GetFullScreenTextItem(i) : std::string{};
+			},
+			"获取当前全屏文本项数量", [](IUISubsystem& s) {
+				auto* u = s.GetGalGameUISystem();
+				return u ? u->GetFullScreenTextSize() : 0;
+			},
+			"获取当前玩家输入标题", [](IUISubsystem& s) {
+				auto* u = s.GetGalGameUISystem();
+				return u ? u->GetInputTitle() : std::string{};
+			},
+			"获取当前玩家输入按键文本", [](IUISubsystem& s) {
+				auto* u = s.GetGalGameUISystem();
+				return u ? u->GetInputButtonText() : std::string{};
+			},
+			"确定当前输入", [](IUISubsystem& s, const std::string& text) {
+				if (auto* u = s.GetGalGameUISystem())
+					u->InputSubmitted(text);
+			}
+		);
+
+		galgame.new_usertype<ISceneSubsystem>("GalSceneSubsystem",
+			"获取分层场景管理器", [](ISceneSubsystem& s) { return s.GetLayeredSceneManager(); },
+			"获取音频层", [](ISceneSubsystem& s, const String& name) -> ISceneAudioLayer* {
+				auto* m = s.GetLayeredSceneManager();
+				return m ? m->GetAudioLayer(name) : nullptr;
+			},
+			"获取精灵层", [](ISceneSubsystem& s, const String& name) -> ISceneSpriteLayer* {
+				auto* m = s.GetLayeredSceneManager();
+				return m ? m->GetSpriteLayer(name) : nullptr;
+			}
+		);
+
 		// 注册UI系统
 		galgame.new_usertype<IGalGameUISystem>("GalGameUISystem",
 			// 剧情选择
@@ -255,14 +491,11 @@ namespace VisionGal::GalGame
 
 		ArchiveDataContainer::InitializeLuaBinding(galgame);
 
-		// 注册引擎类
+		// 注册引擎类（Phase 7：子系统经总线暴露，避免在引擎 userdata 上挂裸 I*System*）
 		galgame.new_usertype<IGalGameEngine>("IGalGameEngine",
 			"LoadArchive", &IGalGameEngine::LoadArchive,
-			"IDialogueSystem", sol::property(
-				[](IGalGameEngine& self) -> IDialogueSystem* { return self.GetDialogueSystem(); }
-			),
-			"ArchiveSystem", sol::property(
-				[](IGalGameEngine& self) -> IArchiveSystem* { return self.GetArchiveSystem(); }
+			"SubsystemBus", sol::property(
+				[](IGalGameEngine& self) -> ISubsystemBus* { return self.GetSubsystemBus(); }
 			),
 
 			//中文
@@ -305,18 +538,29 @@ namespace VisionGal::GalGame
 			"场景截图", &IGalGameEngine::CaptureSceneImage,
 			"获取数据桥", [](IGalGameEngine & self, const std::string& name)-> LuaDataBridge* { return LuaDataBridgeManager::GetInstance()->GetDataBridge(name); },
 
-			//属性
 			"对话系统", sol::property(
-				[](IGalGameEngine& self) -> IDialogueSystem* { return self.GetDialogueSystem(); }
+				[](IGalGameEngine& self) -> IDialogueSubsystem* {
+					auto* b = self.GetSubsystemBus();
+					return b ? b->Dialogue() : nullptr;
+				}
 			),
 			"存档系统", sol::property(
-				[](IGalGameEngine& self) -> IArchiveSystem* { return self.GetArchiveSystem(); }
+				[](IGalGameEngine& self) -> IArchiveSubsystem* {
+					auto* b = self.GetSubsystemBus();
+					return b ? b->Archive() : nullptr;
+				}
 			),
 			"场景系统", sol::property(
-				[](IGalGameEngine& self) -> ILayeredSceneManager* { return self.GetLayeredSceneManager(); }
+				[](IGalGameEngine& self) -> ISceneSubsystem* {
+					auto* b = self.GetSubsystemBus();
+					return b ? b->Scene() : nullptr;
+				}
 			),
 			"UI系统", sol::property(
-				[](IGalGameEngine& self) -> IGalGameUISystem* { return self.GetGalGameUISystem(); }
+				[](IGalGameEngine& self) -> IUISubsystem* {
+					auto* b = self.GetSubsystemBus();
+					return b ? b->UI() : nullptr;
+				}
 			),
 			"存档数据", sol::property(
 				[](IGalGameEngine& self) -> ArchiveDataContainer* { return self.GetArchiveDataContainer(); }

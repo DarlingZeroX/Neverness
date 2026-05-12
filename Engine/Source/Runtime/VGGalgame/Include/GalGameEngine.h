@@ -22,6 +22,7 @@
 #include "VGEngine/Include/Scene/Scene.h"
 #include "VGEngine/Include/Render/RenderCore.h"
 #include "VGCore/Include/Utils/TransitionHelper.h"
+#include "GalSubsystemBus.h"
 
 namespace VisionGal::GalGame
 {
@@ -32,8 +33,8 @@ namespace VisionGal::GalGame
 		~GalGameEngine() override = default;
 		GalGameEngine(const GalGameEngine&) = delete;
 		GalGameEngine& operator=(const GalGameEngine&) = delete;
-		GalGameEngine(GalGameEngine&&) noexcept = default;
-		GalGameEngine& operator=(GalGameEngine&&) noexcept = default;
+		GalGameEngine(GalGameEngine&&) = delete;
+		GalGameEngine& operator=(GalGameEngine&&) = delete;
 
 		/// 预加载指定路径的资源。
 		bool PreLoadResource(const String& path) override;	
@@ -81,7 +82,18 @@ namespace VisionGal::GalGame
 
 		// 引擎上下文获取接口
 		ArchiveDataContainer* GetArchiveDataContainer() const override;
+
+		ISubsystemBus* GetSubsystemBus() override;
+		IGalGameContext* GetContext() override;
 	private:
+		/// Phase 7：总线 Adapter 直接访问成员，避免 IGalGameEngine::Get* 与 Bus 转发相互递归。
+		friend class GalSceneSubsystemAdapter;
+		friend class GalAudioSubsystemAdapter;
+		friend class GalUISubsystemAdapter;
+		friend class GalScriptSubsystemAdapter;
+		friend class GalArchiveSubsystemAdapter;
+		friend class GalDialogueSubsystemAdapter;
+
 		void CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext);		/// 创建引擎的核心子系统。
 		void OnMainSceneChanged(const EngineEvent& evt);			/// 处理主场景更改事件的回调函数。
 		void OneRenderSceneCallback(OpenGL::RenderTarget2D* rt);		/// 引擎渲染回调函数。
@@ -99,7 +111,11 @@ namespace VisionGal::GalGame
 		Ref<StoryScriptSystem> m_StoryScriptSystem;				// 剧情脚本系统
 		Ref<ResourceSystem> m_ResourceSystem;					// 资源系统
 		Ref<GalGameUISystem> m_GalGameUISystem;					// 界面系统
+
+		/// 子系统总线：Scene/UI/Audio/Script/Archive/Dialogue 统一入口（中文注释：瘦引擎迁移用）
+		GalSubsystemBus m_SubsystemBus;
 	};
 
 
 }
+

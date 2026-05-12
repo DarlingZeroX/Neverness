@@ -12,10 +12,12 @@
 #include <regex>
 #include "Executor.h"
 #include "Asset/Asset.h"
+#include "VGGalgameCore/Include/SubsystemBusGuard.h"
+#include "VGGalgameCore/Interface/IGalGameContext.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Core/EventBus.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal::GalGame
@@ -34,12 +36,13 @@ namespace VisionGal::GalGame
         return nullptr;
     }
 
-    bool SSExecutorSequence::Run(IGalGameEngine* engine)
+    bool SSExecutorSequence::Run(ISubsystemBus* bus, IGalGameContext* gameContext)
     {
+        (void)gameContext;
         PreLoadScriptResource();
 
-		m_ExecutionContext.Engine = engine;
-		// SSExecutorResourceManager 仅有默认构造；引擎指针写在 ExecutionContext.Engine。
+		m_ExecutionContext.SubsystemBus = bus;
+		// ResourceManager 默认构造；SubsystemBus 由宿主在 Run 时注入执行上下文。
 		m_ExecutionContext.ResourceManager = MakeRef<SSExecutorResourceManager>();
 		m_ExecutionContext.SequenceData = m_ExecutionData->SequenceData;
 
@@ -53,9 +56,12 @@ namespace VisionGal::GalGame
 
     void SSExecutorSequence::Tick(float deltaTime)
     {
+		SubsystemBusGuard guard(m_ExecutionContext.SubsystemBus);
+		if (!guard)
+			return;
 		if (m_Executor != nullptr)
 		{
-			m_Executor->Tick(deltaTime);
+			m_Executor->Tick(deltaTime, guard.Get());
 		}
     }
 
@@ -76,9 +82,12 @@ namespace VisionGal::GalGame
 
     void SSExecutorSequence::ContinueDialogue()
     {
+		SubsystemBusGuard guard(m_ExecutionContext.SubsystemBus);
+		if (!guard)
+			return;
 		if (m_Executor != nullptr)
 		{
-			m_Executor->Continue();
+			m_Executor->Continue(guard.Get());
 		}
     }
 

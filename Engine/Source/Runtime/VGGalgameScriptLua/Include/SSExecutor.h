@@ -14,6 +14,8 @@
 #include <sol/state.hpp>
 #include <sol/coroutine.hpp>
 #include "VGCore/Include/Core/Core.h"
+#include "VGGalgameCore/Interface/IGalGameContext.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGGalgameRuntime/Interface/IStoryScript.h"
 
@@ -26,7 +28,7 @@ namespace VisionGal::GalGame
 		~LuaStoryScript() override = default;
 
 		static Ref<LuaStoryScript> LoadFromFile(const String& file);
-		bool Run(IGalGameEngine* engine) override;
+		bool Run(ISubsystemBus* bus, IGalGameContext* gameContext) override;
 		void Tick(float deltaTime) override;
 		IRuntimeInterface* QueryInterface(InterfaceID id) override;
 
@@ -40,6 +42,7 @@ namespace VisionGal::GalGame
 	private:
 		bool LoadScript(const String& file);
 	private:
+		ISubsystemBus* m_Bus = nullptr;
 		IGalGameEngine* m_Engine = nullptr;
 		String m_ScriptCode;
 		sol::state m_LuaState;

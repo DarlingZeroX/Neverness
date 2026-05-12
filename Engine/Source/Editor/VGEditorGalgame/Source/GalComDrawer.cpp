@@ -16,7 +16,7 @@
 #include <VGGalgame/Include/GalGameEngine.h>
 #include <VGGalgameCore/Include/Components.h>
 #include <VGAsset/Interface/Package.h>
-#include <VGGalgameCore/Interface/GameEngineCore.h>
+#include <VGGalgameCore/Include/GalGameEngineAccess.h>
 
 #include "VGAsset/Include/GalGameAsset.h"
 #include "VGGalgameScriptSequence/Include/Asset/Asset.h"
@@ -65,7 +65,7 @@ namespace VisionGal::Editor
 				ImGui::TableSetColumnIndex(1);
 				if (ImGui::Button(ICON_FA_REDO "##Reload Story Script"))
 				{
-					GalGame::GameEngineCore::GetCurrentEngine()->ReloadStoryScript();
+					GalGame::GalGameEngineAccess::Current()->GetSubsystemBus()->Script()->ReloadStoryScript();
 				}
 			}
 

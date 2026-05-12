@@ -27,7 +27,7 @@ TEST(SequenceStateSerializer, SaveTickLoadPreservesCursorAndTick)
 	SequenceExecutionInstance a;
 	a.SetExecutionContext(&ctx);
 	a.Play();
-	a.Tick(0.016f);
+	a.Tick(0.016f, nullptr);
 
 	const nlohmann::json snapshot = SequenceStateSerializer::Save(a);
 	ASSERT_TRUE(snapshot.is_object());
@@ -73,6 +73,6 @@ TEST(SequenceStateSerializer, LoadThenContinueClearsSerializedWait)
 	SequenceStateSerializer::Load(inst, j);
 	EXPECT_TRUE(inst.IsWaiting());
 
-	inst.Continue();
+	inst.Continue(nullptr);
 	EXPECT_FALSE(inst.IsWaiting());
 }

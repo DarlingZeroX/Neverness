@@ -7,38 +7,22 @@
 * Copyright (c) 2025-present 梦旅缘心
 *
 * See the LICENSE file in the project root for details.
+*
+* Phase 7：IStoryScriptExecutor / IStoryScriptExecutorCreator 已迁至 VGGalgameCore；
+* 本头文件保留 GalGameScriptExecutorFactory 并转发包含 Core 契约，供旧 include 路径兼容。
 */ 
 
 #pragma once
 #include "../VGGalgameRuntimeConfig.h"
-#include "VGGalgameCore/Interface/IGameEngine.h"
+#include "VGGalgameCore/Interface/IStoryScriptExecutor.h"
 #include "VGCore/Include/Core/Core.h"
+
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace VisionGal::GalGame
 {
-	struct  IStoryScriptExecutor : public VGEngineResource
-	{ 
-		 ~IStoryScriptExecutor() override = default;
-
-		virtual bool Run(IGalGameEngine* engine) = 0;
-		virtual void Tick(float deltaTime) = 0;
-		virtual IRuntimeInterface* QueryInterface(InterfaceID id) = 0;
-
-		virtual void PreLoadScriptResource() = 0;
-		virtual std::filesystem::file_time_type GetScriptLastWriteTime() const = 0;
-
-		virtual void ContinueDialogue() = 0;
-		virtual void OnChoiceSelected(const std::string& id,const std::vector<std::string>& options,int currentChoice) = 0; 
-		virtual void OnInputSubmitted(const std::string& id, const std::string& text) = 0; 
-	};
-
-	struct IStoryScriptExecutorCreator
-	{
-		virtual ~IStoryScriptExecutorCreator() = default;
-
-		virtual Ref<IStoryScriptExecutor> LoadFromAsset(const String& path) = 0;
-	};
-
 	struct VG_GALGAME_RUNTIME_API GalGameScriptExecutorFactory
 	{
 		virtual Ref<IStoryScriptExecutor> LoadAssetExecutor(const String& type, const String& path);

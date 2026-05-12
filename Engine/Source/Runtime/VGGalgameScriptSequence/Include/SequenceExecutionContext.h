@@ -6,13 +6,13 @@
  *
  * 生命周期：
  * - SequenceData / ResourceManager 使用 Ref（shared_ptr）共享所有权；
- * - Engine 为非拥有指针，由宿主保证 Tick/Execute 调用栈内有效。
+ * - SubsystemBus 为非拥有指针，由宿主在 Run 时写入，Tick/Execute 调用栈内有效。
  */
 #pragma once
 
 #include "../GSSExport.h"
 #include "VGCore/Include/Core/Core.h"
-#include "VGGalgameCore/Interface/IGameEngine.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "Sequence/DataContainer.h"
 #include "ExecutorResourceManager.h"
 
@@ -29,8 +29,8 @@ namespace VisionGal
 		/// 运行时对象注册表（角色 / 精灵 / 音视频绑定）。
 		Ref<SSExecutorResourceManager> ResourceManager;
 
-		/// GalGame 引擎实例（ShowSprite、对话管线等）。
-		GalGame::IGalGameEngine* Engine = nullptr;
+		/// 子系统总线（非拥有指针）；由宿主在 Run 时写入，Tick/Continue 周期内有效。
+		GalGame::ISubsystemBus* SubsystemBus = nullptr;
 
 		[[nodiscard]] bool HasSequenceBinding() const noexcept { return SequenceData != nullptr; }
 

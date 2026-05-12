@@ -10,7 +10,7 @@
  */
 
 #include "ResourceSystem.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
+#include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGCore/Interface/Loader.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGEngine/Include/Engine/Manager.h"

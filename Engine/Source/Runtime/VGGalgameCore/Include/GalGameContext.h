@@ -13,16 +13,26 @@
 #include "GalGameRuntimeState.h"
 #include "GalGameEvent.h"
 #include "ArchiveDataContainer.h"
-#include "VGGalgameCore/Interface/IGameEngine.h"
+#include "VGGalgameCore/Interface/IGalGameContext.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
 
 namespace VisionGal::GalGame
 {
-	struct GalGameContext
+	class IGalGameEngine;
+
+	/**
+	 * @brief Gal 运行时上下文：纯数据 + 事件总线（Phase 7 数据层）。
+	 *
+	 * **Engine**：弱引用语义，宿主 `GalGameEngine` 拥有生命周期；`Reset` / 析构时必须置空，禁止悬空。
+	 */
+	struct GalGameContext : public IGalGameContext
 	{
 		GalGameContext()
 		{
 			archiveData = MakeRef<ArchiveDataContainer>();
 		}
+
+		~GalGameContext() override = default;
 
 		IGalGameEngine* Engine = nullptr;
 
@@ -32,5 +42,16 @@ namespace VisionGal::GalGame
 		GalGameRuntimeState runtimeState;
 		Ref<ArchiveDataContainer> archiveData = nullptr;
 
+		/**
+		 * @brief 推荐的唯一构造入口：集中初始化 `archiveData` 与引擎弱引用。
+		 * @param bus 可选；预留与宿主总线一致性校验（当前未强校验）。
+		 */
+		static Ref<GalGameContext> Create(IGalGameEngine* engine, ISubsystemBus* bus = nullptr)
+		{
+			Ref<GalGameContext> ctx = MakeRef<GalGameContext>();
+			ctx->Engine = engine;
+			(void)bus;
+			return ctx;
+		}
 	};
 }

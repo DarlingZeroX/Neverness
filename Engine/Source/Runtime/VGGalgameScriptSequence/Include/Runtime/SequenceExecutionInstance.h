@@ -19,6 +19,7 @@
 #include "../../Interface/IVGSSequenceRuntimeSystem.h"
 #include "../SequenceExecutionContext.h"
 #include "../SequenceRuntimeTypes.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "IStoryExecutionInstance.h"
 #include "SequenceExecutionFrame.h"
 #include "SequenceRuntimeExecutionContext.h"
@@ -64,7 +65,7 @@ namespace VisionGal::GalGame
 		void Stop();
 		void Restart();
 
-		void Continue() override;
+		void Continue(ISubsystemBus* bus) override;
 
 		[[nodiscard]] ESSSequenceExecutorState GetState() const noexcept override { return m_State; }
 
@@ -76,7 +77,7 @@ namespace VisionGal::GalGame
 		[[nodiscard]] std::size_t GetCurrentSequenceIndex() const noexcept;
 		[[nodiscard]] bool IsWaiting() const noexcept;
 
-		void Tick(float deltaTime) override;
+		void Tick(float deltaTime, ISubsystemBus* bus) override;
 
 		[[nodiscard]] SSSequenceRuntimeDebugInfo BuildRuntimeDebugInfo() const;
 		[[nodiscard]] SSSequenceRuntimeDebugInfo GetRuntimeDebugInfo() const { return BuildRuntimeDebugInfo(); }

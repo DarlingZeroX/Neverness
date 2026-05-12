@@ -8,8 +8,8 @@
 
 ## 1. 模块定位与依赖
 
-- **职责**：线性 **Sequence 剪辑表**（`IVGSSequenceComponent` 条目）的加载、JSON 序列化、**数据驱动** 的 **`SequenceExecutionInstance`（Sequence Runtime Kernel）** 调度，以及对话 / 立绘 / 背景等内置 **`IVGSSequenceRuntimeSystem`** 实现；通过 `IGalGameEngine` 与 `SSExecutorResourceManager` 与 Galgame 展示层交互。
-- **CMake 链接**：`PUBLIC VGGalgameCore`、`PUBLIC VGGalgameRuntime`。
+- **职责**：线性 **Sequence 剪辑表**（`IVGSSequenceComponent` 条目）的加载、JSON 序列化、**数据驱动** 的 **`SequenceExecutionInstance`（Sequence Runtime Kernel）** 调度，以及对话 / 立绘 / 背景等内置 **`IVGSSequenceRuntimeSystem`** 实现；通过 **`ISubsystemBus`**（写入 **`SSSequenceExecutionContext::SubsystemBus`**）与 **`SSExecutorResourceManager`** 与 Galgame 展示层交互。
+- **CMake 链接**：`PUBLIC VGGalgameCore`（Phase 7 起 **不再** `PUBLIC` 链接 **`VGGalgameRuntime`**；工厂注册在 **`VGGalgame`** 的 `GalGameSequenceScriptModuleMount.cpp`）。
 - **典型消费方**：`VGGalgame`、`VGEditorGalgameSequence`（编辑器侧私有链接以访问运行时类型与序列化）、`VGDesktopApplication` 等（以工程 CMake 为准）。
 
 ---
@@ -21,7 +21,7 @@ CMake 使用 `GLOB` 收集根目录、`Include/**`、`Interface/**`、`Source/**
 | 路径 | 职责 |
 |------|------|
 | `GSSExport.h` | DLL 导出宏 `VG_GSS_API`。 |
-| `Module.h` / `Source/Module.cpp` | **`GalGameSequenceScriptModule::MountEngineRuntime()`**：注册 `GalGameSequenceScriptAssetFactory`、向 `GalGameScriptExecutorFactory` 注册资产类型 **`GalGameSequenceScript`** 对应的 **`SSExecutorCreatorSequence`**。 |
+| `Module.h` | **`GalGameSequenceScriptModule::MountEngineRuntime()`** 声明；**实现**迁至 **`VGGalgame/Source/Interface/GalGameSequenceScriptModuleMount.cpp`**（需链接 **`VGGalgameRuntime`** 以访问 **`GalGameScriptExecutorFactory`**）。 |
 | `Interface/IVGSSequenceComponent.h` / `Source/Interface/IVGSSequenceComponent.cpp` | **`IVGSSequenceComponent`**（含 **`GetComponentTypeID()`**）、**`TVGSSequenceComponent<T>`**、**`IVGSSequenceComponentManager`**（单例注册表 + **`CreateSequenceEntryByTypeNameID`** / **`EnumerateRegisteredTypeNameIDs`**）。 |
 | `Interface/IVGSSequenceRuntimeSystem.h` | **`IVGSSequenceRuntimeSystem`**：**`SupportsType`** / `CanExecute` / **`Execute(SequenceRuntimeExecutionContext&)`** / **`Tick(SequenceRuntimeExecutionContext&)`** / **`ShouldHoldPlaybackAfterExecute`**（Wait 闸门语义）。 |
 | `Interface/VGSTypeDefine.h` | **`VGSS_INVALID_OBJECT_ID`** 及强类型 ObjectID 别名。 |
@@ -46,14 +46,14 @@ CMake 使用 `GLOB` 收集根目录、`Include/**`、`Interface/**`、`Source/**
 | `Include/Sequence/DataContainer.h` / `Source/Sequence/DataContainer.cpp` | **`VGSSequenceDataContainer`**：条目增删改、重排；**`AddVGSSequenceDataContainerDefaultEntries`**。 |
 | `Include/Sequence/Components.h` / `Source/Sequence/Components.cpp` | 内置组件：**`VGSSC_CommonDialogue`**、**`VGSSC_ChangeFigure`**、**`VGSSC_ChangeBackground`**（及 `GetTypeNameID` 字符串约定）。 |
 | `Include/Sequence/DataContainerSerialization.h` / `Source/Sequence/DataContainerSerialization.cpp` | **nlohmann::json** 容器序列化、**`VGSSequenceComponentJsonRegistry`**、**`TVGSSequenceComponentJsonBinding<T>`**、内置 `component_to_json` / `component_from_json` 与静态注册。 |
-| `Include/SequenceExecutionContext.h` | **`SSSequenceExecutionContext`**：`SequenceData`、`ResourceManager`、`Engine` 非拥有指针。 |
+| `Include/SequenceExecutionContext.h` | **`SSSequenceExecutionContext`**：`SequenceData`、`ResourceManager`、**`SubsystemBus`**（`ISubsystemBus*`，非拥有）。 |
 | `Include/SequenceExecutionData.h` | **`SSSequenceExecutionData`**：默认构造内创建空的 `VGSSequenceDataContainer`；资产载体用。 |
 | `Include/SequenceExecutor.h` | **历史别名**：`using SSSequenceExecutor = SequenceExecutionInstance`；实现已迁至 `Runtime/SequenceExecutionInstance.*`。 |
 | `Include/ExecutorResourceManager.h` / `Source/ExecutorResourceManager.cpp` | **`SSExecutorResourceManager`**：角色/精灵/音频/视频的注册表、Layer 索引、元数据、线程安全说明。 |
 | `Include/RuntimeSystem/Dialogue.h` 等 + `Source/RuntimeSystem/*.cpp` | **`VGSDialogueRuntimeSystem`**、**`VGSFigureRuntimeSystem`**、**`VGSBackgroundRuntimeSystem`**。 |
 | `Include/Asset/Asset.h` / `Source/Asset/Asset.cpp` | **`SequenceScriptAssetType`**（`GetNameID()` → **`GalGameSequenceScript`**）、**`SequenceScriptAsset`**（`ExecutionData`）、`SequenceScriptAssetWriter` / **`SequenceScriptAssetLoader`**。 |
 | `Include/Asset/AssetFactory.h` / `Source/Asset/AssetFactory.cpp` | **`GalGameSequenceScriptAssetFactory`**：`CreateAsset` 等。 |
-| `Include/Executor.h` / `Source/Executor.cpp` | **`SSExecutorSequence`**：实现 **`IStoryScriptExecutor`**；`LoadFromAsset`、`Run`/`Tick`、`ContinueDialogue`、`QueryInterface`；`Run` 内构造 **`SequenceExecutionInstance`** 并以 **`Ref<IStoryExecutionInstance>`** 持有。 |
+| `Include/Executor.h` / `Source/Executor.cpp` | **`SSExecutorSequence`**：实现 **`IStoryScriptExecutor`**；**`Run(ISubsystemBus*, IGalGameContext*)`** / `Tick` / `ContinueDialogue`；`Run` 内构造 **`SequenceExecutionInstance`** 并以 **`Ref<IStoryExecutionInstance>`** 持有。 |
 | `Include/ExecutorCreator.h` / `Source/ExecutorCreator.cpp` | **`SSExecutorCreatorSequence`**：`LoadFromAsset` → `SSExecutorSequence::LoadFromAsset`。 |
 | `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md` | 本文件。 |
 
@@ -126,9 +126,9 @@ VisionGal::GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 ### 4.2 作为 `IStoryScriptExecutor` 使用（推荐路径）
 
 1. 使用 **`SSExecutorSequence::LoadFromAsset(path)`** 或工厂 **`SSExecutorCreatorSequence::LoadFromAsset(path)`** 得到 `Ref<SSExecutorSequence>`（内部 `SequenceScriptAssetLoader` 读盘并取出 `ExecutionData`）。
-2. 在合适的生命周期调用 **`Run(IGalGameEngine* engine)`**：会创建 **`SSExecutorResourceManager`**，填充 **`m_ExecutionContext.Engine`** / **`SequenceData`**，构造 **`SequenceExecutionInstance`** 并 **`Play()`**，内核以 **`Ref<IStoryExecutionInstance>`** 保存。
-3. **每帧**调用 **`Tick(deltaTime)`**。
-4. 当对话等剪辑将 **`ShouldHoldPlaybackAfterExecute`** 置为等待时，由 UI/输入层在玩家确认继续时调用 **`ContinueDialogue()`**（转发到 **`m_Executor->Continue()`**）。
+2. 在合适的生命周期调用 **`Run(ISubsystemBus* bus, IGalGameContext* ctx)`**：会创建 **`SSExecutorResourceManager`**，填充 **`m_ExecutionContext.SubsystemBus`** / **`SequenceData`**，构造 **`SequenceExecutionInstance`** 并 **`Play()`**，内核以 **`Ref<IStoryExecutionInstance>`** 保存。
+3. **每帧**调用 **`Tick(deltaTime)`**（宿主侧；内核 **`IStoryExecutionInstance::Tick(dt, bus)`** 由 **`SSExecutorSequence`** 转发并传入 **`SubsystemBus`**）。
+4. 当对话等剪辑将 **`ShouldHoldPlaybackAfterExecute`** 置为等待时，由 UI/输入层在玩家确认继续时调用 **`ContinueDialogue()`**（转发到 **`m_Executor->Continue(bus)`**）。
 5. 调试 UI 可通过 **`QueryInterface(typeid(SSSequenceRuntimeDebugInfo))`** 取得当前索引、类型名、是否 Waiting；**`QueryInterface(typeid(SSSequenceRuntimeInspectorInfo))`** 取得栈深、并行摘要、**`GlobalTickCounter`** 与帧轨迹文本（见 **`SequenceExecutionInstance::QueryInterface`**）。
 
 **注意**：`PreLoadScriptResource`、`OnChoiceSelected`、`OnInputSubmitted` 等接口当前多为占位（`Executor.cpp`），扩展选择支/输入流时在保持 `IStoryScriptExecutor` 契约的前提下在此模块或上层实现。
@@ -138,9 +138,9 @@ VisionGal::GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 适用于测试、工具或嵌入式播放：
 
 1. 准备 **`Ref<VGSSequenceDataContainer>`**，向 `m_Sequence` 填入 **`IVGSSequenceComponent`**（或通过 **`IVGSSequenceComponentManager::CreateSequenceEntryByTypeNameID`** 克隆模板后改字段）。
-2. 构造 **`SSSequenceExecutionContext`**：`SequenceData`、`ResourceManager`（`MakeRef<SSExecutorResourceManager>()`）、**`Engine`** 指向有效 **`IGalGameEngine*`**（整个 Tick 周期内保持有效）。
+2. 构造 **`SSSequenceExecutionContext`**：`SequenceData`、`ResourceManager`（`MakeRef<SSExecutorResourceManager>()`）、**`SubsystemBus`** 指向有效 **`ISubsystemBus*`**（整个 Tick 周期内保持有效）。
 3. **`SequenceExecutionInstance` executor**；**`executor.SetExecutionContext(&ctx)`**；按需 **`RegisterRuntimeSystem`**（若需覆盖内置三个域，后注册者优先匹配）。
-4. **`Play()`**，之后每帧 **`Tick(dt)`**；Wait 时 **`Continue()`**。
+4. **`Play()`**，之后每帧 **`Tick(dt, bus)`**；Wait 时 **`Continue(bus)`**。
 
 ### 4.4 新增一种序列组件（运行时 + 存档 + 可选执行域）
 
@@ -172,7 +172,7 @@ VisionGal::GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 - `SSExecutorSequence` 对接 `IStoryScriptExecutor`、资产 Loader、修改时间记录。
 - `GalGameSequenceScriptModule::MountEngineRuntime` 双注册。
 - **Phase 2A — Execution Core 稳定化**：`IStorySequenceExecutionInstance`、`SequenceExecutionInstance`、帧栈 + `SequenceExecutionCursor`、`SequenceRuntimeExecutionContext`、`SequenceRuntimeCommandAPI`、`SequenceComponentTypeID` + `SupportsType` 优先分派、`Tick` 管线拆分、`SSExecutorSequence` 以 **`Ref<IStoryExecutionInstance>`** 持有内核。
-- **Phase 2B — Save / Load**：`SequenceStateSerializer`、`SequenceRuntimeSnapshot`、`m_UserStateBlob`、`VGSSObjectIDGenerator` 读档恢复计数器、**`Engine/Source/Tests/VGGalgameScriptSequenceTest`**（GTest：`Save→Tick→Load`、挂起 token + `Continue`）。
+- **Phase 2B — Save / Load**：`SequenceStateSerializer`、`SequenceRuntimeSnapshot`、`m_UserStateBlob`、`VGSSObjectIDGenerator` 读档恢复计数器、**`Engine/Source/Tests/VGGalgameScriptSequenceTest`**（GTest：`Save→Tick→Load`、挂起 token + **`Continue(nullptr)`**）。
 - **Phase 2C — WaitToken / Continuation**：`AsyncWaitRegistry`、`ActiveWaitTokenIds`、`ContinueWithResume`。
 - **Phase 2D — SignalBus**：`SequenceSignalBus`、`EmitSignal`、上下文 **`SignalBus*`**。
 - **Phase 2E — Variable**：`SequenceValue`、`SequenceVariableTable`、`SetVariable`（**未做**通用表达式 `EvaluateExpression`，留后续）。
@@ -196,7 +196,7 @@ VisionGal::GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 
 - `SSExecutorSequence::PreLoadScriptResource` 为空；`OnChoiceSelected` / `OnInputSubmitted` 未接线。
 - `SequenceRuntimeCommandAPI::PushFrame` / `PopFrame`：Phase 2A 不改变栈深度，与多子序列/调用栈对接时实装。
-- CMake 注释仍写「VGGalgameRuntime」历史名称，实际目标为 **`VGGalgameScriptSequence`**；以当前 `CMakeLists.txt` 为准。
+- CMake：`VGGalgameScriptSequence` **仅** `PUBLIC VGGalgameCore`；宿主 **`VGGalgame`** 负责 **`MountEngineRuntime`** 实现与 Runtime 工厂链接。
 
 ### 5.4 已知实现细节
 
@@ -212,4 +212,4 @@ VisionGal::GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 |------|------|
 | 2026-05-12 | 初版：目录结构、架构、`Tick`/Wait 语义、集成步骤与扩展清单。 |
 | 2026-05-12 | Phase 2A：引入 `SequenceExecutionInstance`、`IStoryExecutionInstance`、`SequenceRuntimeExecutionContext` / `CommandAPI`、组件类型 ID 与 `Tick` 管线；更新目录表与 Phase 2 路线图。 |
-| 2026-05-12 | Phase 2B–2G：快照序列化、WaitToken、`SignalBus`、`SequenceValue`/`VariableTable`、并行组、`InspectorInfo`+帧轨迹、`VGSSObjectIDGenerator` 读档恢复、`VGGalgameScriptSequenceTest`；更新目录与 Tick/存档说明。 |
+| 2026-05-12 | SubsystemBus：`SSSequenceExecutionContext::SubsystemBus`；`Run(ISubsystemBus*, IGalGameContext*)`；`IStoryExecutionInstance::Tick/Continue` 带 bus；内置 RuntimeSystem 经总线访问 Scene/Dialogue。 |

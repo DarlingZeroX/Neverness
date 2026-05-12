@@ -10,13 +10,13 @@
  */
 
 #include "SpriteAnimationScriptManager.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
 #include "SpriteAnimationScript.h"
 #include "HCore/Interface/HLocalization.h"
 #include "HCore/Interface/HStringTools.h"
 #include "VGEngine/Include/Scene/Components.h"
 #include "VGEngine/Include/Animation/Core/SpriteAnimationScript.h"
 #include "VGEngine/Include/Animation/Interface/AnimationScriptManager.h"
+#include "VGGalgameCore/Interface/IDialogueSubsystem.h"
 
 namespace VisionGal::GalGame {
 
@@ -45,7 +45,7 @@ namespace VisionGal::GalGame {
 		iss >> duration;
 		iss >> transition;
 
-		if (engine->GetDialogueSystem()->IsFastForward())
+		if (engine->GetSubsystemBus()->Dialogue()->GetDialogueSystem()->IsFastForward())
 		{
 			duration = 0.f;
 		}

@@ -11,7 +11,7 @@
 
 #include "Game.h"
 #include "GalGameEngine.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
+#include "VGGalgameCore/Include/GalGameLayoutUtils.h"
 #include "SpriteAnimationScript.h"
 #include "SpriteAnimationScriptManager.h"
 #include "VGEngine/Include/Animation/Audio/AudioAnimationScriptManager.h"
@@ -81,7 +81,7 @@ namespace VisionGal::GalGame
 
 		if (m_GalState != nullptr)
 		{
-			if (m_GalState->enableFastForward)
+			if (m_GalState->playback.enableFastForward)
 				duration = 0.f;
 		}
 
@@ -235,7 +235,7 @@ namespace VisionGal::GalGame
 
 		if (auto* transform = GetTransformComponent())
 		{
-			float yOffset = GameEngineCore::GetSpriteYOffset(tex->Height() * transform->scale.y);
+			float yOffset = GalGameLayoutUtils::GetSpriteYOffset(tex->Height() * transform->scale.y);
 			transform->location.y = yOffset;
 			transform->is_dirty = true;
 		}
@@ -255,7 +255,7 @@ namespace VisionGal::GalGame
 
 	void GalSprite::Cut(const std::string& cmd)
 	{
-		if (m_Engine->GetDialogueSystem()->IsFastForward())
+		if (m_Engine->GetSubsystemBus()->Dialogue()->GetDialogueSystem()->IsFastForward())
 		{
 			return;
 		}
@@ -275,7 +275,7 @@ namespace VisionGal::GalGame
 		m_Engine = engine;
 		m_Layer = layer;
 		m_Path = path;
-		m_Engine->PreLoadResource(path);
+		m_Engine->GetSubsystemBus()->Scene()->PreLoadResource(path);
 	}
 
 	GalAudio::~GalAudio()
@@ -395,7 +395,7 @@ namespace VisionGal::GalGame
 		m_Engine = engine;
 		m_Layer = layer;
 		m_Path = path;
-		//GameEngineCore::GetCurrentEngine()->PreLoadResource(path);
+		//GalGameEngineAccess::Current()->GetSubsystemBus()->Scene()->PreLoadResource(path);
 	}
 
 	GalVideo::~GalVideo()
@@ -509,18 +509,18 @@ namespace VisionGal::GalGame
 
 	void GalCharacter::Say(const std::string& text)
 	{
-		m_Engine->GetDialogueSystem()->CharacterSay(m_Name,text);
+		m_Engine->GetSubsystemBus()->Dialogue()->GetDialogueSystem()->CharacterSay(m_Name,text);
 	}
 
 	IGalAudio* GalCharacter::Voice(const std::string& path)
 	{
-		if (m_Engine->GetDialogueSystem()->IsFastForward())
+		if (m_Engine->GetSubsystemBus()->Dialogue()->GetDialogueSystem()->IsFastForward())
 		{
 			return nullptr;
 		}
 
 		auto* engine = m_Engine;
-		auto* voice = engine->PlayAudio("Voice", path);
+		auto* voice = engine->GetSubsystemBus()->Audio()->PlayAudio("Voice", path);
 
 		if (voice == nullptr)
 			return nullptr;
@@ -529,7 +529,7 @@ namespace VisionGal::GalGame
 		if (m_LastState.Voice != nullptr)
 		{
 			m_LastState.Voice->Stop();
-			engine->RemoveAudio(m_LastState.Voice);
+			engine->GetSubsystemBus()->Audio()->RemoveAudio(m_LastState.Voice);
 		}
 
 		// 停止当前声音
@@ -582,7 +582,7 @@ namespace VisionGal::GalGame
 		// 显示立绘
 		//auto& path = result->second;
 		//auto* sprite = engine->ShowSprite("Scene", path);
-		auto* sprite = engine->ShowSprite("SceneCharacterSpriteCurrent", Core::GetAssetsPathVFS() + path);
+		auto* sprite = engine->GetSubsystemBus()->Scene()->ShowSprite("SceneCharacterSpriteCurrent", Core::GetAssetsPathVFS() + path);
 
 		if (sprite == nullptr)
 			return nullptr;
@@ -606,7 +606,7 @@ namespace VisionGal::GalGame
 		// 删除最后的立绘
 		if (m_LastState.Sprite != nullptr)
 		{
-			engine->RemoveSprite(m_LastState.Sprite);
+			engine->GetSubsystemBus()->Scene()->RemoveSprite(m_LastState.Sprite);
 		}
 
 		// 保存到最后的立绘状态
@@ -615,7 +615,7 @@ namespace VisionGal::GalGame
 		m_LastState.IsHide = m_CurrentState.IsHide;
 
 		// 将上一个立绘移动到前一层
-		engine->GetLayeredSceneManager()->GetSpriteManager()->MoveSpriteToLayer(m_LastState.Sprite, "SceneCharacterSpritePrev");
+		engine->GetSubsystemBus()->Scene()->GetLayeredSceneManager()->GetSpriteManager()->MoveSpriteToLayer(m_LastState.Sprite, "SceneCharacterSpritePrev");
 
 		// 保存当前显示状态
 		if (isState)

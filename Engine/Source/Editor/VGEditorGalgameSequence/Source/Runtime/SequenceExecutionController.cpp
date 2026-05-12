@@ -10,7 +10,9 @@
 
 #include "HCore/Interface/HLog.h"
 #include "VGEngine/Include/Engine/Manager/SceneManager.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
+#include "VGGalgameCore/Include/GalGameEngineAccess.h"
+#include "VGGalgameCore/Interface/IScriptSubsystem.h"
+#include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGGalgameScriptSequence/Include/SequenceRuntimeTypes.h"
 
 #include <algorithm>
@@ -33,14 +35,14 @@ namespace VisionGal::Editor
 		if (!SceneManager::Get()->IsPlayMode())
 			SceneManager::Get()->EnterPlayMode();
 
-		auto* engine = GalGame::GameEngineCore::GetCurrentEngine();
+		auto* engine = GalGame::GalGameEngineAccess::Current();
 		if (engine == nullptr)
 		{
 			err = "no game engine";
 			return false;
 		}
 
-		auto* story = engine->GetStoryScriptSystem();
+		auto* story = engine->GetSubsystemBus()->Script()->GetStoryScriptSystem();
 		if (story == nullptr)
 		{
 			err = "no story script system";
@@ -55,8 +57,8 @@ namespace VisionGal::Editor
 		if (!EnsurePlayModeAndStory(err))
 			return false;
 
-		auto* engine = GalGame::GameEngineCore::GetCurrentEngine();
-		auto* story = engine->GetStoryScriptSystem();
+		auto* engine = GalGame::GalGameEngineAccess::Current();
+		auto* story = engine->GetSubsystemBus()->Script()->GetStoryScriptSystem();
 
 		if (!story->LoadStoryScript(assetPath))
 		{
@@ -124,8 +126,9 @@ namespace VisionGal::Editor
 		if (!EnsurePlayModeAndStory(err))
 			return false;
 
-		auto* engine = GalGame::GameEngineCore::GetCurrentEngine();
-		auto* story = engine->GetStoryScriptSystem();
+		auto* engine = GalGame::GalGameEngineAccess::Current();
+		auto* bus = engine->GetSubsystemBus();
+		auto* story = engine->GetSubsystemBus()->Script()->GetStoryScriptSystem();
 		auto* executionInstance = story->GetExecutionInstance();
 		if (executionInstance == nullptr)
 		{
@@ -143,8 +146,8 @@ namespace VisionGal::Editor
 		out.HasValidDebugInfo = true;
 		const unsigned before = static_cast<unsigned>(debugInfo->CurrentIndex);
 
-		executionInstance->Continue();
-		executionInstance->Tick(0);
+		executionInstance->Continue(bus);
+		executionInstance->Tick(0, bus);
 
 		debugInfo = executionInstance->ExecutionQuery<GalGame::SSSequenceRuntimeDebugInfo>();
 		if (debugInfo == nullptr)
@@ -183,8 +186,9 @@ namespace VisionGal::Editor
 		if (!EnsurePlayModeAndStory(err))
 			return false;
 
-		auto* engine = GalGame::GameEngineCore::GetCurrentEngine();
-		auto* story = engine->GetStoryScriptSystem();
+		auto* engine = GalGame::GalGameEngineAccess::Current();
+		auto* bus = engine->GetSubsystemBus();
+		auto* story = engine->GetSubsystemBus()->Script()->GetStoryScriptSystem();
 		auto* executionInstance = story->GetExecutionInstance();
 		if (executionInstance == nullptr)
 		{
@@ -230,8 +234,8 @@ namespace VisionGal::Editor
 				return true;
 			}
 
-			executionInstance->Continue();
-			executionInstance->Tick(0);
+			executionInstance->Continue(bus);
+			executionInstance->Tick(0, bus);
 			debugInfo = executionInstance->ExecutionQuery<GalGame::SSSequenceRuntimeDebugInfo>();
 			if (debugInfo == nullptr)
 			{

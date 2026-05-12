@@ -6,6 +6,7 @@
 #include "Runtime/SequenceComponentTypeId.h"
 #include "Sequence/Components.h"
 #include "VGGalgameCore/Interface/IGameObject.h"
+#include "VGGalgameCore/Interface/IDialogueSubsystem.h"
 #include "SequenceExecutionContext.h"
 
 namespace VisionGal
@@ -23,7 +24,7 @@ namespace VisionGal
 	void VGSDialogueRuntimeSystem::Execute(IVGSSequenceComponent* component, SequenceRuntimeExecutionContext& context)
 	{
 		auto* dialogue = dynamic_cast<VGSSC_CommonDialogue*>(component);
-		if (dialogue == nullptr || context.SharedContext == nullptr)
+		if (dialogue == nullptr || context.SharedContext == nullptr || context.SharedContext->SubsystemBus == nullptr)
 			return;
 
 		SSSequenceExecutionContext& shared = *context.SharedContext;
@@ -42,7 +43,7 @@ namespace VisionGal
 		}
 		else
 		{
-			shared.Engine->GetDialogueSystem()->CharacterSay(dialogue->DialogueCharacterName,dialogue->DialogueText);
+			shared.SubsystemBus->Dialogue()->GetDialogueSystem()->CharacterSay(dialogue->DialogueCharacterName,dialogue->DialogueText);
 		}
 	}
 

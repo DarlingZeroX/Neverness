@@ -11,7 +11,8 @@
 
 #pragma once
 #include "../VGGalgameRuntimeConfig.h"
-#include "IStoryScript.h"
+#include "VGGalgameCore/Interface/IStoryScriptExecutor.h"
+#include <VGGalgameCore/Interface/IStoryScriptSystem.h>
 
 namespace VisionGal::GalGame
 {
@@ -20,8 +21,8 @@ namespace VisionGal::GalGame
 		StoryExecutionInstance(const Ref<IStoryScriptExecutor>& executor);
 		~StoryExecutionInstance() override = default;
 
-		void Tick(float deltaTime) override;
-		void Continue() override;
+		void Tick(float deltaTime, ISubsystemBus* bus) override;
+		void Continue(ISubsystemBus* bus) override;
 		IRuntimeInterface* QueryInterface(InterfaceID id) override;
 
 		template<typename T>

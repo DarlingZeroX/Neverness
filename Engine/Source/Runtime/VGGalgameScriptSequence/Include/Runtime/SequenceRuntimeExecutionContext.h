@@ -33,7 +33,7 @@ namespace VisionGal
 	 */
 	struct VG_GSS_API SequenceRuntimeExecutionContext
 	{
-		/// 原有的白盒数据：序列容器、资源管理器、IGalGameEngine*。
+		/// 原有的白盒数据：序列容器、资源管理器、ISubsystemBus*（经 SharedContext）。
 		SSSequenceExecutionContext* SharedContext = nullptr;
 
 		/// 当前活动执行帧（Phase 2A 恒为帧栈栈顶）；可为 nullptr 表示未绑定内核。

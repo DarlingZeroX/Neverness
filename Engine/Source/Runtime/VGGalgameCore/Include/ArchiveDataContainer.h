@@ -15,11 +15,20 @@
 
 namespace VisionGal::GalGame
 {
+	/**
+	 * @brief 存档用变量容器；带稳定 schema 元数据（Phase 7 存档 ABI）。
+	 *
+	 * **schemaVersion**：与 SaveArchive / ValidateArchiveSchema 对齐的容器格式版本。
+	 * **schemaHash**：预留，用于校验 Choices/Inputs 命名空间结构（当前可为 0）。
+	 */
 	class VG_GALGAME_CORE_API ArchiveDataContainer: public VGDataContainer
 	{
 	public:
 		ArchiveDataContainer() = default;
 		~ArchiveDataContainer() = default;
+
+		int schemaVersion = 1;
+		std::uint64_t schemaHash = 0;
 
 		VGDataNamespace* GetChoicesNamespace();
 		VGDataNamespace* GetInputNamespace();

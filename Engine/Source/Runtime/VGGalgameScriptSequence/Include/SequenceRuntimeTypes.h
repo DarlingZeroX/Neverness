@@ -18,6 +18,10 @@ namespace VisionGal::GalGame
 {
 	/**
 	* @brief Sequence 播放器生命周期状态。
+	*
+	* 与 Core 层 `ExecutionLifecycle` 映射（概念层，非严格状态机一一对应）：
+	* Stopped → Stopped；Playing → Running；Paused → Waiting（近似）；
+	* Finished → Finished。详见 VGGalgameCore `GalExecutionLifecycle.h`。
 	*/
 	enum class ESSSequenceExecutorState
 	{

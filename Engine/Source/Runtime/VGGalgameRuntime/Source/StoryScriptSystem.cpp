@@ -54,7 +54,7 @@ namespace VisionGal::GalGame
 		}
 
 		// 初始化当前对话行
-		m_GalGameContext->runtimeState.currentDialogLine = 0;
+		m_GalGameContext->runtimeState.dialogue.currentDialogLine = 0;
 
 		// 脚本开始加载事件
 		{
@@ -65,7 +65,7 @@ namespace VisionGal::GalGame
 		}
 
 		// 运行剧情脚本
-		bool result = storyScript->Run(m_GalGameEngine);
+		bool result = storyScript->Run(m_GalGameEngine->GetSubsystemBus(), m_GalGameContext.get());
 
 		if (result == false)
 			return false;
@@ -90,6 +90,7 @@ namespace VisionGal::GalGame
 		}
 
 		m_ExecutionInstance = MakeRef<StoryExecutionInstance>(m_StoryScript);
+		return true;
 	}
 
 	bool StoryScriptSystem::LoadStoryScriptOnUpdate(const String& path)
@@ -128,7 +129,7 @@ namespace VisionGal::GalGame
 	void StoryScriptSystem::DoChoice(const std::string& id, const std::vector<std::string>& options)
 	{
 		// 如果正在加载存档，则直接从存档数据中获取选择结果
-		if (m_GalGameContext->runtimeState.isCurrentLoadingArchive)
+		if (m_GalGameContext->runtimeState.playback.isCurrentLoadingArchive)
 		{
 			std::string choice = m_GalGameContext->archiveData->GetChoicesNamespace()->GetVariable<std::string>(id);
 
@@ -159,7 +160,7 @@ namespace VisionGal::GalGame
 	void StoryScriptSystem::DoInput(const std::string& id, const std::string& title, const std::string& button)
 	{
 		// 如果正在加载存档，则直接从存档数据中获取选择结果
-		if (m_GalGameContext->runtimeState.isCurrentLoadingArchive)
+		if (m_GalGameContext->runtimeState.playback.isCurrentLoadingArchive)
 		{
 			std::string text = m_GalGameContext->archiveData->GetInputNamespace()->GetVariable<std::string>(id);
 			//OnInputSubmitted(id, text);
@@ -213,19 +214,19 @@ namespace VisionGal::GalGame
 	bool StoryScriptSystem::LoadArchive(const SaveArchive& archive)
 	{
 		// 设置状态
-		m_GalGameContext->runtimeState.enableFastForward = true;
-		m_GalGameContext->runtimeState.isCurrentLoadingArchive = true;
+		m_GalGameContext->runtimeState.playback.enableFastForward = true;
+		m_GalGameContext->runtimeState.playback.isCurrentLoadingArchive = true;
 		// 读取存档数据
 		m_GalGameContext->archiveData = archive.archiveData;
 
 		if (!LoadStoryScript(archive.scriptPath))
 		{
-			m_GalGameContext->runtimeState.enableFastForward = false;
-			m_GalGameContext->runtimeState.isCurrentLoadingArchive = false;
+			m_GalGameContext->runtimeState.playback.enableFastForward = false;
+			m_GalGameContext->runtimeState.playback.isCurrentLoadingArchive = false;
 			return false;
 		}
 
-		while (archive.line > m_GalGameContext->runtimeState.currentDialogLine)
+		while (archive.line > m_GalGameContext->runtimeState.dialogue.currentDialogLine)
 		{
 			ContinueDialogue();
 
@@ -235,8 +236,8 @@ namespace VisionGal::GalGame
 			m_ArchiveLuaReadCallback.clear();
 		}
 
-		m_GalGameContext->runtimeState.enableFastForward = false;
-		m_GalGameContext->runtimeState.isCurrentLoadingArchive = false;
+		m_GalGameContext->runtimeState.playback.enableFastForward = false;
+		m_GalGameContext->runtimeState.playback.isCurrentLoadingArchive = false;
 	}
 
 	void StoryScriptSystem::Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context)

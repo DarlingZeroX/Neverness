@@ -10,7 +10,7 @@
  */
  
 #include "SpriteAnimationScript.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
+#include "VGGalgameCore/Include/GalGameLayoutUtils.h"
 
 namespace VisionGal::GalGame
 {
@@ -21,22 +21,22 @@ namespace VisionGal::GalGame
 		switch (direction)
 		{
 		case Direction::Left:
-			m_StartOffset = -GameEngineCore::GetSpriteXOffset(texSize.x);
+			m_StartOffset = -GalGameLayoutUtils::GetSpriteXOffset(texSize.x);
 			m_EndOffset = -m_StartOffset;
 			m_IsHorizontal = true;
 			break;
 		case Direction::Right:
-			m_StartOffset = GameEngineCore::GetSpriteXOffset(texSize.x);
+			m_StartOffset = GalGameLayoutUtils::GetSpriteXOffset(texSize.x);
 			m_EndOffset = -m_StartOffset;
 			m_IsHorizontal = true;
 			break;
 		case Direction::Up:
-			m_StartOffset = GameEngineCore::GetSpriteYOffset(texSize.y);
+			m_StartOffset = GalGameLayoutUtils::GetSpriteYOffset(texSize.y);
 			m_EndOffset = -m_StartOffset;
 			m_IsHorizontal = false;
 			break;
 		case Direction::Down:
-			m_StartOffset = -GameEngineCore::GetSpriteYOffset(texSize.y);
+			m_StartOffset = -GalGameLayoutUtils::GetSpriteYOffset(texSize.y);
 			m_EndOffset = -m_StartOffset;
 			m_IsHorizontal = false;
 			break;

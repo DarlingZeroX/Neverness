@@ -24,7 +24,7 @@ file(GLOB HCORE_INTERFACE_FILES
 
 file(GLOB HCORE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	   "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+	   "${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Core/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Interface/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/*.h"
@@ -36,7 +36,7 @@ file(GLOB HCORE_HEADER_FILES
 
 file(GLOB HCORE_SRC_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Source/DialogueSystem/*.cpp"

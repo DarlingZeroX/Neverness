@@ -10,6 +10,7 @@
  */
 
 #include "SSExecutor.h"
+#include "VGGalgameCore/Include/GalGameContext.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGGalgameScriptLua/Interface/StoryScriptLuaInterface.h"
 #include <iostream>
@@ -18,7 +19,6 @@
 #include <HCore/Interface/HLog.h>
 #include "VGCore/Include/Core/VFS.h"
 //#include "GalGameEngine.h"
-#include "VGGalgameCore/Interface/GameEngineCore.h"
 #include <sol/state.hpp>
 
 #include "VGCore/Include/Core/EventBus.h"
@@ -26,6 +26,7 @@
 #include "VGEngine/Include/Lua/LuaInterface.h"
 #include "VGGalgameScriptLua/Interface/LuaBinding.h"
 #include "VGLuaCore/LuaErrorManager.h"
+#include "VGGalgameCore/Interface/ISceneSubsystem.h"
 
 namespace VisionGal::GalGame
 {
@@ -43,9 +44,12 @@ namespace VisionGal::GalGame
         return script;
     }
 
-    bool LuaStoryScript::Run(IGalGameEngine* engine)
+    bool LuaStoryScript::Run(ISubsystemBus* bus, IGalGameContext* gameContext)
     {
-		m_Engine = engine;
+		m_Bus = bus;
+		m_Engine = nullptr;
+		if (auto* ctx = dynamic_cast<GalGameContext*>(gameContext))
+			m_Engine = ctx->Engine;
 
 		// 记录脚本最后修改时间 
 		auto absPath = VFS::GetInstance()->AbsolutePath(GetResourcePath());
@@ -56,8 +60,8 @@ namespace VisionGal::GalGame
 
         //m_LuaState["Engine"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
         //m_LuaState["引擎"] = sol::object(m_LuaState, sol::in_place, dynamic_cast<GalGameEngine*>(engine));
-		m_LuaState["GalGame"]["引擎"] = sol::object(m_LuaState, sol::in_place, engine);
-		m_LuaState["VG"] = sol::object(m_LuaState, sol::in_place, engine);
+		m_LuaState["GalGame"]["引擎"] = sol::object(m_LuaState, sol::in_place, m_Engine);
+		m_LuaState["VG"] = sol::object(m_LuaState, sol::in_place, m_Engine);
 
         if (!LoadScript(GetResourcePath()))
             return false;
@@ -100,7 +104,7 @@ namespace VisionGal::GalGame
 
     void LuaStoryScript::PreLoadScriptResource()
     {
-		if (m_Engine == nullptr)
+		if (m_Bus == nullptr)
 			return;
 
         std::istringstream inputStream(m_ScriptCode);
@@ -124,7 +128,8 @@ namespace VisionGal::GalGame
 
         // 预加载资源
         for (const auto& path : resourcePaths) {
-			m_Engine->PreLoadResource(path);
+			if (m_Bus != nullptr)
+				m_Bus->Scene()->PreLoadResource(path);
         }
     }
 

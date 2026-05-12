@@ -6,7 +6,7 @@
 *
 * 生命周期：
 * - SequenceData / ResourceManager 使用 Ref（shared_ptr）共享所有权；
-* - Engine 为非拥有指针，由宿主保证 Tick/Execute 调用栈内有效。
+* - SubsystemBus 总线指针（若使用）由宿主在 Run 时注入并保持有效。
 */
 
 #pragma once

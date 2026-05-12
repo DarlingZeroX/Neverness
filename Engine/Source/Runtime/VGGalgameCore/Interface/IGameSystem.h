@@ -6,8 +6,12 @@
 *
 * Copyright (c) 2025-present 梦旅缘心
 *
-* See the LICENSE file in the project root for details.
-*/
+ * See the LICENSE file in the project root for details.
+ *
+ * CORE ABI STABLE
+ * DO NOT MODIFY WITHOUT VERSION BUMP
+ * 中文：变更须同步升版本、SaveArchive / Lua 绑定与文档。
+ */
 
 #pragma once
 #include "IGameObject.h"

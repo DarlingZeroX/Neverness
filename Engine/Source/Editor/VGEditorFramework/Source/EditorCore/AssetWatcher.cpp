@@ -13,7 +13,6 @@
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGEngine/Include/Engine/Manager.h"
 //#include "VGGalgame/Include/GalGameEngine.h"
-//#include "VGGalgame/Include/GameEngineCore.h"
 #include <VGUI/Interface/UISystem.h>
 #include "VGCore/Include/Core/VFS.h"
 

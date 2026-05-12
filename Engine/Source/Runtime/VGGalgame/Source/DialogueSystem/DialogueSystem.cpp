@@ -45,9 +45,9 @@ namespace VisionGal::GalGame
 	void DialogueSystem::CharacterSay(const String& character, const String& text)
 	{
 		m_DialogName = character;
-		m_GalGameContext->runtimeState.currentDialogCharacter = character;
+		m_GalGameContext->runtimeState.dialogue.currentDialogCharacter = character;
 
-		if (m_GalGameContext->runtimeState.enableTyping)
+		if (m_GalGameContext->runtimeState.textDisplay.enableTyping)
 		{
 			m_TypingEffect.StartTyping(text);
 		}
@@ -56,10 +56,10 @@ namespace VisionGal::GalGame
 			m_DialogText = text;
 		}
 
-		m_GalGameContext->runtimeState.currentDialogText = text;
+		m_GalGameContext->runtimeState.dialogue.currentDialogText = text;
 
 		//m_CurrentDialogLine += 1;
-		m_GalGameContext->runtimeState.currentDialogLine += 1;
+		m_GalGameContext->runtimeState.dialogue.currentDialogLine += 1;
 		m_DialogList.push_back({ character, text });
 
 		//H_LOG_INFO("[Character: %s]: %s", character.c_str(), text.c_str());
@@ -67,7 +67,7 @@ namespace VisionGal::GalGame
 
 	void DialogueSystem::EnableTyping(bool enable)
 	{
-		m_GalGameContext->runtimeState.enableTyping = enable;
+		m_GalGameContext->runtimeState.textDisplay.enableTyping = enable;
 	}
 
 	void DialogueSystem::FinishTyping()
@@ -77,7 +77,7 @@ namespace VisionGal::GalGame
 
 	bool DialogueSystem::IsTypingText()
 	{
-		if (!m_GalGameContext->runtimeState.enableTyping)
+		if (!m_GalGameContext->runtimeState.textDisplay.enableTyping)
 			return false;
 
 		return m_TypingEffect.IsTyping();
@@ -102,7 +102,7 @@ namespace VisionGal::GalGame
 
 	uint DialogueSystem::GetCurrentDialogLine() const
 	{
-		return m_GalGameContext->runtimeState.currentDialogLine;
+		return m_GalGameContext->runtimeState.dialogue.currentDialogLine;
 	}
 
 	uint DialogueSystem::GetDialogNumber() const
@@ -134,33 +134,33 @@ namespace VisionGal::GalGame
 
 	String DialogueSystem::GetCurrentCharacter()
 	{
-		return m_GalGameContext->runtimeState.currentDialogCharacter;
+		return m_GalGameContext->runtimeState.dialogue.currentDialogCharacter;
 	}
 
 	String DialogueSystem::GetCurrentDialogText()
 	{
-		return m_GalGameContext->runtimeState.currentDialogText;
+		return m_GalGameContext->runtimeState.dialogue.currentDialogText;
 	}
 
 	void DialogueSystem::AutoDialogue(bool enable)
 	{
 		//m_EnableAutoDialogue = enable;
-		m_GalGameContext->runtimeState.enableAutoDialogue = enable;
+		m_GalGameContext->runtimeState.playback.enableAutoDialogue = enable;
 		m_WaitingForNextAuto = false;
 	}
 
 	bool DialogueSystem::IsAutoDialogue() const
 	{
-		return m_GalGameContext->runtimeState.enableAutoDialogue;
+		return m_GalGameContext->runtimeState.playback.enableAutoDialogue;
 	}
 
 	void DialogueSystem::FastForward(bool enable)
 	{
 		//m_EnableFastForward = enable;
-		m_GalGameContext->runtimeState.enableFastForward = enable;
+		m_GalGameContext->runtimeState.playback.enableFastForward = enable;
 
 		//if (m_EnableFastForward && m_TypingEffect.IsTyping())
-		if (m_GalGameContext->runtimeState.enableFastForward && m_TypingEffect.IsTyping())
+		if (m_GalGameContext->runtimeState.playback.enableFastForward && m_TypingEffect.IsTyping())
 		{
 			m_TypingEffect.FinishTyping();
 		}
@@ -169,24 +169,24 @@ namespace VisionGal::GalGame
 	bool DialogueSystem::IsFastForward() const
 	{
 		//return m_EnableFastForward;
-		return m_GalGameContext->runtimeState.enableFastForward;
+		return m_GalGameContext->runtimeState.playback.enableFastForward;
 	}
 
 	void DialogueSystem::SetFastForwardDelay(float delay)
 	{
 		//m_FastForwardDelay = delay;
-		m_GalGameContext->runtimeState.fastForwardDelay = delay;
+		m_GalGameContext->runtimeState.playback.fastForwardDelay = delay;
 	}
 
 	float DialogueSystem::GetFastForwardDelay() const
 	{
 		//return m_FastForwardDelay;
-		return m_GalGameContext->runtimeState.fastForwardDelay;
+		return m_GalGameContext->runtimeState.playback.fastForwardDelay;
 	}
 
 	bool DialogueSystem::IsVoicing()
 	{
-		return m_GalGameContext->runtimeState.IsVoicing;
+		return m_GalGameContext->runtimeState.playback.IsVoicing;
 	}
 
 	void DialogueSystem::AddTypingCallback(sol::function callback)
@@ -247,8 +247,8 @@ namespace VisionGal::GalGame
 		m_FastForwardWaitingForNextAuto = false;
 		//m_EnableFastForward = false;
 		//m_EnableAutoDialogue = false;
-		m_GalGameContext->runtimeState.enableAutoDialogue = false;
-		m_GalGameContext->runtimeState.enableFastForward = false;
+		m_GalGameContext->runtimeState.playback.enableAutoDialogue = false;
+		m_GalGameContext->runtimeState.playback.enableFastForward = false;
 	}
 
 	void DialogueSystem::ProcessFastForward()
@@ -272,7 +272,7 @@ namespace VisionGal::GalGame
 		auto current_time = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<float> elapsed = current_time - m_FastForwardTimerStart;
 		//if (elapsed.count() >= m_FastForwardDelay)
-		if (elapsed.count() >= m_GalGameContext->runtimeState.fastForwardDelay)
+		if (elapsed.count() >= m_GalGameContext->runtimeState.playback.fastForwardDelay)
 		{
 			ContinueDialogue();
 			m_FastForwardWaitingForNextAuto = false; // 重置计时器状态
@@ -317,7 +317,7 @@ namespace VisionGal::GalGame
 		auto current_time = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<float> elapsed = current_time - m_AutoTimerStart;
 		//if (elapsed.count() >= m_AutoDelay)
-		if (elapsed.count() >= m_GalGameContext->runtimeState.autoDialogueDelay)
+		if (elapsed.count() >= m_GalGameContext->runtimeState.playback.autoDialogueDelay)
 		{
 			ContinueDialogue();
 			m_WaitingForNextAuto = false; // 重置计时器状态

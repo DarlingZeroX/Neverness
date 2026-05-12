@@ -200,7 +200,7 @@ namespace VisionGal::GalGame
 	{
 		H_ASSERT_NOT_NULL(m_GalGameContext);
 
-		m_GalGameContext->runtimeState.IsVoicing = !GetAudioLayer("Voice")->IsPlayFinished();
+		m_GalGameContext->runtimeState.playback.IsVoicing = !GetAudioLayer("Voice")->IsPlayFinished();
 	}
 
 	void SceneAudioManager::Initialize(const Ref<GalGameContext>& ctx)

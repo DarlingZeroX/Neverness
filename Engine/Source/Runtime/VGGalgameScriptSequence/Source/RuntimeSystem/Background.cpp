@@ -8,7 +8,8 @@
 #include "VGSTypeDefine.h"
 #include "Sequence/Components.h"
 #include "ExecutorResourceManager.h"
-#include "VGGalgameCore/Interface/IGameEngine.h"
+#include "VGGalgameCore/Interface/ISubsystemBus.h"
+#include "VGGalgameCore/Interface/ISceneSubsystem.h"
 #include "SequenceExecutionContext.h"
 
 namespace VisionGal
@@ -32,7 +33,7 @@ namespace VisionGal
 	void VGSBackgroundRuntimeSystem::Execute(IVGSSequenceComponent* component, SequenceRuntimeExecutionContext& context)
 	{
 		auto* bg = dynamic_cast<VGSSC_ChangeBackground*>(component);
-		if (bg == nullptr || context.SharedContext == nullptr || context.SharedContext->Engine == nullptr)
+		if (bg == nullptr || context.SharedContext == nullptr || context.SharedContext->SubsystemBus == nullptr)
 			return;
 
 		SSSequenceExecutionContext& shared = *context.SharedContext;
@@ -42,7 +43,7 @@ namespace VisionGal
 			if (bg->TextureID != VGSS_INVALID_OBJECT_ID && shared.ResourceManager != nullptr)
 			{
 				if (GalGame::IGalSprite* sprite = shared.ResourceManager->GetSprite(bg->TextureID))
-					shared.Engine->RemoveSprite(sprite);
+					shared.SubsystemBus->Scene()->RemoveSprite(sprite);
 			}
 			return;
 		}
@@ -55,7 +56,7 @@ namespace VisionGal
 		}
 
 		if (!path.empty())
-			shared.Engine->ShowSprite(kDefaultBackgroundLayer, path);
+			shared.SubsystemBus->Scene()->ShowSprite(kDefaultBackgroundLayer, path);
 	}
 
 	bool VGSBackgroundRuntimeSystem::ShouldHoldPlaybackAfterExecute(IVGSSequenceComponent* component) const

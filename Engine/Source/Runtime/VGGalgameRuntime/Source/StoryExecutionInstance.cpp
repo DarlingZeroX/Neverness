@@ -11,6 +11,7 @@
 
 #include "StoryExecutionInstance.h"
 
+#include "VGGalgameCore/Include/SubsystemBusGuard.h"
 #include "VGAsset/Interface/Package.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "VGCore/Include/Core/EventBus.h"
@@ -22,16 +23,20 @@ namespace VisionGal::GalGame
 	{
 	}
 
-	void StoryExecutionInstance::Tick(float deltaTime)
+	void StoryExecutionInstance::Tick(float deltaTime, ISubsystemBus* bus)
 	{
+		SubsystemBusGuard guard(bus);
+		(void)guard;
 		if (Executor)
 		{
 			Executor->Tick(deltaTime);
 		}
 	}
 
-	void StoryExecutionInstance::Continue()
+	void StoryExecutionInstance::Continue(ISubsystemBus* bus)
 	{
+		SubsystemBusGuard guard(bus);
+		(void)guard;
 		if (Executor)
 		{
 			Executor->ContinueDialogue();

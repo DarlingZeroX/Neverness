@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../GSSExport.h"
-#include "VGGalgameRuntime/Interface/IStoryScript.h"
+#include "VGGalgameCore/Interface/IStoryScriptExecutor.h"
 
 namespace VisionGal::GalGame
 {

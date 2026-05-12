@@ -7,25 +7,35 @@
  * Copyright (c) 2025-present 梦旅缘心
  *
  * See the LICENSE file in the project root for details.
+ *
+ * CORE ABI STABLE
+ * DO NOT MODIFY WITHOUT VERSION BUMP
+ * 中文：变更须同步升版本、SaveArchive / Lua 绑定与文档。
  */
 
 #pragma once
 #include <string>
 #include <VGCore/Include/Data/DataVariant.h>
 #include <VGCore/Interface/Interface.h>
+#include <VGCore/Interface/SceneInterface.h>
+#include "../Include/SaveArchive.h"
 
 namespace VisionGal::GalGame
 {
+	struct ISubsystemBus;
+
 	struct IStoryExecutionInstance
 	{
 		virtual ~IStoryExecutionInstance() = default;
 
-		virtual void Tick(float deltaTime) = 0;
-		virtual void Continue() = 0;
+		/// @param bus 子系统总线（由宿主注入）；内核与 RuntimeSystem 经执行上下文访问，不得再持有 God Engine。
+		virtual void Tick(float deltaTime, ISubsystemBus* bus) = 0;
+		virtual void Continue(ISubsystemBus* bus) = 0;
 		virtual IRuntimeInterface* QueryInterface(InterfaceID id) = 0;
 
 		template<typename T>
 		T* ExecutionQuery() {
+			/// 中文：当前仍基于 `typeid`；后续可改为稳定 InterfaceID 表以减少 RTTI 依赖。
 			return static_cast<T*>(QueryInterface(typeid(T)));
 		}
 	};

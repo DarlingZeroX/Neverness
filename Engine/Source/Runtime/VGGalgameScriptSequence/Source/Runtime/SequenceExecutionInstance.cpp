@@ -201,8 +201,9 @@ namespace VisionGal::GalGame
 		m_State = ESSSequenceExecutorState::Playing;
 	}
 
-	void SequenceExecutionInstance::Continue()
+	void SequenceExecutionInstance::Continue(ISubsystemBus* bus)
 	{
+		(void)bus;
 		m_CommandApi.Continue();
 	}
 
@@ -590,8 +591,9 @@ namespace VisionGal::GalGame
 	{
 	}
 
-	void SequenceExecutionInstance::Tick(const float deltaTime)
+	void SequenceExecutionInstance::Tick(const float deltaTime, ISubsystemBus* bus)
 	{
+		(void)bus;
 		++m_GlobalTickCounter;
 		BeginFrame(deltaTime);
 		PushFrameTrace("Tick");

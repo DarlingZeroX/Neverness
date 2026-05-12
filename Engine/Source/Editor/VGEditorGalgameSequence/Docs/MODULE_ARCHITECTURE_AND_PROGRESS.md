@@ -133,7 +133,7 @@ flowchart TB
 
   Doc <--> Asset
   RegC --> Mgr
-  Exec -->|LoadStoryScript + Step| Engine[GameEngineCore / StoryScriptSystem]
+  Exec -->|LoadStoryScript + Step| Engine[GalGameEngineAccess / StoryScriptSystem]
 ```
 
 ---
