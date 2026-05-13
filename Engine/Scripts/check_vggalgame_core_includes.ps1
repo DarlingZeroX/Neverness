@@ -2,7 +2,7 @@
 # 在仓库根目录执行：pwsh -File Engine/Scripts/check_vggalgame_core_includes.ps1
 $ErrorActionPreference = "Stop"
 $core = Join-Path $PSScriptRoot "../Source/Runtime/VGGalgameCore"
-$bad = @("VGGalgameRuntime/", "VGGalgameScriptSequence/", "VGEditorGalgame", "/Editor/")
+$bad = @("VGGalgameNodeGraph/", "VGGalgameScriptSequence/", "VGEditorGalgame", "/Editor/")
 $files = Get-ChildItem -Path $core -Recurse -Include *.h,*.cpp
 $exit = 0
 foreach ($f in $files) {

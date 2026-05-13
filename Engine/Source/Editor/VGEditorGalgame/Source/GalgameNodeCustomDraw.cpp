@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cstdio>
 
-#include <VGGalgameRuntime/Include/DialogueListNodeData.h>
+#include <VGGalgameNodeGraph/Include/DialogueListNodeData.h>
 #include "DialogueListEditorPanel.h"
 
 // ImGui / ImNodeEditor

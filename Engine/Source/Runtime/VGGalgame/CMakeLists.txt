@@ -68,6 +68,7 @@ target_include_directories(VGGalgame PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/
 target_include_directories(VGGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-target_link_libraries(VGGalgame PUBLIC VGGalgameRuntime)
+target_link_libraries(VGGalgame PUBLIC VGGalgameNodeGraph)
+target_link_libraries(VGGalgame PUBLIC VGGalgameCore)
 target_link_libraries(VGGalgame PUBLIC VGGalgameScriptLua)
 target_link_libraries(VGGalgame PUBLIC VGGalgameScriptSequence)

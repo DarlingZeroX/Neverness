@@ -52,7 +52,7 @@ add_subdirectory ("Engine/Source/Runtime/VGEngine")
 
 # GalGame Runtime
 add_subdirectory ("Engine/Source/Runtime/VGGalgameCore")
-add_subdirectory ("Engine/Source/Runtime/VGGalgameRuntime")
+add_subdirectory ("Engine/Source/Runtime/VGGalgameNodeGraph")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptLua")
 add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptSequence")
 add_subdirectory ("Engine/Source/Runtime/VGGalgame")

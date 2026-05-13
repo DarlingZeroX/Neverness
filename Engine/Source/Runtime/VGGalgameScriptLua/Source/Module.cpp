@@ -10,7 +10,7 @@
 */
 
 #include "../Module.h"
-#include "VGGalgameRuntime/Interface/IStoryScript.h"
+#include "VGGalgameCore/Interface/IStoryScript.h"
 #include "SSExecutorCreator.h"
 #include "VGAsset/Include/GalGameAsset.h"
 

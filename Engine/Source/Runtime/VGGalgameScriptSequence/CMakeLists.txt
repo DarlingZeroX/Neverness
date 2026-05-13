@@ -1,4 +1,4 @@
-# CMakeList.txt: VGGalgameRuntime
+# CMakeList.txt: VGGalgameScriptSequence
 #
 # 目标：
 # - 纯运行时逻辑库（节点执行函数等）
@@ -56,4 +56,3 @@ target_include_directories(VGGalgameScriptSequence PRIVATE ${CMAKE_CURRENT_SOURC
 target_include_directories(VGGalgameScriptSequence PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 target_link_libraries(VGGalgameScriptSequence PUBLIC VGGalgameCore)
-target_link_libraries(VGGalgameScriptSequence PUBLIC VGGalgameRuntime)

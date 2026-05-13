@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../VGGalgameScriptLuaConfig.h"
-#include "VGGalgameRuntime/Interface/IStoryScript.h"
+#include "VGGalgameCore/Interface/IStoryScript.h"
 
 namespace VisionGal::GalGame
 {

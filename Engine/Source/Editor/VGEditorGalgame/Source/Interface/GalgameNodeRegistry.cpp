@@ -5,7 +5,7 @@
 #include <VGEditorGalgame/Interface/GalgameNodeRegistry.h>
 #include "GalgameNodeCustomDraw.h"
 
-#include <VGGalgameRuntime/Include/VGNodeExec_Galgame.h>
+#include <VGGalgameNodeGraph/Include/VGNodeExec_Galgame.h>
 
 namespace VisionGal::Editor
 {

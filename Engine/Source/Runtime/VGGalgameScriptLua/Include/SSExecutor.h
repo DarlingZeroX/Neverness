@@ -17,7 +17,7 @@
 #include "VGGalgameCore/Interface/IGalGameContext.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IGameEngine.h"
-#include "VGGalgameRuntime/Interface/IStoryScript.h"
+#include "VGGalgameCore/Interface/IStoryScript.h"
 
 namespace VisionGal::GalGame
 {

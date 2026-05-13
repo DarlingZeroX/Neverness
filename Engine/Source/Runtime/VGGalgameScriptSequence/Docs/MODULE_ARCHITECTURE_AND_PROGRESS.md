@@ -9,7 +9,7 @@
 ## 1. 模块定位与依赖
 
 - **职责**：线性 **Sequence 剪辑表**（`IVGSSequenceComponent` 条目）的加载、JSON 序列化、**数据驱动** 的 **`SequenceExecutionInstance`（Sequence Runtime Kernel）** 调度，以及对话 / 立绘 / 背景等内置 **`IVGSSequenceRuntimeSystem`** 实现；通过 **`ISubsystemBus`**（写入 **`SSSequenceExecutionContext::SubsystemBus`**）与 **`SSExecutorResourceManager`** 与 Galgame 展示层交互。
-- **CMake 链接**：`PUBLIC VGGalgameCore`（Phase 7 起 **不再** `PUBLIC` 链接 **`VGGalgameRuntime`**；工厂注册在 **`VGGalgame`** 的 `GalGameSequenceScriptModuleMount.cpp`）。
+- **CMake 链接**：`PUBLIC VGGalgameCore`（**不**再 `PUBLIC` 链接已删除的 **`VGGalgameRuntime`**；**`GalGameScriptExecutorFactory`** 在 **`VGGalgameCore`**；注册仍由 **`VGGalgame`** 挂载代码调用 **`GalGameScriptExecutorFactory::RegisterAssetExecutor`**）。
 - **典型消费方**：`VGGalgame`、`VGEditorGalgameSequence`（编辑器侧私有链接以访问运行时类型与序列化）、`VGDesktopApplication` 等（以工程 CMake 为准）。
 
 ---
@@ -21,7 +21,7 @@ CMake 使用 `GLOB` 收集根目录、`Include/**`、`Interface/**`、`Source/**
 | 路径 | 职责 |
 |------|------|
 | `GSSExport.h` | DLL 导出宏 `VG_GSS_API`。 |
-| `Module.h` | **`GalGameSequenceScriptModule::MountEngineRuntime()`** 声明；**实现**迁至 **`VGGalgame/Source/Interface/GalGameSequenceScriptModuleMount.cpp`**（需链接 **`VGGalgameRuntime`** 以访问 **`GalGameScriptExecutorFactory`**）。 |
+| `Module.h` | **`GalGameSequenceScriptModule::MountEngineRuntime()`** 声明；**实现**迁至 **`VGGalgame/Source/Interface/GalGameSequenceScriptModuleMount.cpp`**（通过 **`#include "VGGalgameCore/Interface/IStoryScript.h"`** 访问 **`GalGameScriptExecutorFactory`**；Sequence 目标仅需链接 **`VGGalgameCore`**）。 |
 | `Interface/IVGSSequenceComponent.h` / `Source/Interface/IVGSSequenceComponent.cpp` | **`IVGSSequenceComponent`**（含 **`GetComponentTypeID()`**）、**`TVGSSequenceComponent<T>`**、**`IVGSSequenceComponentManager`**（单例注册表 + **`CreateSequenceEntryByTypeNameID`** / **`EnumerateRegisteredTypeNameIDs`**）。 |
 | `Interface/IVGSSequenceRuntimeSystem.h` | **`IVGSSequenceRuntimeSystem`**：**`SupportsType`** / `CanExecute` / **`Execute(SequenceRuntimeExecutionContext&)`** / **`Tick(SequenceRuntimeExecutionContext&)`** / **`ShouldHoldPlaybackAfterExecute`**（Wait 闸门语义）。 |
 | `Interface/VGSTypeDefine.h` | **`VGSS_INVALID_OBJECT_ID`** 及强类型 ObjectID 别名。 |

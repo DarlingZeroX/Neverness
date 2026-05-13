@@ -1,9 +1,0 @@
-StoryScriptSystem.cpp
-
-bool StoryScriptSystem::LoadStoryScript(const String& path)
-	{
-		StoryScriptLuaInterface::ResetStoryScript();
-
-		}
-
-		需要迁移

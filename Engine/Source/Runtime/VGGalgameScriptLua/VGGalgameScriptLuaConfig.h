@@ -1,5 +1,5 @@
 /*
-* VGGalgameRuntime 模块导出宏
+ * VGGalgameScriptLua 模块导出宏
 *
 * 目标：
 * - 提供“纯运行时逻辑”库（节点执行函数等）

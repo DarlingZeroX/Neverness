@@ -11,7 +11,7 @@
 #include <memory>
 
 #include <HNGEditorCore/Interface/EditorGraph.h>
-#include <VGGalgameRuntime/Include/DialogueListNodeData.h>
+#include <VGGalgameNodeGraph/Include/DialogueListNodeData.h>
 
 namespace VisionGal::Editor
 {

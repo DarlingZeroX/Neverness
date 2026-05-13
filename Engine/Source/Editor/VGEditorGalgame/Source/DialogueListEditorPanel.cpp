@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <string>
 
-#include <VGGalgameRuntime/Include/DialogueListNodeData.h>
+#include <VGGalgameNodeGraph/Include/DialogueListNodeData.h>
 
 // ImGui
 #include <VGImgui/Include/imgui/imgui.h>

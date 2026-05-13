@@ -1,10 +1,13 @@
 /*
-* DialogueList 节点数据结构与 JSON 序列化
-*
-* 注意：
-* - Runtime::Value 不支持对象/数组，因此用于 DialogueList 的“复杂数据”以 JSON 字符串形式
-*   通过 EditorGraph 的 properties 传入 GraphCompiler，再由 Runtime 解析。
-*/
+ * DialogueList 节点数据结构与 JSON 序列化（VGGalgameNodeGraph）
+ *
+ * 中文说明：
+ * - 节点图运行时槽位类型 Runtime::Value 不支持嵌套对象/数组，因此「一整段对白列表」在资产侧
+ *   以 JSON 字符串形式挂在 EditorGraph 的 properties 上，经 GraphCompiler 写入槽位，
+ *   运行时在 DialogueListExecute 中再反序列化为本头文件定义的结构体。
+ * - 命名空间保持 VisionGal::Runtime，与 HNGRuntimeCore 节点执行上下文中的类型习惯一致，
+ *   避免与 GalGame 业务层命名冲突。
+ */
 #pragma once
 
 #include <string>
@@ -14,6 +17,7 @@
 
 namespace VisionGal::Runtime
 {
+	/** 中文：对白行可选的立绘/文本动效类型（与 JSON 中 animation 字段对应）。 */
 	enum class DialogueAnimation : int
 	{
 		FadeIn = 0,
@@ -21,6 +25,7 @@ namespace VisionGal::Runtime
 		Shake = 2
 	};
 
+	/** 中文：单条对白在「表现层」上的附加参数（坐标、动效、时长等）。 */
 	struct DialoguePresentation
 	{
 		bool usePosition = false;
@@ -33,6 +38,7 @@ namespace VisionGal::Runtime
 		float duration = 0.2f;
 	};
 
+	/** 中文：对白列表中的一行（说话人、正文、立绘/音频、表现参数、行级事件名列表）。 */
 	struct DialogueLine
 	{
 		std::string speakerId;     // 角色ID（如 alice）
@@ -48,17 +54,18 @@ namespace VisionGal::Runtime
 		// 表现控制（核心）
 		DialoguePresentation presentation;
 
-		// 行级事件（非 Exec pin）
+		// 行级事件（非 Exec pin）：字符串列表，序列化进 JSON 供脚本/渲染扩展读取
 		std::vector<std::string> events;
 	};
 
+	/** 中文：DialogueList 节点在内存中的完整载荷（多行对白）。 */
 	struct DialogueListNode
 	{
 		std::vector<DialogueLine> lines;
 	};
 
 	// ----------------------------
-	// JSON 序列化/反序列化
+	// JSON 序列化/反序列化（供编辑器预览与运行时共用）
 	// ----------------------------
 	inline nlohmann::json SerializeDialoguePresentation(const DialoguePresentation& p)
 	{
@@ -193,4 +200,3 @@ namespace VisionGal::Runtime
 		}
 	}
 }
-

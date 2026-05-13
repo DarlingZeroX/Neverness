@@ -1,4 +1,4 @@
-# CMakeList.txt: VGGalgameRuntime
+# CMakeList.txt: VGGalgameScriptLua
 #
 # 目标：
 # - 纯运行时逻辑库（节点执行函数等）
@@ -49,5 +49,4 @@ target_include_directories(VGGalgameScriptLua PRIVATE ${CMAKE_CURRENT_SOURCE_DIR
 target_include_directories(VGGalgameScriptLua PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 target_link_libraries(VGGalgameScriptLua PUBLIC VGGalgameCore)
-target_link_libraries(VGGalgameScriptLua PUBLIC VGGalgameRuntime)
 

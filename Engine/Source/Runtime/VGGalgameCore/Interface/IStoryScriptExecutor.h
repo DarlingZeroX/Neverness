@@ -2,7 +2,7 @@
  * IStoryScriptExecutor — 剧情脚本执行器契约（Core 层）
  *
  * 与资产工厂 GalGameScriptExecutorFactory 分离，供 VGGalgameScriptSequence 等模块
- * 仅依赖 VGGalgameCore，而不链接 VGGalgameRuntime。
+ * 仅依赖 VGGalgameCore 契约头，不依赖上层 Galgame 宿主实现库。
  */
 
 #pragma once

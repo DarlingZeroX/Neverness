@@ -1,7 +1,7 @@
 /*
  * IStoryExecutionInstance — Galgame「Sequence 脚本」运行时执行实例契约（内核层）
  *
- * 与 VGGalgameRuntime 中的具体类 `VisionGal::GalGame::StoryExecutionInstance` 区分：
+ * 与 VGGalgame 模块中具体类 `VisionGal::GalGame::StoryExecutionInstance` 区分：
  * 后者包装 IStoryScriptExecutor（宿主/Tick 入口），本接口表示 **VGGalgameScriptSequence 内部**
  * 的 Sequence Runtime Kernel 实例，负责单资产剪辑序列的状态机调度。
  *

@@ -1,15 +1,11 @@
 /*
-* This source file is part of VisionGal, the Visual Novel Engine
-*
-* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
-* GitHub page: https://github.com/DarlingZeroX/VisionGal
-*
-* Copyright (c) 2025-present 梦旅缘心
-*
-* See the LICENSE file in the project root for details.
-*/
+ * StoryExecutionInstance 实现（VGGalgame / ScriptSystem）
+ *
+ * 中文：构造时持有执行器引用；Tick/Continue 在总线守卫下转发，保证 Sequence 等后端
+ * 在协程或回调中能安全访问 SubsystemBus。
+ */
 
-#include "StoryExecutionInstance.h"
+#include "ScriptSystem/StoryExecutionInstance.h"
 
 #include "VGGalgameCore/Include/SubsystemBusGuard.h"
 #include "VGAsset/Interface/Package.h"

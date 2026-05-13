@@ -18,7 +18,7 @@
 #include <VGEditorGalgame/Interface/GalgameNodeRegistry.h>
 #include "DialogueListEditorPanel.h"
 
-#include "VGGalgameRuntime/Include/VGNodeExec_Galgame.h"
+#include <VGGalgameNodeGraph/Include/VGNodeExec_Galgame.h>
 
 namespace VisionGal::Editor
 {

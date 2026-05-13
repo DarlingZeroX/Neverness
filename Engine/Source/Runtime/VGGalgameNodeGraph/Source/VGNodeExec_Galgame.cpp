@@ -1,10 +1,8 @@
 /*
-* Galgame NodeGraph Runtime 执行逻辑（VGGalgameRuntime）
-*
-* 说明：
-* - 该文件只包含“运行时执行逻辑”，不依赖 Editor UI
-* - 通过 RuntimeContext::nodeStates 保存 DialogueListState，实现跨帧推进
-*/
+ * Galgame 节点图运行时执行逻辑实现（VGGalgameNodeGraph）
+ *
+ * 中文：通过 RuntimeContext::GetOrCreateState 持久化 DialogueListState，实现跨帧打字机与玩家 Next。
+ */
 
 #include "VGNodeExec_Galgame.h"
 
@@ -27,17 +25,19 @@ namespace VisionGal::Runtime
 		const char* CurrentAudioClip = "__CurrentAudioClip";
 	}
 
-	// ----------------------------
-	// DialogueListState：逐帧/可中断播放状态
-	// ----------------------------
+	/**
+	 * 中文：DialogueList 节点在单图实例内的可中断播放状态。
+	 * - index：当前播放到第几行；
+	 * - typedChars：打字机已显示字符数；
+	 * - linePresented：本行是否已把「表现层变量」写入 ctx（避免同一行重复触发）。
+	 */
 	struct DialogueListState
 	{
 		bool initialized = false;
 		size_t index = 0;
 
-		// typewriter progress
 		size_t typedChars = 0;
-		bool linePresented = false; // 当前行表现是否已“触发”（变量写入）
+		bool linePresented = false;
 
 		DialogueListNode nodeData;
 	};
@@ -48,7 +48,6 @@ namespace VisionGal::Runtime
 		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
 		if (!node) return ExecResult::Finished;
 
-		// 激活所有 Exec 类型输出槽
 		for (uint32_t i = 0; i < node->outputsCount; ++i)
 		{
 			const uint32_t outIndex = node->outputsBegin + i;
@@ -68,7 +67,7 @@ namespace VisionGal::Runtime
 
 		DialogueListState& state = ctx.GetOrCreateState<DialogueListState>(nodeIndex);
 
-		// 1) 初始化：解析 DialogueListNodeData（JSON 字符串）
+		// 中文：首帧从 LinesJson 槽读取 JSON 字符串并反序列化
 		if (!state.initialized)
 		{
 			const SLOT_ID linesSlotId = FindOutputSlot(*ctx.graph, *node, PIN_LinesJson);
@@ -91,7 +90,6 @@ namespace VisionGal::Runtime
 		const auto& lines = state.nodeData.lines;
 		if (lines.empty() || state.index >= lines.size())
 		{
-			// 空对话：直接触发 Next
 			const SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
 			if (nextSlotId != 0) PushExec(ctx, nextSlotId);
 			return ExecResult::Finished;
@@ -99,13 +97,13 @@ namespace VisionGal::Runtime
 
 		const DialogueLine& curLine = lines[state.index];
 
-		// 2) 读取 Next（玩家点击继续/跳过）
+		// 中文：外部（UI）将 variables["Next"] 置 true 表示玩家请求继续/跳过打字机
 		bool readyNext = false;
 		auto itNext = ctx.variables.find("Next");
 		if (itNext != ctx.variables.end() && itNext->second.type == ValueType::Bool)
 			readyNext = itNext->second.AsBool();
 
-		// 3) 如果这一行尚未触发表现：写入运行时变量（供 Preview/Renders/扩展层读取）
+		// 中文：新行首次进入时写入「当前对白」相关变量，供预览与渲染读取
 		if (!state.linePresented)
 		{
 			ctx.variables[Vars::CurrentSpeaker] = Value::FromString(curLine.speakerId);
@@ -113,7 +111,6 @@ namespace VisionGal::Runtime
 			ctx.variables[Vars::CurrentExpression] = Value::FromString(curLine.expression);
 			ctx.variables[Vars::CurrentAudioClip] = Value::FromString(curLine.audioClip);
 
-			// 行级事件：以 JSON 字符串形式挂到变量，便于后续渲染层/脚本层取用
 			if (!curLine.events.empty())
 			{
 				nlohmann::json ev = curLine.events;
@@ -130,27 +127,23 @@ namespace VisionGal::Runtime
 
 		const size_t fullLen = curLine.text.size();
 
-		// 4) 自动打字机推进（每帧）
+		// 中文：每帧推进打字机（未收到 Next 时）
 		if (state.typedChars < fullLen && !readyNext)
 		{
-			// chars per second：可按 presentation/duration 扩展（此处用固定值）
 			const float charsPerSecond = 40.0f;
 			const float dt = (ctx.deltaTime > 0.0f) ? ctx.deltaTime : 0.016f;
 			const size_t add = static_cast<size_t>(dt * charsPerSecond);
 			if (add > 0) state.typedChars = std::min(fullLen, state.typedChars + add);
 		}
 
-		// 5) 写入当前可见文本（typewriter）
 		const std::string visible = curLine.text.substr(0, static_cast<size_t>(state.typedChars));
 		ctx.variables[Vars::CurrentText] = Value::FromString(visible);
 
-		// 6) 若玩家按了 Next：先跳过打字机，再进入下一行；最后触发 Next exec
+		// 中文：收到 Next 时——先瞬间打完本行，再切下一行；最后一行打完则触发 Exec 出口 Next
 		if (readyNext)
 		{
-			// 消费 Next
 			ctx.variables["Next"] = Value::FromBool(false);
 
-			// 1) 若当前行未打完：直接补全文本，不推进 index
 			if (state.typedChars < fullLen)
 			{
 				state.typedChars = fullLen;
@@ -159,21 +152,17 @@ namespace VisionGal::Runtime
 				return ExecResult::Running;
 			}
 
-			// 2) 已打完：推进到下一行或结束
 			state.index++;
 			state.typedChars = 0;
 			state.linePresented = false;
 
 			if (state.index < lines.size())
 			{
-				// 继续运行，让下一帧触发表现/显示
 				return ExecResult::Running;
 			}
 
-			// 结束：激活输出 Exec "Next"
 			const SLOT_ID nextSlotId = FindOutputSlot(*ctx.graph, *node, "Next");
 			if (nextSlotId != 0) PushExec(ctx, nextSlotId);
-			// 可选：重置 index 以便 Stop/Play 后的行为更一致
 			state.index = 0;
 			return ExecResult::Finished;
 		}
@@ -187,7 +176,6 @@ namespace VisionGal::Runtime
 		RuntimeNode* node = GetNodeById(*ctx.graph, nodeIndex);
 		if (!node) return ExecResult::Finished;
 
-		// 简化策略：默认 Option1（后续可替换为 UI/变量驱动）
 		const SLOT_ID opt1 = FindOutputSlot(*ctx.graph, *node, "Option1");
 		if (opt1 != 0) PushExec(ctx, opt1);
 		return ExecResult::Finished;
@@ -262,4 +250,3 @@ namespace VisionGal::Runtime
 		return ExecResult::Finished;
 	}
 }
-
