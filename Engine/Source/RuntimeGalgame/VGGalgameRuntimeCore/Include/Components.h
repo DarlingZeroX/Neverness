@@ -10,13 +10,14 @@
  */
 
 #pragma once
+#include "../VGGRCExport.h"
 #include "VGGalgameContract/VGGalCoreConfig.h"
 #include "VGCore/Interface/SceneInterface.h"
 #include "VGAsset/Interface/ISceneSerializer.h"
 
 namespace VisionGal::GalGame
 {
-	struct VG_GALGAME_CORE_API GalGameEngineComponent: public IComponent
+	struct VG_RUNTIME_GALCORE_API GalGameEngineComponent: public IComponent
 	{
 		GalGameEngineComponent();
 		~GalGameEngineComponent() override = default;
@@ -73,7 +74,7 @@ namespace VisionGal::GalGame
 		//Ref<LuaStoryScript> script;
 	};
 
-	struct VG_GALGAME_CORE_API GalGameEngineComponentSerializer : public IEntityComponentSerializer<GalGameEngineComponent>
+	struct VG_RUNTIME_GALCORE_API GalGameEngineComponentSerializer : public IEntityComponentSerializer<GalGameEngineComponent>
 	{
 		GalGameEngineComponentSerializer() = default;
 		GalGameEngineComponentSerializer(const GalGameEngineComponentSerializer&) = default;

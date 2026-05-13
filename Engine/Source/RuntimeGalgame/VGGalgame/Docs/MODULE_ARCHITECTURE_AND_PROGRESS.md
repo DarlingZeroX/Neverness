@@ -23,16 +23,18 @@
 |------|------|
 | `VGGalgameConfig.h` | **`VG_GALGAME_API`**。 |
 | `Interface/GalgameSystem.h` / `Source/Interface/GalgameSystem.cpp` | **`GalGameSystem::Initialize`**：创建 **`GalGameEngine`**、注册 **`GalGameEngineGameActorBuilder`**、**`GalGameEngineComponentSerializer`**、**`GalGameLuaBinding`**、**`GalGameLuaScriptModule::MountEngineRuntime`**（**`VGGalgameLuaRuntime`**）、**`GalGameSequenceScriptModule::MountEngineRuntime`**（实现在 **`Source/Interface/GalGameSequenceScriptModuleMount.cpp`**）。 |
-| `Include/GalGameEngine.h` / `Source/GalGameEngine.cpp` | **`GalGameEngine`**：子系统生命周期、**`Initialize`**、**`OnUpdate`**（经 **`IGalRuntimeSession::Tick`**）、渲染回调里驱动 **`RenderPipeline`**；持有 **`GalSubsystemBus`**、**`GalGameRuntimeHost`**、**`GalRuntimeSessionHost`**。 |
+| `Include/GalGameEngine.h` / `Source/GalGameEngine.cpp` | **`GalGameEngine`**：子系统生命周期、**`Initialize`** / **析构时 `Shutdown` 链**、**`OnUpdate`**（经 **`IGalRuntimeSession::Tick`** → **`GalRuntimeCoordinator::TickFrame`**）、渲染回调里驱动 **`RenderPipeline`**；持有 **`GalSubsystemBus`**、**`GalGameRuntimeHost`**、**`GalRuntimeCoordinator`**、**`GalRuntimeSessionHost`**。 |
 | `Include/GalSubsystemBus.h` / `Source/GalSubsystemBus.cpp` | **`GalSubsystemBus`** 与各 **`Gal*SubsystemAdapter`**：实现 **`ISubsystemBus`**，直访引擎子系统。 |
-| `Include/Runtime/*.h` / `Source/Runtime/*.cpp` | **`GalRuntimeSessionHost`**、**`GalGameRuntimeHost`**、**`GalDefaultExecutionScheduler`** 等 Phase 8 运行时装配。 |
+| `Include/Runtime/*.h` / `Source/Runtime/*.cpp` | **`GalRuntimeCoordinator`**、**`GalRuntimePhase`**、**`GalRuntimeSessionHost`**、**`GalGameRuntimeHost`**、**`GalDefaultExecutionScheduler`** 等 Phase 8 运行时装配。 |
 | `Include/Game.h` / `Source/Game.cpp` | **`GalSprite`**、**`GalAudio`**、**`GalVideo`**、**`GalCharacter`** 实现。 |
 | `Include/ArchiveSystem.h` / `Source/ArchiveSystem.cpp` | 槽位存档 JSON 目录扫描与读写。 |
 | `Include/DialogueSystem/*` / `Source/DialogueSystem/*` | **`DialogueSystem`** 门面；**`DialogueRmlPresentation`**、**`DialogueLineRuntime`**、**`DialogueTypingRuntime`**、**`DialoguePlaybackRuntime`**、**`TypingEffect`**。 |
 | `Include/ResourceSystem.h` / `Source/ResourceSystem.cpp` | 场景 Actor 创建与 **`LayeredSceneSystem`** 挂载。 |
 | `Include/SceneSystem/*` / `Source/SceneSystem/*` | **`LayeredSceneSystem`**、**`SceneSpriteManager`**、**`SceneAudioManager`**、**`SceneVideoManager`**。 |
 | `Include/UISystem/GalUISystem.h` / `Source/UISystem/GalUISystem.cpp` | **`GalGameUISystem`**。 |
-| `Include/ScriptSystem/StoryScriptSystem.h` / `Source/ScriptSystem/StoryScriptSystem.cpp` | **`StoryScriptSystem`**：实现 **`IStoryScriptSystem`**；加载脚本、存档回放、UI 选择/输入桥接。 |
+| `Include/ScriptSystem/StoryScriptSystem.h` / `Source/ScriptSystem/StoryScriptSystem.cpp` | **`StoryScriptSystem`**：实现 **`IStoryScriptSystem`**；**`GalScriptRuntimeRegistry`** + **`IScriptRuntime`**（Phase 8B）优先加载，回退工厂；**`Initialise(..., ISubsystemBus*)`**；**`ResetExecutionPipeline`**。 |
+| `Include/ScriptSystem/GalScriptRuntimeRegistry.h` / `Source/ScriptSystem/GalScriptRuntimeRegistry.cpp` | **`GalScriptRuntimeRegistry`**：脚本后端注册与按路径查找。 |
+| `Include/ScriptSystem/GalAssetTypeScriptRuntime.h` / `Source/ScriptSystem/GalAssetTypeScriptRuntime.cpp` | **`GalAssetTypeScriptRuntime`**：按资产类型 ID 委托 **`GalGameScriptExecutorFactory`** 的 **`IScriptRuntime`** 实现。 |
 | `Include/ScriptSystem/StoryExecutionInstance.h` / `Source/ScriptSystem/StoryExecutionInstance.cpp` | **`StoryExecutionInstance`**：**`IStoryExecutionInstance`** 包装 **`IStoryScriptExecutor`**。 |
 | `Include/RenderPipeline.h` | **薄转发**：`#include "VGGalgamePresentation/Include/RenderPipeline.h"`；实现与 `.cpp` 在 **`VGGalgamePresentation`**。 |
 | `Include/SpriteAnimationScriptManager.h` / `Source/SpriteAnimationScriptManager.cpp` | **`SpriteTransformScriptManager`**：精灵变换命令工厂。 |
@@ -54,6 +56,7 @@ flowchart TB
   end
 
   subgraph Engine["GalGameEngine"]
+    COORD[GalRuntimeCoordinator]
     RS[ResourceSystem]
     LS[LayeredSceneSystem]
     RP[RenderPipeline]
@@ -68,6 +71,7 @@ flowchart TB
   GGS --> LUA
   GGS --> SEQ
   GGE --> CTX
+  GGE --> COORD
   GGE --> RS
   GGE --> LS
   GGE --> RP
@@ -79,11 +83,11 @@ flowchart TB
   STY --> GGE
 ```
 
-**一帧更新顺序**（`GalGameEngine::OnUpdate` → **`GalRuntimeSessionHost::Tick`**，见 `GalRuntimeSessionHost.cpp` 注释）：**`LayeredSceneSystem::OnUpdate`** → **`DialogueSystem::Update`** → **`GalDefaultExecutionScheduler::Tick`**（内部驱动 **`StoryScriptSystem::Update`** 等）。
+**一帧更新顺序**（`GalGameEngine::OnUpdate` → **`GalRuntimeSessionHost::Tick`** → **`GalRuntimeCoordinator::TickFrame`**）：**`LayeredSceneSystem::OnUpdate`** → **`DialogueSystem::Update`** → **`GalDefaultExecutionScheduler::Tick`**（内部驱动 **`StoryScriptSystem::Update`** 等）。
 
 **渲染**：引擎 **`IGameEngineContext`** 的 **BeforeRender** 回调中调用 **`RenderPipeline::Render`**（见 **`GalGameEngine::Initialize`** 订阅）。
 
-**主场景切换**（`EngineEventType::MainSceneChanged`）：清空分层场景、切换 **`Scene*`**、**`DialogueSystem::Clear`**；若处于播放模式则 **`LoadSceneStoryScriptOnUpdate`** 延迟加载脚本，避免资源残留竞态（见 **`GalGameEngine.cpp`** 注释）。
+**主场景切换**（`EngineEventType::MainSceneChanged`）：由 **`GalRuntimeCoordinator::HandleMainSceneChanged`** 统一执行（清空分层场景、切换 **`Scene*`**、**`DialogueSystem::Clear`**；若处于播放模式则 **`LoadSceneStoryScriptOnUpdate`** 延迟加载脚本）；阶段位 **`GalRuntimePhase::Transitioning`**。
 
 ---
 
@@ -118,7 +122,7 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 
 ### 4.4 场景侧配置
 
-在场景 Actor 上挂载 **`GalGameEngineComponent`**，填写 **`scriptPath`** 与各类 UI 资产路径；进入场景且 **`IsPlayMode()`** 为真时，由 **`GalGameEngine::OnMainSceneChanged`** 触发 **`StoryScriptSystem::LoadSceneStoryScriptOnUpdate`**。
+在场景 Actor 上挂载 **`GalGameEngineComponent`**，填写 **`scriptPath`** 与各类 UI 资产路径；进入场景且 **`IsPlayMode()`** 为真时，由 **`GalRuntimeCoordinator::HandleMainSceneChanged`** 触发 **`StoryScriptSystem::LoadSceneStoryScriptOnUpdate`**。
 
 ### 4.5 转场与快进
 
@@ -140,11 +144,13 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 
 | API | 说明 |
 |-----|------|
-| `void Initialize(IGameEngineContext* context)` | 设置 **`GalGameEngineAccess::SetCurrent`**、**`CreateSubsystem`**、订阅视口尺寸与 **BeforeRender**。 |
+| `void Initialize(IGameEngineContext* context)` | **`GalRuntimeCoordinator::Attach`**、设置 **`GalGameEngineAccess::SetCurrent`**、**`CreateSubsystem`**、订阅视口尺寸与 **BeforeRender**、**`MarkHostRunning`** 后 **`GalRuntimeSessionHost::Start`**。 |
+| `~GalGameEngine()` | 调用 **`GalRuntimeCoordinator::Shutdown`** 与 **`GalGameEngineAccess::SetCurrent(nullptr)`**，再析构成员。 |
 | `void OnRender() override` | 当前为空；实际渲染在 **`OneRenderSceneCallback`**。 |
 | `void OnUpdate(float deltaTime) override` | 经 **`GetRuntimeSession()->Tick`** 驱动子系统（见 §3）；并实现 **`IGalGameEngine::GetSubsystemBus` / `GetContext` / `GetRuntimeSession` / `GetRuntime`**。 |
+| **`GalRuntimePhase GetRuntimePhase() const noexcept`** | 转发 **`GalRuntimeCoordinator::GetPhase`**，供调试与只读查询。 |
 
-**`CreateSubsystem` 私有流程**：分配 **`GalGameContext`**（**`GalGameContext::Create`**，**不再写入 `IGalGameEngine*`**）→ 对话系统 **`InitialiseDataModel` + `Initialize`** → **`LayeredSceneSystem::Initialize`** → **`RenderPipeline::Initialize`**（实现类型定义在 **`VGGalgamePresentation`**；本模块头文件为薄 include）→ **`ArchiveSystem::Initialise`** → **`StoryScriptSystem::SetEngine` + `Initialise`** → **`ResourceSystem::Initialize`** → **`GalGameUISystem::Initialize`** → 装配 **`GalSubsystemBus`** 与 **`GalGameRuntimeHost`** / **`GalRuntimeSessionHost`**。
+**`CreateSubsystem` 私有流程（Phase 8A-2）**：**`GalRuntimeCoordinator::BeginSubsystemConstruction`** → 分配 **`GalGameContext`** → **`LayeredSceneSystem::Initialize`** → 对话 **`InitialiseDataModel` + `Initialize`** → **`RenderPipeline::Initialize`** → **`ArchiveSystem::Initialise`** → **`ResourceSystem::Initialize`** → **`GalGameUISystem::Initialize`** → **`StoryScriptSystem::Initialise(..., &m_SubsystemBus)`**（内置注册 Lua/Sequence **`IScriptRuntime`**）→ **`GalRuntimeCoordinator::EndSubsystemConstruction`**。
 
 ### 5.3 `ArchiveSystem`（`Include/ArchiveSystem.h`）
 
@@ -192,6 +198,7 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 | `ShowChoiceUI` / `GetChoiceOptionByIndex` / `GetChoiceOptionSize` / `SelectCurrentChoice` | 选择支状态机 + 通过 **`GalGameContext::uiEventBus`** 派发 **`GalGameUIEvent`**（见 **`GalGameEvent.h`**）。 |
 | `ShowFullScreenTextUI` / `GetFullScreenTextItem` / `GetFullScreenTextSize` | 全屏文本队列。 |
 | `ShowInputUI` / `InputSubmitted` / `GetInputTitle` / `GetInputButtonText` | 输入框流程。 |
+| **`ResetTransientUIState`** | **`GalRuntimeCoordinator::ResetRuntime` / `Shutdown`** 时清空选择/全屏字/输入暂存字段。 |
 
 ### 5.8 `RenderPipeline`（`Include/RenderPipeline.h` → **`VGGalgamePresentation/Include/RenderPipeline.h`**）
 
@@ -205,16 +212,29 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 
 本仓库中 **`VGGalgame/Include/RenderPipeline.h`** 仅 **`#include "VGGalgamePresentation/Include/RenderPipeline.h"`**，链接依赖由 CMake **`PUBLIC VGGalgamePresentation`** 保证。
 
-### 5.9 `GalRuntimeSessionHost`（`Include/Runtime/GalRuntimeSessionHost.h`）
+### 5.9 `GalRuntimeCoordinator` / `GalRuntimePhase`（`Include/Runtime/GalRuntimeCoordinator.h` / `GalRuntimePhase.h`）
+
+| API / 类型 | 说明 |
+|-----|------|
+| **`GalRuntimePhase` 枚举** | **`Uninitialized` / `Initializing` / `Running` / `Resetting` / `Transitioning` / `ShuttingDown`**；供宿主与子系统只读判断生命周期（**勿**作跨线程同步原语）。 |
+| **`Attach` / `BeginSubsystemConstruction` / `EndSubsystemConstruction` / `MarkHostRunning`** | 与 **`GalGameEngine::CreateSubsystem` / `Initialize`** 对齐，固定 Phase 8A-2 装配阶段边界。 |
+| **`TickFrame`** | 统一 **`LayeredSceneSystem::OnUpdate`** → **`DialogueSystem::Update`** → **`IExecutionScheduler::Tick`**；由 **`GalRuntimeSessionHost::Tick`** 调用。 |
+| **`HandleMainSceneChanged`** | 主场景切换：清层、绑 **`RenderPipeline`** 场景、**`DialogueSystem::Clear`**、播放模式下 **`LoadSceneStoryScriptOnUpdate`**。 |
+| **`ResetRuntime`** | 全量清理：停会话、**`StoryScriptSystem::ResetExecutionPipeline`**、对白/场景/UI 暂态、**`GalGameRuntimeState`** 与 **`ArchiveDataContainer`** 重建、调度器 **`Reset`**。 |
+| **`Shutdown`** | **`~GalGameEngine`** 内调用；反序停止脚本与 UI/对白/场景侧可重复清理，并将 **`GalRuntimePhase`** 置 **`Uninitialized`**。 |
+| **`SaveRuntimeState` / `RestoreRuntimeState`** | Phase 8D 快照占位，当前不读写磁盘。 |
+
+### 5.10 `GalRuntimeSessionHost`（`Include/Runtime/GalRuntimeSessionHost.h`）
 
 | API | 说明 |
 |-----|------|
 | **`Start` / `Stop` / `Pause` / `Resume`** | 实现 **`IGalRuntimeSession`**；与引擎 Initialize/Reset 对齐。 |
-| **`Tick(deltaTime)`** | 会话级 Tick（内部顺序见实现：场景/对白 → **`GalDefaultExecutionScheduler::Tick`** 等）。 |
+| **`Tick(deltaTime)`** | 转发 **`GalRuntimeCoordinator::TickFrame`**（内部顺序：场景/对白 → **`GalDefaultExecutionScheduler::Tick`**）。 |
+| **`ResetSchedulerStateForHost`** | **`ResetRuntime`** 时重置调度器暂停与句柄种子。 |
 | **`GetSubsystemBus` / `GetExecutionScheduler` / `GetRuntimeState` / `GetResourceContext`** | 返回引擎装配的总线、调度器与 **`GalGameContext`**。 |
 | **`GetEventPipeline()`** | 当前为 **`GalNoopRuntimeEventPipeline`** 占位。 |
 
-### 5.10 `GalGameRuntimeHost`（`Include/Runtime/GalGameRuntimeHost.h`）
+### 5.11 `GalGameRuntimeHost`（`Include/Runtime/GalGameRuntimeHost.h`）
 
 | API | 说明 |
 |-----|------|
@@ -223,22 +243,23 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 | **`GetPlaybackRuntime`** | **`IPlaybackSubsystem*`**；与 **`ISubsystemBus::Playback()`** 指向同一适配器，避免重复状态。 |
 | **`GetVariableRuntime`** | 当前可返回 **nullptr**（占位）。 |
 
-### 5.11 `GalDefaultExecutionScheduler`（`Include/Runtime/GalDefaultExecutionScheduler.h`）
+### 5.12 `GalDefaultExecutionScheduler`（`Include/Runtime/GalDefaultExecutionScheduler.h`）
 
 | API | 说明 |
 |-----|------|
 | **`Tick`** | 委托剧情 **`StoryScriptSystem::Update`** 等（与引擎 **`OnUpdate`** 顺序文档化于会话宿主）。 |
 | **`SubmitYield`** | **`GalYieldKind::WaitSeconds`** 等路径可委托 **`StoryScriptSystem::Wait`**；其它 Yield 演进中。 |
 | **`SubmitWait` / `Cancel` / `Pause` / `Resume`** | 句柄队列占位演进中。 |
+| **`Reset`** | **`GalRuntimeCoordinator::ResetRuntime`** / **`Shutdown`** 时清空全局暂停与句柄计数。 |
 
-### 5.12 `GalSubsystemBus` 与各 Adapter（`Include/GalSubsystemBus.h` / `Source/GalSubsystemBus.cpp`）
+### 5.13 `GalSubsystemBus` 与各 Adapter（`Include/GalSubsystemBus.h` / `Source/GalSubsystemBus.cpp`）
 
 | 类型 | 说明 |
 |------|------|
 | **`GalSubsystemBus`** | 聚合 **`GalSceneSubsystemAdapter`**、**`GalAudioSubsystemAdapter`**、**`GalUISubsystemAdapter`**、**`GalScriptSubsystemAdapter`**、**`GalArchiveSubsystemAdapter`**、**`GalDialogueSubsystemAdapter`**、**`GalPlaybackSubsystemAdapter`**；实现 **`ISubsystemBus`**。 |
 | **各 `Gal*SubsystemAdapter`** | **`SetOwner(GalGameEngine*)`** 后，将 **`ISubsystemBus`** 虚调用转发到引擎既有 **`ResourceSystem`** / **`LayeredSceneSystem`** / **`StoryScriptSystem`** 等（**不经 **`IGalGameEngine`** 已删除的上帝 API**）。 |
 
-### 5.13 对白子模块（`Include/DialogueSystem/`）
+### 5.14 对白子模块（`Include/DialogueSystem/`）
 
 | 类型 | 职责 |
 |------|------|
@@ -248,7 +269,7 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 | **`DialogueTypingRuntime`** | 打字机与回调。 |
 | **`DialoguePlaybackRuntime`** | 自动播放 / 快进节拍。 |
 
-### 5.14 `SpriteTransformScriptManager`（`Include/SpriteAnimationScriptManager.h`）
+### 5.15 `SpriteTransformScriptManager`（`Include/SpriteAnimationScriptManager.h`）
 
 | API | 说明 |
 |-----|------|
@@ -256,7 +277,7 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 | `static Ref<IAnimationScript> CreateSpriteTransformWithCommand(IGalGameEngine*, IGameActor*, const String& cmd)` | 解析命令字符串创建 **`IAnimationScript`**。 |
 | `static bool StartSpriteTransformWithCommand(...)` | 便捷启动。 |
 
-### 5.15 `ScrollTransformScript`（`Include/SpriteAnimationScript.h`）
+### 5.16 `ScrollTransformScript`（`Include/SpriteAnimationScript.h`）
 
 | API | 说明 |
 |-----|------|
@@ -265,7 +286,7 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 | `void Start() override` | **`IAnimationScript`** 生命周期。 |
 | `void OnUpdate(Horizon::HEntityInterface* entity) override` | 每帧更新 **`TransformAnimationScript`**。 |
 
-### 5.16 `GalSprite` / `GalAudio` / `GalVideo` / `GalCharacter`（`Include/Game.h`）
+### 5.17 `GalSprite` / `GalAudio` / `GalVideo` / `GalCharacter`（`Include/Game.h`）
 
 均实现 **`VGGalgameRuntimeCore/Interface/IGameObject.h`** 中对应 **`I*`** 接口（通过 **`VGGalgameCore`** 聚合头包含）；额外暴露 **`m_Engine`**、路径、图层、底层 **`IGameActor*`** 与（精灵）**`GalGameRuntimeState*`** 指针，供实现体内访问引擎与全局 UI 状态。
 
@@ -278,13 +299,16 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 ### 6.1 已完成
 
 - **`GalGameEngine`** 完整子系统装配与主场景切换流程（含 **OnUpdate** 管线）。
+- **Phase 8A**：**`GalRuntimeCoordinator`** / **`GalRuntimePhase`**；**`CreateSubsystem`** 固定顺序（Context → Systems → **StoryScriptSystem**）；**`Reset`** 全量清理与析构 **Shutdown** 链；**`GalRuntimeSessionHost::Tick`** 委托 **`TickFrame`**。
 - **资源 / 分层场景 / 渲染管线 / 对话（Rml 数据模型 + 打字机）/ 存档槽位 / Gal UI 事件总线** 联通。
 - **`GalGameSystem`** 与 **Lua**、**Sequence** 模块引导一致化。
 - **`Game.h`** 资源具体类与 **`SpriteTransformScriptManager`**、**`ScrollTransformScript`**。
 
 ### 6.2 进行中 / 占位
 
-- **`GalGameEngine::Reset`** 仍为空；主场景切换时部分对话状态清理代码保留为注释（快进/自动/回调策略待定）。
+- **Phase 8B（首包）**：**`IScriptRuntime`**（Contract）、**`GalScriptRuntimeRegistry`**、**`GalAssetTypeScriptRuntime`**；**`StoryScriptSystem`** 去除 **`IGalGameEngine*`**，改为 **`ISubsystemBus*`** 注入；加载路径：**Registry → Factory** 回退。
+- **`RuntimeLoader` 独立类**、**`CreateExecution → IStoryExecutionInstance`** 终极形态仍待后续迭代。
+- **`GalRuntimeCoordinator::SaveRuntimeState` / `RestoreRuntimeState`** 仅占位；与 **ResourceSystem** 在 **Scene** 上创建的 Actor 的全量回收策略待 Phase 8E。
 - **`GalGameEngine::OnRender`** 为空设计，依赖 **BeforeRender** 回调；若宿主未注册引擎上下文回调需自行补渲染路径。
 
 ### 6.3 已知集成注意
@@ -298,7 +322,8 @@ VisionGal::GalGameSystem::Initialize(coreGameEngine);
 
 | 日期 | 说明 |
 |------|------|
-| 2026-05-13 | 对齐 Phase 8：CMake **`VGGalgameLuaRuntime`**、**`RenderPipeline`** 实现位于 **Presentation**、**`CreateSubsystem`** 与 **`GalGameContext`** 无引擎指针、**`OnUpdate`** 经 **`GalRuntimeSessionHost`**、补充 Session/RuntimeHost/Scheduler/SubsystemBus/对白子模块 API 节。 |
+| 2026-05-13 | **Phase 8B（首包）**：**`IScriptRuntime`**、**`GalScriptRuntimeRegistry`**、**`GalAssetTypeScriptRuntime`**；**`StoryScriptSystem::Initialise(..., ISubsystemBus*)`**；文档目录与 §5.2/§6 同步。 |
+| 2026-05-13 | **Phase 8A**：新增 **`GalRuntimeCoordinator`** / **`GalRuntimePhase`**；**`Reset`** / **析构 Shutdown**；**`CreateSubsystem`** 顺序调整；**`StoryScriptSystem::ResetExecutionPipeline`**、**`GalGameUISystem::ResetTransientUIState`**、**`GalDefaultExecutionScheduler::Reset`**；文档 §3/§5/§6 同步。 |
 | 2026-05-13 | **Phase 8**：引入 **`GalRuntimeSessionHost`** / **`GalDefaultExecutionScheduler`**；`OnUpdate` 经 **`IGalRuntimeSession::Tick`**；`PUBLIC` 链接 **`VGGalgamePresentation`**；**`RenderPipeline`** 迁至表现层 DLL；**`GalRuntimeLayerGraphAdapter`**（占位）与对白拆分说明头。 |
 | 2026-05-13 | 删除对 **`VGGalgameRuntime`** 的依赖：**`StoryScriptSystem`** / **`StoryExecutionInstance`** 迁入本模块 **`ScriptSystem/`**；`PUBLIC` 链接 **`VGGalgameNodeGraph`**、**`VGGalgameCore`**。 |
 | 2026-05-12 | 重写：纠正与 ScriptSequence 文档误粘贴问题；补齐 VGGalgame 目录、架构、`GalGameSystem` 引导与实现类 API 表。 |

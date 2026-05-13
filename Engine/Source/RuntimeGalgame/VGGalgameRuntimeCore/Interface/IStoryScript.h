@@ -19,7 +19,7 @@
  */
 
 #pragma once
-
+#include "../VGGRCExport.h"
 #include "VGGalgameContract/VGGalCoreConfig.h"
 #include "VGGalgameContract/Interface/IStoryScriptExecutor.h"
 #include "VGCore/Include/Core/Core.h"
@@ -35,7 +35,7 @@ namespace VisionGal::GalGame
 	 * - `RegisterAssetExecutor`：由各脚本后端模块在启动时注册 type → Creator。
 	 * - `LoadAssetExecutor`：由 `StoryScriptSystem` 在加载脚本时按路径解析出的 type 创建执行器实例。
 	 */
-	struct VG_GALGAME_CORE_API GalGameScriptExecutorFactory
+	struct VG_RUNTIME_GALCORE_API GalGameScriptExecutorFactory
 	{
 		virtual Ref<IStoryScriptExecutor> LoadAssetExecutor(const String& type, const String& path);
 

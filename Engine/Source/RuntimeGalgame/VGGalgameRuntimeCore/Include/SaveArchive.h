@@ -10,6 +10,7 @@
  */
 
 #pragma once
+#include "../VGGRCExport.h"
 #include "VGGalgameContract/VGGalCoreConfig.h"
 #include <cstdint>
 #include <VGRHI/Interface/Texture.h>
@@ -18,7 +19,7 @@
 
 namespace VisionGal::GalGame
 {
-	struct VG_GALGAME_CORE_API SaveArchive
+	struct VG_RUNTIME_GALCORE_API SaveArchive
 	{
 		/// Phase 7：顶层 JSON schema 整数版本（与 `version` 字符串独立演进）。
 		static constexpr int kSaveArchiveSchemaVersion = 1;

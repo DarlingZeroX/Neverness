@@ -41,7 +41,7 @@ add_library(VGGalgameRuntimeCore SHARED ${RUNTIME_INTERFACE_FILES} ${RUNTIME_HEA
 # 中文：对外 DLL 文件名保持为 VGGalgameCore.dll，避免启动器/插件硬编码路径失效。
 set_target_properties(VGGalgameRuntimeCore PROPERTIES OUTPUT_NAME VGGalgameCore)
 
-target_compile_definitions(VGGalgameRuntimeCore PRIVATE VG_GALGAME_CORE_EXPORT)
+target_compile_definitions(VGGalgameRuntimeCore PRIVATE VG_GALGAME_RUNTIME_CORE_EXPORT)
 
 target_include_directories(VGGalgameRuntimeCore PUBLIC
 	${PROJECT_SOURCE_DIR}/Engine/Source/Runtime

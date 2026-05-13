@@ -43,6 +43,7 @@ VGGalgameContract/
     ├── IScriptSubsystem.h
     ├── IStoryScriptSystem.h
     ├── IStoryScriptExecutor.h
+    ├── IScriptRuntime.h           # Phase 8B：可注册脚本后端（Lua/Sequence/…）
     ├── IStoryExecutionAdapter.h
     ├── ISceneSubsystem.h
     ├── IUISubsystem.h
@@ -245,6 +246,16 @@ flowchart LR
 |------|------|
 | **`LoadFromAsset(const String& path)`** | 返回 **`Ref<IStoryScriptExecutor>`**。 |
 
+#### 7.14.1 `Interface/IScriptRuntime.h` — `IScriptRuntime`（Phase 8B）
+
+**`IScriptRuntime`**（继承 **`VGEngineResource`**）：宿主侧 **`GalScriptRuntimeRegistry`** 的表项；当前 **`CreateScriptExecutor`** 仍委托 **`GalGameScriptExecutorFactory`**，与 **`IStoryScriptExecutorCreator`** 并存，便于后续迁入 **`IStoryExecutionInstance`** 直建路径。
+
+| 方法 | 说明 |
+|------|------|
+| **`GetRuntimeName`** | 调试短名。 |
+| **`CanLoad(assetPath)`** | 是否承接该路径（通常与 **`GetAssetTypeNameID`** 对齐）。 |
+| **`CreateScriptExecutor(assetPath)`** | 同步构造 **`IStoryScriptExecutor`**；失败返回 **nullptr**。 |
+
 ### 7.15 `Interface/IStoryExecutionAdapter.h` — `IStoryExecutionAdapter`
 
 | 方法 | 说明 |
@@ -341,5 +352,6 @@ flowchart LR
 
 | 日期 | 说明 |
 |------|------|
+| 2026-05-13 | **Phase 8B**：新增 **`IScriptRuntime.h`**；目录树与 §7.14.1 API 说明。 |
 | 2026-05-13 | 扩充 API 参考节：覆盖 `Interface/` 与 `Include/SubsystemBusSnapshot.h`；与 RuntimeCore / Core 聚合文档交叉引用。 |
 | 2026-05-13 | Phase 8.1：自原 VGGalgameCore 拆出独立 **Contract** 目标。 |

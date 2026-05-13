@@ -5,12 +5,13 @@
  */
 
 #pragma once
+#include "../VGGRCExport.h"
 #include "VGGalgameContract/VGGalCoreConfig.h"
 #include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal::GalGame
 {
-	struct VG_GALGAME_CORE_API GalGameLayoutUtils
+	struct VG_RUNTIME_GALCORE_API GalGameLayoutUtils
 	{
 		static void SetDesignSize(float2 size);
 		static float2 GetDesignSize();

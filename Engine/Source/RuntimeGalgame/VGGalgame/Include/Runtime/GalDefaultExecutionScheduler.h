@@ -26,6 +26,9 @@ namespace VisionGal::GalGame
 		void ResumeAll() override;
 		void Tick(float deltaTime) override;
 
+		/// 中文：**GalRuntimeCoordinator::ResetRuntime** 时调用；与 **PauseAll** 解耦，避免残留全局暂停。
+		void Reset() noexcept;
+
 	private:
 		StoryScriptSystem* m_ScriptSystem = nullptr;
 		bool m_GlobalPaused = false;

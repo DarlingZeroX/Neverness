@@ -52,4 +52,10 @@ namespace VisionGal::GalGame
 
 		m_ScriptSystem->Update();
 	}
+
+	void GalDefaultExecutionScheduler::Reset() noexcept
+	{
+		m_GlobalPaused = false;
+		m_NextHandle = 1;
+	}
 }

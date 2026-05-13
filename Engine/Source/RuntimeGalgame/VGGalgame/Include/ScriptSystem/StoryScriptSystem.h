@@ -9,11 +9,10 @@
  * See the LICENSE file in the project root for details.
  *
  * 中文说明（剧情脚本宿主实现）：
- * - 实现 **`IStoryScriptSystem`**：负责从场景 **`GalGameEngineComponent`** 读取脚本路径、
- *   通过 **`GalGameScriptExecutorFactory`** 按资产类型加载 **`IStoryScriptExecutor`**、
- *   驱动 **`Run` / `Tick` / `ContinueDialogue`**，并把 UI 选择/输入与存档回放桥接到执行器。
- * - **`Initialise` / `Update`**：由 **`GalGameEngine`** 装配与每帧调用；内部用延迟回调队列
- *   处理「在 Update 阶段再加载脚本」等需求，避免在事件中间重入加载。
+ * - 实现 **`IStoryScriptSystem`**：从场景 **`GalGameEngineComponent`** 读取脚本路径；加载时优先走 **`GalScriptRuntimeRegistry`**
+ *   中注册的 **`IScriptRuntime`**（Phase 8B），未命中再回退 **`GalGameScriptExecutorFactory`**；仍统一 **`Run` / `Tick` / `ContinueDialogue`**，
+ *   并把 UI 选择/输入与存档回放桥接到执行器。
+ * - **`Initialise` / `Update`**：由 **`GalGameEngine`** 装配与每帧调用；**`ISubsystemBus*`** 由宿主注入，**禁止**再持有 **`IGalGameEngine*`**。
  * - **`LoadArchive`**：与 **`SaveArchive`** 协作，在加载存档时快进对白行直至目标行号。
  */
 
@@ -22,12 +21,14 @@
 #include "../../VGGalgameConfig.h"
 #include <functional>
 
+#include "VGCore\Interface\GameEngineInterface.h"
+#include "ScriptSystem/GalScriptRuntimeRegistry.h"
 #include "StoryExecutionInstance.h"
 #include "VGGalgameCore/Interface/IStoryScript.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Utils/TransitionHelper.h"
+#include "VGGalgameContract/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IStoryScriptSystem.h"
-#include "VGGalgameCore/Interface/IGameEngine.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
 
 namespace VisionGal::GalGame
@@ -54,21 +55,30 @@ namespace VisionGal::GalGame
 
 		bool LoadArchive(const SaveArchive& archive) override;
 
-		void Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context);
+		void Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context, ISubsystemBus* subsystemBus);
 		void Update();
-		void SetEngine(IGalGameEngine* engine);
+
+		/// 中文：供宿主或测试追加 **`IScriptRuntime`**；后注册者优先于先注册者匹配路径。
+		GalScriptRuntimeRegistry& GetScriptRuntimeRegistry() noexcept { return m_RuntimeRegistry; }
+		const GalScriptRuntimeRegistry& GetScriptRuntimeRegistry() const noexcept { return m_RuntimeRegistry; }
+
+		/// 中文：由 **GalRuntimeCoordinator** 在 **ResetRuntime** / **Shutdown** 时调用：卸载执行器、清空延迟队列与 **GalGameRuntimeState**。
+		void ResetExecutionPipeline();
 	private:
+		void RegisterBuiltinScriptRuntimes();
 		void OnChoiceSelected(const std::string& id, const std::vector<std::string>& options, int currentChoice);
 		void OnInputSubmitted(const std::string& id, const std::string& text);
 		void ContinueDialogue();
 
 		void AddUpdateCallback(const std::function<void()>& callback);
 		void UpdateWaitState();
-	private:
+
 		Ref<GalGameContext> m_GalGameContext;
 		IScene* m_Scene;
 		IGameEngineContext* m_GameEngineContext = nullptr;
-		IGalGameEngine* m_GalGameEngine = nullptr;
+		ISubsystemBus* m_SubsystemBus = nullptr;
+
+		GalScriptRuntimeRegistry m_RuntimeRegistry;
 
 		Ref<IStoryScriptExecutor> m_StoryScript = nullptr;
 		Ref<StoryExecutionInstance> m_ExecutionInstance = nullptr;

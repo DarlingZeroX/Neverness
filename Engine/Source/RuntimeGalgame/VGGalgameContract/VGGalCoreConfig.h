@@ -16,18 +16,18 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
-#ifdef VG_GALGAME_CORE_EXPORT
-#define VG_GALGAME_CORE_API __declspec(dllexport)
+#ifdef VG_GALGAME_CONTRACT_EXPORT
+#define VG_GALGAME_CONTRACT_API __declspec(dllexport)
 #else
-#define VG_GALGAME_CORE_API __declspec(dllimport)
+#define VG_GALGAME_CONTRACT_API __declspec(dllimport)
 #endif
 
 #else
 
-#ifdef VG_GALGAME_CORE_EXPORT
-#define VG_GALGAME_CORE_API __attribute__((visibility("default")))
+#ifdef VG_GALGAME_CONTRACT_EXPORT
+#define VG_GALGAME_CONTRACT_API __attribute__((visibility("default")))
 #else
-#define VG_GALGAME_CORE_API
+#define VG_GALGAME_CONTRACT_API
 #endif
 
 #endif

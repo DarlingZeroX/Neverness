@@ -2,17 +2,22 @@
  * StoryScriptSystem 实现（VGGalgame / ScriptSystem）
  *
  * 中文要点：
- * - `LoadStoryScript`：工厂按扩展名解析类型 → `Run` 启动协程/脚本主循环 → 包装为 `StoryExecutionInstance`。
+ * - `LoadStoryScript`：**GalScriptRuntimeRegistry** 优先 → 未命中则 **GalGameScriptExecutorFactory** → `Run` → **StoryExecutionInstance**。
  * - `LoadArchive`：置位「读档快进」后反复 `ContinueDialogue` 直至对白行号追上存档记录；期间
  *   选择/输入分支通过 `m_ArchiveLuaReadCallback` 延迟到循环内执行，避免在 Lua 协程栈内重入。
  */
 
 #include "ScriptSystem/StoryScriptSystem.h"
 
+#include "ScriptSystem/GalAssetTypeScriptRuntime.h"
+#include "VGAsset/Include/GalGameAsset.h"
+#include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
 #include "VGAsset/Interface/Package.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "VGCore/Include/Core/EventBus.h"
-#include "VGGalgameRuntimeCore\Include\SaveArchive.h"
+#include "VGGalgameRuntimeCore/Include/SaveArchive.h"
+#include "VGGalgameRuntimeCore/Include/GalGameRuntimeState.h"
+#include "VGGalgameRuntimeCore/Include/ArchiveDataContainer.h"
 
 namespace VisionGal::GalGame
 {
@@ -28,10 +33,20 @@ namespace VisionGal::GalGame
 
 	bool StoryScriptSystem::LoadStoryScript(const String& path)
 	{
-		auto storyScript = GalGameScriptExecutorFactory::Get().LoadAssetExecutor(
-			GetAssetTypeNameID(path),
-			path
-		);
+		Ref<IStoryScriptExecutor> storyScript;
+
+		if (IScriptRuntime* rt = m_RuntimeRegistry.FindRuntimeForPath(path))
+		{
+			storyScript = rt->CreateScriptExecutor(path);
+		}
+
+		if (storyScript == nullptr)
+		{
+			storyScript = GalGameScriptExecutorFactory::Get().LoadAssetExecutor(
+				GetAssetTypeNameID(path),
+				path
+			);
+		}
 
 		if (storyScript == nullptr)
 		{
@@ -48,7 +63,13 @@ namespace VisionGal::GalGame
 			m_GalGameContext->engineEventBus.OnStoryScriptEvent.Invoke(evt);
 		}
 
-		bool result = storyScript->Run(m_GalGameEngine->GetSubsystemBus(), m_GalGameContext.get());
+		if (m_SubsystemBus == nullptr)
+		{
+			H_LOG_ERROR("StoryScriptSystem: SubsystemBus 未注入，无法 Run");
+			return false;
+		}
+
+		bool result = storyScript->Run(m_SubsystemBus, m_GalGameContext.get());
 
 		if (result == false)
 			return false;
@@ -209,10 +230,13 @@ namespace VisionGal::GalGame
 		m_GalGameContext->runtimeState.playback.isCurrentLoadingArchive = false;
 	}
 
-	void StoryScriptSystem::Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context)
+	void StoryScriptSystem::Initialise(const Ref<GalGameContext>& galCtx, IGameEngineContext* context, ISubsystemBus* subsystemBus)
 	{
 		m_GalGameContext = galCtx;
 		m_GameEngineContext = context;
+		m_SubsystemBus = subsystemBus;
+
+		RegisterBuiltinScriptRuntimes();
 
 		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
 			{
@@ -261,9 +285,30 @@ namespace VisionGal::GalGame
 		UpdateWaitState();
 	}
 
-	void StoryScriptSystem::SetEngine(IGalGameEngine* engine)
+	void StoryScriptSystem::RegisterBuiltinScriptRuntimes()
 	{
-		m_GalGameEngine = engine;
+		/// 中文：与 **GalGameLuaScriptModule::MountEngineRuntime** / **GalGameSequenceScriptModule::MountEngineRuntime** 注册的工厂类型 ID 保持一致。
+		m_RuntimeRegistry.Clear();
+		m_RuntimeRegistry.RegisterRuntime(MakeRef<GalAssetTypeScriptRuntime>(
+			String(VisionGal::GLuaScriptAssetType{}.GetNameID()),
+			String("GalGameLuaScript")));
+		m_RuntimeRegistry.RegisterRuntime(MakeRef<GalAssetTypeScriptRuntime>(
+			String(VisionGal::GalGame::SequenceScriptAssetType{}.GetNameID()),
+			String("GalGameSequenceScript")));
+	}
+
+	void StoryScriptSystem::ResetExecutionPipeline()
+	{
+		m_UpdateCallback.clear();
+		m_ArchiveLuaReadCallback.clear();
+		m_Wait = {};
+		m_StoryScript.reset();
+		m_ExecutionInstance.reset();
+		if (m_GalGameContext)
+		{
+			m_GalGameContext->runtimeState = GalGameRuntimeState{};
+			m_GalGameContext->archiveData = MakeRef<ArchiveDataContainer>();
+		}
 	}
 
 	void StoryScriptSystem::OnChoiceSelected(

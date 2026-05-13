@@ -49,6 +49,16 @@ namespace VisionGal::GalGame
 			});
 	}
 
+	void GalGameUISystem::ResetTransientUIState()
+	{
+		m_CurrentChoiceID.clear();
+		m_CurrentChoiceOptions.clear();
+		m_CurrentFullScreenTexts.clear();
+		m_CurrentInputID.clear();
+		m_CurrentInputTitle.clear();
+		m_CurrentInputButtonText.clear();
+	}
+
 	void GalGameUISystem::ShowChoiceUI(const std::string& id, const std::vector<std::string>& options)
 	{
 		m_CurrentChoiceID = id;

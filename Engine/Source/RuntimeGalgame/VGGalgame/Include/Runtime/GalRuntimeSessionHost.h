@@ -1,8 +1,8 @@
 /*
  * GalRuntimeSessionHost — IGalRuntimeSession 宿主实现（Phase 8.2 / VGGalgame）
  *
- * 中文：由 GalGameEngine 在 Initialize 末尾创建；Tick 内先更新场景与对白，再调用执行调度器，
- * 统一未来多执行器 / Timeline 的挂载点。
+ * 中文：由 GalGameEngine 在 Initialize 末尾创建；**Tick** 委托 **GalRuntimeCoordinator::TickFrame**，
+ * 将会话级节拍与 **IExecutionScheduler** 持有职责保留在本类，与 Phase 8A 生命周期协调器解耦。
  */
 
 #pragma once
@@ -30,6 +30,9 @@ namespace VisionGal::GalGame
 		void Pause() override;
 		void Resume() override;
 		void Tick(float deltaTime) override;
+
+		/// 中文：由 **GalRuntimeCoordinator::ResetRuntime** 调用，重置调度器上的暂停与句柄计数。
+		void ResetSchedulerStateForHost() noexcept;
 
 		ISubsystemBus* GetSubsystemBus() noexcept override;
 		IExecutionScheduler* GetExecutionScheduler() noexcept override;

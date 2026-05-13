@@ -35,10 +35,16 @@ namespace VisionGal::GalGame
 			});
 	}
 
+	GalGameEngine::~GalGameEngine()
+	{
+		/// 中文：在成员析构之前释放脚本/会话对 **this** 的隐含依赖；顺序与 **Shutdown** 文档一致。
+		m_RuntimeCoordinator.Shutdown();
+		GalGameEngineAccess::SetCurrent(nullptr);
+	}
+
 	void GalGameEngine::Reset()
 	{
-		if (m_RuntimeSession)
-			m_RuntimeSession->Stop();
+		m_RuntimeCoordinator.ResetRuntime();
 	}
 
 	void GalGameEngine::WaitForStoryScript(float duration)
@@ -64,18 +70,14 @@ namespace VisionGal::GalGame
 
 	void GalGameEngine::OnMainSceneChanged(const EngineEvent& evt)
 	{
-		m_LayeredSceneManager->ClearAll();
-
-		m_Scene = dynamic_cast<Scene*>(evt.Scene);
-		m_RenderPipeline->SetScene(m_Scene);
-		m_DialogueSystem->Clear();
-
-		if (GetSceneManager()->IsPlayMode())
-			m_IsEngineEnable = m_StoryScriptSystem->LoadSceneStoryScriptOnUpdate(evt.Scene);
+		m_RuntimeCoordinator.HandleMainSceneChanged(evt);
 	}
 
 	void GalGameEngine::CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext)
 	{
+		m_RuntimeCoordinator.BeginSubsystemConstruction();
+
+		/// 中文：Phase 8A-2 固定装配顺序 — **Context**（内含 **engineEventBus** / **uiEventBus**）→ **Systems**（场景/对白/渲染/存档/资源/UI）→ **ScriptRuntime**（**StoryScriptSystem**）→ **Execution**（**GalRuntimeSessionHost** 在 **Initialize** 末尾创建）。
 		m_GalGameContext = GalGameContext::Create(&m_SubsystemBus);
 
 		// 先完成 LayeredScene 对 engineEventBus 的订阅，再跑 Rml 数据模型绑定，避免第三方堆操作与上下文对象相邻分配时的调试期损坏（见编辑器 AV）。
@@ -92,20 +94,22 @@ namespace VisionGal::GalGame
 		m_ArchiveSystem = MakeRef<ArchiveSystem>();
 		m_ArchiveSystem->Initialise(m_GalGameContext);
 
-		m_StoryScriptSystem = MakeRef<StoryScriptSystem>();
-		m_StoryScriptSystem->SetEngine(this);
-		m_StoryScriptSystem->Initialise(m_GalGameContext, context);
-
 		m_ResourceSystem = MakeRef<ResourceSystem>();
 		m_ResourceSystem->Initialize(m_GalGameContext, m_LayeredSceneManager, this);
 
 		m_GalGameUISystem = MakeRef<GalGameUISystem>();
 		m_GalGameUISystem->Initialize(m_GalGameContext, context);
+
+		m_StoryScriptSystem = MakeRef<StoryScriptSystem>();
+		m_StoryScriptSystem->Initialise(m_GalGameContext, context, &m_SubsystemBus);
+
+		m_RuntimeCoordinator.EndSubsystemConstruction();
 	}
 
 	void GalGameEngine::Initialize(IGameEngineContext* context)
 	{
 		m_EngineContext = context;
+		m_RuntimeCoordinator.Attach(this);
 		GalGameEngineAccess::SetCurrent(this);
 		auto* rmlContext = static_cast<Rml::Context*>(context->GetUISystem()->GetContext());
 		CreateSubsystem(context, rmlContext);
@@ -121,6 +125,7 @@ namespace VisionGal::GalGame
 			});
 
 		m_RuntimeSession = std::make_unique<GalRuntimeSessionHost>(this);
+		m_RuntimeCoordinator.MarkHostRunning();
 		m_RuntimeSession->Start();
 	}
 

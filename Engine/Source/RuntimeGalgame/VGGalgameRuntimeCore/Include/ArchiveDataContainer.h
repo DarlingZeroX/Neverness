@@ -10,6 +10,7 @@
 */
 
 #pragma once
+#include "../VGGRCExport.h"
 #include "VGGalgameContract/VGGalCoreConfig.h"
 #include "VGCore/Include/Data/DataContainer.h"
 
@@ -21,7 +22,7 @@ namespace VisionGal::GalGame
 	 * **schemaVersion**：与 SaveArchive / ValidateArchiveSchema 对齐的容器格式版本。
 	 * **schemaHash**：预留，用于校验 Choices/Inputs 命名空间结构（当前可为 0）。
 	 */
-	class VG_GALGAME_CORE_API ArchiveDataContainer: public VGDataContainer
+	class VG_RUNTIME_GALCORE_API ArchiveDataContainer: public VGDataContainer
 	{
 	public:
 		ArchiveDataContainer() = default;

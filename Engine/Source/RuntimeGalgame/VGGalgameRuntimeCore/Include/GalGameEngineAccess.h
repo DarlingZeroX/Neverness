@@ -5,13 +5,14 @@
  */
 
 #pragma once
+#include "../VGGRCExport.h"
 #include "VGGalgameContract/VGGalCoreConfig.h"
 
 namespace VisionGal::GalGame
 {
 	class IGalGameEngine;
 
-	struct VG_GALGAME_CORE_API GalGameEngineAccess
+	struct VG_RUNTIME_GALCORE_API GalGameEngineAccess
 	{
 		static IGalGameEngine* Current() noexcept;
 		static void SetCurrent(IGalGameEngine* engine) noexcept;

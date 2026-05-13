@@ -24,19 +24,17 @@
 #include "VGCore/Include/Utils/TransitionHelper.h"
 #include "GalSubsystemBus.h"
 #include "Runtime/GalRuntimeSessionHost.h"
+#include "Runtime/GalRuntimeCoordinator.h"
 #include "Runtime/GalGameRuntimeHost.h"
 #include <memory>
 
 namespace VisionGal::GalGame
 {
-	struct IArchiveSystem;
-	struct IStoryScriptSystem;
-
 	class VG_GALGAME_API GalGameEngine : public IGalGameEngine
 	{
 	public:
 		GalGameEngine();
-		~GalGameEngine() override = default;
+		~GalGameEngine() override;
 		GalGameEngine(const GalGameEngine&) = delete;
 		GalGameEngine& operator=(const GalGameEngine&) = delete;
 		GalGameEngine(GalGameEngine&&) = delete;
@@ -51,6 +49,9 @@ namespace VisionGal::GalGame
 		IGalGameContext* GetContext() override;
 		IGalRuntimeSession* GetRuntimeSession() noexcept override;
 		IGalGameRuntime* GetRuntime() noexcept override;
+
+		/// 中文：Phase 8A 运行阶段；供调试器 / 子系统只读查询，**勿**用于跨线程同步原语。
+		GalRuntimePhase GetRuntimePhase() const noexcept { return m_RuntimeCoordinator.GetPhase(); }
 
 		/// 中文：协程式等待；由 IPlaybackSubsystem / IScriptSubsystem::Wait 委托。
 		void WaitForStoryScript(float duration);
@@ -68,6 +69,7 @@ namespace VisionGal::GalGame
 		friend class GalArchiveSubsystemAdapter;
 		friend class GalDialogueSubsystemAdapter;
 		friend struct GalRuntimeSessionHost;
+		friend class GalRuntimeCoordinator;
 
 		bool TransitionCommand(const String& layer, const String& cmd);
 		bool TransitionCommandWithCustomImage(const String& layer, const String& imagePath, const String& cmd);
@@ -92,6 +94,7 @@ namespace VisionGal::GalGame
 
 		GalSubsystemBus m_SubsystemBus;
 		GalGameRuntimeHost m_RuntimeHost;
+		GalRuntimeCoordinator m_RuntimeCoordinator;
 
 		std::unique_ptr<GalRuntimeSessionHost> m_RuntimeSession;
 	};

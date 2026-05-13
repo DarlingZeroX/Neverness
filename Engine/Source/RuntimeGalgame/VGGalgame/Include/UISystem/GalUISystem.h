@@ -29,6 +29,9 @@ namespace VisionGal::GalGame
 
 		void Initialize(const Ref<GalGameContext>& galCtx, IGameEngineContext* context);
 
+		/// 中文：全量 Reset 时清空剧情 UI 暂存态，避免选择/输入面板与 **GalGameRuntimeState** 不一致。
+		void ResetTransientUIState();
+
 		// 剧情选择UI
 		void ShowChoiceUI(const std::string& id, const std::vector<std::string>& options) override;
 		std::string GetChoiceOptionByIndex(int index) override;
