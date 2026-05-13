@@ -27,7 +27,6 @@
 #include "VGAsset/Interface/AssetFactory.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGCore/Interface/Loader.h"
-#include "VGGalgameScriptSequence/Include/Asset/Asset.h"
 
 #ifdef GetCurrentDirectory
 #undef GetCurrentDirectory
@@ -587,7 +586,7 @@ namespace VisionGal::Editor {
 
 			if (ImGui::MenuItem(EditorText{ "Create GalGame Visual Script" }.c_str()))
 			{
-				factory.CreateAsset(path, GalGame::SequenceScriptAssetType{}.GetNameID());
+				factory.CreateAsset(path, "GalGameSequenceScript");
 				RefreshDirectory();
 			}
 

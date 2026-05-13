@@ -10,8 +10,9 @@ alwaysApply: false
 
 1. **禁止** `#include` 以下路径前缀（含子路径）：
    - `VGGalgameNodeGraph/`
-   - `VGGalgameScriptSequence/`
    - `VGEditor` / `Editor/` 下任意编辑器模块
+
+   **例外（Phase 8）**：`VGGalgameCore/` 现为 **薄转发头** 目录，可 `#include "VGGalgameSequenceRuntime/..."` 等以指向真实模块；禁止在转发头之外手写业务逻辑。
 
 2. **允许**：标准库、`VGGalgameCore` 自身、`VGCore`、`VGEngine`、`VGRHI`、`HCore`、`VGLua`/`sol` 等与 Core CMake `target_link_libraries` 一致的公共依赖。
 

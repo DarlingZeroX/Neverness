@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 namespace VisionGal::Editor
 {

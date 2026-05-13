@@ -8,7 +8,7 @@
 
 以下章节说明了如何使新的 `IVGSSequenceComponent` 类型在 `VGEditorGalgameSequence` 中变为可编辑状态，而无需手动维护重复的列表。
 
-## 1. 运行时类型与工厂 (VGGalgameScriptSequence)
+## 1. 运行时类型与工厂 (VGGalgameSequenceRuntime)
 在脚本序列模块中定义组件（通常使用 TVGSSequenceComponent<YourType>）。
 
 在 IVGSSequenceComponentManager 中进行注册（参考 IVGSSequenceComponent.cpp 中的 EmplaceComponentType<YourType>()）。

@@ -18,8 +18,8 @@
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGCore/Interface/Loader.h>
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 namespace VisionGal::Editor
 {

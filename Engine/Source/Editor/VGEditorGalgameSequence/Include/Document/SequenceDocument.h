@@ -13,8 +13,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
-#include "VGGalgameScriptSequence/Include/Sequence/DataContainer.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/DataContainer.h"
 
 //namespace VisionGal
 //{

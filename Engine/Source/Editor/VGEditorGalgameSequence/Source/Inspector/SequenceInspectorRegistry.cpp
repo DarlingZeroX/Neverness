@@ -8,7 +8,7 @@
 
 #include "Inspector/SequenceInspectorRegistry.h"
 
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 #include <utility>
 

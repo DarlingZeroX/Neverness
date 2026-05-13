@@ -41,8 +41,8 @@
 #include "Transactions/Patches/SequencePatchApplier.h"
 #include "ViewModels/SequenceSearchViewModel.h"
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 using namespace VisionGal::Editor;
 

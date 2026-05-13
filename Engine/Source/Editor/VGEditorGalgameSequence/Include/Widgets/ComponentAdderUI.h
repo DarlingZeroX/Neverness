@@ -16,7 +16,7 @@
 #include <vector>
 #include <string>
 #include "ComponentRegistry/SequenceComponentMetadata.h"
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
 
 namespace VisionGal::Editor
 {

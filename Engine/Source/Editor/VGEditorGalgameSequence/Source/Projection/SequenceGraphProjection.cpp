@@ -16,8 +16,8 @@
 #include "Document/SequenceDocument.h"
 #include "Projection/SequenceProjectionContext.h"
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 namespace VisionGal::Editor
 {

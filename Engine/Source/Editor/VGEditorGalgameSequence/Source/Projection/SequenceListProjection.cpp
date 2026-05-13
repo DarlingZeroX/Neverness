@@ -18,8 +18,8 @@
 #include "Runtime/SequenceRuntimeOverlayState.h"
 #include "Validation/SequenceValidationIssue.h"
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 #include <unordered_set>
 

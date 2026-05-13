@@ -14,8 +14,8 @@
 #include "Schema/SequencePropertySchema.h"
 #include "Validation/GenericSchemaValidator.h"
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 #include <unordered_set>
 

@@ -7,7 +7,7 @@
 - 节点位置、注释、可视化边（`SequenceAuthoringEdge`）
 - 通过 `entryIndex` 引用序列条目，**不**引入执行 Pin、分支 VM 或 Graph Compiler
 
-线性执行语义仍由 `VGGalgameScriptSequence` 侧保证；本模块仅服务编辑器可视化与布局持久化预留。
+线性执行语义仍由 `VGGalgameSequenceRuntime` 侧保证；本模块仅服务编辑器可视化与布局持久化预留。
 
 ## 2. 类型一览
 

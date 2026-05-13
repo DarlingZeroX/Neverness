@@ -13,7 +13,7 @@
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGGalgameCore/Interface/IScriptSubsystem.h"
 #include "VGGalgameCore/Interface/IGameEngine.h"
-#include "VGGalgameScriptSequence/Include/SequenceRuntimeTypes.h"
+#include "VGGalgameSequenceRuntime/Include/SequenceRuntimeTypes.h"
 
 #include <algorithm>
 #include <limits>

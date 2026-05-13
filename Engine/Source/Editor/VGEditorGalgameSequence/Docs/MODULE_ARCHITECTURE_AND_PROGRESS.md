@@ -10,7 +10,7 @@
 
 `VGEditorGalgameSequence` 提供面向 **`.vgasset` 序列脚本资源** 的 ImGui 编辑体验：条目列表、组件调色板、属性检查器、撤销/重做、剪贴板、保存与「执行到某条目」及 **Phase 7 起调试器**；**Phase 8** 起引入 **Reactive 派生图、投影事件总线、Authoring 图数据层、Patch 事务雏形、Runtime 事件时间线、扩展注册表** 及四个静态链接子模块（见 §1 依赖与 §6.9）；**Phase 10** 起引入独立 **`VGEditorComponentSchema`**（见 §6.11），将组件元数据升级为 **Authoring Schema**（属性类型、访问器、图端口、通用校验与类型化 Patch 基础）。
 
-序列数据本身来自 **`VGGalgameScriptSequence`**（`VGSSequenceDataContainer`、`IVGSSequenceComponent` 等）；本模块不重复定义运行时组件类型，而是通过 `IVGSSequenceComponentManager::EnumerateRegisteredTypeNameIDs` 与运行时注册表对齐。
+序列数据本身来自 **`VGGalgameSequenceRuntime`**（`VGSSequenceDataContainer`、`IVGSSequenceComponent` 等）；本模块不重复定义运行时组件类型，而是通过 `IVGSSequenceComponentManager::EnumerateRegisteredTypeNameIDs` 与运行时注册表对齐。
 
 **主要链接依赖**（见 `CMakeLists.txt`）：
 
@@ -21,7 +21,7 @@
 - **`VGEditorAuthoringGraph`**（STATIC）：`SequenceAuthoringGraph`（布局 / 边 / 注释，与线性文档解耦）。
 - **`VGEditorExtensions`**（STATIC）：`ISequenceEditorExtension`、`SequenceExtensionRegistry`。
 - **`VGEditorRuntimeBridge`**（STATIC）：`SequenceRuntimeEventFrame`、`SequenceRuntimeEventTimeline`。
-- **`VGEditorComponentSchema`**（STATIC，Phase 10）：`SequenceComponentSchema` / `SequencePropertySchema` / `SequencePropertyValue` / `SequencePropertyAccessor`、**`SequenceGraphPortSchema`**、**`GenericSchemaValidator`**、**`SequenceRuntimePropertySnapshot`**；无 ImGui、不依赖 `VGGalgameScriptSequence`，供本模块与其它未来编辑器复用。
+- **`VGEditorComponentSchema`**（STATIC，Phase 10）：`SequenceComponentSchema` / `SequencePropertySchema` / `SequencePropertyValue` / `SequencePropertyAccessor`、**`SequenceGraphPortSchema`**、**`GenericSchemaValidator`**、**`SequenceRuntimePropertySnapshot`**；无 ImGui、不依赖 `VGGalgameSequenceRuntime`，供本模块与其它未来编辑器复用。
 
 对外主入口为 `VisionGal::Editor::VGScriptSequenceEditor`（`Interface/SequenceEditor.h`），实现编辑器框架的 `IEditorTaskPanel`，并可由宿主通过 `RenderEmbeddedUI()` 嵌入同一套 UI。
 
@@ -126,7 +126,7 @@ flowchart TB
   Ctx --> Insp
   Pal -->|OnComponentChosen| Cmd[AddSequenceEntryCommand via ExecuteCommand]
 
-  subgraph Runtime["VGGalgameScriptSequence / Galgame 引擎"]
+  subgraph Runtime["VGGalgameSequenceRuntime / Galgame 引擎"]
     Asset[SequenceScriptAsset Loader/Writer]
     Mgr[IVGSSequenceComponentManager]
   end
@@ -253,7 +253,7 @@ flowchart TB
 1. 宿主构造 `SequenceDocument`，Bootstrap 组件 / 检查器 / 校验注册表与属性描述符（可选），装配总线、服务定位、**`SequenceDebuggerSession`**、**`SequenceAssetDependencyService`** 与 Context 回调；**`SequencePresentationScheduler::Tick`** 内按合并后的 `SequenceDocumentMutationSummary` 与脏区驱动 **List / Timeline / Graph** 投影、搜索索引、校验缓存、overlay、可见行与可选 **`SequenceEditorMetrics`** 采样；宿主 **`TickEditorPresentation()`** 负责 pending 合并与 **`FillContextPointers()`** 写 Context 指针。
 2. Widget 通过 context **只读**文档与 ViewModel；业务修改应调用 **`context.ExecuteCommand(...)`**（内部 bump 文档代次、`NotifyDocumentChanged`、请求编排刷新）。工具栏撤销/重做走 **`UndoDocument` / `RedoDocument`**。
 3. **脏合并**：一帧内多次 `RequestPresentationRefresh` 折叠为有限次 `TickEditorPresentation`（帧首 + 帧尾各一次，吸收搜索等同帧变更）。
-4. 资源持久化由 `SequenceDocument` 与 `VGGalgameScriptSequence` 资源管线完成；保存等路径可经 **`SequenceAssetDependencyService`**（`OnAssetChanged` 等）→ **`SequenceDependencyGraph::RebuildFromDocument`** → **`NotifyEntriesPropertyTouch`** → **`RequestPresentationRefresh`**（与引擎全局资源事件总线全面对接仍为后续工作）。
+4. 资源持久化由 `SequenceDocument` 与 `VGGalgameSequenceRuntime` 资源管线完成；保存等路径可经 **`SequenceAssetDependencyService`**（`OnAssetChanged` 等）→ **`SequenceDependencyGraph::RebuildFromDocument`** → **`NotifyEntriesPropertyTouch`** → **`RequestPresentationRefresh`**（与引擎全局资源事件总线全面对接仍为后续工作）。
 5. 「执行到某行」路径：保存 → **`SequenceDebuggerSession::RequestRunTo`**（内部经 **`SequenceExecutionController`** 冷路径至目标索引）→ **`SequenceRuntimeSnapshot`** → **`SequenceRuntimeObserver`** → overlay；总线 **`RuntimeStateChanged`** 与 **`RuntimeDebugStream`**（单步、断点命中等）；宿主 **`RequestPresentationRefresh`** 刷新行高亮与状态栏。**Step / Continue / Pause / 断点** 等同理会话内状态机与上述事件流协同。
 6. **可选异步**：`SequenceAsyncTaskService` 在 worker 上计算 issue 列表，主线程 `PumpCompleted` 中可调用 **`SequenceValidationCacheService::ReplaceIssues`** 并发布 `ValidationUpdated`（具体触发策略待产品化）。
 
@@ -349,7 +349,7 @@ flowchart TB
 | [VGEditorAuthoringGraph](../../VGEditorAuthoringGraph/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `SequenceAuthoringGraph`：与 **`SequenceDocument`** 解耦的布局 / 边 / 注释数据。 |
 | [VGEditorExtensions](../../VGEditorExtensions/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 扩展 SDK 雏形：`ISequenceEditorExtension`、`SequenceExtensionRegistry`。 |
 | [VGEditorRuntimeBridge](../../VGEditorRuntimeBridge/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `SequenceRuntimeEventFrame`、`SequenceRuntimeEventTimeline`（环形缓冲）。 |
-| [VGEditorComponentSchema](../../VGEditorComponentSchema/) | Phase 10：Authoring Schema 静态库（`SequenceComponentSchema`、`SequencePropertySchema`、`SequencePropertyValue`、Accessor、**`SequenceGraphPortSchema`**、**`GenericSchemaValidator`**、**`SequenceRuntimePropertySnapshot`**）；无 ImGui、无 `VGGalgameScriptSequence`。 |
+| [VGEditorComponentSchema](../../VGEditorComponentSchema/) | Phase 10：Authoring Schema 静态库（`SequenceComponentSchema`、`SequencePropertySchema`、`SequencePropertyValue`、Accessor、**`SequenceGraphPortSchema`**、**`GenericSchemaValidator`**、**`SequenceRuntimePropertySnapshot`**）；无 ImGui、无 `VGGalgameSequenceRuntime`。 |
 
 #### 6.9.2 派生状态图（P8-1）
 
@@ -418,7 +418,7 @@ flowchart TB
 **目标**：将「仅序列编辑器可用的 UI 描述符」升级为 **跨模块可复用的 Authoring Schema**，为 Graph 执行、分支、插件化组件与 Mod SDK 打基础。
 
 - **独立静态库 `VGEditorComponentSchema`**（根 `CMakeLists.txt` 已 `add_subdirectory`；`VGEditorGalgameSequence` **PUBLIC** 链接）：
-  - **无 ImGui**、**不 `#include` `VGGalgameScriptSequence`**，仅标准库 + 本库头；具体 `void*` 上的 Getter/Setter 由 **`SequenceEditorRegistriesBootstrap`** 注册 lambda（避免其它编辑器反向依赖 Galgame 序列 DLL）。
+  - **无 ImGui**、**不 `#include` `VGGalgameSequenceRuntime`**，仅标准库 + 本库头；具体 `void*` 上的 Getter/Setter 由 **`SequenceEditorRegistriesBootstrap`** 注册 lambda（避免其它编辑器反向依赖 Galgame 序列 DLL）。
   - 核心类型：`SequencePropertyType` / `SequencePropertyFlags` / `SequencePropertyRange` / **`SequencePropertyValue`（`std::variant`）** / **`SequencePropertyAccessor`** / **`SequencePropertySchema`** / **`SequenceComponentSchema`**；**`SequenceGraphPortSchema`** 与组件上 **`InputPorts`/`OutputPorts`**（Bootstrap 为所有类型附加默认 **Flow In/Out**）；**`GenericSchemaValidator`**；**`SequenceRuntimePropertySnapshot`**。
 - **本模块（`VGEditorGalgameSequence`）消费点**：
   - **`SequenceComponentMetadata`** 为 **`SequenceComponentSchema`** 的别名（[`SequenceComponentMetadata.h`](Include/ComponentRegistry/SequenceComponentMetadata.h)）。
@@ -438,7 +438,7 @@ flowchart TB
 | 注册新组件与 Inspector | [SEQUENCE_EDITOR_REGISTRATION.md](SEQUENCE_EDITOR_REGISTRATION.md) |
 | 宿主编排与 UI 布局 | `Source/VGSequenceEditor.cpp`、`Interface/SequenceEditor.h` |
 | 事件与服务 | `Include/Events/`、`Include/Services/`、`Include/Async/` |
-| 运行时组件定义 | `Engine/Source/Runtime/VGGalgameScriptSequence/`（及 `IVGSSequenceComponentManager` 注册） |
+| 运行时组件定义 | `Engine/Source/Runtime/VGGalgameSequenceRuntime/`（及 `IVGSSequenceComponentManager` 注册） |
 | Phase 8 子模块文档 | `Engine/Source/Editor/VGEditorReactive/`、`VGEditorAuthoringGraph/`、`VGEditorExtensions/`、`VGEditorRuntimeBridge/` 各自 **`Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`** |
 | Phase 10 Schema 库 | `Engine/Source/Editor/VGEditorComponentSchema/`（`CMakeLists.txt` + `Include/Schema/`、`Include/Validation/`、`Include/Runtime/`） |
 

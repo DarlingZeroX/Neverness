@@ -50,13 +50,17 @@ add_subdirectory ("Engine/Source/Runtime/VGAsset")
 add_subdirectory ("Engine/Source/Runtime/VGUI")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
 
-# GalGame Runtime
-add_subdirectory ("Engine/Source/Runtime/VGGalgameCore")
-add_subdirectory ("Engine/Source/Runtime/VGGalgameNodeGraph")
-add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptLua")
-add_subdirectory ("Engine/Source/Runtime/VGGalgameScriptSequence")
-add_subdirectory ("Engine/Source/Runtime/VGGalgame")
+# GalGame Runtime（Phase 8：Contract + RuntimeCore + 聚合 shim 目标 VGGalgameCore）
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameContract")
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameRuntimeCore")
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameCore")
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameNodeGraph")
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameScriptLua")
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameSequenceRuntime")
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgamePresentation")
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgame")
 
+add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameEditorRuntime")
 # 编辑器
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
 add_subdirectory ("Engine/Source/Editor/VGEditorFramework")

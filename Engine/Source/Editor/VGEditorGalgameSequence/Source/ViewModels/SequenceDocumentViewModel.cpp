@@ -21,8 +21,8 @@
 #include "DirtyRegions/SequenceDirtyRegion.h"
 #include "DirtyRegions/SequenceDirtyRegionFlags.h"
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 #include <unordered_set>
 

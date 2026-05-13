@@ -87,13 +87,14 @@ target_include_directories(VGEditorGalgameSequence PUBLIC ${CMAKE_CURRENT_SOURCE
 target_include_directories(VGEditorGalgameSequence PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(VGEditorGalgameSequence PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGEditorGalgameSequence PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGEditorGalgameSequence PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/RuntimeGalgame)
 target_include_directories(VGEditorGalgameSequence PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 
 target_link_libraries(VGEditorGalgameSequence PUBLIC VGEditorFramework)
 target_link_libraries(VGEditorGalgameSequence PUBLIC HNGEditorCore)
 target_link_libraries(VGEditorGalgameSequence PUBLIC VGGalgame)
 	# 显式链接脚本序列 DLL 的导入库，确保 `CreateSequenceEntryByTypeNameID` 等符号在编辑器模块链接阶段解析。
-target_link_libraries(VGEditorGalgameSequence PRIVATE VGGalgameScriptSequence)
+target_link_libraries(VGEditorGalgameSequence PRIVATE VGGalgameSequenceRuntime)
 target_link_libraries(VGEditorGalgameSequence PRIVATE HCorePlatform)
 target_link_libraries(VGEditorGalgameSequence PRIVATE HFileSystem)
 target_link_libraries(VGEditorGalgameSequence PRIVATE VGCore)

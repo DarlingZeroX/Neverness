@@ -19,7 +19,7 @@
 #include "VGEditorFramework/Interface/AssetEditor.h"
 #include "VGGalgame/Include/GalGameEngine.h"
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
-#include "VGGalgameScriptSequence/Include/Asset/Asset.h"
+#include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
 
 namespace VisionGal::Editor
 {

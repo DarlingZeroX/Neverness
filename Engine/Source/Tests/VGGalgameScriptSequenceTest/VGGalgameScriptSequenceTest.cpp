@@ -1,16 +1,16 @@
 /*
- * VGGalgameScriptSequence 内核测试：Save → Tick → Load → 状态对齐
+ * VGGalgameSequenceRuntime 内核测试：Save → Tick → Load → 状态对齐
  */
 
 #include <gtest/gtest.h>
 
 #include <HCore/Include/File/nlohmann/json.hpp>
 
-#include "VGGalgameScriptSequence/Include/Runtime/SequenceExecutionInstance.h"
-#include "VGGalgameScriptSequence/Include/Runtime/SequenceStateSerializer.h"
-#include "VGGalgameScriptSequence/Include/SequenceExecutionContext.h"
-#include "VGGalgameScriptSequence/Include/Sequence/DataContainer.h"
-#include "VGGalgameScriptSequence/Include/ExecutorResourceManager.h"
+#include "VGGalgameSequenceRuntime/Include/Runtime/SequenceExecutionInstance.h"
+#include "VGGalgameSequenceRuntime/Include/Runtime/SequenceStateSerializer.h"
+#include "VGGalgameSequenceRuntime/Include/SequenceExecutionContext.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/DataContainer.h"
+#include "VGGalgameSequenceRuntime/Include/ExecutorResourceManager.h"
 
 using namespace VisionGal;
 using namespace VisionGal::GalGame;

@@ -12,7 +12,7 @@
 #include "Commands/SetSequenceEntryBoolPropertyCommand.h"
 #include "Core/SequenceEditorContext.h"
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
 
 #include <variant>
 

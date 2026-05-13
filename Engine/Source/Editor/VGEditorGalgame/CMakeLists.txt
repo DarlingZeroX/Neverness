@@ -36,10 +36,12 @@ target_compile_definitions(VGEditorGalgame PRIVATE VG_GALGAME_EDITOR_EXPORT)
 
 # 添加头文件搜索路径
 target_include_directories(VGEditorGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGEditorGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/RuntimeGalgame)
 target_include_directories(VGEditorGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGEditorGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGEditorGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
+target_link_libraries(VGEditorGalgame PUBLIC VGGalgameEditorRuntime)
 target_link_libraries(VGEditorGalgame PUBLIC VGEditorGalgameSequence)
 target_link_libraries(VGEditorGalgame PUBLIC VGEditorFramework)
 target_link_libraries(VGEditorGalgame PUBLIC HNGEditorCore)

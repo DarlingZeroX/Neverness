@@ -20,7 +20,7 @@
 #include "Transactions/Patches/SequenceDocumentPatch.h"
 #include "Transactions/Patches/SequencePatchApplier.h"
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
 
 #include "HCore/Interface/HLog.h"
 

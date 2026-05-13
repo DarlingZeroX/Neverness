@@ -22,8 +22,8 @@
 
 #include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 
-#include "VGGalgameScriptSequence/Include/Sequence/Components.h"
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 #include <memory>
 #include <string>

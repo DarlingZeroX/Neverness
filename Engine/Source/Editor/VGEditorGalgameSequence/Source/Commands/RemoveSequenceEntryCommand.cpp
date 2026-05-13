@@ -10,7 +10,7 @@
 
 #include "Document/SequenceDocument.h"
 
-#include "VGGalgameScriptSequence/Interface/IVGSSequenceComponent.h"
+#include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"
 
 #include <algorithm>
 
