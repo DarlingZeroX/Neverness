@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$core = Join-Path (Split-Path $PSScriptRoot -Parent) "Source/Runtime/VGGalgameCore"
+$core = Join-Path (Split-Path $PSScriptRoot -Parent) "Source/RuntimeGalgame/VGGalgameCore"
 New-Item -ItemType Directory -Force -Path (Join-Path $core "Interface"), (Join-Path $core "Include") | Out-Null
 
 function Write-Shim($RelativePath, $IncludeLine) {

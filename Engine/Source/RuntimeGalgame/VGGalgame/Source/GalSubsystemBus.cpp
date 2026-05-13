@@ -1,16 +1,19 @@
 /*
- * GalSubsystemBus — 各 Adapter 对 GalGameEngine 的门面转发实现
+ * GalSubsystemBus — 各 Adapter 对 GalGameEngine 子系统的直接转发（Phase 8）
  */
 
 #include "GalSubsystemBus.h"
 
 #include "GalGameEngine.h"
+#include "Game.h"
+#include "VGCore/Include/Core/Core.h"
+#include <VGRHI/Interface/Texture.h>
 
 namespace VisionGal::GalGame
 {
 	bool GalSceneSubsystemAdapter::PreLoadResource(const String& path)
 	{
-		return m_E ? m_E->PreLoadResource(path) : false;
+		return m_E && m_E->m_ResourceSystem ? m_E->m_ResourceSystem->PreLoadResource(path) : false;
 	}
 
 	bool GalSceneSubsystemAdapter::TransitionCommand(const String& layer, const String& cmd)
@@ -25,92 +28,112 @@ namespace VisionGal::GalGame
 
 	IGalSprite* GalSceneSubsystemAdapter::ShowSprite(const std::string& layer, const std::string& path)
 	{
-		return m_E ? m_E->ShowSprite(layer, path) : nullptr;
+		return m_E && m_E->m_ResourceSystem ? m_E->m_ResourceSystem->ShowSprite(layer, path) : nullptr;
 	}
 
 	IGalSprite* GalSceneSubsystemAdapter::ShowColor(const std::string& layer, const float4& color)
 	{
-		return m_E ? m_E->ShowColor(layer, color) : nullptr;
+		return m_E && m_E->m_ResourceSystem ? m_E->m_ResourceSystem->ShowColor(layer, color) : nullptr;
 	}
 
 	IGalVideo* GalSceneSubsystemAdapter::PlayVideo(const std::string& layer, const std::string& path)
 	{
-		return m_E ? m_E->PlayVideo(layer, path) : nullptr;
+		return m_E && m_E->m_ResourceSystem ? m_E->m_ResourceSystem->PlayVideo(layer, path) : nullptr;
 	}
 
 	IGalCharacter* GalSceneSubsystemAdapter::CreateCharacter(const String& name)
 	{
-		return m_E ? m_E->CreateCharacter(name) : nullptr;
+		if (!m_E)
+			return nullptr;
+		auto* character = new GalCharacter(m_E, name);
+		m_E->m_LayeredSceneManager->AddCharacter(character);
+		return character;
 	}
 
 	bool GalSceneSubsystemAdapter::RemoveSprite(IGalSprite* sprite)
 	{
-		return m_E ? m_E->RemoveSprite(sprite) : false;
+		return m_E && m_E->m_LayeredSceneManager ? m_E->m_LayeredSceneManager->GetSpriteManager()->RemoveSprite(sprite) : false;
 	}
 
 	void GalSceneSubsystemAdapter::HideAllCharacterSprite()
 	{
-		if (m_E)
-			m_E->HideAllCharacterSprite();
+		if (!m_E || !m_E->m_LayeredSceneManager)
+			return;
+		m_E->m_LayeredSceneManager->TraverseCharacter([](IGalCharacter* character)
+			{
+				if (GalCharacter* galChar = dynamic_cast<GalCharacter*>(character))
+					galChar->HideFigure();
+			});
 	}
 
 	void GalSceneSubsystemAdapter::CaptureSceneImage()
 	{
-		if (m_E)
-			m_E->CaptureSceneImage();
+		if (!m_E || !m_E->m_GalGameContext || !m_E->m_EngineContext)
+			return;
+		m_E->m_GalGameContext->runtimeState.screenshotPixels = MakeRef<VGFX::TexturePixels>();
+		m_E->m_EngineContext->GetViewport()->GetViewportTexture()->ReadPixels(*m_E->m_GalGameContext->runtimeState.screenshotPixels);
 	}
 
 	ILayeredSceneManager* GalSceneSubsystemAdapter::GetLayeredSceneManager()
 	{
-		return m_E ? m_E->m_LayeredSceneManager.get() : nullptr;
+		return m_E && m_E->m_LayeredSceneManager ? m_E->m_LayeredSceneManager.get() : nullptr;
 	}
 
 	IGalAudio* GalAudioSubsystemAdapter::PlayAudio(const std::string& layer, const std::string& path)
 	{
-		return m_E ? m_E->PlayAudio(layer, path) : nullptr;
+		return m_E && m_E->m_ResourceSystem ? m_E->m_ResourceSystem->PlayAudio(layer, path) : nullptr;
 	}
 
 	bool GalAudioSubsystemAdapter::RemoveAudio(IGalAudio* audio)
 	{
-		return m_E ? m_E->RemoveAudio(audio) : false;
+		return m_E && m_E->m_LayeredSceneManager ? m_E->m_LayeredSceneManager->GetAudioManager()->RemoveAudio(audio) : false;
 	}
 
 	IGalGameUISystem* GalUISubsystemAdapter::GetGalGameUISystem()
 	{
-		return m_E ? m_E->m_GalGameUISystem.get() : nullptr;
+		return m_E && m_E->m_GalGameUISystem ? m_E->m_GalGameUISystem.get() : nullptr;
 	}
 
 	bool GalScriptSubsystemAdapter::LoadStoryScript(const String& path)
 	{
-		return m_E ? m_E->LoadStoryScript(path) : false;
+		if (!m_E || !m_E->m_StoryScriptSystem)
+			return false;
+		m_E->m_StoryScriptSystem->LoadStoryScript(path);
+		return true;
 	}
 
 	void GalScriptSubsystemAdapter::LoadStoryScriptOnUpdate(const String& path)
 	{
-		if (m_E)
-			m_E->LoadStoryScriptOnUpdate(path);
+		if (m_E && m_E->m_StoryScriptSystem)
+			m_E->m_StoryScriptSystem->LoadStoryScriptOnUpdate(path);
 	}
 
 	void GalScriptSubsystemAdapter::ReloadStoryScript()
 	{
-		if (m_E)
-			m_E->ReloadStoryScript();
+		if (m_E && m_E->m_StoryScriptSystem)
+			m_E->m_StoryScriptSystem->ReloadStoryScript();
 	}
 
 	void GalScriptSubsystemAdapter::Wait(float duration)
 	{
 		if (m_E)
-			m_E->Wait(duration);
+			m_E->WaitForStoryScript(duration);
 	}
 
 	IStoryScriptSystem* GalScriptSubsystemAdapter::GetStoryScriptSystem()
 	{
-		return m_E ? m_E->m_StoryScriptSystem.get() : nullptr;
+		return m_E ? m_E->GetStoryScriptSystemPtr() : nullptr;
+	}
+
+	void GalPlaybackSubsystemAdapter::Wait(float durationSeconds)
+	{
+		if (m_E)
+			m_E->WaitForStoryScript(durationSeconds);
 	}
 
 	bool GalArchiveSubsystemAdapter::LoadArchive(const SaveArchive& archive)
 	{
-		return m_E ? m_E->LoadArchive(archive) : false;
+		return m_E && m_E->m_StoryScriptSystem ? m_E->m_StoryScriptSystem->LoadArchive(archive) : false;
 	}
 
 	ArchiveDataContainer* GalArchiveSubsystemAdapter::GetArchiveDataContainer() const
@@ -120,12 +143,12 @@ namespace VisionGal::GalGame
 
 	IArchiveSystem* GalArchiveSubsystemAdapter::GetArchiveSystem()
 	{
-		return m_E ? m_E->m_ArchiveSystem.get() : nullptr;
+		return m_E && m_E->m_ArchiveSystem ? m_E->m_ArchiveSystem.get() : nullptr;
 	}
 
 	IDialogueSystem* GalDialogueSubsystemAdapter::GetDialogueSystem()
 	{
-		return m_E ? m_E->m_DialogueSystem.get() : nullptr;
+		return m_E && m_E->m_DialogueSystem ? m_E->m_DialogueSystem.get() : nullptr;
 	}
 
 	GalSubsystemBus::GalSubsystemBus(GalGameEngine* owner) noexcept
@@ -134,6 +157,7 @@ namespace VisionGal::GalGame
 		, m_Audio(owner)
 		, m_UI(owner)
 		, m_Script(owner)
+		, m_Playback(owner)
 		, m_Archive(owner)
 		, m_Dialogue(owner)
 	{
@@ -167,5 +191,10 @@ namespace VisionGal::GalGame
 	IDialogueSubsystem* GalSubsystemBus::Dialogue()
 	{
 		return &m_Dialogue;
+	}
+
+	IPlaybackSubsystem* GalSubsystemBus::Playback()
+	{
+		return &m_Playback;
 	}
 }

@@ -44,7 +44,14 @@ namespace VisionGal
 		}
 		else
 		{
-			shared.SubsystemBus->Dialogue()->GetDialogueSystem()->CharacterSay(dialogue->DialogueCharacterName,dialogue->DialogueText);
+			if (shared.ExecutionServices != nullptr)
+				shared.ExecutionServices->DialogueCharacterSay(dialogue->DialogueCharacterName, dialogue->DialogueText);
+			else if (shared.SubsystemBus != nullptr)
+			{
+				if (auto* dd = shared.SubsystemBus->Dialogue())
+					if (auto* ds = dd->GetDialogueSystem())
+						ds->CharacterSay(dialogue->DialogueCharacterName, dialogue->DialogueText);
+			}
 		}
 	}
 

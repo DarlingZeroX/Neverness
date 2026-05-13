@@ -26,6 +26,8 @@ namespace VisionGal::GalGame
 		~TypingEffect() = default;
 
 		void StartTyping(const std::string& full_text);
+		/// 中文：无打字机时直接将目标与显示设为全文（不触发 StartTyping 的回调序列）。
+		void ApplyImmediateText(const std::string& full_text);
 		void Update();
 
 		std::wstring Utf8ToWString(const std::string& utf8_str);			// 辅助函数：将UTF-8字符串转换为UTF-16 wstring

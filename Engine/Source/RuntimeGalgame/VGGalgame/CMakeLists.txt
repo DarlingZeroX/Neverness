@@ -74,5 +74,5 @@ target_include_directories(VGGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interfa
 target_link_libraries(VGGalgame PUBLIC VGGalgameNodeGraph)
 target_link_libraries(VGGalgame PUBLIC VGGalgameCore)
 target_link_libraries(VGGalgame PUBLIC VGGalgamePresentation)
-target_link_libraries(VGGalgame PUBLIC VGGalgameScriptLua)
+target_link_libraries(VGGalgame PUBLIC VGGalgameLuaRuntime)
 target_link_libraries(VGGalgame PUBLIC VGGalgameSequenceRuntime)

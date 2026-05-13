@@ -17,6 +17,8 @@
 
 namespace VisionGal::GalGame
 {
+	struct IGalGameEngine;
+
 	class VG_GALGAME_API ResourceSystem 
 	{
 	public:
@@ -27,7 +29,8 @@ namespace VisionGal::GalGame
 		ResourceSystem(ResourceSystem&&) noexcept = default;
 		ResourceSystem& operator=(ResourceSystem&&) noexcept = default;
 
-		void Initialize(const Ref<GalGameContext>& galCtx, const Ref<LayeredSceneSystem>& sceneSystem);
+		/// 中文：hostEngine 用于构造 GalSprite/GalAudio/GalVideo（需 IGalGameEngine*）；Phase 8 起不再从 GalGameContext 取 Engine。
+		void Initialize(const Ref<GalGameContext>& galCtx, const Ref<LayeredSceneSystem>& sceneSystem, IGalGameEngine* hostEngine);
 
 		/// 预加载指定路径的资源。
 		bool PreLoadResource(const String& path);
@@ -50,11 +53,10 @@ namespace VisionGal::GalGame
 	private:
 		Scene* m_Scene;
 
-		// 引擎上下文
 		Ref<GalGameContext> m_GalGameContext;
+		IGalGameEngine* m_HostEngine = nullptr;
 
-		// 引擎核心子系统
-		Ref<LayeredSceneSystem> m_LayeredSceneManager;			// 分层场景管理器，用于管理游戏中的场景和精灵。
+		Ref<LayeredSceneSystem> m_LayeredSceneManager;
 	};
 
 

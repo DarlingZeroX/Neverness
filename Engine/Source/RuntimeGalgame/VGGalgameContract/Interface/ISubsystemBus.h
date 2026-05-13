@@ -23,6 +23,7 @@ namespace VisionGal::GalGame
 	struct IScriptSubsystem;
 	struct IArchiveSubsystem;
 	struct IDialogueSubsystem;
+	struct IPlaybackSubsystem;
 
 	struct ISubsystemBus
 	{
@@ -40,5 +41,7 @@ namespace VisionGal::GalGame
 		virtual IScriptSubsystem* Script() = 0;
 		virtual IArchiveSubsystem* Archive() = 0;
 		virtual IDialogueSubsystem* Dialogue() = 0;
+		/// 中文：Wait / 节拍；与 IScriptSubsystem::Wait 语义分离后的统一入口（Phase 8）。
+		virtual IPlaybackSubsystem* Playback() = 0;
 	};
 }

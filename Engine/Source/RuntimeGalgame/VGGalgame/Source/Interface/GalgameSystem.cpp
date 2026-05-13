@@ -15,8 +15,8 @@
 #include "VGAsset/Interface/SceneSerializerFactory.h"
 #include "VGEngine/Include/Scene/GameActorFactory.h"
 #include "VGEngine/Interface/CoreLua.h"
-#include "VGGalgameScriptLua/Interface/LuaBinding.h"
-#include "VGGalgameScriptLua/Module.h"
+#include "VGGalgameLuaRuntime/Interface/LuaBinding.h"
+#include "VGGalgameLuaRuntime/Module.h"
 #include "VGGalgameSequenceRuntime/Module.h"
 
 namespace VisionGal

@@ -20,6 +20,14 @@ namespace VisionGal::GalGame
 	{
 	}
 
+	void TypingEffect::ApplyImmediateText(const std::string& full_text)
+	{
+		m_TargetText = full_text;
+		m_DisplayText = full_text;
+		m_IsTyping = false;
+		m_CurrentCharPos = full_text.length();
+	}
+
 	void TypingEffect::StartTyping(const std::string& full_text)
 	{
 		m_TargetText = full_text;

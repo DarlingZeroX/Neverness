@@ -27,6 +27,9 @@
 #include "VGGalgameCore/Interface/IArchiveSubsystem.h"
 #include "VGGalgameCore/Interface/IGalRuntimeSession.h"
 #include "VGGalgameCore/Interface/IExecutionScheduler.h"
+#include "VGGalgameCore/Interface/IPlaybackSubsystem.h"
+#include "VGGalgameCore/Interface/IGalGameRuntime.h"
+#include "VGGalgameContract/Interface/IStoryScriptSystem.h"
 
 namespace VisionGal::GalGame
 {
@@ -83,7 +86,8 @@ namespace VisionGal::GalGame
 			"Audio", &ISubsystemBus::Audio,
 			"Script", &ISubsystemBus::Script,
 			"Archive", &ISubsystemBus::Archive,
-			"Dialogue", &ISubsystemBus::Dialogue
+			"Dialogue", &ISubsystemBus::Dialogue,
+			"Playback", &ISubsystemBus::Playback
 		);
 
 		{
@@ -140,7 +144,10 @@ namespace VisionGal::GalGame
 			});
 			engineScript.set_function("Wait", [bus](float d) {
 				if (auto* b = bus())
-					b->Script()->Wait(d);
+				{
+					if (auto* p = b->Playback())
+						p->Wait(d);
+				}
 			});
 			sol::table engineRoot = state.create_table();
 			engineRoot["Scene"] = engineScene;
@@ -506,17 +513,30 @@ namespace VisionGal::GalGame
 		galgame.new_usertype<IExecutionScheduler>("IExecutionScheduler",
 			"Tick", &IExecutionScheduler::Tick,
 			"PauseAll", &IExecutionScheduler::PauseAll,
-			"ResumeAll", &IExecutionScheduler::ResumeAll
+			"ResumeAll", &IExecutionScheduler::ResumeAll,
+			"SubmitYield", &IExecutionScheduler::SubmitYield
 		);
 
-		// 注册引擎类（Phase 7：子系统经总线暴露，避免在引擎 userdata 上挂裸 I*System*）
+		galgame.new_usertype<IPlaybackSubsystem>("IPlaybackSubsystem",
+			"等待", sol::yielding([](IPlaybackSubsystem& self, float d) { self.Wait(d); })
+		);
+
+		galgame.new_usertype<IGalGameRuntime>("IGalGameRuntime",
+			"执行", sol::property([](IGalGameRuntime& self) -> IStoryScriptSystem* { return self.GetExecutionRuntime(); }),
+			"存档", sol::property([](IGalGameRuntime& self) -> IArchiveSystem* { return self.GetSaveRuntime(); }),
+			"播放", sol::property([](IGalGameRuntime& self) -> IPlaybackSubsystem* { return self.GetPlaybackRuntime(); })
+		);
+
+		// 注册引擎类（Phase 8：IGalGameEngine 瘦门面；具体能力经子系统总线）
 		galgame.new_usertype<IGalGameEngine>("IGalGameEngine",
-			"LoadArchive", &IGalGameEngine::LoadArchive,
 			"SubsystemBus", sol::property(
 				[](IGalGameEngine& self) -> ISubsystemBus* { return self.GetSubsystemBus(); }
 			),
 			"RuntimeSession", sol::property(
 				[](IGalGameEngine& self) -> IGalRuntimeSession* { return self.GetRuntimeSession(); }
+			),
+			"Runtime", sol::property(
+				[](IGalGameEngine& self) -> IGalGameRuntime* { return self.GetRuntime(); }
 			),
 
 			//中文
@@ -532,32 +552,90 @@ namespace VisionGal::GalGame
 				{
 					GalGameLuaInterfaceImp::InputText(self, id, title, button);
 				}),
-			"等待", sol::yielding(&IGalGameEngine::Wait),
-			"转场命令", &IGalGameEngine::TransitionCommand,
-			"图片转场命令", &IGalGameEngine::TransitionCommandWithCustomImage,
-			"加载剧情脚本", &IGalGameEngine::LoadStoryScriptOnUpdate,
-			"加载存档", &IGalGameEngine::LoadArchive,
-			"创建人物", &IGalGameEngine::CreateCharacter,
+			"等待", sol::yielding([](IGalGameEngine& self, float d) -> void {
+				auto* b = self.GetSubsystemBus();
+				if (b && b->Playback())
+					b->Playback()->Wait(d);
+			}),
+			"转场命令", [](IGalGameEngine& self, const String& layer, const String& cmd) -> bool {
+				auto* b = self.GetSubsystemBus();
+				return b && b->Scene() ? b->Scene()->TransitionCommand(layer, cmd) : false;
+			},
+			"图片转场命令", [](IGalGameEngine& self, const String& layer, const String& imagePath, const String& cmd) -> bool {
+				auto* b = self.GetSubsystemBus();
+				return b && b->Scene() ? b->Scene()->TransitionCommandWithCustomImage(layer, imagePath, cmd) : false;
+			},
+			"加载剧情脚本", [](IGalGameEngine& self, const String& path) -> void {
+				if (auto* b = self.GetSubsystemBus())
+					if (auto* s = b->Script())
+						s->LoadStoryScriptOnUpdate(path);
+			},
+			"加载存档", [](IGalGameEngine& self, const SaveArchive& ar) -> bool {
+				auto* b = self.GetSubsystemBus();
+				return b && b->Archive() ? b->Archive()->LoadArchive(ar) : false;
+			},
+			"创建人物", [](IGalGameEngine& self, const String& name) -> IGalCharacter* {
+				auto* b = self.GetSubsystemBus();
+				return b && b->Scene() ? b->Scene()->CreateCharacter(name) : nullptr;
+			},
 			"显示背景", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Background", Core::GetAssetsPathVFS() + path); },
-				[](IGalGameEngine& self, const float4& color) ->IGalSprite* { return self.ShowColor("Background", color); }
+				[](IGalGameEngine& self, const std::string& path) -> IGalSprite* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Scene() ? b->Scene()->ShowSprite("Background", Core::GetAssetsPathVFS() + path) : nullptr;
+				},
+				[](IGalGameEngine& self, const float4& color) -> IGalSprite* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Scene() ? b->Scene()->ShowColor("Background", color) : nullptr;
+				}
 			),
 			"显示前景", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Foreground", Core::GetAssetsPathVFS() + path); },
-				[](IGalGameEngine& self, const float4& color) ->IGalSprite* { return self.ShowColor("Foreground", color); }
+				[](IGalGameEngine& self, const std::string& path) -> IGalSprite* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Scene() ? b->Scene()->ShowSprite("Foreground", Core::GetAssetsPathVFS() + path) : nullptr;
+				},
+				[](IGalGameEngine& self, const float4& color) -> IGalSprite* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Scene() ? b->Scene()->ShowColor("Foreground", color) : nullptr;
+				}
 			),
 			"显示屏幕", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalSprite* { return self.ShowSprite("Screen", Core::GetAssetsPathVFS() + path); },
-				[](IGalGameEngine& self, const float4& color) ->IGalSprite* { return self.ShowColor("Screen", color); }
+				[](IGalGameEngine& self, const std::string& path) -> IGalSprite* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Scene() ? b->Scene()->ShowSprite("Screen", Core::GetAssetsPathVFS() + path) : nullptr;
+				},
+				[](IGalGameEngine& self, const float4& color) -> IGalSprite* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Scene() ? b->Scene()->ShowColor("Screen", color) : nullptr;
+				}
 			),
 			"播放背景视频", sol::overload(
-				[](IGalGameEngine& self, const std::string& path) ->IGalVideo* { return self.PlayVideo("Background", Core::GetAssetsPathVFS() + path); }
+				[](IGalGameEngine& self, const std::string& path) -> IGalVideo* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Scene() ? b->Scene()->PlayVideo("Background", Core::GetAssetsPathVFS() + path) : nullptr;
+				}
 			),
-			"播放背景音乐", [](IGalGameEngine& self, const std::string& path) ->IGalAudio* { return self.PlayAudio("BGM", Core::GetAssetsPathVFS() + path); },
-			"播放效果音乐", [](IGalGameEngine& self, const std::string& path) ->IGalAudio* { return self.PlayAudio("Effect", Core::GetAssetsPathVFS() + path); },
-			"隐藏全部人物立绘", &IGalGameEngine::HideAllCharacterSprite,
-			"场景截图", &IGalGameEngine::CaptureSceneImage,
-			"获取数据桥", [](IGalGameEngine & self, const std::string& name)-> LuaDataBridge* { return LuaDataBridgeManager::GetInstance()->GetDataBridge(name); },
+			"播放背景音乐", [](IGalGameEngine& self, const std::string& path) -> IGalAudio* {
+				auto* b = self.GetSubsystemBus();
+				return b && b->Audio() ? b->Audio()->PlayAudio("BGM", Core::GetAssetsPathVFS() + path) : nullptr;
+			},
+			"播放效果音乐", [](IGalGameEngine& self, const std::string& path) -> IGalAudio* {
+				auto* b = self.GetSubsystemBus();
+				return b && b->Audio() ? b->Audio()->PlayAudio("Effect", Core::GetAssetsPathVFS() + path) : nullptr;
+			},
+			"隐藏全部人物立绘", [](IGalGameEngine& self) -> void {
+				if (auto* b = self.GetSubsystemBus())
+					if (auto* s = b->Scene())
+						s->HideAllCharacterSprite();
+			},
+			"场景截图", [](IGalGameEngine& self) -> void {
+				if (auto* b = self.GetSubsystemBus())
+					if (auto* s = b->Scene())
+						s->CaptureSceneImage();
+			},
+			"获取数据桥", [](IGalGameEngine& self, const std::string& name) -> LuaDataBridge* {
+				(void)self;
+				return LuaDataBridgeManager::GetInstance()->GetDataBridge(name);
+			},
 
 			"对话系统", sol::property(
 				[](IGalGameEngine& self) -> IDialogueSubsystem* {
@@ -584,7 +662,10 @@ namespace VisionGal::GalGame
 				}
 			),
 			"存档数据", sol::property(
-				[](IGalGameEngine& self) -> ArchiveDataContainer* { return self.GetArchiveDataContainer(); }
+				[](IGalGameEngine& self) -> ArchiveDataContainer* {
+					auto* b = self.GetSubsystemBus();
+					return b && b->Archive() ? b->Archive()->GetArchiveDataContainer() : nullptr;
+				}
 			)
 		);
 

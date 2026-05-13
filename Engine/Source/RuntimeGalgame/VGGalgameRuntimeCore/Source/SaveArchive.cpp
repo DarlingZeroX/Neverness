@@ -55,6 +55,7 @@ namespace VisionGal::GalGame
 
 		json["contextSnapshot"] = nlohmann::json::object();
 		json["runtimeState"] = nlohmann::json::object();
+		json["presentationSnapshot"] = nlohmann::json::object();
 	}
 
 	void SaveArchive::ReadFromJson(nlohmann::json& json)
@@ -95,5 +96,6 @@ namespace VisionGal::GalGame
 
 		(void)json.value("contextSnapshot", nlohmann::json::object());
 		(void)json.value("runtimeState", nlohmann::json::object());
+		(void)json.value("presentationSnapshot", nlohmann::json::object());
 	}
 }

@@ -15,6 +15,8 @@
 #include "VGGalgameCore/Include/SubsystemBusGuard.h"
 #include "VGGalgameCore/Interface/IGalGameContext.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
+#include "VGGalgameCore/Interface/IGameSystem.h"
+#include "VGGalgameCore/Interface/IDialogueSubsystem.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Core/EventBus.h"
@@ -22,6 +24,29 @@
 
 namespace VisionGal::GalGame
 {
+	namespace
+	{
+		/// 中文：默认 Sequence 执行服务：把对白行转发到 Dialogue 子系统（与旧节点行为一致）。
+		struct BusRuntimeExecutionServices final : public IRuntimeExecutionServices
+		{
+			ISubsystemBus* bus = nullptr;
+
+			explicit BusRuntimeExecutionServices(ISubsystemBus* b) noexcept
+				: bus(b)
+			{
+			}
+
+			void DialogueCharacterSay(const std::string& c, const std::string& t) override
+			{
+				if (!bus)
+					return;
+				if (auto* dd = bus->Dialogue())
+					if (auto* ds = dd->GetDialogueSystem())
+						ds->CharacterSay(String(c.c_str()), String(t.c_str()));
+			}
+		};
+	}
+
 	SSExecutorSequence::SSExecutorSequence()
     {
 		//GalGame::GalGameLuaBinding::RegisterScript(m_LuaState);
@@ -42,6 +67,8 @@ namespace VisionGal::GalGame
         PreLoadScriptResource();
 
 		m_ExecutionContext.SubsystemBus = bus;
+		m_RuntimeExecutionServices = std::make_unique<BusRuntimeExecutionServices>(bus);
+		m_ExecutionContext.ExecutionServices = m_RuntimeExecutionServices.get();
 		// ResourceManager 默认构造；SubsystemBus 由宿主在 Run 时注入执行上下文。
 		m_ExecutionContext.ResourceManager = MakeRef<SSExecutorResourceManager>();
 		m_ExecutionContext.SequenceData = m_ExecutionData->SequenceData;

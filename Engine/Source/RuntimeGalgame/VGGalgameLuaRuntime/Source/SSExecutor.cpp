@@ -11,8 +11,9 @@
 
 #include "SSExecutor.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
+#include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGCore/Include/Core/Core.h"
-#include "VGGalgameScriptLua/Interface/StoryScriptLuaInterface.h"
+#include "StoryScriptLuaInterface.h"
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -24,7 +25,7 @@
 #include "VGCore/Include/Core/EventBus.h"
 #include "HFileSystem/Interface/HFileSystem.h"
 #include "VGEngine/Include/Lua/LuaInterface.h"
-#include "VGGalgameScriptLua/Interface/LuaBinding.h"
+#include "LuaBinding.h"
 #include "VGLuaCore/LuaErrorManager.h"
 #include "VGGalgameCore/Interface/ISceneSubsystem.h"
 
@@ -47,9 +48,10 @@ namespace VisionGal::GalGame
     bool LuaStoryScript::Run(ISubsystemBus* bus, IGalGameContext* gameContext)
     {
 		m_Bus = bus;
-		m_Engine = nullptr;
-		if (auto* ctx = dynamic_cast<GalGameContext*>(gameContext))
-			m_Engine = ctx->Engine;
+		m_ScriptExecution.Bus = bus;
+		m_ScriptExecution.Context = gameContext;
+		m_ScriptExecution.HostEngine = GalGameEngineAccess::Current();
+		m_Engine = m_ScriptExecution.HostEngine;
 
 		// 记录脚本最后修改时间 
 		auto absPath = VFS::GetInstance()->AbsolutePath(GetResourcePath());

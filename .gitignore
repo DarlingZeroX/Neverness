@@ -3,6 +3,7 @@ out/
 build/
 Backup/
 .vs/
+.cursor/
 
 
 

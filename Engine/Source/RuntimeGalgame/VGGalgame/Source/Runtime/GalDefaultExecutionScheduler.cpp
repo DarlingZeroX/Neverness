@@ -14,6 +14,15 @@ namespace VisionGal::GalGame
 		return ++m_NextHandle;
 	}
 
+	GalExecutionHandle GalDefaultExecutionScheduler::SubmitYield(const GalYieldInstruction& instruction)
+	{
+		if (m_ScriptSystem == nullptr)
+			return 0;
+		if (instruction.kind == GalYieldKind::WaitSeconds)
+			m_ScriptSystem->Wait(instruction.seconds);
+		return ++m_NextHandle;
+	}
+
 	void GalDefaultExecutionScheduler::Cancel(GalExecutionHandle /*handle*/)
 	{
 	}

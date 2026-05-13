@@ -2,6 +2,7 @@
  * GalSubsystemBus — VGGalgame 侧 ISubsystemBus 实现
  *
  * 将宿主 GalGameEngine 既有子系统装配为总线；各 Adapter 仅转发，逻辑仍集中在引擎与原有 System。
+ * Phase 8：Adapter 直接访问引擎私有子系统成员，避免经 IGalGameEngine 已删除的门面再转发。
  */
 
 #pragma once
@@ -11,6 +12,7 @@
 #include "VGGalgameCore/Interface/IDialogueSubsystem.h"
 #include "VGGalgameCore/Interface/ISceneSubsystem.h"
 #include "VGGalgameCore/Interface/IScriptSubsystem.h"
+#include "VGGalgameCore/Interface/IPlaybackSubsystem.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IUISubsystem.h"
 
@@ -105,6 +107,21 @@ namespace VisionGal::GalGame
 		IStoryScriptSystem* GetStoryScriptSystem() override;
 	};
 
+	class GalPlaybackSubsystemAdapter final : public IPlaybackSubsystem
+	{
+		GalGameEngine* m_E = nullptr;
+
+	public:
+		explicit GalPlaybackSubsystemAdapter(GalGameEngine* e = nullptr) noexcept
+			: m_E(e)
+		{
+		}
+
+		void SetOwner(GalGameEngine* e) noexcept { m_E = e; }
+
+		void Wait(float durationSeconds) override;
+	};
+
 	class GalArchiveSubsystemAdapter final : public IArchiveSubsystem
 	{
 		GalGameEngine* m_E = nullptr;
@@ -154,6 +171,7 @@ namespace VisionGal::GalGame
 		IScriptSubsystem* Script() override;
 		IArchiveSubsystem* Archive() override;
 		IDialogueSubsystem* Dialogue() override;
+		IPlaybackSubsystem* Playback() override;
 
 	private:
 		GalGameEngine* m_Owner = nullptr;
@@ -161,6 +179,7 @@ namespace VisionGal::GalGame
 		GalAudioSubsystemAdapter m_Audio;
 		GalUISubsystemAdapter m_UI;
 		GalScriptSubsystemAdapter m_Script;
+		GalPlaybackSubsystemAdapter m_Playback;
 		GalArchiveSubsystemAdapter m_Archive;
 		GalDialogueSubsystemAdapter m_Dialogue;
 	};

@@ -39,15 +39,15 @@ file(GLOB RUNTIME_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
 )
 
-add_library(VGGalgameScriptLua SHARED ${RUNTIME_HEADERS} ${RUNTIME_SOURCES})
+add_library(VGGalgameLuaRuntime SHARED ${RUNTIME_HEADERS} ${RUNTIME_SOURCES})
 
-target_compile_definitions(VGGalgameScriptLua PRIVATE VG_GALGAME_SCRIPT_LUA_EXPORT)
+target_compile_definitions(VGGalgameLuaRuntime PRIVATE VG_GALGAME_SCRIPT_LUA_EXPORT)
 
-target_include_directories(VGGalgameScriptLua PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(VGGalgameScriptLua PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/RuntimeGalgame)
-target_include_directories(VGGalgameScriptLua PUBLIC  ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)
-target_include_directories(VGGalgameScriptLua PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-target_include_directories(VGGalgameScriptLua PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
+target_include_directories(VGGalgameLuaRuntime PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGGalgameLuaRuntime PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/RuntimeGalgame)
+target_include_directories(VGGalgameLuaRuntime PUBLIC  ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)
+target_include_directories(VGGalgameLuaRuntime PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(VGGalgameLuaRuntime PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-target_link_libraries(VGGalgameScriptLua PUBLIC VGGalgameCore)
+target_link_libraries(VGGalgameLuaRuntime PUBLIC VGGalgameCore)
 

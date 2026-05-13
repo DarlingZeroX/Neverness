@@ -16,6 +16,20 @@ namespace VisionGal::GalGame
 	 */
 	using GalExecutionHandle = std::uint64_t;
 
+	/// 中文：Yield 指令种类（向 Unity YieldInstruction 迁移的中间态）。
+	enum class GalYieldKind : std::uint8_t
+	{
+		WaitSeconds = 1,
+		WaitDialogueContinue = 2,
+	};
+
+	/// 中文：轻量载荷；后续可扩展字符串事件名、opaque 句柄等。
+	struct GalYieldInstruction
+	{
+		GalYieldKind kind = GalYieldKind::WaitSeconds;
+		float seconds = 0.f;
+	};
+
 	struct IExecutionScheduler
 	{
 		virtual ~IExecutionScheduler() = default;
@@ -32,5 +46,12 @@ namespace VisionGal::GalGame
 
 		/// 中文：每帧调用一次；驱动剧情执行实例、等待计时等。
 		virtual void Tick(float deltaTime) = 0;
+
+		/// 中文：提交 Yield 类任务；默认空实现，宿主调度器可覆盖。
+		virtual GalExecutionHandle SubmitYield(const GalYieldInstruction& instruction)
+		{
+			(void)instruction;
+			return 0;
+		}
 	};
 }

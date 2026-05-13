@@ -42,7 +42,10 @@ namespace VisionGal::GalGame
 		if (m_Paused)
 			return;
 
-		/// 中文：场景与对白仍由引擎子系统直接驱动；脚本侧交给调度器以便后续拆分 Wait/Sequence 任务。
+		/// 中文：Tick 管线顺序（Phase 8 文档化，后续与 IRuntimeScheduler 对齐）：
+		/// 1) LayeredSceneManager::OnUpdate — 场景与分层对象；
+		/// 2) DialogueSystem::Update — 打字机 / 自动播放 / 快进节拍；
+		/// 3) IExecutionScheduler::Tick — 剧情脚本与将来 Sequence / Lua 统一队列。
 		m_Engine->m_LayeredSceneManager->OnUpdate();
 		m_Engine->m_DialogueSystem->Update();
 		m_Scheduler.Tick(deltaTime);

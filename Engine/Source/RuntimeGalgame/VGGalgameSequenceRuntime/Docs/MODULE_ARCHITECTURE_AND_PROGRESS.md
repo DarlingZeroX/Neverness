@@ -21,7 +21,7 @@ CMake 使用 `GLOB` 收集根目录、`Include/**`、`Interface/**`、`Source/**
 | 路径 | 职责 |
 |------|------|
 | `GSSExport.h` | DLL 导出宏 `VG_GSS_API`。 |
-| `Module.h` | **`GalGameSequenceScriptModule::MountEngineRuntime()`** 声明；**实现**迁至 **`VGGalgame/Source/Interface/GalGameSequenceScriptModuleMount.cpp`**（通过 **`#include "VGGalgameCore/Interface/IStoryScript.h"`** 访问 **`GalGameScriptExecutorFactory`**；Sequence 目标仅需链接 **`VGGalgameCore`**）。 |
+| `Module.h` | **`GalGameSequenceScriptModule::MountEngineRuntime()`** 声明；**实现**位于本模块 **`Source/Interface/Module.cpp`**（注册资产工厂 + **`GalGameScriptExecutorFactory::RegisterAssetExecutor`**）。**`GalGameSystem::Initialize`**（`VGGalgame`）在运行时调用该函数一次。 |
 | `Interface/IVGSSequenceComponent.h` / `Source/Interface/IVGSSequenceComponent.cpp` | **`IVGSSequenceComponent`**（含 **`GetComponentTypeID()`**）、**`TVGSSequenceComponent<T>`**、**`IVGSSequenceComponentManager`**（单例注册表 + **`CreateSequenceEntryByTypeNameID`** / **`EnumerateRegisteredTypeNameIDs`**）。 |
 | `Interface/IVGSSequenceRuntimeSystem.h` | **`IVGSSequenceRuntimeSystem`**：**`SupportsType`** / `CanExecute` / **`Execute(SequenceRuntimeExecutionContext&)`** / **`Tick(SequenceRuntimeExecutionContext&)`** / **`ShouldHoldPlaybackAfterExecute`**（Wait 闸门语义）。 |
 | `Interface/VGSTypeDefine.h` | **`VGSS_INVALID_OBJECT_ID`** 及强类型 ObjectID 别名。 |
@@ -210,6 +210,8 @@ VisionGal::GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 
 | 日期 | 说明 |
 |------|------|
+| 2026-05-13 | 文档：`GalGameSequenceScriptModule::MountEngineRuntime` 实现路径更正为 **`VGGalgameSequenceRuntime/Source/Interface/Module.cpp`**（由 **`GalGameSystem::Initialize`** 调用）。 |
+| 2026-05-13 | Phase 8：**`SSSequenceExecutionContext::ExecutionServices`** + **`IRuntimeExecutionServices`** 默认宿主实现；对白节点优先走窄接口，可空则回退总线。 |
 | 2026-05-12 | 初版：目录结构、架构、`Tick`/Wait 语义、集成步骤与扩展清单。 |
 | 2026-05-12 | Phase 2A：引入 `SequenceExecutionInstance`、`IStoryExecutionInstance`、`SequenceRuntimeExecutionContext` / `CommandAPI`、组件类型 ID 与 `Tick` 管线；更新目录表与 Phase 2 路线图。 |
 | 2026-05-12 | SubsystemBus：`SSSequenceExecutionContext::SubsystemBus`；`Run(ISubsystemBus*, IGalGameContext*)`；`IStoryExecutionInstance::Tick/Continue` 带 bus；内置 RuntimeSystem 经总线访问 Scene/Dialogue。 |

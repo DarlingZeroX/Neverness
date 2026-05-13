@@ -47,7 +47,7 @@ namespace VisionGal::Editor
 				if (galEngine->GetSubsystemBus()->Script()->GetStoryScriptSystem()->GetScriptLastWriteTime() != std::filesystem::last_write_time(absPath))
 					//if (storyScript->GetScriptLastWriteTime() != std::filesystem::last_write_time(absPath))
 				{
-					galEngine->ReloadStoryScript();
+					galEngine->GetStoryScriptSystemPtr()->ReloadStoryScript();
 				}
 			});
 

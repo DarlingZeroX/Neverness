@@ -16,10 +16,12 @@
 #include "VGGalgameCore/Interface/IGalGameContext.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IStoryScriptExecutor.h"
+#include "VGGalgameCore/Interface/IRuntimeExecutionServices.h"
 
 #include "Runtime/IStoryExecutionInstance.h"
 #include "Runtime/SequenceExecutionInstance.h"
 #include "SequenceExecutionData.h"
+#include <memory>
 #include "../Interface/IVGSSequenceComponent.h"
 
 namespace VisionGal::GalGame
@@ -51,5 +53,6 @@ namespace VisionGal::GalGame
 		SSSequenceExecutionContext m_ExecutionContext;
 		/// Sequence Runtime Kernel（`SequenceExecutionInstance`），以接口指针持有便于测试替换实现。
 		Ref<IStoryExecutionInstance> m_Executor = nullptr;
+		std::unique_ptr<IRuntimeExecutionServices> m_RuntimeExecutionServices;
 	};
 }

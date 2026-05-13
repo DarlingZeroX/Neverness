@@ -1,24 +1,33 @@
 /*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
- * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
+ * For the latest information, see https://darlingzeroox.github.io/VisionGalDoc/
  * GitHub page: https://github.com/DarlingZeroX/VisionGal
  *
  * Copyright (c) 2025-present 梦旅缘心
  *
  * See the LICENSE file in the project root for details.
+ *
+ * Phase 8：本类为 IDialogueSystem 的 **装配门面**，具体职责拆至：
+ * - DialogueRmlPresentation（Rml 数据模型）
+ * - DialogueLineRuntime（对白行 / 历史 / 与 Context 同步）
+ * - DialogueTypingRuntime（打字机）
+ * - DialoguePlaybackRuntime（自动 / 快进节拍）
  */
 
 #pragma once
 #include "../../VGGalgameConfig.h"
 #include "VGGalgameCore/Interface/IGameSystem.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
-#include "TypingEffect.h"
+#include "DialogueRmlPresentation.h"
+#include "DialogueLineRuntime.h"
+#include "DialogueTypingRuntime.h"
+#include "DialoguePlaybackRuntime.h"
 #include <RmlUi/Core.h>
 
 namespace VisionGal::GalGame
 {
-	class VG_GALGAME_API DialogueSystem: public IDialogueSystem
+	class VG_GALGAME_API DialogueSystem : public IDialogueSystem
 	{
 	public:
 		DialogueSystem();
@@ -29,68 +38,51 @@ namespace VisionGal::GalGame
 		~DialogueSystem() override;
 
 		void Initialize(const Ref<GalGameContext>& ctx);
+		/// 中文：Rml 绑定入口；委托 DialogueRmlPresentation，Runtime 核心逻辑不依赖本调用是否成功。
 		bool InitialiseDataModel(Rml::Context* context);
 
-		void CharacterSay(const String& character, const String& text) override;	// 角色说话
-		void EnableTyping(bool enable = true) override;			// 开启打字机效果
-		void FinishTyping() override;							// 完成打字效果
-		bool IsTypingText() override;							// 是否正在打字
-		void ContinueDialogue() override;								// 继续对话，通常用于脚本中调用
-		float GetTypingDelay() override;									// 获取打字延迟
-		void SetTypingDelay(float delay) override;						// 设置打字延迟
+		void CharacterSay(const String& character, const String& text) override;
+		void EnableTyping(bool enable = true) override;
+		void FinishTyping() override;
+		bool IsTypingText() override;
+		void ContinueDialogue() override;
+		float GetTypingDelay() override;
+		void SetTypingDelay(float delay) override;
 
-		uint GetCurrentDialogLine() const override;				// 获取当前对话从开始是第几个对话
-		uint GetDialogNumber() const override;					// 获取对话数量
-		String GetDialogCharacter(uint index) override;			// 获取对话角色
-		String GetDialogText(uint index) override;				// 获取对话文本
-		String GetCurrentCharacter() override;					// 获取当前对话角色
-		String GetCurrentDialogText() override;					// 获取当前对话文本
+		uint GetCurrentDialogLine() const override;
+		uint GetDialogNumber() const override;
+		String GetDialogCharacter(uint index) override;
+		String GetDialogText(uint index) override;
+		String GetCurrentCharacter() override;
+		String GetCurrentDialogText() override;
 
-		void AutoDialogue(bool enable) override;				// 开启自动对话
-		bool IsAutoDialogue() const override;					// 是否已经开启自动对话
+		void AutoDialogue(bool enable) override;
+		bool IsAutoDialogue() const override;
 
-		void FastForward(bool enable) override;					// 开启快进功能
-		bool IsFastForward() const override;					// 是否开启快进功能
-		void SetFastForwardDelay(float delay) override;			// 设置快进间隔
-		float GetFastForwardDelay() const override;				// 获取快进间隔
+		void FastForward(bool enable) override;
+		bool IsFastForward() const override;
+		void SetFastForwardDelay(float delay) override;
+		float GetFastForwardDelay() const override;
 
-		bool IsVoicing() override;										// 是否正在播放语音
+		bool IsVoicing() override;
 
 		void AddTypingCallback(sol::function callback) override;
 		void ClearAllTypingCallbacks() override;
 
-		// 跳到对话
 		void JumpToDialog(const std::string& text) override;
 
 		void Reset() override;
 		void Clear() override;
 		void Update() override;
 		void ClearDialogList() override;
+
 	private:
-		void ProcessFastForward();
-		void ProcessAutoDialogue();
-
 		Ref<GalGameContext> m_GalGameContext;
-		Rml::DataModelHandle m_ModelHandle;
-		// 打字效果
-		TypingEffect m_TypingEffect;
 
-		// 对话
-		std::string m_DialogName;
-		std::string m_DialogText;
-		struct Dialog
-		{
-			String character;
-			String text;
-		};
-		std::vector<Dialog> m_DialogList;
-
-		// 快进
-		std::chrono::high_resolution_clock::time_point m_FastForwardTimerStart;
-		bool m_FastForwardWaitingForNextAuto = false;
-
-		// 自动对话
-		std::chrono::high_resolution_clock::time_point m_AutoTimerStart;
-		bool m_WaitingForNextAuto = false;
+		/// 中文：成员声明顺序即构造顺序；Typing 依赖 Presentation 提供的绑定字符串引用。
+		DialogueRmlPresentation m_Presentation;
+		DialogueTypingRuntime m_TypingRuntime;
+		DialogueLineRuntime m_LineRuntime;
+		DialoguePlaybackRuntime m_PlaybackRuntime;
 	};
 }

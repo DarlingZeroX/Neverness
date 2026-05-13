@@ -13,6 +13,7 @@
 #include "../GSSExport.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
+#include "VGGalgameCore/Interface/IRuntimeExecutionServices.h"
 #include "Sequence/DataContainer.h"
 #include "ExecutorResourceManager.h"
 
@@ -31,6 +32,9 @@ namespace VisionGal
 
 		/// 子系统总线（非拥有指针）；由宿主在 Run 时写入，Tick/Continue 周期内有效。
 		GalGame::ISubsystemBus* SubsystemBus = nullptr;
+
+		/// 中文：窄执行服务（对白 / 变量等）；若为空则 RuntimeSystem 可回退到 SubsystemBus 直连接口。
+		GalGame::IRuntimeExecutionServices* ExecutionServices = nullptr;
 
 		[[nodiscard]] bool HasSequenceBinding() const noexcept { return SequenceData != nullptr; }
 

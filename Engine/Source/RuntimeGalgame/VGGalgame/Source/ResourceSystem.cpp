@@ -24,10 +24,11 @@ namespace VisionGal::GalGame
 	{
 	}
 
-	void ResourceSystem::Initialize(const Ref<GalGameContext>& galCtx, const Ref<LayeredSceneSystem>& sceneSystem)
+	void ResourceSystem::Initialize(const Ref<GalGameContext>& galCtx, const Ref<LayeredSceneSystem>& sceneSystem, IGalGameEngine* hostEngine)
 	{
 		m_GalGameContext = galCtx;
 		m_LayeredSceneManager = sceneSystem;
+		m_HostEngine = hostEngine;
 
 		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
 			{
@@ -83,7 +84,7 @@ namespace VisionGal::GalGame
 			return nullptr;
 
 		// 创建GalGame的图片类
-		GalSprite* sprite = new GalSprite(m_GalGameContext->Engine, layer, path);
+		GalSprite* sprite = new GalSprite(m_HostEngine, layer, path);
 		sprite->m_Actor = actor;
 		sprite->m_GalState = &m_GalGameContext->runtimeState;
 
@@ -132,7 +133,7 @@ namespace VisionGal::GalGame
 	GalAudio* ResourceSystem::AddAudio(IGameActor* actor, const std::string& layer, const std::string& path)
 	{
 		// 创建GalGame的音频类
-		GalAudio* audio = new GalAudio(m_GalGameContext->Engine, layer, path);
+		GalAudio* audio = new GalAudio(m_HostEngine, layer, path);
 		audio->m_Actor = actor;
 
 		// 添加到管理器
@@ -165,7 +166,7 @@ namespace VisionGal::GalGame
 	GalVideo* ResourceSystem::AddVideo(IGameActor* actor, const std::string& layer, const std::string& path)
 	{
 		// 创建GalGame的视频类
-		GalVideo* video = new GalVideo(m_GalGameContext->Engine, layer, path);
+		GalVideo* video = new GalVideo(m_HostEngine, layer, path);
 		video->m_Actor = actor;
 
 		// 添加到管理器

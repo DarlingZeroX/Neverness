@@ -21,6 +21,14 @@
 
 namespace VisionGal::GalGame
 {
+	/// 中文：Lua 剧情脚本执行期注入聚合（Phase 8）；后续 LuaBinding 应只读此结构而非 GalGameEngineAccess。
+	struct ScriptExecutionContext
+	{
+		ISubsystemBus* Bus = nullptr;
+		IGalGameContext* Context = nullptr;
+		IGalGameEngine* HostEngine = nullptr;
+	};
+
 	class VG_GALGAME_SCRIPT_LUA_API LuaStoryScript : public IStoryScriptExecutor
 	{ 
 	public:
@@ -42,6 +50,7 @@ namespace VisionGal::GalGame
 	private:
 		bool LoadScript(const String& file);
 	private:
+		ScriptExecutionContext m_ScriptExecution;
 		ISubsystemBus* m_Bus = nullptr;
 		IGalGameEngine* m_Engine = nullptr;
 		String m_ScriptCode;

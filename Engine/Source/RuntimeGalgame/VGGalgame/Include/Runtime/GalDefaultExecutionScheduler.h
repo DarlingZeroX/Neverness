@@ -18,6 +18,7 @@ namespace VisionGal::GalGame
 		explicit GalDefaultExecutionScheduler(StoryScriptSystem* scriptSystem) noexcept;
 
 		GalExecutionHandle SubmitWait(float seconds) override;
+		GalExecutionHandle SubmitYield(const GalYieldInstruction& instruction) override;
 		void Cancel(GalExecutionHandle handle) override;
 		void Pause(GalExecutionHandle handle) override;
 		void Resume(GalExecutionHandle handle) override;

@@ -10,6 +10,7 @@
  */
 
 #include "SceneSystem/LayeredSceneSystem.h"
+#include <HCore/Interface/HAssert.h>
 
 namespace VisionGal::GalGame
 {
@@ -77,6 +78,7 @@ namespace VisionGal::GalGame
 
 	void LayeredSceneSystem::Initialize(const Ref<GalGameContext>& ctx)
 	{
+		H_ASSERT_NOT_NULL(ctx.get());
 		m_GalGameContext = ctx;
 		m_AudioManager.Initialize(ctx);
 
