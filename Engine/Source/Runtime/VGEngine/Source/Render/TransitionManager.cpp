@@ -251,6 +251,11 @@ namespace VisionGal {
 		return false;
 	}
 
+	void TransitionManager::AbortAllTransitions()
+	{
+		m_Transitions.clear();
+	}
+
 	std::string TransitionManager::LayerTranslateEnglish(const String& layer)
 	{
 		if (layer == "背景")

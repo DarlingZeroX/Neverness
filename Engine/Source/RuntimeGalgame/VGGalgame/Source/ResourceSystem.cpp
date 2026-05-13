@@ -242,4 +242,12 @@ namespace VisionGal::GalGame
 		return m_LayeredSceneManager->GetAudioManager()->RemoveAudio(audio);
 	}
 
+	void ResourceSystem::NotifyRuntimeReset()
+	{
+		if (!m_LayeredSceneManager)
+			return;
+
+		/// 中文：**LayeredSceneSystem::ClearAll** 已释放 Gal 包装对象；此处预留给 **Handle+Owner** 注册表与 **PreLoadResource** detach（Phase 8E）。
+	}
+
 }

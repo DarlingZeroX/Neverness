@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "../VGGalCoreConfig.h"
-
 namespace VisionGal::GalGame
 {
 	struct IStoryExecutionInstance;

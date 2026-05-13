@@ -11,6 +11,7 @@
 
 #pragma once
 #include <HCore/Include/Event/HEventDelegate.h>
+#include <cstdint>
 
 namespace VisionGal::GalGame
 {
@@ -38,10 +39,26 @@ namespace VisionGal::GalGame
 		GalGameScriptExecuteEventType EventType = GalGameScriptExecuteEventType::None;
 	};
 
+	/// 中文：与 **GalGameScriptEvent** 区分；表达引擎/协调器级生命周期，供 Editor / Debugger 订阅。
+	enum class GalRuntimeLifecycleKind : std::uint8_t
+	{
+		None = 0,
+		/// 中文：**GalRuntimeCoordinator::ResetRuntime** 已写完 **GalGameRuntimeState** 与场景清理后的同步点（仍在 **Running** 阶段内）。
+		ResetCompleted = 1,
+	};
+
+	struct GalRuntimeLifecycleEvent
+	{
+		GalRuntimeLifecycleKind kind = GalRuntimeLifecycleKind::None;
+	};
+
 	struct GalEngineEventBus
 	{
 		Horizon::HEventDelegate<const GalGameScriptEvent&> OnStoryScriptEvent;
 		Horizon::HEventDelegate<const GalGameScriptExecuteEvent&> OnStoryScriptExecuteEvent;
+
+		/// 中文：Phase 8F — 宿主级生命周期（**ResetRuntime** 完成等）；与脚本 **OnStoryScriptEvent** 分离，避免调试器误绑脚本加载。
+		Horizon::HEventDelegate<const GalRuntimeLifecycleEvent&> OnRuntimeLifecycleEvent;
 	};
 
 	struct GalGameUIEvent

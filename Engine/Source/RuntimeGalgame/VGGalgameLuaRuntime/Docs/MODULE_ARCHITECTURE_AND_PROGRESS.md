@@ -210,4 +210,5 @@ flowchart TB
 
 | 日期 | 说明 |
 |------|------|
+| 2026-05-13 | **技术债登记**：**`SSExecutor`/`LuaStoryScript`** 仍可能经 **`IGalGameEngine* HostEngine`** 访问宿主；与「仅 Context+Bus」规则冲突，待迁 **IRuntimeExecutionServices**。 |
 | 2026-05-13 | Phase 8：`LuaBinding` 对齐瘦引擎与 **`IPlaybackSubsystem`**；**`ScriptExecutionContext`** 注入；**`GalGame.Engine.Script.Wait`** 与 **`Playback::Wait`** 同源。 |

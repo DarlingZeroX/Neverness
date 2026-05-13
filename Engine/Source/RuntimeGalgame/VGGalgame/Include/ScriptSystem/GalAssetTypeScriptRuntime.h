@@ -9,6 +9,7 @@
 
 #include "../../VGGalgameConfig.h"
 #include "VGGalgameContract/Interface/IScriptRuntime.h"
+#include "VGGalgameContract/Interface/IStoryScriptSystem.h"
 
 namespace VisionGal::GalGame
 {
@@ -23,6 +24,7 @@ namespace VisionGal::GalGame
 		String GetRuntimeName() const override;
 		bool CanLoad(const String& assetPath) const override;
 		Ref<IStoryScriptExecutor> CreateScriptExecutor(const String& assetPath) override;
+		Ref<IStoryExecutionInstance> TryCreateStoryExecution(const String& assetPath, IStoryScriptExecutor* executor) override;
 
 	private:
 		String m_AssetTypeId;

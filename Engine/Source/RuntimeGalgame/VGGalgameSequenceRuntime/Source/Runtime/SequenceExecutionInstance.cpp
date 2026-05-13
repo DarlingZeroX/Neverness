@@ -203,6 +203,7 @@ namespace VisionGal::GalGame
 
 	void SequenceExecutionInstance::Continue(ISubsystemBus* bus)
 	{
+		/// 中文：Phase 8C — 未来可经 **bus** 解析 **IExecutionScheduler**，对 **GalYieldKind::WaitDialogueContinue** 做统一 resume 记账；当前仍直驱 **CommandAPI**。
 		(void)bus;
 		m_CommandApi.Continue();
 	}

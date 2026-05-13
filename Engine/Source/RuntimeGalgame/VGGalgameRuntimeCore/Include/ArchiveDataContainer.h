@@ -11,7 +11,6 @@
 
 #pragma once
 #include "../VGGRCExport.h"
-#include "VGGalgameContract/VGGalCoreConfig.h"
 #include "VGCore/Include/Data/DataContainer.h"
 
 namespace VisionGal::GalGame

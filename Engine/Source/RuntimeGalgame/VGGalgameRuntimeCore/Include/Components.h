@@ -11,7 +11,6 @@
 
 #pragma once
 #include "../VGGRCExport.h"
-#include "VGGalgameContract/VGGalCoreConfig.h"
 #include "VGCore/Interface/SceneInterface.h"
 #include "VGAsset/Interface/ISceneSerializer.h"
 

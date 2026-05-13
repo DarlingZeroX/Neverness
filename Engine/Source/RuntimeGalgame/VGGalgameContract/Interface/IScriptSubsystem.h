@@ -6,7 +6,6 @@
 
 #pragma once
 #include "IStoryScriptSystem.h"
-#include "../VGGalCoreConfig.h"
 #include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal::GalGame

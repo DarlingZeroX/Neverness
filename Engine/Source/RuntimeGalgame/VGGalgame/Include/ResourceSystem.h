@@ -43,6 +43,9 @@ namespace VisionGal::GalGame
 		// 资源移除相关接口
 		bool RemoveSprite(GalSprite* sprite);	/// 移除指定的精灵对象。
 		bool RemoveAudio(GalAudio* audio);		/// 移除指定的音频对象。
+
+		/// 中文：**GalRuntimeCoordinator** 在 **ResetRuntime** / **Shutdown** 中调用；当前无独立句柄表，仅占位与日志锚点（Phase 8E 扩展）。
+		void NotifyRuntimeReset();
 	private:
 		IGameActor* CreateSpriteImp(const std::string& path);
 		GalSprite* AddSprite(IGameActor* sprite, const std::string& layer, const std::string& path);

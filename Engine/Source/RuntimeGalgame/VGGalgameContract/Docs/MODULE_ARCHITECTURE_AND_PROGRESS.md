@@ -166,8 +166,8 @@ flowchart LR
 | 类型 | 说明 |
 |------|------|
 | **`GalExecutionHandle`** | `std::uint64_t`，`0` 无效。 |
-| **`GalYieldKind`** | `WaitSeconds`、`WaitDialogueContinue`。 |
-| **`GalYieldInstruction`** | `kind` + `seconds` 等载荷。 |
+| **`GalYieldKind`** | `WaitSeconds`、`WaitDialogueContinue`、**`SignalChoice`/`SignalInput`/`SignalDialogueLine`/`SignalCustom`**（ExecutionSignal 预留）。 |
+| **`GalYieldInstruction`** | `kind` + `seconds` + **`signalId`**（不透明标记）。 |
 
 | 方法 | 说明 |
 |------|------|
@@ -248,13 +248,14 @@ flowchart LR
 
 #### 7.14.1 `Interface/IScriptRuntime.h` — `IScriptRuntime`（Phase 8B）
 
-**`IScriptRuntime`**（继承 **`VGEngineResource`**）：宿主侧 **`GalScriptRuntimeRegistry`** 的表项；当前 **`CreateScriptExecutor`** 仍委托 **`GalGameScriptExecutorFactory`**，与 **`IStoryScriptExecutorCreator`** 并存，便于后续迁入 **`IStoryExecutionInstance`** 直建路径。
+**`IScriptRuntime`**（继承 **`VGEngineResource`**）：宿主侧 **`GalScriptRuntimeRegistry`** 的表项；**`CreateScriptExecutor`** 为主路径；**`TryCreateStoryExecution`** 为第二路径（内核直出 **`IStoryExecutionInstance`**，可为 **nullptr** 回退 **`StoryExecutionInstance`**）。
 
 | 方法 | 说明 |
 |------|------|
 | **`GetRuntimeName`** | 调试短名。 |
 | **`CanLoad(assetPath)`** | 是否承接该路径（通常与 **`GetAssetTypeNameID`** 对齐）。 |
 | **`CreateScriptExecutor(assetPath)`** | 同步构造 **`IStoryScriptExecutor`**；失败返回 **nullptr**。 |
+| **`TryCreateStoryExecution(assetPath, executor)`** | 可选直建 **`IStoryExecutionInstance`**；默认实现可返回 **nullptr**。 |
 
 ### 7.15 `Interface/IStoryExecutionAdapter.h` — `IStoryExecutionAdapter`
 

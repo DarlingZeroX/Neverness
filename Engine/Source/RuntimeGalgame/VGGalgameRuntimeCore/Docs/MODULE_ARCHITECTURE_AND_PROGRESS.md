@@ -215,18 +215,20 @@ flowchart TB
 | **`Capture(const GalGameContext&)`** | 浅拷贝运行时切片。 |
 | **`Apply(GalGameContext&)`** | 写回目标上下文。 |
 
-### 8.11 `Include/ISerializableRuntimeState.h`
+### 8.11 `Include/ISerializableRuntimeState.h` / **`GalGameRuntimeStateSerializable`**
 
 | 方法 | 说明 |
 |------|------|
-| **`SaveToJson(json&)`** / **`LoadFromJson(const json&)`** | 子域可序列化状态契约（占位演进）。 |
+| **`ISerializableRuntimeState::SaveToJson` / `LoadFromJson`** | 子域可序列化状态契约。 |
+| **`GalGameRuntimeStateSerializable`**（`Include/GalGameRuntimeStateSerializable.h`） | **`GalGameRuntimeState`** 与 JSON 的桥接；**`GalRuntimeCoordinator::SaveRuntimeState`** 使用。 |
 
 ### 8.12 其它头文件
 
 | 头文件 | 说明 |
 |--------|------|
 | **`GalGameRuntimeState.h`** | 对白索引、截图路径/像素、打字延迟、自动/快进位等字段（见源码）。 |
-| **`GalGameEvent.h`** | **`GalEngineEventBus`**、**`GalGameUIEventBus`** 与载荷。 |
+| **`GalGameEvent.h`** | **`GalEngineEventBus`**（含 **`OnRuntimeLifecycleEvent`**）、**`GalGameUIEventBus`** 与载荷。 |
+| **`GalGameRuntimeStateSerializable.h`** | **`GalGameRuntimeState`** ↔ JSON（**`ISerializableRuntimeState`**）；供宿主内存快照。 |
 | **`GalExecutionLifecycle.h`** | 执行生命周期辅助类型（见源码）。 |
 | **`SubsystemBusGuard.h`** | RAII 或迁移期守卫（见源码）。 |
 | **`VGGalgameCore_Deprecated.h`** | 弃用宏（MSVC / GCC-Clang）。 |
@@ -237,5 +239,6 @@ flowchart TB
 
 | 日期 | 说明 |
 |------|------|
+| 2026-05-13 | **Phase 8D**：新增 **`GalGameRuntimeStateSerializable`**；**`GalGameEvent`** 增加 **`OnRuntimeLifecycleEvent`** 说明。 |
 | 2026-05-13 | 文档整体重写：纠正旧版「VGGalgameCore SHARED」表述；对齐 **RuntimeCore** 目标名、**DLL OUTPUT_NAME**、目录与 API 表。 |
 | 2026-05-13 | Phase 8.1：自原 Core 拆出 **Contract**；本模块为运行时实现库。 |

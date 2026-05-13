@@ -50,6 +50,9 @@ namespace VisionGal {
 
 		bool IsTransitioning() const;
 
+		/// 中文：立即丢弃所有层上的转场队列（Gal **ResetRuntime** / 紧急切场景用）；不触发转场完成回调。
+		void AbortAllTransitions();
+
 		std::string LayerTranslateEnglish(const String& layer);
 
 		Horizon::HEventDelegate<const TransitionEvent&> OnTransitionEvent;

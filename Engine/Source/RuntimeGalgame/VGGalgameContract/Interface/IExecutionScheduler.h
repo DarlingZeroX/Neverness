@@ -6,7 +6,6 @@
  */
 
 #pragma once
-#include "../VGGalCoreConfig.h"
 #include <cstdint>
 
 namespace VisionGal::GalGame
@@ -21,13 +20,19 @@ namespace VisionGal::GalGame
 	{
 		WaitSeconds = 1,
 		WaitDialogueContinue = 2,
+		/// 中文：以下经 **ExecutionSignal** 语义统一（Phase 8C）；宿主调度器可将 **signalId** 与 UI / Dialogue 恢复配对。
+		SignalChoice = 10,
+		SignalInput = 11,
+		SignalDialogueLine = 12,
+		SignalCustom = 13,
 	};
 
-	/// 中文：轻量载荷；后续可扩展字符串事件名、opaque 句柄等。
+	/// 中文：轻量载荷；**WaitSeconds** 用 **seconds**；信号类用 **signalId**（不透明约定，如选项批次哈希）。
 	struct GalYieldInstruction
 	{
 		GalYieldKind kind = GalYieldKind::WaitSeconds;
 		float seconds = 0.f;
+		std::uint32_t signalId = 0;
 	};
 
 	struct IExecutionScheduler

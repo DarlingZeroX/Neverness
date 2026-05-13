@@ -20,7 +20,6 @@
 
 #pragma once
 #include "../VGGRCExport.h"
-#include "VGGalgameContract/VGGalCoreConfig.h"
 #include "VGGalgameContract/Interface/IStoryScriptExecutor.h"
 #include "VGCore/Include/Core/Core.h"
 

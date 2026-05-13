@@ -11,7 +11,6 @@
 // DO NOT MODIFY WITHOUT VERSION BUMP
 // 中文：对外二进制/脚本绑定若有变更，须同步提升存档版本号并更新 Lua 绑定说明。
 
-#include "../VGGalCoreConfig.h"
 #include "IGalGameContext.h"
 #include "ISubsystemBus.h"
 #include "VGCore/Include/Core/Core.h"

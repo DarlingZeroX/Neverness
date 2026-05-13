@@ -8,14 +8,14 @@
 
 | CMake 目标 | 类型 | 职责摘要 | 典型依赖 / 备注 |
 |------------|------|----------|----------------|
-| **VGGalgameContract** | `INTERFACE` | 纯 ABI：`IGalGameEngine`、`IGalGameRuntime`、`ISubsystemBus`（含 **`IPlaybackSubsystem`**）、`IRuntimeExecutionServices`、`ISequenceAction`、`IExecutionScheduler`（**`GalYieldInstruction`**）、`IGalRuntimeSession`、`ILuaRuntimeBridge`、占位 `IRuntimeDebugBridge` / `IGalRuntimeEventBus` / `IVariableRuntime` / `IRuntimeSnapshotProvider` 等。 | → `VGEngine`、`VGCore` |
-| **VGGalgameRuntimeCore** | `SHARED` | 运行时数据与实现：`GalGameContext`、`SaveArchive`、`GalGameScriptExecutorFactory`、`IGameSystem.h` / `IGameObject.h`、`GalGameEngineAccess`、`Components`、**`ISerializableRuntimeState`** 等。**DLL 文件名 `VGGalgameCore.dll`**（`OUTPUT_NAME`）。 | `PUBLIC` → `VGGalgameContract`、`VGEngine` |
+| **VGGalgameContract** | `INTERFACE` | 纯 ABI：`IGalGameEngine`、`IGalGameRuntime`、`ISubsystemBus`（含 **`IPlaybackSubsystem`**）、`IRuntimeExecutionServices`、`ISequenceAction`、`IExecutionScheduler`（**`GalYieldInstruction`** / **`GalYieldKind` 含 Signal***）、`IGalRuntimeSession`、`ILuaRuntimeBridge`、**`GalRuntimeResourceHandle.h`**、占位 `IRuntimeDebugBridge` / `IGalRuntimeEventBus` / `IVariableRuntime` / `IRuntimeSnapshotProvider` 等。 | → `VGEngine`、`VGCore` |
+| **VGGalgameRuntimeCore** | `SHARED` | 运行时数据与实现：`GalGameContext`、`SaveArchive`、`GalGameScriptExecutorFactory`、**`GalGameRuntimeStateSerializable`**（**`ISerializableRuntimeState`**）、`IGameSystem.h` / `IGameObject.h`、`GalGameEngineAccess`、`Components`、**`ISerializableRuntimeState`** 等。**DLL 文件名 `VGGalgameCore.dll`**（`OUTPUT_NAME`）。 | `PUBLIC` → `VGGalgameContract`、`VGEngine` |
 | **VGGalgameCore** | `INTERFACE` | **聚合**：转发头 + 链接 Contract + RuntimeCore；兼容存量 `target_link_libraries(... VGGalgameCore)`。 | → Contract、RuntimeCore |
 | **VGGalgameNodeGraph** | `SHARED` | DialogueList 数据模型 + **`VGNodeExec_Galgame`** 节点执行函数；依赖 HNG。**不依赖 VGGalgameCore**。 | `PUBLIC` → `HNGRuntimeCore`、`HCore` |
 | **VGGalgameLuaRuntime** | `SHARED` | Lua 剧情：`LuaStoryScript`、`GalGameLuaBinding`、`GalGameLuaScriptModule::MountEngineRuntime`。 | `PUBLIC` → `VGGalgameCore`；Lua 头路径 |
 | **VGGalgameSequenceRuntime** | `SHARED` | Sequence 执行内核；**`GalGameSequenceScriptModule::MountEngineRuntime`** 实现在 **`Source/Interface/Module.cpp`**。**DLL 名 `VGGalgameScriptSequence.dll`**。 | `PUBLIC` → `VGGalgameCore` |
-| **VGGalgamePresentation** | `SHARED` | 表现层首包：**`RenderPipeline`**（Gal 分层渲染 / RT）。 | `PUBLIC` → `VGGalgameCore`、`VGEngine` |
-| **VGGalgame** | `SHARED` | 宿主 **`GalGameEngine`**、**`GalRuntimeCoordinator`**（Phase 8A）、**`GalRuntimeSessionHost`**、**`GalDefaultExecutionScheduler`**、**`GalSubsystemBus`**、对白门面与子运行时等。 | `PUBLIC` → `VGGalgameNodeGraph`、`VGGalgameCore`、`VGGalgamePresentation`、`VGGalgameLuaRuntime`、`VGGalgameSequenceRuntime` |
+| **VGGalgamePresentation** | `SHARED` | 表现层首包：**`RenderPipeline`**（Gal 分层渲染 / RT）；**`SceneRenderSnapshot`**（Phase 8G 数据面骨架）。 | `PUBLIC` → `VGGalgameCore`、`VGEngine` |
+| **VGGalgame** | `SHARED` | 宿主 **`GalGameEngine`**、**`GalRuntimeCoordinator`**（Phase 8A/8D/8F 衔接）、**`GalRuntimeSessionHost`**、**`GalDefaultExecutionScheduler`**、**`GalRuntimeScriptLoader`**、**`GalSubsystemBus`**、对白门面与子运行时等。 | `PUBLIC` → `VGGalgameNodeGraph`、`VGGalgameCore`、`VGGalgamePresentation`、`VGGalgameLuaRuntime`、`VGGalgameSequenceRuntime` |
 | **VGGalgameEditorRuntime** | `INTERFACE` | 编辑器隔离：**`IEditorGalgameRuntimeBridge`**。 | → `VGGalgameContract` |
 
 根目录 [`CMakeLists.txt`](../../../CMakeLists.txt)（仓库根）`add_subdirectory` 顺序：**Contract → RuntimeCore → Core → NodeGraph → LuaRuntime → SequenceRuntime → Presentation → VGGalgame →（其它）→ EditorRuntime**。
@@ -64,23 +64,23 @@ flowchart TB
 |--------|------|------|
 | **8.1 Contract / RuntimeCore 拆分** | 已落地 | 新建 Contract + RuntimeCore；`VGGalgameCore` 为 INTERFACE 聚合；`#include "VGGalgameCore/..."` 薄转发保留。 |
 | **8.2 Runtime Session** | 已落地 | `IGalRuntimeSession` + `GalRuntimeSessionHost`；`GalGameEngine::OnUpdate` → `GalRuntimeSessionHost::Tick` → **`GalRuntimeCoordinator::TickFrame`**（顺序见 `GalRuntimeCoordinator.cpp`）。 |
-| **8A Runtime 生命周期统一（Coordinator）** | **首包已落地** | **`GalRuntimePhase`**；**`GalRuntimeCoordinator`** 接管 Tick 顺序、主场景切换、**`ResetRuntime`**、析构 **Shutdown**；**`CreateSubsystem`** 顺序：Context → Systems → **StoryScriptSystem**；**`SaveRuntimeState`/`RestoreRuntimeState`** 占位。详见 [VGGalgame 文档](VGGalgame/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
-| **8.3 Execution Scheduler** | 演进中 | `GalYieldKind` / `GalYieldInstruction`、`SubmitYield`；`GalDefaultExecutionScheduler` 与 `StoryScriptSystem` 协同；新增 **`Reset`** 供 Coordinator 全量清理。详见 [VGGalgame 文档](VGGalgame/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
-| **8B StoryScriptSystem 解耦** | **首包已落地** | **`IScriptRuntime`**（Contract）、**`GalScriptRuntimeRegistry`**、**`GalAssetTypeScriptRuntime`**；**`StoryScriptSystem`** 改为 **`ISubsystemBus*`** 注入，移除 **`SetEngine`/`IGalGameEngine*`**；加载 **Registry → Factory** 回退。**`RuntimeLoader` 独立类**、**`CreateExecution(IStoryExecutionInstance)`** 仍待迭代。 |
+| **8A Runtime 生命周期统一（Coordinator）** | **演进中** | **`GalRuntimePhase`**；**`ResetRuntime`**：**`TransitionManager::AbortAllTransitions`**、脚本/对白/场景/**GalCharacter**（**`ClearAll`**）、**`ResourceSystem::NotifyRuntimeReset`**、UI、**`GalGameRuntimeState`** 单点重建、**`m_IsEngineEnable=true`**、**`OnRuntimeLifecycleEvent(ResetCompleted)`**；**`Shutdown`** 同步中止转场。详见 [VGGalgame 文档](VGGalgame/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
+| **8.3 Execution Scheduler** | **演进中** | **`GalYieldKind` 扩展 Signal***、**`GalYieldInstruction::signalId`**；**`GalDefaultExecutionScheduler::SubmitYield`** 分支；**`Reset`**。详见 [VGGalgame 文档](VGGalgame/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
+| **8B StoryScriptSystem 解耦** | **演进中** | **`GalRuntimeScriptLoader`**；**`IScriptRuntime::TryCreateStoryExecution`**；**`StoryScriptSystem`** **`ISubsystemBus*`**；**`ResetExecutionPipeline`** 不写 **Context**（协调器单点）。 |
 | **8.4 Dialogue Runtime / Presentation** | 已落地（首包） | `DialogueRmlPresentation`、`DialogueLineRuntime`、`DialogueTypingRuntime`、`DialoguePlaybackRuntime` + `DialogueSystem`；`RenderPipeline` 迁至 **Presentation**。 |
 | **8.5 Runtime Layer Graph** | 骨架 | `IRuntimeLayerGraph` + `GalRuntimeLayerGraphAdapter`（`TickLayers` 占位）。 |
-| **8.6 Snapshot / Save** | 演进中 | **`ISerializableRuntimeState`**；`IRuntimeSnapshotProvider` 骨架；SaveArchive schema 与 Lua 绑定联动时升版本。 |
+| **8.6 Snapshot / Save** | **演进中** | **`GalGameRuntimeStateSerializable`**；Coordinator **Save/Restore** 内存 JSON；**`IRuntimeSnapshotProvider`** 骨架；SaveArchive 聚合待版本联动。 |
 | **8.7 Editor Runtime 隔离** | 演进中 | **`IRuntimeDebugBridge`** 占位；`VGGalgameEditorRuntime` + **`IEditorGalgameRuntimeBridge`**。 |
 | **8.8 Engine / Context 去耦** | 已落地（首包） | 瘦 **`IGalGameEngine`**；`GalGameContext` 无 **`Engine`** 指针；`GalSubsystemBus` Adapter；`IGalGameRuntime` + `IPlaybackSubsystem`。 |
-| **8.9 Runtime Event 统一** | 骨架 | **`IGalRuntimeEventBus`** 占位。 |
+| **8.9 Runtime Event 统一** | **演进中** | **`GalEngineEventBus::OnRuntimeLifecycleEvent`**；**`IGalRuntimeEventBus`** 文档对齐；全功能 EventHub 仍待收敛。 |
 | **Sequence 模块重命名** | 已落地 | 目录 **`VGGalgameSequenceRuntime`**；CMake 目标同名；DLL 名保持 **`VGGalgameScriptSequence.dll`**。 |
 | **Lua 独立库** | 已落地 | **`VGGalgameLuaRuntime`**；详见 [LuaRuntime 文档](VGGalgameLuaRuntime/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
 | **NodeGraph 独立库** | 已落地 | **`VGGalgameNodeGraph`**；详见 [NodeGraph 文档](VGGalgameNodeGraph/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
 
-### 3.1 本轮宿主侧落地与已知缺口（2026-05-13）
+### 3.1 本轮宿主侧落地与已知缺口（2026-05-13 更新）
 
-- **已落地**：**Phase 8A** — **`GalRuntimeCoordinator`** / **`GalRuntimePhase`**、**`Reset`/`Shutdown`**、**`CreateSubsystem`** 顺序；**Phase 8B（首包）** — **`IScriptRuntime`**（**`VGGalgameContract`**）、**`GalScriptRuntimeRegistry`** / **`GalAssetTypeScriptRuntime`**（**`VGGalgame`**）；**`StoryScriptSystem`** 仅持 **`ISubsystemBus*`**，不再持 **`IGalGameEngine*`**；脚本加载 **Registry 优先、工厂回退**。
-- **存留 / 后续阶段**：**`RuntimeLoader`** 独立类型、**Wait/Signal** 全走调度器（**8C**）；**`SaveRuntimeState`/`RestoreRuntimeState`** 仅占位（**8D**）；**ResourceSystem** 与 **Scene** Actor 回收（**8E**）；Render/UI/EventHub（**8F–8G**）。
+- **已落地**：**8A** — **`ResetRuntime`** 补 **转场中止**、**`m_IsEngineEnable`**、**`OnRuntimeLifecycleEvent`**；**`Shutdown`** 中止转场；**`ResourceSystem::NotifyRuntimeReset`**。**8B** — **`GalRuntimeScriptLoader`**、**`TryCreateStoryExecution`**。**8C** — **`GalYieldKind`/`signalId`**、**`SubmitYield`** 分支。**8D** — **`GalGameRuntimeStateSerializable`** + Coordinator **Save/Restore**。**8E/8G 骨架** — **`GalRuntimeResourceHandle.h`**、**`SceneRenderSnapshot.h`**。**8H** — [`ABI_AUDIT.md`](ABI_AUDIT.md)、`check_vggalgame_core_includes.ps1` 通过。
+- **存留**：**Lua `HostEngine`**；**Signal*** 与 UI 的 **统一 resume**；**`TransitionManager::AbortAllTransitions`** 是否参与 **MainSceneChanged**（当前否）；**RuntimeSession** 独立执行栈；**Resource GC**；**RenderPipeline** 消费 **SceneRenderSnapshot**。
 
 ---
 
@@ -106,6 +106,7 @@ flowchart TB
 |------|------|
 | `Engine/Scripts/gen_vggalgame_core_shims.ps1` | 重新生成 `VGGalgameCore/` 下薄转发头。 |
 | `Engine/Scripts/check_vggalgame_core_includes.ps1` | 校验 Core 转发目录未引入禁止路径。 |
+| `Engine/Source/RuntimeGalgame/ABI_AUDIT.md` | Phase 8H：Contract / 宿主 ABI 与技术债摘要。 |
 | `Engine/Source/RuntimeGalgame/merge_docs.py` | 将各模块 **`Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`** 合并为 **`MERGED_ARCHITECTURE_AND_PROGRESS.md`**（默认 **包含全部子模块**；便于全文检索与对外导出）。在 **`RuntimeGalgame`** 目录执行：`python merge_docs.py`。 |
 
 ---
@@ -114,6 +115,7 @@ flowchart TB
 
 | 日期 | 说明 |
 |------|------|
+| 2026-05-13 | **Phase 8 深化**：8A **Reset** 补转场/生命周期事件；8B **GalRuntimeScriptLoader**、**TryCreateStoryExecution**；8C **GalYieldKind Signal***；8D **GalGameRuntimeStateSerializable** + Save/Restore；8E/8G 骨架头；8H **ABI_AUDIT.md**；§3/§5/§3.1 同步。 |
 | 2026-05-13 | **Phase 8B**：总览 §3 **8B** 与 §3.1 更新；**`IScriptRuntime`** / Registry 首包落地说明。 |
 | 2026-05-13 | Phase 8 表：新增 **8A Coordinator**、**8B 未开始**；**8.2** 与 **8.3** 说明对齐 **`GalRuntimeCoordinator::TickFrame`** 与 **`GalDefaultExecutionScheduler::Reset`**；矩阵 **VGGalgame** 职责列补充 Coordinator。 |
 | 2026-05-13 | 总览更新：九模块矩阵、依赖图含 NodeGraph、文档入口含 **VGGalgameCore** / **NodeGraph**；脚本节补充 **merge_docs.py**。 |

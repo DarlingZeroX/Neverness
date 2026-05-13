@@ -18,8 +18,20 @@ namespace VisionGal::GalGame
 	{
 		if (m_ScriptSystem == nullptr)
 			return 0;
-		if (instruction.kind == GalYieldKind::WaitSeconds)
+
+		switch (instruction.kind)
+		{
+		case GalYieldKind::WaitSeconds:
 			m_ScriptSystem->Wait(instruction.seconds);
+			break;
+		case GalYieldKind::WaitDialogueContinue:
+			/// 中文：对白行推进仍由 **IStoryScriptExecutor::ContinueDialogue** / UI 事件触发；此处不启动 **StoryScriptSystem::Wait** 计时。
+			break;
+		default:
+			/// 中文：**Signal*** 系列为 **ExecutionSignal** 预留（Choice / Input / Animation 等）；当前仅分配句柄，避免执行器私自 **Wait**。
+			break;
+		}
+
 		return ++m_NextHandle;
 	}
 

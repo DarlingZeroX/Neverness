@@ -6,7 +6,6 @@
 
 #pragma once
 #include "../VGGRCExport.h"
-#include "VGGalgameContract/VGGalCoreConfig.h"
 
 namespace VisionGal::GalGame
 {

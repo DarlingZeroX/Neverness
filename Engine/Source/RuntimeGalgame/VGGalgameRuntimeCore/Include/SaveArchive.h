@@ -11,7 +11,6 @@
 
 #pragma once
 #include "../VGGRCExport.h"
-#include "VGGalgameContract/VGGalCoreConfig.h"
 #include <cstdint>
 #include <VGRHI/Interface/Texture.h>
 #include <HCore/Include/File/nlohmann/json.hpp>

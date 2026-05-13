@@ -6,7 +6,6 @@
  */
 
 #pragma once
-#include "../VGGalCoreConfig.h"
 #include <cstdint>
 
 namespace VisionGal::GalGame

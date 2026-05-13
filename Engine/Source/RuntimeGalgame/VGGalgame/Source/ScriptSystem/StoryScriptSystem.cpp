@@ -2,7 +2,8 @@
  * StoryScriptSystem 实现（VGGalgame / ScriptSystem）
  *
  * 中文要点：
- * - `LoadStoryScript`：**GalScriptRuntimeRegistry** 优先 → 未命中则 **GalGameScriptExecutorFactory** → `Run` → **StoryExecutionInstance**。
+ * - `LoadStoryScript`：**GalRuntimeScriptLoader**（**Registry → Factory**）构造 **IStoryScriptExecutor** → `Run`；
+ *   若 **`IScriptRuntime::TryCreateStoryExecution`** 返回非空则直接持有内核 **IStoryExecutionInstance**，否则 **`StoryExecutionInstance`** 包装。
  * - `LoadArchive`：置位「读档快进」后反复 `ContinueDialogue` 直至对白行号追上存档记录；期间
  *   选择/输入分支通过 `m_ArchiveLuaReadCallback` 延迟到循环内执行，避免在 Lua 协程栈内重入。
  */
@@ -10,9 +11,9 @@
 #include "ScriptSystem/StoryScriptSystem.h"
 
 #include "ScriptSystem/GalAssetTypeScriptRuntime.h"
+#include "ScriptSystem/GalRuntimeScriptLoader.h"
 #include "VGAsset/Include/GalGameAsset.h"
 #include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
-#include "VGAsset/Interface/Package.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGGalgameRuntimeCore/Include/SaveArchive.h"
@@ -33,20 +34,7 @@ namespace VisionGal::GalGame
 
 	bool StoryScriptSystem::LoadStoryScript(const String& path)
 	{
-		Ref<IStoryScriptExecutor> storyScript;
-
-		if (IScriptRuntime* rt = m_RuntimeRegistry.FindRuntimeForPath(path))
-		{
-			storyScript = rt->CreateScriptExecutor(path);
-		}
-
-		if (storyScript == nullptr)
-		{
-			storyScript = GalGameScriptExecutorFactory::Get().LoadAssetExecutor(
-				GetAssetTypeNameID(path),
-				path
-			);
-		}
+		Ref<IStoryScriptExecutor> storyScript = m_ScriptLoader.LoadExecutorForPath(path);
 
 		if (storyScript == nullptr)
 		{
@@ -88,6 +76,15 @@ namespace VisionGal::GalGame
 			evt.scriptPath = path;
 			evt.EventType = GalGameScriptEventType::OnScriptFinishedLoad;
 			m_GalGameContext->engineEventBus.OnStoryScriptEvent.Invoke(evt);
+		}
+
+		if (IScriptRuntime* rt = m_RuntimeRegistry.FindRuntimeForPath(path))
+		{
+			if (Ref<IStoryExecutionInstance> direct = rt->TryCreateStoryExecution(path, m_StoryScript.get()))
+			{
+				m_ExecutionInstance = std::move(direct);
+				return true;
+			}
 		}
 
 		m_ExecutionInstance = MakeRef<StoryExecutionInstance>(m_StoryScript);
@@ -238,6 +235,8 @@ namespace VisionGal::GalGame
 
 		RegisterBuiltinScriptRuntimes();
 
+		m_ScriptLoader.Attach(&m_RuntimeRegistry);
+
 		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
 			{
 				switch (evt.EventType)
@@ -304,11 +303,8 @@ namespace VisionGal::GalGame
 		m_Wait = {};
 		m_StoryScript.reset();
 		m_ExecutionInstance.reset();
-		if (m_GalGameContext)
-		{
-			m_GalGameContext->runtimeState = GalGameRuntimeState{};
-			m_GalGameContext->archiveData = MakeRef<ArchiveDataContainer>();
-		}
+		/// 中文：**GalGameRuntimeState** / **ArchiveDataContainer** 的清理由 **GalRuntimeCoordinator::ResetRuntime** 单点写入，
+		/// 避免与协调器重复赋值及顺序倒置（先清场景再清状态 vs 先清状态）。
 	}
 
 	void StoryScriptSystem::OnChoiceSelected(

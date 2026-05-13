@@ -4,14 +4,13 @@
  * 中文：将原先仅通过 **GalGameScriptExecutorFactory** 隐式分派的路径，提升为可注册的 **IScriptRuntime**，
  * 便于 Lua / Sequence / 未来 Ink 等多后端并存，以及宿主在 **MountEngineRuntime** 之外追加自定义运行时。
  *
- * 注意：当前阶段 **CreateScriptExecutor** 仍委托工厂加载 **IStoryScriptExecutor**；与文档中
- * **CreateExecution → IStoryExecutionInstance** 的终极形态兼容，可后续在宿主侧包装为执行实例而不改 ABI 名。
+ * 注意：**CreateScriptExecutor** 仍为主路径；**TryCreateStoryExecution** 为第二路径（Phase 8B 深化），
+ * 便于 Sequence 等内核直接暴露 **IStoryExecutionInstance** 而不经宿主 **StoryExecutionInstance** 包装。
  */
 
 #pragma once
-
-#include "../VGGalCoreConfig.h"
 #include "IStoryScriptExecutor.h"
+#include "IStoryScriptSystem.h"
 #include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal::GalGame
@@ -34,5 +33,12 @@ namespace VisionGal::GalGame
 
 		/// 中文：同步构造执行器；失败时返回 **nullptr**（宿主会回退到工厂直连或打日志）。
 		virtual Ref<IStoryScriptExecutor> CreateScriptExecutor(const String& assetPath) = 0;
+
+		/**
+		 * @brief 可选：由脚本后端直接提供 **IStoryExecutionInstance**（与 **StoryExecutionInstance** 包装并列）。
+		 * @param executor 已由 **CreateScriptExecutor** 或宿主等价路径创建的执行器；可为 **nullptr**。
+		 * @return 非空时宿主 **StoryScriptSystem** 优先采用；否则回退 **StoryExecutionInstance(executor)**。
+		 */
+		virtual Ref<IStoryExecutionInstance> TryCreateStoryExecution(const String& assetPath, IStoryScriptExecutor* executor) = 0;
 	};
 }

@@ -5,11 +5,10 @@
  * 与 MainSceneChanged 回调中的隐式顺序；Start/Stop 与引擎 Initialize/Reset 对齐。
  *
  * GetRuntimeState / GetResourceContext：当前均映射到同一 IGalGameContext（GalGameContext），
- * 后续可拆为独立 IResourceRuntimeContext 而不改会话形状。
+ * 后续将「可序列化运行态」与「执行栈 / 等待点」拆到独立 **RuntimeSession** 缓冲（见 Phase 8D 文档）。
  */
 
 #pragma once
-#include "../VGGalCoreConfig.h"
 
 namespace VisionGal::GalGame
 {

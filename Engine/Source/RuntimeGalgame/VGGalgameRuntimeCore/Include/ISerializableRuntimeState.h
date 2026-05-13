@@ -6,12 +6,11 @@
  */
 
 #pragma once
-#include "VGGalgameContract/VGGalCoreConfig.h"
 #include <HCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
 {
-	struct VG_GALGAME_CORE_API ISerializableRuntimeState
+	struct ISerializableRuntimeState
 	{
 		virtual ~ISerializableRuntimeState() = default;
 

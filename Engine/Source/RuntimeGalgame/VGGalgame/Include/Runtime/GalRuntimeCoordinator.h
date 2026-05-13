@@ -15,6 +15,7 @@
 #pragma once
 #include "../../VGGalgameConfig.h"
 #include "GalRuntimePhase.h"
+#include <string>
 #include <VGCore\Include\Core\Events.h>
 
 namespace VisionGal::GalGame
@@ -50,10 +51,10 @@ namespace VisionGal::GalGame
 		/// 中文：全量清理（8A-4）：执行器/对话/场景/角色/UI/RuntimeState/延迟回调队列等。
 		void ResetRuntime();
 
-		/// 中文：占位钩子，供 Phase 8D 快照系统接入；当前不读写磁盘。
+		/// 中文：将 **GalGameRuntimeState** 子集序列化为 JSON 字符串缓存（内存态）；**RestoreRuntimeState** 消费；与磁盘 **SaveArchive** 分层。
 		void SaveRuntimeState();
 
-		/// 中文：占位钩子，与 **SaveRuntimeState** 成对预留。
+		/// 中文：自 **SaveRuntimeState** 缓存恢复；失败（空缓存 / 解析失败）则静默保持当前内存态。
 		void RestoreRuntimeState();
 
 		/// 中文：**GalGameEngine** 析构或将来显式 **Dispose** 时调用；反序停止 Tick 与脚本。
@@ -64,5 +65,8 @@ namespace VisionGal::GalGame
 
 		GalGameEngine* m_Host = nullptr;
 		GalRuntimePhase m_Phase = GalRuntimePhase::Uninitialized;
+
+		/// 中文：**SaveRuntimeState** 最近一次成功的 JSON 文本；**Shutdown** 不自动清空以便调试对比（进程退出即释放）。
+		std::string m_LastRuntimeStateJsonBlob;
 	};
 }

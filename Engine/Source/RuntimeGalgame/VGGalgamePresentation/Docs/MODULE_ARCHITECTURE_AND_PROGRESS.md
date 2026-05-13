@@ -16,7 +16,7 @@
 | 项目 | 说明 |
 |------|------|
 | **目标** | `VGGalgamePresentation` |
-| **源文件** | `Include/RenderPipeline.h`、`Source/RenderPipeline.cpp`、`VGGalPresentationConfig.h`（见 [CMakeLists.txt](../CMakeLists.txt)） |
+| **源文件** | `Include/RenderPipeline.h`、`Include/SceneRenderSnapshot.h`、`Source/RenderPipeline.cpp`、`VGGalPresentationConfig.h`（见 [CMakeLists.txt](../CMakeLists.txt)） |
 | **编译宏** | `PRIVATE VG_GALGAME_PRESENTATION_EXPORT` |
 | **链接** | `PUBLIC VGGalgameCore`、`PUBLIC VGEngine` |
 
@@ -38,7 +38,8 @@ VGGalgamePresentation/
 ├── CMakeLists.txt
 ├── VGGalPresentationConfig.h
 ├── Include/
-│   └── RenderPipeline.h
+│   ├── RenderPipeline.h
+│   └── SceneRenderSnapshot.h
 ├── Source/
 │   └── RenderPipeline.cpp
 └── Docs/
@@ -106,6 +107,7 @@ flowchart TB
 
 | 日期 | 说明 |
 |------|------|
+| 2026-05-13 | **Phase 8G 骨架**：新增 **`SceneRenderSnapshot.h`**（渲染数据面占位）。 |
 | 2026-05-13 | Phase 8.4：自 **`VGGalgame`** 迁入 **`RenderPipeline`**；宿主头文件改为薄转发。 |
 | 2026-05-13 | 文档扩充：CMake、目录、依赖图、与宿主衔接、API 表。 |
 

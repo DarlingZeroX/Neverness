@@ -12,7 +12,6 @@
  */
 
 #pragma once
-#include "../VGGalCoreConfig.h"
 #include "../Include/SubsystemBusSnapshot.h"
 
 namespace VisionGal::GalGame

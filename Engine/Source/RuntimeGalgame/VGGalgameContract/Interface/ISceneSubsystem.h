@@ -6,7 +6,6 @@
  */
 
 #pragma once
-#include "../VGGalCoreConfig.h"
 #include "VGCore/Include/Core/Core.h"
 #include <string>
 

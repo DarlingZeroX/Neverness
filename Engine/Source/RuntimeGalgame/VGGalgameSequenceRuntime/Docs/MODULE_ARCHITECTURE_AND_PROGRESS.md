@@ -210,6 +210,7 @@ VisionGal::GalGame::GalGameSequenceScriptModule::MountEngineRuntime();
 
 | 日期 | 说明 |
 |------|------|
+| 2026-05-13 | **Phase 8C 注释**：**`SequenceExecutionInstance::Continue`** 标注未来经 **IExecutionScheduler** 统一 resume 的方向。 |
 | 2026-05-13 | 文档：`GalGameSequenceScriptModule::MountEngineRuntime` 实现路径更正为 **`VGGalgameSequenceRuntime/Source/Interface/Module.cpp`**（由 **`GalGameSystem::Initialize`** 调用）。 |
 | 2026-05-13 | Phase 8：**`SSSequenceExecutionContext::ExecutionServices`** + **`IRuntimeExecutionServices`** 默认宿主实现；对白节点优先走窄接口，可空则回退总线。 |
 | 2026-05-12 | 初版：目录结构、架构、`Tick`/Wait 语义、集成步骤与扩展清单。 |
