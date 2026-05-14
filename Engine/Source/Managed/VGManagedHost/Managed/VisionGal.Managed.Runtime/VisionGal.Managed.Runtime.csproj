@@ -11,5 +11,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\VGManagedCore\Managed\VisionGal.Managed.Core\VisionGal.Managed.Core.csproj" />
     <ProjectReference Include="..\..\..\VGManagedEngine\Managed\VisionGal.Managed.Engine\VisionGal.Managed.Engine.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedEngine\Managed\VisionGal.Managed.Engine.Runtime\VisionGal.Managed.Engine.Runtime.csproj" />
   </ItemGroup>
 </Project>

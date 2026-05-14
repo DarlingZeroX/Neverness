@@ -1,8 +1,8 @@
 # MERGED — Managed 子樹模組文檔合集
 
-本文件由 `merge_docs.py` 自動生成，**請勿手改**；請編輯各子目錄 `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`、根目錄 `MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md`，以及（可選）`Engine/Source/Runtime/VGNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md` 後重新執行本腳本。
+本文件由 `merge_docs.py` 自動生成，**請勿手改**；請編輯各子目錄 `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`、根目錄 `MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md`，以及（可選）`Engine/Source/Runtime/VGNativeEngineAPI/Docs/...`、`VGEngineRuntime/Docs/...`、`VGEngineRuntimeServices/Docs/...` 後重新執行本腳本。
 
-共收錄 **4** 個子模組文檔 + 根總覽。
+共收錄 **6** 個子模組文檔 + 根總覽。
 
 
 ---
@@ -101,8 +101,8 @@ Engine/Source/Managed/VGManagedCore/
 |------|------|
 | **職責** | **僅**託管端 **Engine Service** 之 ABI 鏡像：`VGNativeEngineAPI` 與子表之 `[StructLayout(Sequential)]` 結構、`EngineNativeApiBootstrap` 安裝與 Stub 演練路徑、**Handle** 型別封裝。**不包含** Gameplay、對白、存檔、Sequence。 |
 | **不負責** | CoreCLR 宿主、**`VGNativeAPI`** 宿主級欄位定義（見 **VisionGal.Managed.Core**）。 |
-| **程式集** | **`VisionGal.Managed.Engine`**（`net10.0`，`AllowUnsafeBlocks`） |
-| **依賴** | **VisionGal.Managed.Core**（取得 `VGNativeApi` / `VGNativeApiConstants`）。 |
+| **程式集** | **`VisionGal.Managed.Engine`**（`net10.0`，`AllowUnsafeBlocks`）、**`VisionGal.Managed.Engine.Runtime`**（薄封裝） |
+| **依賴** | **VisionGal.Managed.Core**（取得 `VGNativeApi` / `VGNativeApiConstants`）。**Engine.Runtime** 另依賴 **VisionGal.Managed.Engine**。 |
 
 ---
 
@@ -112,12 +112,16 @@ Engine/Source/Managed/VGManagedCore/
 Engine/Source/Managed/VGManagedEngine/
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
-└── Managed/VisionGal.Managed.Engine/
-    ├── VisionGal.Managed.Engine.csproj
-    ├── VGNativeEngineApiConstants.cs
-    ├── VGNativeHandles.cs
-    ├── VGNativeEngineApiTypes.cs
-    └── EngineNativeApiBootstrap.cs
+└── Managed/
+    ├── VisionGal.Managed.Engine/
+    │   ├── VisionGal.Managed.Engine.csproj
+    │   ├── VGNativeEngineApiConstants.cs
+    │   ├── VGNativeHandles.cs
+    │   ├── VGNativeEngineApiTypes.cs
+    │   └── EngineNativeApiBootstrap.cs
+    └── VisionGal.Managed.Engine.Runtime/
+        ├── VisionGal.Managed.Engine.Runtime.csproj
+        └── EngineTime.cs
 ```
 
 ---
@@ -129,14 +133,15 @@ Engine/Source/Managed/VGManagedEngine/
 | `VGNativeEngineApiConstants.LayoutVersion` | 與 Native `VG_NATIVE_ENGINE_API_LAYOUT_VERSION` 對齊。 |
 | `VGNativeEngineApi` 等 | 與 C 頭 `EngineAPIRegistry.h` 欄位順序一致之鏡像。 |
 | `EngineNativeApiBootstrap.InstallFromNativeApiTable` | 由 `VGNativeAPI*` 解析 `engineServices` 並按值快取函數指標。 |
-| `EngineNativeApiBootstrap.ExerciseStubInteropPath` | 測試用：呼叫 `GetDeltaTime` 與 AsyncWait 三件套。 |
+| `EngineNativeApiBootstrap.ExerciseStubInteropPath` | 測試用：演練 **Timing**（含 Phase 4 擴充欄位）與 **AsyncWait** 三件套。 |
+| **`EngineTime`**（**VisionGal.Managed.Engine.Runtime**） | 讀取已安裝 ABI 之 **DeltaTime** / **TotalTime** / **FrameIndex**。 |
 
 ---
 
 ## 4. 與 VisionGal.Managed.Runtime 的關係
 
 - **`Entry.BootstrapNativeApi`** 在 **`NativeApiBootstrap.Install`** 之後呼叫 **`EngineNativeApiBootstrap.InstallFromNativeApiTable`** 與 **`ExerciseStubInteropPath`**。
-- **`VisionGal.Managed.Runtime.csproj`** 以 `ProjectReference` 引用本程式集；**`VGManagedHost/CMakeLists.txt`** 之 `dotnet publish` 依賴列表已納入本目錄 `*.cs`。
+- **`VisionGal.Managed.Runtime.csproj`** 以 `ProjectReference` 引用 **Engine** 與 **Engine.Runtime**；**`VGManagedHost/CMakeLists.txt`** 之 `dotnet publish` 依賴列表已納入兩目錄之 `*.cs`。
 
 ---
 
@@ -144,8 +149,9 @@ Engine/Source/Managed/VGManagedEngine/
 
 | Phase | 內容 |
 |-------|------|
-| **3（當前）** | 鏡像 Stub 表、Bootstrap、演練路徑。 |
-| **4+** | 依子系統新增 **Service 封裝類**（如正式 `VGRenderService`），仍禁止在此層撰寫 Gameplay。 |
+| **3** | 鏡像 Stub 表、Bootstrap、演練路徑。 |
+| **4（當前）** | **`LayoutVersion` = 2** 鏡像、**Engine.Runtime** 薄封裝。 |
+| **5+** | 依子系統新增 **Service 封裝類**（如正式 `VGRenderService`），仍禁止在此層撰寫 Gameplay。 |
 
 ---
 
@@ -154,6 +160,7 @@ Engine/Source/Managed/VGManagedEngine/
 | 日期 | 進展 |
 |------|------|
 | **2026-05-14** | 新增 **VisionGal.Managed.Engine** 與本模組文檔；與 **VGNativeEngineAPI** 完成跨邊界 Stub 驗證。 |
+| **2026-05-14** | 新增 **VisionGal.Managed.Engine.Runtime**（**EngineTime**）與 ABI **layout v2** 鏡像欄位。 |
 
 
 
@@ -371,16 +378,77 @@ Engine/Source/Managed/VGManagedHost/
 
 
 ---
+## Module: VGEngineRuntime
+
+# VGEngineRuntime — 行程級 Runtime Facade（Phase 4）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | 提供 **`VGEngineRuntime`** 單例：`Initialize` / `Tick` / `Shutdown`；內建 **TimingSystem**（`std::chrono` 語意之累積時間與帧序）、**AsyncSystem**（背景 `std::thread` + 可輪詢完成）、**SceneSubsystem** / **AssetSubsystem** 空殼（未接 **VGEngine** / **VGAsset** 前回傳明確無效值）。 |
+| **不負責** | 不鏈結 **VGEngine**、**VGRHI**、**VGUI**；不提供 Gameplay / 對白。 |
+| **CMake 目標** | **`VGEngineRuntime`**（**`STATIC`**） |
+| **依賴** | **`VGNativeEngineAPI`**（僅 **EngineHandles** 等標頭）。 |
+
+---
+
+## 2. 執行緒與生命週期
+
+- **`Tick`** 須由與 **`Initialize` / `Shutdown` 相同之控制執行緒**呼叫（與未來 game loop 對齊）。
+- **`Shutdown`** 會 **join** 尚未 **`releaseWait`** 之背景執行緒；請勿於 Async 回呼內呼叫 **`Shutdown`**。
+
+---
+
+## 3. 開發進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-14** | Phase 4 首包：新增本靜態庫與子系統骨架；供 **VGEngineRuntimeServices** 轉發 ABI。 |
+
+
+
+---
+## Module: VGEngineRuntimeServices
+
+# VGEngineRuntimeServices — Engine Service ABI Adapter（Phase 4）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | 實作 **`VGNativeEngineApiTable_BuildRuntime`**：以 **`VGNativeEngineApiTable_BuildDefault`** 為基底，覆寫 **Timing**、**AsyncWait**、**Scene** 擴充欄位、**Asset** 擴充欄位，轉發至 **`VGEngineRuntime`**；並提供 **`VGNativeEngineApi_GetRuntimeTable`**、宿主輔助 **`VGEngineRuntimeHost_*`**。 |
+| **不負責** | 不取代 **Stub** 目標（**`VGNativeEngineApi_GetDefaultTable`** 仍供純 Stub 測試）；Render / UI / Audio / Input 等仍沿用 Stub 函數指標。 |
+| **CMake 目標** | **`VGEngineRuntimeServices`**（**`STATIC`**） |
+| **依賴** | **`VGNativeEngineAPI`**、**`VGEngineRuntime`**。 |
+
+---
+
+## 2. 與 VGManagedCore 的關係
+
+- CMake 選項 **`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES`**（預設 **ON**）：**`VGNativeApiTable_BuildDefault`** 將 **`engineServices`** 設為 **`VGNativeEngineApi_GetRuntimeTable()`**；**OFF** 時仍使用 **`VGNativeEngineApi_GetDefaultTable()`**。
+
+---
+
+## 3. 開發進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-14** | Phase 4 首包：新增本適配層與 **Runtime** 建表路徑。 |
+
+
+
+---
 ## Module: VGNativeEngineAPI
 
-# VGNativeEngineAPI — Native Engine Service ABI（Phase 3）
+# VGNativeEngineAPI — Native Engine Service ABI（Phase 3～4）
 
 ## 1. 定位
 
 | 項目 | 說明 |
 |------|------|
 | **職責** | 僅承載 **Engine Runtime 服務層** 之 C 可互操作 **函數表聚合**（`VGNativeEngineAPI`）：Render、UI、Audio、Asset、Input、Scene、Timing、AsyncWait。**不包含** Gameplay、對白、變數、存檔、Sequence、Editor。 |
-| **不負責** | 不連結 **VGEngine** / **VGRHI** / **VGUI**（RmlUi）；本 Phase 僅提供 **Stub** 實作與診斷計數，真實後端由後續 Adapter 目標接線。 |
+| **不負責** | 不連結 **VGEngine** / **VGRHI** / **VGUI**（RmlUi）；本模組提供 **Stub** 實作與診斷計數；**Timing / Async** 等之 **Runtime** 轉發由 **VGEngineRuntimeServices**（可選 CMake）覆寫函數指標。 |
 | **CMake 目標** | **`VGNativeEngineAPI`**（**`STATIC`**） |
 | **依賴** | 僅 C++ 標準庫。 |
 
@@ -420,9 +488,10 @@ Engine/Source/Runtime/VGNativeEngineAPI/
 | `VG_NATIVE_ENGINE_API_LAYOUT_VERSION` | 聚合體佈局版本；與託管 `VGNativeEngineApiConstants.LayoutVersion` 對齊。 |
 | `VGNativeEngineAPI` | 子表：`render`、`ui`、`audio`、`asset`、`input`、`scene`、`timing`、`asyncWait`。 |
 | `VGNativeEngineApiTable_BuildDefault` | 填充 Stub 函數指標。 |
-| `VGNativeEngineApi_GetDefaultTable` | 行程內單例唯讀表指標。 |
+| `VGNativeEngineApi_GetDefaultTable` | 行程內單例唯讀表指標（純 Stub）。 |
 | `VGNativeEngineApi_GetStubInvokeCount` | 測試用：Stub 被呼叫之累計次數。 |
-| **Handle typedef** | `VGTextureHandle`、`VGRenderTargetHandle`、`VGElementHandle`、`VGAudioHandle`、`VGAssetHandle`、`VGAsyncWaitHandle` 皆為 `uint64_t`；**0** 表無效。 |
+| **Handle typedef** | `VGTextureHandle`、`VGRenderTargetHandle`、`VGElementHandle`、`VGAudioHandle`、`VGAssetHandle`、`VGAsyncWaitHandle`、`VGEntityHandle` 皆為 `uint64_t`；**0** 表無效。 |
+| **`VG_NATIVE_ENGINE_API_LAYOUT_VERSION`** | Phase 4 起為 **2**（Timing / Scene / Asset 子表尾擴充）。 |
 
 **`extern "C"` 政策**：僅模組邊界導出上述建表 / 取表 / 診斷符號；業務能力一律經由 **函數表欄位** 間接呼叫。
 
@@ -430,7 +499,7 @@ Engine/Source/Runtime/VGNativeEngineAPI/
 
 ## 4. 與 VGManagedCore 的關係
 
-- **`VGNativeApiTable_BuildDefault`**（VGManagedCore）將 **`VGNativeAPI.engineServices`** 設為 **`VGNativeEngineApi_GetDefaultTable()`** 之回傳值。
+- **`VGNativeApiTable_BuildDefault`**（VGManagedCore）依 **`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES`**：將 **`VGNativeAPI.engineServices`** 設為 **`VGNativeEngineApi_GetRuntimeTable()`** 或 **`VGNativeEngineApi_GetDefaultTable()`**。
 - **`VG_NATIVE_API_VERSION`** 已遞增至 **2**，表尾追加 **`engineServices`** 指標欄位（不重排舊欄位）。
 
 ---
@@ -439,8 +508,9 @@ Engine/Source/Runtime/VGNativeEngineAPI/
 
 | Phase | 內容 |
 |-------|------|
-| **3（當前）** | 子 API 頭檔拆分、聚合體、Stub、`GetStubInvokeCount`、與 **VisionGal.Managed.Engine** 鏡像對齊。 |
-| **4+** | Adapter 靜態/動態庫：將 Stub 替換為呼叫 **VGEngine** / **VGRHI** / **VGUI**；維持 ABI 佈局或遞增 `layoutVersion`。 |
+| **3** | 子 API 頭檔拆分、聚合體、Stub、`GetStubInvokeCount`、與 **VisionGal.Managed.Engine** 鏡像對齊。 |
+| **4（當前）** | **`layoutVersion` = 2**：Timing（`getTotalTime` / `getFrameIndex`）、Scene 擴充、Asset 擴充；Runtime 轉發見 **VGEngineRuntimeServices**。 |
+| **5+** | Adapter：將其餘 Stub 替換為呼叫 **VGEngine** / **VGRHI** / **VGUI**；維持 ABI 佈局或遞增 `layoutVersion`。 |
 
 ---
 
@@ -449,6 +519,7 @@ Engine/Source/Runtime/VGNativeEngineAPI/
 | 日期 | 進展 |
 |------|------|
 | **2026-05-14** | **Phase 3 落地**：新增本模組、預設 Stub、GTest 經託管 **ExerciseStubInteropPath** 驗證 Stub 計數遞增。 |
+| **2026-05-14** | **Phase 4**：`layoutVersion` 遞增至 **2**；擴充子表欄位；與 **VGEngineRuntimeServices** 對齊之 Runtime 路徑。 |
 
 
 
@@ -469,17 +540,25 @@ flowchart TB
     Host[VGManagedHost]
     Core[VGManagedCore]
     EngABI[VGNativeEngineAPI]
+    EngRt[VGEngineRuntime]
+    EngRtSvc[VGEngineRuntimeServices]
     Future[VGEngine等未接線]
     Host --> Core
     Core --> EngABI
+    Core -.->|可選| EngRtSvc
+    EngRtSvc --> EngRt
+    EngABI -.->|Stub 或 Runtime 表| EngRtSvc
     EngABI -.->|Adapter| Future
   end
   subgraph managed [Managed C#]
     MRuntime[VisionGal.Managed.Runtime]
     MCore[VisionGal.Managed.Core]
     MEng[VisionGal.Managed.Engine]
+    MEngRt[VisionGal.Managed.Engine.Runtime]
     MRuntime --> MCore
     MRuntime --> MEng
+    MRuntime --> MEngRt
+    MEngRt --> MEng
   end
   MCore -->|"VGNativeAPI v2"| Core
   MEng -->|"VGNativeEngineAPI 鏡像"| EngABI
@@ -491,7 +570,9 @@ flowchart TB
 | **Native Runtime Host** | **VGManagedHost** | CoreCLR 生命週期、nethost/hostfxr、`load_assembly_and_get_function_pointer`、多程式集登記；**不**承載業務 ABI。 |
 | **Managed Runtime Foundation** | **VGManagedCore** + **VisionGal.Managed.Core** | **`VGNativeAPI`**、預設 Native 實作、託管鏡像與 **無 DllImport** 之函數表引導；**v2** 起掛載 **`engineServices`**。 |
 | **Managed Engine SDK** | **VGNativeEngineAPI**（Native）+ **VisionGal.Managed.Engine** | **僅** Engine Service 函數表 ABI 與託管鏡像、Handle 型別、Stub / 未來 Adapter 接線點。**不含** Gameplay。 |
-| **託管入口程式集** | **VisionGal.Managed.Runtime** | `[UnmanagedCallersOnly]` 匯出、Bootstrap **Core + Engine**。 |
+| **Engine Runtime（Native）** | **VGEngineRuntime** + **VGEngineRuntimeServices** | 行程級 **Timing / Async** 狀態機與 ABI 覆寫層；**不**鏈結完整 **VGEngine**（首包刻意減輕 Host 測試鏈）。 |
+| **Managed Engine Runtime 薄封裝** | **VisionGal.Managed.Engine.Runtime** | 讀已安裝 ABI 之 **EngineTime** 等；依賴 **VisionGal.Managed.Engine**，**不**含 Gameplay。 |
+| **託管入口程式集** | **VisionGal.Managed.Runtime** | `[UnmanagedCallersOnly]` 匯出、Bootstrap **Core + Engine**（並引用 **Engine.Runtime**）。 |
 | **未來** | *VGManagedGameplay、VGManagedEditor* | 依 **穩定後之 ABI**；當前階段不實施。 |
 
 ---
@@ -502,11 +583,12 @@ flowchart TB
 |-------|------|------|------|
 | **1** | Native Runtime Host | **已完成** | C++ → C# 單向 UCO；見 [VGManagedHost/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](VGManagedHost/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
 | **2** | Managed ABI Foundation | **已完成** | **VGManagedCore** + **`VGNativeAPI`** + **VisionGal.Managed.Core** + `BootstrapNativeApi` → Native `LogInfo` 閉環。 |
-| **3** | Managed Engine Runtime Foundation | **進行中 / 本版落地** | **VGNativeEngineAPI**（函數表 + Stub）、**`VG_NATIVE_API_VERSION` = 2** 與 **`engineServices`**、**VisionGal.Managed.Engine**、Handle 與 **AsyncWait** 最小 ABI、**VGManagedHostTest** 擴充。 |
-| **4** | VGManagedGameplay | 未開始 | 對白 / Sequence / 變數等 **需在 Engine ABI 評審後** 遷入。 |
-| **5** | VGManagedEditor | 未開始 | 編輯器工具鏈與宿主 ABI 對齊。 |
-| **6** | Hot Reload / ALC | 未開始 | `AssemblyLoadContext`、擴充卸載等。 |
-| **7** | VGManagedRoslyn | 未開始 | 腳本編譯管線（依賴 ABI 穩定）。 |
+| **3** | Managed Engine Runtime Foundation | **已完成** | **VGNativeEngineAPI**（函數表 + Stub）、**`VG_NATIVE_API_VERSION` = 2** 與 **`engineServices`**、**VisionGal.Managed.Engine**、Handle 與 **AsyncWait** 最小 ABI。 |
+| **4** | Engine Runtime Service Integration | **已完成（首包切片）** | **`VG_NATIVE_ENGINE_API_LAYOUT_VERSION` = 2**（Timing / Scene / Asset 表尾擴充）、**VGEngineRuntime**、**VGEngineRuntimeServices**、CMake **`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES`**、**VisionGal.Managed.Engine.Runtime**、**VGManagedHostTest** 於 Runtime 模式下之 Tick / timing / async 斷言。**不含** Gameplay、**不**在 Host 測試鏈鏈結完整 **VGEngine**。 |
+| **5** | VGManagedGameplay | 未開始 | 對白 / Sequence / 變數等 **需在 Engine ABI 評審後** 遷入。 |
+| **6** | VGManagedEditor | 未開始 | 編輯器工具鏈與宿主 ABI 對齊。 |
+| **7** | Hot Reload / ALC | 未開始 | `AssemblyLoadContext`、擴充卸載等。 |
+| **8** | VGManagedRoslyn | 未開始 | 腳本編譯管線（依賴 ABI 穩定）。 |
 
 **當前刻意不做**：Gameplay Runtime、Dialogue Runtime、Save、Sequence 產品化、Roslyn、Hot Reload、Visual Script——直至 **Engine Runtime ABI** 與 Adapter 策略定型。
 
@@ -517,7 +599,7 @@ flowchart TB
 1. **函數表優先**：託管端經 **`VGNativeAPI*`** 與 **`VGNativeEngineAPI*`** 間接呼叫引擎能力，避免散落 `DllImport`。
 2. **版本欄位**：**`VG_NATIVE_API_VERSION`** 與 **`VGNativeApiConstants.ApiVersion`** 同步；**`VG_NATIVE_ENGINE_API_LAYOUT_VERSION`** 與 **`VGNativeEngineApiConstants.LayoutVersion`** 同步；破壞性佈局變更必須遞增。
 3. **Host 不膨脹**：hostfxr 細節封裝在 **VGManagedHost**；宿主級 ABI 在 **VGManagedCore**；Engine 服務 ABI 在 **VGNativeEngineAPI**。
-4. **靜態合併**：**VGManagedCore** 以 **STATIC** 鏈入 **VGManagedHost.dll**；**VGNativeEngineAPI** 以 **STATIC** 鏈入 **VGManagedCore**。
+4. **靜態合併**：**VGManagedCore** 以 **STATIC** 鏈入 **VGManagedHost.dll**；**VGNativeEngineAPI** 以 **STATIC** 鏈入 **VGManagedCore**；若啟用 **`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES`**，另以 **STATIC** 鏈入 **VGEngineRuntimeServices** 與 **VGEngineRuntime**。
 5. **Handle 邊界**：資源以 **uint64** Handle 暴露；**禁止**託管層持有 C++ 物件指標穿越 ABI。
 
 ---
@@ -532,7 +614,7 @@ cmake --build build --config Debug --target VGManagedHostTest visiongal_managed_
 ctest -C Debug -R VGManagedHost --output-on-failure
 ```
 
-`dotnet publish` 由 **VGManagedHost/CMakeLists.txt** 驅動，輸出含 **VisionGal.Managed.Runtime.dll**、**VisionGal.Managed.Core.dll**、**VisionGal.Managed.Engine.dll**。
+`dotnet publish` 由 **VGManagedHost/CMakeLists.txt** 驅動，輸出含 **VisionGal.Managed.Runtime.dll**、**VisionGal.Managed.Core.dll**、**VisionGal.Managed.Engine.dll**、**VisionGal.Managed.Engine.Runtime.dll**。
 
 ---
 
@@ -542,6 +624,7 @@ ctest -C Debug -R VGManagedHost --output-on-failure
 |------|------|
 | **2026-05-14** | 新增 **VGManagedCore**、**VisionGal.Managed.Core**；擴展 **VGManagedHostTest**（Phase 2 ABI）；本總覽文檔首版。 |
 | **2026-05-14** | **Phase 3**：新增 **VGNativeEngineAPI**、**VisionGal.Managed.Engine**；**VG_NATIVE_API_VERSION** 升級至 2；總覽與子模組文檔更新。 |
+| **2026-05-14** | **Phase 4**：**ABI layout v2**、**VGEngineRuntime** / **VGEngineRuntimeServices**、**VisionGal.Managed.Engine.Runtime**、**VISIONGAL_USE_ENGINE_RUNTIME_SERVICES** 選項與測試擴充。 |
 
 ---
 

@@ -41,6 +41,8 @@ public unsafe struct VGAssetApi
 {
 	public delegate* unmanaged<byte*, ulong> LoadAsset;
 	public delegate* unmanaged<ulong, void> UnloadAsset;
+	public delegate* unmanaged<byte*, ulong> LoadTexture;
+	public delegate* unmanaged<byte*, ulong> LoadAudio;
 }
 
 /// <summary>
@@ -59,6 +61,10 @@ public unsafe struct VGInputApi
 public unsafe struct VGSceneApi
 {
 	public delegate* unmanaged<byte*, int> LoadScene;
+	public delegate* unmanaged<byte*, ulong> Spawn;
+	public delegate* unmanaged<ulong, void> Destroy;
+	public delegate* unmanaged<byte*, ulong> Find;
+	public delegate* unmanaged<ulong, int, void> Activate;
 }
 
 /// <summary>
@@ -68,6 +74,8 @@ public unsafe struct VGSceneApi
 public unsafe struct VGTimingApi
 {
 	public delegate* unmanaged<float> GetDeltaTime;
+	public delegate* unmanaged<float> GetTotalTime;
+	public delegate* unmanaged<ulong> GetFrameIndex;
 }
 
 /// <summary>

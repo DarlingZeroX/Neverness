@@ -9,7 +9,8 @@
       "VisionGal.Managed.Runtime/1.0.0": {
         "dependencies": {
           "VisionGal.Managed.Core": "1.0.0",
-          "VisionGal.Managed.Engine": "1.0.0"
+          "VisionGal.Managed.Engine": "1.0.0",
+          "VisionGal.Managed.Engine.Runtime": "1.0.0"
         },
         "runtime": {
           "VisionGal.Managed.Runtime.dll": {}
@@ -33,6 +34,17 @@
             "fileVersion": "1.0.0.0"
           }
         }
+      },
+      "VisionGal.Managed.Engine.Runtime/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Engine": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Engine.Runtime.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
       }
     }
   },
@@ -48,6 +60,11 @@
       "sha512": ""
     },
     "VisionGal.Managed.Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Engine.Runtime/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

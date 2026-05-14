@@ -1,5 +1,7 @@
+#include <chrono>
 #include <cstdlib>
 #include <filesystem>
+#include <thread>
 
 #include <gtest/gtest.h>
 
@@ -8,6 +10,10 @@
 #include "VGManagedCore/NativeAPI.h"
 #include "VGManagedHost/ManagedFunction.h"
 #include "VGManagedHost/ManagedHost.h"
+
+#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+#include "VGEngineRuntimeServices/NativeEngineRuntimeServices.h"
+#endif
 
 namespace fs = std::filesystem;
 
@@ -52,6 +58,12 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_TRUE(fs::exists(dll)) << dll;
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Core.dll"));
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Engine.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Engine.Runtime.dll"));
+
+#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+	ASSERT_TRUE(VGEngineRuntimeHost_Initialize());
+	VGEngineRuntimeHost_Tick(1.f / 60.f);
+#endif
 
 	VGManagedHost host;
 	ASSERT_TRUE(host.Initialize(cfg, &dll));
@@ -91,10 +103,47 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_NE(apiTable->engineServices, nullptr);
 	ASSERT_EQ(apiTable->engineServices->layoutVersion, VG_NATIVE_ENGINE_API_LAYOUT_VERSION);
 
+#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+	{
+		const VGNativeEngineAPI* const eng = apiTable->engineServices;
+		ASSERT_NE(eng->timing.getFrameIndex, nullptr);
+		const std::uint64_t frame = eng->timing.getFrameIndex();
+		ASSERT_GE(frame, 1u);
+		ASSERT_NE(eng->timing.getTotalTime, nullptr);
+		EXPECT_GT(eng->timing.getTotalTime(), 0.f);
+
+		ASSERT_NE(eng->asyncWait.createWait, nullptr);
+		ASSERT_NE(eng->asyncWait.tryComplete, nullptr);
+		ASSERT_NE(eng->asyncWait.releaseWait, nullptr);
+		const VGAsyncWaitHandle wait = eng->asyncWait.createWait();
+		ASSERT_NE(wait, 0u);
+		int sawComplete = 0;
+		for (int i = 0; i < 4000; ++i)
+		{
+			sawComplete = eng->asyncWait.tryComplete(wait);
+			if (sawComplete != 0)
+			{
+				break;
+			}
+			std::this_thread::sleep_for(std::chrono::microseconds(500));
+		}
+		ASSERT_EQ(sawComplete, 1);
+		eng->asyncWait.releaseWait(wait);
+	}
+#endif
+
 	reinterpret_cast<BootstrapThunk>(bootstrapFn)(apiTable);
 
 	EXPECT_GT(VGNativeApi_GetLogInfoCallCount(), logCountBefore);
+#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+	(void)engineStubCountBefore;
+#else
 	EXPECT_GT(VGNativeEngineApi_GetStubInvokeCount(), engineStubCountBefore);
+#endif
 
 	host.Shutdown();
+
+#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+	VGEngineRuntimeHost_Shutdown();
+#endif
 }

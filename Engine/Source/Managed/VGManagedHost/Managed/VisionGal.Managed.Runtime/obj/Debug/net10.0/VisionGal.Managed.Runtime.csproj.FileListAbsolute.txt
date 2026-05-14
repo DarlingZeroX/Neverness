@@ -38,3 +38,5 @@ E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runti
 E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\obj\Debug\net10.0\VisionGal.Managed.Runtime.pdb
 E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\obj\Debug\net10.0\VisionGal.Managed.Runtime.genruntimeconfig.cache
 E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\obj\Debug\net10.0\ref\VisionGal.Managed.Runtime.dll
+E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.Engine.Runtime.dll
+E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.Engine.Runtime.pdb

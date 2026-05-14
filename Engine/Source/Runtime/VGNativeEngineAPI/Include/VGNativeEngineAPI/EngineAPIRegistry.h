@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 /** 當前發佈之 VGNativeEngineAPI 記憶體佈局版本（與託管 `VGNativeEngineApiConstants.LayoutVersion` 對齊）。 */
-#define VG_NATIVE_ENGINE_API_LAYOUT_VERSION 1u
+#define VG_NATIVE_ENGINE_API_LAYOUT_VERSION 2u
 
 typedef struct VGNativeEngineAPI
 {

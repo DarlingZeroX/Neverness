@@ -24,6 +24,19 @@
         "runtime": {
           "bin/placeholder/VisionGal.Managed.Engine.dll": {}
         }
+      },
+      "VisionGal.Managed.Engine.Runtime/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "VisionGal.Managed.Engine": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Engine.Runtime.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Engine.Runtime.dll": {}
+        }
       }
     }
   },
@@ -37,12 +50,18 @@
       "type": "project",
       "path": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj",
       "msbuildProject": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj"
+    },
+    "VisionGal.Managed.Engine.Runtime/1.0.0": {
+      "type": "project",
+      "path": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/VisionGal.Managed.Engine.Runtime.csproj",
+      "msbuildProject": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/VisionGal.Managed.Engine.Runtime.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
       "VisionGal.Managed.Core >= 1.0.0",
-      "VisionGal.Managed.Engine >= 1.0.0"
+      "VisionGal.Managed.Engine >= 1.0.0",
+      "VisionGal.Managed.Engine.Runtime >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -75,6 +94,9 @@
           "projectReferences": {
             "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
               "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
+            },
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj"
             },
             "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
               "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"

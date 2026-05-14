@@ -19,3 +19,5 @@ typedef std::uint64_t VGElementHandle;
 typedef std::uint64_t VGAudioHandle;
 typedef std::uint64_t VGAssetHandle;
 typedef std::uint64_t VGAsyncWaitHandle;
+/** @brief 場景實體 / Prefab 實例之不透明控制代碼（非 UI Element）。 */
+typedef std::uint64_t VGEntityHandle;

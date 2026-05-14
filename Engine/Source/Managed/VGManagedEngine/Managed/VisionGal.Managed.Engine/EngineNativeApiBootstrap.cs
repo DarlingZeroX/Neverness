@@ -65,6 +65,16 @@ public static unsafe class EngineNativeApiBootstrap
 			_ = s_engineApi.Timing.GetDeltaTime();
 		}
 
+		if (s_engineApi.Timing.GetTotalTime != null)
+		{
+			_ = s_engineApi.Timing.GetTotalTime();
+		}
+
+		if (s_engineApi.Timing.GetFrameIndex != null)
+		{
+			_ = s_engineApi.Timing.GetFrameIndex();
+		}
+
 		if (s_engineApi.AsyncWait.CreateWait != null &&
 		    s_engineApi.AsyncWait.TryComplete != null &&
 		    s_engineApi.AsyncWait.ReleaseWait != null)

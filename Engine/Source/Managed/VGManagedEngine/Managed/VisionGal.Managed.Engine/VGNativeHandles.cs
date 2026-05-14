@@ -14,3 +14,5 @@ public readonly record struct VGAudioHandle(ulong Value);
 public readonly record struct VGAssetHandle(ulong Value);
 
 public readonly record struct VGAsyncWaitHandle(ulong Value);
+
+public readonly record struct VGEntityHandle(ulong Value);

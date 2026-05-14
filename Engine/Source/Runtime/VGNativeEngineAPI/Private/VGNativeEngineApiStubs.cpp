@@ -97,6 +97,20 @@ static void VG_ENGINE_ABI_STDCALL stub_asset_unload(VGAssetHandle asset)
 	(void)asset;
 }
 
+static VGTextureHandle VG_ENGINE_ABI_STDCALL stub_asset_loadTexture(const char* virtualPathUtf8)
+{
+	bump();
+	(void)virtualPathUtf8;
+	return 0;
+}
+
+static VGAudioHandle VG_ENGINE_ABI_STDCALL stub_asset_loadAudio(const char* virtualPathUtf8)
+{
+	bump();
+	(void)virtualPathUtf8;
+	return 0;
+}
+
 // --- Input ---
 static int VG_ENGINE_ABI_STDCALL stub_input_isKeyPressed(int keyCode)
 {
@@ -113,11 +127,50 @@ static int VG_ENGINE_ABI_STDCALL stub_scene_loadScene(const char* sceneNameUtf8)
 	return 1;
 }
 
+static VGEntityHandle VG_ENGINE_ABI_STDCALL stub_scene_spawn(const char* prefabVirtualPathUtf8)
+{
+	bump();
+	(void)prefabVirtualPathUtf8;
+	return 0;
+}
+
+static void VG_ENGINE_ABI_STDCALL stub_scene_destroy(VGEntityHandle entity)
+{
+	bump();
+	(void)entity;
+}
+
+static VGEntityHandle VG_ENGINE_ABI_STDCALL stub_scene_find(const char* entityNameUtf8)
+{
+	bump();
+	(void)entityNameUtf8;
+	return 0;
+}
+
+static void VG_ENGINE_ABI_STDCALL stub_scene_activate(VGEntityHandle entity, int active)
+{
+	bump();
+	(void)entity;
+	(void)active;
+}
+
 // --- Timing ---
 static float VG_ENGINE_ABI_STDCALL stub_timing_getDeltaTime(void)
 {
 	bump();
 	return 0.f;
+}
+
+static float VG_ENGINE_ABI_STDCALL stub_timing_getTotalTime(void)
+{
+	bump();
+	return 0.f;
+}
+
+static std::uint64_t VG_ENGINE_ABI_STDCALL stub_timing_getFrameIndex(void)
+{
+	bump();
+	return 0;
 }
 
 // --- Async wait：建立即視為可一次 tryComplete 讀取之「已完成」物件 ---
@@ -163,12 +216,20 @@ extern "C" void VGNativeEngineApiTable_BuildDefault(VGNativeEngineAPI* outTable)
 
 	outTable->asset.loadAsset = &stub_asset_load;
 	outTable->asset.unloadAsset = &stub_asset_unload;
+	outTable->asset.loadTexture = &stub_asset_loadTexture;
+	outTable->asset.loadAudio = &stub_asset_loadAudio;
 
 	outTable->input.isKeyPressed = &stub_input_isKeyPressed;
 
 	outTable->scene.loadScene = &stub_scene_loadScene;
+	outTable->scene.spawn = &stub_scene_spawn;
+	outTable->scene.destroy = &stub_scene_destroy;
+	outTable->scene.find = &stub_scene_find;
+	outTable->scene.activate = &stub_scene_activate;
 
 	outTable->timing.getDeltaTime = &stub_timing_getDeltaTime;
+	outTable->timing.getTotalTime = &stub_timing_getTotalTime;
+	outTable->timing.getFrameIndex = &stub_timing_getFrameIndex;
 
 	outTable->asyncWait.createWait = &stub_async_createWait;
 	outTable->asyncWait.tryComplete = &stub_async_tryComplete;

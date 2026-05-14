@@ -30,3 +30,10 @@ target_include_directories(VGManagedCore
 )
 
 target_link_libraries(VGManagedCore PUBLIC VGNativeEngineAPI)
+
+if (VISIONGAL_USE_ENGINE_RUNTIME_SERVICES)
+	target_link_libraries(VGManagedCore PUBLIC VGEngineRuntimeServices)
+	target_compile_definitions(VGManagedCore PUBLIC VISIONGAL_USE_ENGINE_RUNTIME_SERVICES=1)
+else()
+	target_compile_definitions(VGManagedCore PUBLIC VISIONGAL_USE_ENGINE_RUNTIME_SERVICES=0)
+endif()

@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using VisionGal.Managed.Core;
 using VisionGal.Managed.Engine;
+using VisionGal.Managed.Engine.Runtime;
 
 namespace VisionGal.Managed.Runtime;
 
@@ -35,6 +36,7 @@ public static class Entry
 
 		EngineNativeApiBootstrap.InstallFromNativeApiTable(nativeApiTable);
 		EngineNativeApiBootstrap.ExerciseStubInteropPath();
+		_ = EngineTime.FrameIndex;
 		BootstrapEngineInteropCompleted = EngineNativeApiBootstrap.IsInstalled;
 	}
 }

@@ -67,6 +67,10 @@ if (VISIONGAL_DOTNET_EXECUTABLE)
 		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine/*.cs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine/*.csproj"
 	)
+	file(GLOB _managed_engine_runtime_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/*.csproj"
+	)
 
 	# 自定义构建命令：编译并发布 VisionGal.Managed.Runtime 托管程序集，用于VGManagedHost测试
 	add_custom_command(
@@ -79,7 +83,7 @@ if (VISIONGAL_DOTNET_EXECUTABLE)
 		# 生成空的标记文件，作为本自定义命令的输出产物
 		COMMAND ${CMAKE_COMMAND} -E touch "${VISIONGAL_MANAGED_PUBLISH_DIR}/.visiongal_managed_publish_stamp"
 		# 依赖源文件：托管通用源码、核心源码、引擎源码，文件变更时触发重新发布
-		DEPENDS ${_managed_sources} ${_managed_core_sources} ${_managed_engine_sources}
+		DEPENDS ${_managed_sources} ${_managed_core_sources} ${_managed_engine_sources} ${_managed_engine_runtime_sources}
 		# 构建时控制台输出提示信息
 		COMMENT "Publishing VisionGal.Managed.Runtime for VGManagedHost tests"
 		# 严格按字面执行命令，不进行CMake自动转义处理

@@ -18,15 +18,21 @@ def merge_docs():
     runtime_engine_abi = (
         current_dir.parent / "Runtime" / "VGNativeEngineAPI" / "Docs" / "MODULE_ARCHITECTURE_AND_PROGRESS.md"
     )
-    if runtime_engine_abi.is_file():
-        sub_docs = sorted(sub_docs + [runtime_engine_abi], key=lambda p: str(p).replace("\\", "/"))
+    vge_rt = current_dir.parent / "Runtime" / "VGEngineRuntime" / "Docs" / "MODULE_ARCHITECTURE_AND_PROGRESS.md"
+    vge_rt_svc = current_dir.parent / "Runtime" / "VGEngineRuntimeServices" / "Docs" / "MODULE_ARCHITECTURE_AND_PROGRESS.md"
+    extra_runtime_docs = []
+    for p in (runtime_engine_abi, vge_rt, vge_rt_svc):
+        if p.is_file():
+            extra_runtime_docs.append(p)
+    if extra_runtime_docs:
+        sub_docs = sorted(sub_docs + extra_runtime_docs, key=lambda p: str(p).replace("\\", "/"))
 
     with open(output_file, "w", encoding="utf-8") as outfile:
         outfile.write(
             "# MERGED — Managed 子樹模組文檔合集\n\n"
             "本文件由 `merge_docs.py` 自動生成，**請勿手改**；請編輯各子目錄 "
             "`Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`、根目錄 `MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md`，"
-            "以及（可選）`Engine/Source/Runtime/VGNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md` 後重新執行本腳本。\n\n"
+            "以及（可選）`Engine/Source/Runtime/VGNativeEngineAPI/Docs/...`、`VGEngineRuntime/Docs/...`、`VGEngineRuntimeServices/Docs/...` 後重新執行本腳本。\n\n"
             f"共收錄 **{len(sub_docs)}** 個子模組文檔 + 根總覽。\n\n"
         )
 
