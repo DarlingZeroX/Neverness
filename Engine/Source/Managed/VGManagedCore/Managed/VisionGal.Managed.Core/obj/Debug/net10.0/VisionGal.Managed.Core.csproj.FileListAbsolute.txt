@@ -1,0 +1,12 @@
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\bin\Debug\net10.0\VisionGal.Managed.Core.deps.json
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\bin\Debug\net10.0\VisionGal.Managed.Core.dll
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\bin\Debug\net10.0\VisionGal.Managed.Core.pdb
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\VisionGal.Managed.Core.GeneratedMSBuildEditorConfig.editorconfig
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\VisionGal.Managed.Core.AssemblyInfoInputs.cache
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\VisionGal.Managed.Core.AssemblyInfo.cs
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\VisionGal.Managed.Core.csproj.CoreCompileInputs.cache
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\VisionGal.Managed.Core.sourcelink.json
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\VisionGal.Managed.Core.dll
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\refint\VisionGal.Managed.Core.dll
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\VisionGal.Managed.Core.pdb
+E:\VisionGal\Engine\Source\ManagedRuntime\VGManagedCore\Managed\VisionGal.Managed.Core\obj\Debug\net10.0\ref\VisionGal.Managed.Core.dll

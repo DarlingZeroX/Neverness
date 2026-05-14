@@ -1,0 +1,6 @@
+E:\VisionGal\Build\vs\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.dll
+E:\VisionGal\Build\vs\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.deps.json
+E:\VisionGal\Build\vs\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.runtimeconfig.json
+E:\VisionGal\Build\vs\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.pdb
+E:\VisionGal\Build\vs\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Core.dll
+E:\VisionGal\Build\vs\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Core.pdb

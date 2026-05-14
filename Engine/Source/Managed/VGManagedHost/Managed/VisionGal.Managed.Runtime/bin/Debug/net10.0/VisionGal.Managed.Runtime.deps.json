@@ -1,0 +1,56 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "VisionGal.Managed.Runtime/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Core": "1.0.0",
+          "VisionGal.Managed.Engine": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Runtime.dll": {}
+        }
+      },
+      "VisionGal.Managed.Core/1.0.0": {
+        "runtime": {
+          "VisionGal.Managed.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "VisionGal.Managed.Engine/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Core": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Engine.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "VisionGal.Managed.Runtime/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

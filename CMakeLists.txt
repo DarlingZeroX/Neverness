@@ -46,6 +46,7 @@ add_subdirectory ("Engine/Source/Runtime/VGRHI")
 add_subdirectory ("Engine/Source/Runtime/VGPackage")
 add_subdirectory ("Engine/Source/Runtime/VGImgui")
 add_subdirectory ("Engine/Source/Runtime/VGCore")
+add_subdirectory ("Engine/Source/Runtime/VGNativeEngineAPI")
 add_subdirectory ("Engine/Source/Runtime/VGAsset")
 add_subdirectory ("Engine/Source/Runtime/VGUI")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
@@ -57,8 +58,8 @@ else()
 endif()
 
 if (VISIONGAL_ENABLE_MANAGED_HOST)
-	add_subdirectory ("Engine/Source/ManagedRuntime/VGManagedCore")
-	add_subdirectory ("Engine/Source/ManagedRuntime/VGManagedHost")
+	add_subdirectory ("Engine/Source/Managed/VGManagedCore")
+	add_subdirectory ("Engine/Source/Managed/VGManagedHost")
 endif()
 
 # GalGame Runtime（Phase 8：Contract + RuntimeCore + 聚合 shim 目标 VGGalgameCore）

@@ -24,8 +24,8 @@ add_executable(VGManagedHostTest
 )
 
 target_include_directories(VGManagedHostTest PRIVATE
-	"${PROJECT_SOURCE_DIR}/Engine/Source/ManagedRuntime/VGManagedHost/Include"
-	"${PROJECT_SOURCE_DIR}/Engine/Source/ManagedRuntime/VGManagedCore/Include"
+	"${PROJECT_SOURCE_DIR}/Engine/Source/Managed/VGManagedHost/Include"
+	"${PROJECT_SOURCE_DIR}/Engine/Source/Managed/VGManagedCore/Include"
 )
 
 target_link_libraries(VGManagedHostTest PRIVATE

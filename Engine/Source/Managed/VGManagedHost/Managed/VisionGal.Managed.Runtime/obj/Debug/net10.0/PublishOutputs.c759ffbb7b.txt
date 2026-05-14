@@ -1,0 +1,8 @@
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.dll
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.deps.json
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.runtimeconfig.json
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Runtime.pdb
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Core.dll
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Engine.dll
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Core.pdb
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Engine.pdb
