@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj": {}
+    "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj": {}
   },
   "projects": {
-    "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
+    "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj",
+        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj",
         "projectName": "VisionGal.Managed.Core",
-        "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj",
+        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\obj\\",
+        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -341,14 +341,14 @@
         }
       }
     },
-    "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
+    "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj",
+        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj",
         "projectName": "VisionGal.Managed.Engine",
-        "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj",
+        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\obj\\",
+        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -366,8 +366,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
-                "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
+              "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
               }
             }
           }
@@ -682,14 +682,14 @@
         }
       }
     },
-    "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj": {
+    "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
+        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
         "projectName": "VisionGal.Managed.Runtime",
-        "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
+        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\obj\\",
+        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -707,11 +707,11 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
-                "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
+              "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
               },
-              "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
-                "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"
+              "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"
               }
             }
           }

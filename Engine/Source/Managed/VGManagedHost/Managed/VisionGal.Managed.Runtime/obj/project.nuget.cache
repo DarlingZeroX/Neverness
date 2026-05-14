@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2JSnargRuq4=",
+  "dgSpecHash": "DtWhsdJTIOA=",
   "success": true,
-  "projectFilePath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
+  "projectFilePath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

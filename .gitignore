@@ -1,9 +1,17 @@
 # 忽略的文件夹
 out/
-build/
+Build/
 Backup/
 .vs/
 .cursor/
+Engine/Source/Managed/VGManagedCore/Managed/VisionGal.Managed.Core/bin/
+Engine/Source/Managed/VGManagedCore/Managed/VisionGal.Managed.Core/obj/
+
+Engine/Source/Managed/VGManagedEngine/Managed/VisionGal.Managed.Engine/bin/
+Engine/Source/Managed/VGManagedEngine/Managed/VisionGal.Managed.Engine/obj/
+
+Engine/Source/Managed/VGManagedHost/Managed/VisionGal.Managed.Runtime/bin/
+Engine/Source/Managed/VGManagedHost/Managed/VisionGal.Managed.Runtime/obj/
 
 
 

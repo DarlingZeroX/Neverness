@@ -1,61 +1,64 @@
-﻿{
-    "version": 3,
-    "configurePresets": [
-        {
-            "name": "windows-base",
-            "hidden": true,
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "cl.exe",
-                "CMAKE_CXX_COMPILER": "cl.exe"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "x64-debug",
-            "displayName": "x64 Debug",
-            "inherits": "windows-base",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "x64-release",
-            "displayName": "x64 Release",
-            "inherits": "x64-debug",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "x86-debug",
-            "displayName": "x86 Debug",
-            "inherits": "windows-base",
-            "architecture": {
-                "value": "x86",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "x86-release",
-            "displayName": "x86 Release",
-            "inherits": "x86-debug",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        }
-    ]
+{
+  "version": 3,
+  "configurePresets": [
+      {
+          "name": "windows-base",
+          "hidden": true,
+          "generator": "Ninja",
+          "cacheVariables": {
+              "CMAKE_C_COMPILER": "cl.exe",
+              "CMAKE_CXX_COMPILER": "cl.exe"
+          },
+          "condition": {
+              "type": "equals",
+              "lhs": "${hostSystemName}",
+              "rhs": "Windows"
+          }
+      },
+      {
+          "name": "x64-base",
+          "hidden": true,
+          "inherits": "windows-base",
+          "architecture": {
+              "value": "x64",
+              "strategy": "external"
+          }
+      },
+      {
+          "name": "vs-x64-debug",
+          "displayName": "VS x64 Debug",
+          "inherits": "x64-base",
+          "binaryDir": "${sourceDir}/Build/vs/x64-debug",
+          "cacheVariables": {
+              "CMAKE_BUILD_TYPE": "Debug"
+          }
+      },
+      {
+          "name": "vs-x64-release",
+          "displayName": "VS x64 Release",
+          "inherits": "vs-x64-debug",
+          "binaryDir": "${sourceDir}/Build/vs/x64-release",
+          "cacheVariables": {
+              "CMAKE_BUILD_TYPE": "Release"
+          }
+      },
+      {
+          "name": "vscode-x64-debug",
+          "displayName": "VSCode x64 Debug",
+          "inherits": "x64-base",
+          "binaryDir": "${sourceDir}/Build/vscode/x64-debug",
+          "cacheVariables": {
+              "CMAKE_BUILD_TYPE": "Debug"
+          }
+      },
+      {
+          "name": "vscode-x64-release",
+          "displayName": "VSCode x64 Release",
+          "inherits": "vscode-x64-debug",
+          "binaryDir": "${sourceDir}/Build/vscode/x64-release",
+          "cacheVariables": {
+              "CMAKE_BUILD_TYPE": "Release"
+          }
+      }
+  ]
 }
