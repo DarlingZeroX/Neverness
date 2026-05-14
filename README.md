@@ -27,6 +27,7 @@ vcpkg install sdl3
 vcpkg install sdl3-image[jpeg,png,tiff,webp]
 vcpkg install rmlui[freetype]
 vcpkg install ffmpeg
+vcpkg install nethost
 ```
 安装ffmpeg的时间可能会比较长，需要耐心等待，因为需要编译ffmpeg的源代码。
 

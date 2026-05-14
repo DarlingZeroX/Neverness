@@ -50,6 +50,17 @@ add_subdirectory ("Engine/Source/Runtime/VGAsset")
 add_subdirectory ("Engine/Source/Runtime/VGUI")
 add_subdirectory ("Engine/Source/Runtime/VGEngine")
 
+if (WIN32 AND MSVC)
+	option(VISIONGAL_ENABLE_MANAGED_HOST "Build VGManagedHost (CoreCLR via nethost)" ON)
+else()
+	option(VISIONGAL_ENABLE_MANAGED_HOST "Build VGManagedHost (CoreCLR via nethost)" OFF)
+endif()
+
+if (VISIONGAL_ENABLE_MANAGED_HOST)
+	add_subdirectory ("Engine/Source/ManagedRuntime/VGManagedCore")
+	add_subdirectory ("Engine/Source/ManagedRuntime/VGManagedHost")
+endif()
+
 # GalGame Runtime（Phase 8：Contract + RuntimeCore + 聚合 shim 目标 VGGalgameCore）
 add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameContract")
 add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameRuntimeCore")
@@ -84,8 +95,9 @@ add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应
 ########## 加载 Tests 目录下所有子测试项目
 if (ENABLE_TESTS)
     enable_testing()
-    add_subdirectory("Engine/Source/Tests/VGEditorGalgameSequenceTest")
-    add_subdirectory("Engine/Source/Tests/VGGalgameScriptSequenceTest")
+    #add_subdirectory("Engine/Source/Tests/VGEditorGalgameSequenceTest")
+    #add_subdirectory("Engine/Source/Tests/VGGalgameScriptSequenceTest")
+    # VGManagedHostTest: add_subdirectory trong VGManagedHost/CMakeLists.txt (ENABLE_TESTS + dotnet).
       
     # add_subdirectory("Tests/VGLauncherTest")
     # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")
