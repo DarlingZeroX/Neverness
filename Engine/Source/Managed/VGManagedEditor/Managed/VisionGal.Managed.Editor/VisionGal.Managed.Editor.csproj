@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RollForward>LatestMinor</RollForward>
+    <RootNamespace>VisionGal.Managed.Editor</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\VGManagedObject\Managed\VisionGal.Managed.Object\VisionGal.Managed.Object.csproj" />
+  </ItemGroup>
+</Project>

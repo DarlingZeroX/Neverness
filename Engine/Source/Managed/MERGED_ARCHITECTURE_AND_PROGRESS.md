@@ -2,7 +2,35 @@
 
 本文件由 `merge_docs.py` 自動生成，**請勿手改**；請編輯各子目錄 `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`、根目錄 `MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md`，以及（可選）`Engine/Source/Runtime/VGNativeEngineAPI/Docs/...`、`VGEngineRuntime/Docs/...`、`VGEngineRuntimeServices/Docs/...` 後重新執行本腳本。
 
-共收錄 **6** 個子模組文檔 + 根總覽。
+共收錄 **17** 個子模組文檔 + 根總覽。
+
+
+---
+## Module: VGManagedAssets
+
+# VGManagedAssets — 資產 GUID 與登記表（VisionGal.Managed.Assets）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **GUID**（128-bit，與 Native VGGuid 互操作）、**AssetDatabase**、**ImportPipeline**、**DependencyTracking**。 |
+| **程式集** | **VisionGal.Managed.Assets**（`net10.0`，`AllowUnsafeBlocks`） |
+| **依賴** | **VisionGal.Managed.Object**、**VisionGal.Managed.Engine** |
+
+## 2. 匯入回退（Phase 5 加固）
+
+- 優先 **`AssetRegistry.importAsset`**（Native）。
+- Native 回傳零 GUID 時，使用 **`GUID.FromDeterministicPath`**（FNV-1a 穩定雜湊），**禁止**對虛擬路徑呼叫 **`GUID.Parse`**。
+- **`AssetDatabase.ClearForTesting`**：清空託管快取（不呼叫 Native 登記表）。
+
+## 3. Phase 5 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：GUID、資產登記、匯入管線、依賴追蹤。 |
+| **2026-05-15** | **加固**：確定性路徑 GUID；`ImportPipeline` 註解與測試；Bootstrap 演練 **Import** + **TryResolveGuid**。 |
+
 
 
 ---
@@ -87,6 +115,29 @@ Engine/Source/Managed/VGManagedCore/
 |------|------|
 | **2026-05-14** | **Phase 2 落地**：新增 **VGManagedCore** 靜態庫、`VGNativeAPI`、預設 Log、單例表、**VisionGal.Managed.Core**、Runtime **`BootstrapNativeApi`**、擴展 **VGManagedHostTest**。 |
 | **2026-05-14** | **Phase 3**：遞增 **`VG_NATIVE_API_VERSION`**、掛載 **VGNativeEngineAPI**、託管 **VisionGal.Managed.Engine**、Stub 跨邊界測試。 |
+| **2026-05-15** | **Phase 5 加固**：Foundation Bootstrap 經 **`VGNativeApi_GetDefaultTable`** 與 **GetBootstrapFlags** 驗證。 |
+
+
+
+---
+## Module: VGManagedEditor
+
+# VGManagedEditor — 編輯器殼層（VisionGal.Managed.Editor）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **EditorShell**、停靠 **DockingLayout**、**EditorPanel** 基底、**ConsolePanel** / **HierarchyPanel**、**IEditorCommand** / **CommandRegistry**、**SelectionService**。 |
+| **程式集** | **VisionGal.Managed.Editor**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Object** |
+
+## 2. Phase 5 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：編輯器殼、面板、命令與選取服務。 |
+| **2026-05-15** | **加固**：標記為 Phase 5 首包切片；產品化 UI 留待 Phase 7。 |
 
 
 
@@ -165,6 +216,58 @@ Engine/Source/Managed/VGManagedEngine/
 
 
 ---
+## Module: VGManagedGameplay
+
+# VGManagedGameplay — Galgame 執行時（VisionGal.Managed.Gameplay）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | Phase 6 首包：**GameplayVariableStore**（託管變數表）、**DialoguePresenter**（經 `VGUIApi.SetDialogueText` 呈現對白）。 |
+| **程式集** | **VisionGal.Managed.Gameplay**（`net10.0`，`AllowUnsafeBlocks`） |
+| **依賴** | **VisionGal.Managed.Core**、**VisionGal.Managed.Engine** |
+| **消費方** | **VisionGal.Managed.Runtime**（專案參考，使 `dotnet publish` 輸出含本程式集）；Foundation 單元測試。 |
+| **不負責** | Sequence 編排、存檔、Legacy Galgame、Roslyn / Hot Reload |
+
+## 2. Phase 6 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | **首包**：變數表 API、對白 Presenter（ABI 未安裝時 no-op）；**VisionGal.Managed.Foundation.Tests** 覆蓋。 |
+| **2026-05-15** | **Runtime 納入 publish**：**VisionGal.Managed.Runtime** 專案參考本模組；**VGManagedHostTest** 斷言 **VisionGal.Managed.Gameplay.dll** 存在於 publish 根目錄。 |
+
+## 3. 後續
+
+- **SequenceRunner** 與場景再水合聯動。
+- 變數表與序列化 / Native ABI 對接。
+- 與 **VGManagedHost** UCO Bootstrap 演練（可選）。
+
+
+
+---
+## Module: VGManagedGraph
+
+# VGManagedGraph — 節點圖（VisionGal.Managed.Graph）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **Graph** / **GraphNode** / **GraphEdge** / **GraphPort**、**GraphValidator** 結構驗證。 |
+| **程式集** | **VisionGal.Managed.Graph**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Reflection** |
+
+## 2. Phase 5 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：節點圖資料模型與驗證器。 |
+| **2026-05-15** | **加固**：**GraphSerializer** 屬性註解；未納入 Bootstrap 路徑。 |
+
+
+
+---
 ## Module: VGManagedHost
 
 # VGManagedHost — Managed Runtime Host（CoreCLR / nethost）
@@ -189,7 +292,7 @@ Engine/Source/Managed/VGManagedEngine/
 | **编译定义** | `PRIVATE VG_MANAGED_HOST_EXPORT` → **`VG_MANAGED_HOST_API`**（见 [VGManagedHostConfig.h](../Include/VGManagedHost/VGManagedHostConfig.h)）。 |
 | **包含目录** | `PUBLIC`：`Include/`（对外 `#include "VGManagedHost/..."`）；`PRIVATE`：`Private/`（仅 **`CoreCLRLoader`** 等实现翻译单元使用，**禁止**作为引擎其它模块的 `PUBLIC` 依赖路径）。 |
 | **非 Windows** | 若启用本模块，`CoreCLRLoader` 使用 `dlopen` / `dlsym`，`target_link_libraries(VGManagedHost PRIVATE dl)`（Unix 非 Apple）。 |
-| **托管测试产物** | 缓存变量 **`VISIONGAL_MANAGED_PUBLISH_DIR`**（默认 `${CMAKE_BINARY_DIR}/ManagedRuntimePublish`）。若找到 **`dotnet`**，生成 **`visiongal_managed_runtime_publish`**：`dotnet publish` [VisionGal.Managed.Runtime.csproj](../Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj)（输出含 **`VisionGal.Managed.Core.dll`**、**`VisionGal.Managed.Engine.dll`**；`DEPENDS` 同時監視 Core 與 Engine 工程原始碼）。 |
+| **托管测试产物** | 缓存变量 **`VISIONGAL_MANAGED_PUBLISH_DIR`**（默认 `${CMAKE_BINARY_DIR}/ManagedRuntimePublish`）。若找到 **`dotnet`**，生成 **`visiongal_managed_runtime_publish`**：`dotnet publish` [VisionGal.Managed.Runtime.csproj](../Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj)（輸出含 **VisionGal.Managed.Core.dll**、**VisionGal.Managed.Engine.dll**、**VisionGal.Managed.Gameplay.dll** 等；`DEPENDS` 監視各 Foundation / Gameplay 工程原始碼）。 |
 
 ### 2.1 单元测试（GTest）
 
@@ -199,7 +302,7 @@ Engine/Source/Managed/VGManagedEngine/
 | **目标** | **`VGManagedHostTest`**（[Engine/Source/Tests/VGManagedHostTest](../../../Tests/VGManagedHostTest/)） |
 | **依赖** | `add_dependencies(VGManagedHostTest visiongal_managed_runtime_publish)`，保证先发布托管程序集。 |
 | **运行时 DLL** | `POST_BUILD` 将 **`VGManagedHost.dll`** 复制到测试 exe 同目录，避免 `bin` 与 `lib` 分离导致加载失败。 |
-| **ctest 环境变量** | **`VGMANAGED_TEST_ROOT`** = `VISIONGAL_MANAGED_PUBLISH_DIR`，目录内需含 **`VisionGal.Managed.Runtime.dll`**、**`VisionGal.Managed.Core.dll`**、**`VisionGal.Managed.Engine.dll`** 与 **`.runtimeconfig.json`**。 |
+| **ctest 环境变量** | **`VGMANAGED_TEST_ROOT`** = `VISIONGAL_MANAGED_PUBLISH_DIR`，目录内需含 **`VisionGal.Managed.Runtime.dll`**、**`VisionGal.Managed.Core.dll`**、**`VisionGal.Managed.Engine.dll`**、**`VisionGal.Managed.Gameplay.dll`** 与 **`.runtimeconfig.json`**。 |
 
 构建与测试示例（在已安装 `nethost` 与 .NET 8 SDK 的前提下）：
 
@@ -340,11 +443,16 @@ Engine/Source/Managed/VGManagedHost/
 
 ---
 
-## 6. 托管侧约定（Phase 1–2）
+## 6. 託管側約定（Phase 1–5）
 
-- 工程：**`net8.0`**，见 [VisionGal.Managed.Runtime.csproj](../Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj)；**ProjectReference** → **`VisionGal.Managed.Core`**（源码树位于 [VGManagedCore/Managed/VisionGal.Managed.Core](../../VGManagedCore/Managed/VisionGal.Managed.Core/)）。
-- 入口：[Entry.cs](../Managed/VisionGal.Managed.Runtime/Entry.cs) — **`Smoke`**（Phase 1）；**`BootstrapNativeApi`**（Phase 2）接收 **`VGNativeAPI*`**（以 **`nint`** 传递），内部调用 **`NativeApiBootstrap`**（**Managed.Core**）。
-- **C# → Native**：经 **`VGNativeAPI.logInfo`** 函数指针；**禁止**对引擎 DLL 使用 **`DllImport`**（Phase 2 起为硬约束方向）。
+- 工程：**`net10.0`**，見 [VisionGal.Managed.Runtime.csproj](../Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj)；**ProjectReference** 涵蓋 Core / Engine / Object / Scene / Assets / **Gameplay** 等 Foundation 程式集。
+- 入口：[Entry.cs](../Managed/VisionGal.Managed.Runtime/Entry.cs)：
+  - **`Smoke`**（Phase 1）
+  - **`BootstrapNativeApi`**（Phase 2–3）
+  - **`BootstrapEngineFoundation`**（Phase 5/5.3：Object / Scene JSON 往返與 **SceneRehydrator** 再水合 / Assets）
+  - **`GetBootstrapFlags`**（位元遮罩，供 GTest 斷言，避免解析 stderr）
+- **C# → Native**：經 **`VGNativeAPI.logInfo`** 函數指標；**禁止**對引擎 DLL 使用 **`DllImport`**。
+- **Phase 6 程式集**：**VisionGal.Managed.Gameplay** 經 Runtime 專案參考進入 publish；**VGManagedHostTest** 斷言該 DLL 存在於 publish 根目錄。
 
 ---
 
@@ -366,14 +474,211 @@ Engine/Source/Managed/VGManagedHost/
 |------|------|
 | **2026-05-14** | **Phase 1 落地**：新增 **`VGManagedHost`** 模块；**`CoreCLRLoader`** 封装 nethost + hostfxr；**`VGManagedHost` / `VGManagedRuntime` / `VGManagedAssembly`** 公开 API；**`VisionGal.Managed.Runtime`** smoke 程序集；**`VGManagedHostTest`** + **`visiongal_managed_runtime_publish`**；根 **`VISIONGAL_ENABLE_MANAGED_HOST`** 选项。 |
 | **2026-05-14** | **Phase 2**：**`PRIVATE`** 链接 **`VGManagedCore`**；托管 **`BootstrapNativeApi`** + **`VisionGal.Managed.Core`**；测试导出 **`VGManagedHost_GetNativeLogInfoCallCountForTest`**；扩展 **GTest** 与 publish 依赖 **Core** 源码。 |
+| **2026-05-15** | **Phase 5 加固**：**`BootstrapEngineFoundation`** 擴充；**`GetBootstrapFlags`**；GTest 斷言 publish 完整性與旗標；**`VisionGal.Managed.Foundation.Tests`**（`dotnet test` / CMake **`visiongal_managed_foundation_tests`**）。 |
+| **2026-05-15** | **Phase 5.3 + publish**：**`BootstrapEngineFoundation`** 演練 **SceneRehydrator**；CMake `DEPENDS` 含 **VGManagedGameplay**；**Runtime.csproj** 專案參考 **VisionGal.Managed.Gameplay**，GTest 斷言 **VisionGal.Managed.Gameplay.dll**。 |
 
 ---
 
 ## 9. 已知限制与注意事项
 
-- 需要本机安装 **.NET 8** 运行时/SDK，以便 **`dotnet publish`** 与 **`runtimeconfig.json`** 解析框架依赖。
+- 需要本机安装 **.NET 10 SDK** 与对应 **Microsoft.NETCore.App** 运行时，以便 **`dotnet publish`** 与 **`runtimeconfig.json`** 解析框架依赖。
 - **`Initialize`** 所给 **`.runtimeconfig.json`** 必须与待加载的托管 DLL 框架版本一致（测试使用同一 publish 目录）。
 - 引擎其它模块 **默认不链接** **`VGManagedHost`**，避免过早耦合；由宿主进程或测试目标按需 **`target_link_libraries(... VGManagedHost)`**。
+
+
+
+---
+## Module: VGManagedInspector
+
+# VGManagedInspector — Inspector 視圖（VisionGal.Managed.Inspector）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **InspectorView** 綁定反射元資料、**PropertyDrawer** 讀寫屬性值（含 Range 約束）。 |
+| **程式集** | **VisionGal.Managed.Inspector**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Reflection**、**VisionGal.Managed.Editor** |
+
+## 2. Phase 5 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：Inspector 視圖與屬性繪製器。 |
+| **2026-05-15** | **加固**：依賴 **Reflection** 掃描規則修正；Phase 7 產品化。 |
+
+
+
+---
+## Module: VGManagedObject
+
+# VGManagedObject — 託管物件生命週期（VisionGal.Managed.Object）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | 託管 **VGObject** 抽象基底、**VGObjectId** 識別、靜態 **ObjectRegistry**、經 **EngineApi.Object** 之 **NativeHandleBridge**、**LifetimeSystem** retain/release 協調。 |
+| **程式集** | **VisionGal.Managed.Object**（`net10.0`，`AllowUnsafeBlocks`） |
+| **依賴** | **VisionGal.Managed.Engine** |
+
+## 2. 生命週期契約（Phase 5 加固）
+
+- **`createObject`** 成功時 Native 引用計數為 **1**；**`CreateAndRegister`** 不再額外 `Retain`。
+- **`Dispose`** → **`Release`**；引用歸零後 **`DestroyObject`**。
+- **`ObjectRegistry.ClearForTesting`**：先對所有已註冊物件呼叫 **`Dispose`**，再清空表與 Id 計數器。
+- **`CreateAndRegister<T>`**：以反射匹配 `(VGObjectId, VGObjectHandle)` 或三參數 `(…, string typeName)` 建構子。
+
+## 3. 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：Id / Object / Registry / Native 橋接 / 生命週期系統。 |
+| **2026-05-15** | **Phase 5 加固**：ref-count、`ClearForTesting`、反射建構 **SceneEntity**。 |
+| **2026-05-15** | **Phase 5.3**：**SceneRehydrator** 經 **`LifetimeSystem`** 再水合場景實體（新 Native 控制代碼）。 |
+
+## 4. 後續
+
+- 執行緒安全之讀寫鎖（若多執行緒存取註冊表）。
+
+
+
+---
+## Module: VGManagedReflection
+
+# VGManagedReflection — 託管反射元資料（VisionGal.Managed.Reflection）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | Inspector / 序列化共用之屬性標記（SerializeField、HideInInspector、Range）、**TypeMetadata** / **PropertyMetadata**、**ReflectionRegistry** 快取。 |
+| **程式集** | **VisionGal.Managed.Reflection**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Object** |
+
+## 2. 掃描規則（Phase 5 加固）
+
+屬性納入序列化掃描當且僅當：
+
+- 標記 **`[SerializeField]`**，或
+- 具 **public setter** 之可讀寫屬性。
+
+（已修正運算子優先級導致 public setter 誤判之問題。）
+
+## 3. Phase 5 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：屬性標記、型別/屬性元資料、註冊表快取。 |
+| **2026-05-15** | **加固**：`TypeMetadata.ScanMembers` 邏輯修正；單元測試覆蓋 **SceneEntity.DisplayName** 與 fixture 欄位。 |
+
+
+
+---
+## Module: VGManagedScene
+
+# VGManagedScene — 場景與 Prefab（VisionGal.Managed.Scene）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **Scene** 容器、**SceneEntity**（VGObject 衍生）、**Prefab** 實例化、與 **SceneSerializer** JSON 往返、**SceneRehydrator** 實體再水合。 |
+| **程式集** | **VisionGal.Managed.Scene**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Object**、**VisionGal.Managed.Serialization** |
+
+## 2. JSON 語意
+
+| API | 說明 |
+|-----|------|
+| **`ToJson`** | 序列化為含 `formatVersion` 之 DTO JSON。 |
+| **`FromJson`** | 僅還原 **`SceneDocument` DTO**，不重建 **`SceneEntity`**。 |
+| **`ValidateRoundTripDocument`** | 驗證名稱、實體數與 **`DisplayName`** 等屬性 payload。 |
+| **`RestoreFromDocument`** | 還原僅託管 **`Scene`** 容器（不含實體）。 |
+| **`RehydrateFromJson`** / **`SceneRehydrator`** | 完整再水合：經 **`LifetimeSystem`** 建立新 Native 控制代碼並套用 DTO 屬性。 |
+
+**刻意未接線**：Native **`VGSceneAPI`**（spawn / setParent 等）之 C# 橋接層。
+
+## 3. 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：場景實體、Prefab、序列化整合。 |
+| **2026-05-15** | **Phase 5 加固**：`ValidateRoundTripDocument` / `RestoreFromDocument`（僅容器）。 |
+| **2026-05-15** | **Phase 5.3**：**`SceneRehydrator`**、**`RehydrateFromJson`**；Bootstrap 演練 JSON→實體往返。 |
+
+
+
+---
+## Module: VGManagedScripting
+
+# VGManagedScripting — 腳本載入與 Roslyn（VisionGal.Managed.Scripting）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **ManagedAssemblyLoadContextHost**、**HotReloadCoordinator**、**RoslynScriptCompiler**（`VISIONGAL_ENABLE_ROSLYN` / Microsoft.CodeAnalysis.CSharp 4.14.0）。 |
+| **程式集** | **VisionGal.Managed.Scripting**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Core** |
+
+## 2. Phase 5 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：ALC 宿主、熱重載、Roslyn 條件編譯編譯器。 |
+| **2026-05-15** | **加固**：標記為 **脚手架**（非生產）；**VISIONGAL_ENABLE_ROSLYN** 未接線；Phase 8/9。 |
+
+
+
+---
+## Module: VGManagedSerialization
+
+# VGManagedSerialization — JSON 序列化（VisionGal.Managed.Serialization）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **VersionTolerance** 格式版本、**SceneSerializer** / **AssetSerializer** / **GraphSerializer**（System.Text.Json）。 |
+| **程式集** | **VisionGal.Managed.Serialization**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Reflection** |
+
+## 2. 版本策略
+
+- 寫入時強制 **`FormatVersion = CurrentFormatVersion`**（當前 **1**）。
+- 讀取時 **`PropertyNameCaseInsensitive`** + 忽略未知欄位（寬鬆模式）；未來可於反序列化後顯式校驗版本號。
+
+## 3. 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：場景/資產/圖 JSON 序列化與版本容忍。 |
+| **2026-05-15** | **Phase 5 加固**：**GraphSerializer** 中文註解；**formatVersion** 單元測試。 |
+| **2026-05-15** | **Phase 5.3**：**`SceneSerializer.ApplyEntryProperties`**（DTO 屬性寫回託管實例）。 |
+| **2026-05-15** | **VersionTolerance**：**`VersionToleranceTests`** 驗證根層未知 JSON 欄位不阻斷反序列化。 |
+
+
+
+---
+## Module: VGManagedUndoRedo
+
+# VGManagedUndoRedo — 撤銷/重做（VisionGal.Managed.UndoRedo）
+
+## 1. 定位
+
+| 項目 | 說明 |
+|------|------|
+| **職責** | **IUndoableCommand**、**UndoStack** 雙棧、**PropertyChangeCommand** 屬性變更撤銷。 |
+| **程式集** | **VisionGal.Managed.UndoRedo**（`net10.0`） |
+| **依賴** | **VisionGal.Managed.Editor**（經 Inspector 引用鏈接 Reflection） |
+
+## 2. Phase 5 進展
+
+| 日期 | 進展 |
+|------|------|
+| **2026-05-15** | 初始模組：Undo/Redo 棧與屬性變更命令。 |
+| **2026-05-15** | **加固**：首包切片；與 Editor Phase 7 聯動規劃。 |
 
 
 
@@ -555,10 +860,19 @@ flowchart TB
     MCore[VisionGal.Managed.Core]
     MEng[VisionGal.Managed.Engine]
     MEngRt[VisionGal.Managed.Engine.Runtime]
+    MObj[VisionGal.Managed.Object]
+    MRefl[VisionGal.Managed.Reflection]
+    MSer[VisionGal.Managed.Serialization]
+    MGameplay[VisionGal.Managed.Gameplay]
     MRuntime --> MCore
     MRuntime --> MEng
     MRuntime --> MEngRt
+    MRuntime --> MObj
+    MObj --> MEng
+    MRefl --> MObj
+    MSer --> MRefl
     MEngRt --> MEng
+    MGameplay --> MEng
   end
   MCore -->|"VGNativeAPI v2"| Core
   MEng -->|"VGNativeEngineAPI 鏡像"| EngABI
@@ -569,11 +883,13 @@ flowchart TB
 |------|----------------|------|
 | **Native Runtime Host** | **VGManagedHost** | CoreCLR 生命週期、nethost/hostfxr、`load_assembly_and_get_function_pointer`、多程式集登記；**不**承載業務 ABI。 |
 | **Managed Runtime Foundation** | **VGManagedCore** + **VisionGal.Managed.Core** | **`VGNativeAPI`**、預設 Native 實作、託管鏡像與 **無 DllImport** 之函數表引導；**v2** 起掛載 **`engineServices`**。 |
-| **Managed Engine SDK** | **VGNativeEngineAPI**（Native）+ **VisionGal.Managed.Engine** | **僅** Engine Service 函數表 ABI 與託管鏡像、Handle 型別、Stub / 未來 Adapter 接線點。**不含** Gameplay。 |
-| **Engine Runtime（Native）** | **VGEngineRuntime** + **VGEngineRuntimeServices** | 行程級 **Timing / Async** 狀態機與 ABI 覆寫層；**不**鏈結完整 **VGEngine**（首包刻意減輕 Host 測試鏈）。 |
+| **Managed Engine SDK** | **VGNativeEngineAPI**（Native）+ **VisionGal.Managed.Engine** | **僅** Engine Service 函數表 ABI 與託管鏡像、Handle 型別、Stub / 未來 Adapter 接線點。**不含** Gameplay 產品邏輯。 |
+| **Engine Runtime（Native）** | **VGEngineRuntime** + **VGEngineRuntimeServices** | 行程級 **Timing / Async / Scene（擴充）/ Object / AssetRegistry** 等狀態機；**不**鏈結完整 **VGEngine**。 |
 | **Managed Engine Runtime 薄封裝** | **VisionGal.Managed.Engine.Runtime** | 讀已安裝 ABI 之 **EngineTime** 等；依賴 **VisionGal.Managed.Engine**，**不**含 Gameplay。 |
-| **託管入口程式集** | **VisionGal.Managed.Runtime** | `[UnmanagedCallersOnly]` 匯出、Bootstrap **Core + Engine**（並引用 **Engine.Runtime**）。 |
-| **未來** | *VGManagedGameplay、VGManagedEditor* | 依 **穩定後之 ABI**；當前階段不實施。 |
+| **Managed Engine Foundation** | **VGManagedObject**、**VGManagedReflection**、**VGManagedSerialization**、**VGManagedAssets**、**VGManagedScene** 等 | Unity 式地基：註冊表、元資料、序列化、資產 GUID、場景再水合；Editor/Inspector/Graph 為資料模型 Shell。 |
+| **Managed Gameplay** | **VGManagedGameplay** + **VisionGal.Managed.Gameplay** | Galgame 變數表、對白呈現（Phase 6 首包）；與 Legacy 分離。 |
+| **託管入口程式集** | **VisionGal.Managed.Runtime** | `[UnmanagedCallersOnly]` 匯出、Bootstrap **Core + Engine + Foundation**。 |
+| **Legacy（可選建置）** | `Engine/Source/Legacy/**` | Galgame 執行時與編輯器；**`VISIONGAL_BUILD_LEGACY_GALGAME`** 預設 **OFF**。 |
 
 ---
 
@@ -581,53 +897,88 @@ flowchart TB
 
 | Phase | 名稱 | 狀態 | 說明 |
 |-------|------|------|------|
-| **1** | Native Runtime Host | **已完成** | C++ → C# 單向 UCO；見 [VGManagedHost/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](VGManagedHost/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
-| **2** | Managed ABI Foundation | **已完成** | **VGManagedCore** + **`VGNativeAPI`** + **VisionGal.Managed.Core** + `BootstrapNativeApi` → Native `LogInfo` 閉環。 |
-| **3** | Managed Engine Runtime Foundation | **已完成** | **VGNativeEngineAPI**（函數表 + Stub）、**`VG_NATIVE_API_VERSION` = 2** 與 **`engineServices`**、**VisionGal.Managed.Engine**、Handle 與 **AsyncWait** 最小 ABI。 |
-| **4** | Engine Runtime Service Integration | **已完成（首包切片）** | **`VG_NATIVE_ENGINE_API_LAYOUT_VERSION` = 2**（Timing / Scene / Asset 表尾擴充）、**VGEngineRuntime**、**VGEngineRuntimeServices**、CMake **`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES`**、**VisionGal.Managed.Engine.Runtime**、**VGManagedHostTest** 於 Runtime 模式下之 Tick / timing / async 斷言。**不含** Gameplay、**不**在 Host 測試鏈鏈結完整 **VGEngine**。 |
-| **5** | VGManagedGameplay | 未開始 | 對白 / Sequence / 變數等 **需在 Engine ABI 評審後** 遷入。 |
-| **6** | VGManagedEditor | 未開始 | 編輯器工具鏈與宿主 ABI 對齊。 |
-| **7** | Hot Reload / ALC | 未開始 | `AssemblyLoadContext`、擴充卸載等。 |
-| **8** | VGManagedRoslyn | 未開始 | 腳本編譯管線（依賴 ABI 穩定）。 |
+| **1** | Native Runtime Host | **已完成** | C++ → C# 單向 UCO。 |
+| **2** | Managed ABI Foundation | **已完成** | **VGManagedCore** + **`VGNativeAPI`** + **VisionGal.Managed.Core**。 |
+| **3** | Managed Engine Runtime Foundation | **已完成** | **VGNativeEngineAPI**、**`engineServices`**、**VisionGal.Managed.Engine**。 |
+| **4** | Engine Runtime Service Integration | **已完成（首包）** | **VGEngineRuntime** / **VGEngineRuntimeServices**、layout v2+、Host 測試 Tick/timing/async。 |
+| **5** | Managed Engine Infrastructure | **已完成（首包 + 加固 + 5.3）** | Foundation 模組樹、**BootstrapEngineFoundation**、**SceneRehydrator** 實體再水合。 |
+| **5.3** | Scene Entity Rehydration | **已完成** | **`ApplyEntryProperties`**、**`RehydrateFromJson`**、Bootstrap 演練。 |
+| **6** | VGManagedGameplay | **進行中（首包）** | **GameplayVariableStore**、**DialoguePresenter**；Sequence / 存檔待做。 |
+| **7** | Managed Editor 產品化 | **未開始** | 真實 UI / 工具鏈（當前 Shell 資料模型）。 |
+| **8** | Hot Reload / ALC | **未開始** | **VGManagedScripting** 脚手架；生產化在 Phase 8。 |
+| **9** | VGManagedRoslyn | **未開始** | Roslyn 編譯管線。 |
 
-**當前刻意不做**：Gameplay Runtime、Dialogue Runtime、Save、Sequence 產品化、Roslyn、Hot Reload、Visual Script——直至 **Engine Runtime ABI** 與 Adapter 策略定型。
+### 2.1 Phase 5.3 摘要（2026-05-15）
+
+| 類別 | 內容 |
+|------|------|
+| **API** | **`SceneSerializer.ApplyEntryProperties`**；**`SceneRehydrator`** / **`Scene.RehydrateFromJson`**。 |
+| **Bootstrap** | **`BootstrapEngineFoundation`** 在 JSON 往返後清空註冊表並再水合，驗證 **DisplayName** 與 Native **IsAlive**。 |
+| **測試** | **SceneRehydrationTests**（屬性套用 + 條件式 Engine 整合）；**VersionToleranceTests**（場景 DTO 含未知根欄位仍可反序列化）。 |
+
+### 2.2 Phase 6 首包摘要（2026-05-15）
+
+| 類別 | 內容 |
+|------|------|
+| **模組** | **VGManagedGameplay** / **VisionGal.Managed.Gameplay**。 |
+| **API** | **GameplayVariableStore**；**DialoguePresenter**（`VGUIApi.SetDialogueText`，未安裝 ABI 時 no-op）。 |
+| **測試** | **GameplayVariableStoreTests**、**DialoguePresenterTests**。 |
+| **發佈** | **VisionGal.Managed.Runtime** 專案參考 **VisionGal.Managed.Gameplay**，**ManagedRuntimePublish** 含 **VisionGal.Managed.Gameplay.dll**；**VGManagedHostTest** 校驗該檔。 |
+
+**仍刻意不做**：Native **`VGSceneAPI`** C# 橋接、Sequence 產品化、Roslyn/Hot Reload 生產化、Legacy Galgame 遷移。
 
 ---
 
 ## 3. 關鍵設計決策（摘要）
 
 1. **函數表優先**：託管端經 **`VGNativeAPI*`** 與 **`VGNativeEngineAPI*`** 間接呼叫引擎能力，避免散落 `DllImport`。
-2. **版本欄位**：**`VG_NATIVE_API_VERSION`** 與 **`VGNativeApiConstants.ApiVersion`** 同步；**`VG_NATIVE_ENGINE_API_LAYOUT_VERSION`** 與 **`VGNativeEngineApiConstants.LayoutVersion`** 同步；破壞性佈局變更必須遞增。
-3. **Host 不膨脹**：hostfxr 細節封裝在 **VGManagedHost**；宿主級 ABI 在 **VGManagedCore**；Engine 服務 ABI 在 **VGNativeEngineAPI**。
-4. **靜態合併**：**VGManagedCore** 以 **STATIC** 鏈入 **VGManagedHost.dll**；**VGNativeEngineAPI** 以 **STATIC** 鏈入 **VGManagedCore**；若啟用 **`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES`**，另以 **STATIC** 鏈入 **VGEngineRuntimeServices** 與 **VGEngineRuntime**。
-5. **Handle 邊界**：資源以 **uint64** Handle 暴露；**禁止**託管層持有 C++ 物件指標穿越 ABI。
+2. **版本欄位**：**`VG_NATIVE_API_VERSION`** / **`VG_NATIVE_ENGINE_API_LAYOUT_VERSION`** 與託管常數同步；破壞性佈局變更必須遞增。
+3. **Host 不膨脹**：hostfxr 封裝在 **VGManagedHost**；宿主 ABI 在 **VGManagedCore**；Engine 服務 ABI 在 **VGNativeEngineAPI**。
+4. **靜態合併**：**VGManagedCore** STATIC 鏈入 **VGManagedHost**；可選 **VGEngineRuntimeServices** STATIC 鏈入建表路徑。
+5. **Handle 邊界**：資源以 **uint64** Handle 暴露；禁止託管層持有 C++ 物件指標穿越 ABI。
+6. **Object 生命週期**：**`createObject`** 成功即 ref=1，**`Dispose`** 遞減至 0 後 **destroy**；再水合一律建立**新** Native 控制代碼。
 
 ---
 
 ## 4. 建置與測試（Windows / MSVC）
 
-前提：vcpkg **`nethost`**、**.NET 10 SDK**（與 `net10.0` 目標一致）、根 **CMake** 中 `VISIONGAL_ENABLE_MANAGED_HOST=ON`、`ENABLE_TESTS=ON`。
+前提：vcpkg **`nethost`**、**.NET 10 SDK**、**`VISIONGAL_ENABLE_MANAGED_HOST=ON`**、**`ENABLE_TESTS=ON`**。
 
 ```bat
-cmake -B build -DCMAKE_TOOLCHAIN_FILE=<你的 vcpkg>/scripts/buildsystems/vcpkg.cmake -DENABLE_TESTS=ON -DVISIONGAL_ENABLE_MANAGED_HOST=ON
-cmake --build build --config Debug --target VGManagedHostTest visiongal_managed_runtime_publish
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=<vcpkg>/scripts/buildsystems/vcpkg.cmake -DENABLE_TESTS=ON -DVISIONGAL_ENABLE_MANAGED_HOST=ON
+cmake --build build --config Debug --target VGManagedHostTest visiongal_managed_runtime_publish visiongal_managed_foundation_tests
 ctest -C Debug -R VGManagedHost --output-on-failure
+dotnet test Engine/Source/Managed/Tests/VisionGal.Managed.Foundation.Tests/VisionGal.Managed.Foundation.Tests.csproj -c Debug
 ```
 
-`dotnet publish` 由 **VGManagedHost/CMakeLists.txt** 驅動，輸出含 **VisionGal.Managed.Runtime.dll**、**VisionGal.Managed.Core.dll**、**VisionGal.Managed.Engine.dll**、**VisionGal.Managed.Engine.Runtime.dll**。
+`dotnet publish` 輸出目錄預設：**`${CMAKE_BINARY_DIR}/ManagedRuntimePublish`**。
 
 ---
 
-## 5. 變更記錄
+## 5. 未來規劃（Phase 6+）
+
+| Phase | 目標 | 依賴 |
+|-------|------|------|
+| **6** | **SequenceRunner**、變數持久化、Gameplay Bootstrap UCO | Phase 5.3 再水合（已完成） |
+| **7** | Editor 產品化：Inspector/Graph 與真實 UI | Phase 6 或並行 Shell 深化 |
+| **8** | **AssemblyLoadContext**、Hot Reload 卸載 | 宿主多程序集策略 |
+| **9** | **Roslyn** 腳本編譯（`VISIONGAL_ENABLE_ROSLYN`） | ABI 凍結、ALC 就緒 |
+| **長期** | **VGEngine** 全量 Adapter 替換 Stub | 各 Engine Service 子表逐項接線 |
+
+---
+
+## 6. 變更記錄
 
 | 日期 | 說明 |
 |------|------|
-| **2026-05-14** | 新增 **VGManagedCore**、**VisionGal.Managed.Core**；擴展 **VGManagedHostTest**（Phase 2 ABI）；本總覽文檔首版。 |
-| **2026-05-14** | **Phase 3**：新增 **VGNativeEngineAPI**、**VisionGal.Managed.Engine**；**VG_NATIVE_API_VERSION** 升級至 2；總覽與子模組文檔更新。 |
-| **2026-05-14** | **Phase 4**：**ABI layout v2**、**VGEngineRuntime** / **VGEngineRuntimeServices**、**VisionGal.Managed.Engine.Runtime**、**VISIONGAL_USE_ENGINE_RUNTIME_SERVICES** 選項與測試擴充。 |
+| **2026-05-14** | **Phase 2–4** 落地；本總覽首版。 |
+| **2026-05-15** | **Phase 5 首包**：layout v3、Legacy 凍結、Foundation 模組樹、**BootstrapEngineFoundation**。 |
+| **2026-05-15** | **Phase 5 加固**：生命週期/匯入/場景 DTO 往返/反射修正；Foundation.Tests + **GetBootstrapFlags**。 |
+| **2026-05-15** | **Phase 5.3 + Phase 6 首包**：**SceneRehydrator**、**ApplyEntryProperties**；**VGManagedGameplay**；文檔與測試同步。 |
+| **2026-05-15** | **Runtime ↔ Gameplay publish**：Runtime 專案參考 Gameplay；GTest 斷言 publish 含 **VisionGal.Managed.Gameplay.dll**；**VersionToleranceTests**（未知 JSON 根欄位）。 |
 
 ---
 
-## 6. 文檔合併
+## 7. 文檔合併
 
 在 `Engine/Source/Managed` 執行 `python merge_docs.py` 可重新生成 **MERGED_ARCHITECTURE_AND_PROGRESS.md**（自動生成檔，請勿手改正文）。

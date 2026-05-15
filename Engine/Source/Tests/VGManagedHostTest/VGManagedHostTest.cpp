@@ -59,6 +59,12 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Core.dll"));
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Engine.dll"));
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Engine.Runtime.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Object.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Serialization.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Scene.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Assets.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Reflection.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Gameplay.dll"));
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	ASSERT_TRUE(VGEngineRuntimeHost_Initialize());
@@ -101,7 +107,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_NE(apiTable, nullptr);
 	ASSERT_EQ(apiTable->apiVersion, VG_NATIVE_API_VERSION);
 	ASSERT_NE(apiTable->engineServices, nullptr);
-	ASSERT_EQ(apiTable->engineServices->layoutVersion, VG_NATIVE_ENGINE_API_LAYOUT_VERSION);
+	ASSERT_EQ(apiTable->engineServices->layoutVersion, 3u);
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	{
@@ -129,10 +135,73 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 		}
 		ASSERT_EQ(sawComplete, 1);
 		eng->asyncWait.releaseWait(wait);
+
+		// Phase 5：ObjectAPI
+		ASSERT_NE(eng->object.createObject, nullptr);
+		ASSERT_NE(eng->object.retainObject, nullptr);
+		ASSERT_NE(eng->object.releaseObject, nullptr);
+		ASSERT_NE(eng->object.isAlive, nullptr);
+		const VGObjectHandle obj = eng->object.createObject("TestType");
+		ASSERT_NE(obj, 0u);
+		ASSERT_EQ(eng->object.isAlive(obj), 1);
+		eng->object.retainObject(obj);
+		eng->object.releaseObject(obj);
+		eng->object.releaseObject(obj);
+		ASSERT_EQ(eng->object.isAlive(obj), 0);
+
+		// Phase 5：Scene 擴充
+		ASSERT_NE(eng->scene.spawn, nullptr);
+		ASSERT_NE(eng->scene.setParent, nullptr);
+		ASSERT_NE(eng->scene.getChildCount, nullptr);
+		const VGEntityHandle e1 = eng->scene.spawn("prefab.vgprefab");
+		const VGEntityHandle e2 = eng->scene.spawn("prefab.vgprefab");
+		ASSERT_NE(e1, 0u);
+		ASSERT_NE(e2, 0u);
+		eng->scene.setParent(e2, e1);
+		ASSERT_EQ(eng->scene.getChildCount(e1), 1u);
+
+		// Phase 5：AssetRegistry
+		ASSERT_NE(eng->assetRegistry.registerAsset, nullptr);
+		ASSERT_NE(eng->assetRegistry.resolvePathByGuid, nullptr);
+		VGGuid g{};
+		g.high = 0x11u;
+		g.low = 0x22u;
+		ASSERT_EQ(eng->assetRegistry.registerAsset("/assets/test.png", g), 0);
+		char pathBuf[256]{};
+		ASSERT_GT(eng->assetRegistry.resolvePathByGuid(g, pathBuf, sizeof(pathBuf)), 0);
+		ASSERT_STREQ(pathBuf, "/assets/test.png");
 	}
 #endif
 
 	reinterpret_cast<BootstrapThunk>(bootstrapFn)(apiTable);
+
+	void* foundationFn{};
+	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
+		dll,
+		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"BootstrapEngineFoundation",
+		&foundationFn));
+	ASSERT_NE(foundationFn, nullptr);
+	reinterpret_cast<VGManagedVoidThunk>(foundationFn)();
+
+	void* flagsFn{};
+	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
+		dll,
+		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"GetBootstrapFlags",
+		&flagsFn));
+	ASSERT_NE(flagsFn, nullptr);
+#if defined(_WIN32)
+	using GetBootstrapFlagsThunk = int(__stdcall*)();
+#else
+	using GetBootstrapFlagsThunk = int(*)();
+#endif
+	const int bootstrapFlags = reinterpret_cast<GetBootstrapFlagsThunk>(flagsFn)();
+	// VisionGal.Managed.Runtime.Entry: FlagSmoke=1, FlagNativeApi=2, FlagEngineInterop=4, FlagEngineFoundation=8
+	EXPECT_NE(bootstrapFlags & 1, 0) << "Smoke flag";
+	EXPECT_NE(bootstrapFlags & 2, 0) << "BootstrapNativeApi flag";
+	EXPECT_NE(bootstrapFlags & 4, 0) << "BootstrapEngineInterop flag";
+	EXPECT_NE(bootstrapFlags & 8, 0) << "BootstrapEngineFoundation flag";
 
 	EXPECT_GT(VGNativeApi_GetLogInfoCallCount(), logCountBefore);
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES

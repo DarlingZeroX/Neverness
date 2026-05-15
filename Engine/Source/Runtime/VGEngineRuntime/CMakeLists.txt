@@ -19,6 +19,8 @@ add_library(VGEngineRuntime STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/AsyncSystem.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/SceneSubsystem.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/AssetSubsystem.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/ObjectSubsystem.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/AssetRegistrySubsystem.cpp"
 )
 
 target_include_directories(VGEngineRuntime

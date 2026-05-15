@@ -17,11 +17,13 @@ namespace visiongal::engine
 class AsyncSystem final
 {
 public:
-	AsyncSystem() noexcept = default;
+	AsyncSystem() noexcept;
 	~AsyncSystem();
 
 	AsyncSystem(const AsyncSystem&) = delete;
 	AsyncSystem& operator=(const AsyncSystem&) = delete;
+	AsyncSystem(AsyncSystem&&) noexcept = delete;
+	AsyncSystem& operator=(AsyncSystem&&) noexcept = delete;
 
 	std::uint64_t CreateWait();
 	int TryComplete(std::uint64_t handle) noexcept;

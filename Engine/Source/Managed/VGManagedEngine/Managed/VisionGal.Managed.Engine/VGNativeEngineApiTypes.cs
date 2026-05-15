@@ -55,6 +55,23 @@ public unsafe struct VGInputApi
 }
 
 /// <summary>
+/// 與 Native <c>VGTransform3</c> 對齊（<c>EngineTypes.h</c>）：position[3]、rotation[3]、scale[3]。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct VGTransform3
+{
+	public float PositionX;
+	public float PositionY;
+	public float PositionZ;
+	public float RotationX;
+	public float RotationY;
+	public float RotationZ;
+	public float ScaleX;
+	public float ScaleY;
+	public float ScaleZ;
+}
+
+/// <summary>
 /// 與 Native <c>VGSceneAPI</c> 對齊。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -65,6 +82,16 @@ public unsafe struct VGSceneApi
 	public delegate* unmanaged<ulong, void> Destroy;
 	public delegate* unmanaged<byte*, ulong> Find;
 	public delegate* unmanaged<ulong, int, void> Activate;
+	public delegate* unmanaged<byte*, int> UnloadScene;
+	public delegate* unmanaged<byte*, nuint, int> GetActiveSceneName;
+	public delegate* unmanaged<ulong, ulong, void> SetParent;
+	public delegate* unmanaged<ulong, ulong> GetParent;
+	public delegate* unmanaged<ulong, uint> GetChildCount;
+	public delegate* unmanaged<ulong, uint, ulong> GetChildAt;
+	public delegate* unmanaged<ulong, VGTransform3*, void> GetTransform;
+	public delegate* unmanaged<ulong, VGTransform3*, void> SetTransform;
+	public delegate* unmanaged<ulong, byte*, int> SetEntityName;
+	public delegate* unmanaged<ulong, byte*, nuint, int> GetEntityName;
 }
 
 /// <summary>
@@ -90,6 +117,47 @@ public unsafe struct VGAsyncWaitApi
 }
 
 /// <summary>
+/// 與 Native <c>VGGuid</c> 對齊之 128-bit 資產 GUID（<c>EngineTypes.h</c>）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct VGGuid
+{
+	public ulong High;
+	public ulong Low;
+}
+
+/// <summary>
+/// 與 Native <c>VGObjectAPI</c> 對齊（<c>ObjectAPI.h</c>）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct VGObjectApi
+{
+	public delegate* unmanaged<byte*, ulong> CreateObject;
+	public delegate* unmanaged<ulong, void> DestroyObject;
+	public delegate* unmanaged<ulong, void> RetainObject;
+	public delegate* unmanaged<ulong, void> ReleaseObject;
+	public delegate* unmanaged<ulong, uint> GetRefCount;
+	public delegate* unmanaged<ulong, int> IsAlive;
+	public delegate* unmanaged<ulong, byte*, nuint, int> GetTypeName;
+}
+
+/// <summary>
+/// 與 Native <c>VGAssetRegistryAPI</c> 對齊（<c>AssetRegistryAPI.h</c>）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct VGAssetRegistryApi
+{
+	public delegate* unmanaged<byte*, VGGuid, int> RegisterAsset;
+	public delegate* unmanaged<VGGuid, int> UnregisterByGuid;
+	public delegate* unmanaged<byte*, int> UnregisterByPath;
+	public delegate* unmanaged<VGGuid, byte*, nuint, int> ResolvePathByGuid;
+	public delegate* unmanaged<byte*, VGGuid*, int> ResolveGuidByPath;
+	public delegate* unmanaged<VGGuid, uint> GetDependencyCount;
+	public delegate* unmanaged<VGGuid, uint, VGGuid*, int> GetDependencyAt;
+	public delegate* unmanaged<byte*, VGGuid> ImportAsset;
+}
+
+/// <summary>
 /// 與 Native <c>VGNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -105,4 +173,6 @@ public unsafe struct VGNativeEngineApi
 	public VGSceneApi Scene;
 	public VGTimingApi Timing;
 	public VGAsyncWaitApi AsyncWait;
+	public VGObjectApi Object;
+	public VGAssetRegistryApi AssetRegistry;
 }

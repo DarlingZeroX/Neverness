@@ -16,3 +16,8 @@ public readonly record struct VGAssetHandle(ulong Value);
 public readonly record struct VGAsyncWaitHandle(ulong Value);
 
 public readonly record struct VGEntityHandle(ulong Value);
+
+/// <summary>
+/// 與 Native <c>VGObjectHandle</c> 對齊之不透明控制代碼；託管 <see cref="VisionGal.Managed.Object.VGObject"/> 與 Native 子系統之橋接鍵。
+/// </summary>
+public readonly record struct VGObjectHandle(ulong Value);

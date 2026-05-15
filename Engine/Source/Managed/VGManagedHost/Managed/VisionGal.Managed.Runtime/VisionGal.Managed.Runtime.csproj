@@ -12,5 +12,16 @@
     <ProjectReference Include="..\..\..\VGManagedCore\Managed\VisionGal.Managed.Core\VisionGal.Managed.Core.csproj" />
     <ProjectReference Include="..\..\..\VGManagedEngine\Managed\VisionGal.Managed.Engine\VisionGal.Managed.Engine.csproj" />
     <ProjectReference Include="..\..\..\VGManagedEngine\Managed\VisionGal.Managed.Engine.Runtime\VisionGal.Managed.Engine.Runtime.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedObject\Managed\VisionGal.Managed.Object\VisionGal.Managed.Object.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedReflection\Managed\VisionGal.Managed.Reflection\VisionGal.Managed.Reflection.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedSerialization\Managed\VisionGal.Managed.Serialization\VisionGal.Managed.Serialization.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedAssets\Managed\VisionGal.Managed.Assets\VisionGal.Managed.Assets.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedEditor\Managed\VisionGal.Managed.Editor\VisionGal.Managed.Editor.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedInspector\Managed\VisionGal.Managed.Inspector\VisionGal.Managed.Inspector.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedGraph\Managed\VisionGal.Managed.Graph\VisionGal.Managed.Graph.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedScene\Managed\VisionGal.Managed.Scene\VisionGal.Managed.Scene.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\VisionGal.Managed.Gameplay.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedUndoRedo\Managed\VisionGal.Managed.UndoRedo\VisionGal.Managed.UndoRedo.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedScripting\Managed\VisionGal.Managed.Scripting\VisionGal.Managed.Scripting.csproj" />
   </ItemGroup>
 </Project>

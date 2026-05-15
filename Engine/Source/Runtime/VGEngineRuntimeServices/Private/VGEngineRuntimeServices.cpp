@@ -1,6 +1,6 @@
 /**
  * @file VGEngineRuntimeServices.cpp
- * @brief Runtime 版 Engine Service 表：先以 Stub 表為基底，再覆寫與 **VGEngineRuntime** 狀態相關之欄位。
+ * @brief Runtime 版 Engine Service 表：先以 Stub 表為基底，再覆寫與 **VGEngineRuntime** 狀態相關之欄位（含 Phase 5 Object / AssetRegistry / Scene 擴充）。
  */
 
 #include <cstdint>
@@ -69,6 +69,56 @@ static void VG_ENGINE_ABI_STDCALL rt_scene_activate(VGEntityHandle entity, int a
 	VGEngineRuntime::Instance().Scene().Activate(entity, active);
 }
 
+static int VG_ENGINE_ABI_STDCALL rt_scene_unloadScene(const char* sceneNameUtf8)
+{
+	return VGEngineRuntime::Instance().Scene().UnloadScene(sceneNameUtf8);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_scene_getActiveSceneName(char* outUtf8, std::size_t outCapacity)
+{
+	return VGEngineRuntime::Instance().Scene().GetActiveSceneName(outUtf8, outCapacity);
+}
+
+static void VG_ENGINE_ABI_STDCALL rt_scene_setParent(VGEntityHandle child, VGEntityHandle parent)
+{
+	VGEngineRuntime::Instance().Scene().SetParent(child, parent);
+}
+
+static VGEntityHandle VG_ENGINE_ABI_STDCALL rt_scene_getParent(VGEntityHandle entity)
+{
+	return VGEngineRuntime::Instance().Scene().GetParent(entity);
+}
+
+static std::uint32_t VG_ENGINE_ABI_STDCALL rt_scene_getChildCount(VGEntityHandle entity)
+{
+	return VGEngineRuntime::Instance().Scene().GetChildCount(entity);
+}
+
+static VGEntityHandle VG_ENGINE_ABI_STDCALL rt_scene_getChildAt(VGEntityHandle entity, std::uint32_t index)
+{
+	return VGEngineRuntime::Instance().Scene().GetChildAt(entity, index);
+}
+
+static void VG_ENGINE_ABI_STDCALL rt_scene_getTransform(VGEntityHandle entity, VGTransform3* outTransform)
+{
+	VGEngineRuntime::Instance().Scene().GetTransform(entity, outTransform);
+}
+
+static void VG_ENGINE_ABI_STDCALL rt_scene_setTransform(VGEntityHandle entity, const VGTransform3* transform)
+{
+	VGEngineRuntime::Instance().Scene().SetTransform(entity, transform);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_scene_setEntityName(VGEntityHandle entity, const char* nameUtf8)
+{
+	return VGEngineRuntime::Instance().Scene().SetEntityName(entity, nameUtf8);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_scene_getEntityName(VGEntityHandle entity, char* outUtf8, std::size_t outCapacity)
+{
+	return VGEngineRuntime::Instance().Scene().GetEntityName(entity, outUtf8, outCapacity);
+}
+
 static VGTextureHandle VG_ENGINE_ABI_STDCALL rt_asset_loadTexture(const char* virtualPathUtf8)
 {
 	return VGEngineRuntime::Instance().Asset().LoadTexture(virtualPathUtf8);
@@ -77,6 +127,81 @@ static VGTextureHandle VG_ENGINE_ABI_STDCALL rt_asset_loadTexture(const char* vi
 static VGAudioHandle VG_ENGINE_ABI_STDCALL rt_asset_loadAudio(const char* virtualPathUtf8)
 {
 	return VGEngineRuntime::Instance().Asset().LoadAudio(virtualPathUtf8);
+}
+
+static VGObjectHandle VG_ENGINE_ABI_STDCALL rt_object_createObject(const char* typeNameUtf8)
+{
+	return VGEngineRuntime::Instance().Object().CreateObject(typeNameUtf8);
+}
+
+static void VG_ENGINE_ABI_STDCALL rt_object_destroyObject(VGObjectHandle object)
+{
+	VGEngineRuntime::Instance().Object().DestroyObject(object);
+}
+
+static void VG_ENGINE_ABI_STDCALL rt_object_retainObject(VGObjectHandle object)
+{
+	VGEngineRuntime::Instance().Object().RetainObject(object);
+}
+
+static void VG_ENGINE_ABI_STDCALL rt_object_releaseObject(VGObjectHandle object)
+{
+	VGEngineRuntime::Instance().Object().ReleaseObject(object);
+}
+
+static std::uint32_t VG_ENGINE_ABI_STDCALL rt_object_getRefCount(VGObjectHandle object)
+{
+	return VGEngineRuntime::Instance().Object().GetRefCount(object);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_object_isAlive(VGObjectHandle object)
+{
+	return VGEngineRuntime::Instance().Object().IsAlive(object);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_object_getTypeName(VGObjectHandle object, char* outUtf8, std::size_t outCapacity)
+{
+	return VGEngineRuntime::Instance().Object().GetTypeName(object, outUtf8, outCapacity);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_reg_registerAsset(const char* virtualPathUtf8, VGGuid guid)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().RegisterAsset(virtualPathUtf8, guid);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_reg_unregisterByGuid(VGGuid guid)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().UnregisterByGuid(guid);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_reg_unregisterByPath(const char* virtualPathUtf8)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().UnregisterByPath(virtualPathUtf8);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_reg_resolvePathByGuid(VGGuid guid, char* outUtf8, std::size_t outCapacity)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().ResolvePathByGuid(guid, outUtf8, outCapacity);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_reg_resolveGuidByPath(const char* virtualPathUtf8, VGGuid* outGuid)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().ResolveGuidByPath(virtualPathUtf8, outGuid);
+}
+
+static std::uint32_t VG_ENGINE_ABI_STDCALL rt_reg_getDependencyCount(VGGuid guid)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().GetDependencyCount(guid);
+}
+
+static int VG_ENGINE_ABI_STDCALL rt_reg_getDependencyAt(VGGuid guid, std::uint32_t index, VGGuid* outDependency)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().GetDependencyAt(guid, index, outDependency);
+}
+
+static VGGuid VG_ENGINE_ABI_STDCALL rt_reg_importAsset(const char* virtualPathUtf8)
+{
+	return VGEngineRuntime::Instance().AssetRegistry().ImportAsset(virtualPathUtf8);
 }
 } // namespace
 
@@ -102,9 +227,36 @@ extern "C" void VGNativeEngineApiTable_BuildRuntime(VGNativeEngineAPI* outTable)
 	outTable->scene.destroy = &rt_scene_destroy;
 	outTable->scene.find = &rt_scene_find;
 	outTable->scene.activate = &rt_scene_activate;
+	outTable->scene.unloadScene = &rt_scene_unloadScene;
+	outTable->scene.getActiveSceneName = &rt_scene_getActiveSceneName;
+	outTable->scene.setParent = &rt_scene_setParent;
+	outTable->scene.getParent = &rt_scene_getParent;
+	outTable->scene.getChildCount = &rt_scene_getChildCount;
+	outTable->scene.getChildAt = &rt_scene_getChildAt;
+	outTable->scene.getTransform = &rt_scene_getTransform;
+	outTable->scene.setTransform = &rt_scene_setTransform;
+	outTable->scene.setEntityName = &rt_scene_setEntityName;
+	outTable->scene.getEntityName = &rt_scene_getEntityName;
 
 	outTable->asset.loadTexture = &rt_asset_loadTexture;
 	outTable->asset.loadAudio = &rt_asset_loadAudio;
+
+	outTable->object.createObject = &rt_object_createObject;
+	outTable->object.destroyObject = &rt_object_destroyObject;
+	outTable->object.retainObject = &rt_object_retainObject;
+	outTable->object.releaseObject = &rt_object_releaseObject;
+	outTable->object.getRefCount = &rt_object_getRefCount;
+	outTable->object.isAlive = &rt_object_isAlive;
+	outTable->object.getTypeName = &rt_object_getTypeName;
+
+	outTable->assetRegistry.registerAsset = &rt_reg_registerAsset;
+	outTable->assetRegistry.unregisterByGuid = &rt_reg_unregisterByGuid;
+	outTable->assetRegistry.unregisterByPath = &rt_reg_unregisterByPath;
+	outTable->assetRegistry.resolvePathByGuid = &rt_reg_resolvePathByGuid;
+	outTable->assetRegistry.resolveGuidByPath = &rt_reg_resolveGuidByPath;
+	outTable->assetRegistry.getDependencyCount = &rt_reg_getDependencyCount;
+	outTable->assetRegistry.getDependencyAt = &rt_reg_getDependencyAt;
+	outTable->assetRegistry.importAsset = &rt_reg_importAsset;
 }
 
 namespace

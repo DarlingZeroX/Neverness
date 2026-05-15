@@ -21,3 +21,5 @@ typedef std::uint64_t VGAssetHandle;
 typedef std::uint64_t VGAsyncWaitHandle;
 /** @brief 場景實體 / Prefab 實例之不透明控制代碼（非 UI Element）。 */
 typedef std::uint64_t VGEntityHandle;
+/** @brief 託管 VGObject 與 Native 子系統對應之不透明控制代碼。 */
+typedef std::uint64_t VGObjectHandle;

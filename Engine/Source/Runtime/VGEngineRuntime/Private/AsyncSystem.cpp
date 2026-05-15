@@ -11,6 +11,8 @@ struct AsyncSystem::Slot
 	std::atomic<bool> done{false};
 };
 
+AsyncSystem::AsyncSystem() noexcept = default;
+
 AsyncSystem::~AsyncSystem()
 {
 	Shutdown();

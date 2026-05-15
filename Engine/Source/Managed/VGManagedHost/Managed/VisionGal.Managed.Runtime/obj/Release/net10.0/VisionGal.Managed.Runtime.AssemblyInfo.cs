@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VisionGal.Managed.Runtime")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3bf0a5554705770858a7e4945553cd7b81831042")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5371d8f48513ec537afa33b1f0dc3968b420fc3")]
 [assembly: System.Reflection.AssemblyProductAttribute("VisionGal.Managed.Runtime")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VisionGal.Managed.Runtime")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

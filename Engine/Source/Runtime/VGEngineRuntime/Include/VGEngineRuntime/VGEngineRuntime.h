@@ -1,7 +1,9 @@
 #pragma once
 
 #include "VGEngineRuntime/AsyncSystem.h"
+#include "VGEngineRuntime/AssetRegistrySubsystem.h"
 #include "VGEngineRuntime/AssetSubsystem.h"
+#include "VGEngineRuntime/ObjectSubsystem.h"
 #include "VGEngineRuntime/SceneSubsystem.h"
 #include "VGEngineRuntime/TimingSystem.h"
 
@@ -27,6 +29,8 @@ public:
 	AsyncSystem& Async() noexcept { return async_; }
 	SceneSubsystem& Scene() noexcept { return scene_; }
 	AssetSubsystem& Asset() noexcept { return asset_; }
+	ObjectSubsystem& Object() noexcept { return object_; }
+	AssetRegistrySubsystem& AssetRegistry() noexcept { return assetRegistry_; }
 
 	bool IsInitialized() const noexcept { return initialized_; }
 
@@ -38,5 +42,7 @@ private:
 	AsyncSystem async_{};
 	SceneSubsystem scene_{};
 	AssetSubsystem asset_{};
+	ObjectSubsystem object_{};
+	AssetRegistrySubsystem assetRegistry_{};
 };
 } // namespace visiongal::engine

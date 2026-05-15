@@ -6,5 +6,5 @@ namespace VisionGal.Managed.Engine;
 public static class VGNativeEngineApiConstants
 {
 	/// <summary>當前 <c>VGNativeEngineAPI</c> 聚合體佈局版本；破壞性子表欄位變更時遞增。</summary>
-	public const uint LayoutVersion = 2;
+	public const uint LayoutVersion = 3;
 }

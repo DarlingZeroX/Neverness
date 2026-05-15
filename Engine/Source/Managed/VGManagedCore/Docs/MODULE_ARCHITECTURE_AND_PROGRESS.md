@@ -77,3 +77,4 @@ Engine/Source/Managed/VGManagedCore/
 |------|------|
 | **2026-05-14** | **Phase 2 落地**：新增 **VGManagedCore** 靜態庫、`VGNativeAPI`、預設 Log、單例表、**VisionGal.Managed.Core**、Runtime **`BootstrapNativeApi`**、擴展 **VGManagedHostTest**。 |
 | **2026-05-14** | **Phase 3**：遞增 **`VG_NATIVE_API_VERSION`**、掛載 **VGNativeEngineAPI**、託管 **VisionGal.Managed.Engine**、Stub 跨邊界測試。 |
+| **2026-05-15** | **Phase 5 加固**：Foundation Bootstrap 經 **`VGNativeApi_GetDefaultTable`** 與 **GetBootstrapFlags** 驗證。 |

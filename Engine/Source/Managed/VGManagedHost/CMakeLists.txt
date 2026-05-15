@@ -71,6 +71,50 @@ if (VISIONGAL_DOTNET_EXECUTABLE)
 		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/*.cs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/*.csproj"
 	)
+	file(GLOB _managed_object_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedObject/Managed/VisionGal.Managed.Object/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedObject/Managed/VisionGal.Managed.Object/*.csproj"
+	)
+	file(GLOB _managed_reflection_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedReflection/Managed/VisionGal.Managed.Reflection/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedReflection/Managed/VisionGal.Managed.Reflection/*.csproj"
+	)
+	file(GLOB _managed_serialization_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/*.csproj"
+	)
+	file(GLOB _managed_assets_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedAssets/Managed/VisionGal.Managed.Assets/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedAssets/Managed/VisionGal.Managed.Assets/*.csproj"
+	)
+	file(GLOB _managed_editor_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEditor/Managed/VisionGal.Managed.Editor/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEditor/Managed/VisionGal.Managed.Editor/*.csproj"
+	)
+	file(GLOB _managed_inspector_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedInspector/Managed/VisionGal.Managed.Inspector/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedInspector/Managed/VisionGal.Managed.Inspector/*.csproj"
+	)
+	file(GLOB _managed_graph_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGraph/Managed/VisionGal.Managed.Graph/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGraph/Managed/VisionGal.Managed.Graph/*.csproj"
+	)
+	file(GLOB _managed_scene_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScene/Managed/VisionGal.Managed.Scene/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScene/Managed/VisionGal.Managed.Scene/*.csproj"
+	)
+	file(GLOB _managed_undoredo_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedUndoRedo/Managed/VisionGal.Managed.UndoRedo/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedUndoRedo/Managed/VisionGal.Managed.UndoRedo/*.csproj"
+	)
+	file(GLOB _managed_scripting_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScripting/Managed/VisionGal.Managed.Scripting/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScripting/Managed/VisionGal.Managed.Scripting/*.csproj"
+	)
+	file(GLOB _managed_gameplay_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/*.csproj"
+	)
 
 	# 自定义构建命令：编译并发布 VisionGal.Managed.Runtime 托管程序集，用于VGManagedHost测试
 	add_custom_command(
@@ -84,6 +128,10 @@ if (VISIONGAL_DOTNET_EXECUTABLE)
 		COMMAND ${CMAKE_COMMAND} -E touch "${VISIONGAL_MANAGED_PUBLISH_DIR}/.visiongal_managed_publish_stamp"
 		# 依赖源文件：托管通用源码、核心源码、引擎源码，文件变更时触发重新发布
 		DEPENDS ${_managed_sources} ${_managed_core_sources} ${_managed_engine_sources} ${_managed_engine_runtime_sources}
+			${_managed_object_sources} ${_managed_reflection_sources} ${_managed_serialization_sources}
+			${_managed_assets_sources} ${_managed_editor_sources} ${_managed_inspector_sources}
+			${_managed_graph_sources} ${_managed_scene_sources} ${_managed_undoredo_sources}
+			${_managed_scripting_sources} ${_managed_gameplay_sources}
 		# 构建时控制台输出提示信息
 		COMMENT "Publishing VisionGal.Managed.Runtime for VGManagedHost tests"
 		# 严格按字面执行命令，不进行CMake自动转义处理

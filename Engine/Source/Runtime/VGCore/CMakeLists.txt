@@ -63,7 +63,8 @@ find_package(SDL3_image CONFIG REQUIRED)
 
 # 链接动态库
 target_link_libraries(VGCore PRIVATE VGLua)
-target_link_libraries(VGCore PRIVATE SDL3::SDL3)
+# Window.h 等公共头暴露 SDL 类型；PRIVATE 不会传给仅链接 VGCore 的目标，会导致 C1083
+target_link_libraries(VGCore PUBLIC SDL3::SDL3)
 target_link_libraries(VGCore PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
 target_link_libraries(VGCore PRIVATE HCore)
 target_link_libraries(VGCore PRIVATE HCorePlatform)

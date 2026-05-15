@@ -11,5 +11,5 @@ target_link_libraries(VGGalgameCore INTERFACE VGGalgameContract VGGalgameRuntime
 target_include_directories(VGGalgameCore INTERFACE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${PROJECT_SOURCE_DIR}/Engine/Source/Runtime
-	${PROJECT_SOURCE_DIR}/Engine/Source/RuntimeGalgame
+	${PROJECT_SOURCE_DIR}/Engine/Source/Legacy/RuntimeGalgame
 )

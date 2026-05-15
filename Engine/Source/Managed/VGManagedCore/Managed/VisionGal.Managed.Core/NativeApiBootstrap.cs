@@ -24,16 +24,19 @@ public static unsafe class NativeApiBootstrap
 		var p = (VGNativeApi*)nativeApiTable;
 		if (p == null)
 		{
+			// 無效指標：保持未安裝狀態，避免後續誤用未初始化的函數表。
 			return;
 		}
 
 		if (p->ApiVersion != VGNativeApiConstants.ApiVersion)
 		{
+			// API 主版本不符：拒絕安裝，防止結構體佈局錯位導致未定義行為。
 			return;
 		}
 
 		if (p->LogInfo == null)
 		{
+			// 至少需具備日誌通道，作為「表可用」之最低限度契約（與既有測試一致）。
 			return;
 		}
 
@@ -46,11 +49,13 @@ public static unsafe class NativeApiBootstrap
 	{
 		if (!s_installed || s_api.LogInfo == null)
 		{
+			// 未安裝或 Native 未提供 LogInfo：靜默略過（Bootstrap 前或測試替身情境）。
 			return;
 		}
 
 		if (utf8Text.IsEmpty)
 		{
+			// Native 端預期以 NUL 結尾之 C 字串；空訊息仍送單一字節 0 以滿足契約。
 			ReadOnlySpan<byte> empty = [(byte)'\0'];
 			fixed (byte* pb = empty)
 			{

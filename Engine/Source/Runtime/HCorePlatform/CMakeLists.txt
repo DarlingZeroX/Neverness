@@ -79,6 +79,6 @@ target_include_directories(HCorePlatform PRIVATE ${PROJECT_SOURCE_DIR}/Engine/So
 target_include_directories(HCorePlatform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HCorePlatform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-#find_package(SDL3 CONFIG REQUIRED)
-#target_link_libraries(HCorePlatform PRIVATE SDL3::SDL3)
-target_link_libraries(HCorePlatform PUBLIC HCore)
+find_package(SDL3 CONFIG REQUIRED)
+# 公共头（如 Include/SDL3/SDL3Window.h）直接 #include <SDL3/...>，依赖方必须获得 SDL 头路径与链接接口
+target_link_libraries(HCorePlatform PUBLIC HCore SDL3::SDL3)

@@ -29,6 +29,7 @@ target_include_directories(VGManagedHostTest PRIVATE
 )
 
 target_link_libraries(VGManagedHostTest PRIVATE
+	VGNativeEngineAPI
 	VGManagedCore
 	VGManagedHost
 	GTest::gtest

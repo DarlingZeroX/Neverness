@@ -19,6 +19,7 @@ add_executable(VGEditorGalgameSequenceTest
 target_include_directories(VGEditorGalgameSequenceTest PRIVATE
 	${PROJECT_SOURCE_DIR}/Engine/Source/Runtime
 	${PROJECT_SOURCE_DIR}/Engine/Source/Editor
+	${PROJECT_SOURCE_DIR}/Engine/Source/Legacy/Editor
 	${PROJECT_SOURCE_DIR}/Engine/Source/Editor/VGEditorReactive/Include
 )
 

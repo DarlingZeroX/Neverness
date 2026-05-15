@@ -45,7 +45,7 @@ target_compile_definitions(VGGalgameRuntimeCore PRIVATE VG_GALGAME_RUNTIME_CORE_
 
 target_include_directories(VGGalgameRuntimeCore PUBLIC
 	${PROJECT_SOURCE_DIR}/Engine/Source/Runtime
-	${PROJECT_SOURCE_DIR}/Engine/Source/RuntimeGalgame
+	${PROJECT_SOURCE_DIR}/Engine/Source/Legacy/RuntimeGalgame
 	${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include
 	${CMAKE_CURRENT_SOURCE_DIR}/Include
 	${CMAKE_CURRENT_SOURCE_DIR}/Interface

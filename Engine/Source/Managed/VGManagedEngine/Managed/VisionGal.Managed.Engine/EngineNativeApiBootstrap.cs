@@ -27,22 +27,26 @@ public static unsafe class EngineNativeApiBootstrap
 		var p = (VGNativeApi*)nativeApiTable;
 		if (p == null)
 		{
+			// 與 Core 層一致：空指標不寫入快取。
 			return;
 		}
 
 		if (p->ApiVersion != VGNativeApiConstants.ApiVersion)
 		{
+			// 主版本不符則不讀取 engineServices 指標，避免越界解讀。
 			return;
 		}
 
 		if (p->EngineServices == 0)
 		{
+			// Phase 2 僅 Core 表之宿主：無引擎服務子表屬正常，此時不標記已安裝。
 			return;
 		}
 
 		var pe = (VGNativeEngineApi*)p->EngineServices;
 		if (pe->LayoutVersion != VGNativeEngineApiConstants.LayoutVersion)
 		{
+			// 引擎服務 ABI 佈局版本必須與託管端鏡像結構一致，否則拒絕快取。
 			return;
 		}
 
@@ -57,6 +61,7 @@ public static unsafe class EngineNativeApiBootstrap
 	{
 		if (!s_installed)
 		{
+			// 未通過佈局校驗時不觸碰函數指標，避免呼叫未定義位址。
 			return;
 		}
 

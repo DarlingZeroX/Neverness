@@ -66,18 +66,13 @@ if (VISIONGAL_ENABLE_MANAGED_HOST)
 	add_subdirectory ("Engine/Source/Managed/VGManagedHost")
 endif()
 
-# GalGame Runtime（Phase 8：Contract + RuntimeCore + 聚合 shim 目标 VGGalgameCore）
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameContract")
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameRuntimeCore")
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameCore")
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameNodeGraph")
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameLuaRuntime")
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameSequenceRuntime")
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgamePresentation")
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgame")
+# Phase 5：Legacy Galgame 產品線（預設不編譯）
+option(VISIONGAL_BUILD_LEGACY_GALGAME "Build Legacy Galgame stack (Frozen / Compatibility Only)" OFF)
+if(VISIONGAL_BUILD_LEGACY_GALGAME)
+	add_subdirectory("Engine/Source/Legacy")
+endif()
 
-add_subdirectory ("Engine/Source/RuntimeGalgame/VGGalgameEditorRuntime")
-# 编辑器
+# 编辑器（主線；Galgame 編輯器模組已移至 Legacy/）
 add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
 add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
 add_subdirectory ("Engine/Source/Editor/VGEditorReactive")
@@ -85,24 +80,24 @@ add_subdirectory ("Engine/Source/Editor/VGEditorComponentSchema")
 add_subdirectory ("Engine/Source/Editor/VGEditorAuthoringGraph")
 add_subdirectory ("Engine/Source/Editor/VGEditorExtensions")
 add_subdirectory ("Engine/Source/Editor/VGEditorRuntimeBridge")
-add_subdirectory ("Engine/Source/Editor/VGEditorGalgameSequence")
-add_subdirectory ("Engine/Source/Editor/VGEditorGalgame")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 
 # 应用
 add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器
 add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
 add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
-add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序
+if(VISIONGAL_BUILD_LEGACY_GALGAME)
+	add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序（Legacy Galgame）
+endif()
 #add_subdirectory ("Engine/Source/Application/HNGRuntimeCoreDemo")     # 节点图应用程序
 
 
 ########## 加载 Tests 目录下所有子测试项目
 if (ENABLE_TESTS)
     enable_testing()
-    #add_subdirectory("Engine/Source/Tests/VGEditorGalgameSequenceTest")
-    #add_subdirectory("Engine/Source/Tests/VGGalgameScriptSequenceTest")
+    # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 VISIONGAL_BUILD_LEGACY_GALGAME=ON）
     # VGManagedHostTest: add_subdirectory trong VGManagedHost/CMakeLists.txt (ENABLE_TESTS + dotnet).
+    add_subdirectory("Engine/Source/Managed/Tests")
       
     # add_subdirectory("Tests/VGLauncherTest")
     # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")

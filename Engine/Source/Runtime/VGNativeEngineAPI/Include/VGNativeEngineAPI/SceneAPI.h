@@ -5,10 +5,11 @@
  * @brief 場景 **Engine Service** 函數表（載入、實體生成與查詢）；**不**含 Gameplay 劇本語義。
  *
  * 字串參數：須為 **NUL 結尾 UTF-8**；nullptr 視為 no-op / 失敗回傳 0。
- * Phase 4：表尾追加 spawn / destroy / find / activate；未接線實作可回傳 0 Handle。
+ * Phase 5：表尾追加層級、變換與命名（layout v3 子表擴充）。
  */
 
 #include "VGNativeEngineAPI/EngineHandles.h"
+#include "VGNativeEngineAPI/EngineTypes.h"
 #include "VGNativeEngineAPI/NativeInterop.h"
 
 #ifdef __cplusplus
@@ -28,6 +29,17 @@ typedef VGEntityHandle(VG_ENGINE_ABI_STDCALL* VGSceneFindFn)(const char* entityN
 /** @brief `active` 非 0 表啟用，0 表停用（銷毀請用 destroy）。 */
 typedef void(VG_ENGINE_ABI_STDCALL* VGSceneActivateFn)(VGEntityHandle entity, int active);
 
+typedef int(VG_ENGINE_ABI_STDCALL* VGSceneUnloadSceneFn)(const char* sceneNameUtf8);
+typedef int(VG_ENGINE_ABI_STDCALL* VGSceneGetActiveSceneNameFn)(char* outUtf8, std::size_t outCapacity);
+typedef void(VG_ENGINE_ABI_STDCALL* VGSceneSetParentFn)(VGEntityHandle child, VGEntityHandle parent);
+typedef VGEntityHandle(VG_ENGINE_ABI_STDCALL* VGSceneGetParentFn)(VGEntityHandle entity);
+typedef std::uint32_t(VG_ENGINE_ABI_STDCALL* VGSceneGetChildCountFn)(VGEntityHandle entity);
+typedef VGEntityHandle(VG_ENGINE_ABI_STDCALL* VGSceneGetChildAtFn)(VGEntityHandle entity, std::uint32_t index);
+typedef void(VG_ENGINE_ABI_STDCALL* VGSceneGetTransformFn)(VGEntityHandle entity, VGTransform3* outTransform);
+typedef void(VG_ENGINE_ABI_STDCALL* VGSceneSetTransformFn)(VGEntityHandle entity, const VGTransform3* transform);
+typedef int(VG_ENGINE_ABI_STDCALL* VGSceneSetEntityNameFn)(VGEntityHandle entity, const char* nameUtf8);
+typedef int(VG_ENGINE_ABI_STDCALL* VGSceneGetEntityNameFn)(VGEntityHandle entity, char* outUtf8, std::size_t outCapacity);
+
 typedef struct VGSceneAPI
 {
 	VGSceneLoadSceneFn loadScene;
@@ -35,6 +47,16 @@ typedef struct VGSceneAPI
 	VGSceneDestroyFn destroy;
 	VGSceneFindFn find;
 	VGSceneActivateFn activate;
+	VGSceneUnloadSceneFn unloadScene;
+	VGSceneGetActiveSceneNameFn getActiveSceneName;
+	VGSceneSetParentFn setParent;
+	VGSceneGetParentFn getParent;
+	VGSceneGetChildCountFn getChildCount;
+	VGSceneGetChildAtFn getChildAt;
+	VGSceneGetTransformFn getTransform;
+	VGSceneSetTransformFn setTransform;
+	VGSceneSetEntityNameFn setEntityName;
+	VGSceneGetEntityNameFn getEntityName;
 } VGSceneAPI;
 
 #ifdef __cplusplus

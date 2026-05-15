@@ -1,4 +1,4 @@
-﻿# CMakeList.txt: VGEditor CMake 项目，在此处包括源代码并定义
+# CMakeList.txt: VGEditor CMake 项目，在此处包括源代码并定义
 # 项目特定的逻辑。
 #
 set(CMAKE_CXX_STANDARD 17)
@@ -42,4 +42,9 @@ target_include_directories(VGEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
  
 # 链接库
 target_link_libraries(VGEditor PRIVATE VGEditorFramework)
-target_link_libraries(VGEditor PRIVATE VGEditorGalgame)
+if(VISIONGAL_BUILD_LEGACY_GALGAME)
+	target_link_libraries(VGEditor PRIVATE VGEditorGalgame)
+	target_compile_definitions(VGEditor PRIVATE VISIONGAL_BUILD_LEGACY_GALGAME=1)
+else()
+	target_compile_definitions(VGEditor PRIVATE VISIONGAL_NO_LEGACY_GALGAME=1)
+endif()
