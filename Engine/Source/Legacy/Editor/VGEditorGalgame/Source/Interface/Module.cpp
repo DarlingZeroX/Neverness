@@ -11,7 +11,7 @@
 
 #include "VGEditorGalgame/Module.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 #include <algorithm>
 

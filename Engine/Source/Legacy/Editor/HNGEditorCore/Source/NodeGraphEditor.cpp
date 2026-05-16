@@ -13,7 +13,7 @@
 #include "CommandInGraph.h"
 #include "GraphCompiler.h"
 #include <unordered_set>
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 #include <HNGEditorCore/Include/IMNEWrap.h>
 #include <NNKernel/Interface/HConfig.h>
 

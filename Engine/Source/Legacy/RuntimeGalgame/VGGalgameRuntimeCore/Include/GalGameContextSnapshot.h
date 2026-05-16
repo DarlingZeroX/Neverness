@@ -8,7 +8,7 @@
 
 #include "GalGameRuntimeState.h"
 #include "ArchiveDataContainer.h"
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 
 namespace VisionGal::GalGame
 {

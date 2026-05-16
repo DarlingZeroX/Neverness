@@ -10,8 +10,8 @@
 */
 
 #include "Asset/Asset.h"
-#include "VGAsset/Interface/Package.h"
-#include "VGCore/Include/Core/VFS.h"
+#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeCore/Include/Core/VFS.h"
 #include "Sequence/DataContainerSerialization.h"
 
 namespace VisionGal::GalGame

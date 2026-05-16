@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VisionGal.Managed.Entity")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8aedac4de6d9bf3749cf9906806c41dd948c7435")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d694f66d7e28fe5f568718fde50b19150c861288")]
 [assembly: System.Reflection.AssemblyProductAttribute("VisionGal.Managed.Entity")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VisionGal.Managed.Entity")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

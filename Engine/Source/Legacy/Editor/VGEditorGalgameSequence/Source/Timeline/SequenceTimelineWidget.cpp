@@ -10,7 +10,7 @@
 
 #include "Core/SequenceEditorContext.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 namespace VisionGal::Editor
 {

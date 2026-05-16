@@ -11,7 +11,7 @@
 #pragma once
 
 #include <string>
-#include <VGCore/Interface/Interface.h>
+#include <NNRuntimeCore/Interface/Interface.h>
 #include "../GSSExport.h"
 
 namespace VisionGal::GalGame

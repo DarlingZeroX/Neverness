@@ -13,10 +13,10 @@
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "SpriteAnimationScriptManager.h"
-#include "VGCore/Include/Core/EventBus.h"
-#include "VGEngine/Include/Render/TransitionManager.h"
-#include "VGEngine/Include/Scene/Scene.h"
-#include "VGEngine/Include/Engine/Manager.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
+#include "NNEngineLegacy/Include/Render/TransitionManager.h"
+#include "NNEngineLegacy/Include/Scene/Scene.h"
+#include "NNEngineLegacy/Include/Engine/Manager.h"
 
 namespace VisionGal::GalGame
 {

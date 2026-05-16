@@ -3,7 +3,7 @@
  */
 
 #include "DialogueSystem/DialoguePlaybackRuntime.h"
-#include "VGEngine/Include/Render/TransitionManager.h"
+#include "NNEngineLegacy/Include/Render/TransitionManager.h"
 
 namespace VisionGal::GalGame
 {

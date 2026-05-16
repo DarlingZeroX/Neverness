@@ -8,7 +8,7 @@
 
 #include "ComponentRegistry/SequenceComponentRegistry.h"
 
-#include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
+#include <NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 
 #include <algorithm>
 

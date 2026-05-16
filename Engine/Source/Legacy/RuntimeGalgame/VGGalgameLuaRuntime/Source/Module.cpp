@@ -12,7 +12,7 @@
 #include "../Module.h"
 #include "VGGalgameCore/Interface/IStoryScript.h"
 #include "SSExecutorCreator.h"
-#include "VGAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAsset/Include/GalGameAsset.h"
 
 namespace VisionGal::GalGame
 {

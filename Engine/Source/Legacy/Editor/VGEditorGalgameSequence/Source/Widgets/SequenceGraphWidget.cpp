@@ -15,7 +15,7 @@
 #include "Projection/SequenceGraphProjection.h"
 #include "Core/SequenceSelectionModel.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 namespace VisionGal::Editor
 {

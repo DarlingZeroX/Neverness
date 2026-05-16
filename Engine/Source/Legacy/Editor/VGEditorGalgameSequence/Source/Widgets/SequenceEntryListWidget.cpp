@@ -20,7 +20,7 @@
 #include "Projection/ProjectionEvents/SequenceProjectionEvent.h"
 #include "Projection/ProjectionEvents/SequenceProjectionEventBus.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 #include <vector>
 

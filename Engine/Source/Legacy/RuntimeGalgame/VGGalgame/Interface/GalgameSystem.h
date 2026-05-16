@@ -10,7 +10,7 @@
 */
 #pragma once
 #include "../VGGalgameConfig.h"
-#include <VGEngine/Include/Game/GameEngine.h>
+#include <NNEngineLegacy/Include/Game/GameEngine.h>
 
 namespace VisionGal
 {

@@ -10,7 +10,7 @@
  */ 
 
 #pragma once
-#include "VGEngine/Include/Animation/Core/TransformAnimation.h"
+#include "NNEngineLegacy/Include/Animation/Core/TransformAnimation.h"
  //#include "Animation/Core/PrimitiveScript.h"
 
 namespace VisionGal::GalGame

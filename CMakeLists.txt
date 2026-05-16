@@ -77,11 +77,11 @@ if(VISIONGAL_BUILD_LEGACY_GALGAME)
 endif()
 
 ############ 编辑器（主線；Galgame 編輯器和附属模組已移至 Legacy/）
-add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
-add_subdirectory ("Engine/Source/Editor/VGEditor")
+add_subdirectory ("Engine/Source/Editor/NNEditorFramework")
+add_subdirectory ("Engine/Source/Editor/NNEditor")
 
 ############ 应用
-add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器
+add_subdirectory ("Engine/Source/Application/NNLauncher")         # 启动器
 #add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
 #add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
 #if(VISIONGAL_BUILD_LEGACY_GALGAME)

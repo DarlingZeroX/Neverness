@@ -16,7 +16,7 @@
 
 #include "../HNGEditorCoreConfig.h"
 
-#include <VGImgui/Include/ImNodeEditor/imgui_node_editor.h>
+#include <NNRuntimeImGui/Include/ImNodeEditor/imgui_node_editor.h>
 #include <NNNodeGraphCore/Interface/RuntimeCore.h>
 //namespace IMNE = ax::NodeEditor;
 

@@ -8,9 +8,9 @@
 #include "ScriptSystem/StoryExecutionInstance.h"
 
 #include "VGGalgameCore/Include/SubsystemBusGuard.h"
-#include "VGAsset/Interface/Package.h"
+#include "NNRuntimeAsset/Interface/Package.h"
 #include "VGGalgameCore/Include/Components.h"
-#include "VGCore/Include/Core/EventBus.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
 
 namespace VisionGal::GalGame
 {

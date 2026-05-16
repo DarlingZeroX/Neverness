@@ -10,16 +10,16 @@
  */
 
 #include "GalComDrawer.h"
-#include <VGEditorFramework/Include/EditorCore/Localization.h>
-#include <VGImgui/IncludeImGuiEx.h>
-#include <VGImgui/Include/ImGuiEx/ImGuiVector.h>
+#include <NNEditorFramework/Include/EditorCore/Localization.h>
+#include <NNRuntimeImGui/IncludeImGuiEx.h>
+#include <NNRuntimeImGui/Include/ImGuiEx/ImGuiVector.h>
 #include <VGGalgame/Include/GalGameEngine.h>
 #include <VGGalgameCore/Include/Components.h>
 #include "VGGalgameCore/Interface/IStoryScript.h"
-#include <VGAsset/Interface/Package.h>
+#include <NNRuntimeAsset/Interface/Package.h>
 #include <VGGalgameCore/Include/GalGameEngineAccess.h>
 
-#include "VGAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAsset/Include/GalGameAsset.h"
 #include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
 
 namespace VisionGal::Editor

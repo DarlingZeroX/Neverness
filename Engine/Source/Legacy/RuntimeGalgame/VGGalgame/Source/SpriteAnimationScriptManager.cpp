@@ -13,9 +13,9 @@
 #include "SpriteAnimationScript.h"
 #include "NNKernel/Interface/HLocalization.h"
 #include "NNKernel/Interface/HStringTools.h"
-#include "VGEngine/Include/Scene/Components.h"
-#include "VGEngine/Include/Animation/Core/SpriteAnimationScript.h"
-#include "VGEngine/Include/Animation/Interface/AnimationScriptManager.h"
+#include "NNEngineLegacy/Include/Scene/Components.h"
+#include "NNEngineLegacy/Include/Animation/Core/SpriteAnimationScript.h"
+#include "NNEngineLegacy/Include/Animation/Interface/AnimationScriptManager.h"
 #include "VGGalgameCore/Interface/IDialogueSubsystem.h"
 #include "VGGalgameCore/Interface/IGameSystem.h"
 

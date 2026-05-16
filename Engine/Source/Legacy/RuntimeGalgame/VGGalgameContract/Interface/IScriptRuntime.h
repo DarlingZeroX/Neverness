@@ -11,7 +11,7 @@
 #pragma once
 #include "IStoryScriptExecutor.h"
 #include "IStoryScriptSystem.h"
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 
 namespace VisionGal::GalGame
 {

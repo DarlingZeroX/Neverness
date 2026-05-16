@@ -10,7 +10,7 @@
  */
 
 #include "DialogueSystem/TypingEffect.h"
-#include "VGEngine/Include/Engine/Manager/SceneManager.h"
+#include "NNEngineLegacy/Include/Engine/Manager/SceneManager.h"
 #include <codecvt>
 
 namespace VisionGal::GalGame

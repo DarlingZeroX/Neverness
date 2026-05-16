@@ -12,7 +12,7 @@
 #pragma once
 #include "VGGalgameCore/Interface/IGameSystem.h"
 #include "../VGGalgameConfig.h"
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 #include "VGGalgameCore/Include/SaveArchive.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
 #include <NNKernel/Include/File/nlohmann/json.hpp>

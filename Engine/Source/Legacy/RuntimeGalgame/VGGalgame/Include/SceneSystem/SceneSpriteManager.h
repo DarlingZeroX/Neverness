@@ -11,7 +11,7 @@
 
 #pragma once
 #include "VGGalgameCore/Interface/IGameSystem.h"
-#include "VGEngine/Include/Render/RenderCore.h"
+#include "NNEngineLegacy/Include/Render/RenderCore.h"
 #include "../Game.h" 
 #include "VGGalgameCore/Include/GalGameContext.h"
 #include <deque>

@@ -12,7 +12,7 @@
 #include "Core/SequenceSelectionModel.h"
 #include "ViewModels/SequenceDocumentViewModel.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 namespace VisionGal::Editor
 {

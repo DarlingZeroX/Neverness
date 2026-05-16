@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../VGGalgameScriptLuaConfig.h"
-#include "VGLua/Include/sol/table.hpp"
-#include "VGLua/Include/sol/state.hpp"
+#include "NNRuntimeLua/Include/sol/table.hpp"
+#include "NNRuntimeLua/Include/sol/state.hpp"
 
 namespace VisionGal::GalGame
 {

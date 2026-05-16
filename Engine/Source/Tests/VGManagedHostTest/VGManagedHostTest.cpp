@@ -5,14 +5,14 @@
 
 #include <gtest/gtest.h>
 
-#include "VGNativeEngineAPI/NativeEngineAPI.h"
+#include "NNNativeEngineAPI/NativeEngineAPI.h"
 #include "VGManagedCore/ManagedExports.h"
 #include "VGManagedCore/NativeAPI.h"
 #include "VGManagedHost/ManagedFunction.h"
 #include "VGManagedHost/ManagedHost.h"
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
-#include "VGEngineRuntimeServices/NativeEngineRuntimeServices.h"
+#include "NNRuntimeEngineServices/NativeEngineRuntimeServices.h"
 #endif
 
 namespace fs = std::filesystem;

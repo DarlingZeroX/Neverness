@@ -11,7 +11,7 @@
 #include <VGGalgameNodeGraph/Include/DialogueListNodeData.h>
 
 // ImGui
-#include <VGImgui/Include/imgui/imgui.h>
+#include <NNRuntimeImGui/Include/imgui/imgui.h>
 
 namespace VisionGal::Editor
 {

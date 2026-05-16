@@ -13,7 +13,7 @@
 #include "VGGalgameCore/Interface/IGameEngine.h"
 #include "SceneSystem/LayeredSceneSystem.h"
 #include "../VGGalgameConfig.h"
-#include "VGEngine/Include/Scene/Scene.h"
+#include "NNEngineLegacy/Include/Scene/Scene.h"
 
 namespace VisionGal::GalGame
 {

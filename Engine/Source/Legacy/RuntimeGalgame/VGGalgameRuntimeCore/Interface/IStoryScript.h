@@ -21,7 +21,7 @@
 #pragma once
 #include "../VGGRCExport.h"
 #include "VGGalgameContract/Interface/IStoryScriptExecutor.h"
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 
 #include <string>
 #include <unordered_map>

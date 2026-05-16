@@ -11,9 +11,9 @@
 #include "DialogueListEditorPanel.h"
 
 // ImGui / ImNodeEditor
-#include <VGImgui/Include/imgui/imgui.h>
-#include <VGImgui/Include/imgui/imgui_internal.h>
-#include <VGImgui/Include/ImNodeEditor/imgui_node_editor.h>
+#include <NNRuntimeImGui/Include/imgui/imgui.h>
+#include <NNRuntimeImGui/Include/imgui/imgui_internal.h>
+#include <NNRuntimeImGui/Include/ImNodeEditor/imgui_node_editor.h>
 
 namespace VisionGal::Editor
 {

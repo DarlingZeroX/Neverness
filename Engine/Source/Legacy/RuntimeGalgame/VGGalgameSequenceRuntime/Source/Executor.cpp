@@ -17,9 +17,9 @@
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IGameSystem.h"
 #include "VGGalgameCore/Interface/IDialogueSubsystem.h"
-#include "VGCore/Include/Core/VFS.h"
-#include "VGCore/Include/Core/Core.h"
-#include "VGCore/Include/Core/EventBus.h"
+#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal::GalGame

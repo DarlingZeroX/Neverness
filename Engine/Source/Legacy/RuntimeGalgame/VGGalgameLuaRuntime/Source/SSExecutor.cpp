@@ -12,19 +12,19 @@
 #include "SSExecutor.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 #include "StoryScriptLuaInterface.h"
 #include <iostream>
 #include <fstream>
 #include <regex>
 #include <NNKernel/Interface/HLog.h>
-#include "VGCore/Include/Core/VFS.h"
+#include "NNRuntimeCore/Include/Core/VFS.h"
 //#include "GalGameEngine.h"
 #include <sol/state.hpp>
 
-#include "VGCore/Include/Core/EventBus.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
-#include "VGEngine/Include/Lua/LuaInterface.h"
+#include "NNEngineLegacy/Include/Lua/LuaInterface.h"
 #include "LuaBinding.h"
 #include "VGLuaCore/LuaErrorManager.h"
 #include "VGGalgameCore/Interface/ISceneSubsystem.h"

@@ -6,8 +6,8 @@
 
 #include "GalGameEngine.h"
 #include "Game.h"
-#include "VGCore/Include/Core/Core.h"
-#include <VGRHI/Interface/Texture.h>
+#include "NNRuntimeCore/Include/Core/Core.h"
+#include <NNRuntimeRHI/Interface/Texture.h>
 
 namespace VisionGal::GalGame
 {

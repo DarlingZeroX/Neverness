@@ -11,8 +11,8 @@
 
 #include "SequenceEditor.h"
 
-#include <VGImgui/IncludeImGui.h>
-#include <VGImgui/IncludeImGuiEx.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGuiEx.h>
 
 #include "Commands/AddSequenceEntryCommand.h"
 #include "ComponentRegistry/SequenceEditorRegistriesBootstrap.h"
@@ -20,11 +20,11 @@
 #include "Events/SequenceEditorEventBus.h"
 #include "Validation/SequenceValidationRegistriesBootstrap.h"
 #include "Widgets/SequenceRuntimeBridgePanelWidget.h"
-#include "VGCore/Include/Core/EventBus.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
-#include "VGCore/Include/Core/Core.h"
-#include "VGCore/Include/Core/VFS.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/VFS.h"
 
 namespace VisionGal::Editor
 {

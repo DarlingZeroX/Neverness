@@ -49,7 +49,7 @@
 #include "Widgets/SequenceStatusBarWidget.h"
 #include "Widgets/SequenceToolbarWidget.h"
 #include "Workspace/SequenceWorkspaceState.h"
-#include "VGEditorFramework/Interface/UITaskInterface.h"
+#include "NNEditorFramework/Interface/UITaskInterface.h"
 #include "Widgets/SequenceValidationWidget.h"
 
 #include "Core/SequenceSelectionProjectionController.h"

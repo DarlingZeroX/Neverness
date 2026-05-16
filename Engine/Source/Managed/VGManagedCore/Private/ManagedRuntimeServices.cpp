@@ -1,11 +1,11 @@
 #include <cstring>
 
-#include "VGNativeEngineAPI/NativeEngineAPI.h"
+#include "NNNativeEngineAPI/NativeEngineAPI.h"
 #include "VGManagedCore/ManagedRuntimeServices.h"
 #include "VGManagedCore/NativeAPI.h"
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
-#include "VGEngineRuntimeServices/NativeEngineRuntimeServices.h"
+#include "NNRuntimeEngineServices/NativeEngineRuntimeServices.h"
 #endif
 
 extern "C" void VGNativeApiTable_BuildDefault(VGNativeAPI* outTable)

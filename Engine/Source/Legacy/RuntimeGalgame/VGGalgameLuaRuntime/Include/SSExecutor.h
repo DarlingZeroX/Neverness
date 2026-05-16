@@ -13,7 +13,7 @@
 #include "../VGGalgameScriptLuaConfig.h"
 #include <sol/state.hpp>
 #include <sol/coroutine.hpp>
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 #include "VGGalgameCore/Interface/IGalGameContext.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IGameEngine.h"

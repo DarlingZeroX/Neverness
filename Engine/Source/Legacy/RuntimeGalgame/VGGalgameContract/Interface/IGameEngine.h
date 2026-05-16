@@ -16,7 +16,7 @@
 #include "IGalGameContext.h"
 #include "ISubsystemBus.h"
 #include "IGalGameRuntime.h"
-#include "VGCore/Interface/GameEngineInterface.h"
+#include "NNRuntimeCore/Interface/GameEngineInterface.h"
 
 namespace VisionGal::GalGame
 {

@@ -16,7 +16,7 @@
 #include "Inspector/SequenceInspectorRenderer.h"
 #include "Inspector/SequenceInspectorRegistry.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 namespace VisionGal::Editor
 {

@@ -19,9 +19,9 @@
 
 #include "NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
-#include "VGCore/Include/Core/Core.h"
-#include "VGCore/Include/Core/VFS.h"
-#include <VGImgui/IncludeImGui.h>
+#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/VFS.h"
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 #include <limits>
 

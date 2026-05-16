@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../VGGRCExport.h"
-#include "VGCore/Interface/SceneInterface.h"
-#include "VGAsset/Interface/ISceneSerializer.h"
+#include "NNRuntimeCore/Interface/SceneInterface.h"
+#include "NNRuntimeAsset/Interface/ISceneSerializer.h"
 
 namespace VisionGal::GalGame
 {

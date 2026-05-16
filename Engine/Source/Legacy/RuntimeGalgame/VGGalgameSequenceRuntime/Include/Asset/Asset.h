@@ -12,7 +12,7 @@
 #pragma once
 #include "../../GSSExport.h"
 #include "../SequenceExecutionData.h"
-#include "VGCore/Interface/VGAsset.h"
+#include "NNRuntimeCore/Interface/VGAsset.h"
 
 namespace VisionGal::GalGame
 {

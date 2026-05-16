@@ -14,9 +14,9 @@
 #include "VGGalgameCore/Include/GalGameLayoutUtils.h"
 #include "SpriteAnimationScript.h"
 #include "SpriteAnimationScriptManager.h"
-#include "VGEngine/Include/Animation/Audio/AudioAnimationScriptManager.h"
-#include "VGEngine/Include/Render/TransitionManager.h"
-#include "VGEngine/Include/Animation/Interface/AnimationScriptManager.h"
+#include "NNEngineLegacy/Include/Animation/Audio/AudioAnimationScriptManager.h"
+#include "NNEngineLegacy/Include/Render/TransitionManager.h"
+#include "NNEngineLegacy/Include/Animation/Interface/AnimationScriptManager.h"
 
 namespace VisionGal::GalGame
 {

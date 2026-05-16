@@ -14,9 +14,9 @@
 #include "Commands/SetSequenceEntryBoolPropertyCommand.h"
 #include "Core/SequenceEditorContext.h"
 
-#include <VGImgui/IncludeImGui.h>
-#include <VGImgui/IncludeImGuiEx.h>
-#include <VGCore/Interface/Loader.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGuiEx.h>
+#include <NNRuntimeCore/Interface/Loader.h>
 
 #include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
 #include "VGGalgameSequenceRuntime/Interface/IVGSSequenceComponent.h"

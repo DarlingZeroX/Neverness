@@ -11,12 +11,12 @@
 
 #include "ResourceSystem.h"
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
-#include "VGCore/Interface/Loader.h"
-#include "VGCore/Include/Core/EventBus.h"
-#include "VGEngine/Include/Engine/Manager.h"
-#include "VGEngine/Include/Engine/EngineResource.h"
-#include "VGEngine/Include/Engine/AudioPlayer.h"
-#include "VGEngine/Include/Engine/VideoPlayer.h"
+#include "NNRuntimeCore/Interface/Loader.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
+#include "NNEngineLegacy/Include/Engine/Manager.h"
+#include "NNEngineLegacy/Include/Engine/EngineResource.h"
+#include "NNEngineLegacy/Include/Engine/AudioPlayer.h"
+#include "NNEngineLegacy/Include/Engine/VideoPlayer.h"
 
 namespace VisionGal::GalGame
 {

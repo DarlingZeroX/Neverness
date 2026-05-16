@@ -10,7 +10,7 @@
  */
 
 #include "ArchiveSystem.h"
-#include "VGEngine/Include/Render/TextureConverter.h"
+#include "NNEngineLegacy/Include/Render/TextureConverter.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNKernel/Include/File/nlohmann/json.hpp>
 

@@ -11,7 +11,7 @@
 #include "CommandInGraph.h"
 #include "GraphCommandAPI.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNNodeGraphCore/Include/RuntimeContext.h>
 
 namespace Horizon::NodeGraphEditor

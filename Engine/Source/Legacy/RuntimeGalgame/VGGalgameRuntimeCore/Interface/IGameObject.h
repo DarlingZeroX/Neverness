@@ -10,9 +10,9 @@
  */
 
 #pragma once
-#include "VGCore/Interface/SceneInterface.h"
-#include "VGEngine/Include/Animation/Interface/Animation2DScript.h"
-#include "VGEngine/Include/Scene/Components.h"
+#include "NNRuntimeCore/Interface/SceneInterface.h"
+#include "NNEngineLegacy/Include/Animation/Interface/Animation2DScript.h"
+#include "NNEngineLegacy/Include/Scene/Components.h"
 
 namespace VisionGal::GalGame
 {

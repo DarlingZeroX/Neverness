@@ -10,8 +10,8 @@
 */
 #pragma once
 
-#include <VGImgui/IncludeImGui.h>
-#include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
+#include <NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 #include <cstdint>
 #include <vector>
 #include <string>

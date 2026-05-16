@@ -13,8 +13,8 @@
 
 #include "IGalGameContext.h"
 #include "ISubsystemBus.h"
-#include "VGCore/Include/Core/Core.h"
-#include "VGCore/Interface/Interface.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Interface/Interface.h"
 
 #include <filesystem>
 #include <string>

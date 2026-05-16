@@ -4,7 +4,7 @@
 
 #include "ScriptSystem/GalRuntimeScriptLoader.h"
 
-#include "VGAsset/Interface/Package.h"
+#include "NNRuntimeAsset/Interface/Package.h"
 
 namespace VisionGal::GalGame
 {

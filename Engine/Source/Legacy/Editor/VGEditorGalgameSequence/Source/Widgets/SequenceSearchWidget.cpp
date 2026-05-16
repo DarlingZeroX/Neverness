@@ -11,8 +11,8 @@
 #include "Core/SequenceEditorContext.h"
 #include "Events/SequenceEditorEventBus.h"
 
-#include <VGImgui/IncludeImGui.h>
-#include <VGImgui/IncludeImGuiEx.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGuiEx.h>
 
 namespace VisionGal::Editor
 {

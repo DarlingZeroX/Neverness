@@ -13,7 +13,7 @@
 #include "ViewModels/SequenceDocumentViewModel.h"
 #include "ViewModels/SequenceEntryViewModel.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 #include <algorithm>
 #include <unordered_map>

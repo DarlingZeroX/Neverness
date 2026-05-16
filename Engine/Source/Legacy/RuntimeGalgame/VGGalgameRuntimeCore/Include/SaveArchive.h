@@ -12,7 +12,7 @@
 #pragma once
 #include "../VGGRCExport.h"
 #include <cstdint>
-#include <VGRHI/Interface/Texture.h>
+#include <NNRuntimeRHI/Interface/Texture.h>
 #include <NNKernel/Include/File/nlohmann/json.hpp>
 #include "ArchiveDataContainer.h"
 

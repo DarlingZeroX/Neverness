@@ -11,7 +11,7 @@
 
 #include "Asset/AssetFactory.h"
 #include "Asset/Asset.h"
-#include "VGCore/Include/Core/VFS.h"
+#include "NNRuntimeCore/Include/Core/VFS.h"
 
 namespace VisionGal::GalGame
 {

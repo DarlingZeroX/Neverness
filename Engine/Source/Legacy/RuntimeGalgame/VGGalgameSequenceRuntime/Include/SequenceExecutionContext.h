@@ -11,7 +11,7 @@
 #pragma once
 
 #include "../GSSExport.h"
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IRuntimeExecutionServices.h"
 #include "Sequence/DataContainer.h"

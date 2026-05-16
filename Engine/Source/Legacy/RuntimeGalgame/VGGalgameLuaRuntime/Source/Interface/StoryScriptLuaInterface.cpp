@@ -11,8 +11,8 @@
 
 #include "StoryScriptLuaInterface.h"
 #include <sol/sol.hpp>
-#include "VGEngine/Include/Lua/LuaInterface.h"
-#include "VGCore/Include/Core/EventBus.h"
+#include "NNEngineLegacy/Include/Lua/LuaInterface.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
 
 namespace VisionGal::GalGame
 {

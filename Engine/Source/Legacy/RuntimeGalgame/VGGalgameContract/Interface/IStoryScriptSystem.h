@@ -18,9 +18,9 @@
 #include <filesystem>
 #include <string>
 #include <vector>
-#include <VGCore/Include/Data/DataVariant.h>
-#include <VGCore/Interface/Interface.h>
-#include <VGCore/Interface/SceneInterface.h>
+#include <NNRuntimeCore/Include/Data/DataVariant.h>
+#include <NNRuntimeCore/Interface/Interface.h>
+#include <NNRuntimeCore/Interface/SceneInterface.h>
 
 namespace VisionGal::GalGame
 {

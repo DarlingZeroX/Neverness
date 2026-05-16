@@ -9,8 +9,8 @@
  * See the LICENSE file in the project root for details.
  */
  
-#include "VGCore/Include/Core/Core.h"
-#include "VGCore/Interface/GameInterface.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Interface/GameInterface.h"
 #include <VGGalgameCore/Interface/IGameEngine.h>
 
 namespace VisionGal::GalGame {

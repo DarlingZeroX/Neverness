@@ -10,8 +10,8 @@
 */
 
 #pragma once
-#include "VGCore/Interface/VGAsset.h"
-#include "VGCore/Interface/AssetInterface.h"
+#include "NNRuntimeCore/Interface/VGAsset.h"
+#include "NNRuntimeCore/Interface/AssetInterface.h"
 
 namespace VisionGal::GalGame
 {

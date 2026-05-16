@@ -12,7 +12,7 @@
 #pragma once
 
 #include "../GSSExport.h"
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 #include "VGGalgameCore/Interface/IGalGameContext.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IStoryScriptExecutor.h"

@@ -6,7 +6,7 @@
  */
 
 #pragma once
-#include "VGCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
 #include <string>
 
 namespace VisionGal::GalGame

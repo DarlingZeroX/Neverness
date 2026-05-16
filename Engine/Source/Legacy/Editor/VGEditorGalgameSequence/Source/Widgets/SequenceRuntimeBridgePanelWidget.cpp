@@ -11,7 +11,7 @@
 #include "RuntimeBridge/SequenceRuntimeEventFrame.h"
 #include "RuntimeBridge/SequenceRuntimeEventTimeline.h"
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 #include <string>
 

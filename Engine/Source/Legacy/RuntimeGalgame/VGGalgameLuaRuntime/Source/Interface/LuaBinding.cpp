@@ -13,9 +13,9 @@
 
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
-#include "VGCore/Include/Core/Core.h"
-#include "VGEngine/Include/Lua/LuaDataBridge.h"
-#include "VGEngine/Include/Lua/LuaInterface.h"
+#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNEngineLegacy/Include/Lua/LuaDataBridge.h"
+#include "NNEngineLegacy/Include/Lua/LuaInterface.h"
 #include "VGGalgameCore/Interface/IGameObject.h"
 #include "VGGalgameCore/Interface/IGameSystem.h"
 #include "VGGalgameCore/Interface/IGameEngine.h"

@@ -10,9 +10,9 @@
  */
 
 #include "UISystem/GalUISystem.h"
-#include "VGCore/Include/Core/EventBus.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "VGGalgameCore/Include/Components.h"
-#include "VGUI/Interface/UISystem.h"
+#include "NNRuntimeRmlui/Interface/UISystem.h"
 
 namespace VisionGal::GalGame
 {

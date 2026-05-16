@@ -11,7 +11,7 @@
 
 #include "../SequenceRuntimeTypes.h"
 #include <VGGalgameCore/Interface/IStoryScriptSystem.h>
-#include <VGCore/Interface/Interface.h>
+#include <NNRuntimeCore/Interface/Interface.h>
 
 namespace VisionGal::GalGame
 {

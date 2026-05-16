@@ -12,10 +12,10 @@
 
 #include "ScriptSystem/GalAssetTypeScriptRuntime.h"
 #include "ScriptSystem/GalRuntimeScriptLoader.h"
-#include "VGAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAsset/Include/GalGameAsset.h"
 #include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
 #include "VGGalgameCore/Include/Components.h"
-#include "VGCore/Include/Core/EventBus.h"
+#include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "VGGalgameRuntimeCore/Include/SaveArchive.h"
 #include "VGGalgameRuntimeCore/Include/GalGameRuntimeState.h"
 #include "VGGalgameRuntimeCore/Include/ArchiveDataContainer.h"

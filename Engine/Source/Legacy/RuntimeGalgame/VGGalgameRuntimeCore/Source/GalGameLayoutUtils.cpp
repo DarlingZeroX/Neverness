@@ -4,7 +4,7 @@
 
 #include "GalGameLayoutUtils.h"
 
-#include "VGEngine/Include/Project/ProjectSettings.h"
+#include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 
 namespace VisionGal::GalGame
 {

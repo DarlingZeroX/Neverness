@@ -10,10 +10,10 @@
  */
 
 #include "RenderPipeline.h"
-#include "VGEngine/Include/Engine/Manager.h"
-#include "VGCore/Interface/Loader.h"
-#include "VGEngine/Include/Render/TransitionManager.h"
-#include "VGEngine/Include/Scene/Scene.h"
+#include "NNEngineLegacy/Include/Engine/Manager.h"
+#include "NNRuntimeCore/Interface/Loader.h"
+#include "NNEngineLegacy/Include/Render/TransitionManager.h"
+#include "NNEngineLegacy/Include/Scene/Scene.h"
 
 namespace VisionGal::GalGame
 {

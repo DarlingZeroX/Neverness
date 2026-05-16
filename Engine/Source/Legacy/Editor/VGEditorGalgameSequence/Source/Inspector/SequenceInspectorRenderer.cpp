@@ -12,8 +12,8 @@
 #include "Core/SequenceEditorContext.h"
 #include "Inspector/SequenceSchemaPropertyCommandDispatch.h"
 
-#include <VGImgui/IncludeImGui.h>
-#include <VGImgui/IncludeImGuiEx.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGuiEx.h>
 
 #include <climits>
 #include <cstdint>

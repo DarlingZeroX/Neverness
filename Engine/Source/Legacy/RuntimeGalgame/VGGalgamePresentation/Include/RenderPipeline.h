@@ -10,14 +10,14 @@
  */
 
 #pragma once
-#include "VGCore/Interface/GameEngineInterface.h"
+#include "NNRuntimeCore/Interface/GameEngineInterface.h"
 #include "VGGalgameCore/Interface/IGameSystem.h"
-#include "VGCore/Interface/AppInterface.h"
+#include "NNRuntimeCore/Interface/AppInterface.h"
 #include "../VGGalPresentationConfig.h"
-#include "VGEngine/Include/Scene/Scene.h"
-#include "VGEngine/Include/Render/RenderCore.h"
+#include "NNEngineLegacy/Include/Scene/Scene.h"
+#include "NNEngineLegacy/Include/Render/RenderCore.h"
 //#include "../Graphics/OpenGL/RenderTarget.h"
-#include <VGRHI/Include/OpenGL/RenderTarget.h>
+#include <NNRuntimeRHI/Include/OpenGL/RenderTarget.h>
 
 namespace VisionGal::GalGame
 {

@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <VGImgui/IncludeImGui.h>
+#include <NNRuntimeImGui/IncludeImGui.h>
 
 #include <string>
 
