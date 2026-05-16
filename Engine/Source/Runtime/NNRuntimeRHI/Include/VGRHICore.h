@@ -11,4 +11,4 @@
 
 #pragma once
 
-#include <NNKernel/Interface/HCore.h>
+#include <NNCore/Interface/HCore.h>

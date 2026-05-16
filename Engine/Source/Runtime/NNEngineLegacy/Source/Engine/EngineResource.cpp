@@ -12,7 +12,7 @@
 #include "Engine/EngineResource.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	std::string EngineResource::GetDefaultSpriteTexturePath()
 	{

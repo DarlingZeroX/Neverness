@@ -12,10 +12,10 @@
 #pragma once
 #include "../../Config.h"
 #include <vector>
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 #include <NNRuntimeImGui/IncludeImGui.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API EditorSideBar : public IEditorPanel
 	{

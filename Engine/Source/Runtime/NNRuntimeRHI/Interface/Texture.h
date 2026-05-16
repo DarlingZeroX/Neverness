@@ -11,17 +11,17 @@
 
 #pragma once
 #include <vector>
-#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNCore/Interface/HCoreTypes.h>
 
-namespace VisionGal::VGFX
+namespace NN::Runtime::VGFX
 {
 	struct TextureDesc
 	{
 		int Width;
 		int Height;
 		int InternalFormat;
-		Horizon::uint Format;
-		Horizon::uint Type;
+		NN::Core::uint Format;
+		NN::Core::uint Type;
 		void* Data;
 		unsigned int DataSize;
 	};

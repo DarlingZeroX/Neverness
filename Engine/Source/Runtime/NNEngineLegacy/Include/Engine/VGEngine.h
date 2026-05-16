@@ -14,9 +14,9 @@
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
 #include "NNRuntimeCore/Interface/EngineInterface.h"
-#include <NNKernel/Interface/HCore.h>
+#include <NNCore/Interface/HCore.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_ENGINE_API VGEngine
 	{

@@ -15,10 +15,10 @@
 #include "NNMediaCore/Include/Audio.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	// 音频解码器接口
-	struct IAudioClip : public VGEngineResource, public Horizon::IAudioClip {
+	struct IAudioClip : public VGEngineResource, public NN::Core::IAudioClip {
 		~IAudioClip() override = default;
 	};
 
@@ -29,8 +29,8 @@ namespace VisionGal {
 
 		bool Open(const std::string& filePath);
 
-		Horizon::IAudioDecoder* GetDecoder() override;
+		NN::Core::IAudioDecoder* GetDecoder() override;
 	private:
-		Horizon::AudioClip m_AudioClip;
+		NN::Core::AudioClip m_AudioClip;
 	};
 }

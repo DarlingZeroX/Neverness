@@ -19,7 +19,7 @@
 #include "NNEngineLegacy/Include/Engine/Manager/SceneManager.h"
 
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	EditorMainWindow::EditorMainWindow()
 	{
@@ -105,18 +105,18 @@ namespace VisionGal::Editor
 			}
 
 			// 播放/停止场景按钮
-			if (GetSceneManager()->IsPlayMode() == false)
+			if (Runtime::GetSceneManager()->IsPlayMode() == false)
 			{
 				if (ImGui::Button(ICON_FA_PLAY "##ScenePlay"))
 				{
-					GetSceneManager()->EnterPlayMode();
+					Runtime::GetSceneManager()->EnterPlayMode();
 				}
 			} 
 			else
 			{
 				if (ImGui::Button(ICON_FA_STOP "##SceneStop"))
 				{
-					GetSceneManager()->ExitPlayMode(); 
+					Runtime::GetSceneManager()->ExitPlayMode(); 
 				}
 			}
 

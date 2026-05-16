@@ -12,7 +12,7 @@
 #pragma once
 #include "OpenGL.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API RasterStates
 	{
@@ -30,4 +30,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	};
  
-VISIONGAL_OPENGL_NAMESPACE_END
+}

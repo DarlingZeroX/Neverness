@@ -14,9 +14,9 @@
 #include "../../Interface/Device.h"
 #include "OpenGL/Texture2D.h"
 
-namespace VisionGal::VGFX
+namespace NN::Runtime::VGFX
 {
-	Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc)
+	NN::Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc)
 	{
 		return OpenGL::Texture2D::CreateFromMemory(desc);
 	}

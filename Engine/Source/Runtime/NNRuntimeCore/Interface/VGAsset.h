@@ -12,7 +12,7 @@
 #pragma once
 #include "../Include/Core/Core.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VGAssetType
 	{
@@ -26,7 +26,7 @@ namespace VisionGal
 		VGAssetMetaData(std::string type) : UUID(0), AssetType(type) {}
 
 		// 全局标识符，每个资产独有一个
-		Horizon::HUUID UUID;
+		NN::Core::HUUID UUID;
 
 		// 资产的类别，string类型
 		std::string AssetType;
@@ -71,7 +71,7 @@ namespace VisionGal
 		uint64 FileSize;
 	};
 
-	//struct VGAsset : public Horizon::HAssetBase
+	//struct VGAsset : public NN::Core::HAssetBase
 	//{
 	//    bool IsGalFile = false;
 	//

@@ -12,7 +12,7 @@
 #include "Scene/GameActor.h"
 #include "Scene/Components.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void GameActor::SetVisible(bool visible)
 	{

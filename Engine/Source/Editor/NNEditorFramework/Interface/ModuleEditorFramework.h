@@ -13,12 +13,12 @@
 #include <NNRuntimeCore/Include/Core/Window.h>
 #include <NNEngineLegacy/Include/Game/GameEngine.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API ModuleEditorFramework
 	{
 	public:
-		static void MountToEditor(Ref<VGWindow>& editorWindow, Ref<CoreGameEngine>& gameEngine);
+		static void MountToEditor(Ref<Runtime::VGWindow>& editorWindow, Ref<Runtime::CoreGameEngine>& gameEngine);
 
 	private:
 

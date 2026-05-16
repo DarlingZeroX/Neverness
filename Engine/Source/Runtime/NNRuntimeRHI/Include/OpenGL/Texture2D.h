@@ -13,7 +13,7 @@
 #include "TextureBase.h"
 #include "../../Interface/Texture.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API Texture2D :public TextureBase, public VGFX::ITexture
 	{
@@ -27,7 +27,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		int Width() const noexcept { return m_Desc.Width; }
 		int Height() const noexcept { return m_Desc.Height; }
 
-		static Ref<Texture2D> CreateFromMemory(const VGFX::TextureDesc& desc);
+		static NN::Ref<Texture2D> CreateFromMemory(const VGFX::TextureDesc& desc);
 		//static Ref<Texture2D> CreateFromMemory(const VGFX::TextureDesc& desc, int RowPitch, int BytesPerPixel);
 
 		const VGFX::TextureDesc& GetDesc() override;
@@ -45,4 +45,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		VGFX::TextureDesc m_Desc;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

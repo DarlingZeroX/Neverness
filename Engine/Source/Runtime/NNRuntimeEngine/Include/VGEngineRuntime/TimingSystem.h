@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 以 `Tick` 累積之時間狀態；**getFrameIndex** 於每次 `Tick` 結束後遞增（首次 `Tick` 後為 1）。

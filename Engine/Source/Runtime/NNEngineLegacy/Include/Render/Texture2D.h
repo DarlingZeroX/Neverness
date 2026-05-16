@@ -13,9 +13,9 @@
 #include "../EngineConfig.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include <NNRuntimeRHI/Interface/Texture.h>
-#include "NNKernel/Interface/HCoreTypes.h"
+#include "NNCore/Interface/HCoreTypes.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	//struct RenderResource : public VGObject
 	//{

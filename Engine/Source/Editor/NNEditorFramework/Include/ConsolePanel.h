@@ -12,9 +12,9 @@
 #pragma once
 #include "../Config.h"
 #include <mutex>
-#include "NNKernel/Interface/HLog.h"
+#include "NNCore/Interface/HLog.h"
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	class VG_EDITOR_FRAMEWORK_API ConsolePanel: public IEditorPanel
 	{
@@ -29,7 +29,7 @@ namespace VisionGal::Editor {
 		void Toggle();
 		void OnGUI() override;
 		void OnSideBarUI();
-		void AddLog(Horizon::HLogLevel level, const std::string& message);
+		void AddLog(NN::Core::HLogLevel level, const std::string& message);
 
 		std::string GetWindowFullName() override;
 		std::string GetWindowName() override;

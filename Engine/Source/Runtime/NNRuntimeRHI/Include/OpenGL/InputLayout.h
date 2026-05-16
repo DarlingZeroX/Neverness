@@ -12,7 +12,7 @@
 #pragma once
 #include "Interface.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	namespace VertexElement
 	{
@@ -205,4 +205,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		std::vector<OPENGL_INPUT_ELEMENT_DESC> m_Elements;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

@@ -13,7 +13,7 @@
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimePak/Include/PackageFileSystem.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VFSImp
 	{
@@ -33,7 +33,7 @@ namespace VisionGal
 
 	String VFS::GetRelativePathVFS(const String& relativePath, const String& absolutePath)
 	{
-		//auto path = Horizon::HFileSystem::ToUnixPath(absolutePath);
+		//auto path = NN::Core::HFileSystem::ToUnixPath(absolutePath);
 		//
 		//auto aPath = GetInstance()->AbsolutePath(relativePath);
 		//auto relative = std::filesystem::relative(path, aPath).string();
@@ -43,7 +43,7 @@ namespace VisionGal
 		//
 		//return relativePath + std::filesystem::relative(path, aPath).string();
 
-		auto path = Horizon::HFileSystem::ToUnixPath(absolutePath);
+		auto path = NN::Core::HFileSystem::ToUnixPath(absolutePath);
 		
 		auto rPath = GetInstance()->AbsolutePath(relativePath);
 		//auto relative = std::filesystem::relative(path, aPath).string();

@@ -16,7 +16,7 @@
 #include <RmlUi/Core.h>
 #include <sol/function.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_UI_API RmlUIDocument : public VGEngineResource
 	{

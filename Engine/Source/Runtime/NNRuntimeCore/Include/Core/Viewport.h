@@ -16,9 +16,9 @@
 //#include "../Graphics/Interface/Texture.h"
 #include <NNRuntimeRHI/Interface/Texture.h>
 #include <NNPlatformCore/Include/WindowInterface.h>
-#include <NNKernel/Include/Event/HEventDelegate.h>
+#include <NNCore/Include/Event/HEventDelegate.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct MouseHoveredData
 	{
@@ -99,8 +99,8 @@ namespace VisionGal
 		void AttachCamera(ICamera* camera) override;
 		bool RemoveCamera(ICamera* camera) override;
 
-		void AttachWindow(Horizon::IWindow* window);
-		Horizon::IWindow* GetWindow();
+		void AttachWindow(NN::Core::IWindow* window);
+		NN::Core::IWindow* GetWindow();
 
 		void EnableInput(bool enable = true);
 		bool IsEnableInput() const;
@@ -108,13 +108,13 @@ namespace VisionGal
 		void SetWindowID(WindowID id);
 		WindowID GetWindowID() const;
 
-		Horizon::HEventDelegate<const ViewportEvent&> OnViewportEvent;
+		NN::Core::HEventDelegate<const ViewportEvent&> OnViewportEvent;
 
 		void FrameUpdate();
 	private:
 		void OnViewportSizeChanged(float2 size);
 	private:
-		Horizon::IWindow* m_Window;
+		NN::Core::IWindow* m_Window;
 		std::unordered_set<ICamera*> m_Cameras;
 		ViewportState m_State;
 		std::vector<ViewportEvent> m_FrameEvents;

@@ -15,7 +15,7 @@
 #include <NNRuntimeCore/Include/Core/VFS.h>
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
 #include <NNEditorFramework/Include/EditorCore/EditorCore.h>
-
+using namespace NN::Runtime;
 /// @brief 表示启动器虚拟文件系统（VFS）中各类资源和设置的路径。
 struct LauncherVFSPath
 {
@@ -35,7 +35,7 @@ void InitializeVFS(LauncherVFSPath path)
 
 	// 添加编辑器资源虚拟文件系统
 	VFS::MountPackageFileSystem(
-		Editor::EditorCore::GetEditorResourcePathVFS(),
+		NN::Editor::EditorCore::GetEditorResourcePathVFS(),
 		"Data/editor.pak",
 		path.editor
 	);
@@ -75,7 +75,7 @@ int main()
 	InitializeVFS(paths);
 
 	// 加载编辑器配置
-	Editor::EditorCore::LoadEditorPreferences();
+	NN::Editor::EditorCore::LoadEditorPreferences();
 	// 加载启动器数据
 	Editor::VGLauncherData::LoadLauncherData();
 
@@ -84,7 +84,7 @@ int main()
 	Editor::VGLauncherData::GetLauncherData().LoadAllProjectsInDirectory("Project/");
 
 	// 初始化启动器
-	Ref<Editor::VGLauncher> launcher = MakeRef<Editor::VGLauncher>();
+	NN::Ref<Editor::VGLauncher> launcher = NN::MakeRef<Editor::VGLauncher>();
 	launcher->Initialize();
 	VGEngine::Get()->AddApplication(launcher);
 

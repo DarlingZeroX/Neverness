@@ -36,8 +36,8 @@ namespace VisionGal::Editor
 
 		static void TipText(const std::string& tip);
 
-		String m_Title;
-		String m_Text;
+		NN::Runtime::String m_Title;
+		NN::Runtime::String m_Text;
 
 		std::string m_ProjectName;
 		std::string m_ProjectLocation;

@@ -11,14 +11,14 @@
 
 #include "SceneAccessor.h"
 #include "SceneSerializerFactory.h"
-#include <NNKernel/Interface/HSerialization.h>
+#include <NNCore/Interface/HSerialization.h>
 #include "NNRuntimeCore/Include/Core/VFS.h"
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
 #include "NNRuntimeAsset/Interface/Package.h"
 //#include "Scene/Components.h"
 //#include "Scene/Scene.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	bool SceneAssetWriter::Write(const std::string path, VGAsset* asset)
 	{

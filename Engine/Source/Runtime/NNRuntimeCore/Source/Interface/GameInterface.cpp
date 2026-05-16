@@ -11,7 +11,7 @@
 
 #include "GameInterface.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	ICamera::~ICamera()
 	{

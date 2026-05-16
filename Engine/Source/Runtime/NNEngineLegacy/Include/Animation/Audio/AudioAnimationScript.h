@@ -12,7 +12,7 @@
 #pragma once
 #include "AudioAnimation.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     class AudioFadeInOutAnimationScript : public IAnimationScript
     {
@@ -36,7 +36,7 @@ namespace VisionGal
 		void SetOutVolume(float volume) { m_StartVolume = volume; }
         void Start() override;
 
-        void OnUpdate(Horizon::HEntityInterface* entity) override;
+        void OnUpdate(NN::Core::HEntityInterface* entity) override;
     private:
         Ref<AudioAnimationScript> m_Script;
 

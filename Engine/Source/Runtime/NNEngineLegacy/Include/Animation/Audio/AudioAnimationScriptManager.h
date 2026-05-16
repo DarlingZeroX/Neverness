@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeCore/Interface/GameInterface.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	class VG_ENGINE_API AudioAnimationScriptManager
 	{

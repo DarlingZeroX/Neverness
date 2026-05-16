@@ -12,7 +12,7 @@
 #include "Render/Material.h"
 #include "Engine/Manager.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     // 顶点着色器
     const char* s_DefualtVertexShader = R"(

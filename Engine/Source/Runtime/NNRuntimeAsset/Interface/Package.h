@@ -15,7 +15,7 @@
 #include "NNRuntimeCore/Interface/VGAsset.h"
 #include <fstream>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	VG_ASSET_API std::string GetAssetTypeNameID(const String& path);
 

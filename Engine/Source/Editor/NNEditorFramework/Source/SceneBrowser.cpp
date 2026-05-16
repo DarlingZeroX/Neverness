@@ -17,7 +17,7 @@
 #include <NNEngineLegacy/Include/Scene/Components.h>
 #include <NNEngineLegacy/Include/Scene/GameActorFactory.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	SceneBrowserPanel::SceneBrowserPanel()
 		:m_rScene(nullptr)
@@ -38,12 +38,12 @@ namespace VisionGal::Editor
 
 	void SceneBrowserPanel::SubscribeEngineEvent()
 	{
-		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
+		Runtime::EngineEventBus::Get().OnEngineEvent.Subscribe([this](const Runtime::EngineEvent& evt)
 			{
 				switch (evt.EventType)
 				{
-				case EngineEventType::MainSceneChanged:
-					m_rScene = static_cast<Scene*>(evt.Scene);
+				case Runtime::EngineEventType::MainSceneChanged:
+					m_rScene = static_cast<Runtime::Scene*>(evt.Scene);
 					break;
 				}
 			});
@@ -58,8 +58,8 @@ namespace VisionGal::Editor
 		ImGuiEx::ScopedStyleColor winClr(ImGuiCol_WindowBg, ImGui::ColorConvertFloat4ToU32(colors[ImGuiCol_MenuBarBg]));
 
 		//static EditorTitle title(ICON_FA_SITEMAP, "World Hierarchy");
-		//static Horizon::HText labelText("Label");
-		//static Horizon::HText typeText("Type");
+		//static NN::Core::HText labelText("Label");
+		//static NN::Core::HText typeText("Type");
 
 		if (ImGui::Begin(GetWindowFullName().c_str()))
 		{
@@ -78,7 +78,7 @@ namespace VisionGal::Editor
 
 			//static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody;
 
-			auto& rootRelation = *m_rScene->GetSceneActor()->GetComponent<Horizon::HRelationship>();
+			auto& rootRelation = *m_rScene->GetSceneActor()->GetComponent<NN::Core::HRelationship>();
 			DrawHierarchy(*m_rScene->GetSceneActor(), rootRelation);
 
 			//bottom overlay
@@ -124,9 +124,9 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void SceneBrowserPanel::CreateGameActor(const String& type, IEntity* parent) const
+	void SceneBrowserPanel::CreateGameActor(const Runtime::String& type, Runtime::IEntity* parent) const
 	{
-		GetGameActorFactory()->CreateActor(m_rScene, type, parent);
+		Runtime::GetGameActorFactory()->CreateActor(m_rScene, type, parent);
 	}
 
 	void SceneBrowserPanel::TickBottomOverlayUI()
@@ -136,7 +136,7 @@ namespace VisionGal::Editor
 		ImVec2 overlayPosBegin = ImVec2(windowPos.x, windowPos.y + windowSize.y - 20);
 		ImVec2 overlayPosEnd = ImVec2(windowPos.x + windowSize.x, windowPos.y + windowSize.y);
 
-		size_t enttSize = m_rScene->GetWorld()->view<TransformComponent>().size();
+		size_t enttSize = m_rScene->GetWorld()->view<Runtime::TransformComponent>().size();
 		//size_t enttSize = m_rScene.GetWorld().count<Scene::TransformComponent>();
 		//size_t enttSize = m_rScene.GetWorld().count(Scene::TransformComponent::GetComponentId());
 		std::string overlayText = std::to_string(enttSize) + " actors";
@@ -146,7 +146,7 @@ namespace VisionGal::Editor
 		ImGui::PopClipRect();
 	}
 
-	void SceneBrowserPanel::DrawHierarchy(IGameActor& parent, Horizon::HRelationship& parentRelation)
+	void SceneBrowserPanel::DrawHierarchy(Runtime::IGameActor& parent, NN::Core::HRelationship& parentRelation)
 	{
 		//ImVec2 size = ImGui::GetWindowSize();
 		ImVec2 windowPos = ImGui::GetWindowPos();
@@ -165,11 +165,11 @@ namespace VisionGal::Editor
 		if (!DrawTreeNodeChildRow(&parent))
 			return;
 
-		IGameActor* currentChild = dynamic_cast<IGameActor*>( parentRelation.FirstChild );
+		Runtime::IGameActor* currentChild = dynamic_cast<Runtime::IGameActor*>( parentRelation.FirstChild );
 
 		for (int child_n = 0; child_n < parentRelation.ChildrenCount; child_n++)
 		{
-			Horizon::HRelationship& chlidRelation = *currentChild->GetComponent<Horizon::HRelationship>();
+			NN::Core::HRelationship& chlidRelation = *currentChild->GetComponent<NN::Core::HRelationship>();
 			auto* nextSibling = chlidRelation.NextSibling;
 
 			if (chlidRelation.ChildrenCount != 0)
@@ -187,14 +187,14 @@ namespace VisionGal::Editor
 				DrawTreeNodeChildRow(currentChild);
 			}
 
-			currentChild = dynamic_cast<IGameActor*>(nextSibling);
+			currentChild = dynamic_cast<Runtime::IGameActor*>(nextSibling);
 		}
 		ImGui::TreePop();
 	}
 
-	bool SceneBrowserPanel::DrawTreeNodeRow(IGameActor& parent)
+	bool SceneBrowserPanel::DrawTreeNodeRow(Runtime::IGameActor& parent)
 	{
-		const Horizon::HRelationship& parentLabel = *parent.GetComponent<Horizon::HRelationship>();
+		const NN::Core::HRelationship& parentLabel = *parent.GetComponent<NN::Core::HRelationship>();
 
 		ImGuiEx::ScopedID id(&parent);
 
@@ -214,9 +214,9 @@ namespace VisionGal::Editor
 		return open;
 	}
 
-	bool SceneBrowserPanel::DrawTreeNodeChildRow(IGameActor* actor)
+	bool SceneBrowserPanel::DrawTreeNodeChildRow(Runtime::IGameActor* actor)
 	{
-		const Horizon::HRelationship& relationship = *actor->GetComponent<Horizon::HRelationship>();
+		const NN::Core::HRelationship& relationship = *actor->GetComponent<NN::Core::HRelationship>();
 
 		ImGuiEx::ScopedID id(actor->GetEntityID());
 
@@ -243,7 +243,7 @@ namespace VisionGal::Editor
 		return true;
 	}
 
-	void SceneBrowserPanel::HandleItemHovered(IGameActor& entityID)
+	void SceneBrowserPanel::HandleItemHovered(Runtime::IGameActor& entityID)
 	{
 		ItemContextMenu(entityID);
 
@@ -253,7 +253,7 @@ namespace VisionGal::Editor
 		m_IsAnyItemHovered = true;
 
 		ImGui::BeginTooltip();
-		String tip = "ActorID: " + std::to_string(entityID.GetEntityID());
+		Runtime::String tip = "ActorID: " + std::to_string(entityID.GetEntityID());
 		ImGui::Text(tip.c_str());
 		ImGui::EndTooltip();
 		
@@ -269,7 +269,7 @@ namespace VisionGal::Editor
 		}
 	}
 
-	bool SceneBrowserPanel::ItemContextMenu(IGameActor& entityID)
+	bool SceneBrowserPanel::ItemContextMenu(Runtime::IGameActor& entityID)
 	{
 		if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
 		{
@@ -288,14 +288,14 @@ namespace VisionGal::Editor
 		return false;
 	}
 
-	void SceneBrowserPanel::TriggerSelectedEvent(IGameActor& entity)
+	void SceneBrowserPanel::TriggerSelectedEvent(Runtime::IGameActor& entity)
 	{
-		const auto* entityInfo = entity.GetComponent<Horizon::HEntityObjectData>();
+		const auto* entityInfo = entity.GetComponent<NN::Core::HEntityObjectData>();
 
-		SceneEvent evt;
-		evt.EventType = SceneEventType::ActorSelected;
+		Runtime::SceneEvent evt;
+		evt.EventType = Runtime::SceneEventType::ActorSelected;
 		evt.ActorID = entityInfo->ID;
-		EngineEventBus::Get().OnSceneEvent.Invoke(evt);
+		Runtime::EngineEventBus::Get().OnSceneEvent.Invoke(evt);
 
 		m_SelectedEntityID = entity.GetEntityID();
 	}

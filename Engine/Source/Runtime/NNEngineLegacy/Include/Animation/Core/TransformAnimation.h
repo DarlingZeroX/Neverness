@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Interface/GameInterface.h"
 #include "AnimationProperty.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_ENGINE_API TransformAnimationState {
 		TransformAnimationState();
@@ -75,11 +75,11 @@ namespace VisionGal
 		void Reset();
 		void Finish();
 
-		void OnUpdate(Horizon::HEntityInterface* entity) override;
-		void OnFixUpdate(Horizon::HEntityInterface* entity) override;
+		void OnUpdate(NN::Core::HEntityInterface* entity) override;
+		void OnFixUpdate(NN::Core::HEntityInterface* entity) override;
 
 	private:
-		void ApplyStateToEntity(Horizon::HEntityInterface* entity);
+		void ApplyStateToEntity(NN::Core::HEntityInterface* entity);
 		float GetCurrentTime() const;
 
 		TransformAnimationState state;

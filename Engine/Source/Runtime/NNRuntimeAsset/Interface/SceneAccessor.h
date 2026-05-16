@@ -15,7 +15,7 @@
 #include "NNRuntimeAsset/Include/SceneAsset.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     class VG_ASSET_API SceneAssetLoader : public IAssetLoader
     {

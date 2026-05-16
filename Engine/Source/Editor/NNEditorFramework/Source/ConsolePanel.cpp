@@ -12,14 +12,14 @@
 #include "pch.h"
 #include "ConsolePanel.h"
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
-#include "NNKernel/Interface/HStringTools.h"
+#include "NNCore/Interface/HStringTools.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/ImNotify.h"
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	ConsolePanel::ConsolePanel()
 	{
-        Horizon::HCoreLogger::AddListener([this](Horizon::HLogLevel level, const std::string& message)
+        NN::Core::HCoreLogger::AddListener([this](NN::Core::HLogLevel level, const std::string& message)
             {
                 AddLog(level, message);
             });
@@ -73,23 +73,23 @@ namespace VisionGal::Editor {
         ImGui::SameLine();
     }
 
-    void ConsolePanel::AddLog(Horizon::HLogLevel level, const std::string& message)
+    void ConsolePanel::AddLog(NN::Core::HLogLevel level, const std::string& message)
     {
         std::string category;
 	    switch (level)
 	    {
-	    case Horizon::HLogLevel::Error:
+	    case NN::Core::HLogLevel::Error:
             category = "Error";
             ImGuiEx::PushNotification({ ImGuiExToastType::Error, message });
             break;
-	    case Horizon::HLogLevel::Info:
+	    case NN::Core::HLogLevel::Info:
             category = "Info";
             break;
-	    case Horizon::HLogLevel::Warn:
+	    case NN::Core::HLogLevel::Warn:
             ImGuiEx::PushNotification({ ImGuiExToastType::Warning, message });
             category = "Warn";
             break;
-	    case Horizon::HLogLevel::Critical:
+	    case NN::Core::HLogLevel::Critical:
             category = "Critical";
             break;
 	    }
@@ -240,7 +240,7 @@ namespace VisionGal::Editor {
             {
                 va_list argsCopy;
                 va_copy(argsCopy, args); // 做个拷贝传给 Format
-                formatString = Horizon::HStringTools::Format(fmt, argsCopy);
+                formatString = NN::Core::HStringTools::Format(fmt, argsCopy);
 
                 va_end(argsCopy); // 结束拷贝
             }

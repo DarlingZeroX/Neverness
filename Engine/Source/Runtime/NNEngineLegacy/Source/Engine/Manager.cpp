@@ -11,7 +11,7 @@
 
 #include "Engine/Manager.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	ViewportManager* GetViewportManager()
 	{

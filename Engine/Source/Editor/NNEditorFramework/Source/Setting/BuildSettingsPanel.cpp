@@ -18,7 +18,7 @@
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 #include "NNEngineLegacy/Include/Project/ProjectBuilder.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	BuildSettingsPanel::BuildSettingsPanel()
 	{
@@ -49,7 +49,7 @@ namespace VisionGal::Editor
 		// 保存项目设置
 		if (m_IsOpen == false)
 		{
-			ProjectSettings::SaveProjectSettings();
+			Runtime::ProjectSettings::SaveProjectSettings();
 		}
 	}
 
@@ -70,13 +70,13 @@ namespace VisionGal::Editor
 		if (m_IsOpen)
 		{
 			// 设置项目主场景
-			auto& projectSettings = ProjectSettings::GetProjectSettings();
+			auto& projectSettings = Runtime::ProjectSettings::GetProjectSettings();
 			if (projectSettings.Application.RunningMainScene.empty())
 			{
 				projectSettings.Application.RunningMainScene = projectSettings.Editor.MainScene;
 			}
 
-			m_ApplicationMainScene = ProjectSettings::GetProjectSettings().Application.RunningMainScene;
+			m_ApplicationMainScene = Runtime::ProjectSettings::GetProjectSettings().Application.RunningMainScene;
 		}
 	}
 
@@ -113,8 +113,8 @@ namespace VisionGal::Editor
 			return false;
 		}
 
-		VGAssetMetaData data;
-		if (VGPackage::GetMeatData(m_ApplicationMainScene, data))
+		Runtime::VGAssetMetaData data;
+		if (Runtime::VGPackage::GetMeatData(m_ApplicationMainScene, data))
 		{
 			if (data.AssetType != "Scene")
 			{
@@ -153,14 +153,14 @@ namespace VisionGal::Editor
 		}
 
 		// 生成目录是否有效
-		if (Horizon::HFileSystem::ExistsDirectory(m_ProjectBuildOutputDirectory) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(m_ProjectBuildOutputDirectory) == false)
 		{
 			ImGui::TextColored(invalidTextColor, EditorText{ "Build output directory is invalid!" }.c_str());
 			return false;
 		}
 
 		// 生成目录必须为空目录
-		if (Horizon::HFileSystem::DirectoryEmpty(m_ProjectBuildOutputDirectory) == false)
+		if (NN::Core::HFileSystem::DirectoryEmpty(m_ProjectBuildOutputDirectory) == false)
 		{
 			ImGui::TextColored(invalidTextColor, EditorText{ "Build output directory must be empty directory!" }.c_str());
 			return false;
@@ -197,7 +197,7 @@ namespace VisionGal::Editor
 		{
 			if (isValidBuildSetting)
 			{
-				auto& projectSettings = ProjectSettings::GetProjectSettings();
+				auto& projectSettings = Runtime::ProjectSettings::GetProjectSettings();
 				projectSettings.Application.RunningMainScene = m_ApplicationMainScene;
 
 				m_TargetPlatform = "Windows";
@@ -206,7 +206,7 @@ namespace VisionGal::Editor
 				//ProjectBuilder::BuildProject(m_ProjectBuildOutputDirectory, "Windows");
 				std::thread thread([this]()
 					{
-						ProjectBuilder::BuildProject(m_BuildContext);
+						Runtime::ProjectBuilder::BuildProject(m_BuildContext);
 					});
 				thread.detach();
 

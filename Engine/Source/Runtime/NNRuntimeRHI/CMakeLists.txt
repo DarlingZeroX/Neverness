@@ -65,7 +65,7 @@ find_package(SDL3_image CONFIG REQUIRED)
 
 # 链接动态库
 target_link_libraries(NevernessRuntime-RHI PRIVATE SDL3::SDL3)
-target_link_libraries(NevernessRuntime-RHI PRIVATE NevernessKernel-Kernel)
+target_link_libraries(NevernessRuntime-RHI PRIVATE NevernessCore-Core)
 
 # 链接OpenGL库
 if (APPLE)

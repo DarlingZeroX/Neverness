@@ -13,7 +13,7 @@
 #include "Core/Application.h"
 //#include "Engine/VGEngine.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void Application::Quit()
 	{

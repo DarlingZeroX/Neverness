@@ -19,9 +19,9 @@
 #include <NNRuntimeRHI/Include/OpenGL/Core.h>
 #include <NNRuntimeRHI/Include/OpenGL/ThrowMarco.h>
 #include <NNRuntimeRHI/Interface/Device.h>
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	////////////////////	FVideoClip
 	uint2 FVideoClip::GetSize() const
@@ -30,7 +30,7 @@ namespace VisionGal
 		return { m_VideoClip.GetSize().x,m_VideoClip.GetSize().y };
 	}
 
-	Horizon::IVideoDecoder* FVideoClip::GetDecoder()
+	NN::Core::IVideoDecoder* FVideoClip::GetDecoder()
 	{
 		//return m_VideoDecoder.get();
 		return m_VideoClip.GetDecoder();
@@ -74,7 +74,7 @@ namespace VisionGal
 
 	bool FVideoPlayer::Open(const Ref<IVideoClip>& clip)
 	{
-		m_VideoPlayer = Horizon::FVideoPlayer::CreatePlayer(clip);
+		m_VideoPlayer = NN::Core::FVideoPlayer::CreatePlayer(clip);
 
 		if (m_VideoPlayer == nullptr)
 			return false;

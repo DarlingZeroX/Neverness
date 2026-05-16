@@ -17,7 +17,7 @@
 //#include <NNMediaCore/Interface/AudioInterface.h>
 #include "../Interface/AudioClip.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct AudioAsset : public VGAsset
 	{

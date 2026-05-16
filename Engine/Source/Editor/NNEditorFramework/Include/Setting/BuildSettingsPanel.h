@@ -14,7 +14,7 @@
 #include "../../Interface/EditorSettingInterface.h"
 #include "NNEngineLegacy/Include/Project/ProjectBuilder.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API BuildSettingsPanel : public IEditorPanel
 	{
@@ -50,7 +50,7 @@ namespace VisionGal::Editor
 		std::vector<std::string> m_TargetPlatforms;
 		std::string m_TargetPlatform;
 
-		ProjectBuilder::BuildContext m_BuildContext;
+		Runtime::ProjectBuilder::BuildContext m_BuildContext;
 	};
 
 }

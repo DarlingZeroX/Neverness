@@ -17,20 +17,20 @@
 //#include <NNRuntimeAsset/Include/HAsset.h>
 #include <NNRuntimeAsset/Interface/Package.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct VG_EDITOR_FRAMEWORK_API AssetEditor
 	{
-		void OpenAsset(const VGPath& path, const VGAssetMetaData& metaData);
-		void OpenAsset(const VGPath& path);
+		void OpenAsset(const Runtime::VGPath& path, const Runtime::VGAssetMetaData& metaData);
+		void OpenAsset(const Runtime::VGPath& path);
 
-		void RegisterHandler(std::string type, std::function<void(const VGPath&)> handle);
+		void RegisterHandler(std::string type, std::function<void(const Runtime::VGPath&)> handle);
 
 		static AssetEditor& Get();
 
-		void OpenTextFile(const VGPath& path);
+		void OpenTextFile(const Runtime::VGPath& path);
 	private:
-		std::unordered_map<std::string, std::function<void(const VGPath&)>> m_Handlers;
+		std::unordered_map<std::string, std::function<void(const Runtime::VGPath&)>> m_Handlers;
 	};
 
 }

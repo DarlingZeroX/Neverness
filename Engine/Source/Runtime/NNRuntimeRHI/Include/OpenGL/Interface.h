@@ -14,7 +14,7 @@
 #include<vector>
 #include<iostream>
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class Bindable
 	{
@@ -31,4 +31,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		virtual ~Renderable() = default;
 	};
 	 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

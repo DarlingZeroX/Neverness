@@ -12,7 +12,7 @@
 #include "OpenGL/Texture2D.h"
 #include "OpenGL/ThrowMarco.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	GLenum Texture2D::GetTexType() const noexcept
 	{
@@ -105,7 +105,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return false;
 	}
 
-	Ref<Texture2D> Texture2D::CreateFromMemory(const VGFX::TextureDesc& desc)
+	NN::Ref<Texture2D> Texture2D::CreateFromMemory(const VGFX::TextureDesc& desc)
 	{
 		auto Tex = std::make_shared<Texture2D>();
 
@@ -176,5 +176,5 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GL_THROW_INFO(glGenerateMipmap(GetTexType()));
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 

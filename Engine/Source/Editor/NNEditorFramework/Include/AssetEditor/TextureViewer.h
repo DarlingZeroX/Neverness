@@ -14,7 +14,7 @@
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNEngineLegacy/Include/Render/Texture2D.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class TextureViewer : public ImGuiEx::ImTaskInterface
 	{
@@ -46,7 +46,7 @@ namespace VisionGal::Editor
 			ImDrawList* DrawList = nullptr;
 		};
 	public:
-		TextureViewer(const VGPath& path);
+		TextureViewer(const Runtime::VGPath& path);
 		TextureViewer(const TextureViewer&) = default;
 		TextureViewer& operator=(const TextureViewer&) = default;
 		TextureViewer(TextureViewer&&) noexcept = default;
@@ -60,8 +60,8 @@ namespace VisionGal::Editor
 
 		void ScaleImage(float offset);
 	private:
-		VGPath m_Path;
-		Ref<Texture2D> m_ImageTexture;
+		Runtime::VGPath m_Path;
+		Ref<Runtime::Texture2D> m_ImageTexture;
 
 		//ImageViewProcessor m_ImageProcesser;
 		ImageViewData m_ViewData;

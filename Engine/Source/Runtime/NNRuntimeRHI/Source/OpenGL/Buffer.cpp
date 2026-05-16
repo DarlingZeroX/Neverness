@@ -12,7 +12,7 @@
 #include "OpenGL/Buffer.h"
 #include "OpenGL/ThrowMarco.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	BufferGL::BufferGL(BufferGL&& buf) noexcept
 
@@ -87,5 +87,5 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return m_RendererID;
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 

@@ -222,8 +222,8 @@ private:
         //BuildFilelist(m_ZipArchive, m_FileList);
         //m_IsInitialized = true;
 
-		std::vector<VisionGal::PakEntry> entries;
-		bool result = VisionGal::PakFileReader::ReadEntries(m_ZipPath, entries);
+		std::vector<NN::Runtime::PakEntry> entries;
+		bool result = NN::Runtime::PakFileReader::ReadEntries(m_ZipPath, entries);
 
 		if(result == false){
 			return;
@@ -296,7 +296,7 @@ private:
         return FindFile(filePath, m_FileList) != nullptr;
     }
 
-	void BuildFilelist(std::vector<VisionGal::PakEntry> entries, TFileList& outFileList)
+	void BuildFilelist(std::vector<NN::Runtime::PakEntry> entries, TFileList& outFileList)
 	{
 		//for (auto i = 0; i < entries.size(); i++) {
 		for(auto& entry: entries)

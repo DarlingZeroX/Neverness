@@ -13,12 +13,12 @@
 #include "Render/Camera.h"
 #include "Scene/Components.h"
 #include "Engine/Manager.h"
-#include "NNKernel/Interface/HLocalization.h"
+#include "NNCore/Interface/HLocalization.h"
 #include "NNRuntimeCore/Interface/Loader.h"
 //#include "Galgame/Components.h"
 #include "Engine/EngineResource.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	GameActorFactory::GameActorFactory()
 	{
@@ -38,12 +38,12 @@ namespace VisionGal
 		auto* actor = scene->CreateActor(parent);
 		if (type == "Empty")
 		{
-			actor->SetLabel(Horizon::GetTranslateText("Empty##Actor"));
+			actor->SetLabel(NN::Core::GetTranslateText("Empty##Actor"));
 			return actor;
 		}
 		if (type == "Camera")
 		{
-			actor->SetLabel(Horizon::GetTranslateText("Camera"));
+			actor->SetLabel(NN::Core::GetTranslateText("Camera"));
 
 			auto com = actor->AddComponent<CameraComponent>();
 			auto* viewport = GetViewportManager()->GetMainViewport();
@@ -55,7 +55,7 @@ namespace VisionGal
 		}
 		else if (type == "Sprite")
 		{
-			actor->SetLabel(Horizon::GetTranslateText("Sprite"));
+			actor->SetLabel(NN::Core::GetTranslateText("Sprite"));
 
 			auto com = actor->AddComponent<SpriteRendererComponent>();
 
@@ -71,25 +71,25 @@ namespace VisionGal
 		}
 		else if (type == "AudioSource")
 		{
-			actor->SetLabel(Horizon::GetTranslateText("Audio Source"));
+			actor->SetLabel(NN::Core::GetTranslateText("Audio Source"));
 
 			auto com = actor->AddComponent<AudioSourceComponent>();
 		}
 		else if (type == "VideoPlayer")
 		{
-			actor->SetLabel(Horizon::GetTranslateText("Video Player"));
+			actor->SetLabel(NN::Core::GetTranslateText("Video Player"));
 
 			auto com = actor->AddComponent<VideoPlayerComponent>();
 		}
 		else if (type == "UIDocument")
 		{
-			actor->SetLabel(Horizon::GetTranslateText("UI Document"));
+			actor->SetLabel(NN::Core::GetTranslateText("UI Document"));
 
 			auto com = actor->AddComponent<RmlUIDocumentComponent>();
 		}
 		//else if (type == "GalGameEngine")
 		//{
-		//	actor->SetLabel(Horizon::GetTranslateText("GalGame Engine"));
+		//	actor->SetLabel(NN::Core::GetTranslateText("GalGame Engine"));
 		//
 		//	auto com = actor->AddComponent<GalGame::GalGameEngineComponent>();
 		//}

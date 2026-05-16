@@ -63,7 +63,7 @@ void Shell::Shutdown()
 
 void Shell::LoadFonts()
 {
-	const Rml::String directory = VisionGal::Core::GetEngineResourcePathVFS() + "fonts/";
+	const Rml::String directory = NN::Runtime::Core::GetEngineResourcePathVFS() + "fonts/";
 
 	struct FontFace {
 		const char* filename;

@@ -11,9 +11,9 @@
 
 #pragma once
 #include "../../Config.h"
-#include <NNKernel/Interface/HLocalization.h>
+#include <NNCore/Interface/HLocalization.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	VG_EDITOR_FRAMEWORK_API bool EditorLoadLanguage(const std::string& code);
 

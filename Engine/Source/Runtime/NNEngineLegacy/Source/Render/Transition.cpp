@@ -15,7 +15,7 @@
 //#include "Graphics/Interface/VGFX.h"
 #include <NNRuntimeRHI/Interface/VGFX.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	SceneTransitionBase::SceneTransitionBase()
 	{

@@ -16,7 +16,7 @@
 namespace VisionGal::Editor
 {
 	/// @brief VGLauncher 主窗口类，用于显示和管理项目列表
-	class VGLauncherMainWindow : public IEditorPanel
+	class VGLauncherMainWindow : public NN::Editor::IEditorPanel
 	{
 	public:
 		VGLauncherMainWindow();

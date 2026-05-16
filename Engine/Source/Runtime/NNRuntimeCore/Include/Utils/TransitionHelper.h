@@ -14,7 +14,7 @@
 #include <functional>
 #include "../../VGCoreConfig.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_CORE_API TransitionHelper {
 	public:

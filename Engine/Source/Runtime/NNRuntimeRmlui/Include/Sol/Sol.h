@@ -23,5 +23,5 @@ namespace RmlSol {
 		and close the state during the call to Rml::Shutdown(). Otherwise, if a Lua state is provided, the user is
 		responsible for closing the provided Lua state. The state must then be closed after the call to Rml::Shutdown().
 		@remark The plugin registers the "body" tag to generate a LuaDocument rather than a ElementDocument. */
-	RMLUISOL_API void Initialise(Ref<sol::state> L);
+	RMLUISOL_API void Initialise(NN::Ref<sol::state> L);
 } // namespace Rml

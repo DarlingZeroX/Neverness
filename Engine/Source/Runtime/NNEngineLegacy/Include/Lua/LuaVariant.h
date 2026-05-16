@@ -13,7 +13,7 @@
 #include <sol/object.hpp>
 #include <unordered_map>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class LuaVariant
 	{

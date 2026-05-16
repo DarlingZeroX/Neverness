@@ -12,7 +12,7 @@
 #include "EditorSettingInterface.h"
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	ImGuiTableFlags EditorSettingInterface::GetSettingTableFlag()
 	{

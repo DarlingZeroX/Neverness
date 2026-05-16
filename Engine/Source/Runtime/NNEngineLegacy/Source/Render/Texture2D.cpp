@@ -10,9 +10,9 @@
 */
 
 #include "Render/Texture2D.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	Texture2D::Texture2D()
 		:m_Texture(nullptr)

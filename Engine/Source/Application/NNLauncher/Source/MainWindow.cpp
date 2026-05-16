@@ -19,7 +19,8 @@
 #include <NNEditorFramework/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor
-{
+{	using namespace NN::Editor;
+using namespace NN::Runtime;
 	VGLauncherMainWindow::VGLauncherMainWindow()
 	{
 		m_ProjectItemSize.y = 63.0f;;
@@ -290,8 +291,8 @@ namespace VisionGal::Editor
 #endif
 
 				// 写入编辑器启动的项目路径到 VGLauncher.txt
-				Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data");
-				Horizon::HFileSystem::WriteTextToFile("Data/EditorStartupData.txt", project.Path);
+				NN::Core::HFileSystem::CreateDirectoryWhenNoExist("Data");
+				NN::Core::HFileSystem::WriteTextToFile("Data/EditorStartupData.txt", project.Path);
 
 				// 使用 std::system 启动编辑器
 				std::string command = "\"" + editorPath.string();

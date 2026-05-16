@@ -5,13 +5,13 @@
 #include "IconFont/IconsFontAwesome5Pro.h"
 #include "ImGuiExDrawList.h"
 #include <functional>
-#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNCore/Interface/HCoreTypes.h>
 
 #include "ImScoped.h"
 #include "ImWindow.h"
 #include "ImNotify.h"
 #include "ImTaskManager.h"
-#include "NNKernel/Interface/HCoreTypes.h"
+#include "NNCore/Interface/HCoreTypes.h"
 
 namespace ImGuiEx
 {
@@ -50,7 +50,7 @@ namespace ImGuiEx
 	IMGUI_API void PushAllColorsCustom(ImGuiStyle custom_gui_style);
 	IMGUI_API void PopAllColorsCustom();
 
-	IMGUI_API void DrawObjBorderFloat2(Horizon::float2 obj_pos, Horizon::float2 obj_size, float distance_thickness = 5.f, ImU32 col = IM_COL32(255, 255, 0, 255), float rounding = 0.f, float tickness = 1.0f);
+	IMGUI_API void DrawObjBorderFloat2(NN::Core::float2 obj_pos, NN::Core::float2 obj_size, float distance_thickness = 5.f, ImU32 col = IM_COL32(255, 255, 0, 255), float rounding = 0.f, float tickness = 1.0f);
 	IMGUI_API void DrawObjBorder(ImVec2 obj_pos, ImVec2 obj_size, float distance_thickness = 5.f, ImU32 col = IM_COL32(255, 255, 0, 255), float rounding = 0.f, float tickness = 1.0f);
 
 }

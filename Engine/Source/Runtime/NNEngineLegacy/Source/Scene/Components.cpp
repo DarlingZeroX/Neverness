@@ -10,13 +10,13 @@
 */
 
 #include "Scene/Components.h"
-#include <NNKernel/Include/Math/GLM/ext/matrix_transform.hpp>
+#include <NNCore/Include/Math/GLM/ext/matrix_transform.hpp>
 #include "Engine/Manager.h"
-#include "NNKernel/Include/Math/GLM/gtc/quaternion.hpp"
+#include "NNCore/Include/Math/GLM/gtc/quaternion.hpp"
 #include "Engine/AudioPlayer.h"
 #include "Engine/VideoPlayer.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	TransformComponent::TransformComponent()
 	{

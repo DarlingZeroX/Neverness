@@ -275,7 +275,7 @@ bool RmlSDL::InputEventHandler(Rml::Context* context, SDL_Window* window, SDL_Ev
 	return result;
 }
 
-bool RmlSDL::InputEventHandler(Rml::Context* context, SDL_Window* window, VisionGal::Viewport* viewport, SDL_Event& ev)
+bool RmlSDL::InputEventHandler(Rml::Context* context, SDL_Window* window, NN::Runtime::Viewport* viewport, SDL_Event& ev)
 {
 #if SDL_MAJOR_VERSION >= 3
 #define RMLSDL_WINDOW_EVENTS_BEGIN

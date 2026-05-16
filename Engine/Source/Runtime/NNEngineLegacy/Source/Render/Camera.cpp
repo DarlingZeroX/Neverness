@@ -10,9 +10,9 @@
 */
 
 #include "Render/Camera.h"
-#include "NNKernel/include/Math/GLM/ext/matrix_clip_space.hpp"
+#include "NNCore/include/Math/GLM/ext/matrix_clip_space.hpp"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	//Letterbox2DCamera::Letterbox2DCamera()
 	//{

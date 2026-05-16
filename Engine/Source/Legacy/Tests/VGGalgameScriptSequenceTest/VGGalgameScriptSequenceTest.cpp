@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 
 #include "VGGalgameSequenceRuntime/Include/Runtime/SequenceExecutionInstance.h"
 #include "VGGalgameSequenceRuntime/Include/Runtime/SequenceStateSerializer.h"

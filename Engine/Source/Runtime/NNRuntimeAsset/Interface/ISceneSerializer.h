@@ -13,9 +13,9 @@
 #include "NNRuntimeAsset/Include/SceneAsset.h"
 //#include "../../Scene/Components.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
-#include <NNKernel/Interface/HSerialization.h>
+#include <NNCore/Interface/HSerialization.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct ISceneSegmentSerializer;
 

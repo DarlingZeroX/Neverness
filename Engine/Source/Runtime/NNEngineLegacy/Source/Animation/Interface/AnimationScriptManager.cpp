@@ -12,7 +12,7 @@
 #include "Animation/Interface/AnimationScriptManager.h"
 #include "Scene/Components.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 
 	bool AnimationScriptManager::AddActorAnimationScript(IGameActor* actor, const Ref<IAnimationScript>& script)

@@ -13,7 +13,7 @@
 #include "../VGGRCExport.h"
 #include <cstdint>
 #include <NNRuntimeRHI/Interface/Texture.h>
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 #include "ArchiveDataContainer.h"
 
 namespace VisionGal::GalGame

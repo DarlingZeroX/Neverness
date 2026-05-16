@@ -12,7 +12,7 @@
 #include "SceneSerializerFactory.h"
 #include "SceneSerializer.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void SceneSerializerRegistry::RegisterSegmentSerializer(const String& segmentType,
 		const Ref<ISceneSegmentSerializer>& serializer)

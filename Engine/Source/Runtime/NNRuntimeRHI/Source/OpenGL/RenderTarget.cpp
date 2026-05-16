@@ -12,10 +12,10 @@
 #include "OpenGL/RenderTarget.h"
 #include "OpenGL/ThrowMarco.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
-	Ref<RenderTarget2D> RenderTarget2D::Create(unsigned int width, unsigned int height)
+namespace NN::Runtime::OpenGL {
+	NN::Ref<RenderTarget2D> RenderTarget2D::Create(unsigned int width, unsigned int height)
 	{
-		auto rt = MakeRef<RenderTarget2D>();
+		auto rt = NN::MakeRef<RenderTarget2D>();
 		rt->CreateImp(width, height);
 
 		return rt;
@@ -45,7 +45,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 	bool RenderTarget2D::CreateImp(unsigned int width, unsigned int height)
 	{
-		m_FrameBuffer = MakeRef<FrameBuffer>();
+		m_FrameBuffer = NN::MakeRef<FrameBuffer>();
 		m_FrameBuffer->Bind();
 
 		m_ColorFBT = FrameBufferTexture::Create(width, height, FrameBufferTexture::Type::COLOR);
@@ -68,4 +68,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

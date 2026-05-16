@@ -15,7 +15,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API ComponentDrawerRegistry
 	{
@@ -29,10 +29,10 @@ namespace VisionGal::Editor
 
 		bool RegisterDrawer(const Ref<IComponentDrawer>& drawer);
 
-		IComponentDrawer* GetDrawer(const String& type);
+		IComponentDrawer* GetDrawer(const Runtime::String& type);
 
 		static ComponentDrawerRegistry& GetInstance();
 	private:
-		std::unordered_map<String,Ref< IComponentDrawer >> m_Drawers;
+		std::unordered_map<Runtime::String,Ref< IComponentDrawer >> m_Drawers;
 	};
 }

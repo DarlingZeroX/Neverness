@@ -12,7 +12,7 @@
 #pragma once
 #include <sol/state.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	namespace Lua
 	{

@@ -11,11 +11,11 @@
 
 #include "PakReader.h"
 #include "PakCrc32.h"
-#include "NNKernel/Interface/HLog.h" // 添加日志头文件
+#include "NNCore/Interface/HLog.h" // 添加日志头文件
 #include <iostream>
 #include <filesystem>
 
-namespace VisionGal {
+namespace NN::Runtime {
 	namespace fs = std::filesystem;
 
 	bool PakFileReader::ReadPakFile(const std::string& pakPath, const std::string& outPath, const std::string& aesKeyHex)

@@ -14,7 +14,7 @@
 #include "Animation/Audio/AudioAnimationScript.h"
 #include "Animation/Interface/AnimationScriptManager.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	AudioAnimationScriptManager* AudioAnimationScriptManager::GetInstance()
 	{

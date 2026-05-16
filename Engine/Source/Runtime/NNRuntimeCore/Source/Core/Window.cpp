@@ -15,11 +15,11 @@
 //#include "Graphics/OpenGL/OpenGL.h"
 #include <NNRuntimeRHI/Include/OpenGL/OpenGL.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	VGWindow::VGWindow()
 	{
-		this->AddWindowEventListener([this](const Horizon::Events::HWindowEvent& evt)
+		this->AddWindowEventListener([this](const NN::Core::Events::HWindowEvent& evt)
 			{
 				OnWindowEvent.Invoke(evt);
 			});

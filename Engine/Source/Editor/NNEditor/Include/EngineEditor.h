@@ -17,7 +17,7 @@
 
 namespace VisionGal::Editor
 {
-	class VGEditorApplication: public IEngineApplication
+	class VGEditorApplication: public NN::Runtime::IEngineApplication
 	{
 	public:
 		VGEditorApplication() = default;
@@ -28,7 +28,7 @@ namespace VisionGal::Editor
 		~VGEditorApplication() override;
 
 		void Initialize();
-		void AddApplicationLayer(IEngineApplicationLayer* layer) override;
+		void AddApplicationLayer(NN::Runtime::IEngineApplicationLayer* layer) override;
 		void OnApplicationUpdate(float deltaTime) override;
 		int ProcessEvent(const SDL_Event& event) override;
 		void MakeCurrentRenderContext() override;
@@ -41,8 +41,8 @@ namespace VisionGal::Editor
 		void OnFixedUpdate();
 		void OnGUI();
 	private:
-		Ref<VGWindow> m_EditorWindow;
-		Scope<ImguiOpengl3Layer> m_ImguiOpengl3Layer;
-		Ref<CoreGameEngine> m_GameEngine;
+		NN::Ref<NN::Runtime::VGWindow> m_EditorWindow;
+		NN::Scope<NN::Runtime::ImguiOpengl3Layer> m_ImguiOpengl3Layer;
+		NN::Ref<NN::Runtime::CoreGameEngine> m_GameEngine;
 	};
 }

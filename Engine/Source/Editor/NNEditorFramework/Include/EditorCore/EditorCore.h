@@ -15,7 +15,7 @@
 #include <functional>
 #include <string>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
     struct VG_EDITOR_FRAMEWORK_API EditorCore
     {

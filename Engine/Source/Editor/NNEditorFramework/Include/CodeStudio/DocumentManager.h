@@ -14,7 +14,7 @@
 #include "CodeDocument.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct DocumentManager
 	{
@@ -24,9 +24,9 @@ namespace VisionGal::Editor
 		int NextUID;
 		DocumentManager() : NextUID(1) {}
 
-		bool OpenTextFile(const VGPath& path);
+		bool OpenTextFile(const Runtime::VGPath& path);
 
-		CodeDocument* GetDocument(const VGPath& path);
+		CodeDocument* GetDocument(const Runtime::VGPath& path);
 
 		void AddDocument(const Ref<CodeDocument>& document);
 
@@ -43,6 +43,6 @@ namespace VisionGal::Editor
 
 		void SaveAllDocument();
 
-		bool SetDocumentActive(const VGPath& path);
+		bool SetDocumentActive(const Runtime::VGPath& path);
 	};
 }

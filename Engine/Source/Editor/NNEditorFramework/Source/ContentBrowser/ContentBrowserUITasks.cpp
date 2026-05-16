@@ -14,7 +14,7 @@
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 	void NewDirectoryUITask::RenderUI(TaskContext& context)
 	{
 		if (context.ForceStop)
@@ -35,9 +35,9 @@ namespace VisionGal::Editor {
 			{
 				const auto fullPath = m_ParentPath / m_FileName;
 
-				if (!Horizon::HFileSystem::ExistsDirectory(fullPath))
+				if (!NN::Core::HFileSystem::ExistsDirectory(fullPath))
 				{
-					if (Horizon::HFileSystem::CreateDirectory(fullPath))
+					if (NN::Core::HFileSystem::CreateDirectory(fullPath))
 					{
 						context.IsFinished = true;
 						ContentBrowser::GetInstancePtr()->RefreshDirectory();

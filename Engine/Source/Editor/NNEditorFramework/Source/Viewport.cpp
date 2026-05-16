@@ -14,9 +14,9 @@
 //#include <NNRuntimeRmlui/Interface/UISystem.h>
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	EditorViewport::EditorViewport(Viewport* viewport)
+	EditorViewport::EditorViewport(Runtime::Viewport* viewport)
 	{
 		m_Viewport = viewport;
 	}

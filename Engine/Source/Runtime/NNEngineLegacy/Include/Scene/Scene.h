@@ -14,11 +14,11 @@
 #include "NNRuntimeCore/Interface/SceneInterface.h"
 #include <memory>
 #include <unordered_map>
-#include <NNKernel/Interface/HRandom.h>
-#include <NNKernel/Include/Scene/HBaseComponent.h>
-#include <NNKernel/Include/Event/HEventDelegate.h>
+#include <NNCore/Interface/HRandom.h>
+#include <NNCore/Include/Scene/HBaseComponent.h>
+#include <NNCore/Include/Event/HEventDelegate.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_ENGINE_API Scene: public IScene
 	{
@@ -30,7 +30,7 @@ namespace VisionGal
 		Scene& operator=(Scene&&) noexcept = default;
 		~Scene() override = default;
 
-		//Horizon::HEventDelegate<const Horizon::HUISceneEvent&> OnSceneEvent;
+		//NN::Core::HEventDelegate<const NN::Core::HUISceneEvent&> OnSceneEvent;
 		IGameActor* CreateActor(IEntity* parent = nullptr) override;
 
 		template<typename T, class = typename std::enable_if<std::is_base_of<IComponent, T>::value>::type>
@@ -48,7 +48,7 @@ namespace VisionGal
 		IEntity* GetActor(VGActorID entityID) override;
 		bool RemoveActor(VGActorID entityID) override;
 		bool ExistActor(VGActorID entityID) override;
-		Horizon::HECS* GetWorld() override;
+		NN::Core::HECS* GetWorld() override;
 
 		void Update() override;
 		IGameActor* GetSceneActor() override;

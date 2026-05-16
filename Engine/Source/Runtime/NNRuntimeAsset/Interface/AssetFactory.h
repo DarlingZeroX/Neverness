@@ -14,7 +14,7 @@
 #include "../VGAssetConfig.h"
 #include "NNRuntimeCore/Interface/AssetInterface.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     /// <summary>
     /// 引擎所有资产的创建工厂

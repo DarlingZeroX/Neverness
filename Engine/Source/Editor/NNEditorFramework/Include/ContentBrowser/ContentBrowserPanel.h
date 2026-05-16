@@ -15,10 +15,10 @@
 #include "../EditorCore/ContentBrowser.h"
 #include <NNEngineLegacy/Include/Render/Texture2D.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 	class VG_EDITOR_FRAMEWORK_API ContentBrowserPanel: public IEditorPanel
 	{
-		using pfsPath = Horizon::fsPath;
+		using pfsPath = NN::Core::fsPath;
 	public:
 		ContentBrowserPanel();
 		ContentBrowserPanel(const pfsPath& path);

@@ -11,7 +11,7 @@
 
 #include "PakFormat.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	void PakEntry::Read(std::istream& stream)
 	{

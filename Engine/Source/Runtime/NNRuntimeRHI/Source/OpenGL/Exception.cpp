@@ -11,7 +11,7 @@
 
 #include "OpenGL/Exception.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	void Exception::ClearError()
 	{
@@ -49,6 +49,6 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return errorMsg.str();
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 
 

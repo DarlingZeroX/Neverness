@@ -18,7 +18,7 @@ endif()
 option(ENABLE_TESTS "Enable building tests" ON)
 
 ############ 项目名称
-project ("VisionGal" LANGUAGES C CXX)
+project ("Neverness" LANGUAGES C CXX)
 
 ############ 全局设置多线程编译（MSVC）
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
@@ -54,7 +54,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES "Use VGEngineRuntimeServices for VGNativeApi engineServices (else Stub-only table)" ON)
 
 ############ 模块
-add_subdirectory ("Engine/Source/Kernel")
+add_subdirectory ("Engine/Source/Core")
 add_subdirectory ("Engine/Source/Runtime")
 
 ############ 托管代码（CoreCLR via nethost，预设仅 Windows/MSVC 平台启用）

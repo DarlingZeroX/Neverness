@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include <SDL3/SDL.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct IEngineApplicationLayer
 	{

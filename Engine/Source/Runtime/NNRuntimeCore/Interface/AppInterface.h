@@ -15,14 +15,14 @@
 #include "../Include/Core/Core.h"
 #include <NNPlatformCore/Include/WindowInterface.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct IGameAppContext
 	{
 		virtual ~IGameAppContext() = default;
 
 		virtual IUISystem* GetUISystem() = 0;
-		virtual Horizon::IWindow* GetWindow() = 0;
+		virtual NN::Core::IWindow* GetWindow() = 0;
 		virtual IScene* GetScene() = 0;
 	};
 }

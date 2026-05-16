@@ -7,7 +7,7 @@
 
 #include "NNNativeEngineAPI/EngineTypes.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 資產登記表（GUID ↔ 虛擬路徑；Phase 5 記憶體實作）。

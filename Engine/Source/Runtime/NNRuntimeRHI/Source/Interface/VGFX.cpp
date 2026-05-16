@@ -16,9 +16,9 @@
 #include "OpenGL/ShaderProgram.h"
 #include "OpenGL/Effect.h"
 #include "OpenGL/ThrowMarco.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal::VGFX
+namespace NN::Runtime::VGFX
 {
 	static IShaderProgram* s_CurrentProgram = nullptr;
 
@@ -27,7 +27,7 @@ namespace VisionGal::VGFX
 		OpenGL::RasterStates::DepthTest(enable);
 	}
 
-	Ref<IShader> CreateShaderBySource(int shaderType, const std::string& source)
+	NN::Ref<IShader> CreateShaderBySource(int shaderType, const std::string& source)
 	{
 		switch (shaderType)
 		{
@@ -37,8 +37,8 @@ namespace VisionGal::VGFX
 			return OpenGL::CreateShader(GL_FRAGMENT_SHADER, source);
 		}
 	}
-	 
-	Ref<IShaderProgram> CreateProgram(const std::vector<IShader*>& shaders)
+
+	NN::Ref<IShaderProgram> CreateProgram(const std::vector<IShader*>& shaders)
 	{
 		return OpenGL::ShaderProgram::Create(shaders);;
 	}
@@ -54,17 +54,17 @@ namespace VisionGal::VGFX
 		s_CurrentProgram->SetInt(name, v);
 	}
 
-	void SetUniformInt2(const std::string& name, Horizon::int2 v)
+	void SetUniformInt2(const std::string& name, NN::Core::int2 v)
 	{
 		s_CurrentProgram->SetInt2(name, v);
 	}
 
-	void SetUniformInt3(const std::string& name, Horizon::int3 v)
+	void SetUniformInt3(const std::string& name, NN::Core::int3 v)
 	{
 		s_CurrentProgram->SetInt3(name, v);
 	}
 
-	void SetUniformInt4(const std::string& name, Horizon::int4 v)
+	void SetUniformInt4(const std::string& name, NN::Core::int4 v)
 	{
 		s_CurrentProgram->SetInt4(name, v);
 	}
@@ -79,32 +79,32 @@ namespace VisionGal::VGFX
 		s_CurrentProgram->SetFloat(name, v);
 	}
 
-	void SetUniformFloat2(const std::string& name, const Horizon::float2& v)
+	void SetUniformFloat2(const std::string& name, const NN::Core::float2& v)
 	{
 		s_CurrentProgram->SetFloat2(name, v);
 	}
 
-	void SetUniformFloat3(const std::string& name, const Horizon::float3& v3)
+	void SetUniformFloat3(const std::string& name, const NN::Core::float3& v3)
 	{
 		s_CurrentProgram->SetFloat3(name, v3);
 	}
 
-	void SetUniformFloat4(const std::string& name, const Horizon::float4& v4)
+	void SetUniformFloat4(const std::string& name, const NN::Core::float4& v4)
 	{
 		s_CurrentProgram->SetFloat4(name, v4);
 	}
 
-	void SetUniformMatrix2(const std::string& name, const Horizon::matrix2x2& matrix)
+	void SetUniformMatrix2(const std::string& name, const NN::Core::matrix2x2& matrix)
 	{
 		s_CurrentProgram->SetMatrix2(name, matrix);
 	}
 
-	void SetUniformMatrix3(const std::string& name, const Horizon::matrix3x3& matrix)
+	void SetUniformMatrix3(const std::string& name, const NN::Core::matrix3x3& matrix)
 	{
 		s_CurrentProgram->SetMatrix3(name, matrix);
 	}
 
-	void SetUniformMatrix4(const std::string& name, const Horizon::matrix4x4& matrix)
+	void SetUniformMatrix4(const std::string& name, const NN::Core::matrix4x4& matrix)
 	{
 		s_CurrentProgram->SetMatrix4(name, matrix);
 	}
@@ -148,10 +148,10 @@ namespace VisionGal::VGFX
 		glViewport(x, y, width, height);
 	}
 
-	Ref<IStaticMesh> CreateStaticMesh(void* vertexData, unsigned int vertexSize, void* indexData,
-	                                  unsigned int indexSize, const std::vector<VertexElement::IElement*>& elements)
+	NN::Ref<IStaticMesh> CreateStaticMesh(void* vertexData, unsigned int vertexSize, void* indexData,
+	                                      unsigned int indexSize, const std::vector<VertexElement::IElement*>& elements)
 	{
-		return MakeRef<OpenGL::StaticMesh>(vertexData,vertexSize,indexData,indexSize, elements);
+		return NN::MakeRef<OpenGL::StaticMesh>(vertexData,vertexSize,indexData,indexSize, elements);
 	}
 
 	void RenderMesh(IStaticMesh* mesh)

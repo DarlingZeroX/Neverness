@@ -16,7 +16,7 @@
 #include "NNRuntimeAsset/Interface/AssetManager.h"
 #include "Manager/SceneManager.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     VG_ENGINE_API ViewportManager* GetViewportManager();
 

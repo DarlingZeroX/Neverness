@@ -14,9 +14,9 @@
 #include "UIInterface.h"
 #include <NNRuntimeCore/Interface/SceneInterface.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
-	struct IComponentDrawer : public IComponentUIRenderer<IEntity>
+	struct IComponentDrawer : public IComponentUIRenderer<Runtime::IEntity>
 	{
 		~IComponentDrawer() override = default;
 	};

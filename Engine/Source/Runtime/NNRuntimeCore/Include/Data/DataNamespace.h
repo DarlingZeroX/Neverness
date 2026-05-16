@@ -11,9 +11,9 @@
 
 #pragma once
 #include "DataVariant.h"
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_CORE_API VGDataNamespace
 	{

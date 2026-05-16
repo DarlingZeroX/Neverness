@@ -15,12 +15,12 @@
 //#include <NNEngineLegacy/Include/Resource/Interface/AudioInterface.h>
 #include <NNMediaCore/Interface/AudioInterface.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class AudioViewer : public IEditorTaskPanel
 	{
 	public:
-		AudioViewer(const VGPath& path);
+		AudioViewer(const Runtime::VGPath& path);
 		AudioViewer(const AudioViewer&) = default;
 		AudioViewer& operator=(const AudioViewer&) = default;
 		AudioViewer(AudioViewer&&) noexcept = default;
@@ -34,8 +34,8 @@ namespace VisionGal::Editor
 		void RenderLoopButtonUI();
 		void RenderVolumeButtonUI();
 
-		VGPath m_Path;
-		Ref<Horizon::IAudioPlayer> m_AudioPlayer = nullptr;
+		Runtime::VGPath m_Path;
+		Ref<NN::Core::IAudioPlayer> m_AudioPlayer = nullptr;
 
 		float m_CurrentPlayTime = 0.f;
 		float m_AudioDuration = 0.f;

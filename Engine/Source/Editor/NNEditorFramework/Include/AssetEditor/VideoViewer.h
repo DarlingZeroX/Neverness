@@ -14,12 +14,12 @@
 #include <NNRuntimeCore/Include/Core/CoreTypes.h>
 #include <NNEngineLegacy/Include/Engine/VideoPlayer.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VideoViewer : public IEditorTaskPanel
 	{
 	public:
-		VideoViewer(const VGPath& path);
+		VideoViewer(const Runtime::VGPath& path);
 		VideoViewer(const VideoViewer&) = default;
 		~VideoViewer() override;
 		VideoViewer& operator=(const VideoViewer&) = default;
@@ -34,8 +34,8 @@ namespace VisionGal::Editor
 		void RenderLoopButtonUI();
 		void RenderVolumeButtonUI();
 
-		VGPath m_Path;
-		Ref<IVideoPlayer> m_VideoPlayer = nullptr;
+		Runtime::VGPath m_Path;
+		Ref<Runtime::IVideoPlayer> m_VideoPlayer = nullptr;
 
 		float m_CurrentPlayTime = 0.f;
 		float m_VideoDuration = 0.f;

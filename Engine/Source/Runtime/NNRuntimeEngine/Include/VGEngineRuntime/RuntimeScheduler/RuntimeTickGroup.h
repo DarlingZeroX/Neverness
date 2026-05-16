@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief Runtime **Tick 分组**（**VGRuntimeScheduler** / **RuntimeScheduler** 管线顺序的语义锚点）。

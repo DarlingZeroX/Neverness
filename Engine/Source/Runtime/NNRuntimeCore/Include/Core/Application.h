@@ -13,7 +13,7 @@
 #include "../../VGCoreConfig.h"
 #include <string>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_CORE_API Application
 	{

@@ -14,11 +14,11 @@
 //#include "Video.h"
 #include "NNRuntimeCore/Interface/Loader.h"
 #include "NNRuntimeAsset/Include/TextureAsset.h"
-#include <NNKernel/Interface/HSingleton.h>
+#include <NNCore/Interface/HSingleton.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
-	class VG_ENGINE_API TextureResourceManager : public Horizon::HSingletonBase<TextureResourceManager>, public VGObjectLoader
+	class VG_ENGINE_API TextureResourceManager : public NN::Core::HSingletonBase<TextureResourceManager>, public VGObjectLoader
 	{
 	public:
 		TextureResourceManager();
@@ -38,7 +38,7 @@ namespace VisionGal {
 	};
 
 
-	class VG_ENGINE_API VideoResourceManager : public Horizon::HSingletonBase<VideoResourceManager>, public VGObjectLoader
+	class VG_ENGINE_API VideoResourceManager : public NN::Core::HSingletonBase<VideoResourceManager>, public VGObjectLoader
 	{
 	public:
 		VideoResourceManager();
@@ -56,7 +56,7 @@ namespace VisionGal {
 		//std::unordered_map<String, Ref<VideoClip>> m_CachedVideos;
 	};
 
-	class VG_ENGINE_API AudioResourceManager : public Horizon::HSingletonBase<AudioResourceManager>, public VGObjectLoader
+	class VG_ENGINE_API AudioResourceManager : public NN::Core::HSingletonBase<AudioResourceManager>, public VGObjectLoader
 	{
 	public:
 		AudioResourceManager();

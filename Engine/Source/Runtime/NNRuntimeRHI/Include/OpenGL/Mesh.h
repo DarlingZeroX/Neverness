@@ -15,7 +15,7 @@
 #include "Buffer.h"
 #include "VertexArray.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API VertexBuffer :public Bindable, public Renderable
 	{
@@ -178,4 +178,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		VertexArray m_VertexArray;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

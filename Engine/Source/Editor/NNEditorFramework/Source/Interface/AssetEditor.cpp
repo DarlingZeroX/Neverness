@@ -22,9 +22,9 @@
 
 #include "NNRuntimeAsset/Include/GalGameAsset.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	void AssetEditor::OpenAsset(const VGPath& path, const VGAssetMetaData& metaData)
+	void AssetEditor::OpenAsset(const Runtime::VGPath& path, const Runtime::VGAssetMetaData& metaData)
 	{
 		auto& manager = ImGuiEx::ImTaskManager::Get();
 
@@ -48,7 +48,7 @@ namespace VisionGal::Editor
 		{
 			OpenTextFile(path);
 		}
-		else if (metaData.AssetType == GLuaScriptAssetType{}.GetNameID())
+		else if (metaData.AssetType == Runtime::GLuaScriptAssetType{}.GetNameID())
 		{
 			OpenTextFile(path);
 		}
@@ -67,12 +67,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void AssetEditor::OpenAsset(const VGPath& path)
+	void AssetEditor::OpenAsset(const Runtime::VGPath& path)
 	{
-		return OpenAsset(path, GetAssetTypeNameID(path));
+		return OpenAsset(path, Runtime::GetAssetTypeNameID(path));
 	}
 
-	void AssetEditor::RegisterHandler(std::string type, std::function<void(const VGPath&)> handle)
+	void AssetEditor::RegisterHandler(std::string type, std::function<void(const Runtime::VGPath&)> handle)
 	{
 		m_Handlers[type] = handle;
 	}
@@ -84,7 +84,7 @@ namespace VisionGal::Editor
 		return editor;
 	}
 
-	void AssetEditor::OpenTextFile(const VGPath& path)
+	void AssetEditor::OpenTextFile(const Runtime::VGPath& path)
 	{
 		auto* editor = PanelManager::GetInstance();
 		auto* mainWindow = dynamic_cast<EditorMainWindow*>(editor->GetPanelWithID("EditorMainWindow"));

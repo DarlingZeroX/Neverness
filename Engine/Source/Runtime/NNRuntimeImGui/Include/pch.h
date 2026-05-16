@@ -10,6 +10,6 @@
 #include <stddef.h>                 // ptrdiff_t, NULL
 #include <string.h>                 // memset, memmove, memcpy, strlen, strchr, strcpy, strcmp
 #include <malloc.h>
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 
 #endif //PCH_H

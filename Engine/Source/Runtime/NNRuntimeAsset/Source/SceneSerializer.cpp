@@ -11,9 +11,9 @@
 
 #include "SceneSerializer.h"
 #include "NNRuntimeCore/Interface/Loader.h"
-#include "NNKernel/Include/Scene/HBaseComponent.h"
+#include "NNCore/Include/Scene/HBaseComponent.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	String EntitySerializer::GetSegmentType()
 	{
@@ -23,9 +23,9 @@ namespace VisionGal
 	template<class Archive>
 	void WriteEntity(Archive& archive, IScene* scene)
 	{
-		auto view = scene->GetWorld()->view<Horizon::HEntityObjectData, Horizon::HRelationship>();
+		auto view = scene->GetWorld()->view<NN::Core::HEntityObjectData, NN::Core::HRelationship>();
 		archive(cereal::make_nvp("EntityNumber", view.size_hint()));
-		view.each([&](Horizon::HEntityObjectData& entityData, Horizon::HRelationship& relation) { // flecs::entity argument is optional
+		view.each([&](NN::Core::HEntityObjectData& entityData, NN::Core::HRelationship& relation) { // flecs::entity argument is optional
 			archive(cereal::make_nvp("Label", relation.Label));
 			archive(cereal::make_nvp("ID", entityData.ID));
 			if (relation.Parent == nullptr)
@@ -134,7 +134,7 @@ namespace VisionGal
 		for (auto& entity: container.entities)
 		{
 			IGameActor* actor = scene->CreateDeserializeActor(entity);
-			auto* entityData = actor->GetComponent<Horizon::HEntityObjectData>();
+			auto* entityData = actor->GetComponent<NN::Core::HEntityObjectData>();
 
 			for (auto& comID: entity.ComponentIDs)
 			{

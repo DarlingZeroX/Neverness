@@ -13,16 +13,17 @@
 #include <NNRuntimeAsset/Interface/Package.h>
 #include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
-#include <NNKernel/Interface/HStringTools.h>
+#include <NNCore/Interface/HStringTools.h>
 #include <NNPlatformCore/Interface/HClipboard.h>
 #include <NNFileSystem/Interface/HFileSystemGenerator.h>
 //#include <NNRuntimeAsset/Include/HPackage.h>
 //#include "Core/VFS.h"
 //#include "Engine/Manager/AssetManager.h"
 #include <NNRuntimeCore/Include/Core/VFS.h>
+#include <NNRuntimeCore/Include/Core/Core.h>
 #include "NNRuntimeAsset/Interface/AssetManager.h"
 
-namespace VisionGal {
+namespace NN::Editor{
 
 	ContentBrowser::ContentBrowser(const pfsPath& path)
 		:m_ProjectDirectory(path)
@@ -78,7 +79,7 @@ namespace VisionGal {
 
 	void ContentBrowser::RefreshDirectoryTree(ContentBrowserDirectory& node, const pfsPath& path)
 	{
-		if (Horizon::HFileSystem::ExistsDirectory(path) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(path) == false)
 		{
 			H_LOG_ERROR("[ContentBrowser::RefreshDirectoryTree] The directory tree does not exist: %s", path.string().c_str());
 			return;
@@ -93,7 +94,7 @@ namespace VisionGal {
 				continue;
 
 			// 直接使用std::filesystem::relative速度太慢
-			//pfsPath relativePath = Horizon::HFileSystem::RelativePath(entry.path(), m_ProjectDirectory);
+			//pfsPath relativePath = NN::Core::HFileSystem::RelativePath(entry.path(), m_ProjectDirectory);
 			// 不触发文件状态检查或符号链接处理，仅做字符串解析
 			//const auto absPath = std::filesystem::absolute(entry.path());
 			//pfsPath relativePath = absPath.lexically_relative(m_ProjectDirectory);
@@ -106,14 +107,14 @@ namespace VisionGal {
 			if (entry == m_CurrentDirectory)
 				chlidFlags = chlidFlags|ImGuiTreeNodeFlags_Selected;
 
-			if (Horizon::HFileSystem::DirectoryEmpty(entry))
+			if (NN::Core::HFileSystem::DirectoryEmpty(entry))
 				chlidFlags |= ImGuiTreeNodeFlags_Leaf;
 
 			std::string nodeName = ICON_FA_FOLDER " ";
 			child.Name += absPath.filename().string();
 			child.UIFlags = chlidFlags;
 			child.AbsolutePath = entry.path();
-			child.Path = VFS::GetResourcePathVFS(path.string());
+			child.Path = NN::Runtime::VFS::GetResourcePathVFS(path.string());
 
 			if (!ExistChildDirectory(node, entry.path()))
 			{
@@ -156,17 +157,17 @@ namespace VisionGal {
 		return;
 	}
 
-	const Horizon::fsPath& ContentBrowser::GetProjectDirectory()
+	const NN::Core::fsPath& ContentBrowser::GetProjectDirectory()
 	{
 		return m_ProjectDirectory;
 	}
 
-	const Horizon::fsPath& ContentBrowser::GetPrevDirectory()
+	const NN::Core::fsPath& ContentBrowser::GetPrevDirectory()
 	{
 		return m_PrevDirectory;
 	}
 
-	const Horizon::fsPath& ContentBrowser::GetCurrentBrowserDirectory()
+	const NN::Core::fsPath& ContentBrowser::GetCurrentBrowserDirectory()
 	{
 		return m_CurrentDirectory;
 	}
@@ -187,7 +188,7 @@ namespace VisionGal {
 	void ContentBrowser::RefreshDirectory()
 	{
 		// 需要刷新虚拟文件系统
-		auto fsList = VFS::GetInstance()->GetFilesystems(Core::GetAssetsPathVFS());
+		auto fsList = Runtime::VFS::GetInstance()->GetFilesystems(Runtime::Core::GetAssetsPathVFS());
 		if (fsList.size() == 1)
 		{
 			auto fs = fsList.begin()->get();
@@ -201,7 +202,7 @@ namespace VisionGal {
 
 	void ContentBrowser::OpenDirectory(const pfsPath& path)
 	{
-		if (Horizon::HFileSystem::ExistsDirectory(path) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(path) == false)
 		{
 			H_LOG_ERROR("[ContentBrowser::OpenDirectory] The directory does not exist: %s", path.string().c_str());
 			return;
@@ -213,7 +214,7 @@ namespace VisionGal {
 
 		for (auto& entry : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
-			//pfsPath relativePath = Horizon::HFileSystem::RelativePath(entry.path(), m_ProjectDirectory);
+			//pfsPath relativePath = NN::Core::HFileSystem::RelativePath(entry.path(), m_ProjectDirectory);
 
 			if (entry.is_directory())
 			{
@@ -222,7 +223,7 @@ namespace VisionGal {
 				int uiFlags = ImGuiTreeNodeFlags_SpanFullWidth;
 
 				// 目录是空的
-				if (Horizon::HFileSystem::DirectoryEmpty(entry))
+				if (NN::Core::HFileSystem::DirectoryEmpty(entry))
 				{
 					uiFlags |= ImGuiTreeNodeFlags_Leaf;
 				}
@@ -233,7 +234,7 @@ namespace VisionGal {
 				directory.AbsolutePath = entry.path();
 				directory.AbsolutePathStr = directory.AbsolutePath.string();
 				directory.IsDirectory = true;
-				directory.Path = VFS::GetResourcePathVFS(directory.AbsolutePathStr);
+				directory.Path = Runtime::VFS::GetResourcePathVFS(directory.AbsolutePathStr);
 
 				m_CurrentDirectoryNode.Directories.emplace_back(directory);
 			}
@@ -245,7 +246,7 @@ namespace VisionGal {
 				std::string name;
 				std::string ext;
 
-				Horizon::HFileSystem::SplitPath(entry.path(), &outDirectory, &name, &ext);
+				NN::Core::HFileSystem::SplitPath(entry.path(), &outDirectory, &name, &ext);
 
 				file.AbsolutePath = entry.path();
 				file.AbsolutePathStr = file.AbsolutePath.string();
@@ -253,10 +254,10 @@ namespace VisionGal {
 				file.Name = name;
 				file.UIFlags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Leaf;
 				file.IsDirectory = false;
-				file.Path = VFS::GetResourcePathVFS(file.AbsolutePathStr);
+				file.Path = Runtime::VFS::GetResourcePathVFS(file.AbsolutePathStr);
 
-				VGAssetMetaData data;
-				if (VGPackage::GetMeatData(file.Path, data))
+				Runtime::VGAssetMetaData data;
+				if (Runtime::VGPackage::GetMeatData(file.Path, data))
 				{
 					file.MetaData = data;
 					file.AssetType = data.AssetType;
@@ -274,12 +275,12 @@ namespace VisionGal {
 		// 目录 Directory
 		if (item.IsDirectory)
 		{
-			if (!Horizon::HFileSystem::DirectoryEmpty(item.AbsolutePath))
+			if (!NN::Core::HFileSystem::DirectoryEmpty(item.AbsolutePath))
 			{
 				DeleteDirectoryItemRecursion(item.AbsolutePath);
 			}
 
-			Horizon::HFileSystem::RemoveDirectory(item.AbsolutePath);
+			NN::Core::HFileSystem::RemoveDirectory(item.AbsolutePath);
 
 			RefreshDirectory();
 			RefreshDirectoryTreeRoot();
@@ -288,7 +289,7 @@ namespace VisionGal {
 		}
 
 		// 文件 File
-		AssetManager::GetInstance()->RemoveAsset(item.Path);
+		Runtime::AssetManager::GetInstance()->RemoveAsset(item.Path);
 		RefreshDirectory();
 	}
 
@@ -299,17 +300,17 @@ namespace VisionGal {
 		auto newPath = path.AbsolutePath.parent_path() / file;
 		auto newMetaPath = path.AbsolutePath.parent_path() / metaFile;
 
-		if (!Horizon::HFileSystem::ExistsDirectory(newPath))
+		if (!NN::Core::HFileSystem::ExistsDirectory(newPath))
 		{
 			// remove data file
 			try {
 				//std::filesystem::remove(aPath);
-				Horizon::HFileSystem::MoveFile(path.AbsolutePath, newPath);
+				NN::Core::HFileSystem::MoveFile(path.AbsolutePath, newPath);
 
 				pfsPath oMetaPath = path.AbsolutePath.string() + ".meta";
-				if (Horizon::HFileSystem::ExistsDirectory(oMetaPath))
+				if (NN::Core::HFileSystem::ExistsDirectory(oMetaPath))
 				{
-					Horizon::HFileSystem::MoveFile(oMetaPath, newMetaPath);
+					NN::Core::HFileSystem::MoveFile(oMetaPath, newMetaPath);
 				}
 			}
 			catch (const std::filesystem::filesystem_error& ex) {
@@ -340,23 +341,23 @@ namespace VisionGal {
 			{
 				DeleteDirectoryItemRecursion(directoryEntry.path());
 
-				Horizon::HFileSystem::RemoveDirectory(directoryEntry.path());
+				NN::Core::HFileSystem::RemoveDirectory(directoryEntry.path());
 			}
 			else
 			{
-				Horizon::HFileSystem::RemoveFile(directoryEntry.path());
+				NN::Core::HFileSystem::RemoveFile(directoryEntry.path());
 			}
 		}
 	}
 
 	void ContentBrowser::ShowInExplorer(const pfsPath& path)
 	{
-		Horizon::HFileSystem::OpenSystemExplorerFolder(path);
+		NN::Core::HFileSystem::OpenSystemExplorerFolder(path);
 	}
 
 	void ContentBrowser::CreateNewDirectory(const pfsPath& path)
 	{
-		Horizon::HSequenceGenerator::GenerateDirectory(path / L"New Folder ");
+		NN::Core::HSequenceGenerator::GenerateDirectory(path / L"New Folder ");
 
 		RefreshDirectory();
 		RefreshDirectoryTreeRoot();
@@ -364,7 +365,7 @@ namespace VisionGal {
 
 	void ContentBrowser::CopyPath(const pfsPath& path)
 	{
-		Horizon::HClipboard::SetText(path.string().c_str());
+		NN::Core::HClipboard::SetText(path.string().c_str());
 	}
 
 	void ContentBrowser::SelectAll(bool select)

@@ -13,7 +13,7 @@
 #include "../Include/EditorCore/ContentBrowser.h"
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	struct ContentBrowserFileUIBox
 	{

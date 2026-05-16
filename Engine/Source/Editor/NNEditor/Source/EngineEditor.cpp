@@ -31,19 +31,19 @@ namespace VisionGal::Editor
 	 
 	void VGEditorApplication::Initialize()
 	{
-		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
+		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		auto editorName = editorConfig.EditorName;
 		auto windowWidth = editorConfig.EditorWindowWidth;
 		auto windowHeight = editorConfig.EditorWindowHeight;
 
 		// 初始化编辑器窗口
-		m_EditorWindow = MakeRef<VGWindow>();
+		m_EditorWindow = NN::MakeRef<NN::Runtime::VGWindow>();
 		m_EditorWindow->SetInitializeBorderless(true);
 		m_EditorWindow->Initialize(editorName.c_str(), windowWidth, windowHeight,true);
 
 		// 初始化游戏引擎
-		m_GameEngine = MakeRef<CoreGameEngine>();
+		m_GameEngine = NN::MakeRef<NN::Runtime::CoreGameEngine>();
 		m_GameEngine->Initialize(m_EditorWindow.get());
 
 #if defined(VISIONGAL_BUILD_LEGACY_GALGAME)
@@ -56,40 +56,40 @@ namespace VisionGal::Editor
 		InitializeEditorUI();
 
 		// 挂载编辑器模块
-		ModuleEditorFramework::MountToEditor(m_EditorWindow, m_GameEngine);
+		NN::Editor::ModuleEditorFramework::MountToEditor(m_EditorWindow, m_GameEngine);
 #if defined(VISIONGAL_BUILD_LEGACY_GALGAME)
 		ModuleEditorGalGame::MountToEditor();
 		AssetEditor::Get().OpenAsset("/assets/GalGameVisualScript0.vgasset");
 #endif
 	}
 
-	void VGEditorApplication::AddApplicationLayer(IEngineApplicationLayer* layer)
+	void VGEditorApplication::AddApplicationLayer(NN::Runtime::IEngineApplicationLayer* layer)
 	{
 	}
 
 	void VGEditorApplication::InitializeEditorUI()
 	{
-		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
+		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		// 设置本地语言
-		EditorLoadLanguage(editorConfig.EditorLanguage);
+		NN::Editor::EditorLoadLanguage(editorConfig.EditorLanguage);
 		// 设置主题
-		EditorStyle::SetTheme(editorConfig.EditorTheme);
+		NN::Editor::EditorStyle::SetTheme(editorConfig.EditorTheme);
 	}
 
 	void VGEditorApplication::AddImguiLayer()
 	{
 		// 添加ImGui Layer
 		m_EditorWindow->AddLayer(std::make_unique<ImGuiEx::Opengl3ImGuiWindowLayer>(m_EditorWindow.get()));
-		m_ImguiOpengl3Layer = std::make_unique<ImguiOpengl3Layer>(m_EditorWindow.get(), m_EditorWindow->GetContext());
+		m_ImguiOpengl3Layer = std::make_unique<NN::Runtime::ImguiOpengl3Layer>(m_EditorWindow.get(), m_EditorWindow->GetContext());
 
 		ImGuiIO& io = ImGui::GetIO();
 
-		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
+		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		//if (m_EditorConfig.LoadFontChinese)
 		{
-			VFS::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFS::DataRef& data) {
+			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const NN::Runtime::VFS::DataRef& data) {
 				ImGuiIO& io = ImGui::GetIO();
 				ImFontConfig icons_config;
 				icons_config.FontDataOwnedByAtlas = false;
@@ -107,7 +107,7 @@ namespace VisionGal::Editor
 
 		//if (m_EditorConfig.LoadFontAwesome)
 		{
-			VFS::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const VFS::DataRef& data) {
+			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::Core::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const NN::Runtime::VFS::DataRef& data) {
 				ImGuiIO& io = ImGui::GetIO();
 				static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 
@@ -133,18 +133,18 @@ namespace VisionGal::Editor
 	void VGEditorApplication::OnUpdate(float deltaTime)
 	{
 		m_GameEngine->OnUpdate(deltaTime);
-		PanelManager::GetInstance()->OnUpdate(deltaTime);
+		NN::Editor::PanelManager::GetInstance()->OnUpdate(deltaTime);
 	}
 
 	void VGEditorApplication::OnFixedUpdate()
 	{
-		PanelManager::GetInstance()->OnFixedUpdate();
+		NN::Editor::PanelManager::GetInstance()->OnFixedUpdate();
 	}
 
 	void VGEditorApplication::OnGUI()
 	{
 		//m_ImguiOpengl3Layer->BeginFrame();
-		PanelManager::GetInstance()->OnGUI();
+		NN::Editor::PanelManager::GetInstance()->OnGUI();
 		ImGuiEx::ImTaskManager::Get().RenderUITask();
 		ImGuiEx::RenderNotifications();
 		//m_ImguiOpengl3Layer->EndFrame();

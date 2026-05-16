@@ -13,7 +13,7 @@
 //#include "SpriteAnimation.h"
 #include "PrimitiveScript.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     class VG_ENGINE_API SpriteFadeInOutTransformScript : public IAnimationScript
     {
@@ -24,7 +24,7 @@ namespace VisionGal
             Out
         };
 
-		SpriteFadeInOutTransformScript(Horizon::HEntityInterface* entity, Direction direction);
+		SpriteFadeInOutTransformScript(NN::Core::HEntityInterface* entity, Direction direction);
         ~SpriteFadeInOutTransformScript() override = default;
 		SpriteFadeInOutTransformScript(const SpriteFadeInOutTransformScript&) = delete;
 		SpriteFadeInOutTransformScript& operator=(const SpriteFadeInOutTransformScript&) = delete;
@@ -35,7 +35,7 @@ namespace VisionGal
         void SetEasing(EasingFunction easing);
         void Start() override;
 
-        void OnUpdate(Horizon::HEntityInterface* entity) override;
+        void OnUpdate(NN::Core::HEntityInterface* entity) override;
     private:
         Ref<SpriteAlphaAnimationScript> m_Script;
 

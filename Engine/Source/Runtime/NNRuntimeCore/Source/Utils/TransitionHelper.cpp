@@ -11,7 +11,7 @@
 
 #include "Utils/TransitionHelper.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	TransitionHelper::TransitionHelper()
 		:callback(nullptr)

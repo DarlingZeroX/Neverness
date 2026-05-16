@@ -14,12 +14,12 @@
 #include <SDL3/SDL.h>
 #include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 
-#include <NNKernel/Include/Event/HEventDelegate.h>
-#include <NNKernel/Include/Event/HWindowEvents.h>
+#include <NNCore/Include/Event/HEventDelegate.h>
+#include <NNCore/Include/Event/HWindowEvents.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
-    class VG_CORE_API VGWindow: public Horizon::SDL3::OpenGLWindow
+    class VG_CORE_API VGWindow: public NN::Core::SDL3::OpenGLWindow
     {
     public:
         VGWindow();

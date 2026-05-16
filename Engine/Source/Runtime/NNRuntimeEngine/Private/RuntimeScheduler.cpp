@@ -5,7 +5,7 @@
 
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeScheduler.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 void RuntimeScheduler::RegisterSubsystem(IRuntimeSubsystem* subsystem) noexcept
 {

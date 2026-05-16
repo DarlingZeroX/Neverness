@@ -1,9 +1,9 @@
 #pragma once
-#include <NNKernel/Include/Math/HVector.h>
+#include <NNCore/Include/Math/HVector.h>
 #include <string>
 #include "../imgui/imgui.h"
 #include <memory>
-#include "NNKernel/Interface/HCoreTypes.h"
+#include "NNCore/Interface/HCoreTypes.h"
 
 namespace ImGuiEx
 {
@@ -18,7 +18,7 @@ namespace ImGuiEx
 
 	IMGUI_API Vec3Dragging DrawVec3Control(
 		const std::string& label,
-		Horizon::float3& values,
+		NN::Core::float3& values,
 		float resetValue,
 		float v_speed = 1.0f,
 		float v_min = 0.0f, float v_max = 0.0f
@@ -36,7 +36,7 @@ namespace ImGuiEx
 
 	IMGUI_API Vec2Dragging DrawVec2Control(
 		const std::string& label,
-		Horizon::float2& values,
+		NN::Core::float2& values,
 		float resetValue,
 		float v_speed = 1.0f,
 		float v_min = 0.0f, float v_max = 0.0f

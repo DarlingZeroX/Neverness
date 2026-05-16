@@ -15,19 +15,19 @@
 #include <NNRuntimeCore/Include/Utils/TimeHelper.h>
 #include <NNEngineLegacy/Include/Engine/VideoPlayer.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	VideoViewer::VideoViewer(const VGPath& path)
+	VideoViewer::VideoViewer(const Runtime::VGPath& path)
 	{
 		m_Path = path;
-		auto clip = MakeRef<FVideoClip>();
+		auto clip = MakeRef<Runtime::FVideoClip>();
 		if (clip->Open(path))
 		{
-			m_VideoPlayer = FVideoPlayer::CreatePlayer(clip);
+			m_VideoPlayer = Runtime::FVideoPlayer::CreatePlayer(clip);
 			m_VideoPlayer->Play();
 
 			m_VideoDuration = m_VideoPlayer->GetDuration();
-			m_AudioDurationFormat = TimeHelper::FloatToTimeFormatSprintf(m_VideoDuration);
+			m_AudioDurationFormat = Runtime::TimeHelper::FloatToTimeFormatSprintf(m_VideoDuration);
 		}
 	}
 
@@ -116,7 +116,7 @@ namespace VisionGal::Editor
 		if (viewportTexture == nullptr)
 			return;
 
-		ImGui::Text(TimeHelper::FloatToTimeFormatSprintf(m_CurrentPlayTime).c_str());
+		ImGui::Text(Runtime::TimeHelper::FloatToTimeFormatSprintf(m_CurrentPlayTime).c_str());
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(std::max(m_CurrentVideoUISizeX - 100, 100));
 		ImGui::SliderFloat("##VideoTimeControl", &m_CurrentPlayTime, 0.f, m_VideoDuration);

@@ -18,9 +18,9 @@
 
 bool EditorInitializer::CheckProjectRootDir(const std::string& projectRootDir)
 {
-	if (Horizon::HFileSystem::ExistsDirectory(projectRootDir) == false)
+	if (NN::Core::HFileSystem::ExistsDirectory(projectRootDir) == false)
 	{
-		auto& preferences = VisionGal::Editor::EditorCore::GetEditorPreferences();
+		auto& preferences = NN::Editor::EditorCore::GetEditorPreferences();
 		if (preferences.Editor.EditorLanguage == "ZH-CN")
 		{
 			pfd::message("错误", "无效的项目位置: " + projectRootDir + "\n请用VGLauncher启动器打开正确项目位置",
@@ -39,37 +39,37 @@ bool EditorInitializer::CheckProjectRootDir(const std::string& projectRootDir)
 
 void EditorInitializer::PakResource(const EditorVFSPath& path)
 {
-	using namespace VisionGal;
+	//using namespace VisionGal;
 
-	PakFileWriter writer;
+	NN::Runtime::PakFileWriter writer;
 
-	Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data");
+	NN::Core::HFileSystem::CreateDirectoryWhenNoExist("Data");
 
-	if (Horizon::HFileSystem::ExistsFile("Data/engine.pak") == false)
+	if (NN::Core::HFileSystem::ExistsFile("Data/engine.pak") == false)
 		writer.WriteDirectoryToPakFile(path.engine, "Data/engine.pak", "");
 
-	if (Horizon::HFileSystem::ExistsFile("Data/editor.pak") == false)
+	if (NN::Core::HFileSystem::ExistsFile("Data/editor.pak") == false)
 		writer.WriteDirectoryToPakFile(path.editor, "Data/editor.pak", "");
 }
 
 void EditorInitializer::InitializeVFS(const EditorVFSPath& path)
 {
-	using namespace VisionGal;
+	//using namespace VisionGal;
 
 	//PakResource(path);
 
-	auto& vfs = VFS::GetInstance();
+	auto& vfs = NN::Runtime::VFS::GetInstance();
 
 	// 添加编辑器资源虚拟文件系统
-	VFS::MountPackageFileSystem(
-		Editor::EditorCore::GetEditorResourcePathVFS(),
+	NN::Runtime::VFS::MountPackageFileSystem(
+		NN::Editor::EditorCore::GetEditorResourcePathVFS(),
 		"Data/editor.pak",
 		path.editor
 	);
 
 	// 添加引擎资源虚拟文件系统
-	VFS::MountPackageFileSystem(
-		Core::GetEngineResourcePathVFS(),
+	NN::Runtime::VFS::MountPackageFileSystem(
+		NN::Runtime::Core::GetEngineResourcePathVFS(),
 		"Data/engine.pak",
 		path.engine
 	);
@@ -82,22 +82,22 @@ void EditorInitializer::InitializeVFS(const EditorVFSPath& path)
 	projectSettingsFS->Initialize();
 	projectIntermediateFS->Initialize();
 
-	vfs->AddFileSystem(Core::GetAssetsPathVFS(), std::move(assetsFS));
-	vfs->AddFileSystem(Core::GetProjectSettingsPathVFS(), std::move(projectSettingsFS));
-	vfs->AddFileSystem(Core::GetProjectIntermediatePathVFS(), std::move(projectIntermediateFS));
+	vfs->AddFileSystem(NN::Runtime::Core::GetAssetsPathVFS(), std::move(assetsFS));
+	vfs->AddFileSystem(NN::Runtime::Core::GetProjectSettingsPathVFS(), std::move(projectSettingsFS));
+	vfs->AddFileSystem(NN::Runtime::Core::GetProjectIntermediatePathVFS(), std::move(projectIntermediateFS));
 
-	auto editorPath = VFS::GetInstance()->AbsolutePath(Editor::EditorCore::GetEditorResourcePathVFS());
+	auto editorPath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Editor::EditorCore::GetEditorResourcePathVFS());
 	H_LOG_INFO("Editor resource path: %s", editorPath.c_str());
 
-	auto enginePath = VFS::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
+	auto enginePath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::Core::GetEngineResourcePathVFS());
 	H_LOG_INFO("Engine resource path: %s", enginePath.c_str());
 
-	auto assetsPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
+	auto assetsPath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::Core::GetAssetsPathVFS());
 	H_LOG_INFO("Assets resource: %s", assetsPath.c_str());
 
-	auto projectSettingsPath = VFS::GetInstance()->AbsolutePath(Core::GetProjectSettingsPathVFS());
+	auto projectSettingsPath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::Core::GetProjectSettingsPathVFS());
 	H_LOG_INFO("Project settings resource path: %s", projectSettingsPath.c_str());
 
-	auto projectIntermediatePath = VFS::GetInstance()->AbsolutePath(Core::GetProjectIntermediatePathVFS());
+	auto projectIntermediatePath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::Core::GetProjectIntermediatePathVFS());
 	H_LOG_INFO("Project intermediate path: %s", projectIntermediatePath.c_str());
 }

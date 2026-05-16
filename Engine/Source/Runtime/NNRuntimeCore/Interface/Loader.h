@@ -13,7 +13,7 @@
 #include "../VGCoreConfig.h"
 #include "../Include/Core/Core.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	using VGObjectPtr = Ref<VGObject>;
 

@@ -12,7 +12,7 @@
 #include "Data/DataVariant.h"
 #include <sol/sol.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	VGDataVariant::VGDataVariant(int value)
 	{

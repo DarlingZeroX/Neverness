@@ -12,7 +12,7 @@
 #include "ArchiveSystem.h"
 #include "NNEngineLegacy/Include/Render/TextureConverter.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
 {

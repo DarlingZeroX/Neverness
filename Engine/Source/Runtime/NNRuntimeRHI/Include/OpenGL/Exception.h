@@ -14,12 +14,12 @@
 #include<deque>
 #include<sstream>
 
-#include <NNKernel/Interface/HException.h>
+#include <NNCore/Interface/HException.h>
 #include "OpenGL.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
-	class VG_RHI_API Exception : public Horizon::EngineException
+	class VG_RHI_API Exception : public NN::Core::EngineException
 	{
 	public:
 		static void ClearError();
@@ -43,4 +43,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		std::string GetErrorInfo() const noexcept;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

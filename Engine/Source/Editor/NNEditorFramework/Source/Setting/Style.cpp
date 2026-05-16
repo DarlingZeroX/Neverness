@@ -12,7 +12,7 @@
 #include "pch.h"
 #include "Setting/Style.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	void EditorStyle::DarkTheme()
 	{

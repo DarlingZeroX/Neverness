@@ -21,7 +21,7 @@
 
 #include "NNRuntimeCore/Interface/EngineState.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	UISystem::UISystem()
 	{
@@ -40,7 +40,7 @@ namespace VisionGal
 		return &s_UISystem;
 	}
 
-	int UISystem::Initialize(Horizon::SDL3::OpenGLWindow* window)
+	int UISystem::Initialize(NN::Core::SDL3::OpenGLWindow* window)
 	{
 		m_Window = window;
 		m_Window->AddLayer(this);
@@ -58,7 +58,7 @@ namespace VisionGal
 		return  dynamic_cast<RenderInterface_GL3*>(interface);
 	}
 
-	int UISystem::Initialize(Horizon::SDL3::OpenGLWindow* window, Viewport* viewport)
+	int UISystem::Initialize(NN::Core::SDL3::OpenGLWindow* window, Viewport* viewport)
 	{
 		Initialize(window);
 
@@ -285,7 +285,7 @@ namespace VisionGal
 		m_CloseCallbacks.clear();
 	}
 
-	bool UISystem::InitializeUISystem(Horizon::SDL3::OpenGLWindow* window)
+	bool UISystem::InitializeUISystem(NN::Core::SDL3::OpenGLWindow* window)
 	{
 
 		if (!RmlGL3::Initialize())
@@ -351,22 +351,22 @@ namespace VisionGal
 	{
 		//m_Window->IsCurrentWindowEvent(event.window.windowID);
 		//if (!m_Window->IsCurrentWindowEvent(event.window.windowID))
-		//	return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+		//	return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 		//H_LOG_INFO("event.window.windowID X:%d", event.window.windowID);
 		if (m_Viewport)
 		{
 			// 不是本窗口事件
 			if (m_Viewport->GetWindowID() != event.window.windowID)
-				return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+				return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 
 			// 当视口关闭了输入
 			if (m_Viewport->IsEnableInput() == false)
-				return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+				return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 
 			// 当场景没有播放
 			//if (GetSceneManager()->IsPlayMode() == false)
 			if (EngineRuntimeState::Get().isPlayMode == false)
-				return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+				return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 		}
 
 		return m_ProcessContextEventFunction(m_pContext, event); 
@@ -414,8 +414,8 @@ namespace VisionGal
 			RmlSDL::InputEventHandler(context, m_Window->GetSDLWindow(), evt);
 
 		//if (propagate_event)
-		return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
-		//return Horizon::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
+		return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+		//return NN::Core::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
 	}
 
 	bool UISystem::ProcessContextEventViewport(Rml::Context* context, const SDL_Event& event)
@@ -470,7 +470,7 @@ namespace VisionGal
 		if (propagate_event)
 			RmlSDL::InputEventHandler(context, m_Window->GetSDLWindow(), m_Viewport, evt);
 
-		return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+		return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 	}
 }
 

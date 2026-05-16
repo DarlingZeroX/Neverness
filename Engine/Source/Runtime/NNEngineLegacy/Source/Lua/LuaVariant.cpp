@@ -12,7 +12,7 @@
 #include "Lua/LuaVariant.h"
 #include <sol/sol.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	LuaVariant LuaVariant::FromLuaObject(sol::object obj, sol::this_state lua)
 	{

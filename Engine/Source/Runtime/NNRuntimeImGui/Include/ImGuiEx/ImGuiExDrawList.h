@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "../imgui/imgui.h"
-#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNCore/Interface/HCoreTypes.h>
 
 namespace ImGuiEx
 {
@@ -22,16 +22,16 @@ namespace ImGuiEx
 	class IMGUI_API RectFilledMultiColor : public RectFilledBase
 	{
 	public:
-		void SetColTopLeft(const Horizon::float4& color);
-		void SetColTopRight(const Horizon::float4& color);
-		void SetColBottomLeft(const Horizon::float4& color);
-		void SetColBottomRight(const Horizon::float4& color);
+		void SetColTopLeft(const NN::Core::float4& color);
+		void SetColTopRight(const NN::Core::float4& color);
+		void SetColBottomLeft(const NN::Core::float4& color);
+		void SetColBottomRight(const NN::Core::float4& color);
 
-		void SetCol(const Horizon::float4& color);
-		void SetColLeft(const Horizon::float4& color);
-		void SetColRight(const Horizon::float4& color);
-		void SetColTop(const Horizon::float4& color);
-		void SetColBottom(const Horizon::float4& color);
+		void SetCol(const NN::Core::float4& color);
+		void SetColLeft(const NN::Core::float4& color);
+		void SetColRight(const NN::Core::float4& color);
+		void SetColTop(const NN::Core::float4& color);
+		void SetColBottom(const NN::Core::float4& color);
 
 		void DebugColor(const std::string& lable = "ColorDebug");
 		void WindowDraw();
@@ -47,7 +47,7 @@ namespace ImGuiEx
 	class IMGUI_API RectFilled : public RectFilledBase
 	{
 	public:
-		void SetCol(const Horizon::float4& color);
+		void SetCol(const NN::Core::float4& color);
 
 		void DebugColor(const std::string& lable = "ColorDebug");
 		void WindowDraw();

@@ -3,7 +3,7 @@
 #include "ImGuiEx/ImNotify.h"
 #include <NNPlatformCore/Interface/HSystemTimer.h>
 
-#include "NNKernel/Interface/HLocalization.h"
+#include "NNCore/Interface/HLocalization.h"
 #include "ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 
 #define NOTIFY_OPACITY					1.0f		// 0-1 Toast opacity
@@ -210,13 +210,13 @@ namespace ImGuiEx
 		case ImGuiExToastType::None:
 			return nullptr;
 		case ImGuiExToastType::Success:
-			return Horizon::GetTranslateText("Success");
+			return NN::Core::GetTranslateText("Success");
 		case ImGuiExToastType::Warning:
-			return Horizon::GetTranslateText("Warning");
+			return NN::Core::GetTranslateText("Warning");
 		case ImGuiExToastType::Error:
-			return Horizon::GetTranslateText("Error");
+			return NN::Core::GetTranslateText("Error");
 		case ImGuiExToastType::Info:
-			return Horizon::GetTranslateText("Info") ;
+			return NN::Core::GetTranslateText("Info") ;
 		}
 
 		return "";
@@ -224,7 +224,7 @@ namespace ImGuiEx
 
 	auto ImToast::GetElapsedTime()
 	{
-		return Horizon::HSystemTimer::GetTicks64() - mCreationTime;
+		return NN::Core::HSystemTimer::GetTicks64() - mCreationTime;
 	}
 
 	const ImGuiExToastPhase& ImToast::GetPhase()
@@ -270,7 +270,7 @@ namespace ImGuiEx
 		:
 		mType(type),
 		mDismissTime(dismiss_time),
-		mCreationTime(Horizon::HSystemTimer::GetTicks64())
+		mCreationTime(NN::Core::HSystemTimer::GetTicks64())
 	{
 		IM_ASSERT(type < ImGuiExToastType::COUNT);
 
@@ -281,28 +281,28 @@ namespace ImGuiEx
 		ImToast(type)
 	{
 		mTitle = title;
-		mContent = Horizon::GetTranslateText(content);
+		mContent = NN::Core::GetTranslateText(content);
 	}
 
 	ImToast::ImToast(ImGuiExToastType type, const char* text)
 		:
 		ImToast(type)
 	{
-		mContent = Horizon::GetTranslateText(text);
+		mContent = NN::Core::GetTranslateText(text);
 	}
 
 	ImToast::ImToast(ImGuiExToastType type, const std::string& text)
 		:
 		ImToast(type)
 	{
-		mContent = Horizon::GetTranslateText(text);
+		mContent = NN::Core::GetTranslateText(text);
 	}
 
 	ImToast::ImToast(ImGuiExToastType type, int dismiss_time, const char* text)
 		:
 		ImToast(type, dismiss_time)
 	{
-		mContent = Horizon::GetTranslateText(text);
+		mContent = NN::Core::GetTranslateText(text);
 	}
 }
 

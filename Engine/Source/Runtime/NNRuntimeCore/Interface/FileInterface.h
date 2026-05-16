@@ -13,7 +13,7 @@
 
 #include "../Include/Core/CoreTypes.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class FileInterface {
 public:

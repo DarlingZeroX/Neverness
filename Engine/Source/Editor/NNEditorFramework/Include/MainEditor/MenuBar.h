@@ -12,17 +12,17 @@
 #pragma once
 #include "../../Config.h"
 #include <vector>
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 #include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNRuntimeCore/Include/Core/Window.h>
 #include <NNEngineLegacy/Include/Render/Texture2D.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct VG_EDITOR_FRAMEWORK_API EditorMenuBar : public IEditorPanel
 	{
 		EditorMenuBar() = default;
-		EditorMenuBar(VGWindow* window);
+		EditorMenuBar(Runtime::VGWindow* window);
 		EditorMenuBar(const EditorMenuBar&) = default;
 		EditorMenuBar& operator=(const EditorMenuBar&) = default;
 		EditorMenuBar(EditorMenuBar&&) noexcept = default;
@@ -39,9 +39,9 @@ namespace VisionGal::Editor
 		void HandleDraggingWindow();
 		void HandleWindowControl();
 		bool m_bDragging = false;
-		VGWindow* m_EditorWindow = nullptr;
+		Runtime::VGWindow* m_EditorWindow = nullptr;
 		bool m_EditorMaximized = false;
-		Ref<Texture2D> m_EngineIcon = nullptr;
+		Ref<Runtime::Texture2D> m_EngineIcon = nullptr;
 	};
 
 }

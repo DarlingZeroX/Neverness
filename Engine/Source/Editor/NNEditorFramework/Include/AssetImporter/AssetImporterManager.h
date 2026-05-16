@@ -17,7 +17,7 @@
 #include <NNRuntimeCore/Include/Core/Window.h>
 #include <NNRuntimeAsset/Interface/Package.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct VG_EDITOR_FRAMEWORK_API AssetImporterManager
 	{
@@ -25,17 +25,17 @@ namespace VisionGal::Editor
 
 		//void RegisterHandler(std::string type, std::function<void(const VGPath&)> handle);
 
-		void Initialize(Ref<VGWindow>& window); 
+		void Initialize(Ref<Runtime::VGWindow>& window); 
 
 		static AssetImporterManager& GetInstance();
 
 		//void OpenTextFile(const VGPath& path);
 	private:
-		void OnFileDropEvent(const Horizon::Events::HWindowEvent& evt);
+		void OnFileDropEvent(const NN::Core::Events::HWindowEvent& evt);
 
-		std::unordered_map<std::string, std::function<void(const VGPath&)>> m_Handlers;
+		std::unordered_map<std::string, std::function<void(const Runtime::VGPath&)>> m_Handlers;
 
-		Ref<VGWindow> m_EditorWindow;
+		Ref<Runtime::VGWindow> m_EditorWindow;
 	};
 
 }

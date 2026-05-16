@@ -13,7 +13,7 @@
 #include <string>
 #include "../../VGCoreConfig.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_CORE_API LuaHelper
 	{

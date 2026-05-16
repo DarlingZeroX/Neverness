@@ -9,7 +9,7 @@
 #include "NNNativeEngineAPI/EngineHandles.h"
 #include "NNNativeEngineAPI/EngineTypes.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 場景子系統：Phase 5 提供最小 **實體層級 / 變換 / 命名** 記憶體模型（未接 VGEngine）。

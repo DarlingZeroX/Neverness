@@ -14,16 +14,16 @@
 #include "../VGRHICore.h"
 #include "IncludeGladGL3.h"
 //#include "gl.h"
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 
-#ifndef VISIONGAL_OPENGL_NAMESPACE_BEGIN
-#define VISIONGAL_OPENGL_NAMESPACE_BEGIN namespace VisionGal { namespace OpenGL {
-#endif
+//#ifndef namespace NN::Runtime {
+//#define namespace NN::Runtime { namespace VisionGal { namespace OpenGL {
+//#endif
 
-#ifndef VISIONGAL_OPENGL_NAMESPACE_END
-#define VISIONGAL_OPENGL_NAMESPACE_END }}
-#endif
+//#ifndef }
+//#define } }}
+//#endif
 
-#ifndef VISIONGAL_OPENGL_NAMESPACE
-#define VISIONGAL_OPENGL_NAMESPACE VisionGal::OpenGL
-#endif 
+//#ifndef NN::Runtime
+//#define NN::Runtime VisionGal::OpenGL
+//#endif 

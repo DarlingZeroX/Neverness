@@ -11,10 +11,10 @@
 
 #pragma once
 #include "../Include/VGRHIConfig.h"
-#include <NNKernel/Interface/HCore.h>
+#include <NNCore/Interface/HCore.h>
 #include "Texture.h"
 
-namespace VisionGal::VGFX
+namespace NN::Runtime::VGFX
 {
-	VG_RHI_API Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc);
+	VG_RHI_API NN::Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc);
 } 

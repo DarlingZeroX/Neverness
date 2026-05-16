@@ -56,8 +56,8 @@ find_package(Freetype REQUIRED)
 
 target_link_libraries(NevernessRuntime-ImGui PRIVATE Freetype::Freetype)
 target_link_libraries(NevernessRuntime-ImGui PRIVATE SDL3::SDL3)
-target_link_libraries(NevernessRuntime-ImGui PRIVATE NevernessKernel-Kernel)
-target_link_libraries(NevernessRuntime-ImGui PRIVATE NevernessKernel-PlatformCore)
+target_link_libraries(NevernessRuntime-ImGui PRIVATE NevernessCore-Core)
+target_link_libraries(NevernessRuntime-ImGui PRIVATE NevernessCore-PlatformCore)
 
 # 链接OpenGL库
 if (APPLE)

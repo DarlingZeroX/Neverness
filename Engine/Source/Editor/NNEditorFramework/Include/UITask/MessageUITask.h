@@ -14,7 +14,7 @@
 #include <NNRuntimeCore/Include/Core/Core.h>
 #include <NNFileSystem/Interface/HFileSystem.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class MessageUITask : public ImGuiEx::ImTaskInterface
 	{
@@ -24,15 +24,15 @@ namespace VisionGal::Editor
 		MessageUITask& operator=(const MessageUITask&) = default;
 		MessageUITask(MessageUITask&&) noexcept = default;
 		MessageUITask& operator=(MessageUITask&&) noexcept = default;
-		MessageUITask(String const& title, String const& text);
+		MessageUITask(Runtime::String const& title, Runtime::String const& text);
 
-		void SetChoices(const std::vector<String>& choices);
+		void SetChoices(const std::vector<Runtime::String>& choices);
 		void SetCallback(const std::function<void(int)>& callback);
 		void RenderUI(TaskContext& context) override;
 	private:
-		String m_Title;
-		String m_Text;
-		std::vector<String> m_Choices;
+		Runtime::String m_Title;
+		Runtime::String m_Text;
+		std::vector<Runtime::String> m_Choices;
 		std::function<void(int)> m_Callback;
 	};
 

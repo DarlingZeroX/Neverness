@@ -11,7 +11,7 @@
 
 #include "Animation/Audio/AudioAnimationScript.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	AudioFadeInOutAnimationScript::AudioFadeInOutAnimationScript(Direction direction)
 	{
@@ -51,7 +51,7 @@ namespace VisionGal
 		);
 	}
 
-	void AudioFadeInOutAnimationScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void AudioFadeInOutAnimationScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		m_Script->OnUpdate(entity);
 	}

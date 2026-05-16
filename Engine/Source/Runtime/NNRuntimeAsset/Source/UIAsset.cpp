@@ -13,7 +13,7 @@
 #include "Package.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 
 	bool UIDocumentAssetWriter::Write(const std::string path, VGAsset* asset)

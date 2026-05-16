@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
 #include "Scene.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class SceneSystem
 	{

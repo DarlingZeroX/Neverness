@@ -15,7 +15,7 @@
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "../Interface/VideoClip.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VideoAsset : public VGAsset
 	{

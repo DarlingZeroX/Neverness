@@ -18,6 +18,7 @@
 
 namespace VisionGal::Editor
 {
+	using namespace NN::Runtime;
 	class VGLauncher: public IEngineApplication
 	{
 	public:
@@ -55,7 +56,7 @@ namespace VisionGal::Editor
 		void OnFixedUpdate();
 		void OnGUI();
 	private:
-		Scope<VGWindow> m_LauncherWindow;	// 启动器窗口
-		Scope<ImguiOpengl3Layer> m_ImGuiOpenGL3Layer;	// ImGui OpenGL3 渲染层
+		NN::Scope<VGWindow> m_LauncherWindow;	// 启动器窗口
+		NN::Scope<ImguiOpengl3Layer> m_ImGuiOpenGL3Layer;	// ImGui OpenGL3 渲染层
 	};
 }

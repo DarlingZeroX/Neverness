@@ -14,7 +14,7 @@
 #include <string.h>
 #include <filesystem>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_ENGINE_API ProjectBuilder
 	{

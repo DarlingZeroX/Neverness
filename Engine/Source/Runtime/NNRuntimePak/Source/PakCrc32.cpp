@@ -11,7 +11,7 @@
 
 #include "PakCrc32.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	uint32_t crc_table[256];
 

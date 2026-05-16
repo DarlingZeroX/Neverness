@@ -16,7 +16,7 @@
 
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	void ProjectSettingPanel::OnGUI()
 	{
@@ -67,7 +67,7 @@ namespace VisionGal::Editor
 		// 保存项目设置
 		if (m_IsOpen == false)
 		{
-			ProjectSettings::SaveProjectSettings();
+			Runtime::ProjectSettings::SaveProjectSettings();
 			//EditorCore::GetEditorPreferences().Save(EditorCore::GetEditorPreferences());
 		}
 	}

@@ -4,9 +4,9 @@
 #include "NNRuntimeAsset/Interface/Package.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	bool DocumentManager::OpenTextFile(const VGPath& path)
+	bool DocumentManager::OpenTextFile(const Runtime::VGPath& path)
 	{
 		if (ExistDocument(path))
 		{
@@ -26,7 +26,7 @@ namespace VisionGal::Editor
 		return true;
 	}
 
-	CodeDocument* DocumentManager::GetDocument(const VGPath& path)
+	CodeDocument* DocumentManager::GetDocument(const Runtime::VGPath& path)
 	{
 		for (auto& doc : Documents)
 		{
@@ -139,7 +139,7 @@ namespace VisionGal::Editor
 		}
 	}
 
-	bool DocumentManager::SetDocumentActive(const VGPath& path)
+	bool DocumentManager::SetDocumentActive(const Runtime::VGPath& path)
 	{
 		for (auto& doc : Documents)
 		{

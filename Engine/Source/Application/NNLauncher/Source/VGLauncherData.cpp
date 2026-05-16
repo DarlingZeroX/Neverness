@@ -10,7 +10,7 @@
  */
 
 #include "VGLauncherData.h"
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 #include <NNFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal::Editor
@@ -88,7 +88,7 @@ namespace VisionGal::Editor
 		/// @brief 从文件加载启动器数据
 		auto dataFilePath = data.m_LauncherDataFilePath;
 		std::string text;
-		if (Horizon::HFileSystem::ReadTextFromFile(data.m_LauncherDataFilePath, text))
+		if (NN::Core::HFileSystem::ReadTextFromFile(data.m_LauncherDataFilePath, text))
 		{
 			// 尝试解析 JSON 数据
 			try {
@@ -115,8 +115,8 @@ namespace VisionGal::Editor
 	bool VGLauncherData::Save(VGLauncherData& data)
 	{
 		// 如果目录不存在则创建
-		Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data");
-		Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data/VGLauncher");
+		NN::Core::HFileSystem::CreateDirectoryWhenNoExist("Data");
+		NN::Core::HFileSystem::CreateDirectoryWhenNoExist("Data/VGLauncher");
 
 		// 将数据转换为 JSON 字符串
 		nlohmann::json json;
@@ -124,7 +124,7 @@ namespace VisionGal::Editor
 		std::string jsonStr = json.dump(2);
 
 		// 将 JSON 字符串写入文件
-		return Horizon::HFileSystem::WriteTextToFile(data.m_LauncherDataFilePath, jsonStr);
+		return NN::Core::HFileSystem::WriteTextToFile(data.m_LauncherDataFilePath, jsonStr);
 	}
 
 	void VGLauncherData::LoadLauncherData()
@@ -154,7 +154,7 @@ namespace VisionGal::Editor
 			}
 		}
 
-		if (Horizon::HFileSystem::ExistsDirectory(project.Path) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(project.Path) == false)
 			return false;
 
 		m_Projects.push_back(project);
@@ -247,7 +247,7 @@ namespace VisionGal::Editor
 		m_Projects.erase(std::remove_if(m_Projects.begin(), m_Projects.end(),
 			[](const VGProjectItem& project)
 			{
-				return !Horizon::HFileSystem::ExistsDirectory(project.Path);
+				return !NN::Core::HFileSystem::ExistsDirectory(project.Path);
 			}), m_Projects.end());
 	}
 }

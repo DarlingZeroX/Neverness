@@ -11,7 +11,7 @@
 
 #include "Animation/Core/PrimitiveScriptInterface.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	bool FloatAnimationPrimitiveScript::ParseLua(sol::object value, Animation2DPrimitive& primitive) const
 	{
@@ -23,7 +23,7 @@ namespace VisionGal
 		return false;
 	}
 
-	void FloatAnimationPrimitiveScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void FloatAnimationPrimitiveScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		property.Update();
 
@@ -57,7 +57,7 @@ namespace VisionGal
 		return true;
 	}
 
-	void Float2AnimationPrimitiveScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void Float2AnimationPrimitiveScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		property.Update();
 
@@ -92,7 +92,7 @@ namespace VisionGal
 		property.Start(startValue, endValue, duration, tween);
 	}
 
-	void Float3AnimationPrimitiveScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void Float3AnimationPrimitiveScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		property.Update();
 

@@ -12,12 +12,12 @@
 #pragma once
 #include "../../Config.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
-#include <NNKernel/Interface/HSingleton.h>
+#include <NNCore/Interface/HSingleton.h>
 //#include <NNRuntimeAsset/Include/HAsset.h>
 #include <NNRuntimeCore/Include/Core/Core.h>
 #include <NNRuntimeCore/Interface/VGAsset.h>
 
-namespace VisionGal {
+namespace NN::Editor{
 
 	struct ContentBrowserItem
 	{
@@ -26,13 +26,13 @@ namespace VisionGal {
 
 		std::string Name;
 		int UIFlags = 0;
-		Horizon::HPath AbsolutePath;
+		NN::Core::HPath AbsolutePath;
 		std::string AbsolutePathStr;
 		bool IsDirectory;
-		VGPath Path;
+		NN::Runtime::VGPath Path;
 
 		std::string Ext;
-		VGAssetMetaData MetaData;
+		NN::Runtime::VGAssetMetaData MetaData;
 		std::string AssetType;
 
 		void* iconView = nullptr;
@@ -59,10 +59,10 @@ namespace VisionGal {
 
 	class VG_EDITOR_FRAMEWORK_API ContentBrowser
 		:
-		public Horizon::HSingletonBase<ContentBrowser>
+		public NN::Core::HSingletonBase<ContentBrowser>
 	{
 	public:
-		using pfsPath = Horizon::fsPath;
+		using pfsPath = NN::Core::fsPath;
 
 		ContentBrowser(const pfsPath& path);
 		ContentBrowser(const ContentBrowser&) = delete;

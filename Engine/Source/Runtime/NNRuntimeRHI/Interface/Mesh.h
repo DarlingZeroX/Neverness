@@ -11,7 +11,7 @@
 
 #pragma once
 
-namespace VisionGal::VGFX
+namespace NN::Runtime::VGFX
 {
 	struct IMesh
 	{

@@ -11,21 +11,21 @@
 
 #pragma once
 #include "Events.h"
-#include <NNKernel/Include/Event/HEventDelegate.h>
+#include <NNCore/Include/Event/HEventDelegate.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_CORE_API EngineEventBus
 	{
-		//Horizon::HEventDelegate<const TransformUpdateEvent&> OnTransformUpdateEvent;
+		//NN::Core::HEventDelegate<const TransformUpdateEvent&> OnTransformUpdateEvent;
 
-		Horizon::HEventDelegate<const SceneEvent&> OnSceneEvent;
+		NN::Core::HEventDelegate<const SceneEvent&> OnSceneEvent;
 
-		Horizon::HEventDelegate<const EngineEvent&> OnEngineEvent;
+		NN::Core::HEventDelegate<const EngineEvent&> OnEngineEvent;
 
-		Horizon::HEventDelegate<const LuaScriptEvent&> OnLuaScriptEvent;
+		NN::Core::HEventDelegate<const LuaScriptEvent&> OnLuaScriptEvent;
 
-		Horizon::HEventDelegate<const UISystemEvent&> OnUISystemEvent;
+		NN::Core::HEventDelegate<const UISystemEvent&> OnUISystemEvent;
 
 		static EngineEventBus& Get();
 	};

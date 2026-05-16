@@ -3,7 +3,7 @@
 #include <chrono>
 #include <thread>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 struct AsyncSystem::Slot
 {

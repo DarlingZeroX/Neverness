@@ -14,7 +14,7 @@ namespace ImGuiEx {
 		const std::string& taskName, ImTaskFlags flags
 	)
 	{
-		auto taskInternal = MakeRef<TaskInternal>(taskName, flags, task);
+		auto taskInternal = NN::MakeRef<TaskInternal>(taskName, flags, task);
 		m_currentUITasks.emplace_back(taskInternal);
 
 		return m_currentUITasks.back();
@@ -67,7 +67,7 @@ namespace ImGuiEx {
 		}
 	}
 
-	Ref<ImTaskInterface::Task> NewUITask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags)
+	NN::Ref<ImTaskInterface::Task> NewUITask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags)
 	{
 		return ImTaskManager::Get().NewTask(
 			task,

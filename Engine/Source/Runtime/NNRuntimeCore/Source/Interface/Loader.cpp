@@ -10,11 +10,11 @@
 */
 
 #include "Loader.h"
-#include <NNKernel/Interface/HTypeInfo.h>
+#include <NNCore/Interface/HTypeInfo.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	static Horizon::unordered_type_map<Scope<VGObjectLoader>> s_ObjectLoaders;
+	static NN::Core::unordered_type_map<Scope<VGObjectLoader>> s_ObjectLoaders;
 
 	VGObjectPtr StaticLoadObject(const String& path, const type_info& typeInfo)
 	{

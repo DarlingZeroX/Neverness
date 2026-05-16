@@ -7,7 +7,7 @@
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeSubsystem.h"
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeTickGroup.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 按 **RuntimeTickGroup** 分桶保存 **IRuntimeSubsystem***，同桶内保持 **注册顺序**（稳定排序）。

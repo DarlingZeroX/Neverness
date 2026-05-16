@@ -16,7 +16,7 @@
 #include "Transactions/Pipeline/SequenceMutationPipeline.h"
 #include "Transactions/SequenceTransactionBuilder.h"
 
-#include "NNKernel/Interface/HLog.h"
+#include "NNCore/Interface/HLog.h"
 
 namespace VisionGal::Editor
 {

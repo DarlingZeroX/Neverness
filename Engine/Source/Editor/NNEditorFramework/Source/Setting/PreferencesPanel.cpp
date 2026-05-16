@@ -15,7 +15,7 @@
 #include "EditorCore/EditorCore.h"
 #include "EditorCore/Localization.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	void PreferencesPanel::OnGUI()
 	{

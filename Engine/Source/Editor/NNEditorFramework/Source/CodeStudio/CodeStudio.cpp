@@ -17,16 +17,16 @@
 #include "NNRuntimeCore/Include/Core/VFS.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	CodeStudioPanel::CodeStudioPanel()
 	{
-		EngineEventBus::Get().OnLuaScriptEvent.Subscribe([this](const LuaScriptEvent& evt)
+		Runtime::EngineEventBus::Get().OnLuaScriptEvent.Subscribe([this](const Runtime::LuaScriptEvent& evt)
 			{
 				// 处理脚本错误事件
 				switch (evt.EventType)
 				{
-				case LuaScriptEventType::ScriptError:
+				case Runtime::LuaScriptEventType::ScriptError:
 					OpenWindow(true);
 					OpenTextFile(evt.ScriptPath);
 
@@ -215,7 +215,7 @@ namespace VisionGal::Editor
 		}
 	}
 
-	bool CodeStudioPanel::OpenTextFile(const VGPath& path)
+	bool CodeStudioPanel::OpenTextFile(const Runtime::VGPath& path)
 	{
 		return m_DocManager.OpenTextFile(path);
 	}

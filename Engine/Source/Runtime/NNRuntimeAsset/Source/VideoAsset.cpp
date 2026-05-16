@@ -12,7 +12,7 @@
 #include "VideoAsset.h"
 //#include "Resource/Video/FVideoDecoder.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	// 自定义 opaque 结构（传递 VFS 文件对象）
 	//struct VFSIOContext {

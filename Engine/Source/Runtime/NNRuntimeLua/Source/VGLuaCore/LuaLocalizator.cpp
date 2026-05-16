@@ -13,7 +13,7 @@
 #include "VGLuaCore/LuaLocalizator.h"
 #include <string>
 #include <unordered_set>
-#include <NNKernel/Interface/HLocalization.h>
+#include <NNCore/Interface/HLocalization.h>
 
 struct VGLuaCoreLocalizeImp
 {
@@ -29,7 +29,7 @@ struct VGLuaCoreLocalizeImp
 
 	std::string Translate(const std::string& text)
 	{
-		auto* localizator = Horizon::HLocalizationManager::GetInstance();
+		auto* localizator = NN::Core::HLocalizationManager::GetInstance();
 		return localizator->Translate(text);
 	}
 

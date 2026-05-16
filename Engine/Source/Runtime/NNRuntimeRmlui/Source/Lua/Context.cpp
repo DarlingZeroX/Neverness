@@ -101,7 +101,7 @@ int ContextLoadDocument(lua_State* L, Context* obj)
 	Document* doc = obj->LoadDocument(path);
 	LuaType<Document>::push(L, doc, false);
 
-	VisionGal::UISystem::Get()->OnScriptOpenDocument(doc);
+	NN::Runtime::UISystem::Get()->OnScriptOpenDocument(doc);
 	return 1;
 }
 

@@ -15,7 +15,7 @@
 #include <functional>
 #include <NNRuntimeCore/Include/Core/Core.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
     struct VG_EDITOR_FRAMEWORK_API EditorScene
     {
@@ -23,7 +23,7 @@ namespace VisionGal::Editor
 
         static void NewScene();
 
-        static bool OpenNewScene(const VGPath& path);
+        static bool OpenNewScene(const Runtime::VGPath& path);
 
         static void OpenSceneByFileDialog();
 

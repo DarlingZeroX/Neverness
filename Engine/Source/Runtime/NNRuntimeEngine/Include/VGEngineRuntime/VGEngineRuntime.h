@@ -9,7 +9,7 @@
 #include "NNRuntimeEngine/SceneSubsystem.h"
 #include "NNRuntimeEngine/TimingSystem.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 行程級引擎 Runtime Facade（Phase 4 + **§2.7.1 Kernel 首包**）：**Initialize → Tick → Shutdown** 由宿主單執行緒驅動。

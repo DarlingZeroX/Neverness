@@ -12,9 +12,9 @@
 #pragma once
 #include "Tween.h"
 #include "NNRuntimeCore/Interface/GameInterface.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	enum class Animation2DPrimitiveType
 	{

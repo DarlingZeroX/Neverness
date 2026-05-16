@@ -19,7 +19,7 @@
 #include "Engine/AudioPlayer.h"
 #include "Engine/VideoPlayer.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	TextureResourceManager::TextureResourceManager()
 	{

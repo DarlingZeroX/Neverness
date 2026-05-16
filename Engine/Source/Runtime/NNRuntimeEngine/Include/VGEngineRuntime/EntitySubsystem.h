@@ -6,7 +6,7 @@
 #include "NNNativeEngineAPI/EntityAPI.h"
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeSubsystem.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 struct RuntimeFrameContext;
 

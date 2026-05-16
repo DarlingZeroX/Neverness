@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 namespace
 {

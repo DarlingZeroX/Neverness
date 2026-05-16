@@ -11,16 +11,16 @@
 
 #include "ComponentDrawerRegistry.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 
 	class EmptyComponentDrawer : public IComponentDrawer
 	{
 	public:
-		void OnGUI(IEntity* entity) override
+		void OnGUI(Runtime::IEntity* entity) override
 		{
 		}
-		const String GetBindType() const override
+		const Runtime::String GetBindType() const override
 		{
 			return "";
 		}
@@ -33,7 +33,7 @@ namespace VisionGal::Editor
 		return true;
 	}
 
-	IComponentDrawer* ComponentDrawerRegistry::GetDrawer(const String& type)
+	IComponentDrawer* ComponentDrawerRegistry::GetDrawer(const Runtime::String& type)
 	{
 		static EmptyComponentDrawer s_EmptyDrawer;
 

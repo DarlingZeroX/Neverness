@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VisionGal.Managed.Engine")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8aedac4de6d9bf3749cf9906806c41dd948c7435")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+416e1baa9b6dc5a2428ecf3efb8b0739b0660f9f")]
 [assembly: System.Reflection.AssemblyProductAttribute("VisionGal.Managed.Engine")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VisionGal.Managed.Engine")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

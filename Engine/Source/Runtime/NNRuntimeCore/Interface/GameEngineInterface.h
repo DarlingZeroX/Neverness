@@ -18,7 +18,7 @@
 //#include "../Graphics/OpenGL/RenderTarget.h"
 #include <NNRuntimeRHI/Include/OpenGL/RenderTarget.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct IRenderPipeline
 	{
@@ -47,7 +47,7 @@ namespace VisionGal
 		virtual ~IGameEngineContext() = default;
 
 		virtual IUISystem* GetUISystem() = 0;
-		virtual Horizon::SDL3::OpenGLWindow* GetWindow() = 0;
+		virtual NN::Core::SDL3::OpenGLWindow* GetWindow() = 0;
 		virtual Viewport* GetViewport() = 0;
 
 		// 在渲染引擎设置各种渲染状态之前，添加渲染回调

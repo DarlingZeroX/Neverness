@@ -105,13 +105,13 @@ namespace RmlSol {
 		// 错误事件
 		if (isError == true)
 		{
-			VisionGal::LuaScriptEvent evt;
-			evt.EventType = VisionGal::LuaScriptEventType::ScriptError;
+			NN::Runtime::LuaScriptEvent evt;
+			evt.EventType = NN::Runtime::LuaScriptEventType::ScriptError;
 			evt.ScriptPath = source_path;
 			evt.ErrorMessage = errorMsg;
-			//evt.ErrorLineNumber = source_line + VisionGal::VGLuaInterface::ExtractErrorLineNumber(errorMsg);
-			evt.ErrorLineNumber = source_line + VisionGal::LuaHelper::ExtractErrorLineNumber(errorMsg);
-			VisionGal::EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
+			//evt.ErrorLineNumber = source_line + NN::Runtime::VGLuaInterface::ExtractErrorLineNumber(errorMsg);
+			evt.ErrorLineNumber = source_line + NN::Runtime::LuaHelper::ExtractErrorLineNumber(errorMsg);
+			NN::Runtime::EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 		}
 
 		return isError == false;

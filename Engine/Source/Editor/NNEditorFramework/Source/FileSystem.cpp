@@ -13,9 +13,9 @@
 #include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	EditorFileSystem::EditorFileSystem(const Horizon::fsPath& path)
+	EditorFileSystem::EditorFileSystem(const NN::Core::fsPath& path)
 	{
 		m_ProjectDirectory = path;
 		OpenRootDirectory();
@@ -38,7 +38,7 @@ namespace VisionGal::Editor
 
 		for (auto& entry : std::filesystem::directory_iterator(path))
 		{
-			pfsPath relativePath = Horizon::HFileSystem::RelativePath(entry.path(), m_ProjectDirectory);
+			pfsPath relativePath = NN::Core::HFileSystem::RelativePath(entry.path(), m_ProjectDirectory);
 
 			if (entry.is_directory())
 			{
@@ -51,7 +51,7 @@ namespace VisionGal::Editor
 				}
 
 				// Ŀ¼�ǿյ�
-				if (Horizon::HFileSystem::DirectoryEmpty(entry))
+				if (NN::Core::HFileSystem::DirectoryEmpty(entry))
 				{
 					uiFlags |= ImGuiTreeNodeFlags_Leaf;
 				}
@@ -86,7 +86,7 @@ namespace VisionGal::Editor
 		m_EditorContentBrowser = MakeRef<EditorFileSystem>(m_ContentPath);
 	}
 
-	FileSystemPanel::FileSystemPanel(const String& contentPath)
+	FileSystemPanel::FileSystemPanel(const Runtime::String& contentPath)
 	{
 		m_ContentPath = contentPath;
 	}

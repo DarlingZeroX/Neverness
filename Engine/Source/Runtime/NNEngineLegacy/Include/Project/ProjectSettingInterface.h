@@ -10,9 +10,9 @@
 */
 
 #pragma once
-#include <NNKernel/Include/File/NlohmannJson.h>
+#include <NNCore/Include/File/NlohmannJson.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct ProjectSettingInterface
 	{

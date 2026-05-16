@@ -13,9 +13,9 @@
 #include "../EngineConfig.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeCore/Interface/RenderInterface.h"
-#include <NNKernel/Include/Event/HEventDelegate.h>
+#include <NNCore/Include/Event/HEventDelegate.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	////////////////		Transition Event
 	enum class TransitionEventType
@@ -55,7 +55,7 @@ namespace VisionGal {
 
 		std::string LayerTranslateEnglish(const String& layer);
 
-		Horizon::HEventDelegate<const TransitionEvent&> OnTransitionEvent;
+		NN::Core::HEventDelegate<const TransitionEvent&> OnTransitionEvent;
 	private:
 		std::unordered_map<String, std::queue<Ref<ISceneTransition>> > m_Transitions;
 	};

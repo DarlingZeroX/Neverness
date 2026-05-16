@@ -12,7 +12,7 @@
 #include "Data/DataNamespace.h"
 #include <sol/sol.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	sol::object VGDataNamespace::GetVariableLua(const String& name, sol::this_state lua)
 	{

@@ -12,7 +12,7 @@
 #include "EditorCore/MenuItem.h"
 #include <NNRuntimeImGui/IncludeImGui.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	void EditorUIMenu::OnGUI()
 	{

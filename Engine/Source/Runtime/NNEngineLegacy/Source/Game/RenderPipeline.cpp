@@ -14,7 +14,7 @@
 #include <NNRuntimeRHI/Interface/VGFX.h>
 #include "Scene/Components.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void CoreRenderPipeline::Initialize(IGameEngineContext* context)
 	{

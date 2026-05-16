@@ -14,7 +14,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 
 #include "../../GSSExport.h"
 #include "DataContainer.h"

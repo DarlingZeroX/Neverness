@@ -13,7 +13,7 @@
 #include "../EngineConfig.h"
 #include <sol/state.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_ENGINE_API VGLuaInterface
 	{

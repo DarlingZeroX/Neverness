@@ -23,12 +23,12 @@
 #include "NNEngineLegacy/Include/Engine/VGEngine.h"
 #include "NNRuntimeCore/Interface/Loader.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	EditorMenuBar::EditorMenuBar(VGWindow* window)
+	EditorMenuBar::EditorMenuBar(Runtime::VGWindow* window)
 		:m_EditorWindow(window)
 	{
-		m_EngineIcon = LoadObject<Texture2D>(  "/editor/icons/engineIcon.png");
+		m_EngineIcon = Runtime::LoadObject<Runtime::Texture2D>(  "/editor/icons/engineIcon.png");
 	}
 
 	void EditorMenuBar::OnGUI()
@@ -98,7 +98,7 @@ namespace VisionGal::Editor
 
 				if (ImGui::MenuItemEx(EditorText{ "Exit" }.c_str(), ICON_FA_TIMES))
 				{
-					VGEngine::Get()->RequestExit();
+					Runtime::VGEngine::Get()->RequestExit();
 				}
 				ImGui::EndMenu();
 			}
@@ -159,12 +159,12 @@ namespace VisionGal::Editor
 			{
 				if (ImGui::MenuItem(EditorText{ "Engine homepage" }.c_str()))
 				{
-					Horizon::HSystemMisc::OpenURL("https://darlingzerox.github.io/VisionGalDoc/");
+					NN::Core::HSystemMisc::OpenURL("https://darlingzerox.github.io/VisionGalDoc/");
 				}
 
 				if (ImGui::MenuItem(EditorText{ "GitHub" }.c_str()))
 				{
-					Horizon::HSystemMisc::OpenURL("https://github.com/DarlingZeroX/VisionGal");
+					NN::Core::HSystemMisc::OpenURL("https://github.com/DarlingZeroX/VisionGal");
 				}
 
 				ImGui::EndMenu();
@@ -215,7 +215,7 @@ namespace VisionGal::Editor
 			return;
 		}
 
-		static int2 position = int2(0, 0);
+		static Runtime::int2 position = Runtime::int2(0, 0);
 		if (m_bDragging == false)
 		{
 			position = m_EditorWindow->GetWindowPos();
@@ -255,8 +255,8 @@ namespace VisionGal::Editor
 			m_EditorWindow->MinimizeWindow();
 		}//ImGui::SameLine();
 
-		static int2 windowSize;
-		static int2 windowPos;
+		static Runtime::int2 windowSize;
+		static Runtime::int2 windowPos;
 		if (m_EditorMaximized)
 		{
 			if (ImGui::Button(ICON_FA_WINDOW_RESTORE"##WindowMax", size))
@@ -287,7 +287,7 @@ namespace VisionGal::Editor
 
 		if (ImGui::Button(ICON_FA_TIMES"##WindowClose", size))
 		{
-			VGEngine::Get()->RequestExit();
+			Runtime::VGEngine::Get()->RequestExit();
 		}
 
 		ImGui::PopStyleColor(4);

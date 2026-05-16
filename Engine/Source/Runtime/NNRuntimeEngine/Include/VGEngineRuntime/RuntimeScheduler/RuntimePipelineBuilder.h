@@ -2,7 +2,7 @@
 
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimePipeline.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief **RuntimePipelineBuilder**（占位）：未来将提供 Fluent API 装配 **RuntimePipeline**（插入/移除阶段、条件 Tick）。

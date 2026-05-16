@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "ImGuiEx/ImGuiVector.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 namespace ImGuiEx
 {
 	Vec3Dragging DrawVec3Control(
 		const std::string& label,
-		Horizon::float3& values,
+		NN::Core::float3& values,
 		float resetValue,
 		float v_speed,
 		float v_min, float v_max
@@ -65,7 +65,7 @@ namespace ImGuiEx
 		return dragging;
 	}
 
-	IMGUI_API Vec2Dragging DrawVec2Control(const std::string& label, Horizon::float2& values, float resetValue, float v_speed, float v_min, float v_max)
+	IMGUI_API Vec2Dragging DrawVec2Control(const std::string& label, NN::Core::float2& values, float resetValue, float v_speed, float v_min, float v_max)
 	{
 		Vec2Dragging dragging;
 

@@ -6,7 +6,7 @@
  */
 
 #pragma once
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
 {

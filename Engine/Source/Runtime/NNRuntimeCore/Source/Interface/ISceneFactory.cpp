@@ -11,7 +11,7 @@
 
 #include "ISceneFactory.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void SceneFactoryRegistry::Register(ISceneFactory* factory)
 	{

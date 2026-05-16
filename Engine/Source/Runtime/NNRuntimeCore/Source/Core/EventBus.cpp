@@ -11,7 +11,7 @@
 
 #include "Core/EventBus.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	EngineEventBus& EngineEventBus::Get()
 	{

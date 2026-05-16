@@ -14,10 +14,10 @@
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeAsset/Include/TextureAsset.h"
 #include <unordered_set>
-#include <NNKernel/Interface/HTypeInfo.h>
+#include <NNCore/Interface/HTypeInfo.h>
 #include <NNFileSystem/Interface/HFileSystem.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_ASSET_API AssetManager
 	{
@@ -97,7 +97,7 @@ namespace VisionGal
 		// 缓存资产
 		std::unordered_map<String, CacheAsset> m_AssetMap;
 		// 资产加载器
-		Horizon::unordered_type_map<Scope<IAssetLoader>>  m_AssetLoaders;
+		NN::Core::unordered_type_map<Scope<IAssetLoader>>  m_AssetLoaders;
 		// 加载列表
 		std::unordered_set<String> m_LoadingAssets;
 

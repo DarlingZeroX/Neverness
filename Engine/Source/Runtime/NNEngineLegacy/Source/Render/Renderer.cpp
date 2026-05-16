@@ -17,7 +17,7 @@
 //#include "Graphics/OpenGL/Core.h"
 #include <NNRuntimeRHI/Include/OpenGL/Core.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	SpriteRendererHandler::SpriteRendererHandler()
 	{

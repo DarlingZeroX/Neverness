@@ -20,14 +20,14 @@
 #include <NNEditorFramework/Framework.h>
 
 namespace VisionGal::Editor
-{
+{	
 	VGLauncher::VGLauncher()
 	{
 	}
 	 
 	void VGLauncher::Initialize()
 	{
-		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
+		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		// 初始化启动器窗口数据
 		auto editorName = "VisionGal Launcher";
@@ -38,7 +38,7 @@ namespace VisionGal::Editor
 		auto windowHeight = 720;
 
 		// 创建启动器窗口
-		m_LauncherWindow = MakeScope<VGWindow>();
+		m_LauncherWindow = NN::MakeScope<VGWindow>();
 		m_LauncherWindow->Initialize(editorName, windowWidth, windowHeight,true);
 
 		// 添加ImGui Layer
@@ -51,20 +51,20 @@ namespace VisionGal::Editor
 
 	void VGLauncher::InitializeLauncherPanels()
 	{
-		auto* panelManager = PanelManager::GetInstance();
+		auto* panelManager = NN::Editor::PanelManager::GetInstance();
 
 		//editor->AddPanelWithID("EditorMenuBar", MakeRef<EditorMenuBar>());
-		panelManager->AddPanelWithID("LauncherMainWindow", MakeRef<VGLauncherMainWindow>());
+		panelManager->AddPanelWithID("LauncherMainWindow", NN::MakeRef<VGLauncherMainWindow>());
 	}
 
 	void VGLauncher::InitializeEditorUI()
 	{
-		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
+		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		// 设置本地语言
-		EditorLoadLanguage(editorConfig.EditorLanguage);
+		NN::Editor::EditorLoadLanguage(editorConfig.EditorLanguage);
 		// 设置主题
-		EditorStyle::DarkTheme();
+		NN::Editor::EditorStyle::DarkTheme();
 		// 初始化ImGuiEx
 		ImGuiEx::Initialize();
 	}
@@ -76,7 +76,7 @@ namespace VisionGal::Editor
 		m_ImGuiOpenGL3Layer = std::make_unique<ImguiOpengl3Layer>(m_LauncherWindow.get(), m_LauncherWindow->GetContext());
 
 		ImGuiIO& io = ImGui::GetIO();
-		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
+		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		// 读取中文字体
 		VFS::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFS::DataRef& data) {
@@ -115,18 +115,18 @@ namespace VisionGal::Editor
 
 	void VGLauncher::OnUpdate(float deltaTime)
 	{
-		PanelManager::GetInstance()->OnUpdate(deltaTime);
+		NN::Editor::PanelManager::GetInstance()->OnUpdate(deltaTime);
 	}
 
 	void VGLauncher::OnFixedUpdate()
 	{
-		PanelManager::GetInstance()->OnFixedUpdate();
+		NN::Editor::PanelManager::GetInstance()->OnFixedUpdate();
 	}
 
 	void VGLauncher::OnGUI()
 	{
 		m_ImGuiOpenGL3Layer->BeginFrame();
-		PanelManager::GetInstance()->OnGUI();
+		NN::Editor::PanelManager::GetInstance()->OnGUI();
 		ImGuiEx::Render();
 		m_ImGuiOpenGL3Layer->EndFrame();
 	}

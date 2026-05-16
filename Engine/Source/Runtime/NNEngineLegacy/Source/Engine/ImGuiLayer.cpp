@@ -18,9 +18,9 @@
 #include <NNRuntimeImGui/Include/Imgui/imgui_impl_opengl3.h>
 #include <NNRuntimeImGui/Include/Imgui/imgui.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	ImguiOpengl3Layer::ImguiOpengl3Layer(Horizon::SDL3::Window* window, SDL_GLContext context)
+	ImguiOpengl3Layer::ImguiOpengl3Layer(NN::Core::SDL3::Window* window, SDL_GLContext context)
 	{
 		//Init SDL3
 		ImGui_ImplSDL3_InitForOpenGL(window->GetSDLWindow(), context);

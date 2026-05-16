@@ -14,7 +14,7 @@
 #include "VGAsset.h"
 #include "../Include/Core/Core.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     struct IEngineAssetFactory
     {

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 void RuntimeSubsystemCollection::Register(IRuntimeSubsystem* subsystem) noexcept
 {

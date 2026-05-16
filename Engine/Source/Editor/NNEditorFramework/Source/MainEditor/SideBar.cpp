@@ -12,8 +12,8 @@
 #include "MainEditor/SideBar.h"
 //#include "NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
-#include <NNKernel/Interface/HVector.h>
-namespace VisionGal::Editor
+#include <NNCore/Interface/HVector.h>
+namespace NN::Editor
 {
 	void EditorSideBar::OnGUI()
 	{
@@ -67,7 +67,7 @@ namespace VisionGal::Editor
 			ImVec2 region = ImGui::GetContentRegionMax();
 			//bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -50.0f, -region.y - 2.0f);
 			bg.SetRegionAutoOffest(region, 0.0f, region.x);
-			bg.SetColLeft(Horizon::float4(.0f, .0f, .0f, 0.231f));
+			bg.SetColLeft(NN::Core::float4(.0f, .0f, .0f, 0.231f));
 			bg.WindowDraw();
 
 			// Sidebar的按钮组件UI

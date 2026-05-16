@@ -10,11 +10,11 @@
 */
 
 #pragma once
-#include <NNKernel/Interface/HInterface.h>
+#include <NNCore/Interface/HInterface.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	using InterfaceID = Horizon::InterfaceID;
+	using InterfaceID = NN::Core::InterfaceID;
 
 	struct IRuntimeInterface
 	{

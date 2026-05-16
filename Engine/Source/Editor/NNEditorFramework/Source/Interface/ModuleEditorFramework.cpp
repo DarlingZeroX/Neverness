@@ -15,12 +15,12 @@
 #include "NNRuntimeCore/Include/Core/VFS.h"
 #include "../Framework.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	void ModuleEditorFramework::MountToEditor(Ref<VGWindow>& editorWindow, Ref<CoreGameEngine>& gameEngine)
+	void ModuleEditorFramework::MountToEditor(Ref<Runtime::VGWindow>& editorWindow, Ref<Runtime::CoreGameEngine>& gameEngine)
 	{
 		// 初始化内容浏览器
-		String contentPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
 		ContentBrowser::Create(contentPath);
 
 		// 初始化资源导入管理器

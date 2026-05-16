@@ -14,7 +14,7 @@
 #include <string>
 #include "../../Config.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
     struct MenuItem {
         std::string label;

@@ -16,7 +16,7 @@
 #include "DocumentManager.h"
 #include "../../Interface/UIInterface.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API CodeStudioPanel : public IEditorPanel
 	{
@@ -25,7 +25,7 @@ namespace VisionGal::Editor
 		~CodeStudioPanel() override;
 
 		void OnGUI() override;
-		bool OpenTextFile(const VGPath& path);
+		bool OpenTextFile(const Runtime::VGPath& path);
 
 		std::string GetWindowFullName() override;
 		std::string GetWindowName() override;

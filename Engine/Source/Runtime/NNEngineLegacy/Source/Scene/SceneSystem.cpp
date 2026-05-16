@@ -15,7 +15,7 @@
 #include "Scene/GameActorFactory.h"
 #include "NNRuntimeAsset/Interface/SceneSerializerFactory.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void SceneSystem::Initialize()
 	{		

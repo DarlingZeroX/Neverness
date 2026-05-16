@@ -10,19 +10,19 @@
 */
 
 #include "AssetInterface.h"
-#include "NNKernel/Include/Utils/HStringGenerator.h"
+#include "NNCore/Include/Utils/HStringGenerator.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	VGPath GenerateAssetPath(const VGPath& path, const std::string& name, const std::string& ext)
 	{
-		Horizon::HSequenceStringGenerator gen(name);
+		NN::Core::HSequenceStringGenerator gen(name);
 
 		std::filesystem::path fsPath = path;
 		auto nextName = gen.GetNext();
 		auto fullPath = fsPath / (nextName + ext);
-		while (Horizon::HFileSystem::ExistsDirectory(fullPath))
+		while (NN::Core::HFileSystem::ExistsDirectory(fullPath))
 		{
 			nextName = gen.GetNext();
 			fullPath = fsPath / (nextName + ext);

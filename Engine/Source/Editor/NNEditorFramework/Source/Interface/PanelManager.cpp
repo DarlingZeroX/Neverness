@@ -12,7 +12,7 @@
 #include "pch.h"
 #include "PanelManager.h"
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	PanelManager::PanelManager()
 	{

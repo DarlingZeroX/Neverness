@@ -2,7 +2,7 @@
 #include <RmlUi/Core.h>
 #include <SDL3_image/SDL_image.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	Rml::TextureHandle RenderInterface_GL3_SDL::LoadTexture(Rml::Vector2i& texture_dimensions,
 		const Rml::String& source)

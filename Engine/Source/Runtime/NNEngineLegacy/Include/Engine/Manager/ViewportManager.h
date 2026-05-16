@@ -13,7 +13,7 @@
 #include "../../EngineConfig.h"
 #include "NNRuntimeCore/Include/Core/Viewport.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_ENGINE_API ViewportManager
 	{

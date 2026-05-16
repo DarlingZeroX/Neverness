@@ -11,7 +11,7 @@
 
 #include "Core/Viewport.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	Viewport::Viewport(const float2& viewport_size)
 		:m_State(viewport_size)
@@ -136,12 +136,12 @@ namespace VisionGal
 		return true;
 	}
 
-	void Viewport::AttachWindow(Horizon::IWindow* window)
+	void Viewport::AttachWindow(NN::Core::IWindow* window)
 	{
 		m_Window = window;
 	}
 
-	Horizon::IWindow* Viewport::GetWindow()
+	NN::Core::IWindow* Viewport::GetWindow()
 	{
 		return m_Window;
 	}

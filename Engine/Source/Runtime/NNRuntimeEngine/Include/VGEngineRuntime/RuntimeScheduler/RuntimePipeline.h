@@ -1,6 +1,6 @@
 #pragma once
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief **RuntimePipeline**（占位）：未来将描述 **RuntimeScheduler** 内阶段序列（类似 Unity **PlayerLoop** 结构体链表）。

@@ -3,7 +3,7 @@
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeFrameContext.h"
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeTickGroup.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 可注册至 **RuntimeScheduler** 的运行时子系统接口（**P0-1 Kernel** 统一 Tick 管线）。

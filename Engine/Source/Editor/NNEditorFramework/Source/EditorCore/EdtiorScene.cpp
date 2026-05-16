@@ -18,7 +18,7 @@
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNRuntimeCore/Include/Core/VFS.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	void EditorScene::OpenSaveCurrentSceneDialog(const std::function<void(int)>& callback)
 	{
@@ -42,21 +42,21 @@ namespace VisionGal::Editor
 	{
 		OpenSaveCurrentSceneDialog([](int choice)
 			{
-				GetSceneManager()->LoadNewScene();
+				Runtime::GetSceneManager()->LoadNewScene();
 			});
 	}
 
-	bool EditorScene::OpenNewScene(const VGPath& path)
+	bool EditorScene::OpenNewScene(const Runtime::VGPath& path)
 	{
 		// 当打开场景就是本场景直接返回
-		if (GetSceneManager()->GetCurrentRunningScene() && GetSceneManager()->GetCurrentRunningScene()->GetResourcePath() == path)
+		if (Runtime::GetSceneManager()->GetCurrentRunningScene() && Runtime::GetSceneManager()->GetCurrentRunningScene()->GetResourcePath() == path)
 		{
 			return true;
 		} 
 
 		OpenSaveCurrentSceneDialog([path](int choice)
 			{
-				GetSceneManager()->LoadScene(path);
+				Runtime::GetSceneManager()->LoadScene(path);
 			});
 
 		return true;
@@ -64,9 +64,9 @@ namespace VisionGal::Editor
 
 	void EditorScene::OpenSceneByFileDialog()
 	{
-		String contentPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
 		auto root = contentPath;
-		root = Horizon::HFileSystem::ToWindowsPath(root);
+		root = NN::Core::HFileSystem::ToWindowsPath(root);
 
 		auto selection = pfd::open_file(EditorText{ "Open Project" }.c_str(), root, { "Scene (.vgasset)", "*.vgasset" }, pfd::opt::multiselect | pfd::opt::force_path).result();
 
@@ -75,8 +75,8 @@ namespace VisionGal::Editor
 
 		OpenSaveCurrentSceneDialog([selection](int choice)
 			{
-			auto scenePath = VFS::GetResourcePathVFS(selection[0]);
-			auto scene = GetSceneManager()->LoadScene(scenePath);
+			auto scenePath = Runtime::VFS::GetResourcePathVFS(selection[0]);
+			auto scene = Runtime::GetSceneManager()->LoadScene(scenePath);
 
 			if (scene)
 			{
@@ -87,7 +87,7 @@ namespace VisionGal::Editor
 
 	bool EditorScene::SaveCurrentScene()
 	{
-		auto* scene = GetSceneManager()->GetCurrentEditorScene();
+		auto* scene = Runtime::GetSceneManager()->GetCurrentEditorScene();
 		if (scene == nullptr)
 			return false;
 
@@ -96,7 +96,7 @@ namespace VisionGal::Editor
 			return SaveCurrentSceneAs();
 		}
 		
-		if (GetSceneManager()->SaveScene(dynamic_cast<Scene*>(scene), scene->GetResourcePath()))
+		if (Runtime::GetSceneManager()->SaveScene(dynamic_cast<Runtime::Scene*>(scene), scene->GetResourcePath()))
 		{
 			ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Save current scene successfully" });
 			//pfd::notify(
@@ -115,18 +115,18 @@ namespace VisionGal::Editor
 
 	bool EditorScene::SaveCurrentSceneAs()
 	{
-		String contentPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
 		auto root = contentPath;
-		root = Horizon::HFileSystem::ToWindowsPath(root);
+		root = NN::Core::HFileSystem::ToWindowsPath(root);
 
 		auto destination = pfd::save_file(EditorText{ "Save Scene As..." }.c_str(), root, { "Scene (.vgasset)", "*.vgasset" }).result();
 		if (destination.empty())
 			return false;
 
-		auto* scene = GetSceneManager()->GetCurrentEditorScene();
-		auto scenePath = VFS::GetResourcePathVFS(destination);
+		auto* scene = Runtime::GetSceneManager()->GetCurrentEditorScene();
+		auto scenePath = Runtime::VFS::GetResourcePathVFS(destination);
 
-		if (GetSceneManager()->SaveScene(dynamic_cast<Scene*>(scene), scenePath))
+		if (Runtime::GetSceneManager()->SaveScene(dynamic_cast<Runtime::Scene*>(scene), scenePath))
 		{
 			ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Save scene successfully" });
 		}

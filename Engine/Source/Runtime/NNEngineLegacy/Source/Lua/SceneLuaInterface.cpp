@@ -14,7 +14,7 @@
 #include "Scene/GameActor.h"
 #include "Scene/Components.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	namespace Lua
 	{

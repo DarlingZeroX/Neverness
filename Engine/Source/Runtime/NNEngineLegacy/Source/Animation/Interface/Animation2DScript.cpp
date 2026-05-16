@@ -12,14 +12,14 @@
 #include "Animation/Interface/Animation2DScript.h"
 #include "Animation/Core/PrimitiveScript.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	Animation2DScript::Animation2DScript(Horizon::HEntityInterface* entity)
+	Animation2DScript::Animation2DScript(NN::Core::HEntityInterface* entity)
 	{
 		SetEntity(entity);
 	}
 
-	void Animation2DScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void Animation2DScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		for (auto& script: m_CurrentAnimationScript.scripts)
 		{
@@ -88,7 +88,7 @@ namespace VisionGal
 		}
 	}
 
-	void Animation2DScript::SetEntity(Horizon::HEntityInterface* entity)
+	void Animation2DScript::SetEntity(NN::Core::HEntityInterface* entity)
 	{
 		m_Entity = entity;
 	}

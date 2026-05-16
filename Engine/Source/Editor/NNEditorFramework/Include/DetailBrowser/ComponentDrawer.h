@@ -13,71 +13,71 @@
 #include "../../Interface/IComponentDrawer.h"
 #include <NNEngineLegacy/Include/Scene/Components.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct TransformComponentDrawer : public IComponentDrawer
 	{
 		~TransformComponentDrawer() override = default;
 
-		void OnGUI(IEntity* entity) override;
-		const String GetBindType() const override;
+		void OnGUI(Runtime::IEntity* entity) override;
+		const Runtime::String GetBindType() const override;
 	};
 
 	struct CameraComponentDrawer : public IComponentDrawer
 	{
 		~CameraComponentDrawer() override = default;
 
-		void OnGUI(IEntity* entity) override;
-		const String GetBindType() const override;
+		void OnGUI(Runtime::IEntity* entity) override;
+		const Runtime::String GetBindType() const override;
 	};
 
 	struct SpriteRendererComponentDrawer: public IComponentDrawer
 	{
 		~SpriteRendererComponentDrawer() override = default;
 
-		void OnGUI(IEntity* entity) override;
-		const String GetBindType() const override;
+		void OnGUI(Runtime::IEntity* entity) override;
+		const Runtime::String GetBindType() const override;
 
-		void SpriteBeginDropTarget(SpriteRendererComponent* com);
+		void SpriteBeginDropTarget(Runtime::SpriteRendererComponent* com);
 	};
 
 	struct ScriptComponentDrawer: public IComponentDrawer
 	{
 		~ScriptComponentDrawer() override = default;
 
-		void OnGUI(IEntity* entity) override;
-		const String GetBindType() const override;
+		void OnGUI(Runtime::IEntity* entity) override;
+		const Runtime::String GetBindType() const override;
 
-		void ScriptBeginDropTarget(IScript* script, IScriptVariable& var);
+		void ScriptBeginDropTarget(Runtime::IScript* script, Runtime::IScriptVariable& var);
 	};
 
 	struct RmlUIDocumentComponentDrawer : public IComponentDrawer
 	{
 		~RmlUIDocumentComponentDrawer() override = default;
 
-		void OnGUI(IEntity* entity) override;
-		const String GetBindType() const override;
+		void OnGUI(Runtime::IEntity* entity) override;
+		const Runtime::String GetBindType() const override;
 
-		void DocumentBeginDropTarget(RmlUIDocumentComponent* com);
+		void DocumentBeginDropTarget(Runtime::RmlUIDocumentComponent* com);
 	};
 
 	struct AudioSourceComponentDrawer : public IComponentDrawer
 	{
 		~AudioSourceComponentDrawer() override = default;
 
-		void OnGUI(IEntity* entity) override;
-		const String GetBindType() const override;
+		void OnGUI(Runtime::IEntity* entity) override;
+		const Runtime::String GetBindType() const override;
 
-		void AudioSourceBeginDropTarget(AudioSourceComponent* com);
+		void AudioSourceBeginDropTarget(Runtime::AudioSourceComponent* com);
 	};
 
 	struct VideoPlayerComponentDrawer : public IComponentDrawer
 	{
 		~VideoPlayerComponentDrawer() override = default;
 
-		void OnGUI(IEntity* entity) override;
-		const String GetBindType() const override;
+		void OnGUI(Runtime::IEntity* entity) override;
+		const Runtime::String GetBindType() const override;
 
-		void VideoPlayerBeginDropTarget(VideoPlayerComponent* com);
+		void VideoPlayerBeginDropTarget(Runtime::VideoPlayerComponent* com);
 	};
 }

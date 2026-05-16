@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Interface/EngineState.h"
 //#include "Engine/Manager/SceneManager.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	RmlUIDocument::RmlUIDocument()
 	{

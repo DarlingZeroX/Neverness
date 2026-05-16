@@ -17,9 +17,9 @@
 
 namespace RmlSol {
 
-	static Ref<sol::state> g_L = nullptr;
+	static NN::Ref<sol::state> g_L = nullptr;
 
-	SolPlugin::SolPlugin(Ref<sol::state> lua_state)
+	SolPlugin::SolPlugin(NN::Ref<sol::state> lua_state)
 	{
 		RMLUI_ASSERT(g_L == nullptr);
 		g_L = lua_state;
@@ -78,7 +78,7 @@ namespace RmlSol {
 		return g_L.get();
 	}
 
-	void SolPlugin::RebindLuaState(Ref<sol::state> lua_state)
+	void SolPlugin::RebindLuaState(NN::Ref<sol::state> lua_state)
 	{
 		g_L = lua_state;
 		RegisterTypes();

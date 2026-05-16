@@ -16,7 +16,7 @@
 #include <sol/function.hpp>
 #include <sol/state.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_ENGINE_API LuaScript: public IScript
 	{

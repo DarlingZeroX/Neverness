@@ -12,7 +12,7 @@
 #pragma once
 #include "PrimitiveScriptInterface.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	/// 具体策略实现
 	/// 位置X轴平移动画脚本
@@ -26,9 +26,9 @@ namespace VisionGal
 		TranslateXAnimationScript& operator=(TranslateXAnimationScript&&) noexcept = default;
 		~TranslateXAnimationScript() override = default;
 
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 		bool CanParse(const std::string& key) const override;
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity,float value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity,float value) override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
 	};
 
@@ -43,9 +43,9 @@ namespace VisionGal
 		TranslateYAnimationScript& operator=(TranslateYAnimationScript&&) noexcept = default;
 		~TranslateYAnimationScript() override = default;
 
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 		bool CanParse(const std::string& key) const override;
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity,float value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity,float value) override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
 	};
 
@@ -60,9 +60,9 @@ namespace VisionGal
 		ScaleXAnimationScript& operator=(ScaleXAnimationScript&&) noexcept = default;
 		~ScaleXAnimationScript() override = default;
 
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 		bool CanParse(const std::string& key) const override;
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity,float value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity,float value) override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
 	};
 
@@ -77,9 +77,9 @@ namespace VisionGal
 		ScaleYAnimationScript& operator=(ScaleYAnimationScript&&) noexcept = default;
 		~ScaleYAnimationScript() override = default;
 
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 		bool CanParse(const std::string& key) const override;
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity, float value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value) override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
 	};
 
@@ -94,9 +94,9 @@ namespace VisionGal
 		ScaleAnimationScript& operator=(ScaleAnimationScript&&) noexcept = default;
 		~ScaleAnimationScript() override = default;
 
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 		bool CanParse(const std::string& key) const override;
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity, float2 value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity, float2 value) override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
 
 		bool ParseLua(sol::object value, Animation2DPrimitive& primitive) const override;
@@ -113,9 +113,9 @@ namespace VisionGal
 		RotateAnimationScript& operator=(RotateAnimationScript&&) noexcept = default;
 		~RotateAnimationScript() override = default;
 
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 		bool CanParse(const std::string& key) const override;
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity, float value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value) override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
 	};
 
@@ -130,9 +130,9 @@ namespace VisionGal
 		SpriteAlphaAnimationScript& operator=(SpriteAlphaAnimationScript&&) noexcept = default;
 		~SpriteAlphaAnimationScript() override = default;
 
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 		bool CanParse(const std::string& key) const override;
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity,float value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity,float value) override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
 	};
 
@@ -146,15 +146,15 @@ namespace VisionGal
 		SpriteColor3AnimationScript& operator=(SpriteColor3AnimationScript&&) noexcept = default;
 		~SpriteColor3AnimationScript() override = default;
 	
-		bool StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
+		bool StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse) override;
 
-		void ApplyValueToEntity(Horizon::HEntityInterface* entity, const float3& value) override;
+		void ApplyValueToEntity(NN::Core::HEntityInterface* entity, const float3& value) override;
 		bool CanParse(const std::string& key) const override;
 		bool ParseLua(sol::object value, Animation2DPrimitive& primitive) const override;
 		Animation2DPrimitiveType GetPrimitiveType() const override;
-		Ref<IAnimationScript> StartAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, Animation2DPrimitive& primitive, bool reverse) override;
+		Ref<IAnimationScript> StartAnimationScript(NN::Core::HEntityInterface* entity, const Animation2DProperty& targetProperty, Animation2DPrimitive& primitive, bool reverse) override;
 	private:
-		Horizon::HEntityInterface* m_Entity;
+		NN::Core::HEntityInterface* m_Entity;
 	};
 
 	// 策略管理器
@@ -176,6 +176,6 @@ namespace VisionGal
 
 		bool Parse(const std::string& key, sol::object value, Animation2DPrimitive& primitive) const;
 
-		Ref<IAnimationScript> StartAnimationScript(Horizon::HEntityInterface* entity, const Animation2DProperty& targetProperty, Animation2DPrimitive& primitive, bool reverse);
+		Ref<IAnimationScript> StartAnimationScript(NN::Core::HEntityInterface* entity, const Animation2DProperty& targetProperty, Animation2DPrimitive& primitive, bool reverse);
 	};
 }

@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Interface/SceneInterface.h"
 //#include "../Scene/Scene.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct SceneAsset : public VGAsset
 	{

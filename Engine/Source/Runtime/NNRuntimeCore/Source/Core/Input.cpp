@@ -12,32 +12,32 @@
 #include "Core/Input.h"
 #include <NNPlatformCore/Interface/HInput.h>
 
-#include "NNKernel/Interface/HStringTools.h"
+#include "NNCore/Interface/HStringTools.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	Input::Input()
 	{
-		m_Mouse = MakeRef<Horizon::SDL3::Mouse>(Horizon::HNativeMouse::GetContext());
+		m_Mouse = MakeRef<NN::Core::SDL3::Mouse>(NN::Core::HNativeMouse::GetContext());
 
-		if (Horizon::HNativeMouse::Get().VaildAttachedMouse() == false)
+		if (NN::Core::HNativeMouse::Get().VaildAttachedMouse() == false)
 		{
-			Horizon::HNativeMouse::Get().MouseAttached(m_Mouse);
+			NN::Core::HNativeMouse::Get().MouseAttached(m_Mouse);
 		}
 
-		m_Keyboard = MakeRef<Horizon::SDL3::Keyboard>(Horizon::HNativeKeyboard::GetContext());
+		m_Keyboard = MakeRef<NN::Core::SDL3::Keyboard>(NN::Core::HNativeKeyboard::GetContext());
 
-		if (Horizon::HNativeKeyboard::Get().VaildAttachedKeyboard() == false)
+		if (NN::Core::HNativeKeyboard::Get().VaildAttachedKeyboard() == false)
 		{
-			Horizon::HNativeKeyboard::Get().KeyboardAttached(m_Keyboard);
+			NN::Core::HNativeKeyboard::Get().KeyboardAttached(m_Keyboard);
 		}
 
 		//m_Mouse->SetWindow(this);
 
-		for (auto& pair: Horizon::HKeycodeUtils::GetKeyNameMap())
+		for (auto& pair: NN::Core::HKeycodeUtils::GetKeyNameMap())
 		{
 			auto name = pair.second;
-			Horizon::HStringTools::ToUpper(name);
+			NN::Core::HStringTools::ToUpper(name);
 			m_NameKeycodeMap[name] = pair.first;
 		}
 	}
@@ -49,9 +49,9 @@ namespace VisionGal
 
 		if (Get()->m_Viewport->IsEnableInput() == false)
 			return false;
-			//return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+			//return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 
-		return GetMouse().IsMouseButtonDown(static_cast<Horizon::HMouseButton>(button));
+		return GetMouse().IsMouseButtonDown(static_cast<NN::Core::HMouseButton>(button));
 	}
 
 	bool Input::GetMouseButtonUp(int button)
@@ -62,7 +62,7 @@ namespace VisionGal
 		if (Get()->m_Viewport->IsEnableInput() == false)
 			return false;
 
-		return GetMouse().IsMouseButtonUp(static_cast<Horizon::HMouseButton>(button));
+		return GetMouse().IsMouseButtonUp(static_cast<NN::Core::HMouseButton>(button));
 	}
 
 	bool Input::GetMouseButtonHeld(int button)
@@ -73,10 +73,10 @@ namespace VisionGal
 		if (Get()->m_Viewport->IsEnableInput() == false)
 			return false;
 
-		return GetMouse().IsMouseButtonHeld(static_cast<Horizon::HMouseButton>(button));
+		return GetMouse().IsMouseButtonHeld(static_cast<NN::Core::HMouseButton>(button));
 	}
 
-	bool Input::GetKey(Horizon::HKeycode code)
+	bool Input::GetKey(NN::Core::HKeycode code)
 	{
 		if (Get()->m_Viewport == nullptr)
 			return false;
@@ -87,7 +87,7 @@ namespace VisionGal
 		return GetKeyboard().IsKeyHeld(code);
 	}
 
-	bool Input::GetKeyDown(Horizon::HKeycode code)
+	bool Input::GetKeyDown(NN::Core::HKeycode code)
 	{
 		if (Get()->m_Viewport == nullptr)
 			return false;
@@ -98,7 +98,7 @@ namespace VisionGal
 		return GetKeyboard().IsKeyDown(code);
 	}
 
-	bool Input::GetKeyUp(Horizon::HKeycode code)
+	bool Input::GetKeyUp(NN::Core::HKeycode code)
 	{
 		if (Get()->m_Viewport == nullptr)
 			return false;
@@ -112,7 +112,7 @@ namespace VisionGal
 	bool Input::GetKeyName(const String& code)
 	{
 		auto name = code;
-		Horizon::HStringTools::ToUpper(name);
+		NN::Core::HStringTools::ToUpper(name);
 
 		auto result = Get()->m_NameKeycodeMap.find(name);
 		if (result != Get()->m_NameKeycodeMap.end())
@@ -125,7 +125,7 @@ namespace VisionGal
 	bool Input::GetKeyNameDown(const String& code)
 	{
 		auto name = code;
-		Horizon::HStringTools::ToUpper(name);
+		NN::Core::HStringTools::ToUpper(name);
 
 		auto result = Get()->m_NameKeycodeMap.find(name);
 		if (result != Get()->m_NameKeycodeMap.end())
@@ -138,7 +138,7 @@ namespace VisionGal
 	bool Input::GetKeyNameUp(const String& code)
 	{
 		auto name = code;
-		Horizon::HStringTools::ToUpper(name);
+		NN::Core::HStringTools::ToUpper(name);
 
 		auto result = Get()->m_NameKeycodeMap.find(name);
 		if (result != Get()->m_NameKeycodeMap.end())
@@ -159,10 +159,10 @@ namespace VisionGal
 		if (m_Viewport)
 		{
 			if (m_Viewport->GetWindowID() != event.window.windowID)
-				return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+				return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 
 			if (m_Viewport->IsEnableInput() == false)
-				return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+				return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 		}
 
 		if (m_Mouse)
@@ -171,10 +171,10 @@ namespace VisionGal
 		if (m_Keyboard)
 			m_Keyboard->ProcessEvent(event);
 
-		return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+		return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 	}
 
-	void Input::AttachWindow(Horizon::SDL3::Window* window)
+	void Input::AttachWindow(NN::Core::SDL3::Window* window)
 	{
 		window->AddLayer(this);
 	}
@@ -184,19 +184,19 @@ namespace VisionGal
 		m_Viewport = viewport;
 	}
 
-	Horizon::HMouse& Input::GetMouse()
+	NN::Core::HMouse& Input::GetMouse()
 	{
-		return Horizon::HNativeMouse::Get();
+		return NN::Core::HNativeMouse::Get();
 	}
 
-	Horizon::HKeyboard& Input::GetKeyboard()
+	NN::Core::HKeyboard& Input::GetKeyboard()
 	{
-		return Horizon::HNativeKeyboard::Get();
+		return NN::Core::HNativeKeyboard::Get();
 	}
 
 	void Input::Update()
 	{
-		Horizon::HInput::FixedUpdate();
-		Horizon::HInput::FrameUpdate();
+		NN::Core::HInput::FixedUpdate();
+		NN::Core::HInput::FrameUpdate();
 	}
 }

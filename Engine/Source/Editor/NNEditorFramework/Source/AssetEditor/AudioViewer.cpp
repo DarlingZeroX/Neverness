@@ -15,18 +15,18 @@
 #include <NNRuntimeCore/Include/Utils/TimeHelper.h>
 #include <NNEngineLegacy/Include/Engine/AudioPlayer.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	AudioViewer::AudioViewer(const VGPath& path)
+	AudioViewer::AudioViewer(const Runtime::VGPath& path)
 	{
 		m_Path = path;
-		if (auto audioClip = LoadObject<VGAudioClip>(path))
+		if (auto audioClip = Runtime::LoadObject<Runtime::VGAudioClip>(path))
 		{
-			m_AudioPlayer = VGAudioPlayer::CreatePlayer(audioClip);
+			m_AudioPlayer = Runtime::VGAudioPlayer::CreatePlayer(audioClip);
 			m_AudioPlayer->Play();
 
 			m_AudioDuration = m_AudioPlayer->GetDuration();
-			m_AudioDurationFormat = TimeHelper::FloatToTimeFormatSprintf(m_AudioDuration);
+			m_AudioDurationFormat = Runtime::TimeHelper::FloatToTimeFormatSprintf(m_AudioDuration);
 		}
 	}
 
@@ -70,7 +70,7 @@ namespace VisionGal::Editor
 
 	void AudioViewer::RenderProgressBarUI()
 	{
-		ImGui::Text(TimeHelper::FloatToTimeFormatSprintf(m_CurrentPlayTime).c_str());
+		ImGui::Text(Runtime::TimeHelper::FloatToTimeFormatSprintf(m_CurrentPlayTime).c_str());
 		ImGui::SameLine();
 		ImGui::SliderFloat("##AudioTimeControl", &m_CurrentPlayTime, 0.f, m_AudioDuration);
 		//std::cout << m_CurrentPlayTime << std::endl;

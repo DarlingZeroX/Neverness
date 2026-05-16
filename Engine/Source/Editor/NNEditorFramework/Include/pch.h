@@ -11,7 +11,7 @@
 
 
 #pragma once
-#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNCore/Interface/HCoreTypes.h>
 
 #include <NNRuntimeImGui/Include/Imgui/imgui.h>
 #include <NNRuntimeImGui/Include/Imgui/imgui_internal.h>

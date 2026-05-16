@@ -15,7 +15,7 @@
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
 #include "NNRuntimeCore/Interface/SceneInterface.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct IGameActorBuilder
 	{

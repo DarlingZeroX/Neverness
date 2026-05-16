@@ -18,7 +18,7 @@
 #include "NNRuntimeCore/Include/Core/VFS.h"
 #include "NNRuntimeImGui/IncludeImGuiEx.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	EditorPreferenceEditor::EditorPreferenceEditor()
 	{
@@ -49,20 +49,20 @@ namespace VisionGal::Editor
 			DrawTableColumnTitle("Editor Language");
 			if (ImGui::BeginCombo("##Editor Language", EditorText{ EditorLanguage }.c_str(), ImGuiComboFlags_PopupAlignLeft))
 			{
-				const auto& languageTypeCode = Horizon::HLocalizationManager::GetInstance()->GetLanguageTypeCode(); // 默认主题
+				const auto& languageTypeCode = NN::Core::HLocalizationManager::GetInstance()->GetLanguageTypeCode(); // 默认主题
 
 				for (int n = 0; n < languageTypeCode.size(); n++)
 				{
 					if (ImGui::Selectable(EditorText{ languageTypeCode[n] }.c_str()))
 					{
 						EditorLanguage = languageTypeCode[n];
-						Horizon::HLocalizationManager::GetInstance()->SetLanguageByCode(EditorLanguage);
+						NN::Core::HLocalizationManager::GetInstance()->SetLanguageByCode(EditorLanguage);
 
 						// 设置完语言需要重新布局编辑器UI
 						auto* panelManager = PanelManager::GetInstance();
 						auto* mainWindow = dynamic_cast<EditorMainWindow*>(panelManager->GetPanelWithID("EditorMainWindow"));
 						mainWindow->RequestRearrangeLayout();
-						Horizon::HFileSystem::RemoveFile("imgui.ini"); // 删除布局文件，强制重新布局
+						NN::Core::HFileSystem::RemoveFile("imgui.ini"); // 删除布局文件，强制重新布局
 					}
 				}
 				ImGui::EndCombo();
@@ -154,10 +154,10 @@ namespace VisionGal::Editor
 
 	void EditorPreferences::Load(EditorPreferences& preferences)
 	{
-		if (Horizon::HFileSystem::ExistsDirectory("Data") == false)
+		if (NN::Core::HFileSystem::ExistsDirectory("Data") == false)
 			return;
 
-		if (Horizon::HFileSystem::ExistsDirectory("Data/Preferences") == false)
+		if (NN::Core::HFileSystem::ExistsDirectory("Data/Preferences") == false)
 			return;
 
 		ReadSettingFromFile("Data/Preferences/Editor.setting", preferences.Editor);
@@ -165,8 +165,8 @@ namespace VisionGal::Editor
 
 	void EditorPreferences::Save(EditorPreferences& preferences)
 	{
-		Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data");
-		Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data/Preferences");
+		NN::Core::HFileSystem::CreateDirectoryWhenNoExist("Data");
+		NN::Core::HFileSystem::CreateDirectoryWhenNoExist("Data/Preferences");
 
 		SaveSettingToFile("Data/Preferences/Editor.setting", preferences.Editor);
 	}
@@ -197,7 +197,7 @@ namespace VisionGal::Editor
 	void EditorPreferences::ReadSettingFromFile(const std::filesystem::path& path, EditorSettingInterface& setting)
 	{
 		std::string text;
-		if (Horizon::HFileSystem::ReadTextFromFile(path, text))
+		if (NN::Core::HFileSystem::ReadTextFromFile(path, text))
 		{
 			try {
 				nlohmann::json json = nlohmann::json::parse(text);
@@ -216,6 +216,6 @@ namespace VisionGal::Editor
 		setting.Save(json);
 		std::string jsonStr = json.dump(2);
 
-		Horizon::HFileSystem::WriteTextToFile(path, jsonStr);
+		NN::Core::HFileSystem::WriteTextToFile(path, jsonStr);
 	}
 }

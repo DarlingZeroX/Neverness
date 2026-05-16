@@ -16,7 +16,7 @@
 #include "VideoAsset.h"
 #include "AudioAsset.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	AssetManager::AssetManager()
 	{
@@ -43,7 +43,7 @@ namespace VisionGal
 				return false;
 
 			auto absPath = VFS::GetInstance()->AbsolutePath(path);
-			if (Horizon::HFileSystem::ExistsFile(absPath))
+			if (NN::Core::HFileSystem::ExistsFile(absPath))
 			{
 				if (it->second.LastWriteTime != std::filesystem::last_write_time(absPath))
 					return true;
@@ -61,7 +61,7 @@ namespace VisionGal
 	Ref<VGAsset> AssetManager::LoadAsset(const type_info& typeInfo, const String& path, bool cache)
 	{
 		Ref<VGAsset> asset = nullptr;
-		//String cleanPath = Horizon::HFileSystem::ToUnixPath(path);
+		//String cleanPath = NN::Core::HFileSystem::ToUnixPath(path);
 		const bool isExpiredAsset = IsExpiredAsset(path);
 
 		// 第一阶段：检查缓存或等待加载
@@ -129,7 +129,7 @@ namespace VisionGal
 
 				// 保存文件最后修改时间
 				auto absPath = VFS::GetInstance()->AbsolutePath(path);
-				if (Horizon::HFileSystem::ExistsFile(absPath))
+				if (NN::Core::HFileSystem::ExistsFile(absPath))
 				{
 					m_AssetMap[path].LastWriteTime = std::filesystem::last_write_time(absPath);
 					m_AssetMap[path].HasLastWriteTime = true;
@@ -195,7 +195,7 @@ namespace VisionGal
 		if (aPath.empty())
 			return false;
 
-		if (Horizon::HFileSystem::ExistsFile(aPath) == false)
+		if (NN::Core::HFileSystem::ExistsFile(aPath) == false)
 			return false;
 
 		// remove data file
@@ -214,11 +214,11 @@ namespace VisionGal
 			H_LOG_ERROR("Unknown std::filesystem::remove exception occurred");
 			return false;
 		}
-		//Horizon::HFileSystem::RemoveFile(aPath);
+		//NN::Core::HFileSystem::RemoveFile(aPath);
 
 		// remove meta file
 		auto metaPath = aPath + ".meta";
-		Horizon::HFileSystem::RemoveFile(metaPath);
+		NN::Core::HFileSystem::RemoveFile(metaPath);
 
 		return true;
 	}

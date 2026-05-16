@@ -12,9 +12,9 @@
 #pragma once
 //#include "../Include/EngineConfig.h"
 #include "../../Interface/SceneInterface.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	////////////////		LuaScript Event
 	enum class LuaScriptEventType

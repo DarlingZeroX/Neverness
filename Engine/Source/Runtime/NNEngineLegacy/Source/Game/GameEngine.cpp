@@ -19,14 +19,14 @@
 #include "Render/TransitionManager.h"
 #include "CoreLua.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	IUISystem* CoreGameEngineContext::GetUISystem()
 	{
 		return uiSystem;
 	}
 
-	Horizon::SDL3::OpenGLWindow* CoreGameEngineContext::GetWindow()
+	NN::Core::SDL3::OpenGLWindow* CoreGameEngineContext::GetWindow()
 	{
 		return window;
 	}
@@ -268,7 +268,7 @@ namespace VisionGal
 		m_SubGameEngines.push_back(subEngine);
 	}
 
-	void CoreGameEngine::Initialize(Horizon::SDL3::OpenGLWindow* window)
+	void CoreGameEngine::Initialize(NN::Core::SDL3::OpenGLWindow* window)
 	{
 		// 创建视口
 		m_Viewport = GetViewportManager()->NewViewport({ window->WindowWidth(), window->WindowHeight() });

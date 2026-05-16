@@ -13,7 +13,7 @@
 #include "ProjectSettingInterface.h"
 #include "../EngineConfig.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_ENGINE_API ProjectSettingsEditor : public ProjectSettingInterface
 	{

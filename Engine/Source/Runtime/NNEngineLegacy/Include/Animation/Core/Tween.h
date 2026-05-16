@@ -17,7 +17,7 @@
 #include "../../EngineConfig.h"
 #include "NNRuntimeCore/Interface/GameInterface.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	class VG_ENGINE_API Tween {
 	public:

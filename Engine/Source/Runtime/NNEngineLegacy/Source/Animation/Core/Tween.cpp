@@ -15,9 +15,9 @@
 #include "Animation/Core/Tween.h"
 #include <utility>
 #include <RmlUi/Core/Math.h>
-#include <NNKernel/Interface/HStringTools.h>
+#include <NNCore/Interface/HStringTools.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	namespace TweenFunctions {
 
@@ -215,7 +215,7 @@ namespace VisionGal {
 		//};
 
 		// 预处理输入字符串，去除空白并转换为小写
-		std::string s = Horizon::HStringTools::TrimCopy(Horizon::HStringTools::ToLowerCopy(tween));
+		std::string s = NN::Core::HStringTools::TrimCopy(NN::Core::HStringTools::ToLowerCopy(tween));
 		//std::string s = to_lower(trim(tween));
 		if (s.empty())
 			return false;

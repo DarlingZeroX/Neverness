@@ -16,18 +16,18 @@
 #include <NNRuntimeRmlui/Interface/UISystem.h>
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	AssetWatcher::AssetWatcher()
 	{
-		EngineEventBus::Get().OnUISystemEvent.Subscribe([this](const UISystemEvent& evt)
+		Runtime::EngineEventBus::Get().OnUISystemEvent.Subscribe([this](const Runtime::UISystemEvent& evt)
 			{
 				switch (evt.EventType)
 				{
-				case UISystemEventType::UIFileOpen:
+				case Runtime::UISystemEventType::UIFileOpen:
 					OnUIFileOpen(evt.UIFilePath);
 					break;
-				case UISystemEventType::UIFileClose:
+				case Runtime::UISystemEventType::UIFileClose:
 					OnUIFileClose(evt.UIFilePath);
 					break;
 				}
@@ -43,7 +43,7 @@ namespace VisionGal::Editor
 
 	void AssetWatcher::OnUpdate()
 	{
-		if (GetSceneManager()->IsPlayMode())
+		if (Runtime::GetSceneManager()->IsPlayMode())
 		{
 			// 剧情脚本监视更新
 			//OnStoryScriptWatchUpdate();
@@ -62,14 +62,14 @@ namespace VisionGal::Editor
 	{
 		for (auto& [path, fileState]: m_UIFilesState)
 		{
-			auto absPath = VFS::GetInstance()->AbsolutePath(path);
-			if (Horizon::HFileSystem::ExistsFile(absPath) == false)
+			auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(path);
+			if (NN::Core::HFileSystem::ExistsFile(absPath) == false)
 				return;
 
 			auto currentWriteTime = std::filesystem::last_write_time(absPath);
 			if (fileState.LastWriteTime != currentWriteTime)
 			{
-				UISystem::Get()->ReloadAllUIDocument();
+				Runtime::UISystem::Get()->ReloadAllUIDocument();
 
 				fileState.LastWriteTime = currentWriteTime;
 				break;
@@ -92,8 +92,8 @@ namespace VisionGal::Editor
 		if (ext != ".html" && ext != ".css")
 			return;
 
-		auto absPath = VFS::GetInstance()->AbsolutePath(path);
-		if (Horizon::HFileSystem::ExistsFile(absPath) == false)
+		auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(path);
+		if (NN::Core::HFileSystem::ExistsFile(absPath) == false)
 			return;
 
 		UIFileState fileState;

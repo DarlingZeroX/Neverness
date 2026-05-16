@@ -13,10 +13,10 @@
 #include <string>
 #include <sol/object.hpp>
 #include <unordered_map>
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 #include "../../VGCoreConfig.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_CORE_API VGDataVariant
 	{

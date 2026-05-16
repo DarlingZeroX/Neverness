@@ -13,7 +13,7 @@
 #include "InputLayout.h"
 #include "../../Interface/VertexElement.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API VertexArray :public Bindable
 	{
@@ -45,4 +45,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		std::vector<OPENGL_INPUT_ELEMENT_DESC> m_Elements;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

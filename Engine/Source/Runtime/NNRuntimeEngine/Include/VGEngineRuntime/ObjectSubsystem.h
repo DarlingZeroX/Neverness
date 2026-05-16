@@ -9,7 +9,7 @@
 
 #include "NNNativeEngineAPI/EngineHandles.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 託管 VGObject 之 Native 端引用計數表（Phase 5）。

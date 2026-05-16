@@ -12,10 +12,10 @@
 #include "Package.h"
 
 #include "NNRuntimeCore/Include/Core/VFS.h"
-#include "NNKernel/Interface/HStringTools.h"
+#include "NNCore/Interface/HStringTools.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	std::string GetAssetTypeNameID(const String& path)
 	{
@@ -41,7 +41,7 @@ namespace VisionGal
 		std::string name;
 		std::string ext;
 
-		Horizon::HFileSystem::SplitPath(path, &outDirectory, &name, &ext);
+		NN::Core::HFileSystem::SplitPath(path, &outDirectory, &name, &ext);
 
 		// MetaData Stream
 		String metaPath = path + ".meta";
@@ -92,7 +92,7 @@ namespace VisionGal
 		std::string metaData;
 		getline(stream.GetStream(), metaData);
 
-		auto split = Horizon::HStringTools::Split(metaData, ";");
+		auto split = NN::Core::HStringTools::Split(metaData, ";");
 
 		if (split.size() != 3)
 			return false;
@@ -127,10 +127,10 @@ namespace VisionGal
 	Ref<VGPackage> VGPackage::NewPackage(const String& path)
 	{
 		//String ext, name, parentPath;
-		//Horizon::HFileSystem::SplitPath(path.c_str(), &parentPath, &name, &ext);
+		//NN::Core::HFileSystem::SplitPath(path.c_str(), &parentPath, &name, &ext);
 
 		auto package = MakeRef<VGPackage>(path);
-		package->m_AssetMetaData.UUID = Horizon::HUUID::NewUUID();
+		package->m_AssetMetaData.UUID = NN::Core::HUUID::NewUUID();
 		return package;
 	}
 
@@ -254,7 +254,7 @@ namespace VisionGal
 	//	std::string metaData;
 	//	getline(metaStream, metaData);
 	//
-	//	auto split = Horizon::HStringTools::Split(metaData, ";");
+	//	auto split = NN::Core::HStringTools::Split(metaData, ";");
 	//
 	//	if (split.size() != 3)
 	//		return false;

@@ -17,7 +17,7 @@
 #include "Scene/GameActor.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	Ref<LuaScript> LuaScript::LoadFromFile(const String& file)
 	{

@@ -6,7 +6,7 @@
 #include <mutex>
 #include <unordered_map>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 可輪詢完成之非同步等待（背景 `std::thread` + `std::mutex`）。

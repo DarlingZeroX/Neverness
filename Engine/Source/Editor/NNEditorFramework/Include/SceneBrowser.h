@@ -14,7 +14,7 @@
 #include "NNEditorFramework/Include/EditorCore/MenuItem.h"
 #include <NNEngineLegacy/Include/Scene/Scene.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API SceneBrowserPanel : public IEditorPanel
 	{
@@ -34,22 +34,22 @@ namespace VisionGal::Editor
 		void OpenWindow(bool open) override;
 		bool IsWindowOpened() override;
 	private:
-		virtual void DrawHierarchy(IGameActor& parent, Horizon::HRelationship& parentRelation);
-		bool DrawTreeNodeRow(IGameActor& parent);
-		bool DrawTreeNodeChildRow(IGameActor* currentChild);
+		virtual void DrawHierarchy(Runtime::IGameActor& parent, NN::Core::HRelationship& parentRelation);
+		bool DrawTreeNodeRow(Runtime::IGameActor& parent);
+		bool DrawTreeNodeChildRow(Runtime::IGameActor* currentChild);
 
 		void TickBottomOverlayUI();							// 底部的UI
-		void HandleItemHovered(IGameActor& entity);			// 当用户鼠标指向这个游戏对象
-		bool ItemContextMenu(IGameActor& entity);			// 游戏对象右键菜单
+		void HandleItemHovered(Runtime::IGameActor& entity);			// 当用户鼠标指向这个游戏对象
+		bool ItemContextMenu(Runtime::IGameActor& entity);			// 游戏对象右键菜单
 
 		void SubscribeEngineEvent();
-		void TriggerSelectedEvent(IGameActor& entity);		// 发送选中事件
+		void TriggerSelectedEvent(Runtime::IGameActor& entity);		// 发送选中事件
 
 		void PanelContextMenu();							// 场景浏览器上下文菜单
-		void CreateGameActor(const String& type, IEntity* parent = nullptr) const;
+		void CreateGameActor(const Runtime::String& type, Runtime::IEntity* parent = nullptr) const;
 	private:
-		VGActorID m_SelectedEntityID = 0;
-		Scene* m_rScene;
+		Runtime::VGActorID m_SelectedEntityID = 0;
+		Runtime::Scene* m_rScene;
 
 		EditorUIMenu m_Menu;
 		bool m_IsAnyItemHovered = false;

@@ -12,7 +12,7 @@
 #include "OpenGL/Shader.h"
 #include "OpenGL/ThrowMarco.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	Shader::Shader(unsigned int type, const std::string& source)
 	{
@@ -125,12 +125,12 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return "Unknown";
 	}
 
-	Ref<Shader> CreateShader(unsigned int type, const std::string& source)
+	NN::Ref<Shader> CreateShader(unsigned int type, const std::string& source)
 	{
-		Ref<Shader> shader = MakeRef<Shader>(type, source);
+		NN::Ref<Shader> shader = NN::MakeRef<Shader>(type, source);
 
 		return shader;
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 

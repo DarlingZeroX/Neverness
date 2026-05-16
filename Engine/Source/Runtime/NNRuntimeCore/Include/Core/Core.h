@@ -14,7 +14,7 @@
 #include "../../VGCoreConfig.h"
 #include "../../Interface/FileInterface.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VGObject
 	{

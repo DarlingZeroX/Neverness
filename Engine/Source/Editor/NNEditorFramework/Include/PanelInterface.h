@@ -10,11 +10,11 @@
  */
 
 #pragma once
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 #include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 
-namespace Horizon::Editor {
+namespace NN::Core::Editor {
 	struct PanelInterface : ImGuiEx::ImPanelInterface
 	{
 		~PanelInterface() override = default;

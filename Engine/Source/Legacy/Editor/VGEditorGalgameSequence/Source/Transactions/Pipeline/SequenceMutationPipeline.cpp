@@ -22,7 +22,7 @@
 
 #include "VGGalgameSequenceRuntime/Include/Sequence/Components.h"
 
-#include "NNKernel/Interface/HLog.h"
+#include "NNCore/Interface/HLog.h"
 
 #include <variant>
 

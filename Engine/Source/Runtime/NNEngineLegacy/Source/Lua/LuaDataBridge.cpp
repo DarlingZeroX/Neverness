@@ -14,7 +14,7 @@
 #include "Render/TransitionManager.h"
 #include <sol/sol.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	sol::object LuaDataBridge::GetVariable(const String& name, sol::this_state lua)
 	{

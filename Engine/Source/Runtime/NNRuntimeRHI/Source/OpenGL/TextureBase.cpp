@@ -11,9 +11,9 @@
 
 #include "OpenGL/TextureBase.h"
 #include "OpenGL/ThrowMarco.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	TextureBase::TextureBase()
 		:
@@ -146,11 +146,11 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GL_THROW_INFO(glTexParameteri(GetTexType(), GL_TEXTURE_WRAP_T, (GLuint)wrapping));
 	}
 
-	void TextureBase::TexBorderColor(const Horizon::float4& color) const
+	void TextureBase::TexBorderColor(const NN::Core::float4& color) const
 	{
 		GL_THROW_INFO(glTexParameterfv(GetTexType(), GL_TEXTURE_BORDER_COLOR, &color[0]));
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 
 

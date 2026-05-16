@@ -12,7 +12,7 @@
 #include "Lua/RenderLuaInterface.h"
 #include "Render/TransitionManager.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	namespace Lua
 	{

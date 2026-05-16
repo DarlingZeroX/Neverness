@@ -31,8 +31,8 @@
 #include <sol/object.hpp>
 #include <sol/lua_value.hpp>
 
-#include <NNKernel/Interface/HLocalization.h>
-#include "NNKernel/Interface/HLog.h"
+#include <NNCore/Interface/HLocalization.h>
+#include "NNCore/Interface/HLog.h"
 
 #if SOL_IS_ON(SOL_PRINT_ERRORS)
 #include <iostream>
@@ -119,13 +119,13 @@ namespace sol {
 	}
 
 	inline protected_function_result script_throw_on_error(lua_State* L, protected_function_result result) {
-		auto* localizator = Horizon::HLocalizationManager::GetInstance();
+		auto* localizator = NN::Core::HLocalizationManager::GetInstance();
 		auto language = localizator->GetCurrentLanguage();
 
 		type t = type_of(L, result.stack_index());
 		std::string err = "sol: ";
 		err += localizator->Translate(to_string(result.status()));
-		if (language == Horizon::HLocalLanguageType::ZH_CN)
+		if (language == NN::Core::HLocalLanguageType::ZH_CN)
 			err += "错误";
 		else
 			err += " error";

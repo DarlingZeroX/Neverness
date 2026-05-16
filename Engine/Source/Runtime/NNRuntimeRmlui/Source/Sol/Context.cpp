@@ -24,7 +24,7 @@ namespace RmlSol {
 			"LoadDocument", [](Rml::Context& self, const std::string& path)
 			{
 				Rml::ElementDocument* doc = self.LoadDocument(path);
-				VisionGal::UISystem::Get()->OnScriptOpenDocument(doc);
+				NN::Runtime::UISystem::Get()->OnScriptOpenDocument(doc);
 				return doc;
 			}
 		);

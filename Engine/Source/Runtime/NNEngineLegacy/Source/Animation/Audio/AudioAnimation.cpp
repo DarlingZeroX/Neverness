@@ -12,7 +12,7 @@
 #include "Animation/Audio/AudioAnimation.h"
 #include "Scene/Components.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	AudioAnimationState::AudioAnimationState()
 	{
@@ -91,7 +91,7 @@ namespace VisionGal
 		state.Finish();
 	}
 
-	void AudioAnimationScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void AudioAnimationScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		float currentTime = GetCurrentTime(); // 假设存在获取当前时间的函数
 
@@ -104,7 +104,7 @@ namespace VisionGal
 		ApplyStateToEntity(entity);
 	}
 
-	void AudioAnimationScript::OnFixUpdate(Horizon::HEntityInterface* entity)
+	void AudioAnimationScript::OnFixUpdate(NN::Core::HEntityInterface* entity)
 	{
 
 	}
@@ -114,7 +114,7 @@ namespace VisionGal
 		return Core::GetCurrentTime();
 	}
 
-	void AudioAnimationScript::ApplyStateToEntity(Horizon::HEntityInterface* entity)
+	void AudioAnimationScript::ApplyStateToEntity(NN::Core::HEntityInterface* entity)
 	{
 		auto* audioSource = entity->GetComponent<AudioSourceComponent>();
 		if (audioSource)

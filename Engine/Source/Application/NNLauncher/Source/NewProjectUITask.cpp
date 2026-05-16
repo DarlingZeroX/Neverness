@@ -17,6 +17,8 @@
 
 namespace VisionGal::Editor
 {
+	using namespace NN::Editor;
+	using namespace NN::Runtime;
 	// 构造函数，初始化项目名称和默认路径，并尝试恢复上次创建项目的目录
 	NewProjectUITask::NewProjectUITask()
 	{

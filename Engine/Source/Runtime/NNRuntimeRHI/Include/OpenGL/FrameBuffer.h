@@ -13,7 +13,7 @@
 #include "Buffer.h"
 #include "Texture2D.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API FrameBuffer : public Bindable, public Renderable
 	{
@@ -21,7 +21,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		FrameBuffer();
 		~FrameBuffer() override;
 
-		static Ref<FrameBuffer> Create();
+		static NN::Ref<FrameBuffer> Create();
 
 		void Gen();
 		void Bind() const override;
@@ -57,7 +57,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		~FrameBufferTexture() override = default;
 
 	public:
-		static Ref<FrameBufferTexture> Create(unsigned int width, unsigned int height, Type type = Type::COLOR, unsigned int slot = 0);
+		static NN::Ref<FrameBufferTexture> Create(unsigned int width, unsigned int height, Type type = Type::COLOR, unsigned int slot = 0);
 
 		/// <summary>
 		/// Attach Texture Attachments to currently bound framebuffer object
@@ -86,7 +86,7 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		FrameBufferDepth();
 		~FrameBufferDepth() override;
 
-		static Ref<FrameBufferDepth> Create(unsigned int width, unsigned int height, Type type = Type::DEPTH24_STENCIL8);
+		static NN::Ref<FrameBufferDepth> Create(unsigned int width, unsigned int height, Type type = Type::DEPTH24_STENCIL8);
 	public:
 		/// <summary>
 		/// Attach Render Buffer Object Attachment to currently bound framebuffer object
@@ -115,4 +115,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GLenum m_StorageType = 0;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

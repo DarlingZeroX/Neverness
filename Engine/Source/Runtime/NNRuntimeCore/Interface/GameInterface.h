@@ -13,9 +13,9 @@
 #include "../VGCoreConfig.h"
 #include "AppInterface.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
-#include <NNKernel/Include/Scene/HEntityInterface.h>
+#include <NNCore/Include/Scene/HEntityInterface.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct IViewport;
 
@@ -99,7 +99,7 @@ namespace VisionGal
 
 		virtual void Start() {}
 		virtual bool IsFinished() { return true; }
-		virtual void OnUpdate(Horizon::HEntityInterface* actor) {};
-		virtual void OnFixUpdate(Horizon::HEntityInterface* actor) {};
+		virtual void OnUpdate(NN::Core::HEntityInterface* actor) {};
+		virtual void OnFixUpdate(NN::Core::HEntityInterface* actor) {};
 	};
 }

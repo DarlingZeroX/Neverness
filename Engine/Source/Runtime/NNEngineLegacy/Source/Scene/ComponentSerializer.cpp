@@ -19,7 +19,7 @@
 #include "Engine/AudioPlayer.h"
 #include "Engine/VideoPlayer.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void TransformComponentSerializer::AddActorSerializeComponent(IScene* scene, IGameActor* actor, VGActorID id)
 	{
@@ -225,7 +225,7 @@ namespace VisionGal
 	//	for (auto& entity: container.entities)
 	//	{
 	//		IGameActor* actor = scene->CreateDeserializeActor(entity);
-	//		auto* entityData = actor->GetComponent<Horizon::HEntityObjectData>();
+	//		auto* entityData = actor->GetComponent<NN::Core::HEntityObjectData>();
 	//
 	//		for (auto& comID: entity.ComponentIDs)
 	//		{

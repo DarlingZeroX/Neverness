@@ -17,7 +17,7 @@
 #include "Scene/GameActorFactory.h"
 #include "NNRuntimeCore/Interface/EngineState.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	bool SceneManager::EnterPlayMode()
 	{

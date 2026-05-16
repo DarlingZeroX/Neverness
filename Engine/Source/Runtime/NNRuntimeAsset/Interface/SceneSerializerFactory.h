@@ -13,7 +13,7 @@
 #include "../VGAssetConfig.h"
 #include "ISceneSerializer.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_ASSET_API SceneSerializerRegistry
 	{

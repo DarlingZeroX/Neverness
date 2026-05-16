@@ -17,7 +17,7 @@
 #include "NNRuntimeAsset/Include/GalGameAsset.h"
 
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	TextureThumbnailManager::~TextureThumbnailManager()
 	{
@@ -31,7 +31,7 @@ namespace VisionGal::Editor {
 
 	void TextureThumbnailManager::Initialize()
 	{
-		m_DefaultThumbnail = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/image.png");
+		m_DefaultThumbnail = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/image.png");
 	}
 
 	void TextureThumbnailManager::OnUpdate()
@@ -42,7 +42,7 @@ namespace VisionGal::Editor {
 
 		for (auto& [path, asset] : m_CachedTextureAssets)
 		{
-			m_CachedTextures[path] = TextureResourceManager::CreateRenderTexture(*asset.get());
+			m_CachedTextures[path] = Runtime::TextureResourceManager::CreateRenderTexture(*asset.get());
 			// 真正完成缩略图加载才移除正在加载标记
 			m_LoadingTexturePaths.erase(path);
 		}
@@ -54,7 +54,7 @@ namespace VisionGal::Editor {
 
 	void* TextureThumbnailManager::GetAssetThumbnail(ContentBrowserItem& item)
 	{
-		static TextureAssetLoader s_TexLoader;
+		static Runtime::TextureAssetLoader s_TexLoader;
 		auto path = item.Path;
 
 		//H_LOG_INFO("进入锁1");
@@ -89,12 +89,12 @@ namespace VisionGal::Editor {
 
 		std::thread thread([path, this]()
 			{
-				Ref<VGAsset> asset;
+				Ref<Runtime::VGAsset> asset;
 				if (s_TexLoader.Read(path, asset))
 				{
 					//H_LOG_INFO("进入锁2");
 					m_ReadWriteMutex.lock();
-					m_CachedTextureAssets[path] = std::dynamic_pointer_cast<TextureAsset>(asset);
+					m_CachedTextureAssets[path] = std::dynamic_pointer_cast<Runtime::TextureAsset>(asset);
 					m_ReadWriteMutex.unlock();
 					//H_LOG_INFO("离开锁2");
 				}
@@ -128,16 +128,16 @@ namespace VisionGal::Editor {
 
 		m_IsInitialized = true;
 
-		m_DefaultThumbnails["Folder"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/folder.png");
+		m_DefaultThumbnails["Folder"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/folder.png");
 
-		m_DefaultThumbnails["File"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/file.png");
-		m_DefaultThumbnails["LuaScript"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/lua.png");
-		m_DefaultThumbnails["Scene"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/scene.png");
-		m_DefaultThumbnails["HTML"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/html.png");
-		m_DefaultThumbnails["CSS"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/css.png");
-		m_DefaultThumbnails["Sound"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/sound.png");
-		m_DefaultThumbnails[GLuaScriptAssetType{}.GetNameID()] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/galStoryScript.png");
-		m_DefaultThumbnails["Video"] = LoadObject<Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/video.png");
+		m_DefaultThumbnails["File"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/file.png");
+		m_DefaultThumbnails["LuaScript"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/lua.png");
+		m_DefaultThumbnails["Scene"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/scene.png");
+		m_DefaultThumbnails["HTML"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/html.png");
+		m_DefaultThumbnails["CSS"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/css.png");
+		m_DefaultThumbnails["Sound"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/sound.png");
+		m_DefaultThumbnails[Runtime::GLuaScriptAssetType{}.GetNameID()] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/galStoryScript.png");
+		m_DefaultThumbnails["Video"] = Runtime::LoadObject<Runtime::Texture2D>(EditorCore::GetEditorResourcePathVFS() + "icons/video.png");
 
 		m_AssetThumbnailManagers["Texture"] = MakeRef<TextureThumbnailManager>();
 		for (auto& [type, manager] : m_AssetThumbnailManagers)

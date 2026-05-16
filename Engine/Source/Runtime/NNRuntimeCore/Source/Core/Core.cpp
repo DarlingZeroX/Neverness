@@ -13,7 +13,7 @@
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNFileSystem/Include/VFS/VFS.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct CoreImp
 	{

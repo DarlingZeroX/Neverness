@@ -19,9 +19,9 @@
 #include <string>
 #include <RmlUi/Core.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	class VG_UI_API UISystem: public IUISystem,public Horizon::SDL3::Layer
+	class VG_UI_API UISystem: public IUISystem,public NN::Core::SDL3::Layer
 	{
 	public:
 		UISystem();
@@ -29,7 +29,7 @@ namespace VisionGal
 
 		static UISystem* Get();
 
-		int Initialize(Horizon::SDL3::OpenGLWindow* window, Viewport* viewport);
+		int Initialize(NN::Core::SDL3::OpenGLWindow* window, Viewport* viewport);
 
 		Ref<RmlUIDocument> LoadUIDocument(const String& path);
 		bool ShowUIDocument(RmlUIDocument* doc);
@@ -60,14 +60,14 @@ namespace VisionGal
 		bool ProcessContextEventViewport(Rml::Context* context, const SDL_Event& evt);
 		int ProcessEvent(const SDL_Event& event) override;
 	private:
-		int Initialize(Horizon::SDL3::OpenGLWindow* window);
-		bool InitializeUISystem(Horizon::SDL3::OpenGLWindow* window);
+		int Initialize(NN::Core::SDL3::OpenGLWindow* window);
+		bool InitializeUISystem(NN::Core::SDL3::OpenGLWindow* window);
 		bool InitializeRuntimeEnvironment();
 	private:
 		Viewport* m_Viewport = nullptr;
 		Rml::Context* m_pContext;
 
-		Horizon::SDL3::OpenGLWindow* m_Window;
+		NN::Core::SDL3::OpenGLWindow* m_Window;
 
 		Rml::SystemInterface* m_SystemInterface;
 		Rml::RenderInterface* m_RenderInterface;

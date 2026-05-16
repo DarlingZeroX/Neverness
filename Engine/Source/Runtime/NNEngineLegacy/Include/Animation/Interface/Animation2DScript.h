@@ -14,19 +14,19 @@
 #include "../Core/AnimationCore.h"
 #include <sol/table.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_ENGINE_API Animation2DScript : public IAnimationScript
 	{
 	public:
-		Animation2DScript(Horizon::HEntityInterface* entity);
+		Animation2DScript(NN::Core::HEntityInterface* entity);
 		~Animation2DScript() override = default;
 		Animation2DScript(const Animation2DScript&) = delete;
 		Animation2DScript& operator=(const Animation2DScript&) = delete;
 		Animation2DScript(Animation2DScript&&) noexcept = default;
 		Animation2DScript& operator=(Animation2DScript&&) noexcept = default;
 
-		void OnUpdate(Horizon::HEntityInterface* entity) override;
+		void OnUpdate(NN::Core::HEntityInterface* entity) override;
 
 		// 开始动画
 		bool Animate(const Animation2DProperty& targetProperty, int numIterations = 1, bool alternateDirection = true, float delay = 0.0f);
@@ -39,7 +39,7 @@ namespace VisionGal
 		// 解析动画属性
 		static bool ParseAnimationProperty(const sol::table& value, Animation2DProperty& outProperty);
 	private:
-		void SetEntity(Horizon::HEntityInterface* entity);
+		void SetEntity(NN::Core::HEntityInterface* entity);
 
 		// 应用动画关键帧
 		void ApplyAnimationKey(Animation2DProperty& targetProperty);
@@ -60,7 +60,7 @@ namespace VisionGal
 		std::vector<Animation2DProperty> m_AnimationKeys;
 		int m_NumIterations = 1;
 		bool m_AlternateDirection = true;
-		Horizon::HEntityInterface* m_Entity = nullptr;
+		NN::Core::HEntityInterface* m_Entity = nullptr;
 
 		int m_CurrentIteration = 0;
 		int m_CurrentDirection = 1;

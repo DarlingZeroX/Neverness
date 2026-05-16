@@ -9,7 +9,7 @@
 
 #include "Commands/ISequenceEditorCommand.h"
 
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 #include <vector>
 
 namespace VisionGal

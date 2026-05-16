@@ -14,7 +14,7 @@
 #include "../../VGCoreConfig.h"
 #include <NNFileSystem/Include/VFS/VFS.h>
 
-namespace VisionGal
+namespace NN::Runtime
 { 
 	struct VG_CORE_API VFS
 	{

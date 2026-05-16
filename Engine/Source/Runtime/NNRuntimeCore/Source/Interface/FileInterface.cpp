@@ -12,7 +12,7 @@
 #include "FileInterface.h"
 #include <RmlUi/Core/Log.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	FileInterface::FileInterface()
 	{

@@ -12,9 +12,9 @@
 #pragma once
 #include "NNRuntimeCore/Interface/GameInterface.h"
 #include "Tween.h"
-#include "NNKernel/Interface/HCoreTypes.h"
+#include "NNCore/Interface/HCoreTypes.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     // 缓动函数类型
     using EasingFunction = std::function<float(float)>;

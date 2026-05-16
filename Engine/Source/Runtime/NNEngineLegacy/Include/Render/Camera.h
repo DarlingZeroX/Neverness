@@ -11,9 +11,9 @@
 
 #pragma once
 #include "NNRuntimeCore/Interface/GameInterface.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class Letterbox2DCamera: public IOrthoCamera
 	{

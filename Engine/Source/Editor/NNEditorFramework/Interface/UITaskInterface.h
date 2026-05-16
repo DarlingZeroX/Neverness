@@ -13,7 +13,7 @@
 #include <string>
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	struct IEditorTaskPanel : public ImGuiEx::ImTaskInterface
 	{

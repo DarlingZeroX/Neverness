@@ -11,7 +11,7 @@
 
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeFrameContext.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 void EntitySubsystem::Tick(const RuntimeFrameContext& context) noexcept
 {

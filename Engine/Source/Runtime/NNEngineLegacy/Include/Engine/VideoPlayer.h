@@ -16,10 +16,10 @@
 #include <NNMediaCore/Include/FVideo.h>
 #include <NNRuntimeAsset/Interface/VideoClip.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	// 音频解码器接口
-	struct IVideoPlayer: public Horizon::IVideoPlayer{
+	struct IVideoPlayer: public NN::Core::IVideoPlayer{
 		~IVideoPlayer() override = default;
 
 		virtual bool Open(const Ref<IVideoClip>& clip) = 0;					// 打开音频片段
@@ -61,7 +61,7 @@ namespace VisionGal {
 		uint8_t* GetFrameData() override;
 
 	private:
-		Ref<Horizon::IVideoPlayer> m_VideoPlayer;
+		Ref<NN::Core::IVideoPlayer> m_VideoPlayer;
 		Ref<VGFX::ITexture> m_VideoTexture;
 	};
 

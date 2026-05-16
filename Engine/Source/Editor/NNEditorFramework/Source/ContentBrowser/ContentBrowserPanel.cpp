@@ -15,7 +15,7 @@
 #include "ContentBrowser/ThumbnialManager.h"
 
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
-#include <NNKernel/Interface/HStringTools.h>
+#include <NNCore/Interface/HStringTools.h>
 #include <NNFileSystem/Interface/HFileSystemGenerator.h>
 #include <NNPlatformCore/Interface/HClipboard.h>
 
@@ -32,7 +32,7 @@
 #undef GetCurrentDirectory
 #endif
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 	ContentBrowserPanel::ContentBrowserPanel()
 	{
 		m_pContentBrowser = ContentBrowser::GetInstancePtr();
@@ -97,7 +97,7 @@ namespace VisionGal::Editor {
 				//const ImVec2 region = ImGui::GetContentRegionAvail();
 				////bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -3.0f, -region.y);
 				//bg.SetRegionAutoOffest(region, 0.0f, 0.0f);
-				//bg.SetColRight(Horizon::float4(.0f, .0f, .0f, 0.431f));
+				//bg.SetColRight(NN::Core::float4(.0f, .0f, .0f, 0.431f));
 				//bg.WindowDraw();
 
 				DrawBrowserHeader();
@@ -110,7 +110,7 @@ namespace VisionGal::Editor {
 			const ImVec2 region = ImGui::GetContentRegionAvail();
 			//bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -3.0f, -region.y);
 			bg.SetRegionAutoOffest(region, 0.0f, 0.0f, -0.0f, -region.y + 6);
-			bg.SetColTop(Horizon::float4(.0f, .0f, .0f, 0.731f));
+			bg.SetColTop(NN::Core::float4(.0f, .0f, .0f, 0.731f));
 			bg.WindowDraw();
 			//bg.ForegroundDraw();
 
@@ -166,13 +166,13 @@ namespace VisionGal::Editor {
 		ImGuiEx::RectFilledMultiColor shadow;
 		ImVec2 region = ImGui::GetContentRegionAvail();
 		shadow.SetRegionAutoOffest(region, region.x - 20.0f, 10.0f);
-		shadow.SetColRight(Horizon::float4(.0f, .0f, .0f, 0.431f));
+		shadow.SetColRight(NN::Core::float4(.0f, .0f, .0f, 0.431f));
 		shadow.WindowDraw();
 
 		// 背景 Background
 		//ImGuiEx::RectFilled bg;
 		//bg.SetRegionAutoOffest(region);
-		//bg.SetCol(Horizon::float4(.0f, .0f, .0f, 0.800f));
+		//bg.SetCol(NN::Core::float4(.0f, .0f, .0f, 0.800f));
 		//bg.WindowDraw();
 
 		//总Assets目录
@@ -243,7 +243,7 @@ namespace VisionGal::Editor {
 			{
 				auto projectDirectory = m_pContentBrowser->GetProjectDirectory();
 				auto directory = m_pContentBrowser->GetCurrentBrowserDirectory().parent_path();
-				if (Horizon::HFileSystem::ExistsDirectory(directory) && Horizon::HFileSystem::IsSubPath(projectDirectory, directory))
+				if (NN::Core::HFileSystem::ExistsDirectory(directory) && NN::Core::HFileSystem::IsSubPath(projectDirectory, directory))
 				{
 					m_pContentBrowser->OpenDirectory(directory);
 				}
@@ -270,11 +270,11 @@ namespace VisionGal::Editor {
 		auto projectParentDirectory = m_pContentBrowser->GetProjectDirectory().parent_path().parent_path();
 
 		size_t pathPos = 0;
-		pfsPath relativePath = Horizon::HFileSystem::RelativePath(path, projectParentDirectory);
+		pfsPath relativePath = NN::Core::HFileSystem::RelativePath(path, projectParentDirectory);
 
 		std::string pathstr = relativePath.string();
 
-		auto spilt = Horizon::HStringTools::Split(pathstr, "\\");
+		auto spilt = NN::Core::HStringTools::Split(pathstr, "\\");
 
 		for (auto& item : spilt)
 		{
@@ -347,8 +347,8 @@ namespace VisionGal::Editor {
 		static std::string itemPath;
 		if (ImGui::BeginDragDropSource())
 		{
-			auto aPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
-			itemPath = Core::GetAssetsPathVFS() + std::filesystem::relative(item.AbsolutePath, aPath).string();
+			auto aPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
+			itemPath = Runtime::Core::GetAssetsPathVFS() + std::filesystem::relative(item.AbsolutePath, aPath).string();
 
 			ImGui::SetDragDropPayload("PLACE_CONTENT_BROWSER_ITEM", itemPath.c_str(), itemPath.size() + 1);
 			ImGui::Text(itemPath.c_str());
@@ -495,8 +495,8 @@ namespace VisionGal::Editor {
 				if (ImGui::Selectable(EditorText{ "Copy asset name" }.c_str()))
 				{
 					auto PathStr = item.Path;
-					PathStr = Horizon::HFileSystem::GetFileNameFromPath(PathStr);
-					Horizon::HClipboard::SetText(PathStr.c_str());
+					PathStr = NN::Core::HFileSystem::GetFileNameFromPath(PathStr);
+					NN::Core::HClipboard::SetText(PathStr.c_str());
 					return true;
 				}
 
@@ -504,22 +504,22 @@ namespace VisionGal::Editor {
 				{
 					auto assetPath = std::filesystem::path(item.Path).lexically_relative("/assets");
 					auto assetPathStr = assetPath.string();
-					assetPathStr = Horizon::HFileSystem::ToUnixPath(assetPathStr);
-					Horizon::HClipboard::SetText(assetPathStr.c_str());
+					assetPathStr = NN::Core::HFileSystem::ToUnixPath(assetPathStr);
+					NN::Core::HClipboard::SetText(assetPathStr.c_str());
 					return true;
 				}
 
 				if (ImGui::Selectable(EditorText{ "Copy relative path" }.c_str()))
 				{
 					auto PathStr = item.Path;
-					PathStr = Horizon::HFileSystem::ToUnixPath(PathStr);
-					Horizon::HClipboard::SetText(PathStr.c_str());
+					PathStr = NN::Core::HFileSystem::ToUnixPath(PathStr);
+					NN::Core::HClipboard::SetText(PathStr.c_str());
 					return true;
 				}
 
 				if (ImGui::Selectable(EditorText{ "Copy absolute path" }.c_str()))
 				{
-					Horizon::HClipboard::SetText(item.AbsolutePath.string().c_str());
+					NN::Core::HClipboard::SetText(item.AbsolutePath.string().c_str());
 					return true;
 				}
 
@@ -551,8 +551,8 @@ namespace VisionGal::Editor {
 
 			ImGui::Separator();
 
-			EngineAssetFactory& factory = EngineAssetFactory::Get();
-			auto path = VFS::GetResourcePathVFS(m_pContentBrowser->GetCurrentBrowserDirectory().string());
+			Runtime::EngineAssetFactory& factory = Runtime::EngineAssetFactory::Get();
+			auto path = Runtime::VFS::GetResourcePathVFS(m_pContentBrowser->GetCurrentBrowserDirectory().string());
 
 			if (ImGui::MenuItem(EditorText{ "Create Scene" }.c_str()))
 			{
@@ -580,7 +580,7 @@ namespace VisionGal::Editor {
 
 			if (ImGui::MenuItem(EditorText{ "Create GalGame Story Script" }.c_str()))
 			{
-				factory.CreateAsset(path, GLuaScriptAssetType{}.GetNameID());
+				factory.CreateAsset(path, Runtime::GLuaScriptAssetType{}.GetNameID());
 				RefreshDirectory();
 			}
 

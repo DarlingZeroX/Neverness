@@ -18,7 +18,7 @@
 
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	bool ProjectBuilder::CheckBuildSettingIsValid(const BuildContext& context)
 	{
@@ -45,14 +45,14 @@ namespace VisionGal
 		}
 
 		// 生成目录是否有效
-		if (Horizon::HFileSystem::ExistsDirectory(context.OutputDirectory) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(context.OutputDirectory) == false)
 		{
 			H_LOG_ERROR("Build output directory is invalid!", context.OutputDirectory.c_str());
 			return false;
 		}
 
 		// 生成目录必须为空目录
-		if (Horizon::HFileSystem::DirectoryEmpty(context.OutputDirectory) == false)
+		if (NN::Core::HFileSystem::DirectoryEmpty(context.OutputDirectory) == false)
 		{
 			H_LOG_ERROR("Build output directory must be empty directory!", context.OutputDirectory.c_str());
 			return false;
@@ -78,10 +78,10 @@ namespace VisionGal
 		ProjectSettings::SaveProjectSettings();
 
 		std::filesystem::path outputPath(context.OutputDirectory);
-		Horizon::HFileSystem::CreateDirectoryWhenNoExist(outputPath);
+		NN::Core::HFileSystem::CreateDirectoryWhenNoExist(outputPath);
 
 		std::filesystem::path dataPath = outputPath / "Data";
-		Horizon::HFileSystem::CreateDirectoryWhenNoExist(dataPath);
+		NN::Core::HFileSystem::CreateDirectoryWhenNoExist(dataPath);
 
 		context.isError = false;
 		context.process = 0.1f;
@@ -89,9 +89,9 @@ namespace VisionGal
 		// 打包引擎资源
 		auto enginePath = VFS::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
 		H_LOG_INFO("Package engine resource: %s", enginePath.c_str());
-		if (Horizon::HFileSystem::ExistsFile("Data/engine.pak"))		// 应用程序模式
+		if (NN::Core::HFileSystem::ExistsFile("Data/engine.pak"))		// 应用程序模式
 		{
-			Horizon::HFileSystem::CopyFile("Data/engine.pak", dataPath / "engine.pak");
+			NN::Core::HFileSystem::CopyFile("Data/engine.pak", dataPath / "engine.pak");
 		}
 		else
 		{
@@ -108,7 +108,7 @@ namespace VisionGal
 		// 打包游戏资产
 		auto assetsPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
 		H_LOG_INFO("Package assets: %s", assetsPath.c_str());
-		if (Horizon::HFileSystem::ExistsDirectory(assetsPath) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(assetsPath) == false)
 		{
 			context.isError = true;
 			H_LOG_ERROR("Assets directory is invalid!", assetsPath.c_str());
@@ -128,7 +128,7 @@ namespace VisionGal
 		// 打包项目设置
 		auto projectSettings = VFS::GetInstance()->AbsolutePath(Core::GetProjectSettingsPathVFS());
 		H_LOG_INFO("Package project settings: %s", projectSettings.c_str());
-		if (Horizon::HFileSystem::ExistsDirectory(projectSettings) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(projectSettings) == false)
 		{
 			context.isError = true;
 			H_LOG_ERROR("Project settings directory is invalid!", projectSettings.c_str());
@@ -157,7 +157,7 @@ namespace VisionGal
 				auto filePath = entry.path();
 				if (filePath.extension() == ".dll" || filePath.extension() == ".so" || filePath.extension() == ".dylib")
 				{
-					Horizon::HFileSystem::CopyFile(filePath, outputPath / filePath.filename());
+					NN::Core::HFileSystem::CopyFile(filePath, outputPath / filePath.filename());
 				}
 
                 // 跨平台复制VGDesktopApplication应用程序
@@ -172,7 +172,7 @@ namespace VisionGal
                 if (filePath.filename() == "VGDesktopApplication")
                 #endif
                 {
-					Horizon::HFileSystem::CopyFile(filePath, outputPath / filePath.filename());
+					NN::Core::HFileSystem::CopyFile(filePath, outputPath / filePath.filename());
                 }
 			}
 		}

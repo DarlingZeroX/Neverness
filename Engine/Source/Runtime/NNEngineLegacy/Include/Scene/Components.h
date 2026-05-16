@@ -20,9 +20,9 @@
 #include "NNRuntimeRmlui/Interface/UIDocument.h"
 #include "NNRuntimeCore/Interface/SceneInterface.h"
 #include "NNRuntimeCore/Interface/GameInterface.h"
-#include <NNKernel/Interface/HSerialization.h>
+#include <NNCore/Interface/HSerialization.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	struct VG_ENGINE_API TransformComponent : public IComponent
 	{
@@ -414,7 +414,7 @@ namespace VisionGal {
 		 bool playOnAwake = true;
 		 bool loop = false;
 		 float volume = 1.0f;
-		 Ref<Horizon::IAudioPlayer> audioPlayer;
+		 Ref<NN::Core::IAudioPlayer> audioPlayer;
 
 		// 播放
 		 bool Play();

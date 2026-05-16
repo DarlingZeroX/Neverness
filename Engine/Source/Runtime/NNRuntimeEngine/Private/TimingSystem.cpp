@@ -1,6 +1,6 @@
 #include "NNRuntimeEngine/TimingSystem.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 void TimingSystem::Reset() noexcept
 {

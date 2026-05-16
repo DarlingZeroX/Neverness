@@ -1,7 +1,7 @@
 #pragma once
 #include "RmlUi_Renderer_GL3.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	/**
 	Custom render interface example for the SDL/GL3 backend.

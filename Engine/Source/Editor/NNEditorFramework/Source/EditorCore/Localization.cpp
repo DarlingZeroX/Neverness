@@ -14,11 +14,11 @@
 #include "EditorCore/EditorCore.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	bool EditorLoadLanguage(const std::string& code)
 	{
-		IStringStreamVFS zhcnLocalization;
+		Runtime::IStringStreamVFS zhcnLocalization;
 		zhcnLocalization.Open(EditorCore::GetEditorResourcePathVFS() + "localization/ZH_CN.txt");
 
 		if (zhcnLocalization.IsOpen())
@@ -26,7 +26,7 @@ namespace VisionGal::Editor
 			auto& stream = zhcnLocalization.GetStream();
 
 			std::string line;
-			Horizon::HLanguageDictionary zhcnDictionary;
+			NN::Core::HLanguageDictionary zhcnDictionary;
 
 			while (std::getline(stream, line))
 			{
@@ -40,19 +40,19 @@ namespace VisionGal::Editor
 
 			}
 
-			Horizon::HLocalizationManager::GetInstance()->MergeLanguageDictionary(Horizon::HLocalLanguageType::ZH_CN, zhcnDictionary);
+			NN::Core::HLocalizationManager::GetInstance()->MergeLanguageDictionary(NN::Core::HLocalLanguageType::ZH_CN, zhcnDictionary);
 
 		}
 
 		if (code == "ZH-CN")
 		{
-			Horizon::HLocalizationManager::GetInstance()->SetLanguage(Horizon::HLocalLanguageType::ZH_CN);
+			NN::Core::HLocalizationManager::GetInstance()->SetLanguage(NN::Core::HLocalLanguageType::ZH_CN);
 			return true;
 		}
 
 		if (code == "EN-US")
 		{
-			Horizon::HLocalizationManager::GetInstance()->SetLanguage(Horizon::HLocalLanguageType::EN_US);
+			NN::Core::HLocalizationManager::GetInstance()->SetLanguage(NN::Core::HLocalLanguageType::EN_US);
 			return true;
 		}
 
@@ -61,7 +61,7 @@ namespace VisionGal::Editor
 
 	EditorText::EditorText(const std::string& title)
 	{
-		m_Text = Horizon::GetTranslateText(title);
+		m_Text = NN::Core::GetTranslateText(title);
 	}
 
 
@@ -69,14 +69,14 @@ namespace VisionGal::Editor
 	{
 		m_Text = icon;
 		m_Text += " ";
-		m_Text += Horizon::GetTranslateText(title);
+		m_Text += NN::Core::GetTranslateText(title);
 	}
 
 	EditorText::EditorText(const std::string& title, const std::string& icon, const std::string& id)
 	{
 		m_Text = icon;
 		m_Text += " ";
-		m_Text += Horizon::GetTranslateText(title);
+		m_Text += NN::Core::GetTranslateText(title);
 		m_Text += "##";
 		m_Text += id;
 	}

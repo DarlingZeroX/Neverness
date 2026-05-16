@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief 单帧只读上下文：由 **VGEngineRuntime::Tick** 在 **TimingSystem::Tick** 之后构造，传入各 **IRuntimeSubsystem::Tick**。

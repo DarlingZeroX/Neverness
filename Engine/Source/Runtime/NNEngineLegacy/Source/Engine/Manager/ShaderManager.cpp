@@ -12,7 +12,7 @@
 #include "Engine/Manager/ShaderManager.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	ShaderManager::ShaderManager()
 	{

@@ -16,7 +16,7 @@
 #include <NNEngineLegacy/Include/Render/Texture2D.h>
 #include <NNRuntimeAsset/Include/TextureAsset.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	struct IThumbnailManager
 	{
@@ -38,10 +38,10 @@ namespace VisionGal::Editor {
 		void* GetAssetThumbnail(ContentBrowserItem& item) override;
 
 	private:
-		Ref<Texture2D> m_DefaultThumbnail;
+		Ref<Runtime::Texture2D> m_DefaultThumbnail;
 
-		std::unordered_map<std::string, Ref<TextureAsset>> m_CachedTextureAssets;
-		std::unordered_map<std::string, Ref<Texture2D>> m_CachedTextures;
+		std::unordered_map<std::string, Ref<Runtime::TextureAsset>> m_CachedTextureAssets;
+		std::unordered_map<std::string, Ref<Runtime::Texture2D>> m_CachedTextures;
 		std::unordered_set<std::string> m_LoadingTexturePaths;
 
 		std::mutex m_ReadWriteMutex;
@@ -61,7 +61,7 @@ namespace VisionGal::Editor {
 		void* GetTextureThumbnail(ContentBrowserItem& item);
 	private:
 		bool m_IsInitialized = false;
-		std::unordered_map<std::string, Ref<Texture2D>> m_DefaultThumbnails;
+		std::unordered_map<std::string, Ref<Runtime::Texture2D>> m_DefaultThumbnails;
 
 		std::unordered_map<std::string, Ref<IThumbnailManager>> m_AssetThumbnailManagers;
 	};

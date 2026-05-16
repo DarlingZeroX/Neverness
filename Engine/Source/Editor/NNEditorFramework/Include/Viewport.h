@@ -12,16 +12,16 @@
 #pragma once
 #include "../Config.h"
 #include <vector>
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 #include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNRuntimeCore/Include/Core/Viewport.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API EditorViewport : public IEditorPanel
 	{
 	public:
-		EditorViewport(Viewport* viewport);
+		EditorViewport(Runtime::Viewport* viewport);
 		EditorViewport(const EditorViewport&) = delete;
 		EditorViewport& operator=(const EditorViewport&) = delete;
 		EditorViewport(EditorViewport&&) noexcept = default;
@@ -35,7 +35,7 @@ namespace VisionGal::Editor
 		void OpenWindow(bool open) override;
 		bool IsWindowOpened() override;
 	private:
-		Viewport* m_Viewport;
+		Runtime::Viewport* m_Viewport;
 		std::vector<Ref<ISidebarComponent>> m_Components;
 		bool m_IsOpen = true;
 	};

@@ -12,15 +12,15 @@
 #include "UITask/MessageUITask.h"
 #include "EditorCore/Localization.h"
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
-	MessageUITask::MessageUITask(String const& title, String const& text)
+	MessageUITask::MessageUITask(Runtime::String const& title, Runtime::String const& text)
 		:m_Title(title),m_Text(text)
 	{
 
 	}
 
-	void MessageUITask::SetChoices(const std::vector<String>& choices)
+	void MessageUITask::SetChoices(const std::vector<Runtime::String>& choices)
 	{
 		m_Choices = choices;
 	}

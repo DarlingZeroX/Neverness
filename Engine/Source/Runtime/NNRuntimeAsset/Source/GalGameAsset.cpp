@@ -13,7 +13,7 @@
 #include "NNRuntimeAsset/Interface/Package.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	bool GalGameStoryScriptAssetWriter::Write(const std::string path, VGAsset* asset)
 	{

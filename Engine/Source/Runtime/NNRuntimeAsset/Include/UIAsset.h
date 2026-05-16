@@ -13,7 +13,7 @@
 #include "../VGAssetConfig.h"
 #include "NNRuntimeCore/Interface/VGAsset.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct UIDocumentAsset : public VGAsset
 	{

@@ -15,7 +15,7 @@
 #include "NNRuntimeCore/Include/Utils/TransitionHelper.h"
 #include <NNRuntimeRHI/Include/OpenGL/RenderTarget.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class SceneTransitionBase: public ISceneTransition
 	{

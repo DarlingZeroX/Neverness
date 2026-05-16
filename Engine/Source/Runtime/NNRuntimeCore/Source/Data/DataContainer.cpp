@@ -11,7 +11,7 @@
 
 #include "Data/DataContainer.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	VGDataContainer::VGDataContainer()
 	{

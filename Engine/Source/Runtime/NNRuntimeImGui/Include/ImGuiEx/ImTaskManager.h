@@ -14,8 +14,8 @@
 #include "../imconfig.h"
 #include "ImTaskInterface.h"
 #include <stdint.h>
-#include <NNKernel/Interface/HConfig.h>
-#include <NNKernel/Interface/HSingleton.h>
+#include <NNCore/Interface/HConfig.h>
+#include <NNCore/Interface/HSingleton.h>
 
 namespace ImGuiEx {
 
@@ -35,7 +35,7 @@ namespace ImGuiEx {
 
             const ImTaskFlags        Flags;                              // is it visible in UI? (InsertImGuiWindow/InsertImGuiContent)
 
-            Scope<ImTaskInterface>  TaskInstance;                               // the actual task
+            NN::Scope<ImTaskInterface>  TaskInstance;                               // the actual task
 
             TaskInternal(const std::string& name, ImTaskFlags flags, ImTaskInterface* task) : Task(name), Flags(flags), TaskInstance(task) { }
 
@@ -43,7 +43,7 @@ namespace ImGuiEx {
             TaskInternal& operator =(const TaskInternal&) = delete;
         };
 
-		std::list<Ref<TaskInternal>>       m_currentUITasks;
+		std::list<NN::Ref<TaskInternal>>       m_currentUITasks;
 
 	private:
         ImTaskManager() = default;
@@ -52,7 +52,7 @@ namespace ImGuiEx {
 
 		static ImTaskManager& Get();
 
-        Ref<ImTaskInterface::Task> NewTask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags = ImTaskFlags::None);
+        NN::Ref<ImTaskInterface::Task> NewTask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags = ImTaskFlags::None);
 
         void RenderUITask();
 
@@ -61,6 +61,6 @@ namespace ImGuiEx {
         virtual void FixedUpdate();
 	};
 
-    IMGUI_API Ref<ImTaskInterface::Task> NewUITask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags = ImTaskFlags::None);
+    IMGUI_API NN::Ref<ImTaskInterface::Task> NewUITask(ImTaskInterface* task, const std::string& taskName, ImTaskFlags flags = ImTaskFlags::None);
 
 }

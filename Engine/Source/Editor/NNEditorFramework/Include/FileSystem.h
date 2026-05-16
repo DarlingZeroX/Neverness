@@ -15,7 +15,7 @@
 #include <NNRuntimeCore/Include/Core\Core.h>
 //#include "NNRuntimeAsset/Include/HAsset.h"
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	struct EditorFileSystemFile
 	{
@@ -25,9 +25,9 @@ namespace VisionGal::Editor {
 		std::string ext;
 		std::string filename;
 		std::string pathStr;
-		Horizon::fsPath path;
+		NN::Core::fsPath path;
 
-		//Horizon::HAssetMeatData metaData;
+		//NN::Core::HAssetMeatData metaData;
 		std::string assetType;
 		int uiFlags;
 	};
@@ -38,7 +38,7 @@ namespace VisionGal::Editor {
 
 		std::string name;
 		int uiFlags;
-		Horizon::fsPath path;
+		NN::Core::fsPath path;
 		bool needOpen = true;
 
 		std::vector<EditorFileSystemDirectory> Directories;
@@ -48,7 +48,7 @@ namespace VisionGal::Editor {
 	class VG_EDITOR_FRAMEWORK_API EditorFileSystem
 	{
 	public:
-		using pfsPath = Horizon::fsPath;
+		using pfsPath = NN::Core::fsPath;
 
 		EditorFileSystem(const pfsPath& path);
 
@@ -65,7 +65,7 @@ namespace VisionGal::Editor {
 	{
 	public:
 		FileSystemPanel();
-		FileSystemPanel(const String& contentPath);
+		FileSystemPanel(const Runtime::String& contentPath);
 		FileSystemPanel(const FileSystemPanel&) = delete;
 		FileSystemPanel& operator=(const FileSystemPanel&) = delete;
 		FileSystemPanel(FileSystemPanel&&) noexcept = default;
@@ -78,7 +78,7 @@ namespace VisionGal::Editor {
 		void DrawDirectoryTree(EditorFileSystemDirectory& node);
 		void DrawFile(EditorFileSystemFile& file);
 	private:
-		Horizon::fsPath m_ContentPath;
+		NN::Core::fsPath m_ContentPath;
 		ContentBrowser* m_pContentBrowser;
 		Ref<EditorFileSystem> m_EditorContentBrowser;
 	};

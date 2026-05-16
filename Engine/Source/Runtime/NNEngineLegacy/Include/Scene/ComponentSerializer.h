@@ -13,9 +13,9 @@
 #include "NNRuntimeAsset/Interface/ISceneSerializer.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "Components.h"
-#include <NNKernel/Interface/HSerialization.h>
+#include <NNCore/Interface/HSerialization.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct TransformComponentSerializer : public IEntityComponentSerializer<TransformComponent>
 	{

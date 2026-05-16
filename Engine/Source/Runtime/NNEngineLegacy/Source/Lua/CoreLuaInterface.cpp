@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Include/Core/Application.h"
 #include "NNRuntimeCore/Include/Core/Input.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	namespace Lua
 	{

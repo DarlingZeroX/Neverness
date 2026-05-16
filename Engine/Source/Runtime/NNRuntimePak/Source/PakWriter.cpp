@@ -12,9 +12,9 @@
 #include "PakWriter.h"
 #include <filesystem>
 #include "PakCrc32.h"
-#include "NNKernel/Interface/HLog.h"
+#include "NNCore/Interface/HLog.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	void PakFileWriter::WriteHeader()
 	{

@@ -10,15 +10,15 @@
 */
 
 #include "SceneInterface.h"
-#include <NNKernel/Include/Scene/HBaseComponent.h>
-#include <NNKernel/Include/Event/HEventDelegate.h>
+#include <NNCore/Include/Scene/HBaseComponent.h>
+#include <NNCore/Include/Event/HEventDelegate.h>
 //#include "Scene/Components.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	void IGameActor::SetLabel(const String& label)
 	{
-		auto* com = GetComponent<Horizon::HRelationship>();
+		auto* com = GetComponent<NN::Core::HRelationship>();
 		if (com)
 		{
 			com->Label = label;
@@ -27,7 +27,7 @@ namespace VisionGal
 
 	String IGameActor::GetLabel()
 	{
-		auto* com = GetComponent<Horizon::HRelationship>();
+		auto* com = GetComponent<NN::Core::HRelationship>();
 		if (com)
 		{
 			return com->Label;

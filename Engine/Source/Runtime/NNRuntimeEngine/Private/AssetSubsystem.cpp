@@ -1,6 +1,6 @@
 #include "NNRuntimeEngine/AssetSubsystem.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 VGTextureHandle AssetSubsystem::LoadTexture(const char* virtualPathUtf8) noexcept
 {

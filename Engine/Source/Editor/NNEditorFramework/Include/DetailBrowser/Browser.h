@@ -14,7 +14,7 @@
 #include "../../Interface/ComponentDrawerRegistry.h"
 #include <NNEngineLegacy/Include/Scene/Scene.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	class VG_EDITOR_FRAMEWORK_API DetailBrowserPanel : public IEditorPanel
 	{
@@ -38,8 +38,8 @@ namespace VisionGal::Editor {
 		bool IsWindowOpened() override;
 	private:
 		//GameActor* m_pSelectedEntity;
-		VGActorID m_SelectEntityID;
-		Scene* m_pScene;
+		Runtime::VGActorID m_SelectEntityID;
+		Runtime::Scene* m_pScene;
 		bool m_IsOpen = true;
 
 		//ComponentDrawerManager m_DrawerManager;

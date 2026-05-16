@@ -16,7 +16,7 @@
 #include <fstream>
 #include <filesystem>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	struct VG_PACKAGE_API PakFileWriter {
 

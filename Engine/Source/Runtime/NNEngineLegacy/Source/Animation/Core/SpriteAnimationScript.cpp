@@ -11,9 +11,9 @@
 
 #include "Animation/Core/SpriteAnimationScript.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	SpriteFadeInOutTransformScript::SpriteFadeInOutTransformScript(Horizon::HEntityInterface* entity,Direction direction)
+	SpriteFadeInOutTransformScript::SpriteFadeInOutTransformScript(NN::Core::HEntityInterface* entity,Direction direction)
 	{
 		m_Script = MakeRef<SpriteAlphaAnimationScript>();
 
@@ -50,7 +50,7 @@ namespace VisionGal
 		);
 	}
 
-	void SpriteFadeInOutTransformScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void SpriteFadeInOutTransformScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		m_Script->OnUpdate(entity);
 	}

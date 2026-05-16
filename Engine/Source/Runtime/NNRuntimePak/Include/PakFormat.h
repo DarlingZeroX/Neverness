@@ -15,7 +15,7 @@
 #include <istream>
 #include <ostream>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	struct PakHeader {
 		char magic[4] = { 'V','G','P','C' };  // 魔数

@@ -99,6 +99,6 @@ private:
 
 	Rml::String root;
 
-	std::unordered_map<Rml::FileHandle, Ref<FilePtr>> m_FilPtrMap;
+	std::unordered_map<Rml::FileHandle, NN::Ref<FilePtr>> m_FilPtrMap;
 	Rml::FileHandle m_FileHandleIndex = 1;
 };

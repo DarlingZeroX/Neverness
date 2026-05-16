@@ -15,9 +15,9 @@
 #include "Shader.h"
 #include <vector>
 #include <unordered_map>
-#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNCore/Interface/HCoreTypes.h>
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API ShaderProgram :public VGFX::IShaderProgram,public Bindable
 	{
@@ -29,8 +29,8 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 
 		ShaderProgram(const std::vector<Shader*>& shaderes);
 	public:
-		static Ref<ShaderProgram> Create(const std::vector<Shader*>& shaderes);
-		static Ref<ShaderProgram> Create(const std::vector<VGFX::IShader*>& shaderes);
+		static NN::Ref<ShaderProgram> Create(const std::vector<Shader*>& shaderes);
+		static NN::Ref<ShaderProgram> Create(const std::vector<VGFX::IShader*>& shaderes);
 
 		bool Exist() const;
 		void DetachShader(GLuint shader);
@@ -43,17 +43,17 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		unsigned int GetRenderID() { return m_RendererID; }
 
 		void SetInt(const std::string& name, int v) override;
-		void SetInt2(const std::string& name, Horizon::int2 v) override;
-		void SetInt3(const std::string& name, Horizon::int3 v) override;
-		void SetInt4(const std::string& name, Horizon::int4 v) override;
+		void SetInt2(const std::string& name, NN::Core::int2 v) override;
+		void SetInt3(const std::string& name, NN::Core::int3 v) override;
+		void SetInt4(const std::string& name, NN::Core::int4 v) override;
 		void SetBool(const std::string& name, bool v) override;
 		void SetFloat(const std::string& name, float v) override;
-		void SetFloat2(const std::string& name, const Horizon::float2& v) override;
-		void SetFloat3(const std::string& name, const Horizon::float3& v3) override;
-		void SetFloat4(const std::string& name, const Horizon::float4& v4) override;
-		void SetMatrix2(const std::string& name, const Horizon::matrix2x2& matrix) override;
-		void SetMatrix3(const std::string& name, const Horizon::matrix3x3& matrix) override;
-		void SetMatrix4(const std::string& name, const Horizon::matrix4x4& matrix) override;
+		void SetFloat2(const std::string& name, const NN::Core::float2& v) override;
+		void SetFloat3(const std::string& name, const NN::Core::float3& v3) override;
+		void SetFloat4(const std::string& name, const NN::Core::float4& v4) override;
+		void SetMatrix2(const std::string& name, const NN::Core::matrix2x2& matrix) override;
+		void SetMatrix3(const std::string& name, const NN::Core::matrix3x3& matrix) override;
+		void SetMatrix4(const std::string& name, const NN::Core::matrix4x4& matrix) override;
 	private:
 		bool CreateImp(const std::vector<VGFX::IShader*>& shaderes);
 		bool CreateImp(const std::vector<Shader*>& shaderes);
@@ -75,4 +75,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		std::unordered_map < std::string, int> m_UniformLocationCache;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

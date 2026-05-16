@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Interface/VGAsset.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     enum class ImageFormat
     {

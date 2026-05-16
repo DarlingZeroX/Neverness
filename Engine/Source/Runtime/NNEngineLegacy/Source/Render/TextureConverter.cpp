@@ -12,9 +12,9 @@
 #include "Render/TextureConverter.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <NNKernel/Include/Stb/stb_image_write.h>
+#include <NNCore/Include/Stb/stb_image_write.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 	VGFX::TexturePixels TextureConverter::ToRGB(const VGFX::TexturePixels& texture)
 	{
 		VGFX::TexturePixels result;

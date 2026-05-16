@@ -21,13 +21,13 @@
 
 namespace ImGuiEx
 {
-	void AddImGuiLayer(Horizon::HWindow& window)
+	void AddImGuiLayer(NN::Core::HWindow& window)
 	{
-		Horizon::IWindow* pWindow = window.GetWrapWindow();
+		NN::Core::IWindow* pWindow = window.GetWrapWindow();
 #ifdef SDL2_WINDOW_SUPPORTED
 		if (window.GetWindowType() == EWindow::SDL2)
 		{
-			auto* sdl2Window = static_cast<Horizon::SDL2::ISDL2Window*>(pWindow);
+			auto* sdl2Window = static_cast<NN::Core::SDL2::ISDL2Window*>(pWindow);
 
 			sdl2Window->AddLayer(std::make_unique<ImGuiEx::ImguiSDL2>(sdl2Window));
 
@@ -38,7 +38,7 @@ namespace ImGuiEx
 #ifdef SDL3_WINDOW_SUPPORTED
 		if (window.GetWindowType() == EWindow::SDL3)
 		{
-			auto* sdl3Window = static_cast<Horizon::SDL3::ISDL3Window*>(pWindow);
+			auto* sdl3Window = static_cast<NN::Core::SDL3::ISDL3Window*>(pWindow);
 
 			sdl3Window->AddLayer(std::make_unique<ImGuiEx::ImguiSDL3>(sdl3Window));
 			return;
@@ -182,7 +182,7 @@ namespace ImGuiEx
 			return -1;
 	}
 
-	ImguiSDL2::ImguiSDL2(Horizon::SDL2::ISDL2Window* window)
+	ImguiSDL2::ImguiSDL2(NN::Core::SDL2::ISDL2Window* window)
 	{
 		m_pWindow = window;
 		ImGuiInit();
@@ -208,7 +208,7 @@ namespace ImGuiEx
 #endif
 
 #ifdef SDL3_WINDOW_SUPPORTED
-	ImguiSDL3::ImguiSDL3(Horizon::SDL3::ISDL3Window* window)
+	ImguiSDL3::ImguiSDL3(NN::Core::SDL3::ISDL3Window* window)
 	{
 		m_pWindow = window;
 		ImGuiInit();
@@ -228,9 +228,9 @@ namespace ImGuiEx
 
 		auto& io = ImGui::GetIO();
 		if (io.WantCaptureKeyboard || io.WantCaptureMouse)
-			return Horizon::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
+			return NN::Core::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
 		
-		return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+		return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 	}
 
 	void ImguiSDL3::ImGuiInit()

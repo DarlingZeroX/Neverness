@@ -12,7 +12,7 @@
 #include "OpenGL/VertexArray.h"
 #include "OpenGL/ThrowMarco.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 	class VGFXVertexElementParser
 	{
 	public:
@@ -187,5 +187,5 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		}
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 

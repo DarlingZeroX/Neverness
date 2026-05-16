@@ -13,11 +13,11 @@
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNFileSystem/Interface/HFileSystem.h>
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 	class NewDirectoryUITask : public ImGuiEx::ImTaskInterface
 	{
 	public:
-		NewDirectoryUITask(const Horizon::fsPath& parentpath)
+		NewDirectoryUITask(const NN::Core::fsPath& parentpath)
 			:m_ParentPath(parentpath)
 		{
 		};
@@ -25,7 +25,7 @@ namespace VisionGal::Editor {
 		void RenderUI(TaskContext& context) override;
 
 	private:
-		Horizon::fsPath m_ParentPath;
+		NN::Core::fsPath m_ParentPath;
 
 		std::string m_FileName;
 

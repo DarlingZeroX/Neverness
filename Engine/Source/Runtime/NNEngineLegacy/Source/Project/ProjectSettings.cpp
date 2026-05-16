@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Include/Core/VFS.h"
 #include "Engine/Manager.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct ProjectSettingsImp
 	{

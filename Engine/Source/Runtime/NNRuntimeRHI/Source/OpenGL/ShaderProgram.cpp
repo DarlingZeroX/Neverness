@@ -11,9 +11,9 @@
 
 #include "OpenGL/ShaderProgram.h"
 #include "OpenGL/ThrowMarco.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	void ShaderProgram::CreateProgram()
 	{
@@ -69,17 +69,17 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		CreateImp(shaders);
 	}
 
-	Ref<ShaderProgram> ShaderProgram::Create(const std::vector<Shader*>& shaders)
+	NN::Ref<ShaderProgram> ShaderProgram::Create(const std::vector<Shader*>& shaders)
 	{
-		auto sp = MakeRef<ShaderProgram>();
+		auto sp = NN::MakeRef<ShaderProgram>();
 		sp->CreateImp(shaders);
 
 		return sp;
 	}
 
-	Ref<ShaderProgram> ShaderProgram::Create(const std::vector<VGFX::IShader*>& shaders)
+	NN::Ref<ShaderProgram> ShaderProgram::Create(const std::vector<VGFX::IShader*>& shaders)
 	{
-		auto sp = MakeRef<ShaderProgram>();
+		auto sp = NN::MakeRef<ShaderProgram>();
 		sp->CreateImp(shaders);
 
 		return sp;
@@ -194,17 +194,17 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GL_THROW_INFO(glUniform1i(GetUniformLocation(name), v));
 	}
 
-	void ShaderProgram::SetInt2(const std::string& name, Horizon::int2 v)
+	void ShaderProgram::SetInt2(const std::string& name, NN::Core::int2 v)
 	{
 		GL_THROW_INFO(glUniform2i(GetUniformLocation(name), v.x, v.y));
 	}
 
-	void ShaderProgram::SetInt3(const std::string& name, Horizon::int3 v)
+	void ShaderProgram::SetInt3(const std::string& name, NN::Core::int3 v)
 	{
 		GL_THROW_INFO(glUniform3i(GetUniformLocation(name), v.x, v.y, v.z));
 	}
 
-	void ShaderProgram::SetInt4(const std::string& name, Horizon::int4 v)
+	void ShaderProgram::SetInt4(const std::string& name, NN::Core::int4 v)
 	{
 		GL_THROW_INFO(glUniform4i(GetUniformLocation(name), v.x, v.y, v.z, v.w));
 	}
@@ -219,33 +219,33 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GL_THROW_INFO(glUniform1f(GetUniformLocation(name), v));
 	}
 
-	void ShaderProgram::SetFloat2(const std::string& name, const Horizon::float2& v)
+	void ShaderProgram::SetFloat2(const std::string& name, const NN::Core::float2& v)
 
 	{
 		GL_THROW_INFO(glUniform2f(GetUniformLocation(name), v.x, v.y));
 	}
 
-	void ShaderProgram::SetFloat3(const std::string& name, const Horizon::float3& v3)
+	void ShaderProgram::SetFloat3(const std::string& name, const NN::Core::float3& v3)
 	{
 		GL_THROW_INFO(glUniform3f(GetUniformLocation(name), v3.x, v3.y, v3.z));
 	}
 
-	void ShaderProgram::SetFloat4(const std::string& name, const Horizon::float4& v4)
+	void ShaderProgram::SetFloat4(const std::string& name, const NN::Core::float4& v4)
 	{
 		GL_THROW_INFO(glUniform4f(GetUniformLocation(name), v4.x, v4.y, v4.z, v4.w));
 	}
 
-	void ShaderProgram::SetMatrix2(const std::string& name, const Horizon::matrix2x2& matrix)
+	void ShaderProgram::SetMatrix2(const std::string& name, const NN::Core::matrix2x2& matrix)
 	{
 		GL_THROW_INFO(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 	}
 
-	void ShaderProgram::SetMatrix3(const std::string& name, const Horizon::matrix3x3& matrix)
+	void ShaderProgram::SetMatrix3(const std::string& name, const NN::Core::matrix3x3& matrix)
 	{
 		GL_THROW_INFO(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 	}
 
-	void ShaderProgram::SetMatrix4(const std::string& name, const Horizon::matrix4x4& matrix)
+	void ShaderProgram::SetMatrix4(const std::string& name, const NN::Core::matrix4x4& matrix)
 	{
 		GL_THROW_INFO(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 	}
@@ -269,6 +269,6 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		return location;
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 
 

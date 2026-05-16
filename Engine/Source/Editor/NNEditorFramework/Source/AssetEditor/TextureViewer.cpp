@@ -14,14 +14,14 @@
 #include <NNRuntimeCore/Interface/Loader.h>
 
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	TextureViewer::TextureViewer(const VGPath& path)
+	TextureViewer::TextureViewer(const Runtime::VGPath& path)
 	{
 		m_Path = path;
-		m_ImageTexture = LoadObject<Texture2D>(path);
+		m_ImageTexture = Runtime::LoadObject<Runtime::Texture2D>(path);
 
 		for (bool& c : m_ViewData.Channels)
 			c = true;
@@ -96,9 +96,9 @@ namespace VisionGal::Editor
 			}
 
 			// Compute start position Image display
-			float2 ImagePos = { m_WindowData.WindowSize.x, m_WindowData.WindowSize.y };
-			ImagePos = (ImagePos - float2{ m_ViewData.ImageViewWidth ,m_ViewData.ImageViewHeight }) / 2.0f;
-			ImagePos = glm::max(ImagePos, float2(0.f));
+			Runtime::float2 ImagePos = { m_WindowData.WindowSize.x, m_WindowData.WindowSize.y };
+			ImagePos = (ImagePos - Runtime::float2{ m_ViewData.ImageViewWidth ,m_ViewData.ImageViewHeight }) / 2.0f;
+			ImagePos = glm::max(ImagePos, Runtime::float2(0.f));
 			ImGui::SetCursorPos({ ImagePos.x, ImagePos.y });
 			ImGuiEx::ImageGL(image->GetShaderResourceView(), m_ViewData.ImageViewWidth, m_ViewData.ImageViewHeight);
 

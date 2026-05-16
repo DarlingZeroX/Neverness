@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Interface/Loader.h"
 #include "Render/Transition.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	TransitionManager* TransitionManager::GetInstance()
 	{

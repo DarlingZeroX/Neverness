@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cstring>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 VGObjectHandle ObjectSubsystem::CreateObject(const char* typeNameUtf8) noexcept
 {

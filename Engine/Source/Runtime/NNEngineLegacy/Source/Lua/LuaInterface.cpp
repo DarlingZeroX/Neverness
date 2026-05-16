@@ -16,7 +16,7 @@
 #include "Lua/LuaDataBridge.h"
 #include <regex>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	int VGLuaInterface::ExtractErrorLineNumber(const std::string& error_msg)
 	{

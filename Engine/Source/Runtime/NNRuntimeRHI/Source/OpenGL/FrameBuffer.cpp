@@ -12,7 +12,7 @@
 #include "OpenGL/FrameBuffer.h"
 #include "OpenGL/ThrowMarco.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	FrameBuffer::FrameBuffer()
 		:
@@ -26,9 +26,9 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		Delete();
 	}
 
-	Ref<FrameBuffer> FrameBuffer::Create()
+	NN::Ref<FrameBuffer> FrameBuffer::Create()
 	{
-		Ref<FrameBuffer> fb = MakeRef<FrameBuffer>();
+		NN::Ref<FrameBuffer> fb = NN::MakeRef<FrameBuffer>();
 
 		return fb;
 	}
@@ -167,9 +167,9 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		Unbind();
 	}
 
-	Ref<FrameBufferTexture> FrameBufferTexture::Create(unsigned int width, unsigned int height, Type type, unsigned int slot)
+	NN::Ref<FrameBufferTexture> FrameBufferTexture::Create(unsigned int width, unsigned int height, Type type, unsigned int slot)
 	{
-		Ref<FrameBufferTexture> fbt = MakeRef<FrameBufferTexture>();
+		NN::Ref<FrameBufferTexture> fbt = NN::MakeRef<FrameBufferTexture>();
 		fbt->CreateFBTInline(width, height, type, slot);
 
 		return fbt;
@@ -222,9 +222,9 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		Delete();
 	}
 
-	Ref<FrameBufferDepth> FrameBufferDepth::Create(unsigned int width, unsigned int height, Type type)
+	NN::Ref<FrameBufferDepth> FrameBufferDepth::Create(unsigned int width, unsigned int height, Type type)
 	{
-		Ref<FrameBufferDepth> fbt = MakeRef<FrameBufferDepth>();
+		NN::Ref<FrameBufferDepth> fbt = NN::MakeRef<FrameBufferDepth>();
 		fbt->CreateImp(width, height, type);
 
 		return fbt;
@@ -314,5 +314,5 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GL_THROW_INFO(glGenRenderbuffers(1, &m_RenderBufferID));
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 

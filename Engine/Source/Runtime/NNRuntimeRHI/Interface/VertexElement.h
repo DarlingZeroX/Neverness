@@ -10,9 +10,9 @@
 */
 
 #pragma once
-#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNCore/Interface/HCoreTypes.h>
 
-namespace VisionGal::VGFX
+namespace NN::Runtime::VGFX
 {
 	namespace VertexElement
 	{

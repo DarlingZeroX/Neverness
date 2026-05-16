@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Interface/GameInterface.h"
 #include "../../Scene/Scene.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     class VG_ENGINE_API SceneManager
     {

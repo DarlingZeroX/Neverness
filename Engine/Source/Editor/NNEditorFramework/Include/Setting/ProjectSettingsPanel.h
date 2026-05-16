@@ -13,7 +13,7 @@
 #include "../../Config.h"
 #include "../../Interface/EditorSettingInterface.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API ProjectSettingPanel : public IEditorPanel
 	{

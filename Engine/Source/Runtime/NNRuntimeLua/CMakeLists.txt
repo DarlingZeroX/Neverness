@@ -92,7 +92,7 @@ target_include_directories(NevernessRuntime-Lua PRIVATE ${PROJECT_SOURCE_DIR}/En
 target_include_directories(NevernessRuntime-Lua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua")
 target_include_directories(NevernessRuntime-Lua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include")
 
-target_link_libraries(NevernessRuntime-Lua PRIVATE NevernessKernel-Kernel)
+target_link_libraries(NevernessRuntime-Lua PRIVATE NevernessCore-Core)
 
 #set_target_properties(NevernessRuntime-Lua PROPERTIES LINKER_LANGUAGE C)
 set_target_properties(NevernessRuntime-Lua PROPERTIES CXX_STANDARD 17)

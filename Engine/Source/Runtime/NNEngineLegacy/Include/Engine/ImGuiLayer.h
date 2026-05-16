@@ -13,11 +13,11 @@
 #include "../EngineConfig.h"
 #include "NNRuntimeCore/Include/Core/Window.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_ENGINE_API ImguiOpengl3Layer
 	{
-		ImguiOpengl3Layer(Horizon::SDL3::Window* window, SDL_GLContext context);
+		ImguiOpengl3Layer(NN::Core::SDL3::Window* window, SDL_GLContext context);
 		ImguiOpengl3Layer(const ImguiOpengl3Layer&) = delete;
 		ImguiOpengl3Layer& operator=(const ImguiOpengl3Layer&) = delete;
 		virtual ~ImguiOpengl3Layer();

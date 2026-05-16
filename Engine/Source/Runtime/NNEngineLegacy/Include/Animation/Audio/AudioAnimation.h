@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Interface/GameInterface.h"
 #include "../Core/AnimationProperty.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     struct AudioAnimationState {
         AudioAnimationState();
@@ -59,11 +59,11 @@ namespace VisionGal
         void Reset();
         void Finish();
 
-        void OnUpdate(Horizon::HEntityInterface* entity) override;
-        void OnFixUpdate(Horizon::HEntityInterface* entity) override;
+        void OnUpdate(NN::Core::HEntityInterface* entity) override;
+        void OnFixUpdate(NN::Core::HEntityInterface* entity) override;
 
     private:
-        void ApplyStateToEntity(Horizon::HEntityInterface* entity);
+        void ApplyStateToEntity(NN::Core::HEntityInterface* entity);
         float GetCurrentTime() const;
 
         AudioAnimationState state;

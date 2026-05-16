@@ -11,17 +11,17 @@
 
 #pragma once
 #include "NNRuntimeCore/Include/Core/Core.h"
-#include <NNKernel/Include/Scene/HEntityInterface.h>
-#include <NNKernel/Include/Scene/HComponentInterface.h>
-#include <NNKernel/Interface/HSerialization.h>
+#include <NNCore/Include/Scene/HEntityInterface.h>
+#include <NNCore/Include/Scene/HComponentInterface.h>
+#include <NNCore/Interface/HSerialization.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class IScene;
 
-	using ECS = Horizon::HECS;
+	using ECS = NN::Core::HECS;
 
-	struct IEntity : public Horizon::HEntityInterface
+	struct IEntity : public NN::Core::HEntityInterface
 	{
 		using Entity = entt::entity;
 		friend class Scene;
@@ -37,7 +37,7 @@ namespace VisionGal
 		virtual IEntity* Instantiate() { return nullptr; };
 	protected:
 		void SetEntityID(size_t id) { m_EntityID = id; }
-		void SetBaseScene(Horizon::HSceneInterface* scene) { m_BaseScene = scene; }
+		void SetBaseScene(NN::Core::HSceneInterface* scene) { m_BaseScene = scene; }
 		void SetBaseEntity(const Entity& entt) { m_BaseEntity = entt; }
 	};
 	 
@@ -56,7 +56,7 @@ namespace VisionGal
 		IPrimitiveEntity* Instantiate() override { return InstantiatePrimitive(); };
 	};
 
-	struct IComponent : public Horizon::HComponentInterface
+	struct IComponent : public NN::Core::HComponentInterface
 	{
 		uint64 EntityComID = 0;
 	public:
@@ -85,7 +85,7 @@ namespace VisionGal
 		}
 	private:
 		std::string ComponentType;
-		//virtual IComponent* Emplace(Horizon::HSceneInterface* scene, IEntity* entity) = 0;
+		//virtual IComponent* Emplace(NN::Core::HSceneInterface* scene, IEntity* entity) = 0;
 	};
 
 	//struct IComponentDrawer
@@ -128,7 +128,7 @@ namespace VisionGal
 		std::vector<uint64> ComponentIDs;
 	};
 
-	struct IScene : public VGEngineResource,public Horizon::HSceneInterface
+	struct IScene : public VGEngineResource,public NN::Core::HSceneInterface
 	{
 		IScene() = default;
 		IScene(const IScene&) = default;

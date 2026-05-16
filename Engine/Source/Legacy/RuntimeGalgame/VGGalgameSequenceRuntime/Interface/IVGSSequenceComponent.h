@@ -14,7 +14,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 #include "../GSSExport.h"
 #include "../Include/Runtime/SequenceComponentTypeId.h"
 #include "VGSTypeDefine.h"

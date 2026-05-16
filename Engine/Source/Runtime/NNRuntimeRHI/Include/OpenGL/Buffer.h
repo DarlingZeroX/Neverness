@@ -12,7 +12,7 @@
 #pragma once
 #include "Interface.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API BufferGL
 	{
@@ -40,4 +40,4 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GLuint m_RendererID = 0;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

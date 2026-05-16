@@ -12,7 +12,7 @@
 #include "Utils/LuaHelper.h"
 #include <regex>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	int LuaHelper::ExtractErrorLineNumber(const std::string& error_msg)
 	{		// 多种可能的错误格式模式

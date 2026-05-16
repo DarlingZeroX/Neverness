@@ -15,7 +15,7 @@
 #include "Scene/Components.h"
 #include "Render/TransitionManager.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	CoreRenderEngine::CoreRenderEngine()
 	{

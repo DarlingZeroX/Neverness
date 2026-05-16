@@ -18,14 +18,14 @@
 #include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 #include "RenderEngine.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
     struct CoreGameEngineContext : public IGameEngineContext
     {
         ~CoreGameEngineContext() override = default;
 
         IUISystem* GetUISystem() override;
-        Horizon::SDL3::OpenGLWindow* GetWindow() override;
+        NN::Core::SDL3::OpenGLWindow* GetWindow() override;
         Viewport* GetViewport() override;
 
         // 在渲染引擎设置各种渲染状态之前，添加渲染回调
@@ -37,7 +37,7 @@ namespace VisionGal
         void ExecuteAfterRenderCallbacks(OpenGL::RenderTarget2D* rt) override;
 
         IUISystem* uiSystem = nullptr;
-        Horizon::SDL3::OpenGLWindow* window = nullptr;
+        NN::Core::SDL3::OpenGLWindow* window = nullptr;
         Viewport* viewport = nullptr;
 
         std::unordered_map<String, std::function<void(OpenGL::RenderTarget2D*)>> beforeRenderCallbacks;
@@ -59,7 +59,7 @@ namespace VisionGal
 		void AddSubGameEngine(const Ref<ISubGameEngine>& subEngine);
 		CoreGameEngineContext* GetContext() { return &m_EngineContext; }
 
-        void Initialize(Horizon::SDL3::OpenGLWindow* window);
+        void Initialize(NN::Core::SDL3::OpenGLWindow* window);
         Viewport* GetViewport() const { return m_Viewport; }
 
 		void SetRenderFinalResultToScreen(bool enable);

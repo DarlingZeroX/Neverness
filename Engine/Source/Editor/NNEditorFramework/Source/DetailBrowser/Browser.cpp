@@ -14,14 +14,14 @@
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
 #include <NNRuntimeCore/Include/Core/EventBus.h>
 #include <NNRuntimeImGui/IncludeImGui.h>
-#include <NNKernel/Interface/HStringTools.h>
+#include <NNCore/Interface/HStringTools.h>
 
 #include "NNRuntimeAsset/Interface/Package.h"
 #include "NNEngineLegacy/Include/Lua/LuaScript.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/ImGuiEx.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/ImNotify.h"
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 
 	DetailBrowserPanel::DetailBrowserPanel()
 	{
@@ -61,8 +61,8 @@ namespace VisionGal::Editor {
 			}
 
 			//auto& registry = m_rScene.GetWorld();
-			auto* entityObject = selectedEntity->GetComponent<Horizon::HEntityObjectData>();
-			auto* relation = selectedEntity->GetComponent<Horizon::HRelationship>();
+			auto* entityObject = selectedEntity->GetComponent<NN::Core::HEntityObjectData>();
+			auto* relation = selectedEntity->GetComponent<NN::Core::HRelationship>();
 
 			if (entityObject != nullptr && entityObject->ComponentTypes.size() > 0)
 			{
@@ -93,12 +93,12 @@ namespace VisionGal::Editor {
 
 	void DetailBrowserPanel::SubscribeEngineEvent()
 	{
-		EngineEventBus::Get().OnEngineEvent.Subscribe([this](const EngineEvent& evt)
+		Runtime::EngineEventBus::Get().OnEngineEvent.Subscribe([this](const Runtime::EngineEvent& evt)
 			{
 				switch (evt.EventType)
 				{
-				case EngineEventType::MainSceneChanged:
-					m_pScene = dynamic_cast<Scene*>(evt.Scene);
+				case Runtime::EngineEventType::MainSceneChanged:
+					m_pScene = dynamic_cast<Runtime::Scene*>(evt.Scene);
 					break;
 				}
 			});
@@ -106,14 +106,14 @@ namespace VisionGal::Editor {
 
 	void DetailBrowserPanel::SubscribeSceneEvent()
 	{
-		EngineEventBus::Get().OnSceneEvent.Subscribe([this](const SceneEvent& evt)
+		Runtime::EngineEventBus::Get().OnSceneEvent.Subscribe([this](const Runtime::SceneEvent& evt)
 			{
 				switch (evt.EventType)
 				{
-				case SceneEventType::ActorSelected:
+				case Runtime::SceneEventType::ActorSelected:
 					m_SelectEntityID = evt.ActorID;
 					break;
-				case SceneEventType::ActorRemoved:
+				case Runtime::SceneEventType::ActorRemoved:
 					break;
 				}
 			});
@@ -128,18 +128,18 @@ namespace VisionGal::Editor {
 				std::string path = static_cast<char*>(payload->Data);
 
 				// 检查文件类型
-				auto assetType = VGPackage::GetAssetType(path);
+				auto assetType = Runtime::VGPackage::GetAssetType(path);
 				if (assetType == "LuaScript")
 				{
-					if (auto* selectedEntity = dynamic_cast<IGameActor*>( m_pScene->GetActor(m_SelectEntityID) ))
+					if (auto* selectedEntity = dynamic_cast<Runtime::IGameActor*>( m_pScene->GetActor(m_SelectEntityID) ))
 					{
-						if (selectedEntity->GetComponent<ScriptComponent>() == nullptr)
+						if (selectedEntity->GetComponent<Runtime::ScriptComponent>() == nullptr)
 						{
-							selectedEntity->AddComponent<ScriptComponent>();
+							selectedEntity->AddComponent<Runtime::ScriptComponent>();
 						}
 
-						auto* com = selectedEntity->GetComponent<ScriptComponent>();
-						auto script = LuaScript::LoadFromFile(path);
+						auto* com = selectedEntity->GetComponent<Runtime::ScriptComponent>();
+						auto script = Runtime::LuaScript::LoadFromFile(path);
 						com->scripts.push_back(script);
 
 						ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置脚本成功!" });

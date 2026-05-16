@@ -67,7 +67,7 @@ namespace vfspp
 	class VGPackageFile final : public IFile
 	{
 	public:
-		VGPackageFile(const FileInfo& fileInfo, const VisionGal::PakEntry& entry, std::filesystem::path pakAbsPath)
+		VGPackageFile(const FileInfo& fileInfo, const NN::Runtime::PakEntry& entry, std::filesystem::path pakAbsPath)
 			: m_FileInfo(fileInfo)
 			, m_Entry(entry)
 			, m_PakAbsPath(pakAbsPath)
@@ -345,7 +345,7 @@ namespace vfspp
 			}
 			m_SeekPos = 0;
 
-            if (VisionGal::PakFileReader::ReadEntryFile(m_PakAbsPath, m_Entry, m_Data)) {
+            if (NN::Runtime::PakFileReader::ReadEntryFile(m_PakAbsPath, m_Entry, m_Data)) {
 				m_IsOpened = true;
 				m_Stream = std::make_unique<PackageVectorIStream>(m_Data);
             } else {
@@ -525,7 +525,7 @@ namespace vfspp
 		FileInfo m_FileInfo;
 		//uint32_t m_Offset;
 		//uint64_t m_Size;
-		VisionGal::PakEntry m_Entry;
+		NN::Runtime::PakEntry m_Entry;
 		std::filesystem::path m_PakAbsPath;
 		std::vector<uint8_t> m_Data;
 		//std::istringstream m_Stream;

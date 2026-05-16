@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ImGuiEx/ImGuiEx.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
 namespace ImGuiEx
 {
@@ -299,7 +299,7 @@ namespace ImGuiEx
 		ImGui::PopStyleColor(ImGuiCol_COUNT);
 	}
 
-	void DrawObjBorderFloat2(Horizon::float2 obj_pos, Horizon::float2 obj_size, float distance_thickness, ImU32 col, float rounding, float tickness)
+	void DrawObjBorderFloat2(NN::Core::float2 obj_pos, NN::Core::float2 obj_size, float distance_thickness, ImU32 col, float rounding, float tickness)
 	{
 		DrawObjBorder(ImVec2(obj_pos.x, obj_pos.y), ImVec2(obj_size.x, obj_size.y), distance_thickness, col, rounding, tickness);
 	}

@@ -4,7 +4,7 @@
 #include "NNRuntimeAsset/Interface/Package.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	void CodeDocument::Initialize()
 	{
@@ -20,8 +20,8 @@ namespace VisionGal::Editor
 		TexEditor.SetUIScale(1.1f);
 
 		// 根据文件类型设置语法高亮
-		VGAssetMetaData metadata;
-		if (VGPackage::GetMeatData(DocPath, metadata))
+		Runtime::VGAssetMetaData metadata;
+		if (Runtime::VGPackage::GetMeatData(DocPath, metadata))
 		{
 			if (metadata.AssetType == "HTML" || metadata.AssetType == "CSS")
 			{
@@ -59,8 +59,8 @@ namespace VisionGal::Editor
 		}
 
 		// 检测文件是否被外部修改
-		auto absPath = VFS::GetInstance()->AbsolutePath(DocPath);
-		if (Horizon::HFileSystem::ExistsFile(absPath))
+		auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(DocPath);
+		if (NN::Core::HFileSystem::ExistsFile(absPath))
 		{
 			if (FileLastWriteTime != std::filesystem::last_write_time(absPath))
 			{
@@ -83,7 +83,7 @@ namespace VisionGal::Editor
 
 		if (DocPath.empty())
 			return;
-		VFS::WriteTextToFile(DocPath, TexEditor.GetText());
+		Runtime::VFS::WriteTextToFile(DocPath, TexEditor.GetText());
 
 		TexEditor.ResetTextChanged();
 		Dirty = false;
@@ -94,22 +94,22 @@ namespace VisionGal::Editor
 
 	void CodeDocument::ReadLastWriteTime()
 	{
-		auto absPath = VFS::GetInstance()->AbsolutePath(DocPath);
-		if (Horizon::HFileSystem::ExistsFile(absPath))
+		auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(DocPath);
+		if (NN::Core::HFileSystem::ExistsFile(absPath))
 		{
 			FileLastWriteTime = std::filesystem::last_write_time(absPath);
 		}
 	}
 
-	bool CodeDocument::OpenFile(const VGPath& path)
+	bool CodeDocument::OpenFile(const Runtime::VGPath& path)
 	{
 		std::string text;
-		auto result = VFS::ReadTextFromFile(path, text);
+		auto result = Runtime::VFS::ReadTextFromFile(path, text);
 
 		if (result == false)
 			return false;
 
-		Name = Horizon::HFileSystem::GetFileNameFromPath(path);
+		Name = NN::Core::HFileSystem::GetFileNameFromPath(path);
 		IsOpen = true;
 		DocPath = path;
 		Initialize();

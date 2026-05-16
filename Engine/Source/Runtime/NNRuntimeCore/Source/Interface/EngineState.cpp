@@ -11,7 +11,7 @@
 
 #include "EngineState.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	EngineRuntimeState& EngineRuntimeState::Get()
 	{

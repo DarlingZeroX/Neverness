@@ -10,10 +10,10 @@
 */
 
 #include "Animation/Core/TransformAnimation.h"
-#include <NNKernel/Include/Math/HMathHelper.h>
+#include <NNCore/Include/Math/HMathHelper.h>
 #include "Scene/Components.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	TransformAnimationState::TransformAnimationState()
 	{
@@ -147,7 +147,7 @@ namespace VisionGal
 		state.Finish();
 	}
 
-	void TransformAnimationScript::OnUpdate(Horizon::HEntityInterface* entity)
+	void TransformAnimationScript::OnUpdate(NN::Core::HEntityInterface* entity)
 	{
 		// 更新所有属性
 		state.TravelProperty([this](FloatAnimationProperty& property)
@@ -166,7 +166,7 @@ namespace VisionGal
 		ApplyStateToEntity(entity);
 	}
 
-	void TransformAnimationScript::OnFixUpdate(Horizon::HEntityInterface* entity)
+	void TransformAnimationScript::OnFixUpdate(NN::Core::HEntityInterface* entity)
 	{
 
 	}
@@ -176,7 +176,7 @@ namespace VisionGal
 		return Core::GetCurrentTime();
 	}
 
-	void TransformAnimationScript::ApplyStateToEntity(Horizon::HEntityInterface* entity)
+	void TransformAnimationScript::ApplyStateToEntity(NN::Core::HEntityInterface* entity)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
 		if (transform)

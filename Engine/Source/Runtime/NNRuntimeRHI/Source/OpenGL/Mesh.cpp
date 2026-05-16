@@ -12,7 +12,7 @@
 #include "OpenGL/Mesh.h"
 #include "OpenGL/ThrowMarco.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	VertexBuffer::~VertexBuffer()
 	{
@@ -127,6 +127,6 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		GL_THROW_INFO(glBindVertexArray(0));
 	}
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}
 
 

@@ -15,9 +15,9 @@
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeCore/Interface/RenderInterface.h"
 #include <NNRuntimeRHI/Interface/VGFX.h>
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	class VG_ENGINE_API FullScreenQuad : public VGObject
 	{

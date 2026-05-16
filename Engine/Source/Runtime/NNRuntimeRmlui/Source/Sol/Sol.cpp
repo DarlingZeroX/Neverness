@@ -19,7 +19,7 @@ namespace RmlSol {
 		::RmlSol::Initialise(nullptr);
 	}
 
-	void Initialise(Ref<sol::state> lua_state)
+	void Initialise(NN::Ref<sol::state> lua_state)
 	{
 		::Rml::RegisterPlugin(new SolPlugin(lua_state));
 	}

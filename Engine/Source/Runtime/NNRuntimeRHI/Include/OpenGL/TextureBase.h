@@ -11,9 +11,9 @@
 
 #pragma once
 #include "Interface.h"
-#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNCore/Interface/HCoreTypes.h>
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API TextureBase :public Bindable, public Renderable
 	{
@@ -48,10 +48,10 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		virtual void TexWrapping(GLuint wrapping);			/// 纹理环绕方式
 
 		/// CLAMP_TO_BORDER 环绕方式时，纹理超过边界时的颜色
-		virtual void TexBorderColor(const Horizon::float4& color) const;
+		virtual void TexBorderColor(const NN::Core::float4& color) const;
 	private:
 		unsigned int m_RendererID = 0;
 		unsigned int  m_Slot = 0;
 	};
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

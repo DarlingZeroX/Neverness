@@ -11,8 +11,8 @@
 
 #include "SpriteAnimationScriptManager.h"
 #include "SpriteAnimationScript.h"
-#include "NNKernel/Interface/HLocalization.h"
-#include "NNKernel/Interface/HStringTools.h"
+#include "NNCore/Interface/HLocalization.h"
+#include "NNCore/Interface/HStringTools.h"
 #include "NNEngineLegacy/Include/Scene/Components.h"
 #include "NNEngineLegacy/Include/Animation/Core/SpriteAnimationScript.h"
 #include "NNEngineLegacy/Include/Animation/Interface/AnimationScriptManager.h"

@@ -15,7 +15,7 @@
 #include "NNRuntimeImGui/Include/Imgui/imgui.h"
 #include <NNRuntimeImGui/Include/ImGuiColorTextEdit/TextEditor.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct VG_EDITOR_FRAMEWORK_API CodeDocument
 	{
@@ -42,6 +42,6 @@ namespace VisionGal::Editor
 		void DoSave();
 
 		void ReadLastWriteTime();
-		bool OpenFile(const VGPath& path);
+		bool OpenFile(const Runtime::VGPath& path);
 	};
 }

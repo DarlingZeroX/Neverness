@@ -12,7 +12,7 @@
 #include "EditorCore/EditorCore.h"
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct EditorCoreImp
 	{
@@ -20,7 +20,7 @@ namespace VisionGal::Editor
 		~EditorCoreImp()
 		{
 			EditorPreferences::Save(Preferences);
-			ProjectSettings::SaveProjectSettings();
+			Runtime::ProjectSettings::SaveProjectSettings();
 		}
 
 		static EditorCoreImp& GetInstance()

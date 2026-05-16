@@ -1,7 +1,7 @@
 #pragma once
 //#include "../include/CrossPlatformDefinitions.h"
 #include "../imconfig.h"
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 
 #ifdef WIN32_NATIVE_WINDOW_SUPPORTED
 #include "Win32Native/Win32Window.h"
@@ -12,7 +12,7 @@
 #endif
 
 #ifdef SDL2_WINDOW_SUPPORTED
-#include <NNKernel/Platform/SDL2/SDL2Window.h>
+#include <NNCore/Platform/SDL2/SDL2Window.h>
 #endif
 
 #ifdef SDL3_WINDOW_SUPPORTED
@@ -23,7 +23,7 @@
 
 namespace ImGuiEx
 {
-	IMGUI_API void AddImGuiLayer(Horizon::HWindow& window);
+	IMGUI_API void AddImGuiLayer(NN::Core::HWindow& window);
 
 	///---------------------------------
 	/// Imgui
@@ -65,12 +65,12 @@ namespace ImGuiEx
 #endif
 
 #ifdef SDL2_WINDOW_SUPPORTED
-	class IMGUI_API ImguiSDL2 :public Horizon::SDL2::Layer
+	class IMGUI_API ImguiSDL2 :public NN::Core::SDL2::Layer
 	{
 	private:
-		Horizon::SDL2::ISDL2Window* m_pWindow;
+		NN::Core::SDL2::ISDL2Window* m_pWindow;
 	public:
-		ImguiSDL2(Horizon::SDL2::ISDL2Window* window);
+		ImguiSDL2(NN::Core::SDL2::ISDL2Window* window);
 		ImguiSDL2(const ImguiSDL2&) = delete;
 		ImguiSDL2& operator=(const ImguiSDL2&) = delete;
 		~ImguiSDL2() override;
@@ -83,12 +83,12 @@ namespace ImGuiEx
 #endif
 
 #ifdef SDL3_WINDOW_SUPPORTED
-	class IMGUI_API ImguiSDL3 :public Horizon::SDL3::Layer
+	class IMGUI_API ImguiSDL3 :public NN::Core::SDL3::Layer
 	{
 	private:
-		Horizon::SDL3::ISDL3Window* m_pWindow;
+		NN::Core::SDL3::ISDL3Window* m_pWindow;
 	public:
-		ImguiSDL3(Horizon::SDL3::ISDL3Window* window);
+		ImguiSDL3(NN::Core::SDL3::ISDL3Window* window);
 		ImguiSDL3(const ImguiSDL3&) = delete;
 		ImguiSDL3& operator=(const ImguiSDL3&) = delete;
 		~ImguiSDL3() override;

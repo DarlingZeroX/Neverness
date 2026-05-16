@@ -11,11 +11,11 @@
 
 #include "Scene/Scene.h"
 #include "Scene/Components.h"
-#include <NNKernel/Include/Scene/HSceneHierachy.h>
+#include <NNCore/Include/Scene/HSceneHierachy.h>
 #include "Scene/GameActor.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	constexpr VGActorID ConstHUISceneActor = 0;
 
@@ -37,7 +37,7 @@ namespace VisionGal
 	}
 	 
 
-	Horizon::HECS* Scene::GetWorld()
+	NN::Core::HECS* Scene::GetWorld()
 	{
 		return &m_Registry;
 	}
@@ -52,7 +52,7 @@ namespace VisionGal
 	{
 		srand(std::clock());
 
-		Horizon::HRandom randEngine;
+		NN::Core::HRandom randEngine;
 		randEngine.Seed(rand());
 
 		auto result = randEngine.NextUINT64();
@@ -69,7 +69,7 @@ namespace VisionGal
 	{
 		srand(std::clock());
 
-		Horizon::HRandom randEngine;
+		NN::Core::HRandom randEngine;
 		randEngine.Seed(rand());
 
 		auto result = randEngine.NextUINT64();
@@ -88,8 +88,8 @@ namespace VisionGal
 		entity->SetBaseScene(this);
 
 		// Entity data
-		auto& data = m_Registry.emplace_or_replace<Horizon::HEntityObjectData>(entity->GetEntity());
-		auto& relationship = m_Registry.emplace_or_replace<Horizon::HRelationship>(entity->GetEntity());
+		auto& data = m_Registry.emplace_or_replace<NN::Core::HEntityObjectData>(entity->GetEntity());
+		auto& relationship = m_Registry.emplace_or_replace<NN::Core::HRelationship>(entity->GetEntity());
 		data.ID = id;
 		data.Entity = entity;
 		relationship.Label = lable;
@@ -120,14 +120,14 @@ namespace VisionGal
 
 	void Scene::UpdateDeserializeActorRelationship()
 	{
-		auto view = GetWorld()->view<Horizon::HEntityObjectData, Horizon::HRelationship>();
+		auto view = GetWorld()->view<NN::Core::HEntityObjectData, NN::Core::HRelationship>();
 
-		view.each([&, this](Horizon::HEntityObjectData& data, Horizon::HRelationship& relationship)
+		view.each([&, this](NN::Core::HEntityObjectData& data, NN::Core::HRelationship& relationship)
 			{
 				if (data.ID == ConstHUISceneActor)
 					return;
 
-				Horizon::HHierarchy::SetParent(
+				NN::Core::HHierarchy::SetParent(
 					m_Registry,
 					*data.Entity,
 					m_IDEntityMap[relationship.ParentID].get()
@@ -146,7 +146,7 @@ namespace VisionGal
 			IEntity* realParent = parent == nullptr ? m_SceneActor.get() : parent;
 
 			SetEntityBaseData(entity.get(), ID, realParent->GetEntityID(), GetNewLabel(entity.get()));
-			Horizon::HHierarchy::SetParent(m_Registry, *entity, realParent);
+			NN::Core::HHierarchy::SetParent(m_Registry, *entity, realParent);
 
 			m_IDEntityMap[ID] = entity;				//map entity id to entity object
 		}
@@ -171,9 +171,9 @@ namespace VisionGal
 		m_SceneActor->SetBaseEntity(this->GetWorld()->create());
 		m_SceneActor->SetBaseScene(this);
 
-		auto& relationship = m_Registry.emplace<Horizon::HRelationship>(m_SceneActor->GetEntity());
+		auto& relationship = m_Registry.emplace<NN::Core::HRelationship>(m_SceneActor->GetEntity());
 
-		auto& object = m_Registry.emplace<Horizon::HEntityObjectData>(m_SceneActor->GetEntity());
+		auto& object = m_Registry.emplace<NN::Core::HEntityObjectData>(m_SceneActor->GetEntity());
 		object.Entity = m_SceneActor.get();
 		object.ID = ConstHUISceneActor;
 		relationship.Label = m_SceneName;
@@ -195,7 +195,7 @@ namespace VisionGal
 	{
 		uint64 comID = NewComponentID();
 
-		Horizon::HEntityObjectData* entt_obj = entity->GetComponent<Horizon::HEntityObjectData>();
+		NN::Core::HEntityObjectData* entt_obj = entity->GetComponent<NN::Core::HEntityObjectData>();
 		entt_obj->ComponentTypes.push_back(component->GetComponentType());
 		entt_obj->ComponentIDs.push_back(comID);
 
@@ -220,9 +220,9 @@ namespace VisionGal
 		if (auto result = m_IDEntityMap.find(entityID); result != m_IDEntityMap.end())
 		{
 			IGameActor& entity = *result->second.get();
-			auto& relation = *entity.GetComponent<Horizon::HRelationship>();
+			auto& relation = *entity.GetComponent<NN::Core::HRelationship>();
 
-			Horizon::HHierarchy::DisconnectParent(m_Registry, entity, relation);
+			NN::Core::HHierarchy::DisconnectParent(m_Registry, entity, relation);
 
 			m_Registry.destroy(entity.GetEntity());
 

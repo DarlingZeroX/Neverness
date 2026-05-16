@@ -14,7 +14,7 @@
 #include "IncludeHeader.h"
 #include "LuaDocumentElementInstancer.h"
 #include "LuaEventListenerInstancer.h"
-#include "NNKernel/Interface/HConfig.h"
+#include "NNCore/Interface/HConfig.h"
 
 namespace RmlSol {
 
@@ -23,11 +23,11 @@ namespace RmlSol {
 
 	class RMLUISOL_API SolPlugin : public Rml::Plugin {
 	public:
-		SolPlugin(Ref<sol::state> lua_state);
+		SolPlugin(NN::Ref<sol::state> lua_state);
 
 		static sol::state* GetLuaState();
 
-		static void RebindLuaState(Ref<sol::state> lua_state);
+		static void RebindLuaState(NN::Ref<sol::state> lua_state);
 
 	private:
 		int GetEventClasses() override;

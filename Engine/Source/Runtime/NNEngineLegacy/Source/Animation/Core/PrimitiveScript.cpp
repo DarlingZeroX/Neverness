@@ -12,13 +12,13 @@
 #include "Animation/Core/PrimitiveScript.h"
 #include "Scene/Components.h"
 #include <sol/table.hpp>
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 
-#include "NNKernel/Include/Math/GLM/gtc/quaternion.hpp"
+#include "NNCore/Include/Math/GLM/gtc/quaternion.hpp"
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	bool TranslateXAnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
+	bool TranslateXAnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
 		float startX = transform->location.x;
@@ -32,7 +32,7 @@ namespace VisionGal
 		return key == "位置偏移X";
 	}
 
-	void TranslateXAnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, float value)
+	void TranslateXAnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value)
 	{
 		if (auto* transform = entity->GetComponent<TransformComponent>())
 		{
@@ -48,7 +48,7 @@ namespace VisionGal
 
 
 
-	bool TranslateYAnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
+	bool TranslateYAnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
 		float startY = transform->location.y;
@@ -62,7 +62,7 @@ namespace VisionGal
 		return key == "位置偏移Y";
 	}
 
-	void TranslateYAnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, float value)
+	void TranslateYAnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value)
 	{
 		if (auto* transform = entity->GetComponent<TransformComponent>())
 		{
@@ -78,7 +78,7 @@ namespace VisionGal
 
 
 
-	bool ScaleXAnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity,
+	bool ScaleXAnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity,
 		Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
@@ -93,7 +93,7 @@ namespace VisionGal
 		return key == "缩放X";
 	}
 
-	void ScaleXAnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, float value)
+	void ScaleXAnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value)
 	{
 		if (auto* transform = entity->GetComponent<TransformComponent>())
 		{
@@ -111,7 +111,7 @@ namespace VisionGal
 
 
 
-	bool ScaleYAnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity,
+	bool ScaleYAnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity,
 		Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
@@ -126,7 +126,7 @@ namespace VisionGal
 		return key == "缩放Y";
 	}
 
-	void ScaleYAnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, float value)
+	void ScaleYAnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value)
 	{
 		if (auto* transform = entity->GetComponent<TransformComponent>())
 		{
@@ -142,7 +142,7 @@ namespace VisionGal
 
 
 
-	bool ScaleAnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity,
+	bool ScaleAnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity,
 	                                                Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
@@ -170,7 +170,7 @@ namespace VisionGal
 		return key == "缩放";
 	}
 
-	void ScaleAnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, float2 value)
+	void ScaleAnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, float2 value)
 	{
 		if (auto* transform = entity->GetComponent<TransformComponent>())
 		{
@@ -197,7 +197,7 @@ namespace VisionGal
 
 
 
-	bool RotateAnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity,
+	bool RotateAnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity,
 		Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* transform = entity->GetComponent<TransformComponent>();
@@ -214,7 +214,7 @@ namespace VisionGal
 		return key == "旋转";
 	}
 
-	void RotateAnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, float value)
+	void RotateAnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value)
 	{
 		if (auto* transform = entity->GetComponent<TransformComponent>())
 		{
@@ -232,7 +232,7 @@ namespace VisionGal
 
 
 
-	bool SpriteAlphaAnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
+	bool SpriteAlphaAnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue, float duration, Tween tween, bool reverse)
 	{
 		auto* sprite = entity->GetComponent<SpriteRendererComponent>();
 		float start = sprite->color.a;
@@ -246,7 +246,7 @@ namespace VisionGal
 		return key == "精灵透明度";
 	}
 
-	void SpriteAlphaAnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, float value)
+	void SpriteAlphaAnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, float value)
 	{
 		if (auto* sprite = entity->GetComponent<SpriteRendererComponent>())
 		{
@@ -261,7 +261,7 @@ namespace VisionGal
 		return Animation2DPrimitiveType::SpriteAlpha;
 	}
 
-	bool SpriteColor3AnimationScript::StartEntityAnimation(Horizon::HEntityInterface* entity, Animation2DPrimitive& targetValue,
+	bool SpriteColor3AnimationScript::StartEntityAnimation(NN::Core::HEntityInterface* entity, Animation2DPrimitive& targetValue,
 		float duration, Tween tween, bool reverse)
 	{
 		auto* sprite = entity->GetComponent<SpriteRendererComponent>();
@@ -281,7 +281,7 @@ namespace VisionGal
 		return true;
 	}
 
-	void SpriteColor3AnimationScript::ApplyValueToEntity(Horizon::HEntityInterface* entity, const float3& value)
+	void SpriteColor3AnimationScript::ApplyValueToEntity(NN::Core::HEntityInterface* entity, const float3& value)
 	{
 		if (auto* sprite = entity->GetComponent<SpriteRendererComponent>())
 		{
@@ -316,7 +316,7 @@ namespace VisionGal
 		return Animation2DPrimitiveType::SpriteColor3;
 	}
 
-	Ref<IAnimationScript> SpriteColor3AnimationScript::StartAnimationScript(Horizon::HEntityInterface* entity,
+	Ref<IAnimationScript> SpriteColor3AnimationScript::StartAnimationScript(NN::Core::HEntityInterface* entity,
 		const Animation2DProperty& targetProperty, Animation2DPrimitive& primitive, bool reverse)
 	{
 		H_ASSERT_NOT_NULL(entity);
@@ -361,7 +361,7 @@ namespace VisionGal
 	}
 
 	Ref<IAnimationScript> AnimationPrimitiveManager::StartAnimationScript(
-		Horizon::HEntityInterface* entity,
+		NN::Core::HEntityInterface* entity,
 		const Animation2DProperty& targetProperty,
 		Animation2DPrimitive& primitive,
 		bool reverse

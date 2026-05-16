@@ -75,13 +75,13 @@ namespace RmlSol {
 					// 错误事件,目前错误行号还没实现获取
 					//if ( owner_document != nullptr)
 					//{
-					//	VisionGal::LuaScriptEvent evt;
-					//	evt.EventType = VisionGal::LuaScriptEventType::ScriptError;
+					//	NN::Runtime::LuaScriptEvent evt;
+					//	evt.EventType = NN::Runtime::LuaScriptEventType::ScriptError;
 					//	evt.ScriptPath = owner_document->GetSourceURL();
 					//	evt.ErrorMessage = err.what();
-					//	//evt.ErrorLineNumber = VisionGal::VGLuaInterface::ExtractErrorLineNumber(err.what());
+					//	//evt.ErrorLineNumber = NN::Runtime::VGLuaInterface::ExtractErrorLineNumber(err.what());
 					//	evt.ErrorLineNumber = 0;
-					//	VisionGal::EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
+					//	NN::Runtime::EngineEventBus::Get().OnLuaScriptEvent.Invoke(evt);
 					//}
 
 				}

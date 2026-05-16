@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include <NNRuntimeRHI/Include/OpenGL/ShaderProgram.h>
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	class Material
 	{

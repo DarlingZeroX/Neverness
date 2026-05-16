@@ -13,7 +13,7 @@
 //#include <NNMediaCore/Include/>
 #include "AudioClip.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	bool AudioAssetLoader::Read(const std::string path, Ref<VGAsset>& asset)
 	{

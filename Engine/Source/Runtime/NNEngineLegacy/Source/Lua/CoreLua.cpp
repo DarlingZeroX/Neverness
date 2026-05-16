@@ -15,7 +15,7 @@
 #include "NNRuntimeRmlui/Include/Sol/Sol.h"
 #include "NNRuntimeRmlui/Source/Sol/SolPlugin.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct CoreLuaImp
 	{

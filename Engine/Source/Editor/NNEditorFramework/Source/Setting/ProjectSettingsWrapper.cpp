@@ -15,11 +15,11 @@
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 #include "NNRuntimeImGui/IncludeImGuiEx.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	void ProjectSettingsEditorWrapper::OnGUI()
 	{
-		auto& setting = ProjectSettings::GetProjectSettings().Editor;
+		auto& setting = Runtime::ProjectSettings::GetProjectSettings().Editor;
 
 		ImGui::Text(EditorText{ "Editor" }.c_str());
 
@@ -39,7 +39,7 @@ namespace VisionGal::Editor
 
 	void ProjectSettingsApplicationWrapper::OnGUI()
 	{
-		auto& setting = ProjectSettings::GetProjectSettings().Application;
+		auto& setting = Runtime::ProjectSettings::GetProjectSettings().Application;
 
 		ImGui::Text(EditorText{ "Application" }.c_str());
 
@@ -75,7 +75,7 @@ namespace VisionGal::Editor
 
 	void ProjectSettingsGalGameWrapper::OnGUI()
 	{
-		auto& setting = ProjectSettings::GetProjectSettings().GalGame;
+		auto& setting = Runtime::ProjectSettings::GetProjectSettings().GalGame;
 
 		ImGui::Text(EditorText{ "GalGame" }.c_str());
 
@@ -107,12 +107,12 @@ namespace VisionGal::Editor
 
 	const std::vector<std::string>& ProjectSettingsWrapper::GetProjectSettingsNameList()
 	{
-		return ProjectSettings::GetProjectSettings().GetSettingsNameList();
+		return Runtime::ProjectSettings::GetProjectSettings().GetSettingsNameList();
 	}
 
 	std::string ProjectSettingsWrapper::GetProjectSettingsNameByIndex(int index)
 	{
-		return ProjectSettings::GetProjectSettings().GetSettingsNameByIndex(index);
+		return Runtime::ProjectSettings::GetProjectSettings().GetSettingsNameByIndex(index);
 	}
 
 	EditorSettingInterface* ProjectSettingsWrapper::GetProjectSettingsByName(const std::string& name)

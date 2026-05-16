@@ -12,7 +12,7 @@
 #pragma once
 #include "SceneInterface.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct VG_CORE_API EngineRuntimeState
 	{

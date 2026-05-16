@@ -11,7 +11,7 @@
 
 #include "Utils/TimeHelper.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	std::string TimeHelper::FloatToTimeFormatSprintf(float secondsFloat)
 	{

@@ -11,7 +11,7 @@
 
 #include "Animation/Core/AnimationCore.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	Animation2DPrimitive::Animation2DPrimitive()
 	{

@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	ImageFormat SDLImgFormat2VGImgFormat(SDL_PixelFormat format)
 	{

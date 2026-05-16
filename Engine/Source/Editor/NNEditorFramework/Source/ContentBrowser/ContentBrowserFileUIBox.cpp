@@ -1,7 +1,7 @@
 #include "ContentBrowser/ContentBrowserFileUIBox.h"
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
 
-namespace VisionGal::Editor {
+namespace NN::Editor {
 	ContentBrowserFileUIBox::ContentBrowserFileUIBox()
 	{
 		thumbnialTextSizeY = 35.0f;

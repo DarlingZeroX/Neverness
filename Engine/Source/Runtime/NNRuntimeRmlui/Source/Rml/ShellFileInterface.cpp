@@ -64,7 +64,7 @@ Rml::FileHandle UIFileInterfaceVFS::Open(const Rml::String& path)
 	Rml::String processPath;
 	PathType type = ProcessPath(path, processPath);
 
-	//auto file = VisionGal::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+	//auto file = NN::Runtime::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
 	//
 	//if (!file)
 	//	return 0;
@@ -72,7 +72,7 @@ Rml::FileHandle UIFileInterfaceVFS::Open(const Rml::String& path)
 	//if (!file->IsOpened())
 	//	return 0;
 
-	Ref<FilePtr> filePtr = MakeRef<FilePtr>();
+	NN::Ref<FilePtr> filePtr = NN::MakeRef<FilePtr>();
 	bool result = filePtr->Open(type, processPath);
 
 	if (result == false)
@@ -133,7 +133,7 @@ bool UIFileInterfaceVFS::FilePtr::Open(PathType pathType, const Rml::String& pat
 
 	if (type == PathType::VFS)
 	{
-		fpVFS = VisionGal::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+		fpVFS = NN::Runtime::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
 
 		if (!fpVFS)
 			return false;
@@ -142,10 +142,10 @@ bool UIFileInterfaceVFS::FilePtr::Open(PathType pathType, const Rml::String& pat
 			return false;
 
 		// 事件
-		VisionGal::UISystemEvent evt;
-		evt.EventType = VisionGal::UISystemEventType::UIFileOpen;
+		NN::Runtime::UISystemEvent evt;
+		evt.EventType = NN::Runtime::UISystemEventType::UIFileOpen;
 		evt.UIFilePath = filePath;
-		VisionGal::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
+		NN::Runtime::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
 
 		return true;
 	}
@@ -170,10 +170,10 @@ void UIFileInterfaceVFS::FilePtr::Close()
 		fpVFS->Close();
 
 		// 事件
-		VisionGal::UISystemEvent evt;
-		evt.EventType = VisionGal::UISystemEventType::UIFileClose;
+		NN::Runtime::UISystemEvent evt;
+		evt.EventType = NN::Runtime::UISystemEventType::UIFileClose;
 		evt.UIFilePath = filePath;
-		VisionGal::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
+		NN::Runtime::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
 	}
 
 	if (type == PathType::FS)

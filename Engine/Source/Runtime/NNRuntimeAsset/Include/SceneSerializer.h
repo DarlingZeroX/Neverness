@@ -12,9 +12,9 @@
 #pragma once
 #include "NNRuntimeAsset/Interface/ISceneSerializer.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
-#include <NNKernel/Interface/HSerialization.h>
+#include <NNCore/Interface/HSerialization.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	struct EntitySerializer : public ISceneSegmentSerializer
 	{

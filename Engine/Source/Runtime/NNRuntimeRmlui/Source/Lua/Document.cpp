@@ -119,7 +119,7 @@ int DocumentHide(lua_State* /*L*/, Document* obj)
 int DocumentClose(lua_State* /*L*/, Document* obj)
 {
 	obj->Close();
-	VisionGal::UISystem::Get()->OnScriptCloseDocument(obj);
+	NN::Runtime::UISystem::Get()->OnScriptCloseDocument(obj);
 	return 0;
 }
 

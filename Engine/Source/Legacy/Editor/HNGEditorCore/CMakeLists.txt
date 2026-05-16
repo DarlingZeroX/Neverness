@@ -44,7 +44,7 @@ target_include_directories(HNGEditorCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Int
 
 # 链接库
 #target_link_libraries(HNGEditorCore PRIVATE SDL3::SDL3)
-target_link_libraries(HNGEditorCore PUBLIC NevernessKernel-Kernel)
+target_link_libraries(HNGEditorCore PUBLIC NevernessCore-Core)
 target_link_libraries(HNGEditorCore PUBLIC VGImgui)
 target_link_libraries(HNGEditorCore PUBLIC HNGRuntimeCore)
 

@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <filesystem>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct VG_EDITOR_FRAMEWORK_API AssetWatcher
 	{

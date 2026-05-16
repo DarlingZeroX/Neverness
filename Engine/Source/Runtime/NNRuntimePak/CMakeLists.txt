@@ -43,5 +43,5 @@ find_package(SDL3 CONFIG REQUIRED)
 
 # 链接库
 target_link_libraries(NevernessRuntime-Pak PRIVATE SDL3::SDL3)
-target_link_libraries(NevernessRuntime-Pak PRIVATE NevernessKernel-Kernel)
+target_link_libraries(NevernessRuntime-Pak PRIVATE NevernessCore-Core)
 

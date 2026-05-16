@@ -10,10 +10,10 @@
 */
 
 #include "Animation/Core/AnimationProperty.h"
-#include <NNKernel/Include/Math/HMathHelper.h>
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Include/Math/HMathHelper.h>
+#include <NNCore/Interface/HVector.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	EasingFunction EasingCallbacks::linear = [](float t) { return t; };
 

@@ -12,7 +12,7 @@
 #pragma once
 #include "FrameBuffer.h"
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	class VG_RHI_API RenderTarget2D
 	{
@@ -22,21 +22,21 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		RenderTarget2D& operator=(RenderTarget2D&) = delete;
 		~RenderTarget2D() = default;
 
-		static Ref<RenderTarget2D> Create(unsigned int width, unsigned int height);
+		static NN::Ref<RenderTarget2D> Create(unsigned int width, unsigned int height);
 
 		OpenGL::FrameBufferTexture* GetTexture() { return m_ColorFBT.get(); }
 		OpenGL::FrameBuffer* GetFrameBuffer() { return m_FrameBuffer.get(); }
 
-		Ref<OpenGL::FrameBufferTexture> GetTextureRef() { return m_ColorFBT; }
+		NN::Ref<OpenGL::FrameBufferTexture> GetTextureRef() { return m_ColorFBT; }
 
 		void CopyToTexture(VGFX::ITexture* texture);
 	protected:
 		void BindColorAttachments();
 		bool CreateImp(unsigned int width, unsigned int height);
 	private:
-		Ref<OpenGL::FrameBufferTexture> m_ColorFBT;
-		Ref<OpenGL::FrameBufferDepth> m_DepthFBT;
-		Ref<OpenGL::FrameBuffer> m_FrameBuffer;
+		NN::Ref<OpenGL::FrameBufferTexture> m_ColorFBT;
+		NN::Ref<OpenGL::FrameBufferDepth> m_DepthFBT;
+		NN::Ref<OpenGL::FrameBuffer> m_FrameBuffer;
 	};
  
-VISIONGAL_OPENGL_NAMESPACE_END
+}

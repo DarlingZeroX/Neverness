@@ -20,7 +20,7 @@
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	EngineAssetFactory::EngineAssetFactory()
 	{

@@ -1,9 +1,9 @@
 #pragma once
 //#include "../include/CrossPlatformDefinitions.h"
 #include "../imconfig.h"
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 
-#ifdef SDL3_WINDOW_SUPPORTED
+#ifdef NN_KERNEL_USE_SDL3
 #include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 #endif
 
@@ -11,15 +11,15 @@
 
 namespace ImGuiEx
 {
-	IMGUI_API void AddSDL3ImGuiWindowLayer(Horizon::HWindow& window, SDL_Renderer* renderer);
+	IMGUI_API void AddSDL3ImGuiWindowLayer(NN::Core::HWindow& window, SDL_Renderer* renderer);
 
-#ifdef SDL3_WINDOW_SUPPORTED
-	class IMGUI_API SDL3RendererImGuiWindowLayer :public Horizon::SDL3::Layer
+#ifdef NN_KERNEL_USE_SDL3
+	class IMGUI_API SDL3RendererImGuiWindowLayer :public NN::Core::SDL3::Layer
 	{
 	private:
-		Horizon::SDL3::ISDL3Window* m_pWindow;
+		NN::Core::SDL3::ISDL3Window* m_pWindow;
 	public:
-		SDL3RendererImGuiWindowLayer(Horizon::SDL3::ISDL3Window* window, SDL_Renderer* renderer);
+		SDL3RendererImGuiWindowLayer(NN::Core::SDL3::ISDL3Window* window, SDL_Renderer* renderer);
 		SDL3RendererImGuiWindowLayer(const SDL3RendererImGuiWindowLayer&) = delete;
 		SDL3RendererImGuiWindowLayer& operator=(const SDL3RendererImGuiWindowLayer&) = delete;
 		~SDL3RendererImGuiWindowLayer() override;
@@ -31,12 +31,12 @@ namespace ImGuiEx
 	};
 #endif
 
-	class IMGUI_API Opengl3ImGuiWindowLayer :public Horizon::SDL3::Layer
+	class IMGUI_API Opengl3ImGuiWindowLayer :public NN::Core::SDL3::Layer
 	{
 	private:
-		Horizon::SDL3::ISDL3Window* m_pWindow;
+		NN::Core::SDL3::ISDL3Window* m_pWindow;
 	public:
-		Opengl3ImGuiWindowLayer(Horizon::SDL3::ISDL3Window* window);
+		Opengl3ImGuiWindowLayer(NN::Core::SDL3::ISDL3Window* window);
 		Opengl3ImGuiWindowLayer(const Opengl3ImGuiWindowLayer&) = delete;
 		Opengl3ImGuiWindowLayer& operator=(const Opengl3ImGuiWindowLayer&) = delete;
 		~Opengl3ImGuiWindowLayer() override;

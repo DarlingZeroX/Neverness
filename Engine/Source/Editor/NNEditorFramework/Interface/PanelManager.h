@@ -14,10 +14,10 @@
 #include <unordered_map>
 #include <vector>
 #include "../Config.h"
-#include <NNKernel/Interface/HConfig.h>
+#include <NNCore/Interface/HConfig.h>
 #include <NNRuntimeImGui/IncludeImgui.h>
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	class VG_EDITOR_FRAMEWORK_API PanelManager: public IPanel
 	{

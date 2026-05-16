@@ -29,12 +29,12 @@ int main(int argc, char* argv[])
 	std::locale::global(std::locale(".utf8"));  // C++标准库使用UTF-8
 
 	// 加载编辑器配置
-	Editor::EditorCore::LoadEditorPreferences();
+	NN::Editor::EditorCore::LoadEditorPreferences();
 
 	// 读取项目根目录
 	std::string projectRootDir = editorProjectRootDir + "/Projects/Test Project";
 	std::string projectPath;
-	if (Horizon::HFileSystem::ReadTextFromFile("Data/EditorStartupData.txt", projectPath))
+	if (NN::Core::HFileSystem::ReadTextFromFile("Data/EditorStartupData.txt", projectPath))
 		projectRootDir = projectPath;
 
 	H_LOG_INFO("Project path: %s", projectPath.c_str());
@@ -53,17 +53,17 @@ int main(int argc, char* argv[])
 	EditorInitializer::InitializeVFS(paths);
 
 	// 加载项目
-	VGEngine::Get()->LoadProject();
+	NN::Runtime::VGEngine::Get()->LoadProject();
 
 	// 初始化编辑器应用
-	Ref<Editor::VGEditorApplication> editor = MakeRef<Editor::VGEditorApplication>();
+	NN::Ref<Editor::VGEditorApplication> editor = NN::MakeRef<Editor::VGEditorApplication>();
 	editor->Initialize();
 	//editor->InitializeEditorPanels();
-	VGEngine::Get()->AddApplication(editor);
+	NN::Runtime::VGEngine::Get()->AddApplication(editor);
 
 	// 加载编辑器主场景
-	VGEngine::Get()->LoadEditorMainScene();
+	NN::Runtime::VGEngine::Get()->LoadEditorMainScene();
 
 	// 运行引擎主循环
-	VGEngine::Get()->Run();
+	NN::Runtime::VGEngine::Get()->Run();
 }

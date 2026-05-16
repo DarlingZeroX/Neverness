@@ -7,7 +7,7 @@
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeSubsystem.h"
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeSubsystemCollection.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief **VGRuntimeScheduler** 首包实现：统一 **RuntimeTickGroup** 顺序、**FixedUpdate** 累加、**LateUpdate** 末 **FlushMainThreadDelegates** 占位。

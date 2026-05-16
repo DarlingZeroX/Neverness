@@ -15,9 +15,9 @@
 #include <NNMediaCore/Include/Audio.h>
 #include <NNRuntimeAsset/Interface/AudioClip.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
-	struct VG_ENGINE_API VGAudioPlayer: public Horizon::AudioPlayer
+	struct VG_ENGINE_API VGAudioPlayer: public NN::Core::AudioPlayer
 	{
 		VGAudioPlayer() = default;
 		~VGAudioPlayer() override = default;

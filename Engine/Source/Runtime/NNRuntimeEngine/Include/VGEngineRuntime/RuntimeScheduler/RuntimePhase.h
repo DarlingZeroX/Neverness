@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 /**
  * @brief **RuntimePhase**（占位）：未来用于 **PlayerLoop** 式可配置阶段 ID，与 **RuntimeTickGroup** 解耦或细分子阶段。

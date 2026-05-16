@@ -14,7 +14,7 @@
 #include "OpenGL.h"
 #include <string>
 
-VISIONGAL_OPENGL_NAMESPACE_BEGIN
+namespace NN::Runtime::OpenGL {
 
 	enum ShaderType
 	{
@@ -53,6 +53,6 @@ VISIONGAL_OPENGL_NAMESPACE_BEGIN
 		unsigned int m_RendererID = 0;
 	};
 
-	Ref<Shader> CreateShader(unsigned int type, const std::string& source);
+	NN::Ref<Shader> CreateShader(unsigned int type, const std::string& source);
 
-VISIONGAL_OPENGL_NAMESPACE_END
+}

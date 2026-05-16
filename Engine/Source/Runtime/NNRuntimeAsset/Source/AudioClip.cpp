@@ -13,7 +13,7 @@
 //#include "Resource/Audio/FAudioDecoder.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	bool VGAudioClip::Open(const std::string& filePath)
 	{
@@ -22,7 +22,7 @@ namespace VisionGal
 		return true;
 	}
 
-	Horizon::IAudioDecoder* VGAudioClip::GetDecoder()
+	NN::Core::IAudioDecoder* VGAudioClip::GetDecoder()
 	{
 		return m_AudioClip.GetDecoder();
 	}

@@ -13,7 +13,7 @@
 
 #include "NNRuntimeEngine/RuntimeScheduler/RuntimeFrameContext.h"
 
-namespace visiongal::engine
+namespace NN::Runtime::engine
 {
 VGEngineRuntime& VGEngineRuntime::Instance() noexcept
 {

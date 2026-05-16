@@ -18,14 +18,14 @@
 #include "Scene/GameActorFactory.h"
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
 
-#include "NNKernel/Interface/HStringTools.h"
+#include "NNCore/Interface/HStringTools.h"
 
 #include <exception>
 #include <iostream>
 #include <sstream>
 #include "Scene/SceneSystem.h"
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	namespace
 	{
@@ -35,11 +35,11 @@ namespace VisionGal
 			std::string msg;
 			if (e)
 			{
-				msg = Horizon::HStringTools::Format("Unhandled exception in %s: %s", context, e->what());
+				msg = NN::Core::HStringTools::Format("Unhandled exception in %s: %s", context, e->what());
 			}
 			else
 			{
-				msg = Horizon::HStringTools::Format("Unknown exception in %s", context);
+				msg = NN::Core::HStringTools::Format("Unknown exception in %s", context);
 			}
 
 			// 弹出错误对话框
@@ -142,7 +142,7 @@ namespace VisionGal
 
 		if (m_Scene == nullptr)
 		{
-			std::string error = Horizon::HStringTools::Format("Invalid project main scene %s", setting.RunningMainScene.c_str());
+			std::string error = NN::Core::HStringTools::Format("Invalid project main scene %s", setting.RunningMainScene.c_str());
 			pfd::message("Error", error, pfd::choice::ok, pfd::icon::error);
 
 			RequestExit();

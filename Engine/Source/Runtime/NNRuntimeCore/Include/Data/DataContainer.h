@@ -12,9 +12,9 @@
 #pragma once
 #include "../Core/Core.h"
 #include "DataNamespace.h"
-#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNCore/Include/File/nlohmann/json.hpp>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	class VG_CORE_API VGDataContainer
 	{

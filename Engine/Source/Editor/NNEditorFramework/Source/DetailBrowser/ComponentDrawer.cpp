@@ -20,13 +20,13 @@
 #include <NNEngineLegacy/Include/Engine/AudioPlayer.h>
 #include <NNEngineLegacy/Include/Engine/VideoPlayer.h>
 
-#include "NNKernel/Include/Math/GLM/gtc/quaternion.hpp"
+#include "NNCore/Include/Math/GLM/gtc/quaternion.hpp"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
-	void TransformComponentDrawer::OnGUI(IEntity* entity)
+	void TransformComponentDrawer::OnGUI(Runtime::IEntity* entity)
 	{
-		auto* transform = entity->GetComponent<TransformComponent>();
+		auto* transform = entity->GetComponent<Runtime::TransformComponent>();
 
 		if (transform == nullptr)
 			return;
@@ -55,9 +55,9 @@ namespace VisionGal::Editor
 				ImGui::Text(EditorText{ "Rotation" }.c_str());
 				ImGui::TableSetColumnIndex(1);
 
-				float3 rotation = glm::degrees(glm::eulerAngles(transform->rotation));
+				Runtime::float3 rotation = glm::degrees(glm::eulerAngles(transform->rotation));
 				ImGuiEx::DrawVec3Control("Rotation", rotation, 0.f, 1.0f, -360.f, 360.f);
-				transform->rotation = quaternion( glm::radians(rotation) );
+				transform->rotation = Runtime::quaternion( glm::radians(rotation) );
 			}
 
 			// 缩放
@@ -87,17 +87,17 @@ namespace VisionGal::Editor
 		ImGui::Separator();
 	}
 
-	const String TransformComponentDrawer::GetBindType() const
+	const Runtime::String TransformComponentDrawer::GetBindType() const
 	{
-		return TransformComponent{}.GetComponentType();
+		return Runtime::TransformComponent{}.GetComponentType();
 	}
 
-	void CameraComponentDrawer::OnGUI(IEntity* entity)
+	void CameraComponentDrawer::OnGUI(Runtime::IEntity* entity)
 	{
 		if (ImGui::CollapsingHeader(EditorText{ "Camera" }.c_str(), ImGuiTreeNodeFlags_DefaultOpen) == false)
 			return;
 
-		auto* com = entity->GetComponent<CameraComponent>();
+		auto* com = entity->GetComponent<Runtime::CameraComponent>();
 
 		if (com == nullptr)
 			return;
@@ -109,7 +109,7 @@ namespace VisionGal::Editor
 
 		if (icamera->GetCameraType() == "Letterbox2D")
 		{
-			auto* camera = dynamic_cast<IOrthoCamera*>(icamera);
+			auto* camera = dynamic_cast<Runtime::IOrthoCamera*>(icamera);
 
 			float left = camera->GetLeft();
 			float right = camera->GetRight();
@@ -128,17 +128,17 @@ namespace VisionGal::Editor
 
 	}
 
-	const String CameraComponentDrawer::GetBindType() const
+	const Runtime::String CameraComponentDrawer::GetBindType() const
 	{
-		return CameraComponent{}.GetComponentType();
+		return Runtime::CameraComponent{}.GetComponentType();
 	}
 
-	void SpriteRendererComponentDrawer::OnGUI(IEntity* entity)
+	void SpriteRendererComponentDrawer::OnGUI(Runtime::IEntity* entity)
 	{
 		if (ImGui::CollapsingHeader(EditorText{ "Sprite Renderer" }.c_str(), ImGuiTreeNodeFlags_DefaultOpen) == false)
 			return;
 
-		auto* com = entity->GetComponent<SpriteRendererComponent>();
+		auto* com = entity->GetComponent<Runtime::SpriteRendererComponent>();
 		if (com == nullptr)
 			return;
 
@@ -201,21 +201,21 @@ namespace VisionGal::Editor
 		}
 	}
 
-	const String SpriteRendererComponentDrawer::GetBindType() const
+	const Runtime::String SpriteRendererComponentDrawer::GetBindType() const
 	{
-		return SpriteRendererComponent{}.GetComponentType();
+		return Runtime::SpriteRendererComponent{}.GetComponentType();
 	}
 
-	void SpriteRendererComponentDrawer::SpriteBeginDropTarget(SpriteRendererComponent* com)
+	void SpriteRendererComponentDrawer::SpriteBeginDropTarget(Runtime::SpriteRendererComponent* com)
 	{
 		if (ImGui::BeginDragDropTarget())
 		{
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_CONTENT_BROWSER_ITEM"))
 			{
 				std::string path = static_cast<char*>(payload->Data);
-				if (auto text2d = LoadObject<Texture2D>(path))
+				if (auto text2d = Runtime::LoadObject<Runtime::Texture2D>(path))
 				{
-					com->sprite = Sprite::Create(text2d, text2d->Size());
+					com->sprite = Runtime::Sprite::Create(text2d, text2d->Size());
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置精灵纹理成功!" });
 				}
 				else
@@ -228,12 +228,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void ScriptComponentDrawer::OnGUI(IEntity* entity)
+	void ScriptComponentDrawer::OnGUI(Runtime::IEntity* entity)
 	{
 		if (ImGui::CollapsingHeader(EditorText{ "Script" }.c_str(), ImGuiTreeNodeFlags_DefaultOpen) == false)
 			return;
 
-		auto* com = entity->GetComponent<ScriptComponent>();
+		auto* com = entity->GetComponent<Runtime::ScriptComponent>();
 		if (com == nullptr)
 			return;
 
@@ -242,7 +242,7 @@ namespace VisionGal::Editor
 			if (script->GetScriptType() != "LuaScript")
 				continue;
 
-			auto* luaScript = dynamic_cast<LuaScript*>(script.get());
+			auto* luaScript = dynamic_cast<Runtime::LuaScript*>(script.get());
 
 			ImGui::Text("");
 			ImGui::SameLine(20);
@@ -269,7 +269,7 @@ namespace VisionGal::Editor
 					ImGui::TableSetColumnIndex(2);
 
 					auto& v = var.second;
-					String vName = "##" + v.VariableName;
+					Runtime::String vName = "##" + v.VariableName;
 					if (v.VariableType == "Number")
 					{
 						if (ImGui::InputDouble(vName.c_str(), &v.ValueDouble));
@@ -293,7 +293,7 @@ namespace VisionGal::Editor
 					}
 					else if (v.VariableType == "GameActor")
 					{
-						String entityID = std::to_string(v.ValueEntityID);
+						Runtime::String entityID = std::to_string(v.ValueEntityID);
 						if (ImGuiEx::InputText(vName.c_str(), entityID, ImGuiInputTextFlags_ReadOnly))
 						{
 							v.Changed = true;
@@ -317,18 +317,18 @@ namespace VisionGal::Editor
 		}
 	}
 
-	const String ScriptComponentDrawer::GetBindType() const
+	const Runtime::String ScriptComponentDrawer::GetBindType() const
 	{
-		return ScriptComponent{}.GetComponentType();
+		return Runtime::ScriptComponent{}.GetComponentType();
 	}
 
-	void ScriptComponentDrawer::ScriptBeginDropTarget(IScript* script, IScriptVariable& var)
+	void ScriptComponentDrawer::ScriptBeginDropTarget(Runtime::IScript* script, Runtime::IScriptVariable& var)
 	{
 		if (ImGui::BeginDragDropTarget())
 		{
 			if (const auto* payload = ImGui::AcceptDragDropPayload("PLACE_GAME_ACTOR"))
 			{
-				IGameActor* actor = static_cast<IGameActor*>(payload->Data);
+				Runtime::IGameActor* actor = static_cast<Runtime::IGameActor*>(payload->Data);
 				if (actor != nullptr)
 				{
 					var.VariableType = "GameActor";
@@ -344,12 +344,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void RmlUIDocumentComponentDrawer::OnGUI(IEntity* entity)
+	void RmlUIDocumentComponentDrawer::OnGUI(Runtime::IEntity* entity)
 	{
 		if (ImGui::CollapsingHeader(EditorText{ "UI Document" }.c_str(), ImGuiTreeNodeFlags_DefaultOpen) == false)
 			return;
 
-		auto* com = entity->GetComponent<RmlUIDocumentComponent>();
+		auto* com = entity->GetComponent<Runtime::RmlUIDocumentComponent>();
 
 		if (com == nullptr)
 			return;
@@ -394,7 +394,7 @@ namespace VisionGal::Editor
 				if (ImGui::Button(ICON_FA_REDO "##ReloadUIDocument"))
 				{
 					H_ASSERT_NOT_NULL(com->document)
-					UISystem::Get()->ReloadUIDocument(com->document);
+						Runtime::UISystem::Get()->ReloadUIDocument(com->document);
 				}}
 
 
@@ -402,12 +402,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	const String RmlUIDocumentComponentDrawer::GetBindType() const
+	const Runtime::String RmlUIDocumentComponentDrawer::GetBindType() const
 	{
-		return RmlUIDocumentComponent{}.GetComponentType();
+		return Runtime::RmlUIDocumentComponent{}.GetComponentType();
 	}
 
-	void RmlUIDocumentComponentDrawer::DocumentBeginDropTarget(RmlUIDocumentComponent* com)
+	void RmlUIDocumentComponentDrawer::DocumentBeginDropTarget(Runtime::RmlUIDocumentComponent* com)
 	{
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -415,7 +415,7 @@ namespace VisionGal::Editor
 			{
 				std::string path = static_cast<char*>(payload->Data);
 
-				auto assetType = VGPackage::GetAssetType(path);
+				auto assetType = Runtime::VGPackage::GetAssetType(path);
 				if (assetType != "HTML")
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Error, "错误文件类型!" });
@@ -423,8 +423,8 @@ namespace VisionGal::Editor
 					return;
 				}
 
-				com->document = UISystem::Get()->LoadUIDocument(path);
-				if (UISystem::Get()->ShowUIDocument(com->document.get()))
+				com->document = Runtime::UISystem::Get()->LoadUIDocument(path);
+				if (Runtime::UISystem::Get()->ShowUIDocument(com->document.get()))
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置UI文档成功!" });
 				}
@@ -437,12 +437,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void AudioSourceComponentDrawer::OnGUI(IEntity* entity)
+	void AudioSourceComponentDrawer::OnGUI(Runtime::IEntity* entity)
 	{
 		if (ImGui::CollapsingHeader(EditorText{ "Audio Source" }.c_str(), ImGuiTreeNodeFlags_DefaultOpen) == false)
 			return;
 
-		auto* com = entity->GetComponent<AudioSourceComponent>();
+		auto* com = entity->GetComponent<Runtime::AudioSourceComponent>();
 		if (com == nullptr)
 			return;
 
@@ -506,12 +506,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	const String AudioSourceComponentDrawer::GetBindType() const
+	const Runtime::String AudioSourceComponentDrawer::GetBindType() const
 	{
-		return AudioSourceComponent{}.GetComponentType();
+		return Runtime::AudioSourceComponent{}.GetComponentType();
 	}
 
-	void AudioSourceComponentDrawer::AudioSourceBeginDropTarget(AudioSourceComponent* com)
+	void AudioSourceComponentDrawer::AudioSourceBeginDropTarget(Runtime::AudioSourceComponent* com)
 	{
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -519,7 +519,7 @@ namespace VisionGal::Editor
 			{
 				std::string path = static_cast<char*>(payload->Data);
 
-				if (auto audioClip = LoadObject<VGAudioClip>(path))
+				if (auto audioClip = Runtime::LoadObject<Runtime::VGAudioClip>(path))
 				{
 					com->audioClip = audioClip;
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置音频成功!" });
@@ -533,12 +533,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	void VideoPlayerComponentDrawer::OnGUI(IEntity* entity)
+	void VideoPlayerComponentDrawer::OnGUI(Runtime::IEntity* entity)
 	{
 		if (ImGui::CollapsingHeader(EditorText{ "Video Player" }.c_str(), ImGuiTreeNodeFlags_DefaultOpen) == false)
 			return;
 
-		auto* com = entity->GetComponent<VideoPlayerComponent>();
+		auto* com = entity->GetComponent<Runtime::VideoPlayerComponent>();
 		if (com == nullptr)
 			return;
 
@@ -620,12 +620,12 @@ namespace VisionGal::Editor
 		}
 	}
 
-	const String VideoPlayerComponentDrawer::GetBindType() const
+	const Runtime::String VideoPlayerComponentDrawer::GetBindType() const
 	{
-		return VideoPlayerComponent{}.GetComponentType();
+		return Runtime::VideoPlayerComponent{}.GetComponentType();
 	}
 
-	void VideoPlayerComponentDrawer::VideoPlayerBeginDropTarget(VideoPlayerComponent* com)
+	void VideoPlayerComponentDrawer::VideoPlayerBeginDropTarget(Runtime::VideoPlayerComponent* com)
 	{
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -633,7 +633,7 @@ namespace VisionGal::Editor
 			{
 				std::string path = static_cast<char*>(payload->Data);
 
-				if (auto video = LoadObject<FVideoClip>(path))
+				if (auto video = Runtime::LoadObject<Runtime::FVideoClip>(path))
 				{
 					com->videoClip = video;
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置视频成功!" });

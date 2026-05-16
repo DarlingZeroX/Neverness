@@ -12,10 +12,10 @@
 #pragma once
 #include "../../Config.h"
 #include <string>
-#include <NNKernel/Include/File/NlohmannJson.h>
+#include <NNCore/Include/File/NlohmannJson.h>
 #include "NNRuntimeImGui/Include/Imgui/imgui.h"
 
-namespace VisionGal::Editor
+namespace NN::Editor
 {
 	struct EditorSettingInterface: public IPanel
 	{

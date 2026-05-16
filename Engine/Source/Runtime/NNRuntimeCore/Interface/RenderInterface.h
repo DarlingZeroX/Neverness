@@ -17,7 +17,7 @@
 #include <NNRuntimeRHI/Interface/Mesh.h>
 #include <NNRuntimeRHI/Interface/Texture.h>
 
-namespace VisionGal
+namespace NN::Runtime
 {
 	enum class RenderPipelineIndex: uint
 	{

@@ -1,17 +1,17 @@
 #include "pch.h"
 #include "ImGuiEx/ImGuiExDrawList.h"
-#include <NNKernel/Interface/HVector.h>
+#include <NNCore/Interface/HVector.h>
 using namespace ImGui;
 
 namespace ImGuiEx
 {
-	static void FillImVec2(const Horizon::float4& lhs, ImVec2& rhs)
+	static void FillImVec2(const NN::Core::float4& lhs, ImVec2& rhs)
 	{
 		rhs.x = lhs.x;
 		rhs.y = lhs.y;
 	}
 
-	static void FillImVec4(const Horizon::float4& lhs, ImVec4& rhs)
+	static void FillImVec4(const NN::Core::float4& lhs, ImVec4& rhs)
 	{
 		rhs.x = lhs.x;
 		rhs.y = lhs.y;
@@ -66,51 +66,51 @@ namespace ImGuiEx
 		Min.y += minY;
 	}
 
-	void RectFilledMultiColor::SetColTopLeft(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColTopLeft(const NN::Core::float4& color)
 	{
 		FillImVec4(color, ColTopLeft);
 	}
 
-	void RectFilledMultiColor::SetColTopRight(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColTopRight(const NN::Core::float4& color)
 	{
 		FillImVec4(color, ColTopRight);
 	}
 
-	void RectFilledMultiColor::SetColBottomLeft(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColBottomLeft(const NN::Core::float4& color)
 	{
 		FillImVec4(color, ColBottomLeft);
 	}
 
-	void RectFilledMultiColor::SetColBottomRight(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColBottomRight(const NN::Core::float4& color)
 	{
 		FillImVec4(color, ColBottomRight);
 	}
 
-	void RectFilledMultiColor::SetCol(const Horizon::float4& color)
+	void RectFilledMultiColor::SetCol(const NN::Core::float4& color)
 	{
 		SetColLeft(color);
 		SetColRight(color);
 	}
 
-	void RectFilledMultiColor::SetColLeft(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColLeft(const NN::Core::float4& color)
 	{
 		SetColTopLeft(color);
 		SetColBottomLeft(color);
 	}
 
-	void RectFilledMultiColor::SetColRight(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColRight(const NN::Core::float4& color)
 	{
 		SetColTopRight(color);
 		SetColBottomRight(color);
 	}
 
-	void RectFilledMultiColor::SetColTop(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColTop(const NN::Core::float4& color)
 	{
 		SetColTopLeft(color);
 		SetColTopRight(color);
 	}
 
-	void RectFilledMultiColor::SetColBottom(const Horizon::float4& color)
+	void RectFilledMultiColor::SetColBottom(const NN::Core::float4& color)
 	{
 		SetColBottomLeft(color);
 		SetColBottomRight(color);
@@ -191,7 +191,7 @@ namespace ImGuiEx
 		);
 	}
 
-	void RectFilled::SetCol(const Horizon::Vec4& color)
+	void RectFilled::SetCol(const NN::Core::Vec4& color)
 	{
 		FillImVec4(color, Color);
 	}

@@ -17,7 +17,7 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
-#include <NNKernel/Interface/HLog.h>
+#include <NNCore/Interface/HLog.h>
 #include "NNRuntimeCore/Include/Core/VFS.h"
 //#include "GalGameEngine.h"
 #include <sol/state.hpp>

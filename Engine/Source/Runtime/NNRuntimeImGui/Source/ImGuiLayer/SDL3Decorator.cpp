@@ -3,21 +3,21 @@
 #include <NNRuntimeImGui/Include/imgui/imgui.h>
 #include "ImGuiEx/ImGuiEx.h"
 
-#ifdef SDL3_WINDOW_SUPPORTED
+#ifdef NN_KERNEL_USE_SDL3
 #include <NNRuntimeImGui/Include/imgui/imgui_impl_sdl3.h>
 #include <NNRuntimeImGui/Include/imgui/imgui_impl_sdlrenderer3.h>
 #endif
 
 namespace ImGuiEx
 {
-	void AddSDL3ImGuiWindowLayer(Horizon::HWindow& window, SDL_Renderer* renderer)
+	void AddSDL3ImGuiWindowLayer(NN::Core::HWindow& window, SDL_Renderer* renderer)
 	{
-		Horizon::IWindow* pWindow = window.GetWrapWindow();
+		NN::Core::IWindow* pWindow = window.GetWrapWindow();
 
-#ifdef SDL3_WINDOW_SUPPORTED
-		if (window.GetWindowType() == EWindow::SDL3)
+#ifdef NN_KERNEL_USE_SDL3
+		if (window.GetWindowType() == NN::Core::EWindow::SDL3)
 		{
-			auto* sdl3Window = static_cast<Horizon::SDL3::ISDL3Window*>(pWindow);
+			auto* sdl3Window = static_cast<NN::Core::SDL3::ISDL3Window*>(pWindow);
 
 			sdl3Window->AddLayer(std::make_unique<ImGuiEx::SDL3RendererImGuiWindowLayer>(sdl3Window, renderer));
 			return;
@@ -27,8 +27,8 @@ namespace ImGuiEx
 
 	} 
 
-#ifdef SDL3_WINDOW_SUPPORTED
-	SDL3RendererImGuiWindowLayer::SDL3RendererImGuiWindowLayer(Horizon::SDL3::ISDL3Window* window, SDL_Renderer* renderer)
+#ifdef NN_KERNEL_USE_SDL3
+	SDL3RendererImGuiWindowLayer::SDL3RendererImGuiWindowLayer(NN::Core::SDL3::ISDL3Window* window, SDL_Renderer* renderer)
 	{
 		m_pWindow = window;
 		ImGuiInit();
@@ -49,9 +49,9 @@ namespace ImGuiEx
 
 		auto& io = ImGui::GetIO();
 		if (io.WantCaptureKeyboard || io.WantCaptureMouse)
-			return Horizon::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
+			return NN::Core::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
 		else
-			return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+			return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 	}
 
 	void SDL3RendererImGuiWindowLayer::ImGuiInit()
@@ -77,7 +77,7 @@ namespace ImGuiEx
 
 #endif
 
-	Opengl3ImGuiWindowLayer::Opengl3ImGuiWindowLayer(Horizon::SDL3::ISDL3Window* window)
+	Opengl3ImGuiWindowLayer::Opengl3ImGuiWindowLayer(NN::Core::SDL3::ISDL3Window* window)
 	{
 		m_pWindow = window;
 		ImGuiInit();
@@ -98,13 +98,13 @@ namespace ImGuiEx
 
 		//if (io.WantCaptureKeyboard || io.WantCaptureMouse)
 		//{
-		//	//H_LOG_INFO("Horizon::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE");
-		//	return Horizon::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
+		//	//H_LOG_INFO("NN::Core::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE");
+		//	return NN::Core::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
 		//}
 		//else
 		//{
-			//H_LOG_INFO("Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAUL");
-			return Horizon::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
+			//H_LOG_INFO("NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAUL");
+			return NN::Core::SDL3::WINDOW_LAYER_RESULT_DEFAULT;
 		//}
 	}
 

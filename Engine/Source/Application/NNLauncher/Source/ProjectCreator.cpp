@@ -13,7 +13,7 @@
 #include <filesystem>
 
 #include "VGLauncherData.h"
-#include "NNKernel/Include/Math/HVector.h"
+#include "NNCore/Include/Math/HVector.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal::Editor
@@ -26,7 +26,7 @@ namespace VisionGal::Editor
 			return false;
 
 		// 检查项目路径是否存在
-		if (Horizon::HFileSystem::ExistsDirectory(config.ProjectPath) == false)
+		if (NN::Core::HFileSystem::ExistsDirectory(config.ProjectPath) == false)
 			return false;
 
 		// 检查同名项目是否已存在

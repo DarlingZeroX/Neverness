@@ -16,12 +16,12 @@
 #include <NNRuntimeRHI/Interface/Texture.h>
 
 #include "NNMediaCore/Include/FVideo.h"
-#include "NNKernel/Interface/HCoreTypes.h"
+#include "NNCore/Interface/HCoreTypes.h"
 
-namespace VisionGal {
+namespace NN::Runtime {
 
 	// 视频解码器接口
-	struct IVideoClip : public VGEngineResource, public Horizon::IVideoClip {
+	struct IVideoClip : public VGEngineResource, public NN::Core::IVideoClip {
 		~IVideoClip() override = default;
 	};
 
@@ -34,8 +34,8 @@ namespace VisionGal {
 		bool Open(const String& filePath);
 		uint2 GetSize() const override;
 
-		Horizon::IVideoDecoder* GetDecoder() override;
+		NN::Core::IVideoDecoder* GetDecoder() override;
 	private:
-		Horizon::FVideoClip m_VideoClip;
+		NN::Core::FVideoClip m_VideoClip;
 	};
 }
