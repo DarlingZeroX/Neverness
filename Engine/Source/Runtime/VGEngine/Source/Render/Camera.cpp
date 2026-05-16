@@ -10,7 +10,7 @@
 */
 
 #include "Render/Camera.h"
-#include "HCore/include/Math/GLM/ext/matrix_clip_space.hpp"
+#include "NNKernel/include/Math/GLM/ext/matrix_clip_space.hpp"
 
 namespace VisionGal
 {

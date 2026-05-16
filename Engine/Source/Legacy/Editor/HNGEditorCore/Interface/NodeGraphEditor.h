@@ -16,8 +16,8 @@
 #include "../Include/CommandInGraph.h"
 
 #include <string>
-#include <HNGRuntimeCore/Include/RuntimeContext.h>
-#include <HNGRuntimeCore/Include/RuntimeGraph.h>
+#include <NNNodeGraphCore/Include/RuntimeContext.h>
+#include <NNNodeGraphCore/Include/RuntimeGraph.h>
 
 namespace Horizon::NodeGraph
 {

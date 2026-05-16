@@ -12,7 +12,7 @@
 #pragma once
 #include "../../Config.h"
 #include <string>
-#include <HCore/Include/File/NlohmannJson.h>
+#include <NNKernel/Include/File/NlohmannJson.h>
 #include "VGImgui/Include/Imgui/imgui.h"
 
 namespace VisionGal::Editor

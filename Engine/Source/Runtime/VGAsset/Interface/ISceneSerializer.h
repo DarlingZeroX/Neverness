@@ -13,7 +13,7 @@
 #include "VGAsset/Include/SceneAsset.h"
 //#include "../../Scene/Components.h"
 #include "VGCore/Include/Core/Core.h"
-#include <HCore/Interface/HSerialization.h>
+#include <NNKernel/Interface/HSerialization.h>
 
 namespace VisionGal
 {

@@ -13,7 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <HNGRuntimeCore/Include/NodeRegistry.h>
+#include <NNNodeGraphCore/Include/NodeRegistry.h>
 #include "../HNGEditorCoreConfig.h"
 #include "NodeEditorCore.h"
 #include "../Include/NodeEditorRegistry.h"

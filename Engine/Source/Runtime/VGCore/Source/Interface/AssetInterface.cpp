@@ -10,8 +10,8 @@
 */
 
 #include "AssetInterface.h"
-#include "HCore/Include/Utils/HStringGenerator.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNKernel/Include/Utils/HStringGenerator.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal
 {

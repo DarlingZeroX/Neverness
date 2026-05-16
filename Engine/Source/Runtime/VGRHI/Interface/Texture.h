@@ -11,7 +11,7 @@
 
 #pragma once
 #include <vector>
-#include <HCore/Interface/HCoreTypes.h>
+#include <NNKernel/Interface/HCoreTypes.h>
 
 namespace VisionGal::VGFX
 {

@@ -78,11 +78,11 @@ target_link_libraries(VGUI PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-s
 find_package(RmlUi CONFIG REQUIRED)
 target_link_libraries(VGUI PRIVATE RmlUi::RmlUi)
  
-target_link_libraries(VGUI PRIVATE HCore)
-target_link_libraries(VGUI PRIVATE HCorePlatform)
-target_link_libraries(VGUI PRIVATE HFileSystem)
+target_link_libraries(VGUI PRIVATE NevernessKernel-Kernel)
+target_link_libraries(VGUI PRIVATE NevernessKernel-PlatformCore)
+target_link_libraries(VGUI PRIVATE NevernessKernel-FileSystem)
+target_link_libraries(VGUI PRIVATE NevernessKernel-MediaCore)
 target_link_libraries(VGUI PRIVATE VGLua)  
 target_link_libraries(VGUI PRIVATE VGCore)
-target_link_libraries(VGUI PRIVATE HMedia)
 target_link_libraries(VGUI PRIVATE VGRHI)
 

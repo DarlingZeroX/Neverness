@@ -12,7 +12,7 @@
 #pragma once
 #include "../Core/Core.h"
 #include "DataNamespace.h"
-#include <HCore/Include/File/nlohmann/json.hpp>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal
 {

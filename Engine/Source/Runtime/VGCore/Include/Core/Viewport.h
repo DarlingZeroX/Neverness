@@ -15,8 +15,8 @@
 #include "../../Interface/GameInterface.h"
 //#include "../Graphics/Interface/Texture.h"
 #include <VGRHI/Interface/Texture.h>
-#include <HCorePlatform/Include/WindowInterface.h>
-#include <HCore/Include/Event/HEventDelegate.h>
+#include <NNPlatformCore/Include/WindowInterface.h>
+#include <NNKernel/Include/Event/HEventDelegate.h>
 
 namespace VisionGal
 {

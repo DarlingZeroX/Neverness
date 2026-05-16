@@ -11,7 +11,7 @@
 
 #pragma once
 #include "DataVariant.h"
-#include <HCore/Include/File/nlohmann/json.hpp>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal
 {

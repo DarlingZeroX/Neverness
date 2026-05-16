@@ -10,8 +10,8 @@
 */
 
 #include "Animation/Core/AnimationProperty.h"
-#include <HCore/Include/Math/HMathHelper.h>
-#include <HCore/Interface/HVector.h>
+#include <NNKernel/Include/Math/HMathHelper.h>
+#include <NNKernel/Interface/HVector.h>
 
 namespace VisionGal
 {

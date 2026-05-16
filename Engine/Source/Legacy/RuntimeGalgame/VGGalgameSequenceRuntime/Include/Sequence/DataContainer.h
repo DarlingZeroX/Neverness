@@ -10,7 +10,7 @@
 */
 #pragma once
 #include <vector>
-#include <HCore/Interface/HConfig.h>
+#include <NNKernel/Interface/HConfig.h>
 #include "../../GSSExport.h"
 #include "../../Interface/IVGSSequenceComponent.h"
 

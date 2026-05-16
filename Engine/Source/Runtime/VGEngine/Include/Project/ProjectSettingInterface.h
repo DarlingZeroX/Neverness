@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include <HCore/Include/File/NlohmannJson.h>
+#include <NNKernel/Include/File/NlohmannJson.h>
 
 namespace VisionGal
 {

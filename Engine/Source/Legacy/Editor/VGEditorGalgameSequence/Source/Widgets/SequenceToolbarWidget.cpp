@@ -17,8 +17,8 @@
 #include "Runtime/SequenceDebuggerSession.h"
 #include "Runtime/SequenceRuntimeSnapshot.h"
 
-#include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Include/Core/VFS.h"
 #include <VGImgui/IncludeImGui.h>

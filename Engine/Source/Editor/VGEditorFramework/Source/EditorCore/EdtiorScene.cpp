@@ -14,8 +14,8 @@
 #include "EditorCore/Localization.h"
 #include <VGEngine/Include/Engine/Manager.h>
 #include <VGImgui/Include/ImGuiEx/ImNotify.h>
-#include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
-#include <HFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
+#include <NNFileSystem/Interface/HFileSystem.h>
 #include <VGCore/Include/Core/VFS.h>
 
 namespace VisionGal::Editor

@@ -17,13 +17,13 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
-#include <HCore/Interface/HLog.h>
+#include <NNKernel/Interface/HLog.h>
 #include "VGCore/Include/Core/VFS.h"
 //#include "GalGameEngine.h"
 #include <sol/state.hpp>
 
 #include "VGCore/Include/Core/EventBus.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 #include "VGEngine/Include/Lua/LuaInterface.h"
 #include "LuaBinding.h"
 #include "VGLuaCore/LuaErrorManager.h"

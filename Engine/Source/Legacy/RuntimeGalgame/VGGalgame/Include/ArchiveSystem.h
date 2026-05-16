@@ -15,7 +15,7 @@
 #include "VGCore/Include/Core/Core.h"
 #include "VGGalgameCore/Include/SaveArchive.h"
 #include "VGGalgameCore/Include/GalGameContext.h"
-#include <HCore/Include/File/nlohmann/json.hpp>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
 {

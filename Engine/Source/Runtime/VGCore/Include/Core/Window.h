@@ -12,10 +12,10 @@
 #pragma once
 #include "../../VGCoreConfig.h"
 #include <SDL3/SDL.h>
-#include <HCorePlatform/Include/SDL3/SDL3Window.h>
+#include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 
-#include <HCore/Include/Event/HEventDelegate.h>
-#include <HCore/Include/Event/HWindowEvents.h>
+#include <NNKernel/Include/Event/HEventDelegate.h>
+#include <NNKernel/Include/Event/HWindowEvents.h>
 
 namespace VisionGal
 {

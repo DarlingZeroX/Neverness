@@ -8,7 +8,7 @@
 
 #include "Runtime/SequenceExecutionController.h"
 
-#include "HCore/Interface/HLog.h"
+#include "NNKernel/Interface/HLog.h"
 #include "VGEngine/Include/Engine/Manager/SceneManager.h"
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGGalgameCore/Interface/IScriptSubsystem.h"

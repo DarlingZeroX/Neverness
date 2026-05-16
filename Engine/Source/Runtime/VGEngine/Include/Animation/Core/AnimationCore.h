@@ -12,7 +12,7 @@
 #pragma once
 #include "Tween.h"
 #include "VGCore/Interface/GameInterface.h"
-#include <HCore/Interface/HVector.h>
+#include <NNKernel/Interface/HVector.h>
 
 namespace VisionGal
 {

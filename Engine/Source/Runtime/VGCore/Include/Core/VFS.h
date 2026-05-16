@@ -12,7 +12,7 @@
 #pragma once
 #include "CoreTypes.h"
 #include "../../VGCoreConfig.h"
-#include <HFileSystem/Include/VFS/VFS.h>
+#include <NNFileSystem/Include/VFS/VFS.h>
 
 namespace VisionGal
 { 

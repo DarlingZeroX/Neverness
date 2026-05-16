@@ -10,7 +10,7 @@
 
 #include "../VGEGExport.h"
 
-#include <HNGRuntimeCore/Include/NodeRegistry.h>
+#include <NNNodeGraphCore/Include/NodeRegistry.h>
 #include <HNGEditorCore/Include/NodeEditorRegistry.h>
 
 namespace VisionGal::Editor

@@ -14,8 +14,8 @@
 #include "../imconfig.h"
 #include "ImTaskInterface.h"
 #include <stdint.h>
-#include <HCore/Interface/HConfig.h>
-#include <HCore/Interface/HSingleton.h>
+#include <NNKernel/Interface/HConfig.h>
+#include <NNKernel/Interface/HSingleton.h>
 
 namespace ImGuiEx {
 

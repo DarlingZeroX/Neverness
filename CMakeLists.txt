@@ -24,7 +24,7 @@ project ("VisionGal" LANGUAGES C CXX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
 ############ 强制关闭 VS 头文件包含输出（终极版）
-if(MSVC AND FALSE)
+if(MSVC AND TRUE)
     message(STATUS "Using MSVC")
 
     # 关闭警告 C4819: 无效的字符。避免中文注释被警告
@@ -51,25 +51,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # 可执行文件目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-############ Kernel 模块（H* 基建）
-add_subdirectory ("Engine/Source/Kernel")
-
-############ Runtime模块
-# 引擎
-add_subdirectory ("Engine/Source/Runtime/VGLua")
-add_subdirectory ("Engine/Source/Runtime/VGRHI")
-add_subdirectory ("Engine/Source/Runtime/VGPackage")
-add_subdirectory ("Engine/Source/Runtime/VGImgui")
-add_subdirectory ("Engine/Source/Runtime/VGCore")
-#add_subdirectory ("Engine/Source/Runtime/VGComponentModel")
-add_subdirectory ("Engine/Source/Runtime/VGNativeEngineAPI")
-
 option(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES "Use VGEngineRuntimeServices for VGNativeApi engineServices (else Stub-only table)" ON)
-add_subdirectory ("Engine/Source/Runtime/VGEngineRuntime")
-add_subdirectory ("Engine/Source/Runtime/VGEngineRuntimeServices")
-add_subdirectory ("Engine/Source/Runtime/VGAsset")
-add_subdirectory ("Engine/Source/Runtime/VGUI")
-add_subdirectory ("Engine/Source/Runtime/VGEngine")
+
+############ 模块
+add_subdirectory ("Engine/Source/Kernel")
+add_subdirectory ("Engine/Source/Runtime")
 
 ############ 托管代码（CoreCLR via nethost，预设仅 Windows/MSVC 平台启用）
 if (WIN32 AND MSVC)
@@ -90,14 +76,8 @@ if(VISIONGAL_BUILD_LEGACY_GALGAME)
 	add_subdirectory("Engine/Source/Legacy")
 endif()
 
-############ 编辑器（主線；Galgame 編輯器模組已移至 Legacy/）
-#add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
+############ 编辑器（主線；Galgame 編輯器和附属模組已移至 Legacy/）
 add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
-#add_subdirectory ("Engine/Source/Editor/VGEditorReactive")
-#add_subdirectory ("Engine/Source/Editor/VGEditorComponentSchema")
-#add_subdirectory ("Engine/Source/Editor/VGEditorAuthoringGraph")
-#add_subdirectory ("Engine/Source/Editor/VGEditorExtensions")
-#add_subdirectory ("Engine/Source/Editor/VGEditorRuntimeBridge")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 
 ############ 应用

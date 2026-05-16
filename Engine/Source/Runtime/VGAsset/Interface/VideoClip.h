@@ -12,11 +12,11 @@
 #pragma once
 #include "../VGAssetConfig.h"
 #include "VGCore/Include/Core/Core.h"
-#include <HMedia/Interface/VideoInterface.h>
+#include <NNMediaCore/Interface/VideoInterface.h>
 #include <VGRHI/Interface/Texture.h>
 
-#include "HMedia/Include/FVideo.h"
-#include "HCore/Interface/HCoreTypes.h"
+#include "NNMediaCore/Include/FVideo.h"
+#include "NNKernel/Interface/HCoreTypes.h"
 
 namespace VisionGal {
 

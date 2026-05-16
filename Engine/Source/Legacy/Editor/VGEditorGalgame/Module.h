@@ -19,7 +19,7 @@
 
 #include <E:/VisionGal/Engine/Source/Editor/HNGEditorCore/Interface/EditorGraph.h>
 #include <E:/VisionGal/Engine/Source/Editor/HNGEditorCore/Interface/NodeGraphEditor.h>
-#include <HNGRuntimeCore/Include/NodeRegistry.h>
+#include <NNNodeGraphCore/Include/NodeRegistry.h>
 
 namespace VisionGal::Editor
 {

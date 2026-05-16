@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include <HCore/Include/File/nlohmann/json.hpp>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
 
 #include <string>
 #include <variant>

@@ -13,7 +13,7 @@
 #include "../EngineConfig.h"
 #include "VGCore/Include/Core/Core.h"
 #include "VGCore/Interface/RenderInterface.h"
-#include <HCore/Include/Event/HEventDelegate.h>
+#include <NNKernel/Include/Event/HEventDelegate.h>
 
 namespace VisionGal {
 

@@ -17,7 +17,7 @@
 #include "VGAsset/Include/UIAsset.h"
 #include "VGAsset/Interface/SceneAccessor.h"
 #include "VGCore/Include/Core/VFS.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 #include "VGCore/Interface/ISceneFactory.h"
 
 namespace VisionGal

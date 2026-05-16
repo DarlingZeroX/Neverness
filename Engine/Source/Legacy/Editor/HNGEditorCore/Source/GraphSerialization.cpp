@@ -8,7 +8,7 @@
 #include <utility>
 
 // 项目内置的 nlohmann::json 单头文件
-#include <HCore/Include/File/nlohmann/json.hpp>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
 
 namespace Horizon::NodeGraphEditor
 {

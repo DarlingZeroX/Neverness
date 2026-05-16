@@ -92,7 +92,7 @@ target_include_directories(VGLua PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Ker
 target_include_directories(VGLua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua")
 target_include_directories(VGLua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include")
 
-target_link_libraries(VGLua PRIVATE HCore)
+target_link_libraries(VGLua PRIVATE NevernessKernel-Kernel)
 
 #set_target_properties(VGLua PROPERTIES LINKER_LANGUAGE C)
 set_target_properties(VGLua PROPERTIES CXX_STANDARD 17)

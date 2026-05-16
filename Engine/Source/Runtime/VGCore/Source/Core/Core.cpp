@@ -10,8 +10,8 @@
 */
 
 #include "Core/Core.h"
-#include <HFileSystem/Interface/HFileSystem.h>
-#include <HFileSystem/Include/VFS/VFS.h>
+#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNFileSystem/Include/VFS/VFS.h>
 
 namespace VisionGal
 {

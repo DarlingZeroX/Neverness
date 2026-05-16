@@ -10,8 +10,8 @@
  */
 
 #include "VGLauncherData.h"
-#include <HCore/Include/File/nlohmann/json.hpp>
-#include <HFileSystem/Interface/HFileSystem.h>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
+#include <NNFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal::Editor
 {

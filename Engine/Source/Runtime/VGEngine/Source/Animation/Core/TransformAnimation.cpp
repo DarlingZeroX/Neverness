@@ -10,7 +10,7 @@
 */
 
 #include "Animation/Core/TransformAnimation.h"
-#include <HCore/Include/Math/HMathHelper.h>
+#include <NNKernel/Include/Math/HMathHelper.h>
 #include "Scene/Components.h"
 
 namespace VisionGal

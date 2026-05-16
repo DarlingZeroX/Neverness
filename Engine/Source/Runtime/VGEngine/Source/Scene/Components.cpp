@@ -10,9 +10,9 @@
 */
 
 #include "Scene/Components.h"
-#include <HCore/Include/Math/GLM/ext/matrix_transform.hpp>
+#include <NNKernel/Include/Math/GLM/ext/matrix_transform.hpp>
 #include "Engine/Manager.h"
-#include "HCore/Include/Math/GLM/gtc/quaternion.hpp"
+#include "NNKernel/Include/Math/GLM/gtc/quaternion.hpp"
 #include "Engine/AudioPlayer.h"
 #include "Engine/VideoPlayer.h"
 

@@ -10,13 +10,13 @@
 */
 
 #include "GraphCompiler.h"
-#include <HNGRuntimeCore/Include/NodeRegistry.h>
+#include <NNNodeGraphCore/Include/NodeRegistry.h>
 #include <unordered_map>
 #include <sstream>
 // hash/== for ax::NodeEditor::NodeId
 #include <functional>
 
-#include <HNGRuntimeCore/Include/RuntimeGraph.h>
+#include <NNNodeGraphCore/Include/RuntimeGraph.h>
 
 namespace ax {
 	namespace NodeEditor {

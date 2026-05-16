@@ -1,7 +1,7 @@
 #pragma once
 //#include "../include/CrossPlatformDefinitions.h"
 #include "../imconfig.h"
-#include <HCore/Interface/HConfig.h>
+#include <NNKernel/Interface/HConfig.h>
 
 #ifdef WIN32_NATIVE_WINDOW_SUPPORTED
 #include "Win32Native/Win32Window.h"
@@ -12,14 +12,14 @@
 #endif
 
 #ifdef SDL2_WINDOW_SUPPORTED
-#include <HCore/Platform/SDL2/SDL2Window.h>
+#include <NNKernel/Platform/SDL2/SDL2Window.h>
 #endif
 
 #ifdef SDL3_WINDOW_SUPPORTED
-#include <HCorePlatform/Include/SDL3/SDL3Window.h>
+#include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 #endif
 
-#include <HCorePlatform/Interface/HWindow.h>
+#include <NNPlatformCore/Interface/HWindow.h>
 
 namespace ImGuiEx
 {

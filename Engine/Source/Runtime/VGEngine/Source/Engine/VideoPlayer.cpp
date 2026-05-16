@@ -19,7 +19,7 @@
 #include <VGRHI/Include/OpenGL/Core.h>
 #include <VGRHI/Include/OpenGL/ThrowMarco.h>
 #include <VGRHI/Interface/Device.h>
-#include <HCore/Interface/HVector.h>
+#include <NNKernel/Interface/HVector.h>
 
 namespace VisionGal
 {

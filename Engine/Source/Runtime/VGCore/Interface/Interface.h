@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include <HCore/Interface/HInterface.h>
+#include <NNKernel/Interface/HInterface.h>
 
 namespace VisionGal
 {

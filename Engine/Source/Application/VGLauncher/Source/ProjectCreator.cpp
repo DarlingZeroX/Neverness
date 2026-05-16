@@ -13,8 +13,8 @@
 #include <filesystem>
 
 #include "VGLauncherData.h"
-#include "HCore/Include/Math/HVector.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNKernel/Include/Math/HVector.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 
 namespace VisionGal::Editor
 {

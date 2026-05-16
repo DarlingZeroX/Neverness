@@ -1,6 +1,6 @@
 #include "AssetImporter/AssetImporterManager.h"
 #include "EditorCore/ContentBrowser.h"
-#include "HCore/Include/Utils/HStringGenerator.h"
+#include "NNKernel/Include/Utils/HStringGenerator.h"
 
 namespace VisionGal::Editor
 {

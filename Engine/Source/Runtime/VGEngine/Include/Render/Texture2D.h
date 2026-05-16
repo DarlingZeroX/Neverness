@@ -13,7 +13,7 @@
 #include "../EngineConfig.h"
 #include "VGCore/Include/Core/Core.h"
 #include <VGRHI/Interface/Texture.h>
-#include "HCore/Interface/HCoreTypes.h"
+#include "NNKernel/Interface/HCoreTypes.h"
 
 namespace VisionGal {
 

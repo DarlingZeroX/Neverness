@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include <HNGRuntimeCore/Include/RuntimeGraph.h>
+#include <NNNodeGraphCore/Include/RuntimeGraph.h>
 
 #include "DialogueListNodeData.h"
 

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <HNGEditorCore/Interface/EditorGraph.h>
-#include <HNGRuntimeCore/Include/RuntimeContext.h>
+#include <NNNodeGraphCore/Include/RuntimeContext.h>
 
 namespace VisionGal::Editor
 {

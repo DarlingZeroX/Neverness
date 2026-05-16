@@ -12,7 +12,7 @@
 #include "NodeFactory.h"
 #include "CommandInGraph.h"
 #include "GraphCommandAPI.h"
-#include <HNGRuntimeCore/Include/RuntimeContext.h>
+#include <NNNodeGraphCore/Include/RuntimeContext.h>
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -27,7 +27,7 @@
 #include "../Include/SelectionSystem.h"
 
 #include "Utilities/builders.h"
-#include <HNGRuntimeCore/Include/ExpressionEvaluator.h>
+#include <NNNodeGraphCore/Include/ExpressionEvaluator.h>
 
 namespace Horizon::NodeGraphEditor
 {

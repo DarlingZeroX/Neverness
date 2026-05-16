@@ -12,9 +12,9 @@
 #pragma once
 #include "Core.h"
 #include "Viewport.h"
-#include <HCorePlatform/Include/SDL3/SDL3Input.h>
-#include <HCorePlatform/Interface/Input/HKeyboardBase.h>
-#include <HCorePlatform/Include/SDL3/SDL3Window.h>
+#include <NNPlatformCore/Include/SDL3/SDL3Input.h>
+#include <NNPlatformCore/Interface/Input/HKeyboardBase.h>
+#include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 
 namespace VisionGal
 {

@@ -10,9 +10,9 @@
 */
 
 #include "Core/Input.h"
-#include <HCorePlatform/Interface/HInput.h>
+#include <NNPlatformCore/Interface/HInput.h>
 
-#include "HCore/Interface/HStringTools.h"
+#include "NNKernel/Interface/HStringTools.h"
 
 namespace VisionGal
 {

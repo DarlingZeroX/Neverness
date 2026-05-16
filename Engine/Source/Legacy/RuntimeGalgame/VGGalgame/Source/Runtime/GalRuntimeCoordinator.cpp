@@ -35,7 +35,7 @@
 #include "VGGalgameRuntimeCore/Include/GalGameRuntimeState.h"
 #include "VGGalgameRuntimeCore/Include/GalGameRuntimeStateSerializable.h"
 
-#include <HCore/Include/File/nlohmann/json.hpp>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame
 {

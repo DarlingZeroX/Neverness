@@ -13,7 +13,7 @@
 #include "EngineInterface.h"
 #include "SceneInterface.h"
 #include "../Include/Core/Core.h"
-#include <HCorePlatform/Include/WindowInterface.h>
+#include <NNPlatformCore/Include/WindowInterface.h>
 
 namespace VisionGal
 {

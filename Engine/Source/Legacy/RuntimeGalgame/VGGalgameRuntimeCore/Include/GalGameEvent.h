@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include <HCore/Include/Event/HEventDelegate.h>
+#include <NNKernel/Include/Event/HEventDelegate.h>
 #include <cstdint>
 
 namespace VisionGal::GalGame

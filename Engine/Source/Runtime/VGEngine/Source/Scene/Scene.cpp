@@ -11,7 +11,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/Components.h"
-#include <HCore/Include/Scene/HSceneHierachy.h>
+#include <NNKernel/Include/Scene/HSceneHierachy.h>
 #include "Scene/GameActor.h"
 #include "VGCore/Include/Core/EventBus.h"
 

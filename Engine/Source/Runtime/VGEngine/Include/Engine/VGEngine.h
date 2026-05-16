@@ -14,7 +14,7 @@
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
 #include "VGCore/Interface/EngineInterface.h"
-#include <HCore/Interface/HCore.h>
+#include <NNKernel/Interface/HCore.h>
 
 namespace VisionGal
 {

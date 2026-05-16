@@ -14,7 +14,7 @@
 #include "VGCore/Interface/VGAsset.h"
 #include "VGCore/Include/Core/Core.h"
 //#include "../Resource/Audio.h"
-//#include <HMedia/Interface/AudioInterface.h>
+//#include <NNMediaCore/Interface/AudioInterface.h>
 #include "../Interface/AudioClip.h"
 
 namespace VisionGal

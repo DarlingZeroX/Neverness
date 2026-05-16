@@ -11,9 +11,9 @@
 
 #pragma once
 #include "VGCore/Include/Core/Core.h"
-#include <HCore/Include/Scene/HEntityInterface.h>
-#include <HCore/Include/Scene/HComponentInterface.h>
-#include <HCore/Interface/HSerialization.h>
+#include <NNKernel/Include/Scene/HEntityInterface.h>
+#include <NNKernel/Include/Scene/HComponentInterface.h>
+#include <NNKernel/Interface/HSerialization.h>
 
 namespace VisionGal
 {

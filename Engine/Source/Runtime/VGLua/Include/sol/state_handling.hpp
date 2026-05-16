@@ -31,8 +31,8 @@
 #include <sol/object.hpp>
 #include <sol/lua_value.hpp>
 
-#include <HCore/Interface/HLocalization.h>
-#include "HCore/Interface/HLog.h"
+#include <NNKernel/Interface/HLocalization.h>
+#include "NNKernel/Interface/HLog.h"
 
 #if SOL_IS_ON(SOL_PRINT_ERRORS)
 #include <iostream>

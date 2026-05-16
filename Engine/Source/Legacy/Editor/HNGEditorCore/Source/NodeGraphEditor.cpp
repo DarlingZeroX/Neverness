@@ -15,7 +15,7 @@
 #include <unordered_set>
 #include <VGImgui/IncludeImGui.h>
 #include <HNGEditorCore/Include/IMNEWrap.h>
-#include <HCore/Interface/HConfig.h>
+#include <NNKernel/Interface/HConfig.h>
 
 namespace Horizon::NodeGraph
 {

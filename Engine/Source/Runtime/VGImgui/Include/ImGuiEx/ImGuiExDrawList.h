@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "../imgui/imgui.h"
-#include <HCore/Interface/HCoreTypes.h>
+#include <NNKernel/Interface/HCoreTypes.h>
 
 namespace ImGuiEx
 {

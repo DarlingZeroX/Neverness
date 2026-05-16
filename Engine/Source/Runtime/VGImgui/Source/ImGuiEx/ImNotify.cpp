@@ -1,9 +1,9 @@
 #include "pch.h"
 #include <vector>
 #include "ImGuiEx/ImNotify.h"
-#include <HCorePlatform/Interface/HSystemTimer.h>
+#include <NNPlatformCore/Interface/HSystemTimer.h>
 
-#include "HCore/Interface/HLocalization.h"
+#include "NNKernel/Interface/HLocalization.h"
 #include "ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 
 #define NOTIFY_OPACITY					1.0f		// 0-1 Toast opacity

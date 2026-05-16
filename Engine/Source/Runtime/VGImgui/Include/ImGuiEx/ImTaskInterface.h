@@ -5,7 +5,7 @@
 #include <future>
 #include <queue>
 #include <shared_mutex>
-#include <HCore/Interface/HCoreTypes.h>
+#include <NNKernel/Interface/HCoreTypes.h>
 
 namespace ImGuiEx {
 

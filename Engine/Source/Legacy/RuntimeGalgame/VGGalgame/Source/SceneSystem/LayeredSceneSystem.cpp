@@ -10,7 +10,7 @@
  */
 
 #include "SceneSystem/LayeredSceneSystem.h"
-#include <HCore/Interface/HAssert.h>
+#include <NNKernel/Interface/HAssert.h>
 
 namespace VisionGal::GalGame
 {

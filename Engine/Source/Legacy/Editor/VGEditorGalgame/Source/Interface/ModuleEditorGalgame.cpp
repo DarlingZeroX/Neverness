@@ -12,7 +12,7 @@
 #include "ModuleEditorGalgame.h"
 #include "GalComDrawer.h"
 #include "SequenceEditor.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 #include "VGCore/Include/Core/VFS.h"
 #include "VGEditorFramework/Interface/ComponentDrawerRegistry.h"
 #include "VGEditorFramework/Include/EditorCore/AssetWatcher.h"

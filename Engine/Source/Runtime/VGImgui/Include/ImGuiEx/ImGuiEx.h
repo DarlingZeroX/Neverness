@@ -5,13 +5,13 @@
 #include "IconFont/IconsFontAwesome5Pro.h"
 #include "ImGuiExDrawList.h"
 #include <functional>
-#include <HCore/Interface/HCoreTypes.h>
+#include <NNKernel/Interface/HCoreTypes.h>
 
 #include "ImScoped.h"
 #include "ImWindow.h"
 #include "ImNotify.h"
 #include "ImTaskManager.h"
-#include "HCore/Interface/HCoreTypes.h"
+#include "NNKernel/Interface/HCoreTypes.h"
 
 namespace ImGuiEx
 {

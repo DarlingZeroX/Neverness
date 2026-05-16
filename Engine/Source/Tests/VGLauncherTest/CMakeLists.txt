@@ -49,7 +49,7 @@ find_package(GTest CONFIG REQUIRED)
 # 链接库
 target_link_libraries(VGLauncherTest PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
 target_link_libraries(VGLauncherTest PRIVATE SDL3::SDL3)
-target_link_libraries(VGLauncherTest PRIVATE HCore)
+target_link_libraries(VGLauncherTest PRIVATE NevernessKernel-Kernel)
 target_link_libraries(VGLauncherTest PRIVATE VGPackage)
 target_link_libraries(VGLauncherTest PRIVATE VGImgui)
 target_link_libraries(VGLauncherTest PRIVATE VGEngine)

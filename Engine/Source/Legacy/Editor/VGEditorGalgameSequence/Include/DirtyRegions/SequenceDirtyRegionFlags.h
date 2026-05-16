@@ -8,7 +8,7 @@
 #pragma once
 
 #include <cstdint>
-#include <HCore/Interface/HCoreTypes.h>
+#include <NNKernel/Interface/HCoreTypes.h>
 
 namespace VisionGal::Editor
 {

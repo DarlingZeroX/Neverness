@@ -14,7 +14,7 @@
 #include "VGEditorFramework/Include/EditorCore/Localization.h"
 #include <VGCore/Include/Core/EventBus.h>
 #include <VGImgui/IncludeImGui.h>
-#include <HCore/Interface/HStringTools.h>
+#include <NNKernel/Interface/HStringTools.h>
 
 #include "VGAsset/Interface/Package.h"
 #include "VGEngine/Include/Lua/LuaScript.h"

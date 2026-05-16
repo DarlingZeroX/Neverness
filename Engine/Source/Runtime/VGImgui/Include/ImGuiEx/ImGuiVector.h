@@ -1,9 +1,9 @@
 #pragma once
-#include <HCore/Include/Math/HVector.h>
+#include <NNKernel/Include/Math/HVector.h>
 #include <string>
 #include "../imgui/imgui.h"
 #include <memory>
-#include "HCore/Interface/HCoreTypes.h"
+#include "NNKernel/Interface/HCoreTypes.h"
 
 namespace ImGuiEx
 {

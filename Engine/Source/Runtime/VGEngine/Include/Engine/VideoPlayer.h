@@ -13,7 +13,7 @@
 //#include "Interface/VideoInterface.h"
 #include "VGCore/Include/Core/Core.h"
 #include "../EngineConfig.h"
-#include <HMedia/Include/FVideo.h>
+#include <NNMediaCore/Include/FVideo.h>
 #include <VGAsset/Interface/VideoClip.h>
 
 namespace VisionGal {

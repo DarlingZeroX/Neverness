@@ -20,7 +20,7 @@
 #include "VGUI/Interface/UIDocument.h"
 #include "VGCore/Interface/SceneInterface.h"
 #include "VGCore/Interface/GameInterface.h"
-#include <HCore/Interface/HSerialization.h>
+#include <NNKernel/Interface/HSerialization.h>
 
 namespace VisionGal {
 

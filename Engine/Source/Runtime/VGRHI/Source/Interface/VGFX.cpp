@@ -16,7 +16,7 @@
 #include "OpenGL/ShaderProgram.h"
 #include "OpenGL/Effect.h"
 #include "OpenGL/ThrowMarco.h"
-#include <HCore/Interface/HVector.h>
+#include <NNKernel/Interface/HVector.h>
 
 namespace VisionGal::VGFX
 {

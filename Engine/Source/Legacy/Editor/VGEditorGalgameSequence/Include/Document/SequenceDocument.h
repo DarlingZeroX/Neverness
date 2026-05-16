@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <HCore/Interface/HConfig.h>
+#include <NNKernel/Interface/HConfig.h>
 #include <cstddef>
 #include <cstdint>
 #include <string>

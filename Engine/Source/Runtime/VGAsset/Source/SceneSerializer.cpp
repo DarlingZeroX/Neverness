@@ -11,7 +11,7 @@
 
 #include "SceneSerializer.h"
 #include "VGCore/Interface/Loader.h"
-#include "HCore/Include/Scene/HBaseComponent.h"
+#include "NNKernel/Include/Scene/HBaseComponent.h"
 
 namespace VisionGal
 {

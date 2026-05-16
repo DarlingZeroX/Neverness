@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include <HNGRuntimeCore/Interface/Types.h>
-#include <HNGRuntimeCore/Interface/Value.h>
+#include <NNNodeGraphCore/Interface/Types.h>
+#include <NNNodeGraphCore/Interface/Value.h>
 
 namespace Horizon::NodeGraphEditor
 {

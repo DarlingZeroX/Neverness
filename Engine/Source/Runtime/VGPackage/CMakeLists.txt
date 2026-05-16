@@ -43,5 +43,5 @@ find_package(SDL3 CONFIG REQUIRED)
 
 # 链接库
 target_link_libraries(VGPackage PRIVATE SDL3::SDL3)
-target_link_libraries(VGPackage PRIVATE HCore)
+target_link_libraries(VGPackage PRIVATE NevernessKernel-Kernel)
 

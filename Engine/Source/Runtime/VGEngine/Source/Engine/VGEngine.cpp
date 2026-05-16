@@ -16,9 +16,9 @@
 #include "VGCore/Include/Core/VFS.h"
 #include "Engine/Manager.h"
 #include "Scene/GameActorFactory.h"
-#include <HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h>
+#include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
 
-#include "HCore/Interface/HStringTools.h"
+#include "NNKernel/Interface/HStringTools.h"
 
 #include <exception>
 #include <iostream>

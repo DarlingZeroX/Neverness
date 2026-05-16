@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ImGuiEx/ImGuiEx.h"
-#include <HCore/Interface/HVector.h>
+#include <NNKernel/Interface/HVector.h>
 
 namespace ImGuiEx
 {

@@ -14,7 +14,7 @@
 #include "../HNGEditorCoreConfig.h"
 #include "../Interface/NodeEditorCore.h"
 #include "EditorGraph.h"
-#include "HNGRuntimeCore/Include/RuntimeGraph.h"
+#include "NNNodeGraphCore/Include/RuntimeGraph.h"
 
 namespace Horizon::NodeGraphEditor
 {

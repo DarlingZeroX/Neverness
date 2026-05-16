@@ -4,7 +4,7 @@
 
 # include <VGImgui/Include/Imgui/imgui.h>
 # include <VGImgui/Include/ImNodeEditor/imgui_node_editor.h>
-#include <HNGRuntimeCore/Interface/Types.h>
+#include <NNNodeGraphCore/Interface/Types.h>
 
 // SlotType -> Icon
 #include "widgets.h"

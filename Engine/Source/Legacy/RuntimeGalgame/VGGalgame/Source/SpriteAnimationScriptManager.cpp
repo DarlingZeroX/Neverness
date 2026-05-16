@@ -11,8 +11,8 @@
 
 #include "SpriteAnimationScriptManager.h"
 #include "SpriteAnimationScript.h"
-#include "HCore/Interface/HLocalization.h"
-#include "HCore/Interface/HStringTools.h"
+#include "NNKernel/Interface/HLocalization.h"
+#include "NNKernel/Interface/HStringTools.h"
 #include "VGEngine/Include/Scene/Components.h"
 #include "VGEngine/Include/Animation/Core/SpriteAnimationScript.h"
 #include "VGEngine/Include/Animation/Interface/AnimationScriptManager.h"

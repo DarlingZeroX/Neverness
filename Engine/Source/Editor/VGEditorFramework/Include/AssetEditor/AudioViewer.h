@@ -13,7 +13,7 @@
 #include "../Config.h"
 #include <VGCore/Include/Core/CoreTypes.h>
 //#include <VGEngine/Include/Resource/Interface/AudioInterface.h>
-#include <HMedia/Interface/AudioInterface.h>
+#include <NNMediaCore/Interface/AudioInterface.h>
 
 namespace VisionGal::Editor
 {

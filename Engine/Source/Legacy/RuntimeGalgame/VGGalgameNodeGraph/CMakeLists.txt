@@ -40,4 +40,4 @@ target_include_directories(VGGalgameNodeGraph PRIVATE ${CMAKE_CURRENT_SOURCE_DIR
 # HNGRuntimeCore：节点图 RuntimeContext / ExecResult 等类�?
 # HCore（PUBLIC）：DialogueListNodeData.h 内联使用 nlohmann::json，消费方包含该头时需可见 HCore 头路�?
 target_link_libraries(VGGalgameNodeGraph PUBLIC HNGRuntimeCore)
-target_link_libraries(VGGalgameNodeGraph PUBLIC HCore)
+target_link_libraries(VGGalgameNodeGraph PUBLIC NevernessKernel-Kernel)

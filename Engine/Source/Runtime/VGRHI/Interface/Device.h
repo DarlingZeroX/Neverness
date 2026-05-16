@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../Include/VGRHIConfig.h"
-#include <HCore/Interface/HCore.h>
+#include <NNKernel/Interface/HCore.h>
 #include "Texture.h"
 
 namespace VisionGal::VGFX

@@ -14,9 +14,9 @@
 #include "VGCore/Interface/SceneInterface.h"
 #include <memory>
 #include <unordered_map>
-#include <HCore/Interface/HRandom.h>
-#include <HCore/Include/Scene/HBaseComponent.h>
-#include <HCore/Include/Event/HEventDelegate.h>
+#include <NNKernel/Interface/HRandom.h>
+#include <NNKernel/Include/Scene/HBaseComponent.h>
+#include <NNKernel/Include/Event/HEventDelegate.h>
 
 namespace VisionGal
 {

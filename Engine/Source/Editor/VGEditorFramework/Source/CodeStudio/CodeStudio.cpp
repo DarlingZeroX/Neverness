@@ -11,7 +11,7 @@
 
 #include "CodeStudio/CodeStudio.h"
 #include "VGEditorFramework/Include/EditorCore/Localization.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 #include "VGAsset/Interface/Package.h"
 #include "VGCore/Include/Core/EventBus.h"
 #include "VGCore/Include/Core/VFS.h"

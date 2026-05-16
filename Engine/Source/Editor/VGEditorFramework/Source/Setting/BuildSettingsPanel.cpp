@@ -12,8 +12,8 @@
 #include "Setting/BuildSettingsPanel.h"
 #include "EditorCore/Localization.h"
 #include <VGImgui/IncludeImGuiEx.h>
-#include "HCorePlatform/Include/NativeFileDialog/portable-file-dialogs.h"
-#include "HFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h"
+#include "NNFileSystem/Interface/HFileSystem.h"
 #include "VGAsset/Interface/Package.h"
 #include "VGEngine/Include/Project/ProjectSettings.h"
 #include "VGEngine/Include/Project/ProjectBuilder.h"

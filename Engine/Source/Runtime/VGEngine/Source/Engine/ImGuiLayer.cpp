@@ -12,7 +12,7 @@
 #include "Engine/ImGuiLayer.h"
 
 #include <SDL3/SDL.h>
-#include <HCorePlatform/Include/SDL3/SDL3Window.h>
+#include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 
 #include <VGImgui/Include/Imgui/imgui_impl_sdl3.h>
 #include <VGImgui/Include/Imgui/imgui_impl_opengl3.h>

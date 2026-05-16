@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "Utilities/builders.h"
-#include <HNGRuntimeCore/Include/ExpressionEvaluator.h>
+#include <NNNodeGraphCore/Include/ExpressionEvaluator.h>
 #include "CommandInGraph.h"
 #include "GraphCommandAPI.h"
 

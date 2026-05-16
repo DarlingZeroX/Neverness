@@ -10,7 +10,7 @@
 */
 
 #include "Loader.h"
-#include <HCore/Interface/HTypeInfo.h>
+#include <NNKernel/Interface/HTypeInfo.h>
 
 namespace VisionGal
 {

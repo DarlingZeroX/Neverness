@@ -12,7 +12,7 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "VGCore/Include/Core/Core.h"
-#include <HMedia/Include/Audio.h>
+#include <NNMediaCore/Include/Audio.h>
 #include <VGAsset/Interface/AudioClip.h>
 
 namespace VisionGal

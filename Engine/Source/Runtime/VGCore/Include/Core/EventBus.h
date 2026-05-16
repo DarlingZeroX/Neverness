@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Events.h"
-#include <HCore/Include/Event/HEventDelegate.h>
+#include <NNKernel/Include/Event/HEventDelegate.h>
 
 namespace VisionGal
 {

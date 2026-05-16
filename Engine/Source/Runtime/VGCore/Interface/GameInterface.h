@@ -13,7 +13,7 @@
 #include "../VGCoreConfig.h"
 #include "AppInterface.h"
 #include "VGCore/Include/Core/Core.h"
-#include <HCore/Include/Scene/HEntityInterface.h>
+#include <NNKernel/Include/Scene/HEntityInterface.h>
 
 namespace VisionGal
 {

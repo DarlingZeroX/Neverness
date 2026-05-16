@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../VGAssetConfig.h"
-#include <HMedia/Interface/AudioInterface.h>
-#include "HMedia/Include/Audio.h"
+#include <NNMediaCore/Interface/AudioInterface.h>
+#include "NNMediaCore/Include/Audio.h"
 #include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal {

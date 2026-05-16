@@ -14,8 +14,8 @@
 #include "VGCore/Include/Core/Core.h"
 #include "VGAsset/Include/TextureAsset.h"
 #include <unordered_set>
-#include <HCore/Interface/HTypeInfo.h>
-#include <HFileSystem/Interface/HFileSystem.h>
+#include <NNKernel/Interface/HTypeInfo.h>
+#include <NNFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal
 {

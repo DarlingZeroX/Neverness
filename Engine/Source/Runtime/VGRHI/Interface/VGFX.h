@@ -16,8 +16,8 @@
 #include "Shader.h"
 #include "VertexElement.h"
 #include "../Include/VGRHIConfig.h"
-#include <HCore/Interface/HCore.h>
-#include <HCore/Interface/HCoreTypes.h>
+#include <NNKernel/Interface/HCore.h>
+#include <NNKernel/Interface/HCoreTypes.h>
 
 namespace VisionGal::VGFX
 {

@@ -11,7 +11,7 @@
 
 #include "SceneAccessor.h"
 #include "SceneSerializerFactory.h"
-#include <HCore/Interface/HSerialization.h>
+#include <NNKernel/Interface/HSerialization.h>
 #include "VGCore/Include/Core/VFS.h"
 #include "VGCore/Interface/ISceneFactory.h"
 #include "VGAsset/Interface/Package.h"

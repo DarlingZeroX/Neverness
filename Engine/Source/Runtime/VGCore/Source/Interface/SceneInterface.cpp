@@ -10,8 +10,8 @@
 */
 
 #include "SceneInterface.h"
-#include <HCore/Include/Scene/HBaseComponent.h>
-#include <HCore/Include/Event/HEventDelegate.h>
+#include <NNKernel/Include/Scene/HBaseComponent.h>
+#include <NNKernel/Include/Event/HEventDelegate.h>
 //#include "Scene/Components.h"
 
 namespace VisionGal

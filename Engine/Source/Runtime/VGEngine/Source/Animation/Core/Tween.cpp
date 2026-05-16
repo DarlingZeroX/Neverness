@@ -15,7 +15,7 @@
 #include "Animation/Core/Tween.h"
 #include <utility>
 #include <RmlUi/Core/Math.h>
-#include <HCore/Interface/HStringTools.h>
+#include <NNKernel/Interface/HStringTools.h>
 
 namespace VisionGal {
 

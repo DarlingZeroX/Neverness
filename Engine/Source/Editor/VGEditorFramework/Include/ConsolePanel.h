@@ -12,7 +12,7 @@
 #pragma once
 #include "../Config.h"
 #include <mutex>
-#include "HCore/Interface/HLog.h"
+#include "NNKernel/Interface/HLog.h"
 
 namespace VisionGal::Editor {
 

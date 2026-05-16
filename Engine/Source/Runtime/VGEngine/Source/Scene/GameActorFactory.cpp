@@ -13,7 +13,7 @@
 #include "Render/Camera.h"
 #include "Scene/Components.h"
 #include "Engine/Manager.h"
-#include "HCore/Interface/HLocalization.h"
+#include "NNKernel/Interface/HLocalization.h"
 #include "VGCore/Interface/Loader.h"
 //#include "Galgame/Components.h"
 #include "Engine/EngineResource.h"

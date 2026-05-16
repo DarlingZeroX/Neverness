@@ -11,8 +11,8 @@
 
 #pragma once
 #include "../../Config.h"
-#include <HFileSystem/Interface/HFileSystem.h>
-#include <HCore/Interface/HSingleton.h>
+#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNKernel/Interface/HSingleton.h>
 //#include <VGAsset/Include/HAsset.h>
 #include <VGCore/Include/Core/Core.h>
 #include <VGCore/Interface/VGAsset.h>

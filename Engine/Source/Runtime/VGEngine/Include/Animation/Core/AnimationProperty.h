@@ -12,7 +12,7 @@
 #pragma once
 #include "VGCore/Interface/GameInterface.h"
 #include "Tween.h"
-#include "HCore/Interface/HCoreTypes.h"
+#include "NNKernel/Interface/HCoreTypes.h"
 
 namespace VisionGal
 {

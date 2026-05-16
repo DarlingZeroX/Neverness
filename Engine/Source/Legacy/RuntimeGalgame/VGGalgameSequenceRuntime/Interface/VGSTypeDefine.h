@@ -16,7 +16,7 @@
 #include <unordered_map>
 
 #include "../GSSExport.h"
-#include <HCore/Interface/HConfig.h>
+#include <NNKernel/Interface/HConfig.h>
 
 namespace VisionGal
 {

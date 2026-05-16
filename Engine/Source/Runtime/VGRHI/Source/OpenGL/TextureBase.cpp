@@ -11,7 +11,7 @@
 
 #include "OpenGL/TextureBase.h"
 #include "OpenGL/ThrowMarco.h"
-#include <HCore/Interface/HVector.h>
+#include <NNKernel/Interface/HVector.h>
 
 VISIONGAL_OPENGL_NAMESPACE_BEGIN
 

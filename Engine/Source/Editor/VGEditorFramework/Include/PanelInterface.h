@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include <HCore/Interface/HConfig.h>
+#include <NNKernel/Interface/HConfig.h>
 #include <VGImgui/IncludeImGui.h>
 #include <VGImgui/IncludeImGuiEx.h>
 

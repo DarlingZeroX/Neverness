@@ -10,8 +10,8 @@
 */
 
 #pragma once
-#include <HCore/Interface/HCoreTypes.h>
-#include <HCore/Include/Scene/HEntityInterface.h>
+#include <NNKernel/Interface/HCoreTypes.h>
+#include <NNKernel/Include/Scene/HEntityInterface.h>
 #include <string>
 #include <SDL3/SDL.h>
 

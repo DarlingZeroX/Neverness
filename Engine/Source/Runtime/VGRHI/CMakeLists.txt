@@ -65,7 +65,7 @@ find_package(SDL3_image CONFIG REQUIRED)
 
 # 链接动态库
 target_link_libraries(VGRHI PRIVATE SDL3::SDL3)
-target_link_libraries(VGRHI PRIVATE HCore)
+target_link_libraries(VGRHI PRIVATE NevernessKernel-Kernel)
 
 # 链接OpenGL库
 if (APPLE)

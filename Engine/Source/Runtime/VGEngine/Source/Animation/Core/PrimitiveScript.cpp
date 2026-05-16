@@ -12,9 +12,9 @@
 #include "Animation/Core/PrimitiveScript.h"
 #include "Scene/Components.h"
 #include <sol/table.hpp>
-#include <HCore/Interface/HVector.h>
+#include <NNKernel/Interface/HVector.h>
 
-#include "HCore/Include/Math/GLM/gtc/quaternion.hpp"
+#include "NNKernel/Include/Math/GLM/gtc/quaternion.hpp"
 
 namespace VisionGal
 {

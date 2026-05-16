@@ -16,7 +16,7 @@
 #include "../Interface/NodeEditorCore.h"
 #include "../Interface/EditorGraph.h"
 #include "GraphIdGenerator.h"
-#include <HNGRuntimeCore/Include/NodeMeta.h>
+#include <NNNodeGraphCore/Include/NodeMeta.h>
 
 namespace Horizon::NodeGraphEditor
 {

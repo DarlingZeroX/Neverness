@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include <HCore/Include/File/nlohmann/json.hpp>
+#include <NNKernel/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::Runtime
 {

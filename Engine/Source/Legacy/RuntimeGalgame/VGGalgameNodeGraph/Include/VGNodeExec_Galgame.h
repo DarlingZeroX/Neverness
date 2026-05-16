@@ -13,9 +13,9 @@
 
 #include <string>
 
-#include <HNGRuntimeCore/Interface/Types.h>
-#include <HNGRuntimeCore/Interface/Value.h>
-#include <HNGRuntimeCore/Include/RuntimeContext.h>
+#include <NNNodeGraphCore/Interface/Types.h>
+#include <NNNodeGraphCore/Interface/Value.h>
+#include <NNNodeGraphCore/Include/RuntimeContext.h>
 
 namespace VisionGal::Runtime
 {
