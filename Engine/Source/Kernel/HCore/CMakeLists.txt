@@ -97,7 +97,7 @@ add_library (HCore STATIC ${HCORE_GEN_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_F
 # target_compile_definitions(HCore PRIVATE CORE_MODULE_EXPORT)
 
 # 添加头文件搜索路径
-target_include_directories(HCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(HCore PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(HCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 

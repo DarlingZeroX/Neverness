@@ -1,4 +1,4 @@
-﻿# 子目录首行：强制初始化C环境
+# 子目录首行：强制初始化C环境
 enable_language(C CXX)
 
 # 设置C标准（Lua源码需ANSI C）
@@ -88,6 +88,7 @@ add_library(VGLua SHARED
 )
 
 target_include_directories(VGLua PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGLua PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGLua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua")
 target_include_directories(VGLua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include")
 

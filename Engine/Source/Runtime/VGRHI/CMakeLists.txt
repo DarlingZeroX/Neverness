@@ -50,6 +50,7 @@ target_compile_definitions(VGRHI PRIVATE VG_RHI_API_EXPORT)
 
 # 添加头文件搜索路径
 target_include_directories(VGRHI PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGRHI PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGRHI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 # 配置预编译头

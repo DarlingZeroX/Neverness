@@ -1,4 +1,4 @@
-﻿# 设置 C++ 标准为 C++17
+# 设置 C++ 标准为 C++17
 #cmake_minimum_required(VERSION 3.10)
 #project(HMedia LANGUAGES CXX)  # 明确指定为C++项目
 
@@ -54,7 +54,7 @@ file(GLOB H_MEDIA_HEADER_FILES
 add_library (HMedia SHARED ${H_MEDIA_SRC_FILES} ${H_MEDIA_HEADER_FILES})
 
 # 添加头文件搜索路径
-target_include_directories(HMedia PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(HMedia PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(HMedia PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 # 配置预编译头

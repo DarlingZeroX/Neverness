@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VisionGal.Managed.Gameplay")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a6a3cb9d52263e241b75c5bc5cd6d50d7b3b7f77")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0bcf2c3457774e7e2c6350803bf0ef2f08116f0")]
 [assembly: System.Reflection.AssemblyProductAttribute("VisionGal.Managed.Gameplay")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VisionGal.Managed.Gameplay")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

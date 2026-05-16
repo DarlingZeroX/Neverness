@@ -16,7 +16,7 @@
 ## 2. 构建与选项
 
 - **预编译头**：`Include/pch.h`。
-- **包含目录**：**PRIVATE** `Engine/Source/Runtime`、`Include`、`Interface`、`VGLua/Include`。
+- **包含目录**：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`、`VGLua/Include`。
 - **SDL3 类型泄漏**：CMake 注释指出部分公共头暴露 SDL 类型，因此 **`SDL3::SDL3` 为 PUBLIC 链接**（见 `VGCore/CMakeLists.txt` 注释）。
 
 ---
@@ -48,7 +48,7 @@ Engine/Source/Runtime/VGCore/
 #include <VGCore/Include/Core/Application.h>
 ```
 
-实际 `#include` 前缀取决于消费者 `include_directories` 是否挂载 `Engine/Source/Runtime`（常见模式）。
+实际 `#include` 前缀取决于消费者是否挂载 `Engine/Source/Runtime` 与 `Engine/Source/Kernel`（`#include <HCore/...>`、`<VGCore/...>` 等常见模式）。
 
 ### 4.2 生命周期
 

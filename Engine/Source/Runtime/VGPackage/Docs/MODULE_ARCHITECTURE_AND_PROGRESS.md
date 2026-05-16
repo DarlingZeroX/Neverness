@@ -14,7 +14,7 @@
 
 ## 2. 构建与选项
 
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Include`（见 [`CMakeLists.txt`](../CMakeLists.txt)）。
+- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`（见 [`CMakeLists.txt`](../CMakeLists.txt)）。
 
 ---
 

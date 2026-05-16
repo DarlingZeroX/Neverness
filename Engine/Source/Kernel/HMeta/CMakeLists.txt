@@ -129,6 +129,6 @@ add_library (HMeta STATIC ${HMETA_GEN_FILES} ${HMETA_HEADER_FILES} )
 # target_compile_definitions(HMeta PRIVATE CORE_MODULE_EXPORT)
 
 # 添加头文件搜索路径
-target_include_directories(HMeta PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(HMeta PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(HMeta PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HMeta PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)

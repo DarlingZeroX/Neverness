@@ -10,6 +10,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
 # 添加头文件搜索路径
 include_directories(${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+include_directories(${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 # 添加宏

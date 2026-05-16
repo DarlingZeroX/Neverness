@@ -17,7 +17,7 @@
 ## 2. 构建与选项
 
 - 需要 **RmlUi**、**SDL3**、**SDL3_image** CMake 包。
-- 包含目录：**PRIVATE** Runtime 根、`Include`、`Interface`；**PUBLIC** `VGLua/Include`。
+- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`；**PUBLIC** `VGLua/Include`。
 
 ---
 

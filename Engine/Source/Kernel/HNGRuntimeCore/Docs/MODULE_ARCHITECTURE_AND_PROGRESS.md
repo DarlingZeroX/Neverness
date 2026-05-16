@@ -15,14 +15,14 @@
 
 ## 2. 构建与选项
 
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Include`、`Interface`。
+- 包含目录：**PUBLIC** `Engine/Source/Kernel`（`VISIONGAL_KERNEL_ROOT`）、`Include`、`Interface`。
 
 ---
 
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Runtime/HNGRuntimeCore/
+Engine/Source/Kernel/HNGRuntimeCore/
 ├── CMakeLists.txt
 ├── HNodeGraphConfig.h
 ├── Docs/
@@ -47,7 +47,7 @@ Engine/Source/Runtime/HNGRuntimeCore/
 #include <HNGRuntimeCore/Include/RuntimeContext.h>
 ```
 
-**HNGRuntimeNodes** 通过相对路径包含 `../../HNGRuntimeCore/...`（见该模块头文件）；建议新代码统一经 Runtime 根包含目录。
+**HNGRuntimeNodes** 通过相对路径包含 `../../HNGRuntimeCore/...`（见该模块头文件）；建议新代码统一经 **Kernel** 根（`VISIONGAL_KERNEL_ROOT`）包含目录。
 
 ### 4.2 执行模型
 
@@ -80,5 +80,6 @@ Engine/Source/Runtime/HNGRuntimeCore/
 
 ## 7. 相关链接
 
-- [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
+- [Kernel 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
+- [Runtime 总览](../../../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
 - [HNGRuntimeNodes](../HNGRuntimeNodes/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

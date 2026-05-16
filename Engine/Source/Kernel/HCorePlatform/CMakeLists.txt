@@ -75,7 +75,7 @@ add_library (HCorePlatform STATIC ${HCORE_INTERFACE_FILES} ${HCORE_HEADER_FILES}
 #target_compile_definitions(HCorePlatform PRIVATE H_CORE_PLATFORM_EXPORT)
 
 # 添加头文件搜索路径
-target_include_directories(HCorePlatform PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(HCorePlatform PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(HCorePlatform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HCorePlatform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 

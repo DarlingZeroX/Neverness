@@ -14,7 +14,7 @@
 
 ## 2. 构建与选项
 
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Include`、`Interface`（以 CMake 为准）。
+- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`（以 CMake 为准）。
 - Windows 等平台通常需链接 **opengl32** 或通过 **SDL** 创建 GL 上下文（由上层协调）。
 
 ---

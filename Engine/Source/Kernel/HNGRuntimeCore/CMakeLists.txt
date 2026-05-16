@@ -1,4 +1,4 @@
-﻿set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
@@ -29,7 +29,7 @@ add_library (HNGRuntimeCore SHARED ${HNODEGRAPH_HEADER_FILES} ${HNODEGRAPH_SRC_F
 target_compile_definitions(HNGRuntimeCore PRIVATE H_NODE_GRAPH_API_EXPORT)
 
 # 添加头文件搜索路径
-target_include_directories(HNGRuntimeCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(HNGRuntimeCore PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(HNGRuntimeCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HNGRuntimeCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 

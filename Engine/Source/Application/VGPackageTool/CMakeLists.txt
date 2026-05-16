@@ -1,4 +1,4 @@
-﻿# CMakeList.txt: 在此处包括源代码并定义
+# CMakeList.txt: 在此处包括源代码并定义
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -31,6 +31,7 @@ target_compile_definitions(VGPackageTool PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJ
 
 # 添加头文件搜索路径
 target_include_directories(VGPackageTool PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGPackageTool PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGPackageTool PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGPackageTool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 

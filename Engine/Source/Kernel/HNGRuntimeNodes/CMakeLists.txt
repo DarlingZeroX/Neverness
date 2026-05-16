@@ -26,8 +26,8 @@ add_library (HNGRuntimeNodes SHARED ${HNGRUNTIMENODES_HEADER_FILES} ${HNGRUNTIME
 
 target_compile_definitions(HNGRuntimeNodes PRIVATE H_NG_RUNTIME_NODES_API_EXPORT)
 
-# 需要能包含到 Runtime 根路径（访问 HNGRuntimeCore 头）
-target_include_directories(HNGRuntimeNodes PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+# 需要能包含到 Kernel 根路径（访问 HNGRuntimeCore 头）
+target_include_directories(HNGRuntimeNodes PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(HNGRuntimeNodes PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HNGRuntimeNodes PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 

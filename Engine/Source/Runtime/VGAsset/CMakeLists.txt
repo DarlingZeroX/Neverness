@@ -55,6 +55,7 @@ target_compile_definitions(VGAsset PRIVATE VG_ASSET_EXPORT)
 
 # 添加头文件搜索路径
 target_include_directories(VGAsset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGAsset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGAsset PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGAsset PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 

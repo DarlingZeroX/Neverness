@@ -14,7 +14,7 @@
 
 ## 2. 构建与选项
 
-- `target_include_directories`：**PRIVATE** `Engine/Source/Runtime`、`Include`、`Interface`。
+- `target_include_directories`：**PUBLIC** `Engine/Source/Kernel`（`VISIONGAL_KERNEL_ROOT`）、`Include`、`Interface`。
 - 未启用单独的 `H_CORE_PLATFORM_EXPORT` 动态导出宏（见 CMake 注释）。
 
 ---
@@ -22,7 +22,7 @@
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Runtime/HCorePlatform/
+Engine/Source/Kernel/HCorePlatform/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
@@ -85,5 +85,6 @@ Engine/Source/Runtime/HCorePlatform/
 
 ## 7. 相关链接
 
-- [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
+- [Kernel 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
+- [Runtime 总览](../../../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
 - [HCore](../HCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

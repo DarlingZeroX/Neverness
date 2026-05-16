@@ -15,7 +15,7 @@
 
 ## 2. 构建与选项
 
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Include`、`Interface`。
+- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`。
 
 ---
 
@@ -81,4 +81,4 @@ Engine/Source/Runtime/VGAsset/
 
 - [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
 - [VGPackage](../VGPackage/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [HMedia](../HMedia/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [HMedia](../../Kernel/HMedia/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

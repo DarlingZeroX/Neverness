@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VisionGal.Managed.Graph")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5371d8f48513ec537afa33b1f0dc3968b420fc3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0bcf2c3457774e7e2c6350803bf0ef2f08116f0")]
 [assembly: System.Reflection.AssemblyProductAttribute("VisionGal.Managed.Graph")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VisionGal.Managed.Graph")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

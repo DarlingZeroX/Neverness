@@ -16,14 +16,14 @@
 ## 2. 构建与选项
 
 - 需要本机/vcpkg 提供 **FFmpeg** 开发包；否则 CMake 配置阶段失败。
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Include`。
+- 包含目录：**PUBLIC** `Engine/Source/Kernel`（`VISIONGAL_KERNEL_ROOT`）、`Include`。
 
 ---
 
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Runtime/HMedia/
+Engine/Source/Kernel/HMedia/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
@@ -84,5 +84,6 @@ Engine/Source/Runtime/HMedia/
 
 ## 7. 相关链接
 
-- [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
+- [Kernel 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
+- [Runtime 总览](../../../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
 - [HCore](../HCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

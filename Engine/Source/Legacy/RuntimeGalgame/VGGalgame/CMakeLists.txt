@@ -55,6 +55,7 @@ add_library (VGGalgame SHARED ${HCORE_INTERFACE_FILES} ${HCORE_HEADER_FILES} ${H
 target_compile_definitions(VGGalgame PRIVATE VG_GALGAME_EXPORT)
 
 target_include_directories(VGGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGGalgame PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Legacy/RuntimeGalgame)
 target_include_directories(VGGalgame PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)
 target_include_directories(VGGalgame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)

@@ -60,7 +60,7 @@ flowchart TB
 |------|------|
 | **C++ 标准** | **C++17**（`CMAKE_CXX_STANDARD 17`）。 |
 | **预编译头** | `Include/pch.h`（`target_precompile_headers`）。 |
-| **包含目录** | **PRIVATE**：`Engine/Source/Runtime`、`Include`、`Interface`；**PUBLIC**：`VGLua/Include`（向依赖方传播 sol2 / Lua 头）。 |
+| **包含目录** | **PRIVATE**：`Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`；**PUBLIC**：`VGLua/Include`（向依赖方传播 sol2 / Lua 头）。 |
 | **编译定义** | `ENGINE_API_EXPORT`（仅本库构建时导出符号）。 |
 | **MSVC** | `/utf-8`、`/bigobj`、并行 `/MP`。 |
 | **链接** | 见 [`CMakeLists.txt`](../CMakeLists.txt)：`SDL3`、`SDL3_image`、`RmlUi`、`VGLua`、`HCore`、`HCorePlatform`、`HFileSystem`、`HMedia`、`VGRHI`、`VGPackage`、`VGImgui`、`VGCore`、`VGAsset`、`VGUI`；**PRIVATE** 平台 **OpenGL**。 |
@@ -127,7 +127,7 @@ target_link_libraries(YourTarget PRIVATE VGEngine)
 # 或 PUBLIC：若 YourTarget 的头文件暴露了 VGEngine 类型
 ```
 
-将 **`Engine/Source/Runtime`** 加入 **include path** 后，可按项目习惯使用：
+将 **`Engine/Source/Runtime`** 与 **`Engine/Source/Kernel`** 加入 **include path** 后，可按项目习惯使用：
 
 - `#include "Engine/VGEngine.h"`
 - `#include "Game/GameEngine.h"`

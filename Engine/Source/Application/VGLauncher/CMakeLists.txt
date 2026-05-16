@@ -1,4 +1,4 @@
-﻿# CMakeList.txt: VGEditor CMake 项目，在此处包括源代码并定义
+# CMakeList.txt: VGEditor CMake 项目，在此处包括源代码并定义
 # 项目特定的逻辑。
 #
 set(CMAKE_CXX_STANDARD 17)
@@ -42,6 +42,7 @@ target_compile_definitions(VGLauncher PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT
 
 # 添加头文件搜索路径
 target_include_directories(VGLauncher PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGLauncher PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGLauncher PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGLauncher PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 

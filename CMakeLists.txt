@@ -51,21 +51,17 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # 可执行文件目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-############ Runtime模块
-# 基础框架
-add_subdirectory ("Engine/Source/Runtime/HCore")
-add_subdirectory ("Engine/Source/Runtime/HCorePlatform")
-add_subdirectory ("Engine/Source/Runtime/HFileSystem")
-add_subdirectory ("Engine/Source/Runtime/HNGRuntimeCore")
-add_subdirectory ("Engine/Source/Runtime/HNGRuntimeNodes")
-add_subdirectory ("Engine/Source/Runtime/HMedia")
+############ Kernel 模块（H* 基建）
+add_subdirectory ("Engine/Source/Kernel")
 
+############ Runtime模块
 # 引擎
 add_subdirectory ("Engine/Source/Runtime/VGLua")
 add_subdirectory ("Engine/Source/Runtime/VGRHI")
 add_subdirectory ("Engine/Source/Runtime/VGPackage")
 add_subdirectory ("Engine/Source/Runtime/VGImgui")
 add_subdirectory ("Engine/Source/Runtime/VGCore")
+#add_subdirectory ("Engine/Source/Runtime/VGComponentModel")
 add_subdirectory ("Engine/Source/Runtime/VGNativeEngineAPI")
 
 option(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES "Use VGEngineRuntimeServices for VGNativeApi engineServices (else Stub-only table)" ON)
@@ -95,22 +91,22 @@ if(VISIONGAL_BUILD_LEGACY_GALGAME)
 endif()
 
 ############ 编辑器（主線；Galgame 編輯器模組已移至 Legacy/）
-add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
+#add_subdirectory ("Engine/Source/Editor/HNGEditorCore")
 add_subdirectory ("Engine/Source/Editor/VGEditorFramework")
-add_subdirectory ("Engine/Source/Editor/VGEditorReactive")
-add_subdirectory ("Engine/Source/Editor/VGEditorComponentSchema")
-add_subdirectory ("Engine/Source/Editor/VGEditorAuthoringGraph")
-add_subdirectory ("Engine/Source/Editor/VGEditorExtensions")
-add_subdirectory ("Engine/Source/Editor/VGEditorRuntimeBridge")
+#add_subdirectory ("Engine/Source/Editor/VGEditorReactive")
+#add_subdirectory ("Engine/Source/Editor/VGEditorComponentSchema")
+#add_subdirectory ("Engine/Source/Editor/VGEditorAuthoringGraph")
+#add_subdirectory ("Engine/Source/Editor/VGEditorExtensions")
+#add_subdirectory ("Engine/Source/Editor/VGEditorRuntimeBridge")
 add_subdirectory ("Engine/Source/Editor/VGEditor")
 
 ############ 应用
 add_subdirectory ("Engine/Source/Application/VGLauncher")         # 启动器
-add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
-add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
-if(VISIONGAL_BUILD_LEGACY_GALGAME)
-	add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序（Legacy Galgame）
-endif()
+#add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
+#add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
+#if(VISIONGAL_BUILD_LEGACY_GALGAME)
+#	add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序（Legacy Galgame）
+#endif()
 #add_subdirectory ("Engine/Source/Application/HNGRuntimeCoreDemo")     # 节点图应用程序
 
 

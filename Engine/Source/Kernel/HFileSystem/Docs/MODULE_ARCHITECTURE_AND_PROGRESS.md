@@ -15,7 +15,7 @@
 
 ## 2. 构建与选项
 
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Include`、`Interface`。
+- 包含目录：**PUBLIC** `Engine/Source/Kernel`（`VISIONGAL_KERNEL_ROOT`）、`Include`、`Interface`。
 - 与 **HCorePlatform** 的源码清单模式同源（CMake 中复用 `HCORE_INTERFACE_FILES` 等变量命名）；以 [`CMakeLists.txt`](../CMakeLists.txt) 为准。
 
 ---
@@ -23,7 +23,7 @@
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Runtime/HFileSystem/
+Engine/Source/Kernel/HFileSystem/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
@@ -71,5 +71,6 @@ Engine/Source/Runtime/HFileSystem/
 
 ## 7. 相关链接
 
-- [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
+- [Kernel 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
+- [Runtime 总览](../../../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
 - [HCore](../HCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

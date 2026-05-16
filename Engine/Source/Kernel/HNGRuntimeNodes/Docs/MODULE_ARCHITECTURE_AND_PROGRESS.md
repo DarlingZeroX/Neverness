@@ -15,14 +15,14 @@
 
 ## 2. 构建与选项
 
-- `target_include_directories`：**PRIVATE** `Engine/Source/Runtime`、`Include`、**模块根目录**（用于 `HNGRuntimeNodesConfig.h` 等直包）。
+- `target_include_directories`：**PUBLIC** `Engine/Source/Kernel`（`VISIONGAL_KERNEL_ROOT`）、`Include`、**模块根目录**（用于 `HNGRuntimeNodesConfig.h` 等直包）。
 
 ---
 
 ## 3. 目录结构
 
 ```
-Engine/Source/Runtime/HNGRuntimeNodes/
+Engine/Source/Kernel/HNGRuntimeNodes/
 ├── CMakeLists.txt
 ├── HNGRuntimeNodesConfig.h
 ├── Docs/
@@ -84,5 +84,6 @@ H_NG_RUNTIME_NODES_API ExecResult SomeNodeExecute(RuntimeContext& ctx, NODE_ID n
 
 ## 7. 相关链接
 
-- [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
+- [Kernel 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
+- [Runtime 总览](../../../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
 - [HNGRuntimeCore](../HNGRuntimeCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

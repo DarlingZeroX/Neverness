@@ -46,6 +46,7 @@ add_library (VGCore SHARED ${ENGINE_SRC_FILES} ${ENGINE_HEADER_FILES})
 
 # 添加头文件搜索路径
 target_include_directories(VGCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(VGCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/VGLua/Include)

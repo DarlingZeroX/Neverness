@@ -18,7 +18,7 @@
 |------|------|
 | `LUA_BUILD_AS_DLL` | 通过 `add_definitions` 启用，Lua 以 DLL/DSO 导出符号。 |
 | C 标准 | Lua 源码按 **C90** 编译（CMake 中 `CMAKE_C_STANDARD 90`）。 |
-| 包含目录 | **PUBLIC** `Include`、`Include/Lua`；依赖方可 `#include <lua.h>` 与 `sol/...`。 |
+| 包含目录 | **PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`；**PUBLIC** `Include`、`Include/Lua`；依赖方可 `#include <lua.h>` 与 `sol/...`。 |
 
 ---
 

@@ -63,6 +63,7 @@ target_compile_definitions(VGEditorFramework PRIVATE VG_EDITOR_FRAMEWORK_API_EXP
 
 # 添加头文件搜索路径
 target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
 target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGEditorFramework PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGEditorFramework PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)

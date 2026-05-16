@@ -1,6 +1,6 @@
 # VisionGal Native Runtime — 架构与总进度
 
-本文描述根 [`CMakeLists.txt`](../../../CMakeLists.txt) 中纳入的 **17 个** `Engine/Source/Runtime` 子模块的分层、依赖与文档入口。**VisionGal 2026 Native 主線分工**（与 Managed **§0** 对齐）见本文 **§0**。各子模块的详细说明见 **该模块目录下** `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`（路径索引见 [§2 模块索引](#2-模块索引)）。
+本文描述根 [`CMakeLists.txt`](../../../CMakeLists.txt) 中纳入的 **11 个** `Engine/Source/Runtime` **VG\*** 子模块的分层、依赖与文档入口。**H\*** 原生基建已迁入 [`Engine/Source/Kernel`](../Kernel/KERNEL_ARCHITECTURE_AND_PROGRESS.md)（**6** 个默认构建 + **HMeta** 目录预留）。**VisionGal 2026 Native 主線分工**（与 Managed **§0** 对齐）见本文 **§0**。各 Runtime 子模块的详细说明见 **该模块目录下** `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`（路径索引见 [§2 模块索引](#2-模块索引)）。
 
 与 **Managed** 栈的关系见 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md)；其中 **Engine Service ABI** 与 **行程级 Runtime** 的 C 侧入口见 [VGNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](VGNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)、[VGEngineRuntimeServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](VGEngineRuntimeServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。
 
@@ -20,7 +20,7 @@
 
 ```mermaid
 flowchart TB
-  subgraph foundation [基础层]
+  subgraph kernel [Kernel — H 基建]
     HCore[HCore]
     HCorePlatform[HCorePlatform]
     HFileSystem[HFileSystem]
@@ -28,21 +28,21 @@ flowchart TB
     HNGRuntimeNodes[HNGRuntimeNodes]
     HMedia[HMedia]
   end
-  subgraph mediaTool [媒体与工具]
+  subgraph mediaTool [Runtime — 媒体与工具]
     VGLua[VGLua]
     VGRHI[VGRHI]
     VGPackage[VGPackage]
     VGImgui[VGImgui]
   end
-  subgraph coreUi [核心与内容]
+  subgraph coreUi [Runtime — 核心与内容]
     VGCore[VGCore]
     VGAsset[VGAsset]
     VGUI[VGUI]
   end
-  subgraph engineTop [引擎主体]
+  subgraph engineTop [Runtime — 引擎主体]
     VGEngine[VGEngine]
   end
-  subgraph abiRuntime [ABI 与行程级 Runtime]
+  subgraph abiRuntime [Runtime — ABI 与行程级 Runtime]
     VGNativeEngineAPI[VGNativeEngineAPI]
     VGEngineRuntime[VGEngineRuntime]
     VGEngineRuntimeServices[VGEngineRuntimeServices]
@@ -92,7 +92,7 @@ flowchart TB
   VGEngineRuntimeServices --> VGEngineRuntime
 ```
 
-说明：上图为 **主要链接依赖** 的简化视图（以各模块 `CMakeLists.txt` 中 `target_link_libraries` 为准）；**`VGNativeEngineAPI` / `VGEngineRuntime` / `VGEngineRuntimeServices` 不链接 `VGEngine`**，供托管宿主与 Stub/Runtime 表路径使用。
+说明：上图为 **主要链接依赖** 的简化视图（以各模块 `CMakeLists.txt` 中 `target_link_libraries` 为准）；**H\*** 细节见 [Kernel 总览](../Kernel/KERNEL_ARCHITECTURE_AND_PROGRESS.md)。**`VGNativeEngineAPI` / `VGEngineRuntime` / `VGEngineRuntimeServices` 不链接 `VGEngine`**，供托管宿主与 Stub/Runtime 表路径使用。
 
 ---
 
@@ -100,12 +100,7 @@ flowchart TB
 
 | 模块 | CMake 目标 | 文档 | 一句话职责 | 成熟度 |
 |------|------------|------|------------|--------|
-| HCore | `HCore` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](HCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 数学、元数据、序列化、事件、VFS 等通用基础（含 vendored GLM 等） | 生产基建 |
-| HCorePlatform | `HCorePlatform` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](HCorePlatform/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 平台层：SDL 封装、文件监视、原生对话框等 | 生产 |
-| HFileSystem | `HFileSystem` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](HFileSystem/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 文件系统相关动态库（与平台头文件布局同源） | 生产 |
-| HNGRuntimeCore | `HNGRuntimeCore` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](HNGRuntimeCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 节点图运行时核心（共享库） | 演进中 |
-| HNGRuntimeNodes | `HNGRuntimeNodes` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](HNGRuntimeNodes/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 节点图运行时节点层，依赖 `HNGRuntimeCore` | 演进中 |
-| HMedia | `HMedia` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](HMedia/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | FFmpeg 音视频封装 | 生产 |
+| *(H\* 基建)* | — | [Kernel 模块索引](../Kernel/KERNEL_ARCHITECTURE_AND_PROGRESS.md#2-模块索引) | HCore、平台、文件系统、媒体、节点图运行时等 | 见 Kernel 文档 |
 | VGLua | `VGLua` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](VGLua/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Lua + sol2 绑定栈 | 生产 |
 | VGRHI | `VGRHI` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](VGRHI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | OpenGL 渲染硬件抽象 | 生产 |
 | VGPackage | `VGPackage` | [Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](VGPackage/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 包体 / 资源包相关 | 生产 |
@@ -134,7 +129,8 @@ flowchart TB
 
 | Phase | 内容 | 状态 |
 |-------|------|------|
-| 基建 | HCore / 平台 / 文件系统 / 媒体 / Lua / RHI / 包 / ImGui / Core | 持续维护 |
+| Kernel 基建 | HCore / 平台 / 文件系统 / 媒体 / 节点图（见 [Kernel](../Kernel/KERNEL_ARCHITECTURE_AND_PROGRESS.md)） | 持续维护 |
+| Runtime 基建 | Lua / RHI / 包 / ImGui / Core | 持续维护 |
 | 引擎主体 | VGEngine + VGAsset + VGUI 聚合 | 持续维护 |
 | Engine ABI | VGNativeEngineAPI（函数表 + Stub） | 已落地，随 layout 演进 |
 | 行程级 Runtime | VGEngineRuntime + VGEngineRuntimeServices | Phase 4 首包已合入；**§2.7.1** **EntitySubsystem** 与 **`entity.*`** Runtime 覆写（**layout v5**）已合入 |
@@ -147,6 +143,7 @@ flowchart TB
 
 | 日期 | 进展 |
 |------|------|
+| 2026-05-16 | **H\*** 模块迁入 `Engine/Source/Kernel`；Runtime 根文档改为 **11** 个 VG 子模块 + Kernel 互链。 |
 | 2026-05-15 | 补齐 Runtime 根总览与各模块 `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md` 索引，统一简体中文与互链。 |
 | 2026-05-15 | Managed Phase 6 slice 5：**VisionGal.Managed.Gameplay** 序列分支与 **Advance** 可恢复等待（纯托管）；总览见 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) §2.6.1。 |
 | 2026-05-16 | 根文档补充 **§5.2** 总体状态表（完成度 / 未完成项 / 未来规划）；与 **VGNativeEngineAPI**、**VGEngineRuntime** 模块文档交叉更新。 |
@@ -163,7 +160,7 @@ flowchart TB
 
 | 维度 | 说明 |
 |------|------|
-| **完成度** | **17** 个子模块中基建层、**VGEngine**、**VGAsset**、**VGUI** 等为生产级；**VGNativeEngineAPI**（函数表 + Stub，**layout v4** 起含尾部 **`VGEntityAPI`**；**layout v5** 起含 **`getRuntimeTick`**）与 **VGEngineRuntime** / **VGEngineRuntimeServices**（Phase 4 首包 + **EntitySubsystem**；**P0-1** 起 **RuntimeScheduler** / **IRuntimeSubsystem** 统一 Tick 管线，**EntitySubsystem** 挂 **Update** 组）已与托管 **Phase 4** 打通 Tick、Async、Scene 内存模型、Object、AssetRegistry 等转发路径；**`BuildRuntime`** 覆写 **`entity.*`** 至 **EntitySubsystem**。托管 **P0 Entity**（**VisionGal.Managed.Entity**）在 **EntityWorld** 上已具备泛型与 **Type** 键查询／**GetComponent**／**RemoveComponent** 及 **GetComponentCount**（MANAGED **§2.5.2–§2.5.5**），与 Native 场景 **VGEntityHandle** 仍无自动桥接；**`VGEntityAPI`** 当前为 ABI 冒烟 + **`getRuntimeTick`** 可观测性，**不代表**托管 **EntityWorld** 已镜像（见 MANAGED **§2.7.1**）。对称托管 **VisionGal.Managed.RuntimeLoop** 见 MANAGED **§0.3**。 |
+| **完成度** | **11** 个 Runtime 子模块 + **6** 个 Kernel 子模块（**7** 含 **HMeta** 目录）；**VGEngine**、**VGAsset**、**VGUI** 等为生产级；**VGNativeEngineAPI**（函数表 + Stub，**layout v4** 起含尾部 **`VGEntityAPI`**；**layout v5** 起含 **`getRuntimeTick`**）与 **VGEngineRuntime** / **VGEngineRuntimeServices**（Phase 4 首包 + **EntitySubsystem**；**P0-1** 起 **RuntimeScheduler** / **IRuntimeSubsystem** 统一 Tick 管线，**EntitySubsystem** 挂 **Update** 组）已与托管 **Phase 4** 打通 Tick、Async、Scene 内存模型、Object、AssetRegistry 等转发路径；**`BuildRuntime`** 覆写 **`entity.*`** 至 **EntitySubsystem**。托管 **P0 Entity**（**VisionGal.Managed.Entity**）在 **EntityWorld** 上已具备泛型与 **Type** 键查询／**GetComponent**／**RemoveComponent** 及 **GetComponentCount**（MANAGED **§2.5.2–§2.5.5**），与 Native 场景 **VGEntityHandle** 仍无自动桥接；**`VGEntityAPI`** 当前为 ABI 冒烟 + **`getRuntimeTick`** 可观测性，**不代表**托管 **EntityWorld** 已镜像（见 MANAGED **§2.7.1**）。对称托管 **VisionGal.Managed.RuntimeLoop** 见 MANAGED **§0.3**。 |
 | **开发进展** | 各 Native 模块以 `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md` 末尾「开发进展」为准。托管 **Phase 6 托管子阶段**（slice 2–5，见 MANAGED **§2.3–§2.6.1**）为纯 C#，**不**修改本树 C++ 与 ABI layout；托管 **P0 Entity** slice 2–5 见 MANAGED **§2.5.2**–**§2.5.5**。**Phase 6** 整体在 MANAGED **§2** 仍标「进行中」系因 **Native Gameplay／存档** 子项未纳入 ABI 表。 |
 | **未完成项** | **VGEntitySystem**（完整实体子系统实现）未开始；**`VGEntityAPI`** Kernel 首包已随 **layout v5** 纳入并由 **BuildRuntime** 转发（见 MANAGED **§2.7.1**）。**EntityWorld** 与 Native **数据镜像**仍为后续文档与实现项。**VGEngineRuntime** 与 **VGAsset** 真实资源管线、**VGEngine** 全量 Adapter 仍为长期项；Lua 栈迁移依赖产品与 Graph 路线。**P0-1 Scheduler 首包**已落地（**Timing → FrameContext → RuntimeScheduler**；**Async** 主线程队列仍为占位）；**Kernel 化第一阶段**其余项（Scene Runtime、双世界深化、Graph.Runtime、Managed Component）见 Managed **§0.3**。索引性清单见 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§2.7**。 |
 | **未来规划** | 与 Managed [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§5** 总表及 **§5.1** Native 子项草案对齐：**VGNativeEngineAPI** 扩展 Gameplay／存档子表、**VGEngineRuntimeServices** 转发、跨栈测试；并继续 **P0+**（**VGEntitySystem**、Scene Runtime、Graph）与 **Kernel 化**。**Runtime Kernel 第一阶段路线**（Scheduler、Scene Runtime、双世界实体等）见 Managed **§0**。 |

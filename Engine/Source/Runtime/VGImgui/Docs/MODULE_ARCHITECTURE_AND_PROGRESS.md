@@ -15,7 +15,7 @@
 
 ## 2. 构建与选项
 
-- 使用全局 `include_directories(Runtime 根 + 本模块 Include)`（见 CMake）；新目标建议逐步迁移为 `target_include_directories` 风格（工程卫生项，非本文件范围）。
+- 使用全局 `include_directories(Runtime 根 + Kernel 根 + 本模块 Include)`（见 CMake）；新目标建议逐步迁移为 `target_include_directories` 风格（工程卫生项，非本文件范围）。
 - 需要 **Freetype** 与 **SDL3** 包。
 
 ---
