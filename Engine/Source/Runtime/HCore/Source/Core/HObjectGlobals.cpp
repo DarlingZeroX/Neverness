@@ -9,7 +9,7 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "pch.h"
+
 #include "HObjectGlobals.h"
 #include "HTypeInfo.h"
 

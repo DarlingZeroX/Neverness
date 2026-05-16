@@ -16,6 +16,7 @@
 #include <VGRHI/Interface/Texture.h>
 
 #include "HMedia/Include/FVideo.h"
+#include "HCore/Interface/HCoreTypes.h"
 
 namespace VisionGal {
 

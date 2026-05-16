@@ -20,6 +20,7 @@
 #include "../WindowInterface.h"
 #include "../../HCorePlatformConfig.h"
 #include <vector>
+#include <HCore/Interface/HVector.h>
 
 #ifdef SDL3_WINDOW_SUPPORTED
 

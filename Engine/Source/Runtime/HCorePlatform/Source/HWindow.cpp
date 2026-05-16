@@ -10,7 +10,7 @@
  */
 
 #include "HWindow.h"
-//#include "SDL3/SDL3Window.h"
+#include "HCore/Interface/HVector.h"
 
 namespace Horizon
 {

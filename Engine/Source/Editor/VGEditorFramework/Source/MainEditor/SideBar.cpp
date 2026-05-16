@@ -12,7 +12,7 @@
 #include "MainEditor/SideBar.h"
 //#include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 #include <VGImgui/IncludeImGuiEx.h>
-
+#include <HCore/Interface/HVector.h>
 namespace VisionGal::Editor
 {
 	void EditorSideBar::OnGUI()

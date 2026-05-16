@@ -11,6 +11,7 @@
 
 #pragma once
 #include "VGCore/Interface/GameInterface.h"
+#include <HCore/Interface/HVector.h>
 
 namespace VisionGal
 {

@@ -10,12 +10,12 @@
 */
 
 #pragma once
-#include "../Render/Texture2D.h"
-#include "VGCore/Include/Core/Core.h"
 #include "../EngineConfig.h"
+#include "Texture2D.h"
+#include "VGCore/Include/Core/Core.h"
 #include "VGCore/Interface/RenderInterface.h"
-//#include "../Graphics/Interface/VGFX.h"
 #include <VGRHI/Interface/VGFX.h>
+#include <HCore/Interface/HVector.h>
 
 namespace VisionGal {
 

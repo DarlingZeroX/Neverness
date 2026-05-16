@@ -21,6 +21,8 @@
     <ProjectReference Include="..\..\..\VGManagedGraph\Managed\VisionGal.Managed.Graph\VisionGal.Managed.Graph.csproj" />
     <ProjectReference Include="..\..\..\VGManagedScene\Managed\VisionGal.Managed.Scene\VisionGal.Managed.Scene.csproj" />
     <ProjectReference Include="..\..\..\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\VisionGal.Managed.Gameplay.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedEntity\Managed\VisionGal.Managed.Entity\VisionGal.Managed.Entity.csproj" />
+    <ProjectReference Include="..\..\..\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\VisionGal.Managed.RuntimeLoop.csproj" />
     <ProjectReference Include="..\..\..\VGManagedUndoRedo\Managed\VisionGal.Managed.UndoRedo\VisionGal.Managed.UndoRedo.csproj" />
     <ProjectReference Include="..\..\..\VGManagedScripting\Managed\VisionGal.Managed.Scripting\VisionGal.Managed.Scripting.csproj" />
   </ItemGroup>

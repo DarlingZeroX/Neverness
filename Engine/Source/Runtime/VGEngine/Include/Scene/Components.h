@@ -10,20 +10,17 @@
 */
 
 #pragma once
-#include "VGCore/Include/Core/Core.h"
+#include "../EngineConfig.h"
 #include "../Render/Sprite.h"
-//#include "../Resource/Audio.h"
-#include "../Engine/AudioPlayer.h"
-#include "../Engine/VideoPlayer.h"
-//#include "../Resource/Video.h"
-#include "VGUI/Interface/UIDocument.h"
 #include "../Render/Material.h"
 #include "../Render/Transition.h"
+#include "../Engine/AudioPlayer.h"
+#include "../Engine/VideoPlayer.h"
+#include "VGCore/Include/Core/Core.h"
+#include "VGUI/Interface/UIDocument.h"
 #include "VGCore/Interface/SceneInterface.h"
 #include "VGCore/Interface/GameInterface.h"
-#include <VGEngine/Include/EngineConfig.h>
 #include <HCore/Interface/HSerialization.h>
-//#include <HMedia/Interface/AudioInterface.h>
 
 namespace VisionGal {
 

@@ -187,12 +187,24 @@
           "bin/placeholder/VisionGal.Managed.Engine.Runtime.dll": {}
         }
       },
+      "VisionGal.Managed.Entity/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Entity.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Entity.dll": {}
+        }
+      },
       "VisionGal.Managed.Gameplay/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "VisionGal.Managed.Core": "1.0.0",
-          "VisionGal.Managed.Engine": "1.0.0"
+          "VisionGal.Managed.Engine": "1.0.0",
+          "VisionGal.Managed.Scene": "1.0.0",
+          "VisionGal.Managed.Serialization": "1.0.0"
         },
         "compile": {
           "bin/placeholder/VisionGal.Managed.Gameplay.dll": {}
@@ -252,6 +264,16 @@
         },
         "runtime": {
           "bin/placeholder/VisionGal.Managed.Reflection.dll": {}
+        }
+      },
+      "VisionGal.Managed.RuntimeLoop/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.RuntimeLoop.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.RuntimeLoop.dll": {}
         }
       },
       "VisionGal.Managed.Scene/1.0.0": {
@@ -1160,6 +1182,11 @@
       "path": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/VisionGal.Managed.Engine.Runtime.csproj",
       "msbuildProject": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/VisionGal.Managed.Engine.Runtime.csproj"
     },
+    "VisionGal.Managed.Entity/1.0.0": {
+      "type": "project",
+      "path": "../../../VGManagedEntity/Managed/VisionGal.Managed.Entity/VisionGal.Managed.Entity.csproj",
+      "msbuildProject": "../../../VGManagedEntity/Managed/VisionGal.Managed.Entity/VisionGal.Managed.Entity.csproj"
+    },
     "VisionGal.Managed.Gameplay/1.0.0": {
       "type": "project",
       "path": "../../../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/VisionGal.Managed.Gameplay.csproj",
@@ -1184,6 +1211,11 @@
       "type": "project",
       "path": "../../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj",
       "msbuildProject": "../../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj"
+    },
+    "VisionGal.Managed.RuntimeLoop/1.0.0": {
+      "type": "project",
+      "path": "../../../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/VisionGal.Managed.RuntimeLoop.csproj",
+      "msbuildProject": "../../../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/VisionGal.Managed.RuntimeLoop.csproj"
     },
     "VisionGal.Managed.Scene/1.0.0": {
       "type": "project",
@@ -1213,11 +1245,13 @@
       "VisionGal.Managed.Editor >= 1.0.0",
       "VisionGal.Managed.Engine >= 1.0.0",
       "VisionGal.Managed.Engine.Runtime >= 1.0.0",
+      "VisionGal.Managed.Entity >= 1.0.0",
       "VisionGal.Managed.Gameplay >= 1.0.0",
       "VisionGal.Managed.Graph >= 1.0.0",
       "VisionGal.Managed.Inspector >= 1.0.0",
       "VisionGal.Managed.Object >= 1.0.0",
       "VisionGal.Managed.Reflection >= 1.0.0",
+      "VisionGal.Managed.RuntimeLoop >= 1.0.0",
       "VisionGal.Managed.Scene >= 1.0.0",
       "VisionGal.Managed.Scripting >= 1.0.0",
       "VisionGal.Managed.Serialization >= 1.0.0",
@@ -1230,11 +1264,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
       "projectName": "VisionGal.Managed.Runtime",
-      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1252,41 +1286,47 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGraph\\Managed\\VisionGal.Managed.Graph\\VisionGal.Managed.Graph.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGraph\\Managed\\VisionGal.Managed.Graph\\VisionGal.Managed.Graph.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedInspector\\Managed\\VisionGal.Managed.Inspector\\VisionGal.Managed.Inspector.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedInspector\\Managed\\VisionGal.Managed.Inspector\\VisionGal.Managed.Inspector.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGraph\\Managed\\VisionGal.Managed.Graph\\VisionGal.Managed.Graph.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGraph\\Managed\\VisionGal.Managed.Graph\\VisionGal.Managed.Graph.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedInspector\\Managed\\VisionGal.Managed.Inspector\\VisionGal.Managed.Inspector.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedInspector\\Managed\\VisionGal.Managed.Inspector\\VisionGal.Managed.Inspector.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedRuntimeLoop\\Managed\\VisionGal.Managed.RuntimeLoop\\VisionGal.Managed.RuntimeLoop.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedRuntimeLoop\\Managed\\VisionGal.Managed.RuntimeLoop\\VisionGal.Managed.RuntimeLoop.csproj"
+            },
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj"
+            },
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj"
             },
             "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj": {
               "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj"

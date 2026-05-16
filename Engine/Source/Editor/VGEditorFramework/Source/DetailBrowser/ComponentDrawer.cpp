@@ -20,6 +20,8 @@
 #include <VGEngine/Include/Engine/AudioPlayer.h>
 #include <VGEngine/Include/Engine/VideoPlayer.h>
 
+#include "HCore/Include/Math/GLM/gtc/quaternion.hpp"
+
 namespace VisionGal::Editor
 {
 	void TransformComponentDrawer::OnGUI(IEntity* entity)

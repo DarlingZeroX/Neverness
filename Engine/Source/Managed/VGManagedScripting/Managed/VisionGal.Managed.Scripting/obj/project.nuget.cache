@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gBP3JBky/O0=",
+  "dgSpecHash": "oKFGogL3TYM=",
   "success": true,
-  "projectFilePath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj",
+  "projectFilePath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\30749\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.11.0\\microsoft.codeanalysis.analyzers.3.11.0.nupkg.sha512",
     "C:\\Users\\30749\\.nuget\\packages\\microsoft.codeanalysis.common\\4.14.0\\microsoft.codeanalysis.common.4.14.0.nupkg.sha512",

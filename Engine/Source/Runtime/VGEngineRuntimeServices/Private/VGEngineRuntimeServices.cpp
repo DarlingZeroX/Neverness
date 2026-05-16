@@ -1,6 +1,11 @@
 /**
  * @file VGEngineRuntimeServices.cpp
  * @brief Runtime 版 Engine Service 表：先以 Stub 表為基底，再覆寫與 **VGEngineRuntime** 狀態相關之欄位（含 Phase 5 Object / AssetRegistry / Scene 擴充）。
+ *
+ * **VGEntityAPI（layout v5+）**
+ * - **`VGNativeEngineApiTable_BuildRuntime`** 覆寫 **`outTable->entity.getServiceAbiToken`** 與 **`getRuntimeTick`**，转发至 **`VGEngineRuntime::Instance().Entity()`**（**EntitySubsystem**）。
+ * - **`VGNativeEngineApiTable_BuildDefault`** / 未链接 Runtime 服务时仍使用 Stub 函数指针（`getRuntimeTick` 恒为 **0**）。
+ * - 与 **`VGSceneAPI`** 之 **`VGEntityHandle`** 语义分离不变（见 **`EntityAPI.h`**）。
  */
 
 #include <cstdint>
@@ -203,6 +208,18 @@ static VGGuid VG_ENGINE_ABI_STDCALL rt_reg_importAsset(const char* virtualPathUt
 {
 	return VGEngineRuntime::Instance().AssetRegistry().ImportAsset(virtualPathUtf8);
 }
+
+// --- VGEntityAPI（layout v5）：ABI 冒烟魔数 + 可观测 **runtimeTick**（与 Stub 行为区分见 **VGNativeEngineApiStubs.cpp**）。---
+
+static std::uint32_t VG_ENGINE_ABI_STDCALL rt_entity_getServiceAbiToken(void)
+{
+	return VGEngineRuntime::Instance().Entity().GetServiceAbiToken();
+}
+
+static std::uint64_t VG_ENGINE_ABI_STDCALL rt_entity_getRuntimeTick(void)
+{
+	return VGEngineRuntime::Instance().Entity().GetRuntimeTick();
+}
 } // namespace
 
 extern "C" void VGNativeEngineApiTable_BuildRuntime(VGNativeEngineAPI* outTable)
@@ -257,6 +274,11 @@ extern "C" void VGNativeEngineApiTable_BuildRuntime(VGNativeEngineAPI* outTable)
 	outTable->assetRegistry.getDependencyCount = &rt_reg_getDependencyCount;
 	outTable->assetRegistry.getDependencyAt = &rt_reg_getDependencyAt;
 	outTable->assetRegistry.importAsset = &rt_reg_importAsset;
+
+	// §2.7.1：Runtime 覆写 **entity.***，与 **VGNativeEngineApiTable_BuildDefault** 之 Stub 分流（Stub 的 **getRuntimeTick** 恒为 0）。
+	// 转发至 **VGEngineRuntime::Entity()**（**EntitySubsystem**）；**不**表示托管 **EntityWorld** 已与 Native ECS 数据镜像。
+	outTable->entity.getServiceAbiToken = &rt_entity_getServiceAbiToken;
+	outTable->entity.getRuntimeTick = &rt_entity_getRuntimeTick;
 }
 
 namespace

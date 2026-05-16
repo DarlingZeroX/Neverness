@@ -3,6 +3,7 @@
 #include <string>
 #include "../imgui/imgui.h"
 #include <memory>
+#include "HCore/Interface/HCoreTypes.h"
 
 namespace ImGuiEx
 {

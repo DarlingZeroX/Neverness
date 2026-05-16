@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ImGuiEx/ImGuiVector.h"
-
+#include <HCore/Interface/HVector.h>
 namespace ImGuiEx
 {
 	Vec3Dragging DrawVec3Control(

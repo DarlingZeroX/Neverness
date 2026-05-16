@@ -10,6 +10,7 @@
 */
 
 #include "Render/Texture2D.h"
+#include <HCore/Interface/HVector.h>
 
 namespace VisionGal
 {

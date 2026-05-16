@@ -425,12 +425,24 @@
           "bin/placeholder/VisionGal.Managed.Engine.dll": {}
         }
       },
+      "VisionGal.Managed.Entity/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Entity.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Entity.dll": {}
+        }
+      },
       "VisionGal.Managed.Gameplay/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "VisionGal.Managed.Core": "1.0.0",
-          "VisionGal.Managed.Engine": "1.0.0"
+          "VisionGal.Managed.Engine": "1.0.0",
+          "VisionGal.Managed.Scene": "1.0.0",
+          "VisionGal.Managed.Serialization": "1.0.0"
         },
         "compile": {
           "bin/placeholder/VisionGal.Managed.Gameplay.dll": {}
@@ -463,6 +475,16 @@
         },
         "runtime": {
           "bin/placeholder/VisionGal.Managed.Reflection.dll": {}
+        }
+      },
+      "VisionGal.Managed.RuntimeLoop/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.RuntimeLoop.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.RuntimeLoop.dll": {}
         }
       },
       "VisionGal.Managed.Scene/1.0.0": {
@@ -947,6 +969,11 @@
       "path": "../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj",
       "msbuildProject": "../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj"
     },
+    "VisionGal.Managed.Entity/1.0.0": {
+      "type": "project",
+      "path": "../../VGManagedEntity/Managed/VisionGal.Managed.Entity/VisionGal.Managed.Entity.csproj",
+      "msbuildProject": "../../VGManagedEntity/Managed/VisionGal.Managed.Entity/VisionGal.Managed.Entity.csproj"
+    },
     "VisionGal.Managed.Gameplay/1.0.0": {
       "type": "project",
       "path": "../../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/VisionGal.Managed.Gameplay.csproj",
@@ -961,6 +988,11 @@
       "type": "project",
       "path": "../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj",
       "msbuildProject": "../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj"
+    },
+    "VisionGal.Managed.RuntimeLoop/1.0.0": {
+      "type": "project",
+      "path": "../../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/VisionGal.Managed.RuntimeLoop.csproj",
+      "msbuildProject": "../../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/VisionGal.Managed.RuntimeLoop.csproj"
     },
     "VisionGal.Managed.Scene/1.0.0": {
       "type": "project",
@@ -977,9 +1009,11 @@
     "net10.0": [
       "Microsoft.NET.Test.Sdk >= 17.14.1",
       "VisionGal.Managed.Assets >= 1.0.0",
+      "VisionGal.Managed.Entity >= 1.0.0",
       "VisionGal.Managed.Gameplay >= 1.0.0",
       "VisionGal.Managed.Object >= 1.0.0",
       "VisionGal.Managed.Reflection >= 1.0.0",
+      "VisionGal.Managed.RuntimeLoop >= 1.0.0",
       "VisionGal.Managed.Scene >= 1.0.0",
       "VisionGal.Managed.Serialization >= 1.0.0",
       "xunit >= 2.9.3",
@@ -1017,6 +1051,9 @@
             "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj": {
               "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj"
             },
+            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj"
+            },
             "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj": {
               "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj"
             },
@@ -1025,6 +1062,9 @@
             },
             "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj": {
               "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj"
+            },
+            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedRuntimeLoop\\Managed\\VisionGal.Managed.RuntimeLoop\\VisionGal.Managed.RuntimeLoop.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedRuntimeLoop\\Managed\\VisionGal.Managed.RuntimeLoop\\VisionGal.Managed.RuntimeLoop.csproj"
             },
             "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj": {
               "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj"

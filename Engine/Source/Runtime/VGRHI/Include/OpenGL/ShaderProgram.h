@@ -15,6 +15,7 @@
 #include "Shader.h"
 #include <vector>
 #include <unordered_map>
+#include <HCore/Interface/HCoreTypes.h>
 
 VISIONGAL_OPENGL_NAMESPACE_BEGIN
 

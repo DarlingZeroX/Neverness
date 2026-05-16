@@ -62,3 +62,7 @@ E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runti
 E:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.Scripting.pdb
 e:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.Gameplay.dll
 e:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.Gameplay.pdb
+e:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.Entity.dll
+e:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.Entity.pdb
+e:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.RuntimeLoop.dll
+e:\VisionGal\Engine\Source\Managed\VGManagedHost\Managed\VisionGal.Managed.Runtime\bin\Debug\net10.0\VisionGal.Managed.RuntimeLoop.pdb

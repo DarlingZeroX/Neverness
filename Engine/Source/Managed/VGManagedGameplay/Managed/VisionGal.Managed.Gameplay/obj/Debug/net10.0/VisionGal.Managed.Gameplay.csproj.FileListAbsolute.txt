@@ -16,3 +16,11 @@ e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.G
 e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\obj\Debug\net10.0\refint\VisionGal.Managed.Gameplay.dll
 e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\obj\Debug\net10.0\VisionGal.Managed.Gameplay.pdb
 e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\obj\Debug\net10.0\ref\VisionGal.Managed.Gameplay.dll
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Serialization.dll
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Reflection.dll
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Serialization.pdb
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Reflection.pdb
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Object.dll
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Object.pdb
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Scene.dll
+e:\VisionGal\Engine\Source\Managed\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\bin\Debug\net10.0\VisionGal.Managed.Scene.pdb

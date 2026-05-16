@@ -11,6 +11,7 @@
 
 #pragma once
 #include "Interface.h"
+#include <HCore/Interface/HCoreTypes.h>
 
 VISIONGAL_OPENGL_NAMESPACE_BEGIN
 

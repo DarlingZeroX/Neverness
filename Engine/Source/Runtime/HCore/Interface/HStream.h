@@ -14,6 +14,7 @@
 #include "HSTL.h"
 #include "../Include/Math/HMath.h"
 #include "HStringTools.h"
+#include "HVector.h"
 //#include "Source/Core/HStringTools.h"
 
 namespace Horizon

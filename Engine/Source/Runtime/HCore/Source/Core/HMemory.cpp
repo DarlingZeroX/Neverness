@@ -9,8 +9,10 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "pch.h"
+
 #include "HMemory.h"
+
+#include <cassert>
 #include <typeinfo>
 #include <memory>
 

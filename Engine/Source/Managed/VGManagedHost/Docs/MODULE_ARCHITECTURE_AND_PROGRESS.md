@@ -20,7 +20,7 @@
 | **编译定义** | `PRIVATE VG_MANAGED_HOST_EXPORT` → **`VG_MANAGED_HOST_API`**（见 [VGManagedHostConfig.h](../Include/VGManagedHost/VGManagedHostConfig.h)）。 |
 | **包含目录** | `PUBLIC`：`Include/`（对外 `#include "VGManagedHost/..."`）；`PRIVATE`：`Private/`（仅 **`CoreCLRLoader`** 等实现翻译单元使用，**禁止**作为引擎其它模块的 `PUBLIC` 依赖路径）。 |
 | **非 Windows** | 若启用本模块，`CoreCLRLoader` 使用 `dlopen` / `dlsym`，`target_link_libraries(VGManagedHost PRIVATE dl)`（Unix 非 Apple）。 |
-| **托管测试产物** | 缓存变量 **`VISIONGAL_MANAGED_PUBLISH_DIR`**（默认 `${CMAKE_BINARY_DIR}/ManagedRuntimePublish`）。若找到 **`dotnet`**，生成 **`visiongal_managed_runtime_publish`**：`dotnet publish` [VisionGal.Managed.Runtime.csproj](../Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj)（輸出含 **VisionGal.Managed.Core.dll**、**VisionGal.Managed.Engine.dll**、**VisionGal.Managed.Gameplay.dll** 等；`DEPENDS` 監視各 Foundation / Gameplay 工程原始碼）。 |
+| **托管测试产物** | 缓存变量 **`VISIONGAL_MANAGED_PUBLISH_DIR`**（默认 `${CMAKE_BINARY_DIR}/ManagedRuntimePublish`）。若找到 **`dotnet`**，生成 **`visiongal_managed_runtime_publish`**：`dotnet publish` [VisionGal.Managed.Runtime.csproj](../Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj)（輸出含 **VisionGal.Managed.Core.dll**、**VisionGal.Managed.Engine.dll**、**VisionGal.Managed.Gameplay.dll**、**VisionGal.Managed.Entity.dll** 等；`DEPENDS` 監視各 Foundation / Gameplay / **Entity** 工程原始碼）。 |
 
 ### 2.1 单元测试（GTest）
 
@@ -30,9 +30,9 @@
 | **目标** | **`VGManagedHostTest`**（[Engine/Source/Tests/VGManagedHostTest](../../../Tests/VGManagedHostTest/)） |
 | **依赖** | `add_dependencies(VGManagedHostTest visiongal_managed_runtime_publish)`，保证先发布托管程序集。 |
 | **运行时 DLL** | `POST_BUILD` 将 **`VGManagedHost.dll`** 复制到测试 exe 同目录，避免 `bin` 与 `lib` 分离导致加载失败。 |
-| **ctest 环境变量** | **`VGMANAGED_TEST_ROOT`** = `VISIONGAL_MANAGED_PUBLISH_DIR`，目录内需含 **`VisionGal.Managed.Runtime.dll`**、**`VisionGal.Managed.Core.dll`**、**`VisionGal.Managed.Engine.dll`**、**`VisionGal.Managed.Gameplay.dll`** 与 **`.runtimeconfig.json`**。 |
+| **ctest 环境变量** | **`VGMANAGED_TEST_ROOT`** = `VISIONGAL_MANAGED_PUBLISH_DIR`，目录内需含 **`VisionGal.Managed.Runtime.dll`**、**`VisionGal.Managed.Core.dll`**、**`VisionGal.Managed.Engine.dll`**、**`VisionGal.Managed.Gameplay.dll`**、**`VisionGal.Managed.Entity.dll`** 与 **`.runtimeconfig.json`**。 |
 
-构建与测试示例（在已安装 `nethost` 与 .NET 8 SDK 的前提下）：
+构建与测试示例（在已安装 `nethost` 与 .NET 10 SDK 的前提下）：
 
 ```bat
 cmake -B build -DCMAKE_TOOLCHAIN_FILE=E:/vcpkg/scripts/buildsystems/vcpkg.cmake -DENABLE_TESTS=ON -DVISIONGAL_ENABLE_MANAGED_HOST=ON
@@ -171,16 +171,17 @@ Engine/Source/Managed/VGManagedHost/
 
 ---
 
-## 6. 託管側約定（Phase 1–5）
+## 6. 託管側約定（Phase 1–6）
 
 - 工程：**`net10.0`**，見 [VisionGal.Managed.Runtime.csproj](../Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj)；**ProjectReference** 涵蓋 Core / Engine / Object / Scene / Assets / **Gameplay** 等 Foundation 程式集。
 - 入口：[Entry.cs](../Managed/VisionGal.Managed.Runtime/Entry.cs)：
   - **`Smoke`**（Phase 1）
   - **`BootstrapNativeApi`**（Phase 2–3）
   - **`BootstrapEngineFoundation`**（Phase 5/5.3：Object / Scene JSON 往返與 **SceneRehydrator** 再水合 / Assets）
-  - **`GetBootstrapFlags`**（位元遮罩，供 GTest 斷言，避免解析 stderr）
+  - **`BootstrapGameplay`**（Phase 6：變數表 JSON 往返 + **SequenceRunner**（含 **SceneRehydrator** 再水合與首實體 **DisplayName** 同步至變數表）+ **GameplaySessionSnapshot** 根層 JSON 往返 + **DialoguePresenter**；須在 **`BootstrapNativeApi`** 之後呼叫）
+  - **`GetBootstrapFlags`**（位元：`1<<0` Smoke … `1<<3` Foundation、**`1<<4` Gameplay**）
 - **C# → Native**：經 **`VGNativeAPI.logInfo`** 函數指標；**禁止**對引擎 DLL 使用 **`DllImport`**。
-- **Phase 6 程式集**：**VisionGal.Managed.Gameplay** 經 Runtime 專案參考進入 publish；**VGManagedHostTest** 斷言該 DLL 存在於 publish 根目錄。
+- **Phase 6 程式集**：**VisionGal.Managed.Gameplay**、**VisionGal.Managed.Entity** 經 Runtime 專案參考進入 publish；**VGManagedHostTest** 斷言上述 DLL 存在於 publish 根目錄。
 
 ---
 
@@ -204,6 +205,10 @@ Engine/Source/Managed/VGManagedHost/
 | **2026-05-14** | **Phase 2**：**`PRIVATE`** 链接 **`VGManagedCore`**；托管 **`BootstrapNativeApi`** + **`VisionGal.Managed.Core`**；测试导出 **`VGManagedHost_GetNativeLogInfoCallCountForTest`**；扩展 **GTest** 与 publish 依赖 **Core** 源码。 |
 | **2026-05-15** | **Phase 5 加固**：**`BootstrapEngineFoundation`** 擴充；**`GetBootstrapFlags`**；GTest 斷言 publish 完整性與旗標；**`VisionGal.Managed.Foundation.Tests`**（`dotnet test` / CMake **`visiongal_managed_foundation_tests`**）。 |
 | **2026-05-15** | **Phase 5.3 + publish**：**`BootstrapEngineFoundation`** 演練 **SceneRehydrator**；CMake `DEPENDS` 含 **VGManagedGameplay**；**Runtime.csproj** 專案參考 **VisionGal.Managed.Gameplay**，GTest 斷言 **VisionGal.Managed.Gameplay.dll**。 |
+| **2026-05-15** | **Phase 6 slice 3**：**`BootstrapGameplay`** 擴充為序列內 **場景再水合 → 變數同步**；**VisionGal.Managed.Gameplay** 專案參考 **VisionGal.Managed.Scene**；Foundation.Tests 新增場景聯動序列用例。 |
+| **2026-05-15** | **Phase 6 slice 4**：**`BootstrapGameplay`** 末尾演練 **GameplaySessionSnapshot**；**GameplaySessionSnapshotTests**。 |
+| **2026-05-15** | **P0 Entity**：publish 含 **VisionGal.Managed.Entity.dll**；CMake **DEPENDS** 監視 **VGManagedEntity**；**VGManagedHostTest** 斷言該檔；**MANAGED_RUNTIME §2.5.1** 與 Entity 程式集中文註解補強。 |
+| **2026-05-15** | **Foundation.Tests 構建順序**：根 **Tests/CMakeLists.txt** 使 **visiongal_managed_foundation_tests** 依賴 **visiongal_managed_runtime_publish**，避免與本模組 **dotnet publish** 並行寫入 **obj/** 造成假陽性失敗。 |
 
 ---
 

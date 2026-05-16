@@ -81,9 +81,7 @@
 #    define VULKAN_SUPPORTED 1
 #endif
 
-#include "../Include/Meta/Macros.h"
-
-enum class HMetaEnable() PlatformType
+enum class PlatformType
 {
 	Windows,
 	Mac,
@@ -93,7 +91,7 @@ enum class HMetaEnable() PlatformType
 	Other
 };
 
-enum class HMetaEnable() EWindow
+enum class EWindow
 {
 	WIN32_NATIVE,
 	GLFW,
@@ -101,7 +99,7 @@ enum class HMetaEnable() EWindow
 	SDL3
 };
 
-enum class HMetaEnable() HTYPE_GRAPHICS_API
+enum class HTYPE_GRAPHICS_API
 {
 	D3D11,
 	D3D12,

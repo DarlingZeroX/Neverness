@@ -24,6 +24,59 @@
         "runtime": {
           "bin/placeholder/VisionGal.Managed.Engine.dll": {}
         }
+      },
+      "VisionGal.Managed.Object/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "VisionGal.Managed.Engine": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Object.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Object.dll": {}
+        }
+      },
+      "VisionGal.Managed.Reflection/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "VisionGal.Managed.Object": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Reflection.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Reflection.dll": {}
+        }
+      },
+      "VisionGal.Managed.Scene/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "VisionGal.Managed.Object": "1.0.0",
+          "VisionGal.Managed.Serialization": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Scene.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Scene.dll": {}
+        }
+      },
+      "VisionGal.Managed.Serialization/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "VisionGal.Managed.Reflection": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Serialization.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Serialization.dll": {}
+        }
       }
     }
   },
@@ -37,12 +90,34 @@
       "type": "project",
       "path": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj",
       "msbuildProject": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj"
+    },
+    "VisionGal.Managed.Object/1.0.0": {
+      "type": "project",
+      "path": "../../../VGManagedObject/Managed/VisionGal.Managed.Object/VisionGal.Managed.Object.csproj",
+      "msbuildProject": "../../../VGManagedObject/Managed/VisionGal.Managed.Object/VisionGal.Managed.Object.csproj"
+    },
+    "VisionGal.Managed.Reflection/1.0.0": {
+      "type": "project",
+      "path": "../../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj",
+      "msbuildProject": "../../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj"
+    },
+    "VisionGal.Managed.Scene/1.0.0": {
+      "type": "project",
+      "path": "../../../VGManagedScene/Managed/VisionGal.Managed.Scene/VisionGal.Managed.Scene.csproj",
+      "msbuildProject": "../../../VGManagedScene/Managed/VisionGal.Managed.Scene/VisionGal.Managed.Scene.csproj"
+    },
+    "VisionGal.Managed.Serialization/1.0.0": {
+      "type": "project",
+      "path": "../../../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/VisionGal.Managed.Serialization.csproj",
+      "msbuildProject": "../../../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/VisionGal.Managed.Serialization.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
       "VisionGal.Managed.Core >= 1.0.0",
-      "VisionGal.Managed.Engine >= 1.0.0"
+      "VisionGal.Managed.Engine >= 1.0.0",
+      "VisionGal.Managed.Scene >= 1.0.0",
+      "VisionGal.Managed.Serialization >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -51,11 +126,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj",
       "projectName": "VisionGal.Managed.Gameplay",
-      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -73,11 +148,17 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
             },
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"
+            },
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj"
+            },
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj"
             }
           }
         }

@@ -4,6 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>VisionGal.Managed.Foundation.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -18,8 +19,10 @@
     <ProjectReference Include="..\..\VGManagedAssets\Managed\VisionGal.Managed.Assets\VisionGal.Managed.Assets.csproj" />
     <ProjectReference Include="..\..\VGManagedObject\Managed\VisionGal.Managed.Object\VisionGal.Managed.Object.csproj" />
     <ProjectReference Include="..\..\VGManagedReflection\Managed\VisionGal.Managed.Reflection\VisionGal.Managed.Reflection.csproj" />
+    <ProjectReference Include="..\..\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\VisionGal.Managed.RuntimeLoop.csproj" />
     <ProjectReference Include="..\..\VGManagedScene\Managed\VisionGal.Managed.Scene\VisionGal.Managed.Scene.csproj" />
     <ProjectReference Include="..\..\VGManagedSerialization\Managed\VisionGal.Managed.Serialization\VisionGal.Managed.Serialization.csproj" />
     <ProjectReference Include="..\..\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\VisionGal.Managed.Gameplay.csproj" />
+    <ProjectReference Include="..\..\VGManagedEntity\Managed\VisionGal.Managed.Entity\VisionGal.Managed.Entity.csproj" />
   </ItemGroup>
 </Project>

@@ -158,8 +158,28 @@ public unsafe struct VGAssetRegistryApi
 }
 
 /// <summary>
-/// 與 Native <c>VGNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）。
+/// 與 Native <c>VGEntityAPI</c> 對齊（<c>EntityAPI.h</c>）。**layout v5** 起含 <c>getRuntimeTick</c>（Runtime 覆寫後隨 Tick 遞增；Stub 恒為 **0**）。
 /// </summary>
+/// <remarks>
+/// 與 <see cref="VGSceneApi"/> 所操作之場景句柄（Native <c>VGEntityHandle</c>）語意分離；與託管 <c>VisionGal.Managed.Entity.EntityHandle</c> 無數值映射。
+/// **GetRuntimeTick** 僅反映 **EntitySubsystem** 是否已被 **VGEngineRuntime::Tick** 驅動（與 **Stub** 表區分）；**不**代表託管 **EntityWorld** 元件資料已與 Kernel 鏡像或自動同步（總覽 **§2.7.1** 資料策略）。
+/// 欄位順序須與 C 端 <c>typedef struct VGEntityAPI</c>（<c>EntityAPI.h</c>）逐欄一致。
+/// </remarks>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct VGEntityApi
+{
+	/// <summary>對應 Native <c>VGEntityGetServiceAbiTokenFn</c>；Stub 返回 <see cref="VGNativeEngineApiConstants.EntityServiceAbiToken"/>（ASCII「VGEn」小端）。</summary>
+	public delegate* unmanaged<uint> GetServiceAbiToken;
+	/// <summary>對應 Native <c>VGEntityGetRuntimeTickFn</c>；Runtime 轉發至 <c>EntitySubsystem</c> 之單調幀計數。</summary>
+	public delegate* unmanaged<ulong> GetRuntimeTick;
+}
+
+/// <summary>
+/// 與 Native <c>VGNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
+/// </summary>
+/// <remarks>
+/// **layout v5** 起末尾為 <see cref="Entity"/>（<c>VGEntityAPI</c>，含 **getRuntimeTick**）；若 Native 遞增 <c>VG_NATIVE_ENGINE_API_LAYOUT_VERSION</c> 而託管未同步，<see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 將拒絕快取。
+/// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct VGNativeEngineApi
 {
@@ -175,4 +195,6 @@ public unsafe struct VGNativeEngineApi
 	public VGAsyncWaitApi AsyncWait;
 	public VGObjectApi Object;
 	public VGAssetRegistryApi AssetRegistry;
+	/// <summary>對應 C 聚合體末尾成員 <c>entity</c>（型別 <c>VGEntityAPI</c>）；語義見 <see cref="VGEntityApi"/> 之 remarks。</summary>
+	public VGEntityApi Entity;
 }

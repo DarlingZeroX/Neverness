@@ -68,11 +68,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj",
       "projectName": "VisionGal.Managed.Editor",
-      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -90,8 +90,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj"
             }
           }
         }

@@ -86,11 +86,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj",
       "projectName": "VisionGal.Managed.Serialization",
-      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -108,8 +108,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj"
             }
           }
         }

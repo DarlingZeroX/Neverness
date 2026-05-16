@@ -7,6 +7,9 @@ namespace VisionGal.Managed.Engine;
 /// 從 <c>VGNativeAPI.engineServices</c> 安裝 **Engine Service** 函數表鏡像（按值複製函數指標，與 <see cref="NativeApiBootstrap"/> 策略一致）。
 /// 執行緒：僅允許在 Bootstrap 階段由宿主單執行緒呼叫；之後視為唯讀快照。
 /// </summary>
+/// <remarks>
+/// **layout v5** 起含 **<see cref="VGEntityApi"/>**（**<c>GetRuntimeTick</c>** 等）；與託管 **EntityWorld** 無自動資料同步（見 MANAGED 總覽 **§2.7.1**）。若 Native **<c>layoutVersion</c>** 與 <see cref="VGNativeEngineApiConstants.LayoutVersion"/> 不一致，本類不會標記 **<see cref="IsInstalled"/>**。
+/// </remarks>
 public static unsafe class EngineNativeApiBootstrap
 {
 	private static VGNativeEngineApi s_engineApi;
@@ -55,8 +58,11 @@ public static unsafe class EngineNativeApiBootstrap
 	}
 
 	/// <summary>
-	/// 供測試與宿主驗證：經函數表間接呼叫 Stub（GetDeltaTime + AsyncWait 路徑），不配置真實引擎資源。
+	/// 供測試與宿主驗證：經函數表間接呼叫 Stub（**Timing**、**AsyncWait**），並在 **layout v5** 下對 **<c>VGEntityAPI</c>**（**<c>getServiceAbiToken</c>** 魔數、可選 **<c>getRuntimeTick</c>**）做 ABI 冒煙。
 	/// </summary>
+	/// <remarks>
+	/// 不配置 GPU／音訊等真實資源；**Entity** 路徑不表示 <c>EntityWorld</c> 已與 Native 資料鏡像（見總覽 MANAGED **§2.7.1** 與 **§207** 殘留策略）。
+	/// </remarks>
 	public static void ExerciseStubInteropPath()
 	{
 		if (!s_installed)
@@ -87,6 +93,23 @@ public static unsafe class EngineNativeApiBootstrap
 			var h = s_engineApi.AsyncWait.CreateWait();
 			_ = s_engineApi.AsyncWait.TryComplete(h);
 			s_engineApi.AsyncWait.ReleaseWait(h);
+		}
+
+		// layout v5：VGEntityAPI 冒煙（與 EntityWorld 無關；僅驗證函數指標與魔數與 Native 一致）。
+		if (s_engineApi.Entity.GetServiceAbiToken != null)
+		{
+			var token = s_engineApi.Entity.GetServiceAbiToken();
+			if (token != VGNativeEngineApiConstants.EntityServiceAbiToken)
+			{
+				// 與 Engine 表校驗策略一致：不拋例外以免破壞宿主啟動；測試應以斷言覆蓋期望值。
+				return;
+			}
+		}
+
+		// getRuntimeTick：Runtime 覆寫後隨宿主 Tick 遞增；純 dotnet 測試未注入表時指標可為 null。
+		if (s_engineApi.Entity.GetRuntimeTick != null)
+		{
+			_ = s_engineApi.Entity.GetRuntimeTick();
 		}
 	}
 }

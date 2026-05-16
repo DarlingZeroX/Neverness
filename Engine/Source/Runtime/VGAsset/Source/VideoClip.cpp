@@ -1,5 +1,6 @@
 #include "VideoClip.h"
 #include "VGCore/Include/Core/VFS.h"
+#include <HCore/Interface/HVector.h>
 
 namespace VisionGal
 {

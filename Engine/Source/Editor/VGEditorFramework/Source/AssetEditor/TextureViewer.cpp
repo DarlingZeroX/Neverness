@@ -14,6 +14,7 @@
 #include <VGCore/Interface/Loader.h>
 
 #include "VGEditorFramework/Include/EditorCore/Localization.h"
+#include <HCore/Interface/HVector.h>
 
 namespace VisionGal::Editor
 {

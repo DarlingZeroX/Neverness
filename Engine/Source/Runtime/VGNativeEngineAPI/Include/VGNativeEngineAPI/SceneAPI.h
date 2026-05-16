@@ -6,6 +6,11 @@
  *
  * 字串參數：須為 **NUL 結尾 UTF-8**；nullptr 視為 no-op / 失敗回傳 0。
  * Phase 5：表尾追加層級、變換與命名（layout v3 子表擴充）。
+ *
+ * **與託管 ECS 及 EntityAPI 的邊界（簡體中文摘要）**
+ * - 本表所涉 **VGEntityHandle** 僅表示 **場景圖／Prefab 實例** 控制碼，由 `spawn`/`destroy` 等場景 API 管理。
+ * - **VisionGal.Managed.Entity** 之 **EntityHandle** 為純 C# ECS 首包，與 `VGEntityHandle` **無自動映射**。
+ * - 未來 Native ECS 能力掛載於 **`VGNativeEngineAPI::entity`**（`EntityAPI.h`），與本 `VGSceneAPI` 子表分離設計。
  */
 
 #include "VGNativeEngineAPI/EngineHandles.h"

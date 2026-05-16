@@ -65,6 +65,8 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Assets.dll"));
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Reflection.dll"));
 	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Gameplay.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Entity.dll"));
+	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.RuntimeLoop.dll"));
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	ASSERT_TRUE(VGEngineRuntimeHost_Initialize());
@@ -107,7 +109,19 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_NE(apiTable, nullptr);
 	ASSERT_EQ(apiTable->apiVersion, VG_NATIVE_API_VERSION);
 	ASSERT_NE(apiTable->engineServices, nullptr);
-	ASSERT_EQ(apiTable->engineServices->layoutVersion, 3u);
+	// §2.7.1：layout v5 起 **VGEntityAPI** 含 **getRuntimeTick**；與 **VisionGal.Managed.Engine.VGNativeEngineApiConstants.LayoutVersion** 對齊。
+	ASSERT_EQ(apiTable->engineServices->layoutVersion, 5u);
+	// **getServiceAbiToken** 為子表接線冒煙（**VG_ENTITY_SERVICE_ABI_TOKEN**）；非場景 **VGEntityHandle**、亦非託管 **EntityHandle**。
+	ASSERT_NE(apiTable->engineServices->entity.getServiceAbiToken, nullptr);
+	ASSERT_EQ(apiTable->engineServices->entity.getServiceAbiToken(), VG_ENTITY_SERVICE_ABI_TOKEN);
+	ASSERT_NE(apiTable->engineServices->entity.getRuntimeTick, nullptr);
+
+#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+	ASSERT_GE(apiTable->engineServices->entity.getRuntimeTick(), 1u)
+		<< "VGEngineRuntimeHost_Tick 已於上文驅動 EntitySubsystem；Runtime 覆寫後應遞增 runtimeTick。";
+#else
+	ASSERT_EQ(apiTable->engineServices->entity.getRuntimeTick(), 0u);
+#endif
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	{
@@ -184,6 +198,15 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_NE(foundationFn, nullptr);
 	reinterpret_cast<VGManagedVoidThunk>(foundationFn)();
 
+	void* gameplayFn{};
+	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
+		dll,
+		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"BootstrapGameplay",
+		&gameplayFn));
+	ASSERT_NE(gameplayFn, nullptr);
+	reinterpret_cast<VGManagedVoidThunk>(gameplayFn)();
+
 	void* flagsFn{};
 	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
 		dll,
@@ -197,11 +220,12 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	using GetBootstrapFlagsThunk = int(*)();
 #endif
 	const int bootstrapFlags = reinterpret_cast<GetBootstrapFlagsThunk>(flagsFn)();
-	// VisionGal.Managed.Runtime.Entry: FlagSmoke=1, FlagNativeApi=2, FlagEngineInterop=4, FlagEngineFoundation=8
+	// VisionGal.Managed.Runtime.Entry: FlagSmoke=1, FlagNativeApi=2, FlagEngineInterop=4, FlagEngineFoundation=8, FlagGameplay=16
 	EXPECT_NE(bootstrapFlags & 1, 0) << "Smoke flag";
 	EXPECT_NE(bootstrapFlags & 2, 0) << "BootstrapNativeApi flag";
 	EXPECT_NE(bootstrapFlags & 4, 0) << "BootstrapEngineInterop flag";
 	EXPECT_NE(bootstrapFlags & 8, 0) << "BootstrapEngineFoundation flag";
+	EXPECT_NE(bootstrapFlags & 16, 0) << "BootstrapGameplay flag";
 
 	EXPECT_GT(VGNativeApi_GetLogInfoCallCount(), logCountBefore);
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES

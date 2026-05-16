@@ -108,8 +108,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj"
             }
           }
         }

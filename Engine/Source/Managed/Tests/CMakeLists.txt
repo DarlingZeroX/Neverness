@@ -19,3 +19,8 @@ add_custom_target(visiongal_managed_foundation_tests
 	COMMENT "Running VisionGal.Managed.Foundation.Tests (dotnet test)"
 	VERBATIM
 )
+
+# 與 **visiongal_managed_runtime_publish** 並行時曾出現多個 **dotnet** 同寫 **obj/** 之競態；強制先完成 publish 再跑 Foundation，避免 **SceneRehydrationTests** 等類在 **Dispose** 時觸發字典損壞假陽性。
+if(TARGET visiongal_managed_runtime_publish)
+	add_dependencies(visiongal_managed_foundation_tests visiongal_managed_runtime_publish)
+endif()

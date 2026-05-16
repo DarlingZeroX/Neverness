@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "ImGuiEx/ImWindow.h"
 
 #include "imgui/imgui_internal.h"

@@ -17,7 +17,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-
 # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -78,37 +77,6 @@ file(GLOB HCORE_HEADER_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Math/GLM/simd/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Math/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Math/*.cpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Argument/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Argument/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Array/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Array/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Constructor/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Constructor/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Destructor/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Destructor/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Enum/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Enum/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/FieldInfo/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/FieldInfo/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/MethodInfo/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/MethodInfo/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/ParameterInfo/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/ParameterInfo/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Type/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Type/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Variant/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Core/Variant/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Deps/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Deps/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Meta/Impl/*.hpp"
-
-	#"${PROJECT_SOURCE_DIR}/HCore/Misc/*.h"
-	#"${PROJECT_SOURCE_DIR}/HCore/Misc/*.cpp"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Stb/*.h"

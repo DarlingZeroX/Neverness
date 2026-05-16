@@ -19,7 +19,12 @@ typedef std::uint64_t VGElementHandle;
 typedef std::uint64_t VGAudioHandle;
 typedef std::uint64_t VGAssetHandle;
 typedef std::uint64_t VGAsyncWaitHandle;
-/** @brief 場景實體 / Prefab 實例之不透明控制代碼（非 UI Element）。 */
+/**
+ * @brief 場景實體 / Prefab 實例之不透明控制代碼（非 UI Element）。
+ *
+ * **邊界**：與託管 **VisionGal.Managed.Entity.EntityHandle**（純 C# ECS）語意獨立；勿與 `VGNativeEngineAPI::entity`
+ *（`EntityAPI.h` 子表，預留 Native ECS）混淆——後者首包僅含服務魔數校驗，本句柄仍專屬場景子系統。
+ */
 typedef std::uint64_t VGEntityHandle;
 /** @brief 託管 VGObject 與 Native 子系統對應之不透明控制代碼。 */
 typedef std::uint64_t VGObjectHandle;

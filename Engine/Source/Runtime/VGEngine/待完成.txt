@@ -1,5 +1,0 @@
-
-1. 在CoreLua.h 添加Galgame的AddGlobalLuaAPI
-2. SceneSystem。cpp 添加Galgame的SceneSerializerRegistry
-3. GameActorFactory 添加Galgame的GameActorFactory
-4. CoreGameEngine 添加Galgame的CoreGameEngine

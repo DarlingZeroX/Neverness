@@ -5,6 +5,7 @@
 #pragma once
 #include <string>
 #include "../CoreModuleDefinitions.h"
+#include "HConfig.h"
 #include "HCoreTypes.h"
 
 namespace Horizon
@@ -33,7 +34,7 @@ namespace Horizon
 		explicit operator uint64_t(void) const { return UUID; }
 
 		std::string ToString() const { return std::to_string(UUID); }
-	} HMetaEnable();
+	};
 
 }
 

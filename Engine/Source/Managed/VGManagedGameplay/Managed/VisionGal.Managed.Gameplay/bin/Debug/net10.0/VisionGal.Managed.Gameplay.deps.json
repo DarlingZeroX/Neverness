@@ -9,7 +9,9 @@
       "VisionGal.Managed.Gameplay/1.0.0": {
         "dependencies": {
           "VisionGal.Managed.Core": "1.0.0",
-          "VisionGal.Managed.Engine": "1.0.0"
+          "VisionGal.Managed.Engine": "1.0.0",
+          "VisionGal.Managed.Scene": "1.0.0",
+          "VisionGal.Managed.Serialization": "1.0.0"
         },
         "runtime": {
           "VisionGal.Managed.Gameplay.dll": {}
@@ -33,6 +35,51 @@
             "fileVersion": "1.0.0.0"
           }
         }
+      },
+      "VisionGal.Managed.Object/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Engine": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Object.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "VisionGal.Managed.Reflection/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Object": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Reflection.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "VisionGal.Managed.Scene/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Object": "1.0.0",
+          "VisionGal.Managed.Serialization": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Scene.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "VisionGal.Managed.Serialization/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Reflection": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Serialization.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
       }
     }
   },
@@ -48,6 +95,26 @@
       "sha512": ""
     },
     "VisionGal.Managed.Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Object/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Reflection/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Scene/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Serialization/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

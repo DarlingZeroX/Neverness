@@ -9,7 +9,7 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "pch.h"
+
 #include "HLog.h"
 #include "HStringTools.h"
 #include <SDL3/SDL_log.h>

@@ -105,11 +105,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj",
       "projectName": "VisionGal.Managed.Scene",
-      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -127,8 +127,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj"
+            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj"
             },
             "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj": {
               "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj"

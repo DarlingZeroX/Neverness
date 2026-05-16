@@ -115,6 +115,14 @@ if (VISIONGAL_DOTNET_EXECUTABLE)
 		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/*.cs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/*.csproj"
 	)
+	file(GLOB _managed_entity_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEntity/Managed/VisionGal.Managed.Entity/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEntity/Managed/VisionGal.Managed.Entity/*.csproj"
+	)
+	file(GLOB _managed_runtimeloop_sources CONFIGURE_DEPENDS
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/*.csproj"
+	)
 
 	# 自定义构建命令：编译并发布 VisionGal.Managed.Runtime 托管程序集，用于VGManagedHost测试
 	add_custom_command(
@@ -131,7 +139,8 @@ if (VISIONGAL_DOTNET_EXECUTABLE)
 			${_managed_object_sources} ${_managed_reflection_sources} ${_managed_serialization_sources}
 			${_managed_assets_sources} ${_managed_editor_sources} ${_managed_inspector_sources}
 			${_managed_graph_sources} ${_managed_scene_sources} ${_managed_undoredo_sources}
-			${_managed_scripting_sources} ${_managed_gameplay_sources}
+			${_managed_scripting_sources} ${_managed_gameplay_sources} ${_managed_entity_sources}
+			${_managed_runtimeloop_sources}
 		# 构建时控制台输出提示信息
 		COMMENT "Publishing VisionGal.Managed.Runtime for VGManagedHost tests"
 		# 严格按字面执行命令，不进行CMake自动转义处理

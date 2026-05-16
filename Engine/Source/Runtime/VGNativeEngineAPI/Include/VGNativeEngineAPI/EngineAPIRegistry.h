@@ -14,6 +14,7 @@
 #include "VGNativeEngineAPI/AssetAPI.h"
 #include "VGNativeEngineAPI/AssetRegistryAPI.h"
 #include "VGNativeEngineAPI/AsyncWaitAPI.h"
+#include "VGNativeEngineAPI/EntityAPI.h"
 #include "VGNativeEngineAPI/AudioAPI.h"
 #include "VGNativeEngineAPI/InputAPI.h"
 #include "VGNativeEngineAPI/ObjectAPI.h"
@@ -28,7 +29,7 @@ extern "C" {
 #endif
 
 /** 當前發佈之 VGNativeEngineAPI 記憶體佈局版本（與託管 `VGNativeEngineApiConstants.LayoutVersion` 對齊）。 */
-#define VG_NATIVE_ENGINE_API_LAYOUT_VERSION 3u
+#define VG_NATIVE_ENGINE_API_LAYOUT_VERSION 5u
 
 typedef struct VGNativeEngineAPI
 {
@@ -44,6 +45,8 @@ typedef struct VGNativeEngineAPI
 	VGAsyncWaitAPI asyncWait;
 	VGObjectAPI object;
 	VGAssetRegistryAPI assetRegistry;
+	/** @brief Native ECS／實體服務子表（骨架）；與 `VGSceneAPI` 使用之 `VGEntityHandle` 語意分離，見 `EntityAPI.h`。 */
+	VGEntityAPI entity;
 } VGNativeEngineAPI;
 
 /**

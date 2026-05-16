@@ -12,6 +12,7 @@
 #pragma once
 //#include "../Include/EngineConfig.h"
 #include "../../Interface/SceneInterface.h"
+#include <HCore/Interface/HVector.h>
 
 namespace VisionGal
 {

@@ -112,3 +112,7 @@ E:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\obj\
 E:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\obj\Debug\net10.0\ref\VisionGal.Managed.Foundation.Tests.dll
 e:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\bin\Debug\net10.0\VisionGal.Managed.Gameplay.dll
 e:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\bin\Debug\net10.0\VisionGal.Managed.Gameplay.pdb
+e:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\bin\Debug\net10.0\VisionGal.Managed.Entity.dll
+e:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\bin\Debug\net10.0\VisionGal.Managed.Entity.pdb
+e:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\bin\Debug\net10.0\VisionGal.Managed.RuntimeLoop.dll
+e:\VisionGal\Engine\Source\Managed\Tests\VisionGal.Managed.Foundation.Tests\bin\Debug\net10.0\VisionGal.Managed.RuntimeLoop.pdb

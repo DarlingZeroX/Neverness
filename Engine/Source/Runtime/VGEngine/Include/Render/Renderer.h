@@ -12,9 +12,9 @@
 #pragma once
 #include "Camera.h"
 #include "../EngineConfig.h"
-#include "VGCore/Include/Core/Core.h"
 #include "../Scene/Scene.h"
 #include "../Scene/Components.h"
+#include "VGCore/Include/Core/Core.h"
 
 namespace VisionGal 
 {

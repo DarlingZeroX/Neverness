@@ -35,10 +35,13 @@ E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Core
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Editor.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Engine.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Engine.Runtime.dll
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Entity.dll
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Gameplay.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Graph.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Inspector.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Object.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Reflection.dll
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.RuntimeLoop.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Scene.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Scripting.dll
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Serialization.dll
@@ -54,5 +57,8 @@ E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Edit
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Inspector.pdb
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Graph.pdb
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Scene.pdb
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Gameplay.pdb
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Entity.pdb
+E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.RuntimeLoop.pdb
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.UndoRedo.pdb
 E:\VisionGal\Build\vscode\x64-debug\ManagedRuntimePublish\VisionGal.Managed.Scripting.pdb

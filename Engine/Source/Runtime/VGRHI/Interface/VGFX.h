@@ -17,6 +17,7 @@
 #include "VertexElement.h"
 #include "../Include/VGRHIConfig.h"
 #include <HCore/Interface/HCore.h>
+#include <HCore/Interface/HCoreTypes.h>
 
 namespace VisionGal::VGFX
 {

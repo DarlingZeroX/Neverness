@@ -11,6 +11,7 @@
 #include "ImWindow.h"
 #include "ImNotify.h"
 #include "ImTaskManager.h"
+#include "HCore/Interface/HCoreTypes.h"
 
 namespace ImGuiEx
 {

@@ -1,0 +1,12 @@
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\bin\Debug\net10.0\VisionGal.Managed.RuntimeLoop.deps.json
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\bin\Debug\net10.0\VisionGal.Managed.RuntimeLoop.dll
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\bin\Debug\net10.0\VisionGal.Managed.RuntimeLoop.pdb
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\VisionGal.Managed.RuntimeLoop.GeneratedMSBuildEditorConfig.editorconfig
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\VisionGal.Managed.RuntimeLoop.AssemblyInfoInputs.cache
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\VisionGal.Managed.RuntimeLoop.AssemblyInfo.cs
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\VisionGal.Managed.RuntimeLoop.csproj.CoreCompileInputs.cache
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\VisionGal.Managed.RuntimeLoop.sourcelink.json
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\VisionGal.Managed.RuntimeLoop.dll
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\refint\VisionGal.Managed.RuntimeLoop.dll
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\VisionGal.Managed.RuntimeLoop.pdb
+E:\VisionGal\Engine\Source\Managed\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\obj\Debug\net10.0\ref\VisionGal.Managed.RuntimeLoop.dll

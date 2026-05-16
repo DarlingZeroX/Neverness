@@ -5,14 +5,13 @@
 #pragma once
 #include "../../Interface/HCoreTypes.h"
 #include "HEventBase.h"
-#include <HCore/Include/Meta/Macros.h>
 
 namespace Horizon::Events
 {
 	/**
      *  \brief Event subtype for window events
      */
-	enum class HMetaEnable() HWindowEventType
+	enum class HWindowEventType
     {
         /// <summary>
         /// Window Event

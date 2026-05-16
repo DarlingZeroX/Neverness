@@ -9,7 +9,7 @@
  * See the LICENSE file in the project root for details.
  */
 
-#include "pch.h"
+
 #include "HUUID.h"
 #include "HRandom.h"
 

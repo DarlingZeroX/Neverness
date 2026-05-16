@@ -4,13 +4,15 @@ using VisionGal.Managed.Assets;
 using VisionGal.Managed.Core;
 using VisionGal.Managed.Engine;
 using VisionGal.Managed.Engine.Runtime;
+using VisionGal.Managed.Gameplay;
 using VisionGal.Managed.Object;
+using VisionGal.Managed.Scene;
 
 namespace VisionGal.Managed.Runtime;
 
 /// <summary>
 /// Phase 1–6：供 Native 透過 <c>load_assembly_and_get_function_pointer</c> 解析之 <c>[UnmanagedCallersOnly]</c> 匯出入口；
-/// 執行期程式集透過專案參考納入 <b>VisionGal.Managed.Gameplay</b>，使 publish 目錄含 Phase 6 首包 DLL。
+/// 執行期程式集透過專案參考納入 <b>VisionGal.Managed.Gameplay</b>（含 <see cref="BootstrapGameplay"/> 之 Phase 6 演練）。
 /// </summary>
 public static class Entry
 {
@@ -26,6 +28,9 @@ public static class Entry
 	/// <summary>Phase 5：Foundation 演練（Object / Scene / Assets）已完成。</summary>
 	public static volatile bool BootstrapEngineFoundationCompleted;
 
+	/// <summary>Phase 6：<see cref="BootstrapGameplay"/>（變數表 JSON、序列含場景再水合、會話快照往返、對白 Stub）已完成。</summary>
+	public static volatile bool BootstrapGameplayCompleted;
+
 	/// <summary><see cref="GetBootstrapFlags"/> 位元遮罩：Smoke 已完成。</summary>
 	public const int FlagSmoke = 1 << 0;
 
@@ -37,6 +42,9 @@ public static class Entry
 
 	/// <summary><see cref="GetBootstrapFlags"/> 位元遮罩：Engine Foundation 演練已完成。</summary>
 	public const int FlagEngineFoundation = 1 << 3;
+
+	/// <summary><see cref="GetBootstrapFlags"/> 位元遮罩：Gameplay 演練（Phase 6 slice）已完成。</summary>
+	public const int FlagGameplay = 1 << 4;
 
 	/// <summary>Phase 1：無參數 smoke，驗證 UCO 呼叫鏈路。</summary>
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
@@ -119,6 +127,105 @@ public static class Entry
 	}
 
 	/// <summary>
+	/// Phase 6：演練 <see cref="GameplayVariableStore"/> JSON 往返、<see cref="SequenceRunner"/>（含場景 JSON → <see cref="SceneRehydrator"/> 再水合與變數同步）、<see cref="GameplaySessionSnapshot"/> 根層往返、<see cref="DialoguePresenter"/>；須先呼叫 <see cref="BootstrapNativeApi"/>。
+	/// </summary>
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
+	public static void BootstrapGameplay()
+	{
+		BootstrapGameplayCompleted = false;
+
+		var store = new GameplayVariableStore();
+		store.Set("gpBootstrap", false);
+
+		var json = store.ToJson();
+		if (!GameplayVariableStore.TryParseFromJson(json, out var roundTrip) || roundTrip is null)
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (json round-trip)"u8);
+			return;
+		}
+
+		if (!roundTrip.TryGet("gpBootstrap", out var v0) || v0 is not bool b0 || b0)
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (json value)"u8);
+			return;
+		}
+
+		// 與 Foundation 演練隔離：清空註冊表後建立「待載入」場景快照，再清空並以序列步驟再水合，模擬劇本邊載入邊寫變數。
+		ObjectRegistry.ClearForTesting();
+		AssetDatabase.ClearForTesting();
+
+		const string expectedRehydratedTitle = "GameplayBootstrapEntity";
+		var preloadEntity = LifetimeSystem.CreateAndRegister<SceneEntity>("SceneEntity");
+		preloadEntity.DisplayName = expectedRehydratedTitle;
+		var preloadScene = new VisionGal.Managed.Scene.Scene("GameplayBootstrapScene");
+		preloadScene.AddEntity(preloadEntity);
+		var sceneJson = preloadScene.ToJson();
+
+		ObjectRegistry.ClearForTesting();
+		AssetDatabase.ClearForTesting();
+
+		// 使用往返後之變數表承接後續序列，避免與上方暫存狀態混淆。
+		var runner = new SequenceRunner(
+			new ISequenceStep[]
+			{
+				new RehydrateSceneSequenceStep(sceneJson),
+				new SyncFirstEntityDisplayNameToVariableSequenceStep("rehydratedTitle"),
+				new SetVariableSequenceStep("gpBootstrap", true),
+				new PresentDialogueSequenceStep(0, "VisionGal.Managed.Runtime BootstrapGameplay (Phase6)"),
+			});
+
+		if (!runner.Run(roundTrip))
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (sequence)"u8);
+			return;
+		}
+
+		if (!roundTrip.TryGet("gpBootstrap", out var v1) || v1 is not bool b1 || !b1)
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (variable)"u8);
+			return;
+		}
+
+		if (!roundTrip.TryGet("rehydratedTitle", out var titleObj) || titleObj is not string title || title != expectedRehydratedTitle)
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (scene sync)"u8);
+			return;
+		}
+
+		// Phase 6 slice 4：會話快照（變數表子 JSON + 場景 JSON）根層往返，驗證與 VersionTolerance 一致之載入路徑。
+		var sessionSnapshot = GameplaySessionSnapshot.Capture(roundTrip, sceneJson);
+		var sessionJson = sessionSnapshot.ToJson();
+		if (!GameplaySessionSnapshot.TryParseFromJson(sessionJson, out var restoredSession) || restoredSession is null)
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session snapshot parse)"u8);
+			return;
+		}
+
+		if (restoredSession.SceneJson != sceneJson)
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session sceneJson)"u8);
+			return;
+		}
+
+		var applied = new GameplayVariableStore();
+		if (!restoredSession.ApplyTo(applied))
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session ApplyTo)"u8);
+			return;
+		}
+
+		if (!applied.TryGet("gpBootstrap", out var v2) || v2 is not bool b2 || !b2 ||
+		    !applied.TryGet("rehydratedTitle", out var t2) || t2 is not string s2 || s2 != expectedRehydratedTitle)
+		{
+			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session variables)"u8);
+			return;
+		}
+
+		BootstrapGameplayCompleted = true;
+		NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay OK (Phase6)"u8);
+	}
+
+	/// <summary>
 	/// 供 GTest 讀取 Bootstrap 旗標（位元遮罩，見 <see cref="FlagSmoke"/> 等常數）；不依賴 stderr 日誌解析。
 	/// </summary>
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
@@ -144,6 +251,11 @@ public static class Entry
 		if (BootstrapEngineFoundationCompleted)
 		{
 			flags |= FlagEngineFoundation;
+		}
+
+		if (BootstrapGameplayCompleted)
+		{
+			flags |= FlagGameplay;
 		}
 
 		return flags;

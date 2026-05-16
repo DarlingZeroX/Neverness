@@ -509,6 +509,30 @@ static void VG_ENGINE_ABI_STDCALL stub_async_releaseWait(VGAsyncWaitHandle wait)
 	(void)wait;
 }
 
+/**
+ * @brief **VGEntityAPI** 首包 Stub：`getServiceAbiToken`。
+ *
+ * 語義（與 MANAGED **§2.7.1** 一致）：
+ * - 僅用於宿主／**VGManagedHostTest**／託管 **ExerciseStubInteropPath** 驗證「**`VGNativeEngineAPI::entity`** 已接線」；
+ *   返回值固定為 **VG_ENTITY_SERVICE_ABI_TOKEN**，與 **VisionGal.Managed.Engine.VGNativeEngineApiConstants.EntityServiceAbiToken** 對齊。
+ * - **不**表示已存在 Native ECS 世界、**不**與 **VGSceneAPI** 之 **VGEntityHandle**（場景圖）互通；真實實體子系統見路線圖 **VGEntitySystem**。
+ * - 每次呼叫仍執行 **bump()**，納入 **VGNativeEngineApi_GetStubInvokeCount** 統計，便於觀測測試是否觸達本路徑。
+ */
+static std::uint32_t VG_ENGINE_ABI_STDCALL stub_entity_getServiceAbiToken(void)
+{
+	bump();
+	return VG_ENTITY_SERVICE_ABI_TOKEN;
+}
+
+/**
+ * @brief Stub：`getRuntimeTick` 恒返回 **0**（无 **EntitySubsystem** 驱动）；仍 **bump()** 便于统计。
+ */
+static std::uint64_t VG_ENGINE_ABI_STDCALL stub_entity_getRuntimeTick(void)
+{
+	bump();
+	return 0u;
+}
+
 extern "C" void VGNativeEngineApiTable_BuildDefault(VGNativeEngineAPI* outTable)
 {
 	if (outTable == nullptr)
@@ -577,6 +601,9 @@ extern "C" void VGNativeEngineApiTable_BuildDefault(VGNativeEngineAPI* outTable)
 	outTable->assetRegistry.getDependencyCount = &stub_reg_getDependencyCount;
 	outTable->assetRegistry.getDependencyAt = &stub_reg_getDependencyAt;
 	outTable->assetRegistry.importAsset = &stub_reg_importAsset;
+
+	outTable->entity.getServiceAbiToken = &stub_entity_getServiceAbiToken;
+	outTable->entity.getRuntimeTick = &stub_entity_getRuntimeTick;
 }
 
 namespace

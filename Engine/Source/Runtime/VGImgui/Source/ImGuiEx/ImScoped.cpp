@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "ImGuiEx/ImScoped.h"
 
 namespace ImGuiEx
