@@ -1,4 +1,4 @@
-#include "NNRuntimeEngine/AssetRegistrySubsystem.h"
+#include "AssetRegistrySubsystem.h"
 
 #include <cstring>
 

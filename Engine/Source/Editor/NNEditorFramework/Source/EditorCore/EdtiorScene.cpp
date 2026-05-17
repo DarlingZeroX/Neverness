@@ -64,7 +64,7 @@ namespace NN::Editor
 
 	void EditorScene::OpenSceneByFileDialog()
 	{
-		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
 		auto root = contentPath;
 		root = NN::Core::HFileSystem::ToWindowsPath(root);
 
@@ -115,7 +115,7 @@ namespace NN::Editor
 
 	bool EditorScene::SaveCurrentSceneAs()
 	{
-		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
 		auto root = contentPath;
 		root = NN::Core::HFileSystem::ToWindowsPath(root);
 

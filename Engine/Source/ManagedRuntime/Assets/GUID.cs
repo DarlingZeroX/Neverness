@@ -1,7 +1,7 @@
-using System.Runtime.InteropServices;
-using VisionGal.Managed.Engine;
+﻿using System.Runtime.InteropServices;
+using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Assets;
+namespace Neverness.Managed.Assets;
 
 /// <summary>
 /// 128-bit 資產 GUID；與 Native <see cref="VGGuid"/> 記憶體佈局一致，可零拷貝互操作。

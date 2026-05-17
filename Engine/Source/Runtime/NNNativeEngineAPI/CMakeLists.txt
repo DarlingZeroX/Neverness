@@ -13,11 +13,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 	add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-set(VG_NATIVE_ENGINE_API_SOURCES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/VGNativeEngineApiStubs.cpp"
-)
+add_library(NevernessRuntime-NativeEngineAPI STATIC)
 
-add_library(NevernessRuntime-NativeEngineAPI STATIC ${VG_NATIVE_ENGINE_API_SOURCES})
+target_sources(NevernessRuntime-NativeEngineAPI
+	PRIVATE
+		Private/VGNativeEngineApiStubs.cpp
+)
 
 target_include_directories(NevernessRuntime-NativeEngineAPI
 	PUBLIC

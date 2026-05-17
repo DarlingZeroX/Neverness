@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../VGAssetConfig.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeAsset/Include/TextureAsset.h"
 #include <unordered_set>
 #include <NNCore/Interface/HTypeInfo.h>

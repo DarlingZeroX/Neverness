@@ -1,6 +1,6 @@
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace VisionGal.Managed.Reflection;
+namespace Neverness.Managed.Reflection;
 
 /// <summary>
 /// 單一 CLR 型別之可序列化成員集合與型別級屬性摘要。

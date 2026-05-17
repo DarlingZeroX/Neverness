@@ -184,7 +184,7 @@ namespace NN::Runtime
 
 	void ProjectSettings::ReadSettingFromFileVFS(const std::string& pathVFS, ProjectSettingInterface& setting)
 	{
-		std::string path = Core::GetProjectSettingsPathVFS();
+		std::string path = RuntimeCore::GetProjectSettingsPathVFS();
 		path = path + pathVFS;
 
 		std::string text;
@@ -207,7 +207,7 @@ namespace NN::Runtime
 		setting.Save(json);
 		std::string jsonStr = json.dump(2);
 
-		std::string path = Core::GetProjectSettingsPathVFS();
+		std::string path = RuntimeCore::GetProjectSettingsPathVFS();
 		path = path + pathVFS;
 
 		VFS::WriteTextToFile(path, jsonStr);

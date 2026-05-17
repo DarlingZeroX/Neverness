@@ -13,24 +13,28 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 	add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-add_library(NevernessRuntime-Engine STATIC
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/VGEngineRuntime.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/TimingSystem.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/AsyncSystem.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/SceneSubsystem.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/AssetSubsystem.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/ObjectSubsystem.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/AssetRegistrySubsystem.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/EntitySubsystem.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/RuntimeSubsystemCollection.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/RuntimeScheduler.cpp"
+add_library(NevernessRuntime-Engine STATIC)
+
+target_sources(NevernessRuntime-Engine
+	PRIVATE
+		Private/VGEngineRuntime.cpp
+		Private/TimingSystem.cpp
+		Private/AsyncSystem.cpp
+		Private/SceneSubsystem.cpp
+		Private/AssetSubsystem.cpp
+		Private/ObjectSubsystem.cpp
+		Private/AssetRegistrySubsystem.cpp
+		Private/EntitySubsystem.cpp
+		Private/NNRuntimeSceneTickSubsystem.cpp
+		Private/RuntimeSubsystemCollection.cpp
+		Private/RuntimeScheduler.cpp
+		Include/NNRuntimeSceneTickSubsystem.h
 )
 
-target_include_directories(NevernessRuntime-Engine
-	PUBLIC
-		"${CMAKE_CURRENT_SOURCE_DIR}/Include"
-	PRIVATE
-		"${CMAKE_CURRENT_SOURCE_DIR}/Private"
-)
+target_include_directories(NevernessRuntime-Engine PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(NevernessRuntime-Engine PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
+target_include_directories(NevernessRuntime-Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(NevernessRuntime-Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 target_link_libraries(NevernessRuntime-Engine PUBLIC NevernessRuntime-NativeEngineAPI)
+target_link_libraries(NevernessRuntime-Engine PRIVATE NevernessRuntime-Scene)

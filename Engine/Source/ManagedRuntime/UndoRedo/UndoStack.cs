@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.UndoRedo;
+﻿namespace Neverness.Managed.UndoRedo;
 
 /// <summary>
 /// 雙棧 Undo/Redo 管理器。

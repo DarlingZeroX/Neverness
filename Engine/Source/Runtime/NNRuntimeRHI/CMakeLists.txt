@@ -1,7 +1,4 @@
 # 设置 C++ 标准为 C++17
-#cmake_minimum_required(VERSION 3.10)
-#project(HMedia LANGUAGES CXX)  # 明确指定为C++项目
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -17,64 +14,72 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-#开启MSVC多线程编译	# windows 并行编译选项
-add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/Gm->) #高版本已被废弃，但是低版本的Gm会影响并行
+#开启MSVC多线程编译
+add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/Gm->)
 cmake_host_system_information(RESULT CPU_NUMBER_OF_LOGICAL_CORES QUERY NUMBER_OF_LOGICAL_CORES)
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_NUMBER_OF_LOGICAL_CORES}>)
 
-# 将源代码添加到此项目的可执行文件。
-file(GLOB VGRHI_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/OpenGL/*.cpp"
+add_library(NevernessRuntime-RHI SHARED)
+
+target_sources(NevernessRuntime-RHI
+  PRIVATE
+    Include/OpenGL/Buffer.h
+    Include/OpenGL/Core.h
+    Include/OpenGL/Effect.h
+    Include/OpenGL/Exception.h
+    Include/OpenGL/FrameBuffer.h
+    Include/OpenGL/IncludeGladGL3.h
+    Include/OpenGL/InputLayout.h
+    Include/OpenGL/Interface.h
+    Include/OpenGL/Mesh.h
+    Include/OpenGL/OpenGL.h
+    Include/OpenGL/RenderTarget.h
+    Include/OpenGL/Shader.h
+    Include/OpenGL/ShaderProgram.h
+    Include/OpenGL/Texture2D.h
+    Include/OpenGL/TextureBase.h
+    Include/OpenGL/ThrowMarco.h
+    Include/OpenGL/VertexArray.h
+    Include/VGRHIConfig.h
+    Include/VGRHICore.h
+    Interface/Device.h
+    Interface/Mesh.h
+    Interface/Shader.h
+    Interface/Texture.h
+    Interface/VertexElement.h
+    Interface/VGFX.h
+    Source/Interface/Device.cpp
+    Source/Interface/VGFX.cpp
+    Source/OpenGL/Buffer.cpp
+    Source/OpenGL/Effect.cpp
+    Source/OpenGL/Exception.cpp
+    Source/OpenGL/FrameBuffer.cpp
+    Source/OpenGL/IncludeGladGL3.cpp
+    Source/OpenGL/Mesh.cpp
+    Source/OpenGL/RenderTarget.cpp
+    Source/OpenGL/Shader.cpp
+    Source/OpenGL/ShaderProgram.cpp
+    Source/OpenGL/Texture2D.cpp
+    Source/OpenGL/TextureBase.cpp
+    Source/OpenGL/VertexArray.cpp
 )
- 
-file(GLOB VGRHI_HEADER_FILES 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/OpenGL/*.h"
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
-)
-
-# 启用预编译头支持
-#set(CMAKE_PCH_ENABLED ON)
-
-# 当前cmake C++项目为动态库
-add_library (NevernessRuntime-RHI SHARED ${VGRHI_SRC_FILES} ${VGRHI_HEADER_FILES})
-
-# 添加宏
 target_compile_definitions(NevernessRuntime-RHI PRIVATE VG_RHI_API_EXPORT)
-#target_compile_definitions(NevernessRuntime-RHI PRIVATE GLAD_API_CALL_EXPORT)
-#target_compile_definitions(NevernessRuntime-RHI PRIVATE GLAD_API_CALL_EXPORT_BUILD)
 
-# 添加头文件搜索路径
 target_include_directories(NevernessRuntime-RHI PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(NevernessRuntime-RHI PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
+target_include_directories(NevernessRuntime-RHI PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(NevernessRuntime-RHI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
-# 配置预编译头
-#target_precompile_headers(NevernessRuntime-RHI PRIVATE
-#    "Include/pch.h"  # 项目级头文件
-#)
- 
-# 包
-#find_package(glad CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(SDL3_image CONFIG REQUIRED)
 
-# 链接动态库
 target_link_libraries(NevernessRuntime-RHI PRIVATE SDL3::SDL3)
 target_link_libraries(NevernessRuntime-RHI PRIVATE NevernessCore-Core)
 
-# 链接OpenGL库
 if (APPLE)
-    # 在macOS上链接OpenGL框架
     target_link_libraries(NevernessRuntime-RHI PRIVATE "-framework OpenGL")
 elseif (UNIX)
-    # 在Linux上链接OpenGL库
     target_link_libraries(NevernessRuntime-RHI PRIVATE GL)
 elseif (WIN32)
-    # 在Windows上，可能需要根据具体情况设置OpenGL库路径和库名
     target_link_libraries(NevernessRuntime-RHI PRIVATE opengl32)
 endif ()

@@ -1,11 +1,11 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace VisionGal.Managed.Core;
+namespace Neverness.Managed.Core;
 
 /// <summary>
 /// 與 Native <c>VGNativeAPI</c>（<c>VGManagedCore/NativeAPI.h</c>）逐欄位對齊的鏡像結構。
 /// 呼叫約定：<c>LogInfo</c> 使用 stdcall 與 C++ <c>VGNativeLogInfoFn</c> 及託管 <c>UnmanagedCallersOnly</c> 一致。
-/// Phase 3：追加 <c>EngineServices</c> 指標，指向 <c>VGNativeEngineAPI</c>（定義於 VisionGal.Managed.Engine）。
+/// Phase 3：追加 <c>EngineServices</c> 指標，指向 <c>VGNativeEngineAPI</c>（定義於 Neverness.Managed.Engine）。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct VGNativeApi

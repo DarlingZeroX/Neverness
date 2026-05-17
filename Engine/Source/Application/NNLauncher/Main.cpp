@@ -42,7 +42,7 @@ void InitializeVFS(LauncherVFSPath path)
 
 	// 添加引擎资源虚拟文件系统
 	VFS::MountPackageFileSystem(
-		Core::GetEngineResourcePathVFS(),
+		RuntimeCore::GetEngineResourcePathVFS(),
 		"Data/engine.pak",
 		path.engine
 	);

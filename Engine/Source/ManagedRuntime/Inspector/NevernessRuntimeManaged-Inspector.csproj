@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-Inspector</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <RootNamespace>VisionGal.Managed.Inspector</RootNamespace>
+    <RootNamespace>Neverness.Managed.Inspector</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\VGManagedReflection\Managed\VisionGal.Managed.Reflection\VisionGal.Managed.Reflection.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedEditor\Managed\VisionGal.Managed.Editor\VisionGal.Managed.Editor.csproj" />
+    <ProjectReference Include="..\Reflection\NevernessRuntimeManaged-Reflection.csproj" />
+    <ProjectReference Include="..\..\ManagedEditor\VGManagedEditor\Managed\VisionGal.Managed.Editor\VisionGal.Managed.Editor.csproj" />
   </ItemGroup>
 </Project>

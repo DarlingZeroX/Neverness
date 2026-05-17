@@ -1,8 +1,8 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
-using VisionGal.Managed.Engine;
+using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Assets;
+namespace Neverness.Managed.Assets;
 
 /// <summary>
 /// 託管資產登記表薄封裝；優先經 <see cref="EngineNativeApiBootstrap.EngineApi.AssetRegistry"/> 與 Native 同步。

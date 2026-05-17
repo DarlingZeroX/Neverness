@@ -1,9 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using VisionGal.Managed.Serialization;
+using Neverness.Managed.Serialization;
 
-namespace VisionGal.Managed.Gameplay;
+namespace Neverness.Managed.Gameplay;
 
 /// <summary>
 /// <see cref="GameplayVariableStore"/> 之 JSON 快照（MVP）：與 <see cref="VersionTolerance"/> 共用選項，寫入 <c>formatVersion</c>，讀取時忽略未知根欄位（由選項控制）。

@@ -1,7 +1,7 @@
-using System.Text.Json;
-using VisionGal.Managed.Serialization;
+﻿using System.Text.Json;
+using Neverness.Managed.Serialization;
 
-namespace VisionGal.Managed.Scene;
+namespace Neverness.Managed.Scene;
 
 /// <summary>
 /// 場景容器：實體清單與 JSON 往返序列化（DTO 層；不直接驅動 Native SceneAPI）。

@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-Core</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <RootNamespace>VisionGal.Managed.Core</RootNamespace>
+    <RootNamespace>Neverness.Managed.Core</RootNamespace>
   </PropertyGroup>
 </Project>

@@ -1,6 +1,6 @@
-using VisionGal.Managed.Object;
+﻿using Neverness.Managed.Object;
 
-namespace VisionGal.Managed.Scene;
+namespace Neverness.Managed.Scene;
 
 /// <summary>
 /// Prefab 描述：可從場景實體範本實例化新 <see cref="SceneEntity"/>。

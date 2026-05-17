@@ -14,7 +14,7 @@
 
 namespace NN::Runtime
 {
-	struct VG_CORE_API EngineRuntimeState
+	struct NN_RUNTIME_CORE_API EngineRuntimeState
 	{
 		static EngineRuntimeState& Get();
 

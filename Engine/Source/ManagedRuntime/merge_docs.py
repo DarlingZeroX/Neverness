@@ -5,7 +5,7 @@ def merge_docs():
     合并 RuntimeGalgame 下各子模块 Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md，
     并追加根目录 MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md。
 
-    用法：在 Engine/Source/Managed 目錄執行
+    用法：在 Engine/Source/ManagedRuntime 目錄執行
         python merge_docs.py
 
     输出：MERGED_ARCHITECTURE_AND_PROGRESS.md（覆盖）

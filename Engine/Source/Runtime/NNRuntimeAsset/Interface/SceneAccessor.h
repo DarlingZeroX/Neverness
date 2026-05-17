@@ -13,7 +13,7 @@
 #include "../VGAssetConfig.h"
 #include "NNRuntimeCore/Interface/VGAsset.h"
 #include "NNRuntimeAsset/Include/SceneAsset.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 
 namespace NN::Runtime
 {

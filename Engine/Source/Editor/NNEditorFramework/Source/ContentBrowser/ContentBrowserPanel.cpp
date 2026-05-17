@@ -347,8 +347,8 @@ namespace NN::Editor {
 		static std::string itemPath;
 		if (ImGui::BeginDragDropSource())
 		{
-			auto aPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
-			itemPath = Runtime::Core::GetAssetsPathVFS() + std::filesystem::relative(item.AbsolutePath, aPath).string();
+			auto aPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
+			itemPath = Runtime::RuntimeCore::GetAssetsPathVFS() + std::filesystem::relative(item.AbsolutePath, aPath).string();
 
 			ImGui::SetDragDropPayload("PLACE_CONTENT_BROWSER_ITEM", itemPath.c_str(), itemPath.size() + 1);
 			ImGui::Text(itemPath.c_str());

@@ -1,6 +1,6 @@
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace VisionGal.Managed.Reflection;
+namespace Neverness.Managed.Reflection;
 
 /// <summary>
 /// 單一可序列化屬性之反射元資料（名稱、型別、屬性標記）。

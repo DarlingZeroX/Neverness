@@ -13,16 +13,14 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-file(GLOB HNGRUNTIMENODES_HEADER_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
-)
+add_library(HNGRuntimeNodes SHARED)
 
-file(GLOB HNGRUNTIMENODES_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+target_sources(HNGRuntimeNodes
+  PRIVATE
+    HNGRuntimeNodesConfig.h
+    Include/HNGRuntimeNodes.h
+    Source/HNGRuntimeNodes.cpp
 )
-
-add_library (HNGRuntimeNodes SHARED ${HNGRUNTIMENODES_HEADER_FILES} ${HNGRUNTIMENODES_SRC_FILES})
 
 target_compile_definitions(HNGRuntimeNodes PRIVATE H_NG_RUNTIME_NODES_API_EXPORT)
 
@@ -32,4 +30,3 @@ target_include_directories(HNGRuntimeNodes PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/I
 target_include_directories(HNGRuntimeNodes PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(HNGRuntimeNodes PUBLIC HNGRuntimeCore)
-

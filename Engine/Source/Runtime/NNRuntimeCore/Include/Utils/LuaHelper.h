@@ -11,11 +11,11 @@
 
 #pragma once
 #include <string>
-#include "../../VGCoreConfig.h"
+#include "../../RuntimeCoreExport.h"
 
 namespace NN::Runtime
 {
-	struct VG_CORE_API LuaHelper
+	struct NN_RUNTIME_CORE_API LuaHelper
 	{
 		static int ExtractErrorLineNumber(const std::string& error_msg);
 	};

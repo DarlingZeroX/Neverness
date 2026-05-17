@@ -1,6 +1,6 @@
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace VisionGal.Managed.UndoRedo;
+namespace Neverness.Managed.UndoRedo;
 
 /// <summary>
 /// 修改單一欄位或屬性之可撤銷命令（使用 BCL 反射，僅依賴 Editor 模組）。

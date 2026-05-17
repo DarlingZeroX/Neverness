@@ -13,7 +13,7 @@
 #include "../../Config.h"
 #include <string>
 #include <functional>
-#include <NNRuntimeCore/Include/Core/Core.h>
+#include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 
 namespace NN::Editor
 {

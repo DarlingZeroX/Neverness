@@ -1,12 +1,14 @@
-# HNGRuntimeCore — 节点图运行时核心
+# NNNodeGraphCore — 节点图运行时核心
+
+> 目录 **`NNNodeGraphCore`**；CMake 目标仍为 **`HNGRuntimeCore`**（**默认未构建**，根 `Engine/Source/Core/CMakeLists.txt` 已注释 `add_subdirectory`）。
 
 ## 1. 定位与边界
 
 | 项目 | 说明 |
 |------|------|
 | **职责** | 提供节点图运行时核心数据结构：`RuntimeGraph`、`RuntimeContext`、槽/边模型、**Value** 与类型枚举、节点执行函数签名（`NodeExecuteFn`）等；命名空间 **`Horizon::NodeGraphRuntime`**。 |
-| **不负责** | 不负责具体节点类型的 `Execute` 实现（见 **HNGRuntimeNodes**）；不负责编辑器 UI（见 Editor 模块）。 |
-| **CMake 目标** | `HNGRuntimeCore`（`SHARED`） |
+| **不负责** | 不负责具体节点类型的 `Execute` 实现（见 **NNNodeGraphNodes**）；不负责编辑器 UI（见 Editor 模块）。 |
+| **CMake 目标** | `HNGRuntimeCore`（`SHARED`，**未纳入默认构建**） |
 | **宏** | `H_NODE_GRAPH_API_EXPORT` |
 | **依赖** | `SDL3::SDL3`（PRIVATE）、`HCore`（PRIVATE）。 |
 | **典型消费者** | **HNGRuntimeNodes**（**PUBLIC** 链接 `HNGRuntimeCore`）、编辑器/工具链。 |
@@ -15,14 +17,14 @@
 
 ## 2. 构建与选项
 
-- 包含目录：**PUBLIC** `Engine/Source/Kernel`（`VISIONGAL_KERNEL_ROOT`）、`Include`、`Interface`。
+- 包含目录：**PUBLIC** `Engine/Source/Core`（`VISIONGAL_KERNEL_ROOT`）、`Include`、`Interface`。
 
 ---
 
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Kernel/HNGRuntimeCore/
+Engine/Source/Core/NNNodeGraphCore/
 ├── CMakeLists.txt
 ├── HNodeGraphConfig.h
 ├── Docs/
@@ -74,12 +76,13 @@ Engine/Source/Kernel/HNGRuntimeCore/
 
 | 日期 | 进展 |
 |------|------|
+| 2026-05-17 | 文档与 **NN** 目录命名对齐；CMake 目标名未改。 |
 | 2026-05-15 | 文档首版：执行模型与目录索引。 |
 
 ---
 
 ## 7. 相关链接
 
-- [Kernel 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
+- [Core 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
 - [Runtime 总览](../../../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
-- [HNGRuntimeNodes](../HNGRuntimeNodes/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [NNNodeGraphNodes](../NNNodeGraphNodes/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

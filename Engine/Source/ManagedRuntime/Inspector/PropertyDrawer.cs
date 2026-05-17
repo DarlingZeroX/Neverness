@@ -1,6 +1,6 @@
-using VisionGal.Managed.Reflection;
+﻿using Neverness.Managed.Reflection;
 
-namespace VisionGal.Managed.Inspector;
+namespace Neverness.Managed.Inspector;
 
 /// <summary>
 /// 屬性繪製器：依 <see cref="PropertyMetadata"/> 讀寫目標成員（供 Editor UI 或測試驅動）。

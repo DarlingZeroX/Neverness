@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "Core.h"
+#include "RuntimeCore.h"
 #include "Viewport.h"
 #include <NNPlatformCore/Include/SDL3/SDL3Input.h>
 #include <NNPlatformCore/Interface/Input/HKeyboardBase.h>
@@ -18,7 +18,7 @@
 
 namespace NN::Runtime
 {
-	struct VG_CORE_API Input: public NN::Core::SDL3::Layer
+	struct NN_RUNTIME_CORE_API Input: public NN::Core::SDL3::Layer
 	{
 		Input();
 

@@ -1,6 +1,6 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
-namespace VisionGal.Managed.Entity;
+namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 元件型別全域工廠表：以 <see cref="Type"/> 為鍵登記 <c>EntityHandle → VGComponent</c> 委派，供資料驅動或編輯器匯出層延遲建立元件。

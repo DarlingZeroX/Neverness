@@ -28,7 +28,7 @@ namespace NN::Runtime
 
 	void ShaderManager::AddBuiltInShader(const std::string& name, const std::string& path)
 	{
-		std::string shaderPath = Core::GetEngineResourcePathVFS() + "shaders/";
+		std::string shaderPath = RuntimeCore::GetEngineResourcePathVFS() + "shaders/";
 
 		if (path.empty())
 			shaderPath += name + ".glsl";

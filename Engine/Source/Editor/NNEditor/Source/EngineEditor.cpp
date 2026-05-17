@@ -89,7 +89,7 @@ namespace VisionGal::Editor
 
 		//if (m_EditorConfig.LoadFontChinese)
 		{
-			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const NN::Runtime::VFS::DataRef& data) {
+			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const NN::Runtime::VFS::DataRef& data) {
 				ImGuiIO& io = ImGui::GetIO();
 				ImFontConfig icons_config;
 				icons_config.FontDataOwnedByAtlas = false;
@@ -107,7 +107,7 @@ namespace VisionGal::Editor
 
 		//if (m_EditorConfig.LoadFontAwesome)
 		{
-			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::Core::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const NN::Runtime::VFS::DataRef& data) {
+			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const NN::Runtime::VFS::DataRef& data) {
 				ImGuiIO& io = ImGui::GetIO();
 				static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 

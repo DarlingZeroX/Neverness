@@ -1,7 +1,7 @@
-using System.Text;
-using VisionGal.Managed.Engine;
+﻿using System.Text;
+using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Assets;
+namespace Neverness.Managed.Assets;
 
 /// <summary>
 /// 資產匯入管線：虛擬路徑 → Native <c>importAsset</c> → 登記至 <see cref="AssetDatabase"/>。

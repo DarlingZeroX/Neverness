@@ -3,7 +3,7 @@
  * @brief **RuntimeScheduler** 实现：Early → Fixed（0..N）→ Update → Late（含主线程队列 Flush 占位）→ Render。
  */
 
-#include "NNRuntimeEngine/RuntimeScheduler/RuntimeScheduler.h"
+#include "RuntimeScheduler/RuntimeScheduler.h"
 
 namespace NN::Runtime::engine
 {

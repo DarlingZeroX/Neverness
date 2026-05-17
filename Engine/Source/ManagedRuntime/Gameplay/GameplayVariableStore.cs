@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Gameplay;
+﻿namespace Neverness.Managed.Gameplay;
 
 /// <summary>
 /// Galgame 執行時變數表：託管端鍵值字典，供劇本、<see cref="SequenceRunner"/> 與存檔快照共用。

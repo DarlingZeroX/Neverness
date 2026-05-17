@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.RuntimeLoop;
+﻿namespace Neverness.Managed.RuntimeLoop;
 
 /// <summary>
 /// 与 Native <c>visiongal::engine::RuntimeTickGroup</c> 语义对齐的托管 Tick 分组（<b>P0-1</b> <see cref="ManagedRuntimeScheduler"/>）。

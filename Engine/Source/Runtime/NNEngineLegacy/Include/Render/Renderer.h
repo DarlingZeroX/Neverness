@@ -14,7 +14,7 @@
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
 #include "../Scene/Components.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 
 namespace NN::Runtime 
 {

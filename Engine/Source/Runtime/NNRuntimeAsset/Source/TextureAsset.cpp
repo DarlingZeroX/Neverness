@@ -11,7 +11,7 @@
 
 #include "TextureAsset.h"
 #include <SDL3_image/SDL_image.h>
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 
 namespace NN::Runtime

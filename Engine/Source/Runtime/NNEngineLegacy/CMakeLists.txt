@@ -28,69 +28,16 @@ endif()
 add_definitions(-DENGINE_API_EXPORT) 
 #add_definitions(-DIMGUI_IMPL_OPENGL_ES3)
 
-# 将源代码添加到此项目的可执行文件。
-file(GLOB ENGINE_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Animation/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Animation/Audio/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Animation/Core/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/Accessor/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Data/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/Manager/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Event/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Game/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Project/*.cpp"
-	 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Lua/Interface/*.cpp" 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Render/*.cpp" 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Resource/Texture/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Scene/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Utils/*.cpp"
-)
- 
-file(GLOB ENGINE_HEADER_FILES 
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Audio/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Animation/Core/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/Accessor/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Core/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Data/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Engine/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Engine/Manager/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Game/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Project/*.h"
+include(${CMAKE_CURRENT_SOURCE_DIR}/NNEngineLegacySources.cmake)
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Lua/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Render/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Texture/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Resource/Interface/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Scene/*.h" 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Utils/*.h"
-)
-
-# 启用预编译头支持
 set(CMAKE_PCH_ENABLED ON)
 
-# 当前cmake C++项目为动态库
-add_library (NevernessRuntime-EngineLegacy SHARED ${ENGINE_SRC_FILES} ${ENGINE_HEADER_FILES})
+add_library(NevernessRuntime-EngineLegacy SHARED)
+target_sources(NevernessRuntime-EngineLegacy PRIVATE ${NNEngineLegacy_SOURCES})
 
 # 添加头文件搜索路径
 target_include_directories(NevernessRuntime-EngineLegacy PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(NevernessRuntime-EngineLegacy PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
+target_include_directories(NevernessRuntime-EngineLegacy PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(NevernessRuntime-EngineLegacy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-EngineLegacy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(NevernessRuntime-EngineLegacy PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeLua/Include)

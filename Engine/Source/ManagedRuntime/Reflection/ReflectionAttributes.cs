@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Reflection;
+﻿namespace Neverness.Managed.Reflection;
 
 /// <summary>
 /// 標記欄位或屬性應參與序列化（即使為 private）；對齊 Unity <c>[SerializeField]</c> 語義。

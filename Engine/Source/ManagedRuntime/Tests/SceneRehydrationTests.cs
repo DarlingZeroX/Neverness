@@ -1,9 +1,9 @@
-using VisionGal.Managed.Engine;
-using VisionGal.Managed.Object;
-using VisionGal.Managed.Serialization;
-using SceneType = VisionGal.Managed.Scene.Scene;
+﻿using Neverness.Managed.Engine;
+using Neverness.Managed.Object;
+using Neverness.Managed.Serialization;
+using SceneType = Neverness.Managed.Scene.Scene;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>場景實體再水合與屬性套用測試。</summary>
 public sealed class SceneRehydrationTests : IDisposable
@@ -21,10 +21,10 @@ public sealed class SceneRehydrationTests : IDisposable
 	[Fact]
 	public void ApplyEntryProperties_RestoresDisplayName()
 	{
-		var source = new VisionGal.Managed.Scene.SceneEntity(new VGObjectId(1), new VGObjectHandle(1), "SourceName");
+		var source = new Neverness.Managed.Scene.SceneEntity(new VGObjectId(1), new VGObjectHandle(1), "SourceName");
 		var entry = SceneSerializer.CaptureObject("Entity", source);
 
-		var target = new VisionGal.Managed.Scene.SceneEntity(new VGObjectId(2), new VGObjectHandle(2), "Placeholder");
+		var target = new Neverness.Managed.Scene.SceneEntity(new VGObjectId(2), new VGObjectHandle(2), "Placeholder");
 		SceneSerializer.ApplyEntryProperties(target, entry);
 
 		Assert.Equal("SourceName", target.DisplayName);
@@ -38,7 +38,7 @@ public sealed class SceneRehydrationTests : IDisposable
 			return;
 		}
 
-		var entity = LifetimeSystem.CreateAndRegister<VisionGal.Managed.Scene.SceneEntity>("RehydrateTest");
+		var entity = LifetimeSystem.CreateAndRegister<Neverness.Managed.Scene.SceneEntity>("RehydrateTest");
 		entity.DisplayName = "RehydratedDisplay";
 
 		var scene = new SceneType("RehydrateScene");

@@ -1,6 +1,6 @@
-using VisionGal.Managed.Engine;
+﻿using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Object;
+namespace Neverness.Managed.Object;
 
 /// <summary>
 /// 所有託管引擎物件之抽象基底；持有託管 <see cref="VGObjectId"/> 與 Native 橋接 <see cref="VGObjectHandle"/>。

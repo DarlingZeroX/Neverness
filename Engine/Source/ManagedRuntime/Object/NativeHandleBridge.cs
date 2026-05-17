@@ -1,8 +1,8 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
-using VisionGal.Managed.Engine;
+using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Object;
+namespace Neverness.Managed.Object;
 
 /// <summary>
 /// 透過 <see cref="EngineNativeApiBootstrap.EngineApi"/> 之 <c>Object</c> 子表與 Native 互操作。

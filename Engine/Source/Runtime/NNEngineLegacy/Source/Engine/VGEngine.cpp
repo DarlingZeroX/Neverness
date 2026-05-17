@@ -11,7 +11,7 @@
 
 #include "Engine/VGEngine.h"
 #include "Engine/ResourceManager.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNRuntimeCore/Include/Core/VFS.h"
 #include "Engine/Manager.h"
@@ -115,7 +115,7 @@ namespace NN::Runtime
 
 	void VGEngine::Initialize()
 	{
-        Core::Initialize();
+        RuntimeCore::Initialize();
 	}
 
 	void VGEngine::OnUpdateSubSystem(float deltaTime)

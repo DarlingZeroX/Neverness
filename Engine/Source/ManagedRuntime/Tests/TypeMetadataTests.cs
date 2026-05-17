@@ -1,7 +1,7 @@
-using VisionGal.Managed.Reflection;
-using VisionGal.Managed.Scene;
+﻿using Neverness.Managed.Reflection;
+using Neverness.Managed.Scene;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>反射元資料掃描規則測試。</summary>
 public sealed class TypeMetadataTests

@@ -1,6 +1,6 @@
-using VisionGal.Managed.Entity;
+﻿using Neverness.Managed.Entity;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>
 /// P0：<see cref="EntityWorld"/> 之 Spawn/掛件/銷毀語意，以及 <see cref="ComponentRegistry"/> 靜態工廠路徑。

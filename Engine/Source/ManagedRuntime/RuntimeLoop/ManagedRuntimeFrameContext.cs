@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.RuntimeLoop;
+﻿namespace Neverness.Managed.RuntimeLoop;
 
 /// <summary>
 /// 单帧只读上下文，对应 Native <c>RuntimeFrameContext</c>；由宿主在每帧调用 <see cref="ManagedRuntimeScheduler.Tick"/> 前构造。

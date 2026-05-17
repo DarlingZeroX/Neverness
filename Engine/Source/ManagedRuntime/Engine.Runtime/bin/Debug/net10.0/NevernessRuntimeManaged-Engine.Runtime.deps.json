@@ -1,0 +1,55 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "NevernessRuntimeManaged-Engine.Runtime/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Engine": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Engine.Runtime.dll": {}
+        }
+      },
+      "NevernessRuntimeManaged-Core/1.0.0": {
+        "runtime": {
+          "NevernessRuntimeManaged-Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Engine/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Core": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Engine.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "NevernessRuntimeManaged-Engine.Runtime/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,30 +1,32 @@
-# VGUI — RmlUi 与 Lua 驱动的 UI 运行时
+# NNRuntimeRmlui — RmlUi 与 Lua 驱动的 UI 运行时
+
+> 曾用名：**VGUI**；CMake 目标 **`NevernessRuntime-RmlUI`**；C++ 命名空间 **`NN::Runtime`**。
 
 ## 1. 定位与边界
 
 | 项目 | 说明 |
 |------|------|
 | **职责** | 基于 **RmlUi** 与 **SDL3** 构建 **SHARED** UI 库；集成 **Lua/Sol** 元素（CMake 中 `Include/Lua`、`Include/Sol`、`Include/Rml`）；对外 **`Interface/UISystem.h`**、**`UIDocument.h`**。 |
-| **不负责** | 不负责 ImGui 工具栈（**VGImgui**）；不负责游戏玩法状态机（**VGEngine**）。 |
-| **CMake 目标** | `VGUI`（`SHARED`） |
-| **宏** | `VG_UI_EXPORT` |
-| **依赖** | `SDL3`、`SDL3_image`、`RmlUi::RmlUi`、`HCore`、`HCorePlatform`、`HFileSystem`、`VGLua`、`VGCore`、`HMedia`、`VGRHI`（PRIVATE）。 |
-| **包含传播** | **`target_include_directories(VGUI PUBLIC ... VGLua/Include)`** —— 链接 **VGUI** 的目标会自动获得 **sol/Lua** 头路径。 |
-| **典型消费者** | **VGEngine**。 |
+| **不负责** | 不负责 ImGui 工具栈（**NNRuntimeImGui**）；不负责游戏玩法状态机（**NNEngineLegacy**）。 |
+| **CMake 目标** | `NevernessRuntime-RmlUI`（`SHARED`） |
+| **宏** | `VG_UI_EXPORT`（历史宏名） |
+| **依赖** | `SDL3`、`SDL3_image`、`RmlUi::RmlUi`、`NevernessCore-Core`、`NevernessCore-PlatformCore`、`NevernessCore-FileSystem`、`NevernessRuntime-Lua`、`NevernessRuntime-Core`、`NevernessCore-MediaCore`、`NevernessRuntime-RHI`（PRIVATE）。 |
+| **包含传播** | **`target_include_directories(... PUBLIC ... NNRuntimeLua/Include)`** —— 链接本目标会自动获得 **sol/Lua** 头路径。 |
+| **典型消费者** | **NevernessRuntime-EngineLegacy**。 |
 
 ---
 
 ## 2. 构建与选项
 
 - 需要 **RmlUi**、**SDL3**、**SDL3_image** CMake 包。
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`；**PUBLIC** `VGLua/Include`。
+- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Core`、`Include`、`Interface`；**PUBLIC** `NNRuntimeLua/Include`。
 
 ---
 
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Runtime/VGUI/
+Engine/Source/Runtime/NNRuntimeRmlui/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
@@ -44,11 +46,11 @@ Engine/Source/Runtime/VGUI/
 ### 4.1 包含方式
 
 ```cpp
-#include <VGUI/Interface/UISystem.h>
-#include <VGUI/Interface/UIDocument.h>
+#include "NNRuntimeRmlui/Interface/UISystem.h"
+#include "NNRuntimeRmlui/Interface/UIDocument.h"
 ```
 
-并链接 **`VGUI`**（将自动 **PUBLIC** 继承 **VGLua** 头路径）。
+并链接 **`NevernessRuntime-RmlUI`**（将自动 **PUBLIC** 继承 **NNRuntimeLua** 头路径）。
 
 ### 4.2 与 RmlUi 文档生命周期
 
@@ -57,7 +59,7 @@ Engine/Source/Runtime/VGUI/
 
 ### 4.3 线程
 
-RmlUi 更新与渲染默认在主线程；与 **OpenGL** 交互时注意与 **VGRHI** 的上下文一致性。
+RmlUi 更新与渲染默认在主线程；与 **OpenGL** 交互时注意与 **NevernessRuntime-RHI** 的上下文一致性。
 
 ---
 
@@ -76,6 +78,7 @@ RmlUi 更新与渲染默认在主线程；与 **OpenGL** 交互时注意与 **VG
 
 | 日期 | 进展 |
 |------|------|
+| 2026-05-17 | 文档与 **NN/Neverness** 命名对齐（无行为变更）。 |
 | 2026-05-15 | 文档首版。 |
 
 ---
@@ -83,5 +86,5 @@ RmlUi 更新与渲染默认在主线程；与 **OpenGL** 交互时注意与 **VG
 ## 7. 相关链接
 
 - [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
-- [VGEngine](../VGEngine/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [VGLua](../VGLua/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [NNEngineLegacy](../NNEngineLegacy/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [NNRuntimeLua](../NNRuntimeLua/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

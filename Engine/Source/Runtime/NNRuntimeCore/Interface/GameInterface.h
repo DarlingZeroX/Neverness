@@ -10,9 +10,9 @@
 */
 
 #pragma once
-#include "../VGCoreConfig.h"
+#include "../RuntimeCoreExport.h"
 #include "AppInterface.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include <NNCore/Include/Scene/HEntityInterface.h>
 
 namespace NN::Runtime
@@ -59,7 +59,7 @@ namespace NN::Runtime
 		virtual std::unordered_map<String, IScriptVariable>& GetVariables() = 0;
 	};
 
-	struct VG_CORE_API ICamera
+	struct NN_RUNTIME_CORE_API ICamera
 	{
 		virtual ~ICamera();
 

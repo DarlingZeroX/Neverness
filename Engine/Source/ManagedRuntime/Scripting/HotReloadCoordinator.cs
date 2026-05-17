@@ -1,6 +1,6 @@
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace VisionGal.Managed.Scripting;
+namespace Neverness.Managed.Scripting;
 
 /// <summary>
 /// 熱重載協調器：卸載可收集 ALC 並以新程序集路徑重新載入。
@@ -18,7 +18,7 @@ public sealed class HotReloadCoordinator
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
 		UnloadCurrent();
-		_currentHost = new ManagedAssemblyLoadContextHost($"VisionGal.Scripting.{Guid.NewGuid():N}");
+		_currentHost = new ManagedAssemblyLoadContextHost($"Neverness.Scripting.{Guid.NewGuid():N}");
 		var asm = _currentHost.LoadFromPath(assemblyPath);
 		_loadedPath = assemblyPath;
 		return asm;

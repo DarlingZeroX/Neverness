@@ -111,7 +111,7 @@ namespace NN::Runtime
 
 	float AudioAnimationScript::GetCurrentTime() const
 	{
-		return Core::GetCurrentTime();
+		return RuntimeCore::GetCurrentTime();
 	}
 
 	void AudioAnimationScript::ApplyStateToEntity(NN::Core::HEntityInterface* entity)

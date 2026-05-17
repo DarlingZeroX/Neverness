@@ -13,7 +13,7 @@
 #include "../VGAssetConfig.h"
 #include <NNMediaCore/Interface/AudioInterface.h>
 #include "NNMediaCore/Include/Audio.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 
 namespace NN::Runtime {
 

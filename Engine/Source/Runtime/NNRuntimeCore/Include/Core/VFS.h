@@ -11,12 +11,12 @@
 
 #pragma once
 #include "CoreTypes.h"
-#include "../../VGCoreConfig.h"
+#include "../../RuntimeCoreExport.h"
 #include <NNFileSystem/Include/VFS/VFS.h>
 
 namespace NN::Runtime
 { 
-	struct VG_CORE_API VFS
+	struct NN_RUNTIME_CORE_API VFS
 	{
 		using DataRef = Ref<std::vector<uint8_t>>;
 
@@ -76,7 +76,7 @@ namespace NN::Runtime
 		static bool MountPackageFileSystem(const String& alias, const String& pakPath, const String& backAsbPath);
 	};
 
-	struct VG_CORE_API IStringStreamVFS
+	struct NN_RUNTIME_CORE_API IStringStreamVFS
 	{
 		~IStringStreamVFS();
 

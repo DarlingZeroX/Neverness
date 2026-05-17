@@ -34,7 +34,7 @@ target_compile_definitions(HNGEditorCore PRIVATE HNG_EDITOR_CORE_API_EXPORT)
 
 # 添加头文件搜索路径
 target_include_directories(HNGEditorCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(HNGEditorCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
+target_include_directories(HNGEditorCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(HNGEditorCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(HNGEditorCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(HNGEditorCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)

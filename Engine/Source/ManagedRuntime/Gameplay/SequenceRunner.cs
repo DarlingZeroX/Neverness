@@ -1,12 +1,12 @@
-using VisionGal.Managed.Engine;
+﻿using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Gameplay;
+namespace Neverness.Managed.Gameplay;
 
 /// <summary>
-/// 序列执行上下文：在同一次 <see cref="SequenceRunner.Run"/> 或 <see cref="SequenceRunner.Advance"/> 推进过程中，共享一套 <see cref="GameplayVariableStore"/>，并可由步骤写入 <see cref="T:VisionGal.Managed.Scene.Scene"/>（例如场景 JSON 再水合后供后续步骤读取实体）。
+/// 序列执行上下文：在同一次 <see cref="SequenceRunner.Run"/> 或 <see cref="SequenceRunner.Advance"/> 推进过程中，共享一套 <see cref="GameplayVariableStore"/>，并可由步骤写入 <see cref="T:Neverness.Managed.Scene.Scene"/>（例如场景 JSON 再水合后供后续步骤读取实体）。
 /// </summary>
 /// <remarks>
-/// <para>Phase 6 slice 3：在纯托管侧把「变量表」与「经 <see cref="T:VisionGal.Managed.Scene.SceneRehydrator"/> 恢复的场域实体」放在同一对象中，便于剧本序列编排（不调用 Native <c>VGSceneAPI</c>）。</para>
+/// <para>Phase 6 slice 3：在纯托管侧把「变量表」与「经 <see cref="T:Neverness.Managed.Scene.SceneRehydrator"/> 恢复的场域实体」放在同一对象中，便于剧本序列编排（不调用 Native <c>VGSceneAPI</c>）。</para>
 /// <para>Phase 6 slice 5：<see cref="SequenceMachineState"/> 在多次 <see cref="SequenceRunner.Advance"/> 之间复用同一 <see cref="SequenceContext"/>，因此 <see cref="ActiveScene"/> 与变量在「等待门闩」跨帧期间会一直保持。</para>
 /// </remarks>
 public sealed class SequenceContext
@@ -25,7 +25,7 @@ public sealed class SequenceContext
 	/// 当前序列关联的托管场景实例；由 <see cref="RehydrateSceneSequenceStep"/> 等步骤赋值。
 	/// </summary>
 	/// <value>尚未加载或未使用场景时为 <c>null</c>。</value>
-	public VisionGal.Managed.Scene.Scene? ActiveScene { get; set; }
+	public Neverness.Managed.Scene.Scene? ActiveScene { get; set; }
 }
 
 /// <summary>
@@ -201,11 +201,11 @@ public sealed class PresentDialogueSequenceStep : ISequenceStep
 }
 
 /// <summary>
-/// 「再水合场景」步骤：将完整场景 JSON 解析并创建 <see cref="T:VisionGal.Managed.Scene.Scene"/> 及其实体（经 <see cref="T:VisionGal.Managed.Scene.SceneRehydrator"/>），并把结果赋给 <see cref="SequenceContext.ActiveScene"/>。
+/// 「再水合场景」步骤：将完整场景 JSON 解析并创建 <see cref="T:Neverness.Managed.Scene.Scene"/> 及其实体（经 <see cref="T:Neverness.Managed.Scene.SceneRehydrator"/>），并把结果赋给 <see cref="SequenceContext.ActiveScene"/>。
 /// </summary>
 /// <remarks>
-/// <para>JSON 须由 <see cref="M:VisionGal.Managed.Scene.Scene.ToJson"/> 等正规路径产生；反序列化失败或无法创建实体时返回 <c>false</c>。</para>
-/// <para>再水合会通过 <see cref="T:VisionGal.Managed.Object.LifetimeSystem"/> 注册新的 <see cref="T:VisionGal.Managed.Scene.SceneEntity"/>；测试或产品级场景切换时须注意与旧实体 ID 的隔离（测试可调用 <see cref="M:VisionGal.Managed.Object.ObjectRegistry.ClearForTesting"/>）。</para>
+/// <para>JSON 须由 <see cref="M:Neverness.Managed.Scene.Scene.ToJson"/> 等正规路径产生；反序列化失败或无法创建实体时返回 <c>false</c>。</para>
+/// <para>再水合会通过 <see cref="T:Neverness.Managed.Object.LifetimeSystem"/> 注册新的 <see cref="T:Neverness.Managed.Scene.SceneEntity"/>；测试或产品级场景切换时须注意与旧实体 ID 的隔离（测试可调用 <see cref="M:Neverness.Managed.Object.ObjectRegistry.ClearForTesting"/>）。</para>
 /// </remarks>
 public sealed class RehydrateSceneSequenceStep : ISequenceStep
 {
@@ -222,7 +222,7 @@ public sealed class RehydrateSceneSequenceStep : ISequenceStep
 	public bool Execute(SequenceContext context)
 	{
 		ArgumentNullException.ThrowIfNull(context);
-		var scene = VisionGal.Managed.Scene.SceneRehydrator.RestoreFromJsonWithEntities(_sceneJson);
+		var scene = Neverness.Managed.Scene.SceneRehydrator.RestoreFromJsonWithEntities(_sceneJson);
 		if (scene is null)
 		{
 			return false;
@@ -234,7 +234,7 @@ public sealed class RehydrateSceneSequenceStep : ISequenceStep
 }
 
 /// <summary>
-/// 「同步首实体显示名」步骤：将 <see cref="SequenceContext.ActiveScene"/> 中第一个实体的 <see cref="P:VisionGal.Managed.Scene.SceneEntity.DisplayName"/> 写入变量表指定键。
+/// 「同步首实体显示名」步骤：将 <see cref="SequenceContext.ActiveScene"/> 中第一个实体的 <see cref="P:Neverness.Managed.Scene.SceneEntity.DisplayName"/> 写入变量表指定键。
 /// </summary>
 /// <remarks>
 /// 典型用途：再水合后把场景标题或角色名同步到 Galgame 变量表，供 UI 或其它步骤使用。若当前无活动场景或实体列表为空则返回 <c>false</c>。

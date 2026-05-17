@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace VisionGal.Managed.Engine;
+namespace Neverness.Managed.Engine;
 
 /// <summary>
 /// 與 Native <c>VGRenderAPI</c> 逐欄位對齊（<c>RenderAPI.h</c>）。
@@ -161,7 +161,7 @@ public unsafe struct VGAssetRegistryApi
 /// 與 Native <c>VGEntityAPI</c> 對齊（<c>EntityAPI.h</c>）。**layout v5** 起含 <c>getRuntimeTick</c>（Runtime 覆寫後隨 Tick 遞增；Stub 恒為 **0**）。
 /// </summary>
 /// <remarks>
-/// 與 <see cref="VGSceneApi"/> 所操作之場景句柄（Native <c>VGEntityHandle</c>）語意分離；與託管 <c>VisionGal.Managed.Entity.EntityHandle</c> 無數值映射。
+/// 與 <see cref="VGSceneApi"/> 所操作之場景句柄（Native <c>VGEntityHandle</c>）語意分離；與託管 <c>Neverness.Managed.Entity.EntityHandle</c> 無數值映射。
 /// **GetRuntimeTick** 僅反映 **EntitySubsystem** 是否已被 **VGEngineRuntime::Tick** 驅動（與 **Stub** 表區分）；**不**代表託管 **EntityWorld** 元件資料已與 Kernel 鏡像或自動同步（總覽 **§2.7.1** 資料策略）。
 /// 欄位順序須與 C 端 <c>typedef struct VGEntityAPI</c>（<c>EntityAPI.h</c>）逐欄一致。
 /// </remarks>

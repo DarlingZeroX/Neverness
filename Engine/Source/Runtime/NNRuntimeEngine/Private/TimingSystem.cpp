@@ -1,4 +1,4 @@
-#include "NNRuntimeEngine/TimingSystem.h"
+#include "TimingSystem.h"
 
 namespace NN::Runtime::engine
 {

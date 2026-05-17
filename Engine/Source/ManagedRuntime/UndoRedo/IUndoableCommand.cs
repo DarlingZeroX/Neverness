@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.UndoRedo;
+﻿namespace Neverness.Managed.UndoRedo;
 
 /// <summary>
 /// 可撤銷/重做之編輯器命令契約。

@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace VisionGal.Managed.RuntimeLoop;
+namespace Neverness.Managed.RuntimeLoop;
 
 /// <summary>
 /// 托管侧 **Runtime Loop** 调度器（<b>P0-1</b>），与 Native <c>RuntimeScheduler</c> 管线顺序对称：Early → Fixed（0..N）→ Update → Late → Render。

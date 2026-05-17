@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 啟用旗標：供遊戲邏輯、系統迭代時快速過濾「暫停參與」之實體；<b>不</b>改變 <see cref="EntityHandle"/> 或 <see cref="EntityWorld.IsAlive"/> 語意。

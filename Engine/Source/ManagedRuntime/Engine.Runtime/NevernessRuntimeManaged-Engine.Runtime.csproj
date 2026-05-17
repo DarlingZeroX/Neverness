@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-Engine.Runtime</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <RootNamespace>VisionGal.Managed.Engine.Runtime</RootNamespace>
+    <RootNamespace>Neverness.Managed.Engine.Runtime</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VisionGal.Managed.Engine\VisionGal.Managed.Engine.csproj" />
+    <ProjectReference Include="..\Engine\NevernessRuntimeManaged-Engine.csproj" />
   </ItemGroup>
 </Project>

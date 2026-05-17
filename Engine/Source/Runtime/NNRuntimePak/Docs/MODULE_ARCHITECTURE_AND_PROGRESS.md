@@ -1,27 +1,29 @@
-# VGPackage — 资源包格式与 IO
+# NNRuntimePak — 资源包格式与 IO
+
+> 曾用名：**VGPackage**；CMake 目标 **`NevernessRuntime-Pak`**。
 
 ## 1. 定位与边界
 
 | 项目 | 说明 |
 |------|------|
 | **职责** | 读写 **Pak** 包体：`PakReader`/`PakWriter`、CRC、虚拟路径 **`PackageFileSystem`** 等；头文件位于 **`Include/`**（无独立 `Interface/` 目录）。 |
-| **不负责** | 不负责通用 OS 文件对话框（**HCorePlatform**）；不负责游戏资产类型系统（**VGAsset**）。 |
-| **CMake 目标** | `VGPackage`（`SHARED`） |
-| **依赖** | `HCore`（PRIVATE）。 |
-| **典型消费者** | **VGCore**、**VGEngine**。 |
+| **不负责** | 不负责通用 OS 文件对话框（**NevernessCore-PlatformCore**）；不负责游戏资产类型系统（**NNRuntimeAsset**）。 |
+| **CMake 目标** | `NevernessRuntime-Pak`（`SHARED`） |
+| **依赖** | `NevernessCore-Core`（PRIVATE）。 |
+| **典型消费者** | **NevernessRuntime-Core**、**NevernessRuntime-EngineLegacy**。 |
 
 ---
 
 ## 2. 构建与选项
 
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`（见 [`CMakeLists.txt`](../CMakeLists.txt)）。
+- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Core`、`Include`（见 [`CMakeLists.txt`](../CMakeLists.txt)）。
 
 ---
 
 ## 3. 目录结构
 
 ```
-Engine/Source/Runtime/VGPackage/
+Engine/Source/Runtime/NNRuntimePak/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
@@ -43,15 +45,15 @@ Engine/Source/Runtime/VGPackage/
 ### 4.1 包含方式
 
 ```cpp
-#include "VGPackage/Include/PackageFileSystem.h"
-#include "VGPackage/Include/PakReader.h"
+#include "NNRuntimePak/Include/PackageFileSystem.h"
+#include "NNRuntimePak/Include/PakReader.h"
 ```
 
-（示例取自 **VGCore** `VFS.cpp`；须已包含 **`Engine/Source/Runtime`** 作为基路径。）
+（示例取自 **NNRuntimeCore** `VFS.cpp`；须已包含 **`Engine/Source/Runtime`** 作为基路径。）
 
 ### 4.2 与虚拟文件系统
 
-`PackageFileSystem` 将包内路径映射到读取接口，常与 **HFileSystem** / **HCore** VFS 组合使用。
+`PackageFileSystem` 将包内路径映射到读取接口，常与 **NevernessCore-FileSystem** / **NNCore** VFS 组合使用。
 
 ---
 
@@ -73,6 +75,7 @@ Engine/Source/Runtime/VGPackage/
 
 | 日期 | 进展 |
 |------|------|
+| 2026-05-17 | 文档与 **NN/Neverness** 命名对齐（无行为变更）。 |
 | 2026-05-15 | 文档首版。 |
 
 ---
@@ -80,4 +83,4 @@ Engine/Source/Runtime/VGPackage/
 ## 7. 相关链接
 
 - [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
-- [VGCore](../VGCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [NNRuntimeCore](../NNRuntimeCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

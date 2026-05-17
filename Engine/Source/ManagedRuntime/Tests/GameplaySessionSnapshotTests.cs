@@ -1,12 +1,12 @@
-using System.Text.Json;
-using VisionGal.Managed.Engine;
-using VisionGal.Managed.Gameplay;
-using VisionGal.Managed.Object;
-using SceneModel = VisionGal.Managed.Scene.Scene;
-using VisionGal.Managed.Scene;
-using VisionGal.Managed.Serialization;
+﻿using System.Text.Json;
+using Neverness.Managed.Engine;
+using Neverness.Managed.Gameplay;
+using Neverness.Managed.Object;
+using SceneModel = Neverness.Managed.Scene.Scene;
+using Neverness.Managed.Scene;
+using Neverness.Managed.Serialization;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>Phase 6 slice 4：<see cref="GameplaySessionSnapshot"/> 根 JSON 與嵌套變子文檔。</summary>
 public sealed class GameplaySessionSnapshotTests

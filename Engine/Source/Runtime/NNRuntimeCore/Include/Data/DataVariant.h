@@ -14,11 +14,11 @@
 #include <sol/object.hpp>
 #include <unordered_map>
 #include <NNCore/Include/File/nlohmann/json.hpp>
-#include "../../VGCoreConfig.h"
+#include "../../RuntimeCoreExport.h"
 
 namespace NN::Runtime
 {
-	class VG_CORE_API VGDataVariant
+	class NN_RUNTIME_CORE_API VGDataVariant
 	{
 	public:
 		enum class Type {

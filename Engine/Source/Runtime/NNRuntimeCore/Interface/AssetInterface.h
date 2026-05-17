@@ -10,9 +10,9 @@
 */
 
 #pragma once
-#include "../VGCoreConfig.h"
+#include "../RuntimeCoreExport.h"
 #include "VGAsset.h"
-#include "../Include/Core/Core.h"
+#include "../Include/Core/RuntimeCore.h"
 
 namespace NN::Runtime
 {
@@ -31,5 +31,5 @@ namespace NN::Runtime
         virtual Ref<VGAsset> CreateAsset(const String& path) = 0;
     };
 
-	VG_CORE_API VGPath GenerateAssetPath(const VGPath& path, const std::string& name, const std::string& ext);
+	NN_RUNTIME_CORE_API VGPath GenerateAssetPath(const VGPath& path, const std::string& name, const std::string& ext);
 }

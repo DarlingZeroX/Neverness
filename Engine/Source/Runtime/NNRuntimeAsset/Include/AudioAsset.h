@@ -12,7 +12,7 @@
 #pragma once
 #include "../VGAssetConfig.h"
 #include "NNRuntimeCore/Interface/VGAsset.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 //#include "../Resource/Audio.h"
 //#include <NNMediaCore/Interface/AudioInterface.h>
 #include "../Interface/AudioClip.h"

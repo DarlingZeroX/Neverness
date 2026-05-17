@@ -1,7 +1,7 @@
-using VisionGal.Managed.Serialization;
+﻿using Neverness.Managed.Serialization;
 using Xunit;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>
 /// 驗證 <see cref="VersionTolerance.CreateOptions"/> 下 JSON 反序列化對「未知欄位」之寬鬆行為，

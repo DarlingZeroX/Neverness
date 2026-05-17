@@ -13,17 +13,23 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-# 将源代码添加到此项目的可执行文件。
-file(GLOB HNODEGRAPH_HEADER_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
-)
+add_library(HNGRuntimeCore SHARED)
 
-file(GLOB HNODEGRAPH_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+target_sources(HNGRuntimeCore
+  PRIVATE
+    Include/Events.h
+    Include/ExpressionEvaluator.h
+    Include/NodeMeta.h
+    Include/NodeRegistry.h
+    Include/RuntimeContext.h
+    Include/RuntimeGraph.h
+    Interface/RuntimeCore.h
+    Interface/Types.h
+    Interface/Value.h
+    Source/ExpressionEvaluator.cpp
+    Source/RuntimeContext.cpp
+    Source/RuntimeGraph.cpp
 )
-
-add_library (HNGRuntimeCore SHARED ${HNODEGRAPH_HEADER_FILES} ${HNODEGRAPH_SRC_FILES})
 
 # 添加宏
 target_compile_definitions(HNGRuntimeCore PRIVATE H_NODE_GRAPH_API_EXPORT)
@@ -39,4 +45,3 @@ find_package(SDL3 CONFIG REQUIRED)
 # 链接库
 target_link_libraries(HNGRuntimeCore PRIVATE SDL3::SDL3)
 target_link_libraries(HNGRuntimeCore PRIVATE NevernessCore-Core)
-

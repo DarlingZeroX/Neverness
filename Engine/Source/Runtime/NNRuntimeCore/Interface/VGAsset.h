@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../Include/Core/Core.h"
+#include "../Include/Core/RuntimeCore.h"
 
 namespace NN::Runtime
 {

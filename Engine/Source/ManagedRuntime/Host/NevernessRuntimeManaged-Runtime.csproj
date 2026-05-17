@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-Runtime</AssemblyName>
+    <RootNamespace>Neverness.Managed.Runtime</RootNamespace>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -9,21 +11,21 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\VGManagedCore\Managed\VisionGal.Managed.Core\VisionGal.Managed.Core.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedEngine\Managed\VisionGal.Managed.Engine\VisionGal.Managed.Engine.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedEngine\Managed\VisionGal.Managed.Engine.Runtime\VisionGal.Managed.Engine.Runtime.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedObject\Managed\VisionGal.Managed.Object\VisionGal.Managed.Object.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedReflection\Managed\VisionGal.Managed.Reflection\VisionGal.Managed.Reflection.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedSerialization\Managed\VisionGal.Managed.Serialization\VisionGal.Managed.Serialization.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedAssets\Managed\VisionGal.Managed.Assets\VisionGal.Managed.Assets.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedEditor\Managed\VisionGal.Managed.Editor\VisionGal.Managed.Editor.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedInspector\Managed\VisionGal.Managed.Inspector\VisionGal.Managed.Inspector.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedGraph\Managed\VisionGal.Managed.Graph\VisionGal.Managed.Graph.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedScene\Managed\VisionGal.Managed.Scene\VisionGal.Managed.Scene.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\VisionGal.Managed.Gameplay.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedEntity\Managed\VisionGal.Managed.Entity\VisionGal.Managed.Entity.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\VisionGal.Managed.RuntimeLoop.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedUndoRedo\Managed\VisionGal.Managed.UndoRedo\VisionGal.Managed.UndoRedo.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedScripting\Managed\VisionGal.Managed.Scripting\VisionGal.Managed.Scripting.csproj" />
+    <ProjectReference Include="..\Core\NevernessRuntimeManaged-Core.csproj" />
+    <ProjectReference Include="..\Engine\NevernessRuntimeManaged-Engine.csproj" />
+    <ProjectReference Include="..\Engine.Runtime\NevernessRuntimeManaged-Engine.Runtime.csproj" />
+    <ProjectReference Include="..\Object\NevernessRuntimeManaged-Object.csproj" />
+    <ProjectReference Include="..\Reflection\NevernessRuntimeManaged-Reflection.csproj" />
+    <ProjectReference Include="..\Serialization\NevernessRuntimeManaged-Serialization.csproj" />
+    <ProjectReference Include="..\Assets\NevernessRuntimeManaged-Assets.csproj" />
+    <ProjectReference Include="..\..\ManagedEditor\VGManagedEditor\Managed\VisionGal.Managed.Editor\VisionGal.Managed.Editor.csproj" />
+    <ProjectReference Include="..\Inspector\NevernessRuntimeManaged-Inspector.csproj" />
+    <ProjectReference Include="..\Graph\NevernessRuntimeManaged-Graph.csproj" />
+    <ProjectReference Include="..\Scene\NevernessRuntimeManaged-Scene.csproj" />
+    <ProjectReference Include="..\Gameplay\NevernessRuntimeManaged-Gameplay.csproj" />
+    <ProjectReference Include="..\Entity\NevernessRuntimeManaged-Entity.csproj" />
+    <ProjectReference Include="..\RuntimeLoop\NevernessRuntimeManaged-RuntimeLoop.csproj" />
+    <ProjectReference Include="..\UndoRedo\NevernessRuntimeManaged-UndoRedo.csproj" />
+    <ProjectReference Include="..\Scripting\NevernessRuntimeManaged-Scripting.csproj" />
   </ItemGroup>
 </Project>

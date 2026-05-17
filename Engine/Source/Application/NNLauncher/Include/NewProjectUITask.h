@@ -11,7 +11,7 @@
 
 #pragma once
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
-#include <NNRuntimeCore/Include/Core/Core.h>
+#include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 #include <NNFileSystem/Interface/HFileSystem.h>
 
 namespace VisionGal::Editor

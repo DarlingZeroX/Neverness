@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Object;
+﻿namespace Neverness.Managed.Object;
 
 /// <summary>
 /// 託管物件之全域唯一識別碼（64-bit 不透明整數）。

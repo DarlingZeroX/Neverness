@@ -57,7 +57,7 @@ namespace NN::Runtime
 
 	String VFS::GetResourcePathVFS(const String& absolutePath)
 	{
-		return GetRelativePathVFS(Core::GetAssetsPathVFS(), absolutePath);
+		return GetRelativePathVFS(RuntimeCore::GetAssetsPathVFS(), absolutePath);
 	}
 
 	vfspp::VirtualFileSystemPtr& VFS::GetInstance()

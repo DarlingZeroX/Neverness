@@ -10,12 +10,12 @@
 */ 
 
 #pragma once
-#include "../../VGCoreConfig.h"
+#include "../../RuntimeCoreExport.h"
 #include <string>
 
 namespace NN::Runtime
 {
-	struct VG_CORE_API Application
+	struct NN_RUNTIME_CORE_API Application
 	{
 	 	static void Quit();
 		

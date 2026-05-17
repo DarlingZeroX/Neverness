@@ -124,210 +124,210 @@
           }
         }
       },
-      "VisionGal.Managed.Assets/1.0.0": {
+      "NevernessRuntimeManaged-Assets/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Engine": "1.0.0",
-          "VisionGal.Managed.Object": "1.0.0"
+          "NevernessRuntimeManaged-Engine": "1.0.0",
+          "NevernessRuntimeManaged-Object": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Assets.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Assets.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Assets.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Assets.dll": {}
         }
       },
-      "VisionGal.Managed.Core/1.0.0": {
+      "NevernessRuntimeManaged-Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Core.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Core.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Core.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Core.dll": {}
         }
       },
-      "VisionGal.Managed.Editor/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "VisionGal.Managed.Object": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/VisionGal.Managed.Editor.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/VisionGal.Managed.Editor.dll": {}
-        }
-      },
-      "VisionGal.Managed.Engine/1.0.0": {
+      "NevernessRuntimeManaged-Engine/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Core": "1.0.0"
+          "NevernessRuntimeManaged-Core": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Engine.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Engine.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Engine.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Engine.dll": {}
         }
       },
-      "VisionGal.Managed.Engine.Runtime/1.0.0": {
+      "NevernessRuntimeManaged-Engine.Runtime/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Engine": "1.0.0"
+          "NevernessRuntimeManaged-Engine": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Engine.Runtime.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Engine.Runtime.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Engine.Runtime.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Engine.Runtime.dll": {}
         }
       },
-      "VisionGal.Managed.Entity/1.0.0": {
+      "NevernessRuntimeManaged-Entity/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Entity.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Entity.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Entity.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Entity.dll": {}
         }
       },
-      "VisionGal.Managed.Gameplay/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "VisionGal.Managed.Core": "1.0.0",
-          "VisionGal.Managed.Engine": "1.0.0",
-          "VisionGal.Managed.Scene": "1.0.0",
-          "VisionGal.Managed.Serialization": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/VisionGal.Managed.Gameplay.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/VisionGal.Managed.Gameplay.dll": {}
-        }
-      },
-      "VisionGal.Managed.Graph/1.0.0": {
+      "NevernessRuntimeManaged-Gameplay/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Reflection": "1.0.0"
+          "NevernessRuntimeManaged-Core": "1.0.0",
+          "NevernessRuntimeManaged-Engine": "1.0.0",
+          "NevernessRuntimeManaged-Scene": "1.0.0",
+          "NevernessRuntimeManaged-Serialization": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Graph.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Gameplay.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Graph.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Gameplay.dll": {}
         }
       },
-      "VisionGal.Managed.Inspector/1.0.0": {
+      "NevernessRuntimeManaged-Graph/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Editor": "1.0.0",
-          "VisionGal.Managed.Reflection": "1.0.0"
+          "NevernessRuntimeManaged-Reflection": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Inspector.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Graph.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Inspector.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Graph.dll": {}
         }
       },
-      "VisionGal.Managed.Object/1.0.0": {
+      "NevernessRuntimeManaged-Inspector/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Engine": "1.0.0"
+          "NevernessRuntimeManaged-Reflection": "1.0.0",
+          "VisionGal.Managed.Editor": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Object.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Inspector.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Object.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Inspector.dll": {}
         }
       },
-      "VisionGal.Managed.Reflection/1.0.0": {
+      "NevernessRuntimeManaged-Object/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Object": "1.0.0"
+          "NevernessRuntimeManaged-Engine": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Reflection.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Object.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Reflection.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Object.dll": {}
         }
       },
-      "VisionGal.Managed.RuntimeLoop/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "compile": {
-          "bin/placeholder/VisionGal.Managed.RuntimeLoop.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/VisionGal.Managed.RuntimeLoop.dll": {}
-        }
-      },
-      "VisionGal.Managed.Scene/1.0.0": {
+      "NevernessRuntimeManaged-Reflection/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Object": "1.0.0",
-          "VisionGal.Managed.Serialization": "1.0.0"
+          "NevernessRuntimeManaged-Object": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Scene.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Reflection.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Scene.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Reflection.dll": {}
         }
       },
-      "VisionGal.Managed.Scripting/1.0.0": {
+      "NevernessRuntimeManaged-RuntimeLoop/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/NevernessRuntimeManaged-RuntimeLoop.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/NevernessRuntimeManaged-RuntimeLoop.dll": {}
+        }
+      },
+      "NevernessRuntimeManaged-Scene/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "NevernessRuntimeManaged-Object": "1.0.0",
+          "NevernessRuntimeManaged-Serialization": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/NevernessRuntimeManaged-Scene.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/NevernessRuntimeManaged-Scene.dll": {}
+        }
+      },
+      "NevernessRuntimeManaged-Scripting/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp": "4.14.0",
-          "VisionGal.Managed.Core": "1.0.0"
+          "NevernessRuntimeManaged-Core": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Scripting.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Scripting.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Scripting.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Scripting.dll": {}
         }
       },
-      "VisionGal.Managed.Serialization/1.0.0": {
+      "NevernessRuntimeManaged-Serialization/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "VisionGal.Managed.Reflection": "1.0.0"
+          "NevernessRuntimeManaged-Reflection": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Serialization.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Serialization.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Serialization.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Serialization.dll": {}
         }
       },
-      "VisionGal.Managed.UndoRedo/1.0.0": {
+      "NevernessRuntimeManaged-UndoRedo/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "VisionGal.Managed.Editor": "1.0.0"
         },
         "compile": {
-          "bin/placeholder/VisionGal.Managed.UndoRedo.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-UndoRedo.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.UndoRedo.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-UndoRedo.dll": {}
+        }
+      },
+      "VisionGal.Managed.Editor/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "NevernessRuntimeManaged-Object": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/VisionGal.Managed.Editor.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/VisionGal.Managed.Editor.dll": {}
         }
       }
     }
@@ -1157,105 +1157,105 @@
         "microsoft.codeanalysis.csharp.nuspec"
       ]
     },
-    "VisionGal.Managed.Assets/1.0.0": {
+    "NevernessRuntimeManaged-Assets/1.0.0": {
       "type": "project",
-      "path": "../../../VGManagedAssets/Managed/VisionGal.Managed.Assets/VisionGal.Managed.Assets.csproj",
-      "msbuildProject": "../../../VGManagedAssets/Managed/VisionGal.Managed.Assets/VisionGal.Managed.Assets.csproj"
+      "path": "../Assets/NevernessRuntimeManaged-Assets.csproj",
+      "msbuildProject": "../Assets/NevernessRuntimeManaged-Assets.csproj"
     },
-    "VisionGal.Managed.Core/1.0.0": {
+    "NevernessRuntimeManaged-Core/1.0.0": {
       "type": "project",
-      "path": "../../../VGManagedCore/Managed/VisionGal.Managed.Core/VisionGal.Managed.Core.csproj",
-      "msbuildProject": "../../../VGManagedCore/Managed/VisionGal.Managed.Core/VisionGal.Managed.Core.csproj"
+      "path": "../Core/NevernessRuntimeManaged-Core.csproj",
+      "msbuildProject": "../Core/NevernessRuntimeManaged-Core.csproj"
+    },
+    "NevernessRuntimeManaged-Engine/1.0.0": {
+      "type": "project",
+      "path": "../Engine/NevernessRuntimeManaged-Engine.csproj",
+      "msbuildProject": "../Engine/NevernessRuntimeManaged-Engine.csproj"
+    },
+    "NevernessRuntimeManaged-Engine.Runtime/1.0.0": {
+      "type": "project",
+      "path": "../Engine.Runtime/NevernessRuntimeManaged-Engine.Runtime.csproj",
+      "msbuildProject": "../Engine.Runtime/NevernessRuntimeManaged-Engine.Runtime.csproj"
+    },
+    "NevernessRuntimeManaged-Entity/1.0.0": {
+      "type": "project",
+      "path": "../Entity/NevernessRuntimeManaged-Entity.csproj",
+      "msbuildProject": "../Entity/NevernessRuntimeManaged-Entity.csproj"
+    },
+    "NevernessRuntimeManaged-Gameplay/1.0.0": {
+      "type": "project",
+      "path": "../Gameplay/NevernessRuntimeManaged-Gameplay.csproj",
+      "msbuildProject": "../Gameplay/NevernessRuntimeManaged-Gameplay.csproj"
+    },
+    "NevernessRuntimeManaged-Graph/1.0.0": {
+      "type": "project",
+      "path": "../Graph/NevernessRuntimeManaged-Graph.csproj",
+      "msbuildProject": "../Graph/NevernessRuntimeManaged-Graph.csproj"
+    },
+    "NevernessRuntimeManaged-Inspector/1.0.0": {
+      "type": "project",
+      "path": "../Inspector/NevernessRuntimeManaged-Inspector.csproj",
+      "msbuildProject": "../Inspector/NevernessRuntimeManaged-Inspector.csproj"
+    },
+    "NevernessRuntimeManaged-Object/1.0.0": {
+      "type": "project",
+      "path": "../Object/NevernessRuntimeManaged-Object.csproj",
+      "msbuildProject": "../Object/NevernessRuntimeManaged-Object.csproj"
+    },
+    "NevernessRuntimeManaged-Reflection/1.0.0": {
+      "type": "project",
+      "path": "../Reflection/NevernessRuntimeManaged-Reflection.csproj",
+      "msbuildProject": "../Reflection/NevernessRuntimeManaged-Reflection.csproj"
+    },
+    "NevernessRuntimeManaged-RuntimeLoop/1.0.0": {
+      "type": "project",
+      "path": "../RuntimeLoop/NevernessRuntimeManaged-RuntimeLoop.csproj",
+      "msbuildProject": "../RuntimeLoop/NevernessRuntimeManaged-RuntimeLoop.csproj"
+    },
+    "NevernessRuntimeManaged-Scene/1.0.0": {
+      "type": "project",
+      "path": "../Scene/NevernessRuntimeManaged-Scene.csproj",
+      "msbuildProject": "../Scene/NevernessRuntimeManaged-Scene.csproj"
+    },
+    "NevernessRuntimeManaged-Scripting/1.0.0": {
+      "type": "project",
+      "path": "../Scripting/NevernessRuntimeManaged-Scripting.csproj",
+      "msbuildProject": "../Scripting/NevernessRuntimeManaged-Scripting.csproj"
+    },
+    "NevernessRuntimeManaged-Serialization/1.0.0": {
+      "type": "project",
+      "path": "../Serialization/NevernessRuntimeManaged-Serialization.csproj",
+      "msbuildProject": "../Serialization/NevernessRuntimeManaged-Serialization.csproj"
+    },
+    "NevernessRuntimeManaged-UndoRedo/1.0.0": {
+      "type": "project",
+      "path": "../UndoRedo/NevernessRuntimeManaged-UndoRedo.csproj",
+      "msbuildProject": "../UndoRedo/NevernessRuntimeManaged-UndoRedo.csproj"
     },
     "VisionGal.Managed.Editor/1.0.0": {
       "type": "project",
-      "path": "../../../VGManagedEditor/Managed/VisionGal.Managed.Editor/VisionGal.Managed.Editor.csproj",
-      "msbuildProject": "../../../VGManagedEditor/Managed/VisionGal.Managed.Editor/VisionGal.Managed.Editor.csproj"
-    },
-    "VisionGal.Managed.Engine/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj",
-      "msbuildProject": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine/VisionGal.Managed.Engine.csproj"
-    },
-    "VisionGal.Managed.Engine.Runtime/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/VisionGal.Managed.Engine.Runtime.csproj",
-      "msbuildProject": "../../../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/VisionGal.Managed.Engine.Runtime.csproj"
-    },
-    "VisionGal.Managed.Entity/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedEntity/Managed/VisionGal.Managed.Entity/VisionGal.Managed.Entity.csproj",
-      "msbuildProject": "../../../VGManagedEntity/Managed/VisionGal.Managed.Entity/VisionGal.Managed.Entity.csproj"
-    },
-    "VisionGal.Managed.Gameplay/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/VisionGal.Managed.Gameplay.csproj",
-      "msbuildProject": "../../../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/VisionGal.Managed.Gameplay.csproj"
-    },
-    "VisionGal.Managed.Graph/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedGraph/Managed/VisionGal.Managed.Graph/VisionGal.Managed.Graph.csproj",
-      "msbuildProject": "../../../VGManagedGraph/Managed/VisionGal.Managed.Graph/VisionGal.Managed.Graph.csproj"
-    },
-    "VisionGal.Managed.Inspector/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedInspector/Managed/VisionGal.Managed.Inspector/VisionGal.Managed.Inspector.csproj",
-      "msbuildProject": "../../../VGManagedInspector/Managed/VisionGal.Managed.Inspector/VisionGal.Managed.Inspector.csproj"
-    },
-    "VisionGal.Managed.Object/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedObject/Managed/VisionGal.Managed.Object/VisionGal.Managed.Object.csproj",
-      "msbuildProject": "../../../VGManagedObject/Managed/VisionGal.Managed.Object/VisionGal.Managed.Object.csproj"
-    },
-    "VisionGal.Managed.Reflection/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj",
-      "msbuildProject": "../../../VGManagedReflection/Managed/VisionGal.Managed.Reflection/VisionGal.Managed.Reflection.csproj"
-    },
-    "VisionGal.Managed.RuntimeLoop/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/VisionGal.Managed.RuntimeLoop.csproj",
-      "msbuildProject": "../../../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/VisionGal.Managed.RuntimeLoop.csproj"
-    },
-    "VisionGal.Managed.Scene/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedScene/Managed/VisionGal.Managed.Scene/VisionGal.Managed.Scene.csproj",
-      "msbuildProject": "../../../VGManagedScene/Managed/VisionGal.Managed.Scene/VisionGal.Managed.Scene.csproj"
-    },
-    "VisionGal.Managed.Scripting/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedScripting/Managed/VisionGal.Managed.Scripting/VisionGal.Managed.Scripting.csproj",
-      "msbuildProject": "../../../VGManagedScripting/Managed/VisionGal.Managed.Scripting/VisionGal.Managed.Scripting.csproj"
-    },
-    "VisionGal.Managed.Serialization/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/VisionGal.Managed.Serialization.csproj",
-      "msbuildProject": "../../../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/VisionGal.Managed.Serialization.csproj"
-    },
-    "VisionGal.Managed.UndoRedo/1.0.0": {
-      "type": "project",
-      "path": "../../../VGManagedUndoRedo/Managed/VisionGal.Managed.UndoRedo/VisionGal.Managed.UndoRedo.csproj",
-      "msbuildProject": "../../../VGManagedUndoRedo/Managed/VisionGal.Managed.UndoRedo/VisionGal.Managed.UndoRedo.csproj"
+      "path": "../../ManagedEditor/VGManagedEditor/Managed/VisionGal.Managed.Editor/VisionGal.Managed.Editor.csproj",
+      "msbuildProject": "../../ManagedEditor/VGManagedEditor/Managed/VisionGal.Managed.Editor/VisionGal.Managed.Editor.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "VisionGal.Managed.Assets >= 1.0.0",
-      "VisionGal.Managed.Core >= 1.0.0",
-      "VisionGal.Managed.Editor >= 1.0.0",
-      "VisionGal.Managed.Engine >= 1.0.0",
-      "VisionGal.Managed.Engine.Runtime >= 1.0.0",
-      "VisionGal.Managed.Entity >= 1.0.0",
-      "VisionGal.Managed.Gameplay >= 1.0.0",
-      "VisionGal.Managed.Graph >= 1.0.0",
-      "VisionGal.Managed.Inspector >= 1.0.0",
-      "VisionGal.Managed.Object >= 1.0.0",
-      "VisionGal.Managed.Reflection >= 1.0.0",
-      "VisionGal.Managed.RuntimeLoop >= 1.0.0",
-      "VisionGal.Managed.Scene >= 1.0.0",
-      "VisionGal.Managed.Scripting >= 1.0.0",
-      "VisionGal.Managed.Serialization >= 1.0.0",
-      "VisionGal.Managed.UndoRedo >= 1.0.0"
+      "NevernessRuntimeManaged-Assets >= 1.0.0",
+      "NevernessRuntimeManaged-Core >= 1.0.0",
+      "NevernessRuntimeManaged-Engine >= 1.0.0",
+      "NevernessRuntimeManaged-Engine.Runtime >= 1.0.0",
+      "NevernessRuntimeManaged-Entity >= 1.0.0",
+      "NevernessRuntimeManaged-Gameplay >= 1.0.0",
+      "NevernessRuntimeManaged-Graph >= 1.0.0",
+      "NevernessRuntimeManaged-Inspector >= 1.0.0",
+      "NevernessRuntimeManaged-Object >= 1.0.0",
+      "NevernessRuntimeManaged-Reflection >= 1.0.0",
+      "NevernessRuntimeManaged-RuntimeLoop >= 1.0.0",
+      "NevernessRuntimeManaged-Scene >= 1.0.0",
+      "NevernessRuntimeManaged-Scripting >= 1.0.0",
+      "NevernessRuntimeManaged-Serialization >= 1.0.0",
+      "NevernessRuntimeManaged-UndoRedo >= 1.0.0",
+      "VisionGal.Managed.Editor >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -1264,11 +1264,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
-      "projectName": "VisionGal.Managed.Runtime",
-      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\VisionGal.Managed.Runtime.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Host\\NevernessRuntimeManaged-Runtime.csproj",
+      "projectName": "NevernessRuntimeManaged-Runtime",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Host\\NevernessRuntimeManaged-Runtime.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedHost\\Managed\\VisionGal.Managed.Runtime\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Host\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1286,53 +1286,53 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedAssets\\Managed\\VisionGal.Managed.Assets\\VisionGal.Managed.Assets.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedEditor\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedEditor\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Assets\\NevernessRuntimeManaged-Assets.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Assets\\NevernessRuntimeManaged-Assets.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEditor\\Managed\\VisionGal.Managed.Editor\\VisionGal.Managed.Editor.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Core\\NevernessRuntimeManaged-Core.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Core\\NevernessRuntimeManaged-Core.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine.Runtime\\VisionGal.Managed.Engine.Runtime.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Engine.Runtime\\NevernessRuntimeManaged-Engine.Runtime.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Engine.Runtime\\NevernessRuntimeManaged-Engine.Runtime.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEngine\\Managed\\VisionGal.Managed.Engine\\VisionGal.Managed.Engine.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Engine\\NevernessRuntimeManaged-Engine.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Engine\\NevernessRuntimeManaged-Engine.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Entity\\NevernessRuntimeManaged-Entity.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Entity\\NevernessRuntimeManaged-Entity.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGameplay\\Managed\\VisionGal.Managed.Gameplay\\VisionGal.Managed.Gameplay.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Gameplay\\NevernessRuntimeManaged-Gameplay.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Gameplay\\NevernessRuntimeManaged-Gameplay.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGraph\\Managed\\VisionGal.Managed.Graph\\VisionGal.Managed.Graph.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedGraph\\Managed\\VisionGal.Managed.Graph\\VisionGal.Managed.Graph.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Graph\\NevernessRuntimeManaged-Graph.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Graph\\NevernessRuntimeManaged-Graph.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedInspector\\Managed\\VisionGal.Managed.Inspector\\VisionGal.Managed.Inspector.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedInspector\\Managed\\VisionGal.Managed.Inspector\\VisionGal.Managed.Inspector.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Inspector\\NevernessRuntimeManaged-Inspector.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Inspector\\NevernessRuntimeManaged-Inspector.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedObject\\Managed\\VisionGal.Managed.Object\\VisionGal.Managed.Object.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Object\\NevernessRuntimeManaged-Object.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Object\\NevernessRuntimeManaged-Object.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedReflection\\Managed\\VisionGal.Managed.Reflection\\VisionGal.Managed.Reflection.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Reflection\\NevernessRuntimeManaged-Reflection.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Reflection\\NevernessRuntimeManaged-Reflection.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedRuntimeLoop\\Managed\\VisionGal.Managed.RuntimeLoop\\VisionGal.Managed.RuntimeLoop.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedRuntimeLoop\\Managed\\VisionGal.Managed.RuntimeLoop\\VisionGal.Managed.RuntimeLoop.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\RuntimeLoop\\NevernessRuntimeManaged-RuntimeLoop.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\RuntimeLoop\\NevernessRuntimeManaged-RuntimeLoop.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScene\\Managed\\VisionGal.Managed.Scene\\VisionGal.Managed.Scene.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Scene\\NevernessRuntimeManaged-Scene.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Scene\\NevernessRuntimeManaged-Scene.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Scripting\\NevernessRuntimeManaged-Scripting.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Scripting\\NevernessRuntimeManaged-Scripting.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedSerialization\\Managed\\VisionGal.Managed.Serialization\\VisionGal.Managed.Serialization.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Serialization\\NevernessRuntimeManaged-Serialization.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Serialization\\NevernessRuntimeManaged-Serialization.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedUndoRedo\\Managed\\VisionGal.Managed.UndoRedo\\VisionGal.Managed.UndoRedo.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedUndoRedo\\Managed\\VisionGal.Managed.UndoRedo\\VisionGal.Managed.UndoRedo.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\UndoRedo\\NevernessRuntimeManaged-UndoRedo.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\UndoRedo\\NevernessRuntimeManaged-UndoRedo.csproj"
             }
           }
         }

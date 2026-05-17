@@ -124,14 +124,14 @@
           }
         }
       },
-      "VisionGal.Managed.Core/1.0.0": {
+      "NevernessRuntimeManaged-Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "compile": {
-          "bin/placeholder/VisionGal.Managed.Core.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Core.dll": {}
         },
         "runtime": {
-          "bin/placeholder/VisionGal.Managed.Core.dll": {}
+          "bin/placeholder/NevernessRuntimeManaged-Core.dll": {}
         }
       }
     }
@@ -961,16 +961,16 @@
         "microsoft.codeanalysis.csharp.nuspec"
       ]
     },
-    "VisionGal.Managed.Core/1.0.0": {
+    "NevernessRuntimeManaged-Core/1.0.0": {
       "type": "project",
-      "path": "../../../VGManagedCore/Managed/VisionGal.Managed.Core/VisionGal.Managed.Core.csproj",
-      "msbuildProject": "../../../VGManagedCore/Managed/VisionGal.Managed.Core/VisionGal.Managed.Core.csproj"
+      "path": "../Core/NevernessRuntimeManaged-Core.csproj",
+      "msbuildProject": "../Core/NevernessRuntimeManaged-Core.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
       "Microsoft.CodeAnalysis.CSharp >= 4.14.0",
-      "VisionGal.Managed.Core >= 1.0.0"
+      "NevernessRuntimeManaged-Core >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -979,11 +979,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj",
-      "projectName": "VisionGal.Managed.Scripting",
-      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\VisionGal.Managed.Scripting.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Scripting\\NevernessRuntimeManaged-Scripting.csproj",
+      "projectName": "NevernessRuntimeManaged-Scripting",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Scripting\\NevernessRuntimeManaged-Scripting.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedScripting\\Managed\\VisionGal.Managed.Scripting\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Scripting\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1001,8 +1001,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedCore\\Managed\\VisionGal.Managed.Core\\VisionGal.Managed.Core.csproj"
+            "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Core\\NevernessRuntimeManaged-Core.csproj": {
+              "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Core\\NevernessRuntimeManaged-Core.csproj"
             }
           }
         }

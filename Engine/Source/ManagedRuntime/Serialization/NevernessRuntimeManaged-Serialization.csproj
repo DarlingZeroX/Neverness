@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-Serialization</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <RootNamespace>VisionGal.Managed.Serialization</RootNamespace>
+    <RootNamespace>Neverness.Managed.Serialization</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\VGManagedReflection\Managed\VisionGal.Managed.Reflection\VisionGal.Managed.Reflection.csproj" />
+    <ProjectReference Include="..\Reflection\NevernessRuntimeManaged-Reflection.csproj" />
   </ItemGroup>
 </Project>

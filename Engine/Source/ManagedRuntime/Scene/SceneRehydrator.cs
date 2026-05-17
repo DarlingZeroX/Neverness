@@ -1,7 +1,7 @@
-using VisionGal.Managed.Object;
-using VisionGal.Managed.Serialization;
+﻿using Neverness.Managed.Object;
+using Neverness.Managed.Serialization;
 
-namespace VisionGal.Managed.Scene;
+namespace Neverness.Managed.Scene;
 
 /// <summary>
 /// 場景 DTO → 託管實體之再水合：經 <see cref="LifetimeSystem"/> 建立新 Native 控制代碼並套用序列化屬性。

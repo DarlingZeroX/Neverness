@@ -1,4 +1,4 @@
-# VGEngineRuntimeServices — 將 VGNativeEngineAPI 轉發至 VGEngineRuntime（不鏈結 VGEngine）。
+# NevernessRuntime-EngineServices — 將 VGNativeEngineAPI 轉發至 VGEngineRuntime（不鏈結 VGEngine）。
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,13 +13,16 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 	add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-add_library(VGEngineRuntimeServices STATIC
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/VGEngineRuntimeServices.cpp"
+add_library(NevernessRuntime-EngineServices STATIC)
+
+target_sources(NevernessRuntime-EngineServices
+	PRIVATE
+		Private/NativeEngineRuntimeServices.cpp
 )
 
-target_include_directories(VGEngineRuntimeServices
-	PUBLIC
-		"${CMAKE_CURRENT_SOURCE_DIR}/Include"
-)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-target_link_libraries(VGEngineRuntimeServices PUBLIC NevernessRuntime-NativeEngineAPI NevernessRuntime-Engine)
+target_link_libraries(NevernessRuntime-EngineServices PUBLIC NevernessRuntime-NativeEngineAPI NevernessRuntime-Engine)

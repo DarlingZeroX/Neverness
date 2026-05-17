@@ -1,33 +1,27 @@
-using System.Reflection;
-using VisionGal.Managed.Engine;
+﻿using System.Reflection;
+using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Object;
+namespace Neverness.Managed.Object;
 
 /// <summary>
-/// 協調託管 <see cref="VGObject"/> 與 Native <see cref="NativeHandleBridge"/> 之 retain/release 語義。
-/// <para>
-/// 契約：<c>createObject</c> 成功時 Native 側引用計數為 1，託管註冊表持有該唯一引用；
-/// 僅在共享所有權場景才呼叫 <see cref="Retain"/> 遞增。Dispose 時 <see cref="Release"/> 遞減至 0 後銷毀控制代碼。
-/// </para>
+/// 鍗旇瑷楃 <see cref="VGObject"/> 鑸?Native <see cref="NativeHandleBridge"/> 涔?retain/release 瑾炵京銆?/// <para>
+/// 濂戠磩锛?c>createObject</c> 鎴愬姛鏅?Native 鍋村紩鐢ㄨ▓鏁哥偤 1锛岃绠¤ɑ鍐婅〃鎸佹湁瑭插敮涓€寮曠敤锛?/// 鍍呭湪鍏变韩鎵€鏈夋瑠鍫存櫙鎵嶅懠鍙?<see cref="Retain"/> 閬炲銆侱ispose 鏅?<see cref="Release"/> 閬炴笡鑷?0 寰岄姺姣€鎺у埗浠ｇ⒓銆?/// </para>
 /// </summary>
 public static class LifetimeSystem
 {
 	/// <summary>
-	/// 建立並註冊託管物件：分配 Id、呼叫 Native Create（初始 ref=1）、寫入註冊表；不再額外 Retain。
-	/// </summary>
+	/// 寤虹珛涓﹁ɑ鍐婅绠＄墿浠讹細鍒嗛厤 Id銆佸懠鍙?Native Create锛堝垵濮?ref=1锛夈€佸鍏ヨɑ鍐婅〃锛涗笉鍐嶉澶?Retain銆?	/// </summary>
 	/// <typeparam name="T">
-	/// 具備 <c>(VGObjectId, VGObjectHandle)</c> 或 <c>(VGObjectId, VGObjectHandle, string)</c> 建構子之 <see cref="VGObject"/> 衍生型別。
-	/// 僅有第三參數為可選字串之建構子時，IL 仍為三參數簽名，<see cref="Activator.CreateInstance(Type, object[])"/> 無法匹配兩元素陣列，故改以反射建立。
-	/// </typeparam>
-	/// <param name="typeName">傳遞給 Native 的型別名稱；若使用三參數建構子亦作為第三參數傳入。</param>
-	/// <returns>已註冊之託管物件實例。</returns>
+	/// 鍏峰倷 <c>(VGObjectId, VGObjectHandle)</c> 鎴?<c>(VGObjectId, VGObjectHandle, string)</c> 寤烘瀛愪箣 <see cref="VGObject"/> 琛嶇敓鍨嬪垾銆?	/// 鍍呮湁绗笁鍙冩暩鐐哄彲閬稿瓧涓蹭箣寤烘瀛愭檪锛孖L 浠嶇偤涓夊弮鏁哥敖鍚嶏紝<see cref="Activator.CreateInstance(Type, object[])"/> 鐒℃硶鍖归厤鍏╁厓绱犻櫍鍒楋紝鏁呮敼浠ュ弽灏勫缓绔嬨€?	/// </typeparam>
+	/// <param name="typeName">鍌抽仦绲?Native 鐨勫瀷鍒ュ悕绋憋紱鑻ヤ娇鐢ㄤ笁鍙冩暩寤烘瀛愪害浣滅偤绗笁鍙冩暩鍌冲叆銆?/param>
+	/// <returns>宸茶ɑ鍐婁箣瑷楃鐗╀欢瀵︿緥銆?/returns>
 	public static T CreateAndRegister<T>(string typeName) where T : VGObject
 	{
 		var id = ObjectRegistry.AllocateId();
 		var handle = NativeHandleBridge.CreateObject(typeName);
 		if (handle.Value == 0)
 		{
-			throw new InvalidOperationException($"Native createObject 失敗，型別：{typeName}");
+			throw new InvalidOperationException($"Native createObject 澶辨晽锛屽瀷鍒ワ細{typeName}");
 		}
 
 		var t = typeof(T);
@@ -56,14 +50,14 @@ public static class LifetimeSystem
 		return obj;
 	}
 
-	/// <summary>對已存在物件再次 Retain（共享所有權場景）。</summary>
+	/// <summary>灏嶅凡瀛樺湪鐗╀欢鍐嶆 Retain锛堝叡浜墍鏈夋瑠鍫存櫙锛夈€?/summary>
 	public static void Retain(VGObject obj)
 	{
 		ArgumentNullException.ThrowIfNull(obj);
 		NativeHandleBridge.Retain(obj.Handle);
 	}
 
-	/// <summary>對應 Dispose 路徑：Release Native 控制代碼並可選銷毀。</summary>
+	/// <summary>灏嶆噳 Dispose 璺緫锛歊elease Native 鎺у埗浠ｇ⒓涓﹀彲閬搁姺姣€銆?/summary>
 	public static void Release(VGObject obj)
 	{
 		ArgumentNullException.ThrowIfNull(obj);

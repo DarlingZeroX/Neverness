@@ -1,7 +1,7 @@
-using System.Runtime.InteropServices;
-using VisionGal.Managed.Core;
+﻿using System.Runtime.InteropServices;
+using Neverness.Managed.Core;
 
-namespace VisionGal.Managed.Engine;
+namespace Neverness.Managed.Engine;
 
 /// <summary>
 /// 從 <c>VGNativeAPI.engineServices</c> 安裝 **Engine Service** 函數表鏡像（按值複製函數指標，與 <see cref="NativeApiBootstrap"/> 策略一致）。

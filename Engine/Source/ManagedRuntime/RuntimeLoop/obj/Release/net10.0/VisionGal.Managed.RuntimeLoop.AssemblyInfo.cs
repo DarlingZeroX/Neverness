@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VisionGal.Managed.RuntimeLoop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+416e1baa9b6dc5a2428ecf3efb8b0739b0660f9f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c28eb98ea54e8525b9008fe82c697af174701472")]
 [assembly: System.Reflection.AssemblyProductAttribute("VisionGal.Managed.RuntimeLoop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VisionGal.Managed.RuntimeLoop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

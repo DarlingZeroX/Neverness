@@ -1,0 +1,87 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "NevernessRuntimeManaged-UndoRedo/1.0.0": {
+        "dependencies": {
+          "VisionGal.Managed.Editor": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-UndoRedo.dll": {}
+        }
+      },
+      "NevernessRuntimeManaged-Core/1.0.0": {
+        "runtime": {
+          "NevernessRuntimeManaged-Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Engine/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Core": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Engine.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Object/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Engine": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Object.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "VisionGal.Managed.Editor/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Object": "1.0.0"
+        },
+        "runtime": {
+          "VisionGal.Managed.Editor.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "NevernessRuntimeManaged-UndoRedo/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Object/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VisionGal.Managed.Editor/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

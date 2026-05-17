@@ -15,7 +15,7 @@
 
 namespace NN::Runtime
 {
-	struct VG_CORE_API EngineEventBus
+	struct NN_RUNTIME_CORE_API EngineEventBus
 	{
 		//NN::Core::HEventDelegate<const TransformUpdateEvent&> OnTransformUpdateEvent;
 

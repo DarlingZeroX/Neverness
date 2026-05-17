@@ -11,7 +11,7 @@
 
 #include "Setting/ProjectSettingsWrapper.h"
 #include "EditorCore/Localization.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 #include "NNRuntimeImGui/IncludeImGuiEx.h"
 

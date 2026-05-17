@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../VGUIConfig.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeCore/Include/Utils/TransitionHelper.h"
 #include <RmlUi/Core.h>
 #include <sol/function.hpp>

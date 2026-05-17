@@ -51,22 +51,22 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 		   "(CMake defines VGMANAGED_TEST_ROOT_DEFAULT to ManagedRuntimePublish).";
 
 	const fs::path publish(root);
-	const fs::path cfg = publish / "VisionGal.Managed.Runtime.runtimeconfig.json";
-	const fs::path dll = publish / "VisionGal.Managed.Runtime.dll";
+	const fs::path cfg = publish / "NevernessRuntimeManaged-Runtime.runtimeconfig.json";
+	const fs::path dll = publish / "NevernessRuntimeManaged-Runtime.dll";
 
 	ASSERT_TRUE(fs::exists(cfg)) << cfg;
 	ASSERT_TRUE(fs::exists(dll)) << dll;
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Core.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Engine.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Engine.Runtime.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Object.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Serialization.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Scene.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Assets.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Reflection.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Gameplay.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.Entity.dll"));
-	ASSERT_TRUE(fs::exists(publish / "VisionGal.Managed.RuntimeLoop.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Core.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Engine.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Engine.Runtime.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Object.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Serialization.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Scene.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Assets.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Reflection.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Gameplay.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-Entity.dll"));
+	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-RuntimeLoop.dll"));
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	ASSERT_TRUE(VGEngineRuntimeHost_Initialize());
@@ -81,7 +81,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	void* smokeFn{};
 	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
 		dll,
-		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"Neverness.Managed.Runtime.Entry, NevernessRuntimeManaged-Runtime",
 		"Smoke",
 		&smokeFn));
 	ASSERT_NE(smokeFn, nullptr);
@@ -94,7 +94,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	void* bootstrapFn{};
 	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
 		dll,
-		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"Neverness.Managed.Runtime.Entry, NevernessRuntimeManaged-Runtime",
 		"BootstrapNativeApi",
 		&bootstrapFn));
 	ASSERT_NE(bootstrapFn, nullptr);
@@ -109,7 +109,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_NE(apiTable, nullptr);
 	ASSERT_EQ(apiTable->apiVersion, VG_NATIVE_API_VERSION);
 	ASSERT_NE(apiTable->engineServices, nullptr);
-	// §2.7.1：layout v5 起 **VGEntityAPI** 含 **getRuntimeTick**；與 **VisionGal.Managed.Engine.VGNativeEngineApiConstants.LayoutVersion** 對齊。
+	// §2.7.1：layout v5 起 **VGEntityAPI** 含 **getRuntimeTick**；與 **Neverness.Managed.Engine.VGNativeEngineApiConstants.LayoutVersion** 對齊。
 	ASSERT_EQ(apiTable->engineServices->layoutVersion, 5u);
 	// **getServiceAbiToken** 為子表接線冒煙（**VG_ENTITY_SERVICE_ABI_TOKEN**）；非場景 **VGEntityHandle**、亦非託管 **EntityHandle**。
 	ASSERT_NE(apiTable->engineServices->entity.getServiceAbiToken, nullptr);
@@ -192,7 +192,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	void* foundationFn{};
 	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
 		dll,
-		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"Neverness.Managed.Runtime.Entry, NevernessRuntimeManaged-Runtime",
 		"BootstrapEngineFoundation",
 		&foundationFn));
 	ASSERT_NE(foundationFn, nullptr);
@@ -201,7 +201,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	void* gameplayFn{};
 	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
 		dll,
-		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"Neverness.Managed.Runtime.Entry, NevernessRuntimeManaged-Runtime",
 		"BootstrapGameplay",
 		&gameplayFn));
 	ASSERT_NE(gameplayFn, nullptr);
@@ -210,7 +210,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	void* flagsFn{};
 	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
 		dll,
-		"VisionGal.Managed.Runtime.Entry, VisionGal.Managed.Runtime",
+		"Neverness.Managed.Runtime.Entry, NevernessRuntimeManaged-Runtime",
 		"GetBootstrapFlags",
 		&flagsFn));
 	ASSERT_NE(flagsFn, nullptr);
@@ -220,7 +220,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	using GetBootstrapFlagsThunk = int(*)();
 #endif
 	const int bootstrapFlags = reinterpret_cast<GetBootstrapFlagsThunk>(flagsFn)();
-	// VisionGal.Managed.Runtime.Entry: FlagSmoke=1, FlagNativeApi=2, FlagEngineInterop=4, FlagEngineFoundation=8, FlagGameplay=16
+	// Neverness.Managed.Runtime.Entry: FlagSmoke=1, FlagNativeApi=2, FlagEngineInterop=4, FlagEngineFoundation=8, FlagGameplay=16
 	EXPECT_NE(bootstrapFlags & 1, 0) << "Smoke flag";
 	EXPECT_NE(bootstrapFlags & 2, 0) << "BootstrapNativeApi flag";
 	EXPECT_NE(bootstrapFlags & 4, 0) << "BootstrapEngineInterop flag";

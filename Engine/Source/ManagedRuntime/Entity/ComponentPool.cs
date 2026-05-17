@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 泛型元件（或中介緩衝物件）之輕量堆疊池：預留給高頻 Rent/Return 場景；首包不與 <see cref="EntityWorld"/> 自動整合。

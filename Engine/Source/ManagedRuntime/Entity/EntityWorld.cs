@@ -1,12 +1,12 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
-namespace VisionGal.Managed.Entity;
+namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 託管實體世界：負責分配 <see cref="EntityHandle"/>、追蹤存活狀態，並以「每實體一張元件表」掛載 <see cref="VGComponent"/>（首包為 AoS-on-entity，非 Archetype 批次）。
 /// </summary>
 /// <remarks>
-/// <para><b>首包範圍</b>：單執行緒假設、無 SoA／Chunks；與 <c>VisionGal.Managed.Scene</c> 之 <b>SceneEntity</b> 並存，不自動同步。Native <b>VGEntityAPI</b>（MANAGED 總覽 <b>§2.7.1</b>）含魔數與 <b>getRuntimeTick</b> 等可觀測項，<b>不</b>表示本類別已與 Kernel 資料鏡像或自動灌入。</para>
+/// <para><b>首包範圍</b>：單執行緒假設、無 SoA／Chunks；與 <c>Neverness.Managed.Scene</c> 之 <b>SceneEntity</b> 並存，不自動同步。Native <b>VGEntityAPI</b>（MANAGED 總覽 <b>§2.7.1</b>）含魔數與 <b>getRuntimeTick</b> 等可觀測項，<b>不</b>表示本類別已與 Kernel 資料鏡像或自動灌入。</para>
 /// <para><b>槽位回收</b>：本類別目前<b>不</b>重用已銷毀實體之 Index（內部索引分配器單調遞增），以降低除錯難度；未來若引入自由列表，須維持 Generation 語意不變。</para>
 /// <para><b>查詢 API</b>：泛型 <see cref="HasComponent{T}"/>／<see cref="GetComponent{T}"/>／<see cref="TryGetComponent{T}"/> 與非泛型 <see cref="HasComponent(EntityHandle, Type)"/>／<see cref="TryGetComponent(EntityHandle, Type, out VGComponent)"/>／<see cref="GetComponent(EntityHandle, Type)"/>／<see cref="RemoveComponent(EntityHandle, Type)"/> 皆以字典之 <b>精確</b> <see cref="Type"/> 為鍵（與 <see cref="ComponentRegistry.TryCreate"/> 所傳之具體元件型別一致；**Type** 鍵重載與泛型 API 成對，供資料驅動／反射路徑）；另見 <see cref="GetComponentCount"/>。仍屬單執行緒首包；與 Native <b>VGEntityHandle</b>（見 <c>VGNativeEngineAPI/SceneAPI.h</c>）語意獨立，無自動映射或同步。</para>
 /// </remarks>

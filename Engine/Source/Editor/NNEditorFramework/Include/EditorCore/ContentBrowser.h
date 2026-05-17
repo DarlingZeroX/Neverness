@@ -14,7 +14,7 @@
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNCore/Interface/HSingleton.h>
 //#include <NNRuntimeAsset/Include/HAsset.h>
-#include <NNRuntimeCore/Include/Core/Core.h>
+#include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 #include <NNRuntimeCore/Interface/VGAsset.h>
 
 namespace NN::Editor{

@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj",
-      "projectName": "VisionGal.Managed.Entity",
-      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj",
+      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Entity\\NevernessRuntimeManaged-Entity.csproj",
+      "projectName": "NevernessRuntimeManaged-Entity",
+      "projectPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Entity\\NevernessRuntimeManaged-Entity.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\obj\\",
+      "outputPath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Entity\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",

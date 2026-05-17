@@ -1,9 +1,9 @@
-using VisionGal.Managed.Engine;
-using VisionGal.Managed.Object;
-using VisionGal.Managed.Serialization;
-using SceneType = VisionGal.Managed.Scene.Scene;
+﻿using Neverness.Managed.Engine;
+using Neverness.Managed.Object;
+using Neverness.Managed.Serialization;
+using SceneType = Neverness.Managed.Scene.Scene;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>場景 JSON 往返與 DTO 驗證測試。</summary>
 public sealed class SceneRoundTripTests
@@ -11,7 +11,7 @@ public sealed class SceneRoundTripTests
 	[Fact]
 	public void ValidateRoundTripDocument_PreservesDisplayName()
 	{
-		var entity = new VisionGal.Managed.Scene.SceneEntity(new VGObjectId(1), new VGObjectHandle(1), "RoundTripEntity");
+		var entity = new Neverness.Managed.Scene.SceneEntity(new VGObjectId(1), new VGObjectHandle(1), "RoundTripEntity");
 		var scene = new SceneType("TestScene");
 		scene.AddEntity(entity);
 

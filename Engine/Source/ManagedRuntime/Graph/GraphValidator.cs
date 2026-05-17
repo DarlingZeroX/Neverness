@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Graph;
+﻿namespace Neverness.Managed.Graph;
 
 /// <summary>
 /// 圖結構驗證：節點存在性、埠方向、重複連線等。

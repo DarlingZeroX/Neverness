@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 簡易本地平移元件：以浮點三元組表達相對於父空間或世界空間之位移（具體座標系由遊戲／場景層約定）。

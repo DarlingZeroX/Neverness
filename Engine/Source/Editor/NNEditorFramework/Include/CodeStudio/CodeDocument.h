@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../../Config.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeImGui/Include/Imgui/imgui.h"
 #include <NNRuntimeImGui/Include/ImGuiColorTextEdit/TextEditor.h>
 

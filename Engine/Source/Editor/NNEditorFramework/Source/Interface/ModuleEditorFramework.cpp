@@ -20,7 +20,7 @@ namespace NN::Editor
 	void ModuleEditorFramework::MountToEditor(Ref<Runtime::VGWindow>& editorWindow, Ref<Runtime::CoreGameEngine>& gameEngine)
 	{
 		// 初始化内容浏览器
-		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::Core::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
 		ContentBrowser::Create(contentPath);
 
 		// 初始化资源导入管理器

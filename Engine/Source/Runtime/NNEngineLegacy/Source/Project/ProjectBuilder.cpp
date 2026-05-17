@@ -11,7 +11,7 @@
 
 #include "Project/ProjectBuilder.h"
 #include "NNRuntimeAsset/Interface/Package.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "Project/ProjectSettings.h"
 #include <NNRuntimePak/Include/PakWriter.h>
@@ -87,7 +87,7 @@ namespace NN::Runtime
 		context.process = 0.1f;
 
 		// 打包引擎资源
-		auto enginePath = VFS::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
+		auto enginePath = VFS::GetInstance()->AbsolutePath(RuntimeCore::GetEngineResourcePathVFS());
 		H_LOG_INFO("Package engine resource: %s", enginePath.c_str());
 		if (NN::Core::HFileSystem::ExistsFile("Data/engine.pak"))		// 应用程序模式
 		{
@@ -106,7 +106,7 @@ namespace NN::Runtime
 		context.process = 0.2f;
 
 		// 打包游戏资产
-		auto assetsPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
+		auto assetsPath = VFS::GetInstance()->AbsolutePath(RuntimeCore::GetAssetsPathVFS());
 		H_LOG_INFO("Package assets: %s", assetsPath.c_str());
 		if (NN::Core::HFileSystem::ExistsDirectory(assetsPath) == false)
 		{
@@ -126,7 +126,7 @@ namespace NN::Runtime
 		context.process = 0.7f;
 
 		// 打包项目设置
-		auto projectSettings = VFS::GetInstance()->AbsolutePath(Core::GetProjectSettingsPathVFS());
+		auto projectSettings = VFS::GetInstance()->AbsolutePath(RuntimeCore::GetProjectSettingsPathVFS());
 		H_LOG_INFO("Package project settings: %s", projectSettings.c_str());
 		if (NN::Core::HFileSystem::ExistsDirectory(projectSettings) == false)
 		{
@@ -147,7 +147,7 @@ namespace NN::Runtime
 		// 跨平台复制当前目录库和VGDesktopApplication桌面应用程序
 
 		// 遍历当前目录下的所有文件
-		std::filesystem::path cwd = Core::GetExecutableDirectory();
+		std::filesystem::path cwd = RuntimeCore::GetExecutableDirectory();
 		H_LOG_INFO("Build Executable Directory: ",cwd.string().c_str());
 		for (const auto& entry : std::filesystem::directory_iterator(cwd))
 		{

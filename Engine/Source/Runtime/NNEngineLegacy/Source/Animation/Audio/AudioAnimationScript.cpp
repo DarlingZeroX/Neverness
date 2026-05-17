@@ -43,7 +43,7 @@ namespace NN::Runtime
 	void AudioFadeInOutAnimationScript::Start()
 	{
 		m_Script->TransformVolume(
-			Core::GetCurrentTime(),
+			RuntimeCore::GetCurrentTime(),
 			m_Duration,
 			m_StartVolume,
 			m_EndVolume,

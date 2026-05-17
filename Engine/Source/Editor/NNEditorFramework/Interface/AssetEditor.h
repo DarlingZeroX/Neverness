@@ -13,7 +13,7 @@
 #include "../Config.h"
 #include "../Include/PanelInterface.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
-#include <NNRuntimeCore/Include/Core/Core.h>
+#include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 //#include <NNRuntimeAsset/Include/HAsset.h>
 #include <NNRuntimeAsset/Interface/Package.h>
 

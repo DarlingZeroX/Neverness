@@ -1,6 +1,6 @@
-# VGEngine — 模块详细说明、架构、目录与 API
+# NNEngineLegacy — 单体游戏引擎（原 VGEngine）
 
-本文档描述 `Engine/Source/Runtime/VGEngine` 的**职责边界**、**构建方式**、**目录结构**、**典型用法**与**公开类型 API**（以当前头文件为准）。与 Native 总栈关系见 [RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)。
+本文档描述 `Engine/Source/Runtime/NNEngineLegacy`（CMake **`NevernessRuntime-EngineLegacy`**；C++ 命名空间 **`NN::Runtime`**；主循环类名仍为 **`VGEngine`**） 的**职责边界**、**构建方式**、**目录结构**、**典型用法**与**公开类型 API**（以当前头文件为准）。与 Native 总栈关系见 [RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)。
 
 ---
 
@@ -8,11 +8,11 @@
 
 | 项目 | 说明 |
 |------|------|
-| **职责** | 在 **VGCore**（应用壳、窗口、VFS、事件总线等）之上，聚合 **VGRHI**、**VGUI**（RmlUi）、**VGAsset**、**HMedia**、**VGLua**、**VGPackage**、**VGImgui** 等，实现 **游戏主循环入口（`VGEngine`）**、**渲染子引擎（`CoreGameEngine` / `CoreRenderEngine`）**、**ECS 场景（`Scene` + `Components`）**、**资源加载器（纹理/音视频）**、**项目与构建设置**、**2D 动画与转场**、**Lua 绑定入口** 等高层能力。 |
-| **不负责** | **不**实现 **Engine Service C ABI**（见 **VGNativeEngineAPI**）；**不**实现行程级 **Runtime Kernel**（见 **VGEngineRuntime** / **VGEngineRuntimeServices**）。托管主线 Gameplay 逻辑在 **Managed**，本库为 **Native 渲染与场景执行** 层。 |
-| **CMake 目标** | `VGEngine`（`SHARED`） |
+| **职责** | 在 **NNRuntimeCore**（原 VGCore）（应用壳、窗口、VFS、事件总线等）之上，聚合 **NevernessRuntime-RHI**、**NNRuntimeRmlui**（RmlUi）、**NNRuntimeAsset**、**NevernessCore-MediaCore**、**NevernessRuntime-Lua**、**NevernessRuntime-Pak**、**NevernessRuntime-ImGui** 等，实现 **游戏主循环入口（`VGEngine`）**、**渲染子引擎（`CoreGameEngine` / `CoreRenderEngine`）**、**ECS 场景（`Scene` + `Components`）**、**资源加载器（纹理/音视频）**、**项目与构建设置**、**2D 动画与转场**、**Lua 绑定入口** 等高层能力。 |
+| **不负责** | **不**实现 **Engine Service C ABI**（见 **NNNativeEngineAPI**；C ABI 类型仍为 **VGNativeEngineAPI**）；**不**实现行程级 **Runtime Kernel**（见 **NNRuntimeEngine** / **NNRuntimeEngineServices**，原 VGEngineRuntime*）。托管主线 Gameplay 逻辑在 **Managed**，本库为 **Native 渲染与场景执行** 层。 |
+| **CMake 目标** | `NevernessRuntime-EngineLegacy`（`SHARED`） |
 | **导出宏** | 编译目标定义 `ENGINE_API_EXPORT` → **`VG_ENGINE_API`**（`Include/EngineConfig.h`）：Windows 为 `dllexport`/`dllimport`，其他平台为可见性属性。 |
-| **典型消费者** | **VGDesktopApplication**、**VGLauncher**、编辑器运行时桥等需要 OpenGL 场景与 RmlUi 的宿主。 |
+| **典型消费者** | **NNDesktopApplication**、**NNLauncher**、**NNEditorFramework**、编辑器运行时桥等需要 OpenGL 场景与 RmlUi 的宿主。 |
 
 ---
 
@@ -23,24 +23,24 @@
 ```mermaid
 flowchart TB
   subgraph deps [依赖栈]
-    HCore[HCore / HCorePlatform / HFileSystem / HMedia]
-    VGLua[VGLua]
-    VGRHI[VGRHI]
-    VGPackage[VGPackage]
-    VGImgui[VGImgui]
-    VGCore[VGCore]
-    VGAsset[VGAsset]
-    VGUI[VGUI]
+    NNCore[NevernessCore-*]
+    NNLua[NevernessRuntime-Lua]
+    NNRHI[NevernessRuntime-RHI]
+    NNPak[NevernessRuntime-Pak]
+    NNImGui[NevernessRuntime-ImGui]
+    NNRtCore[NevernessRuntime-Core]
+    NNAsset[NevernessRuntime-Asset]
+    NNRml[NevernessRuntime-RmlUI]
   end
-  VGEngine[VGEngine]
-  HCore --> VGEngine
-  VGLua --> VGEngine
-  VGRHI --> VGEngine
-  VGPackage --> VGEngine
-  VGImgui --> VGEngine
-  VGCore --> VGEngine
-  VGAsset --> VGEngine
-  VGUI --> VGEngine
+  NNEngLegacy[NevernessRuntime-EngineLegacy]
+  NNCore --> NNEngLegacy
+  NNLua --> NNEngLegacy
+  NNRHI --> NNEngLegacy
+  NNPak --> NNEngLegacy
+  NNImGui --> NNEngLegacy
+  NNRtCore --> NNEngLegacy
+  NNAsset --> NNEngLegacy
+  NNRml --> NNEngLegacy
 ```
 
 ### 2.2 运行时两条主线
@@ -48,9 +48,9 @@ flowchart TB
 | 主线 | 入口类型 | 说明 |
 |------|-----------|------|
 | **应用级主循环** | `VisionGal::VGEngine` | 单例 `Get()`：`LoadProject` → `Run()` 内 **SDL 事件泵** + `OnApplicationUpdate` 分发到多个 **`IEngineApplication`**；`OnUpdateSubSystem` 驱动 **ViewportManager** 等。 |
-| **渲染与场景** | `CoreGameEngine` → `CoreRenderEngine` → `CoreRenderPipeline` | 实现 **`IGameEngine`** / **`IGameEngineContext`**（定义在 **VGCore**），负责 **视口**、**场景渲染**、**渲染前后回调**、**子引擎 `ISubGameEngine`** 链。 |
+| **渲染与场景** | `CoreGameEngine` → `CoreRenderEngine` → `CoreRenderPipeline` | 实现 **`IGameEngine`** / **`IGameEngineContext`**（定义在 **NNRuntimeCore**（原 VGCore）），负责 **视口**、**场景渲染**、**渲染前后回调**、**子引擎 `ISubGameEngine`** 链。 |
 
-**场景数据模型**：`IScene` / `IGameActor` / `IComponent` 接口在 **VGCore**（`VGCore/Interface/SceneInterface.h`），具体 ECS 实现在本模块 **`Scene::Scene`**（基于 **HCore** 的 `Horizon::HECS`）。
+**场景数据模型**：`IScene` / `IGameActor` / `IComponent` 接口在 **NNRuntimeCore**（原 VGCore）（`NNRuntimeCore/Interface/SceneInterface.h`），具体 ECS 实现在本模块 **`Scene::Scene`**（基于 **NNCore**（Horizon::HECS） 的 `Horizon::HECS`）。
 
 ---
 
@@ -60,10 +60,10 @@ flowchart TB
 |------|------|
 | **C++ 标准** | **C++17**（`CMAKE_CXX_STANDARD 17`）。 |
 | **预编译头** | `Include/pch.h`（`target_precompile_headers`）。 |
-| **包含目录** | **PRIVATE**：`Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`；**PUBLIC**：`VGLua/Include`（向依赖方传播 sol2 / Lua 头）。 |
+| **包含目录** | **PRIVATE**：`Engine/Source/Runtime`、`Engine/Source/Core`、`Include`、`Interface`；**PUBLIC**：`NNRuntimeLua/Include`（向依赖方传播 sol2 / Lua 头）。 |
 | **编译定义** | `ENGINE_API_EXPORT`（仅本库构建时导出符号）。 |
 | **MSVC** | `/utf-8`、`/bigobj`、并行 `/MP`。 |
-| **链接** | 见 [`CMakeLists.txt`](../CMakeLists.txt)：`SDL3`、`SDL3_image`、`RmlUi`、`VGLua`、`HCore`、`HCorePlatform`、`HFileSystem`、`HMedia`、`VGRHI`、`VGPackage`、`VGImgui`、`VGCore`、`VGAsset`、`VGUI`；**PRIVATE** 平台 **OpenGL**。 |
+| **链接** | 见 [`CMakeLists.txt`](../CMakeLists.txt)：`SDL3`、`SDL3_image`、`RmlUi`、`NevernessRuntime-Lua`、`NevernessCore-Core`、`NevernessCore-PlatformCore`、`NevernessCore-FileSystem`、`NevernessCore-MediaCore`、`NevernessRuntime-RHI`、`NevernessRuntime-Pak`、`NevernessRuntime-ImGui`、`NevernessRuntime-Core`、`NevernessRuntime-Asset`、`NevernessRuntime-RmlUI`；**PRIVATE** 平台 **OpenGL**。 |
 
 **说明**：`CMakeLists.txt` 中 `file(GLOB ...)` 仍包含 `Include/Asset`、`Include/Core`、`Include/Data`、`Include/Event`、`Include/Resource` 等路径；若仓库中对应目录暂无源文件，不影响当前已存在的编译单元。
 
@@ -72,7 +72,7 @@ flowchart TB
 ## 4. 目录结构（完整）
 
 ```
-Engine/Source/Runtime/VGEngine/
+Engine/Source/Runtime/NNEngineLegacy/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md    ← 本文件
@@ -123,20 +123,20 @@ Engine/Source/Runtime/VGEngine/
 ### 5.1 CMake 链接
 
 ```cmake
-target_link_libraries(YourTarget PRIVATE VGEngine)
+target_link_libraries(YourTarget PRIVATE NevernessRuntime-EngineLegacy)
 # 或 PUBLIC：若 YourTarget 的头文件暴露了 VGEngine 类型
 ```
 
-将 **`Engine/Source/Runtime`** 与 **`Engine/Source/Kernel`** 加入 **include path** 后，可按项目习惯使用：
+将 **`Engine/Source/Runtime`** 与 **`Engine/Source/Core`** 加入 **include path** 后，可按项目习惯使用：
 
 - `#include "Engine/VGEngine.h"`
 - `#include "Game/GameEngine.h"`
-- 或带 `VGEngine/Include/` 前缀的路径（取决于目标 `target_include_directories` 配置）。
+- 或带 `NNEngineLegacy/Include/` 前缀的路径（取决于目标 `target_include_directories` 配置）。
 
 ### 5.2 符号导出
 
-- **消费** `VGEngine` 动态库时：**不要**在依赖目标上定义 `ENGINE_API_EXPORT`，以便 `VG_ENGINE_API` 解析为 **import**。
-- **扩展** 本库源码时：保持由 `VGEngine` 目标统一导出。
+- **消费** `NevernessRuntime-EngineLegacy` 动态库时：**不要**在依赖目标上定义 `ENGINE_API_EXPORT`，以便 `VG_ENGINE_API` 解析为 **import**。
+- **扩展** 本库源码时：保持由 `NevernessRuntime-EngineLegacy` 目标统一导出。
 
 ### 5.3 `VGEngine` 单典型流程
 
@@ -169,15 +169,15 @@ target_link_libraries(YourTarget PRIVATE VGEngine)
 
 ## 6. 与 VGCore 接口的配合（摘要）
 
-以下类型定义在 **VGCore**（`VGCore/Interface/*.h`），**VGEngine** 提供实现或消费方：
+以下类型定义在 **NNRuntimeCore**（原 VGCore）（`NNRuntimeCore/Interface/*.h`），**VGEngine** 提供实现或消费方：
 
 | 接口 | 头文件 | 本模块角色 |
 |------|--------|------------|
-| `IEngineApplication` / `IEngineApplicationLayer` | `VGCore/Interface/EngineInterface.h` | `VGEngine::AddApplication` 持有并驱动。 |
-| `IGameEngine` / `IGameEngineContext` / `ISubGameEngine` / `IRenderPipeline` | `VGCore/Interface/GameEngineInterface.h` | `CoreGameEngine`、`CoreRenderEngine`、`CoreRenderPipeline` 实现。 |
-| `IScene` / `IGameActor` / `IComponent` | `VGCore/Interface/SceneInterface.h` | `Scene`、`GameActor`、各 `*Component` 实现或继承。 |
-| `IScript` / `IScriptVariable` / `ICamera` / `IOrthoCamera` / `IAnimationScript` | `VGCore/Interface/GameInterface.h` | `LuaScript`、相机类、动画脚本体系。 |
-| `VGEngineResource` | `VGCore/Include/Core/Core.h` | `Texture2D`、`IScene`、`IScript` 等基类，提供 `GetResourcePath` / `SetResourcePath`。 |
+| `IEngineApplication` / `IEngineApplicationLayer` | `NNRuntimeCore/Interface/EngineInterface.h` | `VGEngine::AddApplication` 持有并驱动。 |
+| `IGameEngine` / `IGameEngineContext` / `ISubGameEngine` / `IRenderPipeline` | `NNRuntimeCore/Interface/GameEngineInterface.h` | `CoreGameEngine`、`CoreRenderEngine`、`CoreRenderPipeline` 实现。 |
+| `IScene` / `IGameActor` / `IComponent` | `NNRuntimeCore/Interface/SceneInterface.h` | `Scene`、`GameActor`、各 `*Component` 实现或继承。 |
+| `IScript` / `IScriptVariable` / `ICamera` / `IOrthoCamera` / `IAnimationScript` | `NNRuntimeCore/Interface/GameInterface.h` | `LuaScript`、相机类、动画脚本体系。 |
+| `VGEngineResource` | `NNRuntimeCore/Include/Core/Core.h` | `Texture2D`、`IScene`、`IScript` 等基类，提供 `GetResourcePath` / `SetResourcePath`。 |
 
 ---
 
@@ -516,6 +516,7 @@ target_link_libraries(YourTarget PRIVATE VGEngine)
 
 | 日期 | 内容 |
 |------|------|
+| 2026-05-17 | 文档与 **NN/Neverness** 命名对齐（无行为变更）。 |
 | 2026-05-15 | 文档首版：Include 域索引与 `CoreGameEngine` 入口。 |
 | 2026-05-16 | **完整重写**：架构说明、完整目录树、使用流程、`VGEngine`/`CoreGameEngine`/场景/渲染/动画/Lua/工程 等 **API 级**条目表。 |
 
@@ -524,9 +525,9 @@ target_link_libraries(YourTarget PRIVATE VGEngine)
 ## 9. 相关链接
 
 - [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
-- [VGCore](../VGCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [VGRHI](../VGRHI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [VGUI](../VGUI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [VGAsset](../VGAsset/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [VGEngineRuntime](../VGEngineRuntime/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [VGNativeEngineAPI](../VGNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [VGCore](../NNRuntimeCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [VGRHI](../NNRuntimeRHI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [VGUI](../NNRuntimeRmlui/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [VGAsset](../NNRuntimeAsset/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [VGEngineRuntime](../NNRuntimeEngine/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [VGNativeEngineAPI](../NNNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

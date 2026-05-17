@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 實體控制代碼（Handle）：以單調遞增之 <see cref="Index"/> 標識槽位，並以 <see cref="Generation"/> 記錄該槽位「第幾代」存活週期。

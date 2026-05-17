@@ -12,7 +12,7 @@
 #pragma once
 //#include "../Graphics/OpenGL/Sprite.h"
 //#include "../Resource/Texture2D.h"
-#include "../Include/Core/Core.h"
+#include "../Include/Core/RuntimeCore.h"
 //#include "../Graphics/Interface/Mesh.h"
 #include <NNRuntimeRHI/Interface/Mesh.h>
 #include <NNRuntimeRHI/Interface/Texture.h>

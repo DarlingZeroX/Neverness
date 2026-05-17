@@ -16,26 +16,29 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-# 将源代码添加到此项目的可执行文件。
-file(GLOB VGPACKAGE_HEADER_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-)
+add_library(NevernessRuntime-Pak SHARED)
 
-file(GLOB VGPACKAGE_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
+target_sources(NevernessRuntime-Pak
+  PRIVATE
+    Include/Config.h
+    Include/PackageFile.h
+    Include/PackageFileSystem.h
+    Include/PakCrc32.h
+    Include/PakFormat.h
+    Include/PakReader.h
+    Include/PakWriter.h
+    Source/PakCrc32.cpp
+    Source/PakFormat.cpp
+    Source/PakReader.cpp
+    Source/PakWriter.cpp
 )
-
-add_library (NevernessRuntime-Pak SHARED ${VGPACKAGE_HEADER_FILES} ${VGPACKAGE_SRC_FILES})
 
 # 添加宏
 target_compile_definitions(NevernessRuntime-Pak PRIVATE VG_PACKAGE_API_EXPORT)
 
 # 添加头文件搜索路径
 target_include_directories(NevernessRuntime-Pak PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(NevernessRuntime-Pak PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
+target_include_directories(NevernessRuntime-Pak PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(NevernessRuntime-Pak PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
 # 寻找CMake包
@@ -44,4 +47,3 @@ find_package(SDL3 CONFIG REQUIRED)
 # 链接库
 target_link_libraries(NevernessRuntime-Pak PRIVATE SDL3::SDL3)
 target_link_libraries(NevernessRuntime-Pak PRIVATE NevernessCore-Core)
-

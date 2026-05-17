@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 實體原型（Archetype）枚舉占位：描述一類實體預期掛載之元件組合語意，供文件化與未來批次分配器對齊。

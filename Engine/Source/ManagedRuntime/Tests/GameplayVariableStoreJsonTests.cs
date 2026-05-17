@@ -1,6 +1,6 @@
-using VisionGal.Managed.Gameplay;
+﻿using Neverness.Managed.Gameplay;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>Phase 6：<see cref="GameplayVariableStore"/> JSON 快照往返。</summary>
 public sealed class GameplayVariableStoreJsonTests

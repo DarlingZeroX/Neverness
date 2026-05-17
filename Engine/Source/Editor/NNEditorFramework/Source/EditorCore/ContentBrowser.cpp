@@ -20,7 +20,7 @@
 //#include "Core/VFS.h"
 //#include "Engine/Manager/AssetManager.h"
 #include <NNRuntimeCore/Include/Core/VFS.h>
-#include <NNRuntimeCore/Include/Core/Core.h>
+#include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 #include "NNRuntimeAsset/Interface/AssetManager.h"
 
 namespace NN::Editor{
@@ -188,7 +188,7 @@ namespace NN::Editor{
 	void ContentBrowser::RefreshDirectory()
 	{
 		// 需要刷新虚拟文件系统
-		auto fsList = Runtime::VFS::GetInstance()->GetFilesystems(Runtime::Core::GetAssetsPathVFS());
+		auto fsList = Runtime::VFS::GetInstance()->GetFilesystems(Runtime::RuntimeCore::GetAssetsPathVFS());
 		if (fsList.size() == 1)
 		{
 			auto fs = fsList.begin()->get();

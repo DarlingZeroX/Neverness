@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../EngineConfig.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeCore/Interface/RenderInterface.h"
 #include <NNCore/Include/Event/HEventDelegate.h>
 

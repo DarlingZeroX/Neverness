@@ -1,6 +1,6 @@
-using VisionGal.Managed.Engine;
+﻿using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Assets;
+namespace Neverness.Managed.Assets;
 
 /// <summary>
 /// 資產依賴關係追蹤；經 Native AssetRegistry 或託管側快取查詢。

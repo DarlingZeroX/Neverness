@@ -9,9 +9,9 @@
  * - 先 **`async_.Shutdown`**（join 后台等待），再 **`scheduler_.ShutdownRegistered()`**（**EntitySubsystem::Shutdown** 内 **`Reset`**）将 **`runtimeTick`** 清零，便于下次 **`Initialize`** 后从 0 重新观测；与 MANAGED **§2.7.1** 文档一句说明一致。
  */
 
-#include "NNRuntimeEngine/VGEngineRuntime.h"
+#include "VGEngineRuntime.h"
 
-#include "NNRuntimeEngine/RuntimeScheduler/RuntimeFrameContext.h"
+#include "RuntimeScheduler/RuntimeFrameContext.h"
 
 namespace NN::Runtime::engine
 {
@@ -30,6 +30,8 @@ bool VGEngineRuntime::Initialize() noexcept
 
 	timing_.Reset();
 	scheduler_.RegisterSubsystem(&entity_);
+	sceneTick_.SetScene(&ecsScene_);
+	scheduler_.RegisterSubsystem(&sceneTick_);
 	scheduler_.InitializeRegistered();
 	initialized_ = true;
 	return true;
@@ -62,4 +64,4 @@ void VGEngineRuntime::Shutdown() noexcept
 	scheduler_.ShutdownRegistered();
 	initialized_ = false;
 }
-} // namespace visiongal::engine
+} // namespace NN::Runtime::engine

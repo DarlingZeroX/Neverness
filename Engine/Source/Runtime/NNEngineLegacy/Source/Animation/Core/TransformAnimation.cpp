@@ -173,7 +173,7 @@ namespace NN::Runtime
 
 	float TransformAnimationScript::GetCurrentTime() const
 	{
-		return Core::GetCurrentTime();
+		return RuntimeCore::GetCurrentTime();
 	}
 
 	void TransformAnimationScript::ApplyStateToEntity(NN::Core::HEntityInterface* entity)

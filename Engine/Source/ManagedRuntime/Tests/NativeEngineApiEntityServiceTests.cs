@@ -1,12 +1,12 @@
-using VisionGal.Managed.Engine;
+﻿using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>
 /// 校驗 Native <b>VGEntityAPI</b> 子表與託管鏡像（MANAGED 總覽 <b>§2.7.1</b>）：<b>layout v5</b>、<c>getServiceAbiToken</c> 與 <c>getRuntimeTick</c>、可選宿主安裝路徑。
 /// </summary>
 /// <remarks>
-/// 與 <see cref="VisionGal.Managed.Entity.EntityWorld"/> 無資料關聯；純 C# ECS 仍僅在 <c>VisionGal.Managed.Entity</c> 程式集內。
+/// 與 <see cref="Neverness.Managed.Entity.EntityWorld"/> 無資料關聯；純 C# ECS 仍僅在 <c>Neverness.Managed.Entity</c> 程式集內。
 /// <c>getRuntimeTick</c> 在 Native 宿主已 <c>Tick</c> 後遞增；僅 <c>dotnet test</c> 時可為 **0**。
 /// </remarks>
 public sealed class NativeEngineApiEntityServiceTests

@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Graph;
+﻿namespace Neverness.Managed.Graph;
 
 /// <summary>
 /// 節點圖容器：節點、連線與基本查詢。

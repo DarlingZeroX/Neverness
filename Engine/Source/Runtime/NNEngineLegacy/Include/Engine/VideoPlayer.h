@@ -11,7 +11,7 @@
 
 #pragma once
 //#include "Interface/VideoInterface.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "../EngineConfig.h"
 #include <NNMediaCore/Include/FVideo.h>
 #include <NNRuntimeAsset/Interface/VideoClip.h>

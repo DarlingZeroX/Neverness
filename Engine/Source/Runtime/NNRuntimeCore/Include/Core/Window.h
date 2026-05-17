@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "../../VGCoreConfig.h"
+#include "../../RuntimeCoreExport.h"
 #include <SDL3/SDL.h>
 #include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 
@@ -19,7 +19,7 @@
 
 namespace NN::Runtime
 {
-    class VG_CORE_API VGWindow: public NN::Core::SDL3::OpenGLWindow
+    class NN_RUNTIME_CORE_API VGWindow: public NN::Core::SDL3::OpenGLWindow
     {
     public:
         VGWindow();

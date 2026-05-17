@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "g2tYzbbO/QI=",
+  "dgSpecHash": "vKb2nfJLh7c=",
   "success": true,
-  "projectFilePath": "E:\\VisionGal\\Engine\\Source\\Managed\\VGManagedEntity\\Managed\\VisionGal.Managed.Entity\\VisionGal.Managed.Entity.csproj",
+  "projectFilePath": "E:\\VisionGal\\Engine\\Source\\ManagedRuntime\\Entity\\NevernessRuntimeManaged-Entity.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

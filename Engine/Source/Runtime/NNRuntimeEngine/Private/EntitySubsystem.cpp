@@ -7,9 +7,9 @@
  * - **`deltaTimeSeconds`** 当前未参与计数；若未来与 **TimingSystem** 帧序号对齐，可在此读取 **Timing** 而非自增，但须另行评审 ABI 文档。
  */
 
-#include "NNRuntimeEngine/EntitySubsystem.h"
+#include "EntitySubsystem.h"
 
-#include "NNRuntimeEngine/RuntimeScheduler/RuntimeFrameContext.h"
+#include "RuntimeScheduler/RuntimeFrameContext.h"
 
 namespace NN::Runtime::engine
 {

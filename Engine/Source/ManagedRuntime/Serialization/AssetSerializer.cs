@@ -1,6 +1,6 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 
-namespace VisionGal.Managed.Serialization;
+namespace Neverness.Managed.Serialization;
 
 /// <summary>
 /// 資產描述（路徑、GUID、依賴）之 JSON 序列化。

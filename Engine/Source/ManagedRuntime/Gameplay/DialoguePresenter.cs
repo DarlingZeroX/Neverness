@@ -1,7 +1,7 @@
-using System.Text;
-using VisionGal.Managed.Engine;
+﻿using System.Text;
+using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Gameplay;
+namespace Neverness.Managed.Gameplay;
 
 /// <summary>
 /// 對白呈現：經 Engine Service <c>VGUIApi.SetDialogueText</c> 將文字送至 UI 層（Stub 或 Runtime 實作）。

@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include <NNCore/Include/Scene/HEntityInterface.h>
 #include <NNCore/Include/Scene/HComponentInterface.h>
 #include <NNCore/Interface/HSerialization.h>
@@ -96,7 +96,7 @@ namespace NN::Runtime
 	//	virtual std::string GetBindComponentType() = 0;
 	//};
 
-	class VG_CORE_API IGameActor : public IEntity
+	class NN_RUNTIME_CORE_API IGameActor : public IEntity
 	{
 	public:
 		IGameActor() = default;

@@ -19,7 +19,7 @@ namespace NN::Runtime
 
 	float IAnimationProperty::GetCurrentTime()
 	{
-		return Core::GetCurrentTime();
+		return RuntimeCore::GetCurrentTime();
 	}
 
 	void FloatAnimationProperty::SetCurrentValue(float value)

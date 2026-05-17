@@ -1,7 +1,7 @@
-using VisionGal.Managed.Engine;
-using VisionGal.Managed.Object;
+﻿using Neverness.Managed.Engine;
+using Neverness.Managed.Object;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>託管物件註冊表與測試清理行為。</summary>
 public sealed class ObjectRegistryTests

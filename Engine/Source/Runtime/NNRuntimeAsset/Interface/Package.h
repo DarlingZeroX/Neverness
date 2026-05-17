@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../VGAssetConfig.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeCore/Interface/VGAsset.h"
 #include <fstream>
 

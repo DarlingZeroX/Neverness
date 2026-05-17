@@ -1,11 +1,11 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 託管元件抽象基類：掛載於單一 <see cref="EntityHandle"/> 上，由 <see cref="EntityWorld"/> 以字典持有其生命週期（與實體同存亡，除非個別 <see cref="EntityWorld.RemoveComponent{T}"/>）。
 /// </summary>
 /// <remarks>
 /// <para>對齊路線圖「Managed Component System」之第一步；首包不帶序列化、反射管線或系統排程。</para>
-/// <para>未來可拆出獨立程式集 <c>VisionGal.Managed.Component</c>，並與 <see cref="ComponentRegistry"/> 工廠、編輯器資料驅動載入對齊。</para>
+/// <para>未來可拆出獨立程式集 <c>Neverness.Managed.Component</c>，並與 <see cref="ComponentRegistry"/> 工廠、編輯器資料驅動載入對齊。</para>
 /// </remarks>
 public abstract class VGComponent
 {

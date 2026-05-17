@@ -10,14 +10,14 @@
 */
 
 #pragma once
-#include "../VGCoreConfig.h"
-#include "../Include/Core/Core.h"
+#include "../RuntimeCoreExport.h"
+#include "../Include/Core/RuntimeCore.h"
 
 namespace NN::Runtime
 {
 	using VGObjectPtr = Ref<VGObject>;
 
-	VG_CORE_API VGObjectPtr StaticLoadObject(const String& path, const type_info& typeInfo);
+	NN_RUNTIME_CORE_API VGObjectPtr StaticLoadObject(const String& path, const type_info& typeInfo);
 
 	template<class T>
 	inline Ref<T> LoadObject(const String& path)
@@ -33,5 +33,5 @@ namespace NN::Runtime
 		virtual VGObjectPtr StaticLoadObject(const String& path) = 0;
 	};
 
-	VG_CORE_API int RegisterObjectLoader(const type_info& typeInfo, VGObjectLoader* loader);
+	NN_RUNTIME_CORE_API int RegisterObjectLoader(const type_info& typeInfo, VGObjectLoader* loader);
 }

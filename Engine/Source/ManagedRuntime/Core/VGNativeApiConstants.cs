@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Core;
+﻿namespace Neverness.Managed.Core;
 
 /// <summary>
 /// 與 Native 側 C 標頭 <c>NativeAPI.h</c> 中 <c>VG_NATIVE_API_VERSION</c> 保持數值一致。

@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 可讀顯示名稱：用於除錯、UI 標籤或劇本顯示；<b>非</b>資產 GUID、亦非跨場景唯一 Id。

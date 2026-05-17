@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Object;
+﻿namespace Neverness.Managed.Object;
 
 /// <summary>
 /// 進程內託管 <see cref="VGObject"/> 實例之靜態註冊表（<see cref="VGObjectId"/> → 物件）。

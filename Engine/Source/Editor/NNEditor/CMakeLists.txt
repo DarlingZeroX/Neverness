@@ -37,7 +37,7 @@ target_compile_definitions(VGEditor PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_S
 
 # 添加头文件搜索路径
 target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
+target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
 target_include_directories(VGEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
  

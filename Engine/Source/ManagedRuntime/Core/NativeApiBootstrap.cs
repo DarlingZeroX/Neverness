@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace VisionGal.Managed.Core;
+namespace Neverness.Managed.Core;
 
 /// <summary>
 /// 將 Native 傳入的 <c>VGNativeAPI*</c> 安裝到進程內靜態快取，並提供型別安全的 UTF-8 日誌封裝。

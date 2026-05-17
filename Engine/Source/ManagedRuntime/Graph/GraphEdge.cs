@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Graph;
+﻿namespace Neverness.Managed.Graph;
 
 /// <summary>
 /// 節點間有向連線（輸出埠 → 輸入埠）。

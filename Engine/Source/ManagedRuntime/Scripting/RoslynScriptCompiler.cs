@@ -1,9 +1,9 @@
-#if VISIONGAL_ENABLE_ROSLYN
+﻿#if VISIONGAL_ENABLE_ROSLYN
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 #endif
 
-namespace VisionGal.Managed.Scripting;
+namespace Neverness.Managed.Scripting;
 
 /// <summary>
 /// Roslyn C# 腳本編譯器；定義 <c>VISIONGAL_ENABLE_ROSLYN</c> 時使用 Microsoft.CodeAnalysis.CSharp。
@@ -27,7 +27,7 @@ public static class RoslynScriptCompiler
 	}
 
 	/// <summary>將 C# 原始碼編譯為程序集位元組或驗證占位。</summary>
-	public static CompileResult Compile(string source, string assemblyName = "VisionGal.DynamicScript")
+	public static CompileResult Compile(string source, string assemblyName = "Neverness.DynamicScript")
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(source);
 		ArgumentException.ThrowIfNullOrWhiteSpace(assemblyName);

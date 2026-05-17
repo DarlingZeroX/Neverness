@@ -10,13 +10,13 @@
 */
 
 #pragma once
-#include "../Core/Core.h"
+#include "../Core/RuntimeCore.h"
 #include "DataNamespace.h"
 #include <NNCore/Include/File/nlohmann/json.hpp>
 
 namespace NN::Runtime
 {
-	class VG_CORE_API VGDataContainer
+	class NN_RUNTIME_CORE_API VGDataContainer
 	{
 	public:
 		VGDataContainer();

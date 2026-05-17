@@ -1,7 +1,7 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace VisionGal.Managed.Serialization;
+namespace Neverness.Managed.Serialization;
 
 /// <summary>
 /// 序列化版本容忍策略：讀取時忽略未知欄位、寫入時附帶格式版本號。

@@ -50,81 +50,79 @@ set(VISIONGAL_MANAGED_PUBLISH_DIR "${CMAKE_BINARY_DIR}/ManagedRuntimePublish" CA
 find_program(VISIONGAL_DOTNET_EXECUTABLE dotnet DOC ".NET SDK CLI")
 
 if (VISIONGAL_DOTNET_EXECUTABLE)
+	set(_managed_runtime_root "${CMAKE_CURRENT_SOURCE_DIR}/../../ManagedRuntime")
 	# 定义托管运行时项目文件路径
-	set(_managed_csproj "${CMAKE_CURRENT_SOURCE_DIR}/Managed/VisionGal.Managed.Runtime/VisionGal.Managed.Runtime.csproj")
-	# 收集托管运行时模块的C#源码及项目文件，CONFIGURE_DEPENDS表示文件变更时自动重新配置
+	set(_managed_csproj "${_managed_runtime_root}/Host/NevernessRuntimeManaged-Runtime.csproj")
 	file(GLOB _managed_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/Managed/VisionGal.Managed.Runtime/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/Managed/VisionGal.Managed.Runtime/*.csproj"
+		"${_managed_runtime_root}/Host/*.cs"
+		"${_managed_runtime_root}/Host/*.csproj"
 	)
-	# 收集托管核心模块的C#源码及项目文件
 	file(GLOB _managed_core_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedCore/Managed/VisionGal.Managed.Core/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedCore/Managed/VisionGal.Managed.Core/*.csproj"
+		"${_managed_runtime_root}/Core/*.cs"
+		"${_managed_runtime_root}/Core/*.csproj"
 	)
-	# 收集托管引擎模块的C#源码及项目文件
 	file(GLOB _managed_engine_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine/*.csproj"
+		"${_managed_runtime_root}/Engine/*.cs"
+		"${_managed_runtime_root}/Engine/*.csproj"
 	)
 	file(GLOB _managed_engine_runtime_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEngine/Managed/VisionGal.Managed.Engine.Runtime/*.csproj"
+		"${_managed_runtime_root}/Engine.Runtime/*.cs"
+		"${_managed_runtime_root}/Engine.Runtime/*.csproj"
 	)
 	file(GLOB _managed_object_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedObject/Managed/VisionGal.Managed.Object/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedObject/Managed/VisionGal.Managed.Object/*.csproj"
+		"${_managed_runtime_root}/Object/*.cs"
+		"${_managed_runtime_root}/Object/*.csproj"
 	)
 	file(GLOB _managed_reflection_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedReflection/Managed/VisionGal.Managed.Reflection/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedReflection/Managed/VisionGal.Managed.Reflection/*.csproj"
+		"${_managed_runtime_root}/Reflection/*.cs"
+		"${_managed_runtime_root}/Reflection/*.csproj"
 	)
 	file(GLOB _managed_serialization_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedSerialization/Managed/VisionGal.Managed.Serialization/*.csproj"
+		"${_managed_runtime_root}/Serialization/*.cs"
+		"${_managed_runtime_root}/Serialization/*.csproj"
 	)
 	file(GLOB _managed_assets_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedAssets/Managed/VisionGal.Managed.Assets/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedAssets/Managed/VisionGal.Managed.Assets/*.csproj"
+		"${_managed_runtime_root}/Assets/*.cs"
+		"${_managed_runtime_root}/Assets/*.csproj"
 	)
 	file(GLOB _managed_editor_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEditor/Managed/VisionGal.Managed.Editor/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEditor/Managed/VisionGal.Managed.Editor/*.csproj"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../../ManagedEditor/VGManagedEditor/Managed/VisionGal.Managed.Editor/*.cs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../../ManagedEditor/VGManagedEditor/Managed/VisionGal.Managed.Editor/*.csproj"
 	)
 	file(GLOB _managed_inspector_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedInspector/Managed/VisionGal.Managed.Inspector/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedInspector/Managed/VisionGal.Managed.Inspector/*.csproj"
+		"${_managed_runtime_root}/Inspector/*.cs"
+		"${_managed_runtime_root}/Inspector/*.csproj"
 	)
 	file(GLOB _managed_graph_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGraph/Managed/VisionGal.Managed.Graph/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGraph/Managed/VisionGal.Managed.Graph/*.csproj"
+		"${_managed_runtime_root}/Graph/*.cs"
+		"${_managed_runtime_root}/Graph/*.csproj"
 	)
 	file(GLOB _managed_scene_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScene/Managed/VisionGal.Managed.Scene/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScene/Managed/VisionGal.Managed.Scene/*.csproj"
+		"${_managed_runtime_root}/Scene/*.cs"
+		"${_managed_runtime_root}/Scene/*.csproj"
 	)
 	file(GLOB _managed_undoredo_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedUndoRedo/Managed/VisionGal.Managed.UndoRedo/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedUndoRedo/Managed/VisionGal.Managed.UndoRedo/*.csproj"
+		"${_managed_runtime_root}/UndoRedo/*.cs"
+		"${_managed_runtime_root}/UndoRedo/*.csproj"
 	)
 	file(GLOB _managed_scripting_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScripting/Managed/VisionGal.Managed.Scripting/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedScripting/Managed/VisionGal.Managed.Scripting/*.csproj"
+		"${_managed_runtime_root}/Scripting/*.cs"
+		"${_managed_runtime_root}/Scripting/*.csproj"
 	)
 	file(GLOB _managed_gameplay_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedGameplay/Managed/VisionGal.Managed.Gameplay/*.csproj"
+		"${_managed_runtime_root}/Gameplay/*.cs"
+		"${_managed_runtime_root}/Gameplay/*.csproj"
 	)
 	file(GLOB _managed_entity_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEntity/Managed/VisionGal.Managed.Entity/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedEntity/Managed/VisionGal.Managed.Entity/*.csproj"
+		"${_managed_runtime_root}/Entity/*.cs"
+		"${_managed_runtime_root}/Entity/*.csproj"
 	)
 	file(GLOB _managed_runtimeloop_sources CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/*.cs"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../VGManagedRuntimeLoop/Managed/VisionGal.Managed.RuntimeLoop/*.csproj"
+		"${_managed_runtime_root}/RuntimeLoop/*.cs"
+		"${_managed_runtime_root}/RuntimeLoop/*.csproj"
 	)
 
-	# 自定义构建命令：编译并发布 VisionGal.Managed.Runtime 托管程序集，用于VGManagedHost测试
+	# 自定义构建命令：编译并发布 NevernessRuntimeManaged-Runtime 托管程序集，用于 VGManagedHost 测试
 	add_custom_command(
 		# 输出标记文件，用于标识发布操作已完成，避免重复执行
 		OUTPUT "${VISIONGAL_MANAGED_PUBLISH_DIR}/.visiongal_managed_publish_stamp"
@@ -142,7 +140,7 @@ if (VISIONGAL_DOTNET_EXECUTABLE)
 			${_managed_scripting_sources} ${_managed_gameplay_sources} ${_managed_entity_sources}
 			${_managed_runtimeloop_sources}
 		# 构建时控制台输出提示信息
-		COMMENT "Publishing VisionGal.Managed.Runtime for VGManagedHost tests"
+		COMMENT "Publishing NevernessRuntimeManaged-Runtime for VGManagedHost tests"
 		# 严格按字面执行命令，不进行CMake自动转义处理
 		VERBATIM
 	)

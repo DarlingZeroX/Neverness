@@ -1,6 +1,6 @@
-using VisionGal.Managed.Reflection;
+﻿using Neverness.Managed.Reflection;
 
-namespace VisionGal.Managed.Inspector;
+namespace Neverness.Managed.Inspector;
 
 /// <summary>
 /// Inspector 視圖模型：綁定目標物件與其 <see cref="TypeMetadata"/> 可編輯屬性清單。

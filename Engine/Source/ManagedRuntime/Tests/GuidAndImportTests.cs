@@ -1,6 +1,6 @@
-using VisionGal.Managed.Assets;
+﻿using Neverness.Managed.Assets;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>資產 GUID 與匯入管線單元測試（無 CoreCLR Host）。</summary>
 public sealed class GuidAndImportTests

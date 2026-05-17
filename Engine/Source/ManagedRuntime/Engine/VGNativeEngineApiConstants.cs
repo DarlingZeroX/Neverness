@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Engine;
+﻿namespace Neverness.Managed.Engine;
 
 /// <summary>
 /// 與 Native <c>VG_NATIVE_ENGINE_API_LAYOUT_VERSION</c>（<c>EngineAPIRegistry.h</c>）數值一致；託管讀表前必須相等，否則 <see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 拒絕快取。

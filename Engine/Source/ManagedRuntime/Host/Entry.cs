@@ -1,18 +1,18 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using VisionGal.Managed.Assets;
-using VisionGal.Managed.Core;
-using VisionGal.Managed.Engine;
-using VisionGal.Managed.Engine.Runtime;
-using VisionGal.Managed.Gameplay;
-using VisionGal.Managed.Object;
-using VisionGal.Managed.Scene;
+using Neverness.Managed.Assets;
+using Neverness.Managed.Core;
+using Neverness.Managed.Engine;
+using Neverness.Managed.Engine.Runtime;
+using Neverness.Managed.Gameplay;
+using Neverness.Managed.Object;
+using Neverness.Managed.Scene;
 
-namespace VisionGal.Managed.Runtime;
+namespace Neverness.Managed.Runtime;
 
 /// <summary>
 /// Phase 1–6：供 Native 透過 <c>load_assembly_and_get_function_pointer</c> 解析之 <c>[UnmanagedCallersOnly]</c> 匯出入口；
-/// 執行期程式集透過專案參考納入 <b>VisionGal.Managed.Gameplay</b>（含 <see cref="BootstrapGameplay"/> 之 Phase 6 演練）。
+/// 執行期程式集透過專案參考納入 <b>Neverness.Managed.Gameplay</b>（含 <see cref="BootstrapGameplay"/> 之 Phase 6 演練）。
 /// </summary>
 public static class Entry
 {
@@ -61,7 +61,7 @@ public static class Entry
 	public static void BootstrapNativeApi(nint nativeApiTable)
 	{
 		NativeApiBootstrap.Install(nativeApiTable);
-		NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapNativeApi -> Native LogInfo (Phase2 ABI)"u8);
+		NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapNativeApi -> Native LogInfo (Phase2 ABI)"u8);
 		BootstrapNativeApiCompleted = NativeApiBootstrap.IsInstalled;
 
 		EngineNativeApiBootstrap.InstallFromNativeApiTable(nativeApiTable);
@@ -81,12 +81,12 @@ public static class Entry
 		AssetDatabase.ClearForTesting();
 
 		// 經 LifetimeSystem 建立 SceneEntity 並註冊；若 Engine ABI 已安裝則稍後以 IsAlive 驗證 Native 控制代碼。
-		var entity = LifetimeSystem.CreateAndRegister<VisionGal.Managed.Scene.SceneEntity>("SceneEntity");
+		var entity = LifetimeSystem.CreateAndRegister<Neverness.Managed.Scene.SceneEntity>("SceneEntity");
 		entity.DisplayName = "BootstrapEntity";
 
 		var nativeObjectOk = !EngineNativeApiBootstrap.IsInstalled || NativeHandleBridge.IsAlive(entity.Handle);
 
-		var scene = new VisionGal.Managed.Scene.Scene("BootstrapScene");
+		var scene = new Neverness.Managed.Scene.Scene("BootstrapScene");
 		scene.AddEntity(entity);
 
 		// 場景 JSON 往返：僅驗證 DTO 與託管屬性一致，不涉及再水合。
@@ -98,7 +98,7 @@ public static class Entry
 		ObjectRegistry.ClearForTesting();
 		AssetDatabase.ClearForTesting();
 
-		var rehydratedScene = VisionGal.Managed.Scene.SceneRehydrator.RestoreFromJsonWithEntities(json);
+		var rehydratedScene = Neverness.Managed.Scene.SceneRehydrator.RestoreFromJsonWithEntities(json);
 		var rehydratedEntity = rehydratedScene?.Entities.Count == 1 ? rehydratedScene.Entities[0] : null;
 		var sceneRehydrationOk =
 			rehydratedScene != null &&
@@ -122,8 +122,8 @@ public static class Entry
 
 		NativeApiBootstrap.LogInfoUtf8(
 			BootstrapEngineFoundationCompleted
-				? "VisionGal.Managed.Runtime BootstrapEngineFoundation OK (Phase5)"u8
-				: "VisionGal.Managed.Runtime BootstrapEngineFoundation FAILED"u8);
+				? "Neverness.Managed.Runtime BootstrapEngineFoundation OK (Phase5)"u8
+				: "Neverness.Managed.Runtime BootstrapEngineFoundation FAILED"u8);
 	}
 
 	/// <summary>
@@ -140,13 +140,13 @@ public static class Entry
 		var json = store.ToJson();
 		if (!GameplayVariableStore.TryParseFromJson(json, out var roundTrip) || roundTrip is null)
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (json round-trip)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (json round-trip)"u8);
 			return;
 		}
 
 		if (!roundTrip.TryGet("gpBootstrap", out var v0) || v0 is not bool b0 || b0)
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (json value)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (json value)"u8);
 			return;
 		}
 
@@ -157,7 +157,7 @@ public static class Entry
 		const string expectedRehydratedTitle = "GameplayBootstrapEntity";
 		var preloadEntity = LifetimeSystem.CreateAndRegister<SceneEntity>("SceneEntity");
 		preloadEntity.DisplayName = expectedRehydratedTitle;
-		var preloadScene = new VisionGal.Managed.Scene.Scene("GameplayBootstrapScene");
+		var preloadScene = new Neverness.Managed.Scene.Scene("GameplayBootstrapScene");
 		preloadScene.AddEntity(preloadEntity);
 		var sceneJson = preloadScene.ToJson();
 
@@ -171,24 +171,24 @@ public static class Entry
 				new RehydrateSceneSequenceStep(sceneJson),
 				new SyncFirstEntityDisplayNameToVariableSequenceStep("rehydratedTitle"),
 				new SetVariableSequenceStep("gpBootstrap", true),
-				new PresentDialogueSequenceStep(0, "VisionGal.Managed.Runtime BootstrapGameplay (Phase6)"),
+				new PresentDialogueSequenceStep(0, "Neverness.Managed.Runtime BootstrapGameplay (Phase6)"),
 			});
 
 		if (!runner.Run(roundTrip))
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (sequence)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (sequence)"u8);
 			return;
 		}
 
 		if (!roundTrip.TryGet("gpBootstrap", out var v1) || v1 is not bool b1 || !b1)
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (variable)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (variable)"u8);
 			return;
 		}
 
 		if (!roundTrip.TryGet("rehydratedTitle", out var titleObj) || titleObj is not string title || title != expectedRehydratedTitle)
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (scene sync)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (scene sync)"u8);
 			return;
 		}
 
@@ -197,32 +197,32 @@ public static class Entry
 		var sessionJson = sessionSnapshot.ToJson();
 		if (!GameplaySessionSnapshot.TryParseFromJson(sessionJson, out var restoredSession) || restoredSession is null)
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session snapshot parse)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (session snapshot parse)"u8);
 			return;
 		}
 
 		if (restoredSession.SceneJson != sceneJson)
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session sceneJson)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (session sceneJson)"u8);
 			return;
 		}
 
 		var applied = new GameplayVariableStore();
 		if (!restoredSession.ApplyTo(applied))
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session ApplyTo)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (session ApplyTo)"u8);
 			return;
 		}
 
 		if (!applied.TryGet("gpBootstrap", out var v2) || v2 is not bool b2 || !b2 ||
 		    !applied.TryGet("rehydratedTitle", out var t2) || t2 is not string s2 || s2 != expectedRehydratedTitle)
 		{
-			NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay FAILED (session variables)"u8);
+			NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay FAILED (session variables)"u8);
 			return;
 		}
 
 		BootstrapGameplayCompleted = true;
-		NativeApiBootstrap.LogInfoUtf8("VisionGal.Managed.Runtime BootstrapGameplay OK (Phase6)"u8);
+		NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Runtime BootstrapGameplay OK (Phase6)"u8);
 	}
 
 	/// <summary>

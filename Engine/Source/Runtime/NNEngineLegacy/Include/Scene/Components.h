@@ -16,7 +16,7 @@
 #include "../Render/Transition.h"
 #include "../Engine/AudioPlayer.h"
 #include "../Engine/VideoPlayer.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeRmlui/Interface/UIDocument.h"
 #include "NNRuntimeCore/Interface/SceneInterface.h"
 #include "NNRuntimeCore/Interface/GameInterface.h"
@@ -92,7 +92,7 @@ namespace NN::Runtime {
 				}
 				else
 				{
-					archive(cereal::make_nvp("m_SpriteTexturePath", Core::GetDefaultSpriteTexturePath()));
+					archive(cereal::make_nvp("m_SpriteTexturePath", RuntimeCore::GetDefaultSpriteTexturePath()));
 				}
 			}
 			else

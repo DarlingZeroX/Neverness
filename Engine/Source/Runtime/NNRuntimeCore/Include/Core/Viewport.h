@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Events.h"
-#include "Core.h"
+#include "RuntimeCore.h"
 #include "../../Interface/GameInterface.h"
 //#include "../Graphics/Interface/Texture.h"
 #include <NNRuntimeRHI/Interface/Texture.h>
@@ -63,7 +63,7 @@ namespace NN::Runtime
 		}
 	};
 
-	class VG_CORE_API Viewport: public IViewport
+	class NN_RUNTIME_CORE_API Viewport: public IViewport
 	{
 	public:
 		Viewport() = default;

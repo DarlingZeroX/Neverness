@@ -34,7 +34,7 @@
 #include <RmlUi/Core/ElementDocument.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Debugger.h>
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 
 //static Rml::UniquePtr<ShellFileInterface> file_interface;
 static Rml::UniquePtr<UIFileInterfaceVFS> file_interface;
@@ -63,7 +63,7 @@ void Shell::Shutdown()
 
 void Shell::LoadFonts()
 {
-	const Rml::String directory = NN::Runtime::Core::GetEngineResourcePathVFS() + "fonts/";
+	const Rml::String directory = NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/";
 
 	struct FontFace {
 		const char* filename;

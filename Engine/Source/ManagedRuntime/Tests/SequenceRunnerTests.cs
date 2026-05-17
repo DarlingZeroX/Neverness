@@ -1,10 +1,10 @@
-using VisionGal.Managed.Engine;
-using VisionGal.Managed.Gameplay;
-using VisionGal.Managed.Object;
-using SceneModel = VisionGal.Managed.Scene.Scene;
-using VisionGal.Managed.Scene;
+﻿using Neverness.Managed.Engine;
+using Neverness.Managed.Gameplay;
+using Neverness.Managed.Object;
+using SceneModel = Neverness.Managed.Scene.Scene;
+using Neverness.Managed.Scene;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>Phase 6：<see cref="SequenceRunner"/> 與步驟之託管行為（含場景再水合聯動）。</summary>
 public sealed class SequenceRunnerTests

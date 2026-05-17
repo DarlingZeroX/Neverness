@@ -12,7 +12,7 @@
 #pragma once
 #include "EngineInterface.h"
 #include "SceneInterface.h"
-#include "../Include/Core/Core.h"
+#include "../Include/Core/RuntimeCore.h"
 #include <NNPlatformCore/Include/WindowInterface.h>
 
 namespace NN::Runtime

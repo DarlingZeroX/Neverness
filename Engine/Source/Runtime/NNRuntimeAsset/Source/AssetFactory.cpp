@@ -101,7 +101,7 @@ namespace NN::Runtime
 		Ref<UIDocumentAsset> asset = MakeRef<UIDocumentAsset>();
 
 		// 获取UI模版文档
-		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/document.html";
+		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/document.html";
 
 		String templateText;
 		if ( VFS::ReadTextFromFile(templatePath, templateText))
@@ -137,7 +137,7 @@ namespace NN::Runtime
 		Ref<UICssAsset> asset = MakeRef<UICssAsset>();
 
 		// 获取UI模版文档
-		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/style.css";
+		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/style.css";
 		String templateText;
 
 		if (VFS::ReadTextFromFile(templatePath, templateText))
@@ -173,7 +173,7 @@ namespace NN::Runtime
 		Ref<LuaScriptAsset> asset = MakeRef<LuaScriptAsset>();
 
 		// 获取UI模版文档
-		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/luaScript.lua";
+		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/luaScript.lua";
 		String templateText;
 
 		if (VFS::ReadTextFromFile(templatePath, templateText))
@@ -209,7 +209,7 @@ namespace NN::Runtime
 		Ref<GalGameLuaScriptAsset> asset = MakeRef<GalGameLuaScriptAsset>();
 
 		// 获取UI模版文档
-		String templatePath = Core::GetEngineResourcePathVFS() + "asset/template/galgameStoryScript.lua";
+		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/galgameStoryScript.lua";
 		String templateText;
 
 		if (VFS::ReadTextFromFile(templatePath, templateText))

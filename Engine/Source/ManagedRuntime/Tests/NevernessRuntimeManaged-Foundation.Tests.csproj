@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-Foundation.Tests</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RootNamespace>VisionGal.Managed.Foundation.Tests</RootNamespace>
+    <RootNamespace>Neverness.Managed.Foundation.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
@@ -16,13 +17,13 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\VGManagedAssets\Managed\VisionGal.Managed.Assets\VisionGal.Managed.Assets.csproj" />
-    <ProjectReference Include="..\..\VGManagedObject\Managed\VisionGal.Managed.Object\VisionGal.Managed.Object.csproj" />
-    <ProjectReference Include="..\..\VGManagedReflection\Managed\VisionGal.Managed.Reflection\VisionGal.Managed.Reflection.csproj" />
-    <ProjectReference Include="..\..\VGManagedRuntimeLoop\Managed\VisionGal.Managed.RuntimeLoop\VisionGal.Managed.RuntimeLoop.csproj" />
-    <ProjectReference Include="..\..\VGManagedScene\Managed\VisionGal.Managed.Scene\VisionGal.Managed.Scene.csproj" />
-    <ProjectReference Include="..\..\VGManagedSerialization\Managed\VisionGal.Managed.Serialization\VisionGal.Managed.Serialization.csproj" />
-    <ProjectReference Include="..\..\VGManagedGameplay\Managed\VisionGal.Managed.Gameplay\VisionGal.Managed.Gameplay.csproj" />
-    <ProjectReference Include="..\..\VGManagedEntity\Managed\VisionGal.Managed.Entity\VisionGal.Managed.Entity.csproj" />
+    <ProjectReference Include="..\Assets\NevernessRuntimeManaged-Assets.csproj" />
+    <ProjectReference Include="..\Object\NevernessRuntimeManaged-Object.csproj" />
+    <ProjectReference Include="..\Reflection\NevernessRuntimeManaged-Reflection.csproj" />
+    <ProjectReference Include="..\RuntimeLoop\NevernessRuntimeManaged-RuntimeLoop.csproj" />
+    <ProjectReference Include="..\Scene\NevernessRuntimeManaged-Scene.csproj" />
+    <ProjectReference Include="..\Serialization\NevernessRuntimeManaged-Serialization.csproj" />
+    <ProjectReference Include="..\Gameplay\NevernessRuntimeManaged-Gameplay.csproj" />
+    <ProjectReference Include="..\Entity\NevernessRuntimeManaged-Entity.csproj" />
   </ItemGroup>
 </Project>

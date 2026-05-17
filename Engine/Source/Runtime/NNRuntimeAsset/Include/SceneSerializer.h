@@ -11,7 +11,7 @@
 
 #pragma once
 #include "NNRuntimeAsset/Interface/ISceneSerializer.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include <NNCore/Interface/HSerialization.h>
 
 namespace NN::Runtime

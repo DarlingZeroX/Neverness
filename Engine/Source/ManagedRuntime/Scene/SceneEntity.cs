@@ -1,8 +1,8 @@
-using VisionGal.Managed.Engine;
-using VisionGal.Managed.Object;
-using VisionGal.Managed.Reflection;
+﻿using Neverness.Managed.Engine;
+using Neverness.Managed.Object;
+using Neverness.Managed.Reflection;
 
-namespace VisionGal.Managed.Scene;
+namespace Neverness.Managed.Scene;
 
 /// <summary>
 /// 場景實體：託管 <see cref="VGObject"/> 衍生，具可序列化顯示名稱。

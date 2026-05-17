@@ -12,7 +12,7 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "Texture2D.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeCore/Interface/RenderInterface.h"
 #include <NNRuntimeRHI/Interface/VGFX.h>
 #include <NNCore/Interface/HVector.h>

@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Gameplay;
+﻿namespace Neverness.Managed.Gameplay;
 
 /// <summary>
 /// Phase 6 slice 5：描述 <see cref="SequenceRunner.Advance"/> 单次调用后的推进类别。

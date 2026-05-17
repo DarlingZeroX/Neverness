@@ -39,8 +39,8 @@ namespace NN::Runtime
 		}
 
 		m_EditorScene = m_CurrentScene;
-		SaveScene(dynamic_cast<Scene*>(m_CurrentScene.get()),  Core::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
-		LoadScene(Core::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
+		SaveScene(dynamic_cast<Scene*>(m_CurrentScene.get()),  RuntimeCore::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
+		LoadScene(RuntimeCore::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
 
 		return true;
 	}

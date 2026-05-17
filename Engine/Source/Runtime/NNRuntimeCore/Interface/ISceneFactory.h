@@ -29,7 +29,7 @@ namespace NN::Runtime
 		virtual IGameActor* CreateActor(IScene* scene, const String& type, IEntity* parent = nullptr) = 0;
 	};
 
-	class VG_CORE_API SceneFactoryRegistry
+	class NN_RUNTIME_CORE_API SceneFactoryRegistry
 	{
 	public:
 		static void Register(ISceneFactory* factory);
@@ -42,7 +42,7 @@ namespace NN::Runtime
 		ISceneFactory* m_Factory = nullptr;
 	};
 
-	class VG_CORE_API GameActorFactoryRegistry
+	class NN_RUNTIME_CORE_API GameActorFactoryRegistry
 	{
 	public:
 		static void Register(IGameActorFactory* factory);

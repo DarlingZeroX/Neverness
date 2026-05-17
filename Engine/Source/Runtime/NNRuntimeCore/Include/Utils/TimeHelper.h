@@ -12,11 +12,11 @@
 #pragma once
 #include <chrono>
 #include <functional>
-#include "../../VGCoreConfig.h"
+#include "../../RuntimeCoreExport.h"
 
 namespace NN::Runtime
 {
-	struct VG_CORE_API TimeHelper
+	struct NN_RUNTIME_CORE_API TimeHelper
 	{
 		static std::string FloatToTimeFormatSprintf(float secondsFloat);
 	};

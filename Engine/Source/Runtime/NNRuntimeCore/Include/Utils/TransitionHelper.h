@@ -12,11 +12,11 @@
 #pragma once
 #include <chrono>
 #include <functional>
-#include "../../VGCoreConfig.h"
+#include "../../RuntimeCoreExport.h"
 
 namespace NN::Runtime
 {
-	class VG_CORE_API TransitionHelper {
+	class NN_RUNTIME_CORE_API TransitionHelper {
 	public:
 		TransitionHelper();
 		TransitionHelper(float durationSeconds, std::function<void()> onComplete = nullptr);			// 构造函数：传入总时长和转场完成后的回调函数

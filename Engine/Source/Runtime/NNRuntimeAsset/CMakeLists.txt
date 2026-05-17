@@ -1,7 +1,6 @@
 # CMakeList.txt: GalEngine 的 CMake 项目，在此处包括源代码并定义
 # 项目特定的逻辑。
 #
-# 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -17,45 +16,46 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
+add_library(NevernessRuntime-Asset SHARED)
 
-# 设置 C++ 标准为 C++17
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-
-# 开启utf-8编码支持
-if (MSVC)
-    add_compile_options(/utf-8)
-endif()
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
-endif()
-
-# 将源代码添加到此项目的可执行文件。
-file(GLOB HCORE_INTERFACE_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
+target_sources(NevernessRuntime-Asset
+  PRIVATE
+    Include/AudioAsset.h
+    Include/GalGameAsset.h
+    Include/LuaScriptAsset.h
+    Include/SceneAsset.h
+    Include/SceneSerializer.h
+    Include/TextureAsset.h
+    Include/UIAsset.h
+    Include/VideoAsset.h
+    Interface/AssetFactory.h
+    Interface/AssetManager.h
+    Interface/AudioClip.h
+    Interface/ISceneSerializer.h
+    Interface/Package.h
+    Interface/SceneAccessor.h
+    Interface/SceneSerializerFactory.h
+    Interface/VideoClip.h
+    Source/AssetFactory.cpp
+    Source/AssetManager.cpp
+    Source/AudioAsset.cpp
+    Source/AudioClip.cpp
+    Source/GalGameAsset.cpp
+    Source/LuaScriptAsset.cpp
+    Source/Package.cpp
+    Source/SceneAccessor.cpp
+    Source/SceneSerializer.cpp
+    Source/SceneSerializerFactory.cpp
+    Source/TextureAsset.cpp
+    Source/UIAsset.cpp
+    Source/VideoAsset.cpp
+    Source/VideoClip.cpp
 )
 
-file(GLOB HCORE_HEADER_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-)
-
-file(GLOB HCORE_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-)
-
-# 库
-add_library (NevernessRuntime-Asset SHARED ${HCORE_INTERFACE_FILES} ${HCORE_HEADER_FILES} ${HCORE_SRC_FILES})
-
-# 仅对动态库目标定义 CORE_MODULE_EXPORT
 target_compile_definitions(NevernessRuntime-Asset PRIVATE VG_ASSET_EXPORT)
 
-# 添加头文件搜索路径
 target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Kernel)
+target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(NevernessRuntime-Asset PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-Asset PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 

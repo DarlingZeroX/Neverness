@@ -12,7 +12,7 @@
 #pragma once
 #include "NNRuntimeAsset/Include/SceneAsset.h"
 //#include "../../Scene/Components.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include <NNCore/Interface/HSerialization.h>
 
 namespace NN::Runtime

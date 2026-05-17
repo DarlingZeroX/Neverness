@@ -100,7 +100,7 @@ namespace NN::Runtime
 
 			if (tex == nullptr)
 			{
-				auto tex = LoadObject<Texture2D>(Core::GetDefaultSpriteTexturePath());
+				auto tex = LoadObject<Texture2D>(RuntimeCore::GetDefaultSpriteTexturePath());
 
 				if (tex == nullptr)
 				{
@@ -113,7 +113,7 @@ namespace NN::Runtime
 		}
 		else
 		{
-			auto tex = LoadObject<Texture2D>(Core::GetDefaultSpriteTexturePath());
+			auto tex = LoadObject<Texture2D>(RuntimeCore::GetDefaultSpriteTexturePath());
 			com.sprite = Sprite::Create(tex, tex->Size());
 		}
 

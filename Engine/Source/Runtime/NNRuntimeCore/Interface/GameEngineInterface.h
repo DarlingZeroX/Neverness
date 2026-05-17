@@ -12,7 +12,7 @@
 #pragma once
 #include "GameInterface.h"
 #include "SceneInterface.h"
-#include "../Include/Core/Core.h"
+#include "../Include/Core/RuntimeCore.h"
 #include "../Include/Core/Viewport.h"
 #include <NNPlatformCore/Include/SDL3/SDL3Window.h>
 //#include "../Graphics/OpenGL/RenderTarget.h"

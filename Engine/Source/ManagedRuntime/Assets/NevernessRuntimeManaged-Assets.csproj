@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-Assets</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <RootNamespace>VisionGal.Managed.Assets</RootNamespace>
+    <RootNamespace>Neverness.Managed.Assets</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\VGManagedObject\Managed\VisionGal.Managed.Object\VisionGal.Managed.Object.csproj" />
-    <ProjectReference Include="..\..\..\VGManagedEngine\Managed\VisionGal.Managed.Engine\VisionGal.Managed.Engine.csproj" />
+    <ProjectReference Include="..\Object\NevernessRuntimeManaged-Object.csproj" />
+    <ProjectReference Include="..\Engine\NevernessRuntimeManaged-Engine.csproj" />
   </ItemGroup>
 </Project>

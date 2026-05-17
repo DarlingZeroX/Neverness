@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../../Config.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "CodeDocument.h"
 #include "DocumentManager.h"
 #include "../../Interface/UIInterface.h"

@@ -1,34 +1,35 @@
-# HFileSystem — 文件系统动态库
+# NNFileSystem — 文件系统动态库
+
+> 曾用名：**HFileSystem**；CMake 目标 **`NevernessCore-FileSystem`**。
 
 ## 1. 定位与边界
 
 | 项目 | 说明 |
 |------|------|
-| **职责** | 提供虚拟文件系统、打包头、生成器钩子等与 **文件 IO** 强相关的运行时实现；与 **HCorePlatform** 共享相似的 **Interface/Include 布局**（见 CMake `file(GLOB)`）。 |
-| **不负责** | 不负责窗口与输入（**HCorePlatform**）；不负责引擎资源业务类型（**VGAsset**）。 |
-| **CMake 目标** | `HFileSystem`（`SHARED`） |
-| **依赖** | `HCore`（**PUBLIC**）。 |
-| **宏** | `H_FILE_SYSTEM_EXPORT`（私有编译定义，用于 DLL 导出装饰）。 |
-| **典型消费者** | **VGCore**、**VGUI**、**VGAsset**、**VGEngine**。 |
+| **职责** | 提供虚拟文件系统、打包头、生成器钩子等与 **文件 IO** 强相关的运行时实现。 |
+| **不负责** | 不负责窗口与输入（**NNPlatformCore**）；不负责引擎资源业务类型（**NNRuntimeAsset**）。 |
+| **CMake 目标** | `NevernessCore-FileSystem`（`SHARED`） |
+| **依赖** | `NevernessCore-Core`（**PUBLIC**）。 |
+| **宏** | `H_FILE_SYSTEM_EXPORT`（历史宏名） |
+| **典型消费者** | **NevernessRuntime-Core**、**NevernessRuntime-RmlUI**、**NevernessRuntime-Asset**、**NevernessRuntime-EngineLegacy**。 |
 
 ---
 
 ## 2. 构建与选项
 
-- 包含目录：**PUBLIC** `Engine/Source/Kernel`（`VISIONGAL_KERNEL_ROOT`）、`Include`、`Interface`。
-- 与 **HCorePlatform** 的源码清单模式同源（CMake 中复用 `HCORE_INTERFACE_FILES` 等变量命名）；以 [`CMakeLists.txt`](../CMakeLists.txt) 为准。
+- 包含目录：**PUBLIC** `Engine/Source/Core`（`VISIONGAL_KERNEL_ROOT`）、`Include`、`Interface`。
 
 ---
 
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Kernel/HFileSystem/
+Engine/Source/Core/NNFileSystem/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
 ├── Interface/
-├── Include/                   ← FileWatcher、NativeFileDialog、Input 等与平台树同源布局
+├── Include/
 └── Source/
 ```
 
@@ -39,14 +40,10 @@ Engine/Source/Kernel/HFileSystem/
 ### 4.1 链接与包含
 
 ```cpp
-#include <HFileSystem/Interface/HVirtualFileSystem.h>
+#include <NNFileSystem/Interface/HVirtualFileSystem.h>
 ```
 
-链接 **`HFileSystem`** 时继承 **`HCore`** 的 **PUBLIC** 传递依赖。
-
-### 4.2 与 HCorePlatform 的差异
-
-二者 CMake 列表结构相近，但 **目标名与导出宏不同**；应用层应 **只链接所需目标**，避免符号与 DLL 边界混淆。
+链接 **`NevernessCore-FileSystem`** 时继承 **`NevernessCore-Core`** 的 **PUBLIC** 传递依赖。
 
 ---
 
@@ -65,12 +62,13 @@ Engine/Source/Kernel/HFileSystem/
 
 | 日期 | 进展 |
 |------|------|
+| 2026-05-17 | 文档与 **NN/Neverness** 命名对齐（无行为变更）。 |
 | 2026-05-15 | 文档首版。 |
 
 ---
 
 ## 7. 相关链接
 
-- [Kernel 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
+- [Core 总览](../../KERNEL_ARCHITECTURE_AND_PROGRESS.md)
 - [Runtime 总览](../../../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
-- [HCore](../HCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [NNCore](../NNCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

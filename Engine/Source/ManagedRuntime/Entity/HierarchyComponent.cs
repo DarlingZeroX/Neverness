@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Entity;
+﻿namespace Neverness.Managed.Entity;
 
 /// <summary>
 /// 父子層級資料：以 <see cref="Parent"/> 指向父實體；根節點使用 <see cref="EntityHandle.Invalid"/>。

@@ -1,7 +1,7 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.Loader;
 
-namespace VisionGal.Managed.Scripting;
+namespace Neverness.Managed.Scripting;
 
 /// <summary>
 /// 隔離式 <see cref="AssemblyLoadContext"/> 宿主：載入遊戲腳本程序集而不污染預設上下文。

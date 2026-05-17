@@ -1,7 +1,7 @@
-using System.Text.Json;
-using VisionGal.Managed.Reflection;
+﻿using System.Text.Json;
+using Neverness.Managed.Reflection;
 
-namespace VisionGal.Managed.Serialization;
+namespace Neverness.Managed.Serialization;
 
 /// <summary>
 /// 場景描述資料之 JSON 序列化/反序列化（基於 <see cref="System.Text.Json"/>）。
@@ -76,7 +76,7 @@ public static class SceneSerializer
 	/// <summary>
 	/// 將 <see cref="SceneEntityEntry.Properties"/> 內之 JSON 值寫回已存在之託管實例（依 <see cref="ReflectionRegistry"/> 可序列化成員清單）。
 	/// </summary>
-	/// <param name="instance">目標物件（通常為 <see cref="VisionGal.Managed.Object.VGObject"/> 衍生）。</param>
+	/// <param name="instance">目標物件（通常為 <see cref="Neverness.Managed.Object.VGObject"/> 衍生）。</param>
 	/// <param name="entry">含屬性字典之實體條目。</param>
 	/// <remarks>
 	/// 僅處理 metadata 中已登記之屬性名；條目中多餘或未知鍵會略過；缺少之可選鍵不拋出例外。

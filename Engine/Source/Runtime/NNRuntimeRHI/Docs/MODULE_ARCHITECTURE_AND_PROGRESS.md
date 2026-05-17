@@ -1,20 +1,22 @@
-# VGRHI — 渲染硬件抽象（OpenGL）
+# NNRuntimeRHI — 渲染硬件抽象（OpenGL）
+
+> 曾用名：**VGRHI**；CMake 目标 **`NevernessRuntime-RHI`**；C++ 命名空间 **`NN::Runtime`**。
 
 ## 1. 定位与边界
 
 | 项目 | 说明 |
 |------|------|
 | **职责** | 提供 OpenGL 侧 **设备、网格、纹理、着色器、渲染目标** 等抽象接口（`Interface/`）；实现位于 `Source/OpenGL/` 等子目录。 |
-| **不负责** | 不负责游戏帧循环与场景裁剪（见 **VGEngine**）；不负责 ImGui 即时模式封装（见 **VGImgui**）。 |
-| **CMake 目标** | `VGRHI`（`SHARED` 或依 CMake 配置，以 [`CMakeLists.txt`](../CMakeLists.txt) 为准） |
-| **依赖** | `HCore`（PRIVATE）；平台 OpenGL 加载在消费者或本模块内链接。 |
-| **典型消费者** | **VGCore**、**VGUI**、**VGEngine**。 |
+| **不负责** | 不负责游戏帧循环与场景裁剪（见 **NNEngineLegacy**）；不负责 ImGui 即时模式封装（见 **NNRuntimeImGui**）。 |
+| **CMake 目标** | `NevernessRuntime-RHI`（`SHARED`，以 [`CMakeLists.txt`](../CMakeLists.txt) 为准） |
+| **依赖** | `NevernessCore-Core`（PRIVATE）；平台 OpenGL 加载在消费者或本模块内链接。 |
+| **典型消费者** | **NevernessRuntime-Core**、**NevernessRuntime-RmlUI**、**NevernessRuntime-EngineLegacy**。 |
 
 ---
 
 ## 2. 构建与选项
 
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Kernel`、`Include`、`Interface`（以 CMake 为准）。
+- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Core`、`Include`、`Interface`（以 CMake 为准）。
 - Windows 等平台通常需链接 **opengl32** 或通过 **SDL** 创建 GL 上下文（由上层协调）。
 
 ---
@@ -22,7 +24,7 @@
 ## 3. 目录结构（摘要）
 
 ```
-Engine/Source/Runtime/VGRHI/
+Engine/Source/Runtime/NNRuntimeRHI/
 ├── CMakeLists.txt
 ├── Docs/
 │   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
@@ -38,11 +40,11 @@ Engine/Source/Runtime/VGRHI/
 ### 4.1 包含方式
 
 ```cpp
-#include <VGRHI/Interface/Device.h>
-#include <VGRHI/Interface/Texture.h>
+#include "NNRuntimeRHI/Interface/Device.h"
+#include "NNRuntimeRHI/Interface/Texture.h"
 ```
 
-依赖方须将 **`Engine/Source/Runtime`** 加入包含路径（多数引擎目标已 **PRIVATE** 包含该路径），以便解析 `VGRHI/...` 前缀。
+依赖方须将 **`Engine/Source/Runtime`** 加入包含路径（多数引擎目标已 **PRIVATE** 包含该路径）。
 
 ### 4.2 线程与 GL 上下文
 
@@ -70,6 +72,7 @@ Engine/Source/Runtime/VGRHI/
 
 | 日期 | 进展 |
 |------|------|
+| 2026-05-17 | 文档与 **NN/Neverness** 命名对齐（无行为变更）。 |
 | 2026-05-15 | 文档首版：Interface 索引与线程注意点。 |
 
 ---
@@ -77,4 +80,4 @@ Engine/Source/Runtime/VGRHI/
 ## 7. 相关链接
 
 - [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
-- [VGImgui](../VGImgui/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+- [NNRuntimeImGui](../NNRuntimeImGui/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)

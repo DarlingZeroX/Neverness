@@ -1,15 +1,15 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using VisionGal.Managed.Serialization;
+using Neverness.Managed.Serialization;
 
-namespace VisionGal.Managed.Gameplay;
+namespace Neverness.Managed.Gameplay;
 
 /// <summary>
-/// Phase 6 slice 4：託管「會話／存檔快照」根 DTO——在單一 JSON 文件中組裝 <b>變數表 JSON 字串</b>（語意與 <see cref="GameplayVariableStore.ToJson"/> 一致）與可選的 <b>場景 JSON 字串</b>（語意與 <see cref="T:VisionGal.Managed.Scene.Scene.ToJson"/> 一致）。
+/// Phase 6 slice 4：託管「會話／存檔快照」根 DTO——在單一 JSON 文件中組裝 <b>變數表 JSON 字串</b>（語意與 <see cref="GameplayVariableStore.ToJson"/> 一致）與可選的 <b>場景 JSON 字串</b>（語意與 <see cref="T:Neverness.Managed.Scene.Scene.ToJson"/> 一致）。
 /// </summary>
 /// <remarks>
-/// <para>設計要點：不重複定義變數條目或場景實體之內部欄位，僅做容器與 <c>formatVersion</c>，降低與 <see cref="VisionGal.Managed.Serialization.SceneSerializer"/> 等模組漂移風險。</para>
+/// <para>設計要點：不重複定義變數條目或場景實體之內部欄位，僅做容器與 <c>formatVersion</c>，降低與 <see cref="Neverness.Managed.Serialization.SceneSerializer"/> 等模組漂移風險。</para>
 /// <para>序列化選項與全專案一致：<see cref="VersionTolerance.CreateOptions()"/>（寬鬆讀取、可忽略未知根欄位）。</para>
 /// <para><b>與 Native 存檔路線之關係</b>：當前僅託管 JSON；未來若在 <b>VGNativeEngineAPI</b> 納入 Gameplay／存檔服務表，可將本 DTO 之 <see cref="ToJson"/> 輸出作為寫入檔案之內容來源，或由 Native 僅負責路徑／slot 與錯誤碼（見總覽 <b>MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md</b> 之 <c>§5.1</c> 草案）。</para>
 /// </remarks>

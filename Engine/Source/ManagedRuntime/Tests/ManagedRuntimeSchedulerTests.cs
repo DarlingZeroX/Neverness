@@ -1,6 +1,6 @@
-using VisionGal.Managed.RuntimeLoop;
+﻿using Neverness.Managed.RuntimeLoop;
 
-namespace VisionGal.Managed.Foundation.Tests;
+namespace Neverness.Managed.Foundation.Tests;
 
 /// <summary>
 /// P0-1：<see cref="ManagedRuntimeScheduler"/> 與 Native <c>RuntimeScheduler</c> 管線順序對稱（Early → Fixed → Update → Late → Render）。

@@ -10,13 +10,13 @@
 */
 
 #include "Engine/EngineResource.h"
-#include "NNRuntimeCore/Include/Core/Core.h"
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 
 namespace NN::Runtime
 {
 	std::string EngineResource::GetDefaultSpriteTexturePath()
 	{
-		std::string path = Core::GetEngineResourcePathVFS() + "textures/white.png";
+		std::string path = RuntimeCore::GetEngineResourcePathVFS() + "textures/white.png";
 		return path;
 	}
 }

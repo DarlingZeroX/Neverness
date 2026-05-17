@@ -1,7 +1,4 @@
 # 设置 C++ 标准为 C++17
-#cmake_minimum_required(VERSION 3.10)
-#project(HMedia LANGUAGES CXX)  # 明确指定为C++项目
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -25,52 +22,65 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_NUMBER_OF_LOGICAL_CORES}>
 # 添加宏
 add_definitions(-DH_MEDIA_API_EXPORT) 
 
-# 将源代码添加到此项目的可执行文件。
-file(GLOB SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Audio/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Video/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Common/*.cpp" 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/SDL/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/FFmpeg/*.cpp"
+add_library(NevernessCore-MediaCore SHARED)
+
+target_sources(NevernessCore-MediaCore
+  PRIVATE
+    Include/Audio.h
+    Include/Audio/AudioRingBuffer.h
+    Include/Audio/FAudioDecoder.h
+    Include/Common/FFmpegIOContext.h
+    Include/Common/InMemoryRemuxer.h
+    Include/FFmpeg/FBuffer.h
+    Include/FFmpeg/FChannelLayout.h
+    Include/FFmpeg/FCodecContext.h
+    Include/FFmpeg/FCodecParameters.h
+    Include/FFmpeg/FContext.h
+    Include/FFmpeg/FDictionary.h
+    Include/FFmpeg/FFormatContext.h
+    Include/FFmpeg/FFrame.h
+    Include/FFmpeg/FIOContext.h
+    Include/FFmpeg/FPacket.h
+    Include/FFmpeg/FSwrContext.h
+    Include/FFmpeg/FSwsContext.h
+    Include/FVideo.h
+    Include/HMediaConfig.h
+    Include/SDL/SDLAudio.h
+    Include/Video/FVideoDecoder.h
+    Interface/AudioDecoderInterface.h
+    Interface/AudioInterface.h
+    Interface/VideoDecoderInterface.h
+    Interface/VideoInterface.h
+    Source/Audio.cpp
+    Source/Audio/AudioRingBuffer.cpp
+    Source/Audio/FAudioDecoder.cpp
+    Source/Common/FFmpegIOContext.cpp
+    Source/Common/InMemoryRemuxer.cpp
+    Source/FFmpeg/FBuffer.cpp
+    Source/FFmpeg/FChannelLayout.cpp
+    Source/FFmpeg/FCodecContext.cpp
+    Source/FFmpeg/FCodecParameters.cpp
+    Source/FFmpeg/FContext.cpp
+    Source/FFmpeg/FDictionary.cpp
+    Source/FFmpeg/FFormatContext.cpp
+    Source/FFmpeg/FFrame.cpp
+    Source/FFmpeg/FIOContext.cpp
+    Source/FFmpeg/FPacket.cpp
+    Source/FFmpeg/FSwrContext.cpp
+    Source/FFmpeg/FSwsContext.cpp
+    Source/FVideo.cpp
+    Source/SDL/SDLAudio.cpp
+    Source/Video/FVideoDecoder.cpp
 )
- 
-file(GLOB HEADER_FILES 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Audio/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Video/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Common/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/SDL/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/FFmpeg/*.h"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
-)
-
-# 启用预编译头支持
-#set(CMAKE_PCH_ENABLED ON)
-
-# 当前cmake C++项目为动态库
-add_library (NevernessCore-MediaCore SHARED ${SRC_FILES} ${HEADER_FILES})
 
 # 添加头文件搜索路径
 target_include_directories(NevernessCore-MediaCore PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(NevernessCore-MediaCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
-# 配置预编译头
-#target_precompile_headers(VGEngine PRIVATE
-#    "Include/pch.h"  # 项目级头文件
-#)
- 
-# 包
-#find_package(SDL3 CONFIG REQUIRED)
- 
 # FFmpeg
 find_package(FFMPEG REQUIRED)
 target_include_directories(NevernessCore-MediaCore PRIVATE ${FFMPEG_INCLUDE_DIRS})
 target_link_directories(NevernessCore-MediaCore PRIVATE ${FFMPEG_LIBRARY_DIRS})
 target_link_libraries(NevernessCore-MediaCore PRIVATE ${FFMPEG_LIBRARIES})
 
-# 链接动态库
-#target_link_libraries(NevernessCore-MediaCore PRIVATE SDL3::SDL3)
 target_link_libraries(NevernessCore-MediaCore PRIVATE NevernessCore-Core)

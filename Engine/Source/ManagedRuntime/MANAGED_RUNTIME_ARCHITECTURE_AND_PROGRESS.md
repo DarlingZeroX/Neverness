@@ -23,8 +23,8 @@
 | 代號 | 方向 | Native（目標模組／能力） | Managed（目標模組／能力） | 備註 |
 |------|------|--------------------------|---------------------------|------|
 | **P0-1** | **Runtime 排程與 Pipeline** | **RuntimeScheduler**（**VGRuntimeScheduler** 首包：**RuntimeTickGroup**、**FixedUpdate** 累加上限、**IRuntimeSubsystem**、**RuntimeFrameContext**；**EntitySubsystem** 掛 **Update**；**LateUpdate** 末 **FlushMainThreadDelegates** 占位） | **VisionGal.Managed.RuntimeLoop**（**ManagedRuntimeScheduler** 與 Native 管線對稱；無 Engine 依賴） | **layoutVersion** 不變；**`getRuntimeTick`** 語義不變。後續：更多子系統掛載、Async 主線程隊列、**RuntimePipelineBuilder** 可配置化。 |
-| **P0-2** | **VGEntitySystem 正式化** | **EntityRegistry**、**EntityStorage**、**ComponentStorage**、SparseSet、階層與啟用、生命週期、查詢視圖等 | **EntityWorld** 與 Native **雙世界策略** | **非**「全量 Native ECS + 託管鏡像」；推薦 **雙世界**：Native 側 **Runtime 實體句柄／場景／流式／Transform／渲染附掛**；託管側 **Gameplay ECS**（類 **Unreal** 中 UObject 與 Gameplay 框架分工，**非** Unity DOTS 全鏡像）。當前 **EntitySubsystem** + **§2.7.1** 為 **P0-2** 前置首包。 |
-| **P0-3** | **VGSceneRuntime** | 場景生命週期、Prefab Runtime、Streaming、World Partition、Activation、Async Loading | **VisionGal.Managed.Scene.Runtime** | 主線從 **JSON Scene DTO** 走向 **Runtime Scene**；JSON 再水合保留為工具／相容路徑。 |
+| **P0-2** | **VGEntitySystem 正式化** | **NNRuntimeScene** Phase 2–3 已落地（System、層級、**NN_FIELD** 字段反射、**VGSC** 二進制序列化；**VGEngineRuntime::EcsScene** + **Update** Tick）；後續 **SceneSubsystem** 橋接、C API | **EntityWorld** 與 Native **雙世界策略** | **非**全量鏡像；**NNEntity** 打包與 **EntityHandle** 一致，**仍無**自動同步／C# 組件綁定。**EntitySubsystem** + **§2.7.1** 為前置首包。 |
+| **P0-3** | **VGSceneRuntime** | **NNRuntimeScene** 為 Native 存儲後端（Phase 4+：**NNPrefab**／**NNSceneRuntime** Streaming）；Phase 3 二進制快照已就緒；JSON 與 **VGManagedScene** DTO 邊界分離 | **VisionGal.Managed.Scene.Runtime** | 主線從 **JSON Scene DTO** 走向 **Runtime Scene**；JSON 再水合保留為工具／相容路徑。 |
 | **P0-4** | **Managed 元件框架** | — | **VGManagedComponent**（ComponentMetadata、PropertyBag、ComponentSerializer、InspectorBinding、ComponentActivator、DefaultValuePipeline 等） | Inspector／Graph／Serialization／SaveGame／Editor 地基。 |
 | **P0-5** | **Graph Runtime（Lua 替代核心）** | **不**實作 Native Graph VM | **VisionGal.Managed.Graph.Runtime**（GraphVM、NodeExecutor、FlowScheduler、SignalBus、Async／Latent Node、變數綁定等）**100% Managed** | 統一 Dialogue、Gameplay、Event、Cutscene、狀態機；**Native 不參與**，避免重蹈 **Lua Runtime** 無限膨脹。 |
 
@@ -40,6 +40,7 @@
 ### 0.5 與本文件既有章節之關係
 
 - **§2.7.1**：**Kernel 首包**（**layout v5**、**EntitySubsystem**、**`entity.*`** 轉發）屬 **P0-2** 前置；**完整 VGEntitySystem** 與 **雙世界策略** 仍為 **P0-2** 本體與文檔化工作。
+- **Native NNRuntimeScene Phase 2–3**（2026-05-17）：見 [NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](../Runtime/NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)；字段反射與 **VGSC** 序列化首包已落地；與 **EntityHandle** 打包對齊，**不**擴展 **VGNativeEngineAPI** layout，**無** C# 自動綁定。
 - **§5.1**：Phase 6 Native（Gameplay／存檔）可與 **P0** 並行規劃，須**分別 ABI 評審**與 **layoutVersion** 同步。
 
 ---
@@ -119,13 +120,13 @@ flowchart TB
 | **8** | Hot Reload / ALC | **未開始** | **VGManagedScripting** 脚手架；生產化在 Phase 8。 |
 | **9** | VGManagedRoslyn | **未開始** | Roslyn 編譯管線。 |
 
-### 2.5 Managed Runtime 總體狀態（2026-05-15，對齊 P0 **§2.7.1 Kernel**）
+### 2.5 Managed Runtime 總體狀態（2026-05-17，對齊 P0 **§2.7.1 Kernel** + **NNRuntimeScene Phase 2–3**）
 
 | 維度 | 說明 |
 |------|------|
-| **完成度** | Phase **1–5.3** 已閉環；**Phase 6 託管子階段**（slice **2–5**：變數 JSON、場景再水合序列步、會話快照、條件分支與 **Advance** 可恢復等待；見 §2.3–§2.6.1）**已落地**；**Phase 6 整體**仍標「進行中」係因 **Native Gameplay／存檔 ABI** 尚未納表。**P0 託管 Entity** 首包與 **slice 2–5** 已納 publish 與 **Foundation.Tests**。**§2.7.1 Kernel 首包**：**`VGEntityAPI`** **layout v5**（**`getServiceAbiToken`**、**`getRuntimeTick`**）、**EntitySubsystem**、**`BuildRuntime`** 覆寫 **`entity.*`**、託管鏡像與測試已落地；完整 **VGEntitySystem**、**EntityWorld** 資料鏡像、**VGSceneRuntime**、Graph Runtime、Editor 產品化仍未完成。 |
-| **開發進展** | **VisionGal.Managed.Gameplay**／**Entity** 同上；**VisionGal.Managed.Engine**：**layout v5** 鏡像、**`VGEntityApi`**、**`EngineNativeApiBootstrap.ExerciseStubInteropPath`** 擴充 **Entity** 冒煙（含 **`GetRuntimeTick`**）；**NativeEngineApiEntityServiceTests** 校驗 **LayoutVersion** 與可選已安裝路徑；**VGNativeEngineAPI** Stub 與 **VGEngineRuntimeServices** **`BuildRuntime`** 覆寫 **`entity.*`** 轉發 **EntitySubsystem**；**VGManagedHostTest** 斷言 **layoutVersion**、魔數與（Runtime 路徑下）**`getRuntimeTick`**；各 MODULE 與 [RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§5.2** 同步。 |
-| **未完成項（索引）** | **§2.7** 表格：完整 **VGEntitySystem**、**EntityWorld**／Native **資料鏡像**、Native **Gameplay／存檔** ABI、**VGSceneRuntime**、Graph.Runtime、Editor Phase 7、GameFramework、AssetPipeline、Hot Reload／Roslyn、Lua 遷出等。（**`VGEntityAPI`** Kernel 首包見 **§2.7.1**；**第一階段 Kernel 化** 五項索引見 **§0.3**。） |
+| **完成度** | Phase **1–5.3** 已閉環；Native **[NNRuntimeScene](../Runtime/NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) Phase 2–3**（System、層級、字段反射、**VGSC** 序列化；**Engine** **Update** Tick 適配）已合入，**不**改 **VGNativeEngineAPI** layout、**不**自動同步 **EntityWorld**、**無** C# 組件自動綁定；**Phase 6 託管子階段**（slice **2–5**：變數 JSON、場景再水合序列步、會話快照、條件分支與 **Advance** 可恢復等待；見 §2.3–§2.6.1）**已落地**；**Phase 6 整體**仍標「進行中」係因 **Native Gameplay／存檔 ABI** 尚未納表。**P0 託管 Entity** 首包與 **slice 2–5** 已納 publish 與 **Foundation.Tests**。**§2.7.1 Kernel 首包**：**`VGEntityAPI`** **layout v5**（**`getServiceAbiToken`**、**`getRuntimeTick`**）、**EntitySubsystem**、**`BuildRuntime`** 覆寫 **`entity.*`**、託管鏡像與測試已落地；完整 **VGEntitySystem**、**EntityWorld** 資料鏡像、**VGSceneRuntime**、Graph Runtime、Editor 產品化仍未完成。 |
+| **開發進展** | **VisionGal.Managed.Gameplay**／**Entity** 同上；Native **NevernessRuntime-Scene** 與 [RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§5.2** 同步；**VisionGal.Managed.Engine**：**layout v5** 鏡像、**`VGEntityApi`**、**`EngineNativeApiBootstrap.ExerciseStubInteropPath`** 擴充 **Entity** 冒煙（含 **`GetRuntimeTick`**）；**NativeEngineApiEntityServiceTests** 校驗 **LayoutVersion** 與可選已安裝路徑；**VGNativeEngineAPI** Stub 與 **VGEngineRuntimeServices** **`BuildRuntime`** 覆寫 **`entity.*`** 轉發 **EntitySubsystem**；**VGManagedHostTest** 斷言 **layoutVersion**、魔數與（Runtime 路徑下）**`getRuntimeTick`**；各 MODULE 與 [RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Runtime/RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§5.2** 同步。 |
+| **未完成項（索引）** | **§2.7** 表格：完整 **VGEntitySystem**、**NNRuntimeScene** Phase 4+（**Prefab**／Streaming／**SceneSubsystem** 橋接／C API）、**EntityWorld**／Native **資料鏡像**、Native **Gameplay／存檔** ABI、**VGSceneRuntime** 產品化、Graph.Runtime、Editor Phase 7、GameFramework、AssetPipeline、Hot Reload／Roslyn、Lua 遷出等。（**`VGEntityAPI`** Kernel 首包見 **§2.7.1**；**第一階段 Kernel 化** 五項索引見 **§0.3**。） |
 | **未來規劃** | 短期：Phase 6 **Native** 子項見 **§5.1**；**P0+** 接續完整 **VGEntitySystem** 與 **EntityWorld** 資料策略實作（**不**承諾跨 ABI 自動灌入）。**第一階段 Kernel 化路線**（排程器、Scene Runtime、Graph.Runtime、Managed Component）見 **§0.3**–**§0.4**。中期：**VGSceneRuntime**、Graph、Editor；長期：ALC、Roslyn、Lua 移除。 |
 
 #### 2.5.1 P0 託管 Entity 切片（補強）

@@ -1,0 +1,123 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "NevernessRuntimeManaged-Gameplay/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Core": "1.0.0",
+          "NevernessRuntimeManaged-Engine": "1.0.0",
+          "NevernessRuntimeManaged-Scene": "1.0.0",
+          "NevernessRuntimeManaged-Serialization": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Gameplay.dll": {}
+        }
+      },
+      "NevernessRuntimeManaged-Core/1.0.0": {
+        "runtime": {
+          "NevernessRuntimeManaged-Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Engine/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Core": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Engine.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Object/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Engine": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Object.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Reflection/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Object": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Reflection.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Scene/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Object": "1.0.0",
+          "NevernessRuntimeManaged-Serialization": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Scene.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NevernessRuntimeManaged-Serialization/1.0.0": {
+        "dependencies": {
+          "NevernessRuntimeManaged-Reflection": "1.0.0"
+        },
+        "runtime": {
+          "NevernessRuntimeManaged-Serialization.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "NevernessRuntimeManaged-Gameplay/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Object/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Reflection/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Scene/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NevernessRuntimeManaged-Serialization/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

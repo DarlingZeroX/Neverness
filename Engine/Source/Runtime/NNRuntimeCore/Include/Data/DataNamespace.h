@@ -15,7 +15,7 @@
 
 namespace NN::Runtime
 {
-	class VG_CORE_API VGDataNamespace
+	class NN_RUNTIME_CORE_API VGDataNamespace
 	{
 	public:
 		sol::object GetVariableLua(const std::string& name, sol::this_state lua);

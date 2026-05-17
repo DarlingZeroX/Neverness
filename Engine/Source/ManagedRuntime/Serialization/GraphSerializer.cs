@@ -1,6 +1,6 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 
-namespace VisionGal.Managed.Serialization;
+namespace Neverness.Managed.Serialization;
 
 /// <summary>
 /// 節點圖（節點、連線、埠）之 JSON 序列化。

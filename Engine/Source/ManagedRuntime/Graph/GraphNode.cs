@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Graph;
+﻿namespace Neverness.Managed.Graph;
 
 /// <summary>
 /// 圖節點：具唯一 Id、型別名與平面座標。

@@ -1,4 +1,4 @@
-namespace VisionGal.Managed.Reflection;
+﻿namespace Neverness.Managed.Reflection;
 
 /// <summary>
 /// 快取 <see cref="Type"/> → <see cref="TypeMetadata"/>，避免重複反射掃描。

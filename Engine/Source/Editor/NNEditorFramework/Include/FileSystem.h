@@ -12,7 +12,7 @@
 #pragma once
 #include "../Config.h"
 #include "NNEditorFramework/Include/EditorCore/ContentBrowser.h"
-#include <NNRuntimeCore/Include/Core\Core.h>
+#include <NNRuntimeCore/Include/Core\RuntimeCore.h>
 //#include "NNRuntimeAsset/Include/HAsset.h"
 
 namespace NN::Editor {

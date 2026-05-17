@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>NevernessRuntimeManaged-UndoRedo</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <RootNamespace>VisionGal.Managed.UndoRedo</RootNamespace>
+    <RootNamespace>Neverness.Managed.UndoRedo</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\VGManagedEditor\Managed\VisionGal.Managed.Editor\VisionGal.Managed.Editor.csproj" />
+    <ProjectReference Include="..\..\ManagedEditor\VGManagedEditor\Managed\VisionGal.Managed.Editor\VisionGal.Managed.Editor.csproj" />
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "NNNativeEngineAPI/NativeEngineAPI.h"
+#include "NativeEngineAPI.h"
 
 namespace
 {

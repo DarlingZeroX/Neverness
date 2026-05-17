@@ -44,12 +44,72 @@ if (POLICY CMP0141)
 endif()
 
 ############ 设置输出目录
-# 设置静态库文件目录
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-# 动态库文件目录
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-# 可执行文件目录
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+## 设置静态库文件目录
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+## 动态库文件目录
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+## 可执行文件目录
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# ============================================
+# 全局统一输出目录（C++ / C# / CoreCLR）
+# ============================================
+
+# 最终输出根目录
+set(NN_OUTPUT_ROOT ${CMAKE_SOURCE_DIR}/Build)
+
+# --------------------------------------------
+# 默认输出目录
+# --------------------------------------------
+
+# exe / dll
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+    ${NN_OUTPUT_ROOT}/bin)
+
+# shared library (.dll/.so)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
+    ${NN_OUTPUT_ROOT}/bin)
+
+# static library (.lib/.a)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+    ${NN_OUTPUT_ROOT}/lib)
+
+# pdb
+if(MSVC)
+    set(CMAKE_PDB_OUTPUT_DIRECTORY
+        ${NN_OUTPUT_ROOT}/bin)
+endif()
+
+# --------------------------------------------
+# 多配置输出目录（Debug / Release）
+# --------------------------------------------
+
+foreach(CONFIG Debug Release RelWithDebInfo MinSizeRel)
+
+    string(TOUPPER ${CONFIG} CONFIG_UPPER)
+
+    # EXE / DLL
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER}
+        ${NN_OUTPUT_ROOT}/bin/${CONFIG})
+
+    # Shared Library
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIG_UPPER}
+        ${NN_OUTPUT_ROOT}/bin/${CONFIG})
+
+    # Static Library
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIG_UPPER}
+        ${NN_OUTPUT_ROOT}/lib/${CONFIG})
+
+    # PDB
+    if(MSVC)
+        set(CMAKE_PDB_OUTPUT_DIRECTORY_${CONFIG_UPPER}
+            ${NN_OUTPUT_ROOT}/bin/${CONFIG})
+    endif()
+
+endforeach()
+
+
+
 
 option(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES "Use VGEngineRuntimeServices for VGNativeApi engineServices (else Stub-only table)" ON)
 
@@ -95,7 +155,7 @@ if (ENABLE_TESTS)
     enable_testing()
     # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 VISIONGAL_BUILD_LEGACY_GALGAME=ON）
     # VGManagedHostTest: add_subdirectory trong VGManagedHost/CMakeLists.txt (ENABLE_TESTS + dotnet).
-    add_subdirectory("Engine/Source/Managed/Tests")
+    add_subdirectory("Engine/Source/ManagedRuntime/Tests")
       
     # add_subdirectory("Tests/VGLauncherTest")
     # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")

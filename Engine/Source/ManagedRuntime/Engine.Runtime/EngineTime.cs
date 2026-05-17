@@ -1,6 +1,6 @@
-using VisionGal.Managed.Engine;
+﻿using Neverness.Managed.Engine;
 
-namespace VisionGal.Managed.Engine.Runtime;
+namespace Neverness.Managed.Engine.Runtime;
 
 /// <summary>
 /// 透過 <see cref="EngineNativeApiBootstrap"/> 讀取之 **時間服務** 薄封裝；未安裝 ABI 時回傳零值。
