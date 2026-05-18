@@ -12,13 +12,14 @@
 #include "EditorCore/Localization.h"
 
 #include "EditorCore/EditorCore.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 
 namespace NN::Editor
 {
 	bool EditorLoadLanguage(const std::string& code)
 	{
-		Runtime::IStringStreamVFS zhcnLocalization;
+		Runtime::VFS::IStringStreamVFS zhcnLocalization;
 		zhcnLocalization.Open(EditorCore::GetEditorResourcePathVFS() + "localization/ZH_CN.txt");
 
 		if (zhcnLocalization.IsOpen())

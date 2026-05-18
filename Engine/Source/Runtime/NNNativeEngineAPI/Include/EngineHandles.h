@@ -13,18 +13,18 @@
 
 #include "NativeInterop.h"
 
-typedef std::uint64_t VGTextureHandle;
-typedef std::uint64_t VGRenderTargetHandle;
-typedef std::uint64_t VGElementHandle;
-typedef std::uint64_t VGAudioHandle;
-typedef std::uint64_t VGAssetHandle;
-typedef std::uint64_t VGAsyncWaitHandle;
+typedef std::uint64_t NNTextureHandle;
+typedef std::uint64_t NNRenderTargetHandle;
+typedef std::uint64_t NNElementHandle;
+typedef std::uint64_t NNAudioHandle;
+typedef std::uint64_t NNAssetHandle;
+typedef std::uint64_t NNAsyncWaitHandle;
 /**
  * @brief 場景實體 / Prefab 實例之不透明控制代碼（非 UI Element）。
  *
- * **邊界**：與託管 **VisionGal.Managed.Entity.EntityHandle**（純 C# ECS）語意獨立；勿與 `VGNativeEngineAPI::entity`
+ * **邊界**：與託管 **VisionGal.Managed.Entity.EntityHandle**（純 C# ECS）語意獨立；勿與 `NNNativeEngineAPI::entity`
  *（`EntityAPI.h` 子表，預留 Native ECS）混淆——後者首包僅含服務魔數校驗，本句柄仍專屬場景子系統。
  */
-typedef std::uint64_t VGEntityHandle;
+typedef std::uint64_t NNEntityHandle;
 /** @brief 託管 VGObject 與 Native 子系統對應之不透明控制代碼。 */
-typedef std::uint64_t VGObjectHandle;
+typedef std::uint64_t NNObjectHandle;

@@ -12,6 +12,7 @@
 #include "FVideo.h"
 #include <SDL3/SDL_audio.h>
 #include "Video/FVideoDecoder.h"
+#include <NNCore/Interface/HVector.h>
 
 namespace NN::Core
 {
@@ -180,7 +181,7 @@ namespace NN::Core
 		m_IsLoopPlay = loop;
 	}
 
-	bool FVideoClip::Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
+	bool FVideoClip::Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath)
 	{
 		auto decoder = MakeRef<FVideoDecoder>();
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -46,16 +46,16 @@ namespace NN::Core
 			return static_cast<int64_t>(ctx->file->Size());
 		}
 
-		vfspp::IFile::Origin origin;
+		NN::Runtime::VFS::IFile::Origin origin;
 		switch (whence) {
 		case SEEK_SET:
-			origin = vfspp::IFile::Origin::Begin;
+			origin = NN::Runtime::VFS::IFile::Origin::Begin;
 			break;
 		case SEEK_CUR:
-			origin = vfspp::IFile::Origin::Set; // 修正：Current 代表当前位置
+			origin = NN::Runtime::VFS::IFile::Origin::Set; // 修正：Current 代表当前位置
 			break;
 		case SEEK_END:
-			origin = vfspp::IFile::Origin::End;
+			origin = NN::Runtime::VFS::IFile::Origin::End;
 			break;
 		default:
 			return -1; // 不支持
@@ -75,16 +75,16 @@ namespace NN::Core
     //
     //    if (whence == SEEK_CUR) {
     //        uint64_t current = ctx->file->Tell();
-    //        return ctx->file->Seek(current + offset, vfspp::IFile::Origin::Begin);
+    //        return ctx->file->Seek(current + offset, NN::Runtime::VFS::IFile::Origin::Begin);
     //    }
     //
-    //    vfspp::IFile::Origin origin;
+    //    NN::Runtime::VFS::IFile::Origin origin;
     //    switch (whence) {
     //    case SEEK_SET:
-    //        origin = vfspp::IFile::Origin::Begin;
+    //        origin = NN::Runtime::VFS::IFile::Origin::Begin;
     //        break;
     //    case SEEK_END:
-    //        origin = vfspp::IFile::Origin::End;
+    //        origin = NN::Runtime::VFS::IFile::Origin::End;
     //        break;
     //    default:
     //        return -1;
@@ -111,16 +111,16 @@ namespace NN::Core
             return ctx->file->Size();
         }
 
-        vfspp::IFile::Origin origin;
+        NN::Runtime::VFS::IFile::Origin origin;
         switch (whence) {
         case SEEK_SET:
-            origin = vfspp::IFile::Origin::Begin;
+            origin = NN::Runtime::VFS::IFile::Origin::Begin;
             break;
         case SEEK_CUR:
-            origin = vfspp::IFile::Origin::Set; //  这里注意：请确认Set是否代表 Current
+            origin = NN::Runtime::VFS::IFile::Origin::Set; //  这里注意：请确认Set是否代表 Current
             break;
         case SEEK_END:
-            origin = vfspp::IFile::Origin::End;
+            origin = NN::Runtime::VFS::IFile::Origin::End;
             break;
         default:
             return -1; // 不支持

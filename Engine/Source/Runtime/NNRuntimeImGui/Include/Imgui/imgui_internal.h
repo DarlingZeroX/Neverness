@@ -840,7 +840,7 @@ struct ImChunkStream
 
 // Helper: ImGuiTextIndex
 // Maintain a line index for a text buffer. This is a strong candidate to be moved into the public API.
-struct ImGuiTextIndex
+struct IMGUI_API ImGuiTextIndex
 {
     ImVector<int>   Offsets;
     int             EndOffset = 0;                          // Because we don't own text buffer we need to maintain EndOffset (may bake in LineOffsets?)
@@ -2389,7 +2389,7 @@ struct ImGuiContextHook
 // [SECTION] ImGuiContext (main Dear ImGui context)
 //-----------------------------------------------------------------------------
 
-struct ImGuiContext
+struct IMGUI_API ImGuiContext
 {
     bool                    Initialized;
     ImGuiIO                 IO;
@@ -3613,7 +3613,7 @@ namespace ImGui
     inline bool             IsMouseKey(ImGuiKey key)                    { return key >= ImGuiKey_Mouse_BEGIN && key < ImGuiKey_Mouse_END; }
     inline bool             IsAliasKey(ImGuiKey key)                    { return key >= ImGuiKey_Aliases_BEGIN && key < ImGuiKey_Aliases_END; }
     inline bool             IsLRModKey(ImGuiKey key)                    { return key >= ImGuiKey_LeftCtrl && key <= ImGuiKey_RightSuper; }
-    ImGuiKeyChord           FixupKeyChord(ImGuiKeyChord key_chord);
+	IMGUI_API ImGuiKeyChord           FixupKeyChord(ImGuiKeyChord key_chord);
     inline ImGuiKey         ConvertSingleModFlagToKey(ImGuiKey key)
     {
         if (key == ImGuiMod_Ctrl) return ImGuiKey_ReservedForModCtrl;

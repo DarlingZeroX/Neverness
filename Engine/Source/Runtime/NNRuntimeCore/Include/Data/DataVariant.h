@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <NNCore/Include/File/nlohmann/json.hpp>
 #include "../../RuntimeCoreExport.h"
+#include "NNCore/Interface/HAssert.h"
 
 namespace NN::Runtime
 {

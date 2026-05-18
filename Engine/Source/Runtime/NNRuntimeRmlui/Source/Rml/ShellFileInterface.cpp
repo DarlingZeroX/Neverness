@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -10,7 +10,7 @@
  */
 
 #include "Rml/ShellFileInterface.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 
 ShellFileInterface::ShellFileInterface(const Rml::String& root) : root(root) {}
@@ -64,7 +64,7 @@ Rml::FileHandle UIFileInterfaceVFS::Open(const Rml::String& path)
 	Rml::String processPath;
 	PathType type = ProcessPath(path, processPath);
 
-	//auto file = NN::Runtime::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+	//auto file = NN::Runtime::VFS::VFSService::GetInstance()->OpenFile(NN::Runtime::VFS::FileInfo(path), NN::Runtime::VFS::IFile::FileMode::Read);
 	//
 	//if (!file)
 	//	return 0;
@@ -133,7 +133,7 @@ bool UIFileInterfaceVFS::FilePtr::Open(PathType pathType, const Rml::String& pat
 
 	if (type == PathType::VFS)
 	{
-		fpVFS = NN::Runtime::VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+		fpVFS = NN::Runtime::VFS::VFSService::GetInstance()->OpenFile(NN::Runtime::VFS::FileInfo(path), NN::Runtime::VFS::IFile::FileMode::Read);
 
 		if (!fpVFS)
 			return false;
@@ -199,16 +199,16 @@ bool UIFileInterfaceVFS::FilePtr::Seek(long offset, int origin)
 {
 	if (type == PathType::VFS)
 	{
-		vfspp::IFile::Origin vfsOrigin;
+		NN::Runtime::VFS::IFile::Origin vfsOrigin;
 		switch (origin) {
 		case SEEK_SET:
-			vfsOrigin = vfspp::IFile::Origin::Begin;
+			vfsOrigin = NN::Runtime::VFS::IFile::Origin::Begin;
 			break;
 		case SEEK_CUR:
-			vfsOrigin = vfspp::IFile::Origin::Set; //  这里注意：请确认Set是否代表 Current
+			vfsOrigin = NN::Runtime::VFS::IFile::Origin::Set; //  这里注意：请确认Set是否代表 Current
 			break;
 		case SEEK_END:
-			vfsOrigin = vfspp::IFile::Origin::End;
+			vfsOrigin = NN::Runtime::VFS::IFile::Origin::End;
 			break;
 		default:
 			return false; // 不支持

@@ -17,7 +17,7 @@
 #include "NNEditorFramework/Include/EditorCore/EdtiorScene.h"
 #include "NNEngineLegacy/Include/Engine/Manager.h"
 #include "NNEngineLegacy/Include/Engine/Manager/SceneManager.h"
-
+#include "NNBridgeImGui/Include/cimgui.h"
 
 namespace NN::Editor
 {
@@ -29,7 +29,8 @@ namespace NN::Editor
 	void EditorMainWindow::OnGUI()
 	{
 		auto* editor = PanelManager::GetInstance();
-
+		bool show = true;
+		igShowDemoWindow(&show);
 		// Submit top-level documents
 		ImGui::SetNextWindowClass(&editor->GetImGuiWindowClass());
 

@@ -11,13 +11,13 @@
 
 #include "AudioClip.h"
 //#include "Resource/Audio/FAudioDecoder.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Runtime
 {
 	bool VGAudioClip::Open(const std::string& filePath)
 	{
-		return m_AudioClip.Open(VFS::GetInstance(), filePath);
+		return m_AudioClip.Open(VFS::VFSService::GetInstance(), filePath);
 
 		return true;
 	}

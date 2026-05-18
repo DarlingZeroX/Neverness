@@ -1,8 +1,0 @@
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Runtime.dll
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Runtime.deps.json
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Runtime.runtimeconfig.json
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Runtime.pdb
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Core.dll
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Engine.dll
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Core.pdb
-E:\VisionGal\Build\manual-vs\ManagedRuntimePublish\VisionGal.Managed.Engine.pdb

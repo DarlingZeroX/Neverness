@@ -1,8 +1,8 @@
-#include "CodeStudio/CodeStudio.h"
+﻿#include "CodeStudio/CodeStudio.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimeCore/Interface/VGAsset.h"
 #include "NNRuntimeAsset/Interface/Package.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Editor
 {
@@ -59,7 +59,7 @@ namespace NN::Editor
 		}
 
 		// 检测文件是否被外部修改
-		auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(DocPath);
+		auto absPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(DocPath);
 		if (NN::Core::HFileSystem::ExistsFile(absPath))
 		{
 			if (FileLastWriteTime != std::filesystem::last_write_time(absPath))
@@ -83,7 +83,7 @@ namespace NN::Editor
 
 		if (DocPath.empty())
 			return;
-		Runtime::VFS::WriteTextToFile(DocPath, TexEditor.GetText());
+		Runtime::VFS::VFSService::WriteTextToFile(DocPath, TexEditor.GetText());
 
 		TexEditor.ResetTextChanged();
 		Dirty = false;
@@ -94,7 +94,7 @@ namespace NN::Editor
 
 	void CodeDocument::ReadLastWriteTime()
 	{
-		auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(DocPath);
+		auto absPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(DocPath);
 		if (NN::Core::HFileSystem::ExistsFile(absPath))
 		{
 			FileLastWriteTime = std::filesystem::last_write_time(absPath);
@@ -104,7 +104,7 @@ namespace NN::Editor
 	bool CodeDocument::OpenFile(const Runtime::VGPath& path)
 	{
 		std::string text;
-		auto result = Runtime::VFS::ReadTextFromFile(path, text);
+		auto result = Runtime::VFS::VFSService::ReadTextFromFile(path, text);
 
 		if (result == false)
 			return false;

@@ -76,6 +76,7 @@ target_sources(NevernessCore-MediaCore
 # 添加头文件搜索路径
 target_include_directories(NevernessCore-MediaCore PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(NevernessCore-MediaCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories(NevernessCore-MediaCore PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 
 # FFmpeg
 find_package(FFMPEG REQUIRED)
@@ -84,3 +85,4 @@ target_link_directories(NevernessCore-MediaCore PRIVATE ${FFMPEG_LIBRARY_DIRS})
 target_link_libraries(NevernessCore-MediaCore PRIVATE ${FFMPEG_LIBRARIES})
 
 target_link_libraries(NevernessCore-MediaCore PRIVATE NevernessCore-Core)
+target_link_libraries(NevernessCore-MediaCore PRIVATE NevernessRuntime-VFS)

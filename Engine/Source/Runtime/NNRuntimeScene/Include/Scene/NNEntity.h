@@ -9,7 +9,7 @@
  * - 高 32 位：Generation（同 Index 每经历一次 Destroy 递增）
  * - Index==0 且 Generation==0 => 无效（NNEntityInvalid）
  *
- * 边界：与 Legacy VGActorID、SceneSubsystem 之 VGEntityHandle、托管 EntityWorld 均无自动映射。
+ * 边界：与 Legacy VGActorID、SceneSubsystem 之 NNEntityHandle、托管 EntityWorld 均无自动映射。
  */
 
 #include <cstdint>

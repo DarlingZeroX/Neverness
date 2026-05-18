@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -16,7 +16,7 @@ namespace NN::Runtime
 {
 	// 自定义 opaque 结构（传递 VFS 文件对象）
 	//struct VFSIOContext {
-	//	vfspp::IFilePtr file; // VFSpp 文件句柄
+	//	NN::Runtime::VFS::IFilePtr file; // VFSpp 文件句柄
 	//};
 	//
 	//static int read_packet(void* opaque, uint8_t* buf, int buf_size) {
@@ -45,7 +45,7 @@ namespace NN::Runtime
 		auto& vfs = Core::GetVFS();
 
 		// 尝试打开文件
-		auto file = vfs->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Read);
+		auto file = vfs->OpenFile(NN::Runtime::VFS::FileInfo(path), NN::Runtime::VFS::IFile::FileMode::Read);
 		if (!file)
 			return false;
 
@@ -56,7 +56,7 @@ namespace NN::Runtime
 		// 用ffmpeg读取视频
 		//AVFormatContext* fmt_ctx = avformat_alloc_context();
 		videoAsset->videoClip->pFormatCtx = avformat_alloc_context();
-		VFSIOContext io_ctx{ file }; // file 是已打开的 vfspp::IFile 对象
+		VFSIOContext io_ctx{ file }; // file 是已打开的 NN::Runtime::VFS::IFile 对象
 
 		// 创建 AVIOContext（关键！）
 		const int buffer_size = 4096; // 建议缓冲区大小

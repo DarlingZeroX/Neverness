@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -11,7 +11,7 @@
 
 #include "Asset/AssetFactory.h"
 #include "Asset/Asset.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace VisionGal::GalGame
 {
@@ -22,11 +22,11 @@ namespace VisionGal::GalGame
 
 	Ref<VGAsset> GalGameSequenceScriptAssetFactory::CreateAsset(const String& path)
 	{
-		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
+		auto absolutePath = VFSService::GetInstance()->AbsolutePath(path);
 
 		// 先得到保存路径
 		auto aPath = GenerateAssetPath(absolutePath, "GalGameVisualScript", ".vgasset");
-		auto rPath = VFS::GetResourcePathVFS(aPath);
+		auto rPath = RuntimeCore::GetResourcePathVFS(aPath);
 
 		// 创建场景资产
 		SequenceScriptAssetWriter writer;

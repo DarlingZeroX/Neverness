@@ -7,7 +7,7 @@
 * Copyright (c) 2025-present 梦旅缘心
 *
 * See the LICENSE file in the project root for details.
-*/
+
 #pragma once
 #include "FFmpegIOContext.h"
 
@@ -29,7 +29,7 @@ namespace NN::Core {
         InMemoryRemuxer();
         ~InMemoryRemuxer();
 		 
-        bool Remux(vfspp::VirtualFileSystemPtr& vfs, const char* input_filename);
+        bool Remux(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const char* input_filename);
         AVFormatContext* GetFormatContext() const { return fixed_fmt_ctx; }
 
     private:
@@ -52,3 +52,4 @@ namespace NN::Core {
         void Cleanup();
     };
 }
+*/

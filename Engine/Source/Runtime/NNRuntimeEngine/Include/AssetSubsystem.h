@@ -10,7 +10,7 @@ namespace NN::Runtime::engine
 class AssetSubsystem final
 {
 public:
-	VGTextureHandle LoadTexture(const char* virtualPathUtf8) noexcept;
-	VGAudioHandle LoadAudio(const char* virtualPathUtf8) noexcept;
+	NNTextureHandle LoadTexture(const char* virtualPathUtf8) noexcept;
+	NNAudioHandle LoadAudio(const char* virtualPathUtf8) noexcept;
 };
 } // namespace visiongal::engine

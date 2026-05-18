@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -13,7 +13,7 @@
 #include "GalComDrawer.h"
 #include "SequenceEditor.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNEditorFramework/Interface/ComponentDrawerRegistry.h"
 #include "NNEditorFramework/Include/EditorCore/AssetWatcher.h"
 #include "NNEditorFramework/Interface/AssetEditor.h"
@@ -39,8 +39,8 @@ namespace VisionGal::Editor
 				//	return;
 				auto storyScriptPath = galEngine->GetSubsystemBus()->Script()->GetStoryScriptSystem()->GetCurrentStoryScriptPath();
 
-				//auto absPath = VFS::GetInstance()->AbsolutePath(storyScript->GetResourcePath());
-				auto absPath = VFS::GetInstance()->AbsolutePath(storyScriptPath);
+				//auto absPath = VFSService::GetInstance()->AbsolutePath(storyScript->GetResourcePath());
+				auto absPath = VFSService::GetInstance()->AbsolutePath(storyScriptPath);
 				if (Horizon::HFileSystem::ExistsFile(absPath) == false)
 					return;
 

@@ -23,7 +23,7 @@ target_sources(NevernessCore-FileSystem
     Interface/HFileHeaders.h
     Interface/HFileSystem.h
     Interface/HFileSystemGenerator.h
-    Interface/HVirtualFileSystem.h
+    
     Source/HFileSystem.cpp
     Source/HFileSystemGenerator.cpp
 )

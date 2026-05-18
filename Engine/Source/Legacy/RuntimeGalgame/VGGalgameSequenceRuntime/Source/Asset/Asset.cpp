@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -11,7 +11,7 @@
 
 #include "Asset/Asset.h"
 #include "NNRuntimeAsset/Interface/Package.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "Sequence/DataContainerSerialization.h"
 
 namespace VisionGal::GalGame
@@ -29,7 +29,7 @@ namespace VisionGal::GalGame
 		std::string sequenceData = SerializeVGSSequenceDataContainerToString(*uiAsset->ExecutionData->SequenceData, 2);
 
 		// 创建或打开一个文件用于写入
-		if (VFS::WriteTextToFile(path, sequenceData) == false)
+		if (VFSService::WriteTextToFile(path, sequenceData) == false)
 			return false;
 
 		// 写入元信息
@@ -43,7 +43,7 @@ namespace VisionGal::GalGame
 	bool SequenceScriptAssetLoader::Read(const std::string path, Ref<VGAsset>& asset)
 	{
 		std::string text;
-		if (VFS::ReadTextFromFile(path, text) == false)
+		if (VFSService::ReadTextFromFile(path, text) == false)
 			return false;
 
 		auto sequenceData = MakeRef<VGSSequenceDataContainer>();

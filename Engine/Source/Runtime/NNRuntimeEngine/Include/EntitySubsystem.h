@@ -16,12 +16,12 @@ struct RuntimeFrameContext;
  *
  * **职责（本切片）**
  * - 实现 **IRuntimeSubsystem**，由 **RuntimeScheduler** 在 **RuntimeTickGroup::Update** 阶段驱动（**P0-1**）。
- * - 维护 **`runtimeTick`**：每帧 **`Tick`** 时单调递增，供 **`VGEntityAPI::getRuntimeTick`**
+ * - 维护 **`runtimeTick`**：每帧 **`Tick`** 时单调递增，供 **`NNEntityAPI::getRuntimeTick`**
  *   观测「Runtime 表已覆写 **`entity.*`**」。
- * - **`GetServiceAbiToken`**：返回 **`VG_ENTITY_SERVICE_ABI_TOKEN`**，与 Stub 及托管常量一致，用于 ABI 冒烟不断裂。
+ * - **`GetServiceAbiToken`**：返回 **`NN_ENTITY_SERVICE_ABI_TOKEN`**，与 Stub 及托管常量一致，用于 ABI 冒烟不断裂。
  *
  * **边界**
- * - **不**实现完整 Native ECS，**不**与托管 **EntityWorld** 做数据结构同步；与 **`VGSceneAPI`** 之 **`VGEntityHandle`** 语义仍独立（见 **`EntityAPI.h`**）。
+ * - **不**实现完整 Native ECS，**不**与托管 **EntityWorld** 做数据结构同步；与 **`NNSceneAPI`** 之 **`NNEntityHandle`** 语义仍独立（见 **`EntityAPI.h`**）。
  */
 class EntitySubsystem final : public IRuntimeSubsystem
 {

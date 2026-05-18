@@ -16,47 +16,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-# 将源代码添加到此项目的可执行文件。
-file(GLOB EDITOR_FRMAEWORK_HEADER_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+include(${CMAKE_CURRENT_SOURCE_DIR}/NNEditorFrameworkSources.cmake)
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/ImportStarter/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Asset/ImporterUITask/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/AssetEditor/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/AssetImporter/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/DetailBrowser/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/ContentBrowser/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/CodeStudio/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/MainEditor/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Setting/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/Preferences/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/UITask/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/EditorCore/*.h"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/Interface/*.h"
-)
-
-# 将源代码添加到此项目的可执行文件。
-file(GLOB EDITOR_FRMAEWORK_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/ImportStarter/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Asset/ImporterUITask/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetEditor/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/AssetImporter/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/DetailBrowser/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/ContentBrowser/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/CodeStudio/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/MainEditor/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Setting/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Preferences/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/UITask/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorCore/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/Interface/*.cpp"
-)
-
-add_library (VGEditorFramework SHARED ${EDITOR_FRMAEWORK_HEADER_FILES} ${EDITOR_FRMAEWORK_SRC_FILES})
+add_library(VGEditorFramework SHARED)
+target_sources(VGEditorFramework PRIVATE ${NNEditorFramework_SOURCES})
 
 # 添加宏
 target_compile_definitions(VGEditorFramework PRIVATE VG_EDITOR_FRAMEWORK_API_EXPORT)
@@ -65,7 +28,9 @@ target_compile_definitions(VGEditorFramework PRIVATE VG_EDITOR_FRAMEWORK_API_EXP
 target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Editor)
+target_include_directories(VGEditorFramework PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Bridge)
 target_include_directories(VGEditorFramework PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(VGEditorFramework PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 target_link_libraries(VGEditorFramework PUBLIC NevernessRuntime-EngineLegacy)
+target_link_libraries(VGEditorFramework PRIVATE NevernessBridge-ImGui)

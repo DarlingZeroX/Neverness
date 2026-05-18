@@ -2,7 +2,7 @@
 
 /**
  * @file AssetRegistryAPI.h
- * @brief 專案資產登記表 ABI（GUID ↔ 虛擬路徑；與 `VGAssetAPI` 執行時載入分離）。
+ * @brief 專案資產登記表 ABI（GUID ↔ 虛擬路徑；與 `NNAssetAPI` 執行時載入分離）。
  *
  * 字串輸出函數：寫入 `outUtf8`（容量 `outCapacity`），回傳寫入字節數；失敗 -1。
  */
@@ -15,32 +15,32 @@
 extern "C" {
 #endif
 
-typedef int(VG_ENGINE_ABI_STDCALL* VGAssetRegistryRegisterFn)(const char* virtualPathUtf8, VGGuid guid);
-typedef int(VG_ENGINE_ABI_STDCALL* VGAssetRegistryUnregisterByGuidFn)(VGGuid guid);
-typedef int(VG_ENGINE_ABI_STDCALL* VGAssetRegistryUnregisterByPathFn)(const char* virtualPathUtf8);
-typedef int(VG_ENGINE_ABI_STDCALL* VGAssetRegistryResolvePathByGuidFn)(
-	VGGuid guid,
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryRegisterFn)(const char* virtualPathUtf8, NNGuid guid);
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryUnregisterByGuidFn)(NNGuid guid);
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryUnregisterByPathFn)(const char* virtualPathUtf8);
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryResolvePathByGuidFn)(
+	NNGuid guid,
 	char* outUtf8,
 	std::size_t outCapacity);
-typedef int(VG_ENGINE_ABI_STDCALL* VGAssetRegistryResolveGuidByPathFn)(const char* virtualPathUtf8, VGGuid* outGuid);
-typedef std::uint32_t(VG_ENGINE_ABI_STDCALL* VGAssetRegistryGetDependencyCountFn)(VGGuid guid);
-typedef int(VG_ENGINE_ABI_STDCALL* VGAssetRegistryGetDependencyAtFn)(
-	VGGuid guid,
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryResolveGuidByPathFn)(const char* virtualPathUtf8, NNGuid* outGuid);
+typedef std::uint32_t(NN_ENGINE_ABI_STDCALL* NNAssetRegistryGetDependencyCountFn)(NNGuid guid);
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryGetDependencyAtFn)(
+	NNGuid guid,
 	std::uint32_t index,
-	VGGuid* outDependency);
-typedef VGGuid(VG_ENGINE_ABI_STDCALL* VGAssetRegistryImportAssetFn)(const char* virtualPathUtf8);
+	NNGuid* outDependency);
+typedef NNGuid(NN_ENGINE_ABI_STDCALL* NNAssetRegistryImportAssetFn)(const char* virtualPathUtf8);
 
-typedef struct VGAssetRegistryAPI
+typedef struct NNAssetRegistryAPI
 {
-	VGAssetRegistryRegisterFn registerAsset;
-	VGAssetRegistryUnregisterByGuidFn unregisterByGuid;
-	VGAssetRegistryUnregisterByPathFn unregisterByPath;
-	VGAssetRegistryResolvePathByGuidFn resolvePathByGuid;
-	VGAssetRegistryResolveGuidByPathFn resolveGuidByPath;
-	VGAssetRegistryGetDependencyCountFn getDependencyCount;
-	VGAssetRegistryGetDependencyAtFn getDependencyAt;
-	VGAssetRegistryImportAssetFn importAsset;
-} VGAssetRegistryAPI;
+	NNAssetRegistryRegisterFn registerAsset;
+	NNAssetRegistryUnregisterByGuidFn unregisterByGuid;
+	NNAssetRegistryUnregisterByPathFn unregisterByPath;
+	NNAssetRegistryResolvePathByGuidFn resolvePathByGuid;
+	NNAssetRegistryResolveGuidByPathFn resolveGuidByPath;
+	NNAssetRegistryGetDependencyCountFn getDependencyCount;
+	NNAssetRegistryGetDependencyAtFn getDependencyAt;
+	NNAssetRegistryImportAssetFn importAsset;
+} NNAssetRegistryAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

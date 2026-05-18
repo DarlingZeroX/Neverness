@@ -5,11 +5,11 @@
 
 namespace NN::Runtime::engine
 {
-VGObjectHandle ObjectSubsystem::CreateObject(const char* typeNameUtf8) noexcept
+NNObjectHandle ObjectSubsystem::CreateObject(const char* typeNameUtf8) noexcept
 {
 	const char* const tn = (typeNameUtf8 != nullptr) ? typeNameUtf8 : "";
 	std::lock_guard<std::mutex> lock(mutex_);
-	const VGObjectHandle id = nextHandle_.fetch_add(1u, std::memory_order_relaxed);
+	const NNObjectHandle id = nextHandle_.fetch_add(1u, std::memory_order_relaxed);
 	if (id == 0)
 	{
 		return 0;
@@ -22,7 +22,7 @@ VGObjectHandle ObjectSubsystem::CreateObject(const char* typeNameUtf8) noexcept
 	return id;
 }
 
-void ObjectSubsystem::DestroyObject(VGObjectHandle object) noexcept
+void ObjectSubsystem::DestroyObject(NNObjectHandle object) noexcept
 {
 	if (object == 0)
 	{
@@ -32,7 +32,7 @@ void ObjectSubsystem::DestroyObject(VGObjectHandle object) noexcept
 	slots_.erase(object);
 }
 
-void ObjectSubsystem::RetainObject(VGObjectHandle object) noexcept
+void ObjectSubsystem::RetainObject(NNObjectHandle object) noexcept
 {
 	if (object == 0)
 	{
@@ -47,7 +47,7 @@ void ObjectSubsystem::RetainObject(VGObjectHandle object) noexcept
 	++it->second.refCount;
 }
 
-void ObjectSubsystem::ReleaseObject(VGObjectHandle object) noexcept
+void ObjectSubsystem::ReleaseObject(NNObjectHandle object) noexcept
 {
 	if (object == 0)
 	{
@@ -69,7 +69,7 @@ void ObjectSubsystem::ReleaseObject(VGObjectHandle object) noexcept
 	}
 }
 
-std::uint32_t ObjectSubsystem::GetRefCount(VGObjectHandle object) const noexcept
+std::uint32_t ObjectSubsystem::GetRefCount(NNObjectHandle object) const noexcept
 {
 	if (object == 0)
 	{
@@ -84,7 +84,7 @@ std::uint32_t ObjectSubsystem::GetRefCount(VGObjectHandle object) const noexcept
 	return it->second.refCount;
 }
 
-int ObjectSubsystem::IsAlive(VGObjectHandle object) const noexcept
+int ObjectSubsystem::IsAlive(NNObjectHandle object) const noexcept
 {
 	if (object == 0)
 	{
@@ -99,7 +99,7 @@ int ObjectSubsystem::IsAlive(VGObjectHandle object) const noexcept
 	return 1;
 }
 
-int ObjectSubsystem::GetTypeName(VGObjectHandle object, char* outUtf8, std::size_t outCapacity) const noexcept
+int ObjectSubsystem::GetTypeName(NNObjectHandle object, char* outUtf8, std::size_t outCapacity) const noexcept
 {
 	if (object == 0 || outUtf8 == nullptr || outCapacity == 0u)
 	{

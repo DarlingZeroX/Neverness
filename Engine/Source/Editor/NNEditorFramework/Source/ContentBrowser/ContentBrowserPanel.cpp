@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -25,7 +25,7 @@
 #include "NNEditorFramework/Include/EditorCore/EditorCore.h"
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
 #include "NNRuntimeAsset/Interface/AssetFactory.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeCore/Interface/Loader.h"
 
 #ifdef GetCurrentDirectory
@@ -347,7 +347,7 @@ namespace NN::Editor {
 		static std::string itemPath;
 		if (ImGui::BeginDragDropSource())
 		{
-			auto aPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
+			auto aPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
 			itemPath = Runtime::RuntimeCore::GetAssetsPathVFS() + std::filesystem::relative(item.AbsolutePath, aPath).string();
 
 			ImGui::SetDragDropPayload("PLACE_CONTENT_BROWSER_ITEM", itemPath.c_str(), itemPath.size() + 1);
@@ -552,7 +552,7 @@ namespace NN::Editor {
 			ImGui::Separator();
 
 			Runtime::EngineAssetFactory& factory = Runtime::EngineAssetFactory::Get();
-			auto path = Runtime::VFS::GetResourcePathVFS(m_pContentBrowser->GetCurrentBrowserDirectory().string());
+			auto path = Runtime::RuntimeCore::GetResourcePathVFS(m_pContentBrowser->GetCurrentBrowserDirectory().string());
 
 			if (ImGui::MenuItem(EditorText{ "Create Scene" }.c_str()))
 			{

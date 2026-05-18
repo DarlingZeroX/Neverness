@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -14,7 +14,7 @@
 #include "NNEngineLegacy/Include/Engine/Manager.h"
 //#include "VGGalgame/Include/GalGameEngine.h"
 #include <NNRuntimeRmlui/Interface/UISystem.h>
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Editor
 {
@@ -62,7 +62,7 @@ namespace NN::Editor
 	{
 		for (auto& [path, fileState]: m_UIFilesState)
 		{
-			auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(path);
+			auto absPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(path);
 			if (NN::Core::HFileSystem::ExistsFile(absPath) == false)
 				return;
 
@@ -92,7 +92,7 @@ namespace NN::Editor
 		if (ext != ".html" && ext != ".css")
 			return;
 
-		auto absPath = Runtime::VFS::GetInstance()->AbsolutePath(path);
+		auto absPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(path);
 		if (NN::Core::HFileSystem::ExistsFile(absPath) == false)
 			return;
 

@@ -14,7 +14,9 @@
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <NNRuntimePak/Include/PakWriter.h>
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
+#include "NNRuntimeVFS/Include/VFS/NativeFileSystem.h"
 
 bool EditorInitializer::CheckProjectRootDir(const std::string& projectRootDir)
 {
@@ -58,7 +60,7 @@ void EditorInitializer::InitializeVFS(const EditorVFSPath& path)
 
 	//PakResource(path);
 
-	auto& vfs = NN::Runtime::VFS::GetInstance();
+	auto& vfs = NN::Runtime::VFS::VFSService::GetInstance();
 
 	// 添加编辑器资源虚拟文件系统
 	NN::Runtime::VFS::MountPackageFileSystem(
@@ -74,9 +76,9 @@ void EditorInitializer::InitializeVFS(const EditorVFSPath& path)
 		path.engine
 	);
 
-	auto assetsFS = std::make_unique<vfspp::NativeFileSystem>(path.assets);
-	auto projectSettingsFS = std::make_unique<vfspp::NativeFileSystem>(path.projectSettings);
-	auto projectIntermediateFS = std::make_unique<vfspp::NativeFileSystem>(path.projectIntermediate);
+	auto assetsFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.assets);
+	auto projectSettingsFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectSettings);
+	auto projectIntermediateFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectIntermediate);
 
 	assetsFS->Initialize();
 	projectSettingsFS->Initialize();
@@ -86,18 +88,18 @@ void EditorInitializer::InitializeVFS(const EditorVFSPath& path)
 	vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectSettingsPathVFS(), std::move(projectSettingsFS));
 	vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectIntermediatePathVFS(), std::move(projectIntermediateFS));
 
-	auto editorPath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Editor::EditorCore::GetEditorResourcePathVFS());
+	auto editorPath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Editor::EditorCore::GetEditorResourcePathVFS());
 	H_LOG_INFO("Editor resource path: %s", editorPath.c_str());
 
-	auto enginePath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS());
+	auto enginePath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS());
 	H_LOG_INFO("Engine resource path: %s", enginePath.c_str());
 
-	auto assetsPath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetAssetsPathVFS());
+	auto assetsPath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetAssetsPathVFS());
 	H_LOG_INFO("Assets resource: %s", assetsPath.c_str());
 
-	auto projectSettingsPath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetProjectSettingsPathVFS());
+	auto projectSettingsPath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetProjectSettingsPathVFS());
 	H_LOG_INFO("Project settings resource path: %s", projectSettingsPath.c_str());
 
-	auto projectIntermediatePath = NN::Runtime::VFS::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetProjectIntermediatePathVFS());
+	auto projectIntermediatePath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetProjectIntermediatePathVFS());
 	H_LOG_INFO("Project intermediate path: %s", projectIntermediatePath.c_str());
 }

@@ -10,7 +10,7 @@
 */
 
 #include "Project/ProjectSettings.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "Engine/Manager.h"
 
 namespace NN::Runtime
@@ -188,7 +188,7 @@ namespace NN::Runtime
 		path = path + pathVFS;
 
 		std::string text;
-		if (VFS::ReadTextFromFile(path, text))
+		if (VFS::VFSService::ReadTextFromFile(path, text))
 		{
 			try {
 				nlohmann::json json = nlohmann::json::parse(text);
@@ -210,6 +210,6 @@ namespace NN::Runtime
 		std::string path = RuntimeCore::GetProjectSettingsPathVFS();
 		path = path + pathVFS;
 
-		VFS::WriteTextToFile(path, jsonStr);
+		VFS::VFSService::WriteTextToFile(path, jsonStr);
 	}
 }

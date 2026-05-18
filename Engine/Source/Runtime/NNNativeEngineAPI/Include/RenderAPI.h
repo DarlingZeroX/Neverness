@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 /** @brief 建立可上傳像素資料之紋理；失敗回傳 0。 */
-typedef VGTextureHandle(VG_ENGINE_ABI_STDCALL* VGRenderCreateTextureFn)(std::uint32_t width, std::uint32_t height);
+typedef NNTextureHandle(NN_ENGINE_ABI_STDCALL* NNRenderCreateTextureFn)(std::uint32_t width, std::uint32_t height);
 
 /**
  * @brief 上傳像素至既有紋理。
@@ -23,20 +23,20 @@ typedef VGTextureHandle(VG_ENGINE_ABI_STDCALL* VGRenderCreateTextureFn)(std::uin
  * @param pixelBytes 可為 nullptr（視為 no-op）；否則指向連續位元組緩衝。
  * @param byteCount 緩衝長度；與格式/尺寸不符時實作端可截斷或拒絕（Stub 忽略）。
  */
-typedef void(VG_ENGINE_ABI_STDCALL* VGRenderUploadTextureFn)(
-	VGTextureHandle texture,
+typedef void(NN_ENGINE_ABI_STDCALL* NNRenderUploadTextureFn)(
+	NNTextureHandle texture,
 	const std::uint8_t* pixelBytes,
 	std::size_t byteCount);
 
 /** @brief 建立渲染目標；失敗回傳 0。 */
-typedef VGRenderTargetHandle(VG_ENGINE_ABI_STDCALL* VGRenderCreateRenderTargetFn)(std::uint32_t width, std::uint32_t height);
+typedef NNRenderTargetHandle(NN_ENGINE_ABI_STDCALL* NNRenderCreateRenderTargetFn)(std::uint32_t width, std::uint32_t height);
 
-typedef struct VGRenderAPI
+typedef struct NNRenderAPI
 {
-	VGRenderCreateTextureFn createTexture;
-	VGRenderUploadTextureFn uploadTexture;
-	VGRenderCreateRenderTargetFn createRenderTarget;
-} VGRenderAPI;
+	NNRenderCreateTextureFn createTexture;
+	NNRenderUploadTextureFn uploadTexture;
+	NNRenderCreateRenderTargetFn createRenderTarget;
+} NNRenderAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

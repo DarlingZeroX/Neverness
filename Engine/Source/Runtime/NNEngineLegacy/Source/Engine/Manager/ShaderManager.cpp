@@ -10,7 +10,7 @@
 */
 
 #include "Engine/Manager/ShaderManager.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Runtime
 {
@@ -36,7 +36,7 @@ namespace NN::Runtime
 			shaderPath += path;
 
 		std::string shader;
-		if (VFS::ReadTextFromFile(shaderPath, shader))
+		if (VFS::VFSService::ReadTextFromFile(shaderPath, shader))
 		{
 			std::string vertexShader, fragmentShader;
 			ExtractShaders(shader, vertexShader, fragmentShader);

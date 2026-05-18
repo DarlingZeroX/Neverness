@@ -17,7 +17,8 @@
 #include <VGEditorComponent/Framework.h>
 #include <VGEditorCore/IncludeCore.h>
 #include "VGEditorCore/Include/EditorCore/EditorCore.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 #include "NNEngineLegacy/Include/Engine/Manager.h"
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 
@@ -75,7 +76,7 @@ namespace VisionGal::Editor
 		m_ApplicationWindow->AddLayer(std::make_unique<ImGuiEx::Opengl3ImGuiWindowLayer>(m_ApplicationWindow.get()));
 		m_ImguiOpengl3Layer = std::make_unique<ImguiOpengl3Layer>(m_ApplicationWindow.get(), m_ApplicationWindow->GetContext());
 
-		VFS::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFS::DataRef& data) {
+		VFSService::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFSService::DataRef& data) {
 			ImGuiIO& io = ImGui::GetIO();
 			ImFontConfig icons_config;
 			icons_config.FontDataOwnedByAtlas = false;

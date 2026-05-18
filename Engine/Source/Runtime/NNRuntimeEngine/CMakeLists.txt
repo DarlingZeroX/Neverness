@@ -17,7 +17,7 @@ add_library(NevernessRuntime-Engine STATIC)
 
 target_sources(NevernessRuntime-Engine
 	PRIVATE
-		Private/VGEngineRuntime.cpp
+		"Private/NNEngineRuntime.cpp"
 		Private/TimingSystem.cpp
 		Private/AsyncSystem.cpp
 		Private/SceneSubsystem.cpp

@@ -7,7 +7,7 @@
 | 项目 | 说明 |
 |------|------|
 | **职责** | **Handle + POD Component + entt::registry** 的新一代 Native Scene：**世代 `NNEntity`**、实体生命周期、`Emplace`/`Query`、**字段级组件反射**、**System 调度**、层级、事件/脏跟踪、**二进制场景快照**。 |
-| **不负责** | Legacy `IGameActor`/`IComponent`、**SceneSubsystem** 替换或数据迁移、**VGNativeEngineAPI** layout 扩展（`NN_AddComponent` 留 Phase 4）、**Prefab/Streaming** 完整实现、JSON 导出、并行 Job。 |
+| **不负责** | Legacy `IGameActor`/`IComponent`、**SceneSubsystem** 替换或数据迁移、**NNNativeEngineAPI** layout 扩展（`NN_AddComponent` 留 Phase 4）、**Prefab/Streaming** 完整实现、JSON 导出、并行 Job。 |
 | **CMake 目标** | `NevernessRuntime-Scene`（`SHARED`） |
 | **宏** | `NN_RUNTIME_SCENE_API` / `NN_RUNTIME_SCENE_EXPORT` |
 | **依赖** | `NevernessCore-Core`（PUBLIC，含 vendored **entt**）；**NNNativeEngineAPI** 头路径（PRIVATE，仅字段对齐约定，不链接 ABI 表）。**不**链接 **NevernessRuntime-Engine**。 |
@@ -18,7 +18,7 @@
 | 体系 | 身份 | 关系 |
 |------|------|------|
 | **NNEngineLegacy** | `VGActorID` + `shared_ptr<IGameActor>` + entt | **并存**，不修改 |
-| **NNRuntimeEngine** | `VGEntityHandle` 单调 id + `SceneSubsystem` map | **并存**；ECS 路径为 **`EcsScene()`**，不替换 `SceneSubsystem` |
+| **NNRuntimeEngine** | `NNEntityHandle` 单调 id + `SceneSubsystem` map | **并存**；ECS 路径为 **`EcsScene()`**，不替换 `SceneSubsystem` |
 | **本模块** | `NNEntity`（`uint64` Index+Generation）+ entt | **已落地** Phase 1–3 |
 | **VisionGal.Managed.Entity** | `EntityHandle`（`uint` Index + `uint` Generation） | **打包规则对齐**；**无**自动桥接 |
 

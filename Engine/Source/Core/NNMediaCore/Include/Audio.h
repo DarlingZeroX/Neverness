@@ -14,7 +14,7 @@
 #include "SDL/SDLAudio.h"
 #include "HMediaConfig.h"
 #include <NNCore/Interface/HCore.h>
-#include <NNFileSystem/Include/VFS/VirtualFileSystem.hpp>
+#include "NNRuntimeVFS/Include/VFS/VirtualFileSystem.h"
 
 namespace NN::Core
 {
@@ -24,7 +24,7 @@ namespace NN::Core
         AudioClip();
         ~AudioClip() override;
 
-        bool Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath);
+        bool Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath);
 
 		IAudioDecoder* GetDecoder() override;
     private:

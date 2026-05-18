@@ -13,7 +13,7 @@
 #include "HMediaConfig.h"
 #include "../Interface/VideoInterface.h"
 #include <NNCore/Interface/HCore.h>
-#include <NNFileSystem/Include/VFS/VirtualFileSystem.hpp>
+#include "NNRuntimeVFS/Include/VFS/VirtualFileSystem.h"
 #include "SDL/SDLAudio.h"
 
 namespace NN::Core {
@@ -27,7 +27,7 @@ namespace NN::Core {
 		FVideoClip(FVideoClip&&) noexcept = default;
 		FVideoClip& operator=(FVideoClip&&) noexcept = default;
 
-		bool Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath);
+		bool Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath);
 		uint2 GetSize() const override;
 
 		IVideoDecoder* GetDecoder() override;

@@ -2,7 +2,7 @@
 
 /**
  * @file NNTransformComponent.h
- * @brief 变换组件（纯 POD）：与 VGTransform3 字段布局一致，便于未来 ABI 与序列化对齐。
+ * @brief 变换组件（纯 POD）：与 NNTransform3 字段布局一致，便于未来 ABI 与序列化对齐。
  */
 
 #include "NNRuntimeScene/NNRuntimeSceneExport.h"

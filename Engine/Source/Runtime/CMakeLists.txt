@@ -1,10 +1,23 @@
 add_subdirectory ("NNRuntimeLua")
 add_subdirectory ("NNRuntimeRHI")
+add_subdirectory ("NNRuntimeVFS")
 add_subdirectory ("NNRuntimePak")
 add_subdirectory ("NNRuntimeImGui")
 add_subdirectory ("NNRuntimeCore")
 add_subdirectory ("NNNativeEngineAPI")
+add_subdirectory ("NNRuntimeNativeEngineAPIStub")
+add_subdirectory ("NNRuntimeManaged")
 add_subdirectory ("NNRuntimeScene")
+
+############ 托管宿主（CoreCLR via nethost，可选；默认不构建）
+option(VISIONGAL_ENABLE_MANAGED_HOST "Build NNRuntimeManagedHost (CoreCLR via nethost)" OFF)
+
+if (VISIONGAL_ENABLE_MANAGED_HOST)
+	if (NOT WIN32 OR NOT MSVC)
+		message(FATAL_ERROR "VISIONGAL_ENABLE_MANAGED_HOST requires WIN32 and MSVC (nethost).")
+	endif()
+	add_subdirectory("NNRuntimeManagedHost")
+endif()
 add_subdirectory ("NNRuntimeEngine")
 add_subdirectory ("NNRuntimeEngineServices")
 add_subdirectory ("NNRuntimeAsset")

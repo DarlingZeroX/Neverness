@@ -12,7 +12,7 @@
 #include "Engine/VideoPlayer.h"
 #include <SDL3/SDL_audio.h>
 
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 //#include "Graphics/OpenGL/Core.h"
 //#include "Graphics/Interface/Device.h"
 //#include "Graphics/OpenGL/ThrowMarco.h"
@@ -38,7 +38,7 @@ namespace NN::Runtime
 
 	bool FVideoClip::Open(const std::string& filePath)
 	{
-		return m_VideoClip.Open(VFS::GetInstance(), filePath);
+		return m_VideoClip.Open(VFS::VFSService::GetInstance(), filePath);
 	}
 
 	bool FVideoPlayer::IsLooping() const

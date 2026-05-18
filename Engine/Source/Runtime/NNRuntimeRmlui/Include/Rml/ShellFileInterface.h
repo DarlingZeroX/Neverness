@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -12,7 +12,7 @@
 #pragma once
 #include <RmlUi/Core/FileInterface.h>
 #include <RmlUi/Core/Types.h>
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 /**
     RmlUi file interface for the shell examples.
@@ -73,7 +73,7 @@ private:
 	struct FilePtr
 	{
 		PathType type = PathType::VFS;
-		vfspp::IFilePtr fpVFS = nullptr;
+		NN::Runtime::VFS::IFilePtr fpVFS = nullptr;
 		FILE* fp = nullptr;
 		std::string filePath;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -13,7 +13,7 @@
 #include "NNRuntimePak/Include/PakReader.h"
 #include "NNRuntimePak/Include/PakWriter.h"
 #include <NNRuntimeCore/Include/Core/Core.h>
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include <VGEditorCore/Include/EditorCore/EditorCore.h>
 #include "NNFileSystem/Interface/HFileSystem.h"
 
@@ -22,8 +22,8 @@ namespace VisionGal::Editor
 	void VGPackageTool::PakEngineEditorResources()
 	{	PakFileReader reader;
 		PakFileWriter writer;
-		String engineResourcePath = VFS::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
-		String editorResourcePath = VFS::GetInstance()->AbsolutePath(EditorCore::GetEditorResourcePathVFS());
+		String engineResourcePath = VFSService::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
+		String editorResourcePath = VFSService::GetInstance()->AbsolutePath(EditorCore::GetEditorResourcePathVFS());
 
 		Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data");
 

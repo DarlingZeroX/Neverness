@@ -2,7 +2,7 @@
 
 /**
  * @file NativeInterop.h
- * @brief 跨 Native/Managed 邊界的呼叫約定與可互操作型別（不依賴 VGManagedCore）。
+ * @brief 跨 Native/Managed 邊界的呼叫約定與可互操作型別（不依賴 NNRuntimeManaged）。
  *
  * 說明：
  * - 與託管端 `UnmanagedCallersOnly` / `delegate* unmanaged` 對齊時，Windows 上顯式使用 stdcall。
@@ -12,7 +12,7 @@
 #include <cstdint>
 
 #if defined(_WIN32)
-#define VG_ENGINE_ABI_STDCALL __stdcall
+#define NN_ENGINE_ABI_STDCALL __stdcall
 #else
-#define VG_ENGINE_ABI_STDCALL
+#define NN_ENGINE_ABI_STDCALL
 #endif

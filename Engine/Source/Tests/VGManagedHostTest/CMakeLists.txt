@@ -11,7 +11,7 @@ endif()
 
 find_package(GTest CONFIG REQUIRED)
 
-# 与 VGManagedHost/CMakeLists.txt 中 visiongal_managed_runtime_publish 输出目录一致；
+# 与 NNRuntimeManagedHost/CMakeLists.txt 中 visiongal_managed_runtime_publish 输出目录一致；
 # 供测试 exe 在未设置环境变量（例如从 VS 直接运行）时仍能解析托管产物路径。
 if(NOT DEFINED VISIONGAL_MANAGED_PUBLISH_DIR)
 	set(VISIONGAL_MANAGED_PUBLISH_DIR "${CMAKE_BINARY_DIR}/ManagedRuntimePublish")
@@ -24,14 +24,14 @@ add_executable(VGManagedHostTest
 )
 
 target_include_directories(VGManagedHostTest PRIVATE
-	"${PROJECT_SOURCE_DIR}/Engine/Source/Managed/VGManagedHost/Include"
-	"${PROJECT_SOURCE_DIR}/Engine/Source/Managed/VGManagedCore/Include"
+	"${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeManagedHost/Include"
+	"${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeManaged/Include"
 )
 
 target_link_libraries(VGManagedHostTest PRIVATE
-	VGNativeEngineAPI
-	VGManagedCore
-	VGManagedHost
+	NevernessRuntime-NativeEngineAPIStub
+	NevernessRuntime-Managed
+	NevernessRuntime-ManagedHost
 	GTest::gtest
 	GTest::gtest_main
 )
@@ -44,7 +44,10 @@ add_dependencies(VGManagedHostTest visiongal_managed_runtime_publish)
 
 add_custom_command(TARGET VGManagedHostTest POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		"$<TARGET_FILE:VGManagedHost>"
+		"$<TARGET_FILE:NevernessRuntime-ManagedHost>"
+		"$<TARGET_FILE_DIR:VGManagedHostTest>"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"$<TARGET_FILE:NevernessRuntime-Managed>"
 		"$<TARGET_FILE_DIR:VGManagedHostTest>"
 	VERBATIM
 )

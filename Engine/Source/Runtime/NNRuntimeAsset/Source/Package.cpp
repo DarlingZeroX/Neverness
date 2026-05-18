@@ -11,7 +11,7 @@
 
 #include "Package.h"
 
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNCore/Interface/HStringTools.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 
@@ -31,8 +31,8 @@ namespace NN::Runtime
 		m_VirtualDataFilePath = path;
 		m_VirtualMetaFilePath = path + ".meta";
 
-		m_PhysicalMetaFilePath = VFS::GetInstance()->AbsolutePath(m_VirtualDataFilePath) + ".meta";
-		m_PhysicalDataFilePath = VFS::GetInstance()->AbsolutePath(m_VirtualDataFilePath);
+		m_PhysicalMetaFilePath = VFS::VFSService::GetInstance()->AbsolutePath(m_VirtualDataFilePath) + ".meta";
+		m_PhysicalDataFilePath = VFS::VFSService::GetInstance()->AbsolutePath(m_VirtualDataFilePath);
 	}
 
 	bool VGPackage::GetMeatData(const String& path, VGAssetMetaData& metadata)
@@ -46,7 +46,7 @@ namespace NN::Runtime
 		// MetaData Stream
 		String metaPath = path + ".meta";
 
-		IStringStreamVFS stream;
+		VFS::IStringStreamVFS stream;
 		if (!stream.Open(metaPath))
 		{
 			if (ext == ".png" || ext == ".jpg" || ext == ".bmp" || ext == ".tga")
@@ -183,7 +183,7 @@ namespace NN::Runtime
 	bool VGPackage::WriteMetaData(const String& data)
 	{
 		// 创建或打开一个文件用于写入
-		auto metaFile = VFS::GetInstance()->OpenFile(vfspp::FileInfo(m_VirtualMetaFilePath), vfspp::IFile::FileMode::Write);
+		auto metaFile = VFS::VFSService::GetInstance()->OpenFile(NN::Runtime::VFS::FileInfo(m_VirtualMetaFilePath), NN::Runtime::VFS::IFile::FileMode::Write);
 		if (!metaFile->IsOpened())
 			return false;
 

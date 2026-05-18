@@ -11,7 +11,7 @@
 
 #include "AssetManager.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "TextureAsset.h"
 #include "VideoAsset.h"
 #include "AudioAsset.h"
@@ -42,7 +42,7 @@ namespace NN::Runtime
 			if (it->second.HasLastWriteTime == false)
 				return false;
 
-			auto absPath = VFS::GetInstance()->AbsolutePath(path);
+			auto absPath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 			if (NN::Core::HFileSystem::ExistsFile(absPath))
 			{
 				if (it->second.LastWriteTime != std::filesystem::last_write_time(absPath))
@@ -128,7 +128,7 @@ namespace NN::Runtime
 				m_AssetMap[path].Path = path;
 
 				// 保存文件最后修改时间
-				auto absPath = VFS::GetInstance()->AbsolutePath(path);
+				auto absPath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 				if (NN::Core::HFileSystem::ExistsFile(absPath))
 				{
 					m_AssetMap[path].LastWriteTime = std::filesystem::last_write_time(absPath);
@@ -190,7 +190,7 @@ namespace NN::Runtime
 			m_AssetMap.erase(path);
 		}
 
-		auto aPath = VFS::GetInstance()->AbsolutePath(path);
+		auto aPath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 
 		if (aPath.empty())
 			return false;

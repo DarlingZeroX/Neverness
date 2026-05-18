@@ -13,7 +13,8 @@
 #include "Engine/ResourceManager.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 #include "Engine/Manager.h"
 #include "Scene/GameActorFactory.h"
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>

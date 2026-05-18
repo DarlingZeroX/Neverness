@@ -12,15 +12,17 @@
 #pragma once
 #include "PackageFile.h"
 #include "PakReader.h"
-#include <NNFileSystem/Include/VFS/IFileSystem.h>
-//#include <NNFileSystem/Include/VFS/Global.h>
-#include <NNFileSystem/Include/VFS/StringUtils.hpp>
+#include <mutex>
+#include <vector>
+#include "NNRuntimeVFS/Include/VFS/IFileSystem.h"
+//#include "NNRuntimeVFS/Include/VFS.h"
+#include "NNRuntimeVFS/Include/VFS/StringUtils.h"
 //#include "ZipFile.hpp"
 //#include "zip_file.hpp"
 
 namespace fs = std::filesystem;
 
-namespace vfspp
+namespace NN::Runtime::VFS
 {
 
 using VGPackageFileSystemPtr = std::shared_ptr<class VGPackageFileSystem>;
@@ -47,7 +49,7 @@ public:
      */
     virtual void Initialize() override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             InitializeST();
         } else {
@@ -60,7 +62,7 @@ public:
      */
     virtual void Shutdown() override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             ShutdownST();
         } else {
@@ -81,7 +83,7 @@ public:
      */
     virtual const std::string& BasePath() const override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             return BasePathST();
         } else {
@@ -94,7 +96,7 @@ public:
      */
     virtual const TFileList& FileList() const override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             return FileListST();
         } else {
@@ -116,7 +118,7 @@ public:
      */
     virtual IFilePtr OpenFile(const FileInfo& filePath, IFile::FileMode mode) override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             return OpenFileST(filePath, mode);
         } else {
@@ -167,7 +169,7 @@ public:
      */
     virtual bool IsFileExists(const FileInfo& filePath) const override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             return IsFileExistsST(filePath);
         } else {
@@ -180,7 +182,7 @@ public:
      */
     virtual bool IsFile(const FileInfo& filePath) const override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             return IFileSystem::IsFile(filePath, m_FileList);
         } else {
@@ -193,7 +195,7 @@ public:
      */
     virtual bool IsDir(const FileInfo& dirPath) const override
     {
-        if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+        if constexpr (VFS_MT_SUPPORT_ENABLED) {
             std::lock_guard<std::mutex> lock(m_Mutex);
             return IFileSystem::IsDir(dirPath, m_FileList);
         } else {
@@ -331,4 +333,4 @@ private:
     mutable std::mutex m_Mutex;
 };
 
-} // namespace vfspp
+} // namespace NN::Runtime::VFS

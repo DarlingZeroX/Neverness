@@ -14,21 +14,21 @@
 extern "C" {
 #endif
 
-typedef VGAssetHandle(VG_ENGINE_ABI_STDCALL* VGAssetLoadFn)(const char* virtualPathUtf8);
+typedef NNAssetHandle(NN_ENGINE_ABI_STDCALL* NNAssetLoadFn)(const char* virtualPathUtf8);
 
-typedef void(VG_ENGINE_ABI_STDCALL* VGAssetUnloadFn)(VGAssetHandle asset);
+typedef void(NN_ENGINE_ABI_STDCALL* NNAssetUnloadFn)(NNAssetHandle asset);
 
-typedef VGTextureHandle(VG_ENGINE_ABI_STDCALL* VGAssetLoadTextureFn)(const char* virtualPathUtf8);
+typedef NNTextureHandle(NN_ENGINE_ABI_STDCALL* NNAssetLoadTextureFn)(const char* virtualPathUtf8);
 
-typedef VGAudioHandle(VG_ENGINE_ABI_STDCALL* VGAssetLoadAudioFn)(const char* virtualPathUtf8);
+typedef NNAudioHandle(NN_ENGINE_ABI_STDCALL* NNAssetLoadAudioFn)(const char* virtualPathUtf8);
 
-typedef struct VGAssetAPI
+typedef struct NNAssetAPI
 {
-	VGAssetLoadFn loadAsset;
-	VGAssetUnloadFn unloadAsset;
-	VGAssetLoadTextureFn loadTexture;
-	VGAssetLoadAudioFn loadAudio;
-} VGAssetAPI;
+	NNAssetLoadFn loadAsset;
+	NNAssetUnloadFn unloadAsset;
+	NNAssetLoadTextureFn loadTexture;
+	NNAssetLoadAudioFn loadAudio;
+} NNAssetAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

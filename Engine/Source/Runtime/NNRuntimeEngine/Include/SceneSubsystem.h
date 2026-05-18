@@ -18,42 +18,42 @@ class SceneSubsystem final
 {
 public:
 	int LoadScene(const char* sceneNameUtf8) noexcept;
-	VGEntityHandle Spawn(const char* prefabVirtualPathUtf8) noexcept;
-	void Destroy(VGEntityHandle entity) noexcept;
-	VGEntityHandle Find(const char* entityNameUtf8) noexcept;
-	void Activate(VGEntityHandle entity, int active) noexcept;
+	NNEntityHandle Spawn(const char* prefabVirtualPathUtf8) noexcept;
+	void Destroy(NNEntityHandle entity) noexcept;
+	NNEntityHandle Find(const char* entityNameUtf8) noexcept;
+	void Activate(NNEntityHandle entity, int active) noexcept;
 
 	int UnloadScene(const char* sceneNameUtf8) noexcept;
 	int GetActiveSceneName(char* outUtf8, std::size_t outCapacity) const noexcept;
-	void SetParent(VGEntityHandle child, VGEntityHandle parent) noexcept;
-	VGEntityHandle GetParent(VGEntityHandle entity) const noexcept;
-	std::uint32_t GetChildCount(VGEntityHandle entity) const noexcept;
-	VGEntityHandle GetChildAt(VGEntityHandle entity, std::uint32_t index) const noexcept;
-	void GetTransform(VGEntityHandle entity, VGTransform3* outTransform) const noexcept;
-	void SetTransform(VGEntityHandle entity, const VGTransform3* transform) noexcept;
-	int SetEntityName(VGEntityHandle entity, const char* nameUtf8) noexcept;
-	int GetEntityName(VGEntityHandle entity, char* outUtf8, std::size_t outCapacity) const noexcept;
+	void SetParent(NNEntityHandle child, NNEntityHandle parent) noexcept;
+	NNEntityHandle GetParent(NNEntityHandle entity) const noexcept;
+	std::uint32_t GetChildCount(NNEntityHandle entity) const noexcept;
+	NNEntityHandle GetChildAt(NNEntityHandle entity, std::uint32_t index) const noexcept;
+	void GetTransform(NNEntityHandle entity, NNTransform3* outTransform) const noexcept;
+	void SetTransform(NNEntityHandle entity, const NNTransform3* transform) noexcept;
+	int SetEntityName(NNEntityHandle entity, const char* nameUtf8) noexcept;
+	int GetEntityName(NNEntityHandle entity, char* outUtf8, std::size_t outCapacity) const noexcept;
 
 private:
 	struct Entity
 	{
-		VGEntityHandle id{0};
+		NNEntityHandle id{0};
 		std::string name{};
-		VGEntityHandle parent{0};
-		std::vector<VGEntityHandle> children{};
-		VGTransform3 transform{};
+		NNEntityHandle parent{0};
+		std::vector<NNEntityHandle> children{};
+		NNTransform3 transform{};
 		int active{1};
 		bool alive{true};
 	};
 
-	static VGTransform3 DefaultTransform() noexcept;
+	static NNTransform3 DefaultTransform() noexcept;
 
-	void RemoveFromParent(VGEntityHandle child) noexcept;
-	VGEntityHandle AllocateEntity() noexcept;
+	void RemoveFromParent(NNEntityHandle child) noexcept;
+	NNEntityHandle AllocateEntity() noexcept;
 
 	mutable std::mutex mutex_{};
 	std::string activeScene_{};
-	std::unordered_map<VGEntityHandle, Entity> entities_{};
-	std::atomic<VGEntityHandle> nextEntity_{1};
+	std::unordered_map<NNEntityHandle, Entity> entities_{};
+	std::atomic<NNEntityHandle> nextEntity_{1};
 };
 } // namespace visiongal::engine

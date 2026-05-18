@@ -28,13 +28,12 @@ target_sources(NevernessRuntime-Core
     Include/Core/Events.h
     Include/Core/Input.h
     Include/Core/RuntimeCore.h
-    Include/Core/VFS.h
     Include/Core/Viewport.h
     Include/Core/Window.h
     Include/Data/DataContainer.h
     Include/Data/DataNamespace.h
     Include/Data/DataVariant.h
-    Include/pch.h
+    
     Include/Utils/LuaHelper.h
     Include/Utils/TimeHelper.h
     Include/Utils/TransitionHelper.h
@@ -43,7 +42,6 @@ target_sources(NevernessRuntime-Core
     Source/Core/EventBus.cpp
     Source/Core/Input.cpp
     Source/Core/RuntimeCore.cpp
-    Source/Core/VFS.cpp
     Source/Core/Viewport.cpp
     Source/Core/Window.cpp
     Source/Data/DataContainer.cpp
@@ -56,7 +54,7 @@ target_sources(NevernessRuntime-Core
     Source/Interface/ISceneFactory.cpp
     Source/Interface/Loader.cpp
     Source/Interface/SceneInterface.cpp
-    Source/pch.cpp
+    
     Source/Utils/LuaHelper.cpp
     Source/Utils/TimeHelper.cpp
     Source/Utils/TransitionHelper.cpp
@@ -68,11 +66,6 @@ target_include_directories(NevernessRuntime-Core PRIVATE ${PROJECT_SOURCE_DIR}/E
 target_include_directories(NevernessRuntime-Core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-Core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(NevernessRuntime-Core PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeLua/Include)
-
-# 配置预编译头
-target_precompile_headers(NevernessRuntime-Core PRIVATE
-    "Include/pch.h"
-)
  
 find_package(SDL3 CONFIG REQUIRED)
 find_package(RmlUi REQUIRED)
@@ -84,6 +77,7 @@ target_link_libraries(NevernessRuntime-Core PRIVATE $<IF:$<TARGET_EXISTS:SDL3_im
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-Core)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-PlatformCore)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-FileSystem)
+target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-VFS)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-ImGui)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-RHI)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-Pak)

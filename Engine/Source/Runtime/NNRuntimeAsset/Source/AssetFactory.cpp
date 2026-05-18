@@ -16,7 +16,7 @@
 #include "NNRuntimeAsset/Include/SceneAsset.h"
 #include "NNRuntimeAsset/Include/UIAsset.h"
 #include "NNRuntimeAsset/Interface/SceneAccessor.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
 
@@ -62,11 +62,11 @@ namespace NN::Runtime
 
 	Ref<VGAsset> SceneAssetFactory::CreateAsset(const String& path)
 	{
-		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
+		auto absolutePath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 
 		// 先得到保存路径
 		auto aPath = GenerateAssetPath(absolutePath, "NewScene", ".vgasset");
-		auto rPath = VFS::GetResourcePathVFS(aPath);
+		auto rPath = RuntimeCore::GetResourcePathVFS(aPath);
 
 		// 创建场景资产
 		SceneAssetWriter writer;
@@ -95,7 +95,7 @@ namespace NN::Runtime
 
 	Ref<VGAsset> UIDocumentAssetFactory::CreateAsset(const String& path)
 	{
-		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
+		auto absolutePath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
 		Ref<UIDocumentAsset> asset = MakeRef<UIDocumentAsset>();
@@ -104,11 +104,11 @@ namespace NN::Runtime
 		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/document.html";
 
 		String templateText;
-		if ( VFS::ReadTextFromFile(templatePath, templateText))
+		if (VFS::VFSService::ReadTextFromFile(templatePath, templateText))
 		{
 			// 先得到保存路径
 			auto aPath = GenerateAssetPath(absolutePath, "document", ".html");
-			auto rPath = VFS::GetResourcePathVFS(aPath);
+			auto rPath = RuntimeCore::GetResourcePathVFS(aPath);
 
 			// 写入资产数据
 			asset->Text = templateText;
@@ -131,7 +131,7 @@ namespace NN::Runtime
 
 	Ref<VGAsset> UICssAssetFactory::CreateAsset(const String& path)
 	{
-		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
+		auto absolutePath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
 		Ref<UICssAsset> asset = MakeRef<UICssAsset>();
@@ -140,11 +140,11 @@ namespace NN::Runtime
 		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/style.css";
 		String templateText;
 
-		if (VFS::ReadTextFromFile(templatePath, templateText))
+		if (VFS::VFSService::ReadTextFromFile(templatePath, templateText))
 		{
 			// 先得到保存路径
 			auto aPath = GenerateAssetPath(absolutePath, "style", ".css");
-			auto rPath = VFS::GetResourcePathVFS(aPath);
+			auto rPath = RuntimeCore::GetResourcePathVFS(aPath);
 
 			// 写入资产数据
 			asset->Text = templateText;
@@ -167,7 +167,7 @@ namespace NN::Runtime
 
 	Ref<VGAsset> LuaScriptAssetFactory::CreateAsset(const String& path)
 	{
-		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
+		auto absolutePath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
 		Ref<LuaScriptAsset> asset = MakeRef<LuaScriptAsset>();
@@ -176,11 +176,11 @@ namespace NN::Runtime
 		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/luaScript.lua";
 		String templateText;
 
-		if (VFS::ReadTextFromFile(templatePath, templateText))
+		if (VFS::VFSService::ReadTextFromFile(templatePath, templateText))
 		{
 			// 先得到保存路径
 			auto aPath = GenerateAssetPath(absolutePath, "script", ".lua");
-			auto rPath = VFS::GetResourcePathVFS(aPath);
+			auto rPath = RuntimeCore::GetResourcePathVFS(aPath);
 
 			// 写入资产数据
 			asset->Text = templateText;
@@ -203,7 +203,7 @@ namespace NN::Runtime
 
 	Ref<VGAsset> GalGameStoryScriptFactory::CreateAsset(const String& path)
 	{
-		auto absolutePath = VFS::GetInstance()->AbsolutePath(path);
+		auto absolutePath = VFS::VFSService::GetInstance()->AbsolutePath(path);
 
 		// 先创建UI文档资产
 		Ref<GalGameLuaScriptAsset> asset = MakeRef<GalGameLuaScriptAsset>();
@@ -212,11 +212,11 @@ namespace NN::Runtime
 		String templatePath = RuntimeCore::GetEngineResourcePathVFS() + "asset/template/galgameStoryScript.lua";
 		String templateText;
 
-		if (VFS::ReadTextFromFile(templatePath, templateText))
+		if (VFS::VFSService::ReadTextFromFile(templatePath, templateText))
 		{
 			// 先得到保存路径
 			auto aPath = GenerateAssetPath(absolutePath, "GalGameScript", ".lua");
-			auto rPath = VFS::GetResourcePathVFS(aPath);
+			auto rPath = RuntimeCore::GetResourcePathVFS(aPath);
 
 			// 写入资产数据
 			asset->Text = templateText;

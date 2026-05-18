@@ -11,7 +11,7 @@
 
 #include "Core/Window.h"
 #include <SDL3_image/SDL_image.h>
-#include "Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 //#include "Graphics/OpenGL/OpenGL.h"
 #include <NNRuntimeRHI/Include/OpenGL/OpenGL.h>
 
@@ -119,10 +119,10 @@ namespace NN::Runtime
 
 		// 引擎图标
 		std::string iconPath = "/editor/icons/engineIcon.png";
-		VFS::SafeReadFileFromVFS(iconPath, [&](const VFS::DataRef& data) {
+		VFS::VFSService::SafeReadFileFromVFS(iconPath, [&](const VFS::VFSService::DataRef& data) {
 
 			const size_t i_ext = iconPath.rfind('.');
-			String extension = (i_ext == String::npos ? String() : iconPath.substr(i_ext + 1));
+			std::string extension = (i_ext == std::string::npos ? std::string() : iconPath.substr(i_ext + 1));
 
 			auto CreateSurface = [&]() { return IMG_LoadTyped_IO(SDL_IOFromMem(data->data(), data->size()), 1, extension.c_str()); };
 			SDL_Surface* surface = CreateSurface();

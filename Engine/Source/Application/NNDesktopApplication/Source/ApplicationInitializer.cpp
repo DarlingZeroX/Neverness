@@ -14,7 +14,8 @@
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <NNRuntimePak/Include/PakWriter.h>
 #include <NNRuntimeCore/Include/Core/Core.h>
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 
 void VGDesktopApplicationInitializer::PakResource(const VGDesktopApplicationVFSPath& path)
 {
@@ -37,45 +38,45 @@ void VGDesktopApplicationInitializer::InitializeVFS(const VGDesktopApplicationVF
 
 	//PakResource(path);
 
-	auto& vfs = VFS::GetInstance();
+	auto& vfs = VFSService::GetInstance();
 
 	// 添加引擎资源虚拟文件系统
-	VFS::MountPackageFileSystem(
+	NN::Runtime::VFS::MountPackageFileSystem(
 		Core::GetEngineResourcePathVFS(),
 		"Data/engine.pak",
 		path.engine
 	);
 
 	// 添加游戏资产虚拟文件系统
-	VFS::MountPackageFileSystem(
+	NN::Runtime::VFS::MountPackageFileSystem(
 		Core::GetAssetsPathVFS(),
 		"Data/assets.pak",
 		path.assets
 	);
 
 	// 添加项目设置虚拟文件系统
-	VFS::MountPackageFileSystem(
+	NN::Runtime::VFS::MountPackageFileSystem(
 		Core::GetProjectSettingsPathVFS(),
 		"Data/projectSetting.pak",
 		path.projectSettings
 	);
 
-	auto projectIntermediateFS = std::make_unique<vfspp::NativeFileSystem>(path.projectIntermediate);
+	auto projectIntermediateFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectIntermediate);
 	projectIntermediateFS->Initialize();
 	vfs->AddFileSystem(Core::GetProjectIntermediatePathVFS(), std::move(projectIntermediateFS));
 
-	auto editorPath = VFS::GetInstance()->AbsolutePath(Editor::EditorCore::GetEditorResourcePathVFS());
+	auto editorPath = VFSService::GetInstance()->AbsolutePath(Editor::EditorCore::GetEditorResourcePathVFS());
 	H_LOG_INFO("Editor resource path: %s", editorPath.c_str());
 
-	auto enginePath = VFS::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
+	auto enginePath = VFSService::GetInstance()->AbsolutePath(Core::GetEngineResourcePathVFS());
 	H_LOG_INFO("Engine resource path: %s", enginePath.c_str());
 
-	auto assetsPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
+	auto assetsPath = VFSService::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
 	H_LOG_INFO("Assets resource: %s", assetsPath.c_str());
 
-	auto projectSettingsPath = VFS::GetInstance()->AbsolutePath(Core::GetProjectSettingsPathVFS());
+	auto projectSettingsPath = VFSService::GetInstance()->AbsolutePath(Core::GetProjectSettingsPathVFS());
 	H_LOG_INFO("Project settings resource path: %s", projectSettingsPath.c_str());
 
-	auto projectIntermediatePath = VFS::GetInstance()->AbsolutePath(Core::GetProjectIntermediatePathVFS());
+	auto projectIntermediatePath = VFSService::GetInstance()->AbsolutePath(Core::GetProjectIntermediatePathVFS());
 	H_LOG_INFO("Project intermediate path: %s", projectIntermediatePath.c_str());
 }

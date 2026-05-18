@@ -11,7 +11,7 @@
 
 #include "LuaScriptAsset.h"
 #include "Package.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Runtime
 {
@@ -26,7 +26,7 @@ namespace NN::Runtime
 			return false;
 
 		// 创建或打开一个文件用于写入
-		if (VFS::WriteTextToFile(path, uiAsset->Text) == false)
+		if (VFS::VFSService::WriteTextToFile(path, uiAsset->Text) == false)
 			return false;
 
 		// 写入元信息

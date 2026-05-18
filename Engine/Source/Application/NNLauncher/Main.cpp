@@ -12,7 +12,8 @@
 #include "VGLauncherData.h"
 #include "Include/VGLauncher.h"
 #include <NNRuntimePak/Include/PackageFileSystem.h>
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
 #include <NNEditorFramework/Include/EditorCore/EditorCore.h>
 using namespace NN::Runtime;
@@ -34,14 +35,14 @@ void InitializeVFS(LauncherVFSPath path)
 	using namespace VisionGal;
 
 	// 添加编辑器资源虚拟文件系统
-	VFS::MountPackageFileSystem(
+	NN::Runtime::VFS::MountPackageFileSystem(
 		NN::Editor::EditorCore::GetEditorResourcePathVFS(),
 		"Data/editor.pak",
 		path.editor
 	);
 
 	// 添加引擎资源虚拟文件系统
-	VFS::MountPackageFileSystem(
+	NN::Runtime::VFS::MountPackageFileSystem(
 		RuntimeCore::GetEngineResourcePathVFS(),
 		"Data/engine.pak",
 		path.engine

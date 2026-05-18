@@ -1,18 +1,19 @@
-#include <chrono>
+﻿#include <chrono>
 #include <cstdlib>
 #include <filesystem>
 #include <thread>
 
 #include <gtest/gtest.h>
 
-#include "NNNativeEngineAPI/NativeEngineAPI.h"
-#include "VGManagedCore/ManagedExports.h"
-#include "VGManagedCore/NativeAPI.h"
-#include "VGManagedHost/ManagedFunction.h"
-#include "VGManagedHost/ManagedHost.h"
+#include "EngineAPIRegistry.h"
+#include "NNRuntimeNativeEngineApiStub.h"
+#include "ManagedExports.h"
+#include "NativeAPI.h"
+#include "ManagedFunction.h"
+#include "ManagedHost.h"
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
-#include "NNRuntimeEngineServices/NativeEngineRuntimeServices.h"
+#include "NativeEngineRuntimeServices.h"
 #endif
 
 namespace fs = std::filesystem;
@@ -69,8 +70,8 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_TRUE(fs::exists(publish / "NevernessRuntimeManaged-RuntimeLoop.dll"));
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
-	ASSERT_TRUE(VGEngineRuntimeHost_Initialize());
-	VGEngineRuntimeHost_Tick(1.f / 60.f);
+	ASSERT_TRUE(NNEngineRuntimeHost_Initialize());
+	NNEngineRuntimeHost_Tick(1.f / 60.f);
 #endif
 
 	VGManagedHost host;
@@ -87,10 +88,9 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_NE(smokeFn, nullptr);
 	reinterpret_cast<VGManagedVoidThunk>(smokeFn)();
 
-	// Phase 2：計數必須與 VGNativeApi_GetDefaultTable() 同源（exe 內嵌的 VGManagedCore）。
-	// 若改呼叫 VGManagedHost_GetNativeLogInfoCallCountForTest，會讀到 VGManagedHost.dll 內另一份靜態副本，永遠為 0。
-	const std::uint32_t logCountBefore = VGNativeApi_GetLogInfoCallCount();
-	const std::uint32_t engineStubCountBefore = VGNativeEngineApi_GetStubInvokeCount();
+	// Phase 2：計數必須與 NNNativeApi_GetDefaultTable() 同源（NNRuntimeManaged.dll）。
+	const std::uint32_t logCountBefore = NNNativeApi_GetLogInfoCallCount();
+	const std::uint32_t engineStubCountBefore = NNNativeEngineApi_GetStubInvokeCount();
 	void* bootstrapFn{};
 	ASSERT_TRUE(host.TryGetUnmanagedCallersOnly(
 		dll,
@@ -100,32 +100,32 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	ASSERT_NE(bootstrapFn, nullptr);
 
 #if defined(_WIN32)
-	using BootstrapThunk = void(__stdcall*)(const VGNativeAPI*);
+	using BootstrapThunk = void(__stdcall*)(const NNNativeAPI*);
 #else
-	using BootstrapThunk = void(*)(const VGNativeAPI*);
+	using BootstrapThunk = void(*)(const NNNativeAPI*);
 #endif
 
-	const VGNativeAPI* const apiTable = VGNativeApi_GetDefaultTable();
+	const NNNativeAPI* const apiTable = NNNativeApi_GetDefaultTable();
 	ASSERT_NE(apiTable, nullptr);
-	ASSERT_EQ(apiTable->apiVersion, VG_NATIVE_API_VERSION);
+	ASSERT_EQ(apiTable->apiVersion, NN_NATIVE_API_VERSION);
 	ASSERT_NE(apiTable->engineServices, nullptr);
-	// §2.7.1：layout v5 起 **VGEntityAPI** 含 **getRuntimeTick**；與 **Neverness.Managed.Engine.VGNativeEngineApiConstants.LayoutVersion** 對齊。
+	// §2.7.1：layout v5 起 **NNEntityAPI** 含 **getRuntimeTick**；與 **Neverness.Managed.Engine.NNNativeEngineApiConstants.LayoutVersion** 對齊。
 	ASSERT_EQ(apiTable->engineServices->layoutVersion, 5u);
-	// **getServiceAbiToken** 為子表接線冒煙（**VG_ENTITY_SERVICE_ABI_TOKEN**）；非場景 **VGEntityHandle**、亦非託管 **EntityHandle**。
+	// **getServiceAbiToken** 為子表接線冒煙（**NN_ENTITY_SERVICE_ABI_TOKEN**）；非場景 **NNEntityHandle**、亦非託管 **EntityHandle**。
 	ASSERT_NE(apiTable->engineServices->entity.getServiceAbiToken, nullptr);
-	ASSERT_EQ(apiTable->engineServices->entity.getServiceAbiToken(), VG_ENTITY_SERVICE_ABI_TOKEN);
+	ASSERT_EQ(apiTable->engineServices->entity.getServiceAbiToken(), NN_ENTITY_SERVICE_ABI_TOKEN);
 	ASSERT_NE(apiTable->engineServices->entity.getRuntimeTick, nullptr);
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	ASSERT_GE(apiTable->engineServices->entity.getRuntimeTick(), 1u)
-		<< "VGEngineRuntimeHost_Tick 已於上文驅動 EntitySubsystem；Runtime 覆寫後應遞增 runtimeTick。";
+		<< "NNEngineRuntimeHost_Tick 已於上文驅動 EntitySubsystem；Runtime 覆寫後應遞增 runtimeTick。";
 #else
 	ASSERT_EQ(apiTable->engineServices->entity.getRuntimeTick(), 0u);
 #endif
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	{
-		const VGNativeEngineAPI* const eng = apiTable->engineServices;
+		const NNNativeEngineAPI* const eng = apiTable->engineServices;
 		ASSERT_NE(eng->timing.getFrameIndex, nullptr);
 		const std::uint64_t frame = eng->timing.getFrameIndex();
 		ASSERT_GE(frame, 1u);
@@ -135,7 +135,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 		ASSERT_NE(eng->asyncWait.createWait, nullptr);
 		ASSERT_NE(eng->asyncWait.tryComplete, nullptr);
 		ASSERT_NE(eng->asyncWait.releaseWait, nullptr);
-		const VGAsyncWaitHandle wait = eng->asyncWait.createWait();
+		const NNAsyncWaitHandle wait = eng->asyncWait.createWait();
 		ASSERT_NE(wait, 0u);
 		int sawComplete = 0;
 		for (int i = 0; i < 4000; ++i)
@@ -155,7 +155,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 		ASSERT_NE(eng->object.retainObject, nullptr);
 		ASSERT_NE(eng->object.releaseObject, nullptr);
 		ASSERT_NE(eng->object.isAlive, nullptr);
-		const VGObjectHandle obj = eng->object.createObject("TestType");
+		const NNObjectHandle obj = eng->object.createObject("TestType");
 		ASSERT_NE(obj, 0u);
 		ASSERT_EQ(eng->object.isAlive(obj), 1);
 		eng->object.retainObject(obj);
@@ -167,8 +167,8 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 		ASSERT_NE(eng->scene.spawn, nullptr);
 		ASSERT_NE(eng->scene.setParent, nullptr);
 		ASSERT_NE(eng->scene.getChildCount, nullptr);
-		const VGEntityHandle e1 = eng->scene.spawn("prefab.vgprefab");
-		const VGEntityHandle e2 = eng->scene.spawn("prefab.vgprefab");
+		const NNEntityHandle e1 = eng->scene.spawn("prefab.vgprefab");
+		const NNEntityHandle e2 = eng->scene.spawn("prefab.vgprefab");
 		ASSERT_NE(e1, 0u);
 		ASSERT_NE(e2, 0u);
 		eng->scene.setParent(e2, e1);
@@ -177,7 +177,7 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 		// Phase 5：AssetRegistry
 		ASSERT_NE(eng->assetRegistry.registerAsset, nullptr);
 		ASSERT_NE(eng->assetRegistry.resolvePathByGuid, nullptr);
-		VGGuid g{};
+		NNGuid g{};
 		g.high = 0x11u;
 		g.low = 0x22u;
 		ASSERT_EQ(eng->assetRegistry.registerAsset("/assets/test.png", g), 0);
@@ -227,16 +227,16 @@ TEST(VGManagedHost, InteropSmokeAndBootstrapNativeApi)
 	EXPECT_NE(bootstrapFlags & 8, 0) << "BootstrapEngineFoundation flag";
 	EXPECT_NE(bootstrapFlags & 16, 0) << "BootstrapGameplay flag";
 
-	EXPECT_GT(VGNativeApi_GetLogInfoCallCount(), logCountBefore);
+	EXPECT_GT(NNNativeApi_GetLogInfoCallCount(), logCountBefore);
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
 	(void)engineStubCountBefore;
 #else
-	EXPECT_GT(VGNativeEngineApi_GetStubInvokeCount(), engineStubCountBefore);
+	EXPECT_GT(NNNativeEngineApi_GetStubInvokeCount(), engineStubCountBefore);
 #endif
 
 	host.Shutdown();
 
 #if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
-	VGEngineRuntimeHost_Shutdown();
+	NNEngineRuntimeHost_Shutdown();
 #endif
 }

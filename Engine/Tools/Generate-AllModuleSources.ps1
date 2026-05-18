@@ -131,6 +131,30 @@ $modules = @(
         )
     },
     @{
+        ModuleRoot = 'Engine/Source/Editor/NNEditor'
+        VariableName = 'NNEditor'
+        RelativeGlobs = @('*.cpp', '*.h', 'Include/*.h', 'Source/*.cpp')
+    },
+    @{
+        ModuleRoot = 'Engine/Source/Editor/NNEditorFramework'
+        VariableName = 'NNEditorFramework'
+        RelativeGlobs = @(
+            'Include/*.h',
+            'Include/Asset/*.h', 'Include/Asset/ImportStarter/*.h', 'Include/Asset/ImporterUITask/*.h',
+            'Include/AssetEditor/*.h', 'Include/AssetImporter/*.h',
+            'Include/DetailBrowser/*.h', 'Include/ContentBrowser/*.h', 'Include/CodeStudio/*.h',
+            'Include/MainEditor/*.h', 'Include/Setting/*.h', 'Include/Preferences/*.h',
+            'Include/UITask/*.h', 'Include/EditorCore/*.h',
+            'Interface/*.h',
+            'Source/*.cpp',
+            'Source/Asset/*.cpp', 'Source/Asset/ImportStarter/*.cpp', 'Source/Asset/ImporterUITask/*.cpp',
+            'Source/AssetEditor/*.cpp', 'Source/AssetImporter/*.cpp',
+            'Source/DetailBrowser/*.cpp', 'Source/ContentBrowser/*.cpp', 'Source/CodeStudio/*.cpp',
+            'Source/MainEditor/*.cpp', 'Source/Setting/*.cpp', 'Source/Preferences/*.cpp',
+            'Source/UITask/*.cpp', 'Source/EditorCore/*.cpp', 'Source/Interface/*.cpp'
+        )
+    },
+    @{
         ModuleRoot = 'Engine/Source/Runtime/NNRuntimeLua'
         VariableName = 'NNRuntimeLua'
         RelativeGlobs = @(

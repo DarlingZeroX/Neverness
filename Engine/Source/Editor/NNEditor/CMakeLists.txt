@@ -16,22 +16,15 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-# 将源代码添加到此项目的可执行文件。
-file(GLOB EDITOR_HEADER_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-)
-
-file(GLOB EDITOR_SRC_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-)
+include(${CMAKE_CURRENT_SOURCE_DIR}/NNEditorSources.cmake)
 
 # 文件图标
 if(WIN32)
-     set(APP_RESOURCES resources.rc)
+    set(APP_RESOURCES resources.rc)
 endif()
-add_executable (VGEditor ${EDITOR_HEADER_FILES} ${EDITOR_SRC_FILES} ${APP_RESOURCES})
+
+add_executable(VGEditor)
+target_sources(VGEditor PRIVATE ${NNEditor_SOURCES} ${APP_RESOURCES})
 
 target_compile_definitions(VGEditor PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")
 

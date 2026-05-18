@@ -12,7 +12,7 @@
 #include "SceneAccessor.h"
 #include "SceneSerializerFactory.h"
 #include <NNCore/Interface/HSerialization.h>
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
 #include "NNRuntimeAsset/Interface/Package.h"
 //#include "Scene/Components.h"
@@ -26,7 +26,7 @@ namespace NN::Runtime
 		IScene* scene = sceneAsset->WriteScene;
 
 		// 创建或打开一个文件用于写入
-		auto file = VFS::GetInstance()->OpenFile(vfspp::FileInfo(path), vfspp::IFile::FileMode::Write);
+		auto file = VFS::VFSService::GetInstance()->OpenFile(NN::Runtime::VFS::FileInfo(path), NN::Runtime::VFS::IFile::FileMode::Write);
 		if (file == nullptr)
 			return false;
 
@@ -69,7 +69,7 @@ namespace NN::Runtime
 		//sceneAsset->LoadedScene = dynamic_pointer_cast<IScene>(MakeRef<Scene>());
 		sceneAsset->LoadedScene = SceneFactoryRegistry::GetFactory()->CreateScene();
 
-		IStringStreamVFS stream;
+		VFS::IStringStreamVFS stream;
 		if (stream.Open(path) == false)
 			return false;
 	//

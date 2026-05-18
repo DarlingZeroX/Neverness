@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -15,7 +15,7 @@
 #include <NNRuntimeImGui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <NNRuntimeImGui/Include/Imgui/imgui_impl_opengl3.h>
 #include <NNEditorFramework/Framework.h>
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNEditorFramework/Interface/AssetEditor.h"
 #if defined(VISIONGAL_BUILD_LEGACY_GALGAME)
 #include "VGGalgame/Interface/GalgameSystem.h"
@@ -89,7 +89,7 @@ namespace VisionGal::Editor
 
 		//if (m_EditorConfig.LoadFontChinese)
 		{
-			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const NN::Runtime::VFS::DataRef& data) {
+			NN::Runtime::VFS::VFSService::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const NN::Runtime::VFS::VFSService::DataRef& data) {
 				ImGuiIO& io = ImGui::GetIO();
 				ImFontConfig icons_config;
 				icons_config.FontDataOwnedByAtlas = false;
@@ -107,7 +107,7 @@ namespace VisionGal::Editor
 
 		//if (m_EditorConfig.LoadFontAwesome)
 		{
-			NN::Runtime::VFS::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const NN::Runtime::VFS::DataRef& data) {
+			NN::Runtime::VFS::VFSService::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const NN::Runtime::VFS::VFSService::DataRef& data) {
 				ImGuiIO& io = ImGui::GetIO();
 				static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 

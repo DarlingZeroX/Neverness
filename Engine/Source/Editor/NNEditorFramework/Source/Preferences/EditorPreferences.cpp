@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -15,7 +15,7 @@
 #include "NNEditorFramework/Include/EditorCore/Localization.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "MainEditor/MainPanel.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeImGui/IncludeImGuiEx.h"
 
 namespace NN::Editor

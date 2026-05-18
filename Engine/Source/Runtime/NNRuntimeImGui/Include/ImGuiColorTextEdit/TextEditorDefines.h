@@ -1,4 +1,4 @@
-// https://github.com/dfranx/ImGuiColorTextEdit	 start on Commits on Oct 21, 2020		Fix scrolling
+// https://github.com/dfranx/ImGuiColorTextEdit/tree/b66ebd70e232f0710a22730ad030e9c0aa22354b Oct 21, 2020		Fix scrolling
 /*
  * This source file is part of VisionGal, the Visual Novel Engine
  *

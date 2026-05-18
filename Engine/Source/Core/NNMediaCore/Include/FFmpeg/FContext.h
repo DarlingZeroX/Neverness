@@ -15,6 +15,7 @@
 #include "FIOContext.h"
 #include "FFormatContext.h"
 #include "../Common/FFmpegIOContext.h"
+#include <NNRuntimeVFS/Include/VFS/VirtualFileSystem.h>
 
 namespace NN::Core {
 	struct FfmpegContext
@@ -22,14 +23,14 @@ namespace NN::Core {
 		FfmpegContext() = default;
 		~FfmpegContext() = default;
 
-		static Ref<FfmpegContext> Create(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath);
+		static Ref<FfmpegContext> Create(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath);
 
 		int FindAudioStreamIndex() const;
 		int FindVideoStreamIndex() const;
 
 		FfmpegAVFormatContext* GetFormatContext() const;
 	private:
-		bool Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath);
+		bool Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath);
 
 		VFSFFmpegIOContext m_VFSIoContext;
 

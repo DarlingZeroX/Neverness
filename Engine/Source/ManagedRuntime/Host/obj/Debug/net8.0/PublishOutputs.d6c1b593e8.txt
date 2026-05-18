@@ -1,5 +1,0 @@
-e:\VisionGal\build_publish_test\VisionGal.Managed.Runtime.dll
-e:\VisionGal\build_publish_test\VisionGal.Managed.Runtime.deps.json
-e:\VisionGal\build_publish_test\VisionGal.Managed.Runtime.pdb
-e:\VisionGal\build_publish_test\VisionGal.Managed.Core.dll
-e:\VisionGal\build_publish_test\VisionGal.Managed.Core.pdb

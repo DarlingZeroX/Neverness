@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -24,7 +24,7 @@
 #include "NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace VisionGal::Editor
 {
@@ -32,7 +32,7 @@ namespace VisionGal::Editor
 	{
 		bool RunSaveAsDialog(SequenceDocument& doc)
 		{
-			const std::string contentPath = VFS::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
+			const std::string contentPath = VFSService::GetInstance()->AbsolutePath(Core::GetAssetsPathVFS());
 			std::string root = Horizon::HFileSystem::ToWindowsPath(contentPath);
 			const auto destination = pfd::save_file(
 					"Save sequence script as...",

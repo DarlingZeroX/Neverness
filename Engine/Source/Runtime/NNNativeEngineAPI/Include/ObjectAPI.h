@@ -14,27 +14,27 @@
 extern "C" {
 #endif
 
-typedef VGObjectHandle(VG_ENGINE_ABI_STDCALL* VGObjectCreateFn)(const char* typeNameUtf8);
-typedef void(VG_ENGINE_ABI_STDCALL* VGObjectDestroyFn)(VGObjectHandle object);
-typedef void(VG_ENGINE_ABI_STDCALL* VGObjectRetainFn)(VGObjectHandle object);
-typedef void(VG_ENGINE_ABI_STDCALL* VGObjectReleaseFn)(VGObjectHandle object);
-typedef std::uint32_t(VG_ENGINE_ABI_STDCALL* VGObjectGetRefCountFn)(VGObjectHandle object);
-typedef int(VG_ENGINE_ABI_STDCALL* VGObjectIsAliveFn)(VGObjectHandle object);
-typedef int(VG_ENGINE_ABI_STDCALL* VGObjectGetTypeNameFn)(
-	VGObjectHandle object,
+typedef NNObjectHandle(NN_ENGINE_ABI_STDCALL* NNObjectCreateFn)(const char* typeNameUtf8);
+typedef void(NN_ENGINE_ABI_STDCALL* NNObjectDestroyFn)(NNObjectHandle object);
+typedef void(NN_ENGINE_ABI_STDCALL* NNObjectRetainFn)(NNObjectHandle object);
+typedef void(NN_ENGINE_ABI_STDCALL* NNObjectReleaseFn)(NNObjectHandle object);
+typedef std::uint32_t(NN_ENGINE_ABI_STDCALL* NNObjectGetRefCountFn)(NNObjectHandle object);
+typedef int(NN_ENGINE_ABI_STDCALL* NNObjectIsAliveFn)(NNObjectHandle object);
+typedef int(NN_ENGINE_ABI_STDCALL* NNObjectGetTypeNameFn)(
+	NNObjectHandle object,
 	char* outUtf8,
 	std::size_t outCapacity);
 
-typedef struct VGObjectAPI
+typedef struct NNObjectAPI
 {
-	VGObjectCreateFn createObject;
-	VGObjectDestroyFn destroyObject;
-	VGObjectRetainFn retainObject;
-	VGObjectReleaseFn releaseObject;
-	VGObjectGetRefCountFn getRefCount;
-	VGObjectIsAliveFn isAlive;
-	VGObjectGetTypeNameFn getTypeName;
-} VGObjectAPI;
+	NNObjectCreateFn createObject;
+	NNObjectDestroyFn destroyObject;
+	NNObjectRetainFn retainObject;
+	NNObjectReleaseFn releaseObject;
+	NNObjectGetRefCountFn getRefCount;
+	NNObjectIsAliveFn isAlive;
+	NNObjectGetTypeNameFn getTypeName;
+} NNObjectAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

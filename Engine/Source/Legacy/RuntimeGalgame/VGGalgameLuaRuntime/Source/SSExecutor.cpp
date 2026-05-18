@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -18,7 +18,7 @@
 #include <fstream>
 #include <regex>
 #include <NNCore/Interface/HLog.h>
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 //#include "GalGameEngine.h"
 #include <sol/state.hpp>
 
@@ -54,7 +54,7 @@ namespace VisionGal::GalGame
 		m_Engine = m_ScriptExecution.HostEngine;
 
 		// 记录脚本最后修改时间 
-		auto absPath = VFS::GetInstance()->AbsolutePath(GetResourcePath());
+		auto absPath = VFSService::GetInstance()->AbsolutePath(GetResourcePath());
 		if (Horizon::HFileSystem::ExistsFile(absPath))
 		{
 			m_ScriptLastWriteTime = std::filesystem::last_write_time(absPath);
@@ -153,7 +153,7 @@ namespace VisionGal::GalGame
 
     bool LuaStoryScript::LoadScript(const String& file)
     {
-		auto result = VFS::ReadTextFromFile(file, m_ScriptCode);
+		auto result = VFSService::ReadTextFromFile(file, m_ScriptCode);
 
 		if (!result)
 		{

@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -27,7 +27,7 @@ namespace NN::Core {
 		}
 	}
 
-	bool FAudioDecoder::Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
+	bool FAudioDecoder::Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath)
 	{
 		m_FContext = FfmpegContext::Create(vfs, filePath);
 

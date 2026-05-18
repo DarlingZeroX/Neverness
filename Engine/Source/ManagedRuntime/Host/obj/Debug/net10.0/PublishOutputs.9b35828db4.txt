@@ -1,8 +1,0 @@
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Runtime.dll
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Runtime.deps.json
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Runtime.runtimeconfig.json
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Runtime.pdb
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Core.dll
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Engine.dll
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Core.pdb
-e:\VisionGal\Build\ManagedTestPublish\VisionGal.Managed.Engine.pdb

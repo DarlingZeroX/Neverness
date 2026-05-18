@@ -17,7 +17,8 @@
 #include "VGGalgameCore/Interface/ISubsystemBus.h"
 #include "VGGalgameCore/Interface/IGameSystem.h"
 #include "VGGalgameCore/Interface/IDialogueSubsystem.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
@@ -132,7 +133,7 @@ namespace VisionGal::GalGame
     bool SSExecutorSequence::LoadScript(const String& path)
     {
 		// 记录脚本最后修改时间 
-		auto absPath = VFS::GetInstance()->AbsolutePath(GetResourcePath());
+		auto absPath = VFSService::GetInstance()->AbsolutePath(GetResourcePath());
 		if (Horizon::HFileSystem::ExistsFile(absPath))
 		{
 			m_ScriptLastWriteTime = std::filesystem::last_write_time(absPath);

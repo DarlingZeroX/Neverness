@@ -1,5 +1,5 @@
 #include "VideoClip.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include <NNCore/Interface/HVector.h>
 
 namespace NN::Runtime
@@ -19,7 +19,7 @@ namespace NN::Runtime
 
 	bool FVideoClip::Open(const std::string& filePath)
 	{
-		return m_VideoClip.Open(VFS::GetInstance(), filePath);
+		return m_VideoClip.Open(VFS::VFSService::GetInstance(), filePath);
 	}
 
 }

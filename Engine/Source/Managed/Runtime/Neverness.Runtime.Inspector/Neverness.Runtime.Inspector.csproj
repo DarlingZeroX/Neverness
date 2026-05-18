@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Runtime.Inspector</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RollForward>LatestMinor</RollForward>
+    <RootNamespace>Neverness.Managed.Inspector</RootNamespace>
+
+    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+
+    <!-- 直接写死项目名，强制生效，绕过变量解析bug -->
+    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Runtime.Inspector\$(Configuration)\</IntermediateOutputPath>
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Neverness.Runtime.Reflection\Neverness.Runtime.Reflection.csproj" />
+    <ProjectReference Include="..\..\Editor\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
+  </ItemGroup>
+</Project>

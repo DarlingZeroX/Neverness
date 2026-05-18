@@ -15,22 +15,22 @@ namespace NN::Runtime::engine
 class AssetRegistrySubsystem final
 {
 public:
-	int RegisterAsset(const char* virtualPathUtf8, VGGuid guid) noexcept;
-	int UnregisterByGuid(VGGuid guid) noexcept;
+	int RegisterAsset(const char* virtualPathUtf8, NNGuid guid) noexcept;
+	int UnregisterByGuid(NNGuid guid) noexcept;
 	int UnregisterByPath(const char* virtualPathUtf8) noexcept;
-	int ResolvePathByGuid(VGGuid guid, char* outUtf8, std::size_t outCapacity) const noexcept;
-	int ResolveGuidByPath(const char* virtualPathUtf8, VGGuid* outGuid) const noexcept;
-	std::uint32_t GetDependencyCount(VGGuid guid) const noexcept;
-	int GetDependencyAt(VGGuid guid, std::uint32_t index, VGGuid* outDependency) const noexcept;
-	VGGuid ImportAsset(const char* virtualPathUtf8) noexcept;
+	int ResolvePathByGuid(NNGuid guid, char* outUtf8, std::size_t outCapacity) const noexcept;
+	int ResolveGuidByPath(const char* virtualPathUtf8, NNGuid* outGuid) const noexcept;
+	std::uint32_t GetDependencyCount(NNGuid guid) const noexcept;
+	int GetDependencyAt(NNGuid guid, std::uint32_t index, NNGuid* outDependency) const noexcept;
+	NNGuid ImportAsset(const char* virtualPathUtf8) noexcept;
 
 private:
-	static bool GuidIsZero(VGGuid g) noexcept;
-	static VGGuid MakeSyntheticGuid(const std::string& path) noexcept;
+	static bool GuidIsZero(NNGuid g) noexcept;
+	static NNGuid MakeSyntheticGuid(const std::string& path) noexcept;
 
 	mutable std::mutex mutex_{};
-	std::unordered_map<std::string, VGGuid> pathToGuid_{};
+	std::unordered_map<std::string, NNGuid> pathToGuid_{};
 	std::unordered_map<std::uint64_t, std::string> guidLowToPath_{};
-	std::unordered_map<std::uint64_t, std::vector<VGGuid>> dependencies_{};
+	std::unordered_map<std::uint64_t, std::vector<NNGuid>> dependencies_{};
 };
 } // namespace visiongal::engine

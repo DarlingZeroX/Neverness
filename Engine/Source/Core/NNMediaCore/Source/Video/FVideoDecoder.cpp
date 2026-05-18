@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -10,7 +10,7 @@
 */
 
 #include "Video/FVideoDecoder.h"
-//#include "Core/VFS.h"
+//#include "NNRuntimeVFS/Include/VFSService.h"
 extern "C" {
 #include <libavutil/imgutils.h>
 }
@@ -127,7 +127,7 @@ namespace NN::Core {
 		m_IsFinishedDecode = true;
 	}
 
-	bool FVideoDecoder::Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
+	bool FVideoDecoder::Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath)
 	{
 		avformat_network_init();
 

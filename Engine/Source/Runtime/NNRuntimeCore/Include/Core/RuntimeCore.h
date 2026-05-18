@@ -46,6 +46,8 @@ namespace NN::Runtime
 		static std::string GetProjectSettingsPathVFS();
 		static std::string GetEngineResourcePathVFS();
 
+		static std::string GetResourcePathVFS(const std::string& absolutePath);
+
 		static std::filesystem::path GetExecutableDirectory();
 	};
 

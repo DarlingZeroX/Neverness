@@ -1,0 +1,636 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuizmo\\Neverness.Editor.ImGuizmo.csproj": {}
+  },
+  "projects": {
+    "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuizmo\\Neverness.Editor.ImGuizmo.csproj": {
+      "version": "2.2.10-prerelease",
+      "restore": {
+        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuizmo\\Neverness.Editor.ImGuizmo.csproj",
+        "projectName": "Neverness.Editor.ImGuizmo",
+        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuizmo\\Neverness.Editor.ImGuizmo.csproj",
+        "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
+        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuizmo\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0",
+          "net7.0",
+          "net8.0",
+          "net9.0",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "framework": "net6.0",
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+              }
+            }
+          },
+          "net7.0": {
+            "framework": "net7.0",
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+              }
+            }
+          },
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+              }
+            }
+          },
+          "net9.0": {
+            "framework": "net9.0",
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+              }
+            }
+          },
+          "netstandard2.0": {
+            "framework": "netstandard2.0",
+            "targetAlias": "netstandard2.0",
+            "projectReferences": {
+              "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+              }
+            }
+          },
+          "netstandard2.1": {
+            "framework": "netstandard2.1",
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {
+              "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+                "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.300"
+      },
+      "frameworks": {
+        "net6.0": {
+          "framework": "net6.0",
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        },
+        "net7.0": {
+          "framework": "net7.0",
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "Microsoft.NET.ILLink.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.100-1.23211.1, )",
+              "autoReferenced": true
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.100-1.23211.1, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        },
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.27, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+        },
+        "net9.0": {
+          "framework": "net9.0",
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.16, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "framework": "netstandard2.0",
+          "targetAlias": "netstandard2.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "framework": "netstandard2.1",
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+      "version": "2.2.10-prerelease",
+      "restore": {
+        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj",
+        "projectName": "Neverness.Editor.ImGui",
+        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj",
+        "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
+        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0",
+          "net7.0",
+          "net8.0",
+          "net9.0",
+          "netstandard2.0",
+          "netstandard2.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "framework": "net6.0",
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          },
+          "net7.0": {
+            "framework": "net7.0",
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          },
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          },
+          "net9.0": {
+            "framework": "net9.0",
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          },
+          "netstandard2.0": {
+            "framework": "netstandard2.0",
+            "targetAlias": "netstandard2.0",
+            "projectReferences": {}
+          },
+          "netstandard2.1": {
+            "framework": "netstandard2.1",
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.300"
+      },
+      "frameworks": {
+        "net6.0": {
+          "framework": "net6.0",
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        },
+        "net7.0": {
+          "framework": "net7.0",
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "Microsoft.NET.ILLink.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.100-1.23211.1, )",
+              "autoReferenced": true
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.100-1.23211.1, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        },
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.27, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+        },
+        "net9.0": {
+          "framework": "net9.0",
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.16, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+        },
+        "netstandard2.0": {
+          "framework": "netstandard2.0",
+          "targetAlias": "netstandard2.0",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        },
+        "netstandard2.1": {
+          "framework": "netstandard2.1",
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "HexaGen.Runtime": {
+              "target": "Package",
+              "version": "[1.1.21, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

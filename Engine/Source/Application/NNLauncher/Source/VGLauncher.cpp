@@ -15,7 +15,8 @@
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNRuntimeImGui/Include/ImGuiLayer/SDL3Decorator.h>
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 #include <NNRuntimeRmlui/Interface/UISystem.h>
 #include <NNEditorFramework/Framework.h>
 
@@ -79,7 +80,7 @@ namespace VisionGal::Editor
 		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		// 读取中文字体
-		VFS::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFS::DataRef& data) {
+		VFSService::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFSService::DataRef& data) {
 			ImGuiIO& io = ImGui::GetIO();
 			ImFontConfig icons_config;
 			icons_config.FontDataOwnedByAtlas = false;
@@ -90,7 +91,7 @@ namespace VisionGal::Editor
 			});
 
 		// 读取图标字体
-		VFS::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const VFS::DataRef& data) {
+		VFSService::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const VFSService::DataRef& data) {
 			ImGuiIO& io = ImGui::GetIO();
 			static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 

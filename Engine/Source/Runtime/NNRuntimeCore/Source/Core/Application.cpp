@@ -9,7 +9,6 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "pch.h"
 #include "Core/Application.h"
 //#include "Engine/VGEngine.h"
 

@@ -1,8 +1,8 @@
-#include "CodeStudio/DocumentManager.h"
+﻿#include "CodeStudio/DocumentManager.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimeCore/Interface/VGAsset.h"
 #include "NNRuntimeAsset/Interface/Package.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Editor
 {

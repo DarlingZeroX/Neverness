@@ -17,9 +17,9 @@
 #include <NNPlatformCore/Interface/HClipboard.h>
 #include <NNFileSystem/Interface/HFileSystemGenerator.h>
 //#include <NNRuntimeAsset/Include/HPackage.h>
-//#include "Core/VFS.h"
 //#include "Engine/Manager/AssetManager.h"
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimeVFS/Include/VFS/VFSNative.h"
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 #include "NNRuntimeAsset/Interface/AssetManager.h"
 
@@ -114,7 +114,7 @@ namespace NN::Editor{
 			child.Name += absPath.filename().string();
 			child.UIFlags = chlidFlags;
 			child.AbsolutePath = entry.path();
-			child.Path = NN::Runtime::VFS::GetResourcePathVFS(path.string());
+			child.Path = NN::Runtime::RuntimeCore::GetResourcePathVFS(path.string());
 
 			if (!ExistChildDirectory(node, entry.path()))
 			{
@@ -188,11 +188,11 @@ namespace NN::Editor{
 	void ContentBrowser::RefreshDirectory()
 	{
 		// 需要刷新虚拟文件系统
-		auto fsList = Runtime::VFS::GetInstance()->GetFilesystems(Runtime::RuntimeCore::GetAssetsPathVFS());
+		auto fsList = Runtime::VFS::VFSService::GetInstance()->GetFilesystems(Runtime::RuntimeCore::GetAssetsPathVFS());
 		if (fsList.size() == 1)
 		{
 			auto fs = fsList.begin()->get();
-			vfspp::NativeFileSystem* nfs = dynamic_cast<vfspp::NativeFileSystem*>(fs);
+			NN::Runtime::VFS::NativeFileSystem* nfs = dynamic_cast<NN::Runtime::VFS::NativeFileSystem*>(fs);
 			nfs->RebuildFileList();
 		}
 
@@ -234,7 +234,7 @@ namespace NN::Editor{
 				directory.AbsolutePath = entry.path();
 				directory.AbsolutePathStr = directory.AbsolutePath.string();
 				directory.IsDirectory = true;
-				directory.Path = Runtime::VFS::GetResourcePathVFS(directory.AbsolutePathStr);
+				directory.Path = Runtime::RuntimeCore::GetResourcePathVFS(directory.AbsolutePathStr);
 
 				m_CurrentDirectoryNode.Directories.emplace_back(directory);
 			}
@@ -254,7 +254,7 @@ namespace NN::Editor{
 				file.Name = name;
 				file.UIFlags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Leaf;
 				file.IsDirectory = false;
-				file.Path = Runtime::VFS::GetResourcePathVFS(file.AbsolutePathStr);
+				file.Path = Runtime::RuntimeCore::GetResourcePathVFS(file.AbsolutePathStr);
 
 				Runtime::VGAssetMetaData data;
 				if (Runtime::VGPackage::GetMeatData(file.Path, data))

@@ -4,10 +4,10 @@
 
 /**
  * @file EngineAPIRegistry.h
- * @brief 聚合所有 Engine Service 子表之 **VGNativeEngineAPI** 根結構與建表入口宣告。
+ * @brief 聚合所有 Engine Service 子表之 **NNNativeEngineAPI** 根結構與建表入口宣告。
  *
  * 版本：
- * - `layoutVersion` 對應 `VG_NATIVE_ENGINE_API_LAYOUT_VERSION`；破壞性子表欄位變更時遞增。
+ * - `layoutVersion` 對應 `NN_NATIVE_ENGINE_API_LAYOUT_VERSION`；破壞性子表欄位變更時遞增。
  * - 擴充規則：僅能在各子表尾或本聚合體尾 **追加** 欄位；禁止重排既有欄位。
  */
 
@@ -22,42 +22,31 @@
 #include "SceneAPI.h"
 #include "TimingAPI.h"
 #include "UIAPI.h"
-#include "VGNativeEngineApiConfig.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** 當前發佈之 VGNativeEngineAPI 記憶體佈局版本（與託管 `VGNativeEngineApiConstants.LayoutVersion` 對齊）。 */
-#define VG_NATIVE_ENGINE_API_LAYOUT_VERSION 5u
+/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 5u
 
-typedef struct VGNativeEngineAPI
+typedef struct NNNativeEngineAPI
 {
 	std::uint32_t layoutVersion;
 	std::uint32_t reserved0;
-	VGRenderAPI render;
-	VGUIAPI ui;
-	VGAudioAPI audio;
-	VGAssetAPI asset;
-	VGInputAPI input;
-	VGSceneAPI scene;
-	VGTimingAPI timing;
-	VGAsyncWaitAPI asyncWait;
-	VGObjectAPI object;
-	VGAssetRegistryAPI assetRegistry;
-	/** @brief Native ECS／實體服務子表（骨架）；與 `VGSceneAPI` 使用之 `VGEntityHandle` 語意分離，見 `EntityAPI.h`。 */
-	VGEntityAPI entity;
-} VGNativeEngineAPI;
-
-/**
- * @brief 將 `outTable` 清零後填入預設 Stub 函數指標（不連結 VGEngine）。
- */
-VG_NATIVE_ENGINE_API void VGNativeEngineApiTable_BuildDefault(VGNativeEngineAPI* outTable);
-
-/**
- * @brief 供測試斷言：累計 Stub 實作被呼叫次數（跨子系統加總）。
- */
-VG_NATIVE_ENGINE_API std::uint32_t VGNativeEngineApi_GetStubInvokeCount(void);
+	NNRenderAPI render;
+	NNUIAPI ui;
+	NNAudioAPI audio;
+	NNAssetAPI asset;
+	NNInputAPI input;
+	NNSceneAPI scene;
+	NNTimingAPI timing;
+	NNAsyncWaitAPI asyncWait;
+	NNObjectAPI object;
+	NNAssetRegistryAPI assetRegistry;
+	/** @brief Native ECS／實體服務子表（骨架）；與 `NNSceneAPI` 使用之 `NNEntityHandle` 語意分離，見 `EntityAPI.h`。 */
+	NNEntityAPI entity;
+} NNNativeEngineAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

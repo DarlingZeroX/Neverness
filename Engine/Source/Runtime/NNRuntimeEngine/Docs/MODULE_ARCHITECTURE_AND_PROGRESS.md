@@ -6,10 +6,10 @@
 
 | 项目 | 说明 |
 |------|------|
-| **职责** | 提供 **`VGEngineRuntime`** 单例：`Initialize` / `Tick` / `Shutdown`；内置 **TimingSystem**、**RuntimeScheduler**（**P0-1**）、**AsyncSystem**、**SceneSubsystem**、**AssetSubsystem**、**ObjectSubsystem**、**AssetRegistrySubsystem**、**EntitySubsystem**（实现 **IRuntimeSubsystem**，**Update** 组；**`runtimeTick`**、**`VG_ENTITY_SERVICE_ABI_TOKEN`** 对齐 **VGEntityAPI**）。**当前形态**为 **Engine Service 状态机聚合** 向 **Runtime Kernel** 演进（见 [MANAGED 总览 §0.3 P0-1](../../../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md)）。 |
-| **不负责** | 不链接 **NevernessRuntime-EngineLegacy**、**NevernessRuntime-RHI**、**NevernessRuntime-RmlUI**；**不**承载 **Gameplay** 产品逻辑（变量、剧本 VM、Graph 执行等均在 **Managed**）。与 **VGNativeEngineAPI** 的衔接由 **NNRuntimeEngineServices** 覆写函数表完成。 |
+| **职责** | 提供 **`VGEngineRuntime`** 单例：`Initialize` / `Tick` / `Shutdown`；内置 **TimingSystem**、**RuntimeScheduler**（**P0-1**）、**AsyncSystem**、**SceneSubsystem**、**AssetSubsystem**、**ObjectSubsystem**、**AssetRegistrySubsystem**、**EntitySubsystem**（实现 **IRuntimeSubsystem**，**Update** 组；**`runtimeTick`**、**`NN_ENTITY_SERVICE_ABI_TOKEN`** 对齐 **NNEntityAPI**）。**当前形态**为 **Engine Service 状态机聚合** 向 **Runtime Kernel** 演进（见 [MANAGED 总览 §0.3 P0-1](../../../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md)）。 |
+| **不负责** | 不链接 **NevernessRuntime-EngineLegacy**、**NevernessRuntime-RHI**、**NevernessRuntime-RmlUI**；**不**承载 **Gameplay** 产品逻辑（变量、剧本 VM、Graph 执行等均在 **Managed**）。与 **NNNativeEngineAPI** 的衔接由 **NNRuntimeEngineServices** 覆写函数表完成。 |
 | **CMake 目标** | `NevernessRuntime-Engine`（`STATIC`） |
-| **依赖** | `NevernessRuntime-NativeEngineAPI`（PUBLIC：Handle / `VGTransform3` / `VGGuid` 等头）。 |
+| **依赖** | `NevernessRuntime-NativeEngineAPI`（PUBLIC：Handle / `NNTransform3` / `NNGuid` 等头）。 |
 | **典型消费者** | **NevernessRuntime-EngineServices**；单元测试与托管宿主通过 C 封装 `VGEngineRuntimeHost_*` 驱动 Tick。 |
 
 ---
@@ -76,7 +76,7 @@ Engine/Source/Runtime/NNRuntimeEngine/
 
 ### 4.4 与 NNRuntimeEngineServices 的关系
 
-**NevernessRuntime-EngineServices** 将 **VGNativeEngineAPI** 表中 Timing、Async、Scene、Asset（纹理/音频项）、Object、AssetRegistry、**Entity** 等指针指向本单例子系统的 thunk；Render/UI/Audio/Input 等仍可能保持 Stub。详见 [NNRuntimeEngineServices 文档](../NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。
+**NevernessRuntime-EngineServices** 将 **NNNativeEngineAPI** 表中 Timing、Async、Scene、Asset（纹理/音频项）、Object、AssetRegistry、**Entity** 等指针指向本单例子系统的 thunk；Render/UI/Audio/Input 等仍可能保持 Stub。详见 [NNRuntimeEngineServices 文档](../NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。
 
 ---
 
@@ -117,7 +117,7 @@ Engine/Source/Runtime/NNRuntimeEngine/
 
 ### 5.4 `SceneSubsystem`（[`SceneSubsystem.h`](../Include/SceneSubsystem.h)）
 
-提供与 **VGNativeEngineAPI::VGSceneAPI** 对齐的 C++ 方法。实现为进程内内存模型，**未接 EngineLegacy**。
+提供与 **NNNativeEngineAPI::NNSceneAPI** 对齐的 C++ 方法。实现为进程内内存模型，**未接 EngineLegacy**。
 
 ### 5.5 `AssetSubsystem`（[`AssetSubsystem.h`](../Include/AssetSubsystem.h)）
 

@@ -14,7 +14,7 @@
 
 namespace NN::Runtime
 {
-	sol::object VGDataNamespace::GetVariableLua(const String& name, sol::this_state lua)
+	sol::object VGDataNamespace::GetVariableLua(const std::string& name, sol::this_state lua)
 	{
 		if (const auto it = m_Data.find(name); it != m_Data.end())
 		{
@@ -24,7 +24,7 @@ namespace NN::Runtime
 		return sol::make_object(lua, sol::nil);
 	}
 
-	void VGDataNamespace::SetVariableLua(const String& name, sol::object srcObj, sol::this_state luaState)
+	void VGDataNamespace::SetVariableLua(const std::string& name, sol::object srcObj, sol::this_state luaState)
 	{
 		// nil
 		if (!srcObj.valid() || srcObj.is<sol::nil_t>())

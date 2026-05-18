@@ -7,10 +7,10 @@
 * Copyright (c) 2025-present 梦旅缘心
 *
 * See the LICENSE file in the project root for details.
-*/
+
 
 #include "Common/InMemoryRemuxer.h"
-#include <NNFileSystem/Interface/HVirtualFileSystem.h>
+#include <NNRuntimeVFS/Include/VFS/VirtualFileSystem.h>
 
 namespace NN::Core
 {
@@ -48,7 +48,7 @@ namespace NN::Core
 		return to_copy;
 	}
 
-	bool InMemoryRemuxer::Remux(vfspp::VirtualFileSystemPtr& vfs, const char* input_filename) {
+	bool InMemoryRemuxer::Remux(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const char* input_filename) {
 		Cleanup();
 
 		int ret = 0;
@@ -58,10 +58,10 @@ namespace NN::Core
 		// ------------------------
 		// 1. 打开输入文件
 		// ------------------------
-		//auto& vfs = VFS::GetInstance();
+		//auto& vfs = VFSService::GetInstance();
 
 		// 尝试打开文件
-		auto file = vfs->OpenFile(vfspp::FileInfo(input_filename), vfspp::IFile::FileMode::Read);
+		auto file = vfs->OpenFile(NN::Runtime::VFS::FileInfo(input_filename), NN::Runtime::VFS::IFile::FileMode::Read);
 		if (!file)
 			return false;
 
@@ -72,7 +72,7 @@ namespace NN::Core
 		// 用ffmpeg读取视频
 		//AVFormatContext* fmt_ctx = avformat_alloc_context();
 		auto in_fmt_ctx = avformat_alloc_context();
-		io_ctx = { file }; // file 是已打开的 vfspp::IFile 对象
+		io_ctx = { file }; // file 是已打开的 NN::Runtime::VFS::IFile 对象
 
 		// 创建 AVIOContext（关键！）
 		const int buffer_size = 4096; // 建议缓冲区大小
@@ -205,4 +205,4 @@ namespace NN::Core
 		return true;
 	}
 
-}
+}*/

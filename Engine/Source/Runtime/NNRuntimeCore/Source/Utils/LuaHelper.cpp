@@ -12,6 +12,8 @@
 #include "Utils/LuaHelper.h"
 #include <regex>
 
+#include "NNCore/Interface/HLog.h"
+
 namespace NN::Runtime
 {
 	int LuaHelper::ExtractErrorLineNumber(const std::string& error_msg)

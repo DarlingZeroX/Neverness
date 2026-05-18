@@ -16,16 +16,16 @@ extern "C" {
 #endif
 
 /** @brief 設定元素關聯之對話/標題文字（引擎語義，非 Gameplay 劇本層）。 */
-typedef void(VG_ENGINE_ABI_STDCALL* VGUISetDialogueTextFn)(VGElementHandle element, const char* utf8Text);
+typedef void(NN_ENGINE_ABI_STDCALL* NNUISetDialogueTextFn)(NNElementHandle element, const char* utf8Text);
 
 /** @brief `visible` 使用 0 表隱藏、非 0 表顯示（與布林等價）。 */
-typedef void(VG_ENGINE_ABI_STDCALL* VGUISetElementVisibleFn)(VGElementHandle element, int visible);
+typedef void(NN_ENGINE_ABI_STDCALL* NNUISetElementVisibleFn)(NNElementHandle element, int visible);
 
-typedef struct VGUIAPI
+typedef struct NNUIAPI
 {
-	VGUISetDialogueTextFn setDialogueText;
-	VGUISetElementVisibleFn setElementVisible;
-} VGUIAPI;
+	NNUISetDialogueTextFn setDialogueText;
+	NNUISetElementVisibleFn setElementVisible;
+} NNUIAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

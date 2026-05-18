@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -16,7 +16,7 @@
 #include <NNRuntimeImGui/Include/ImGuiEx/ImNotify.h>
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <NNFileSystem/Interface/HFileSystem.h>
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Editor
 {
@@ -64,7 +64,7 @@ namespace NN::Editor
 
 	void EditorScene::OpenSceneByFileDialog()
 	{
-		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
 		auto root = contentPath;
 		root = NN::Core::HFileSystem::ToWindowsPath(root);
 
@@ -75,7 +75,7 @@ namespace NN::Editor
 
 		OpenSaveCurrentSceneDialog([selection](int choice)
 			{
-			auto scenePath = Runtime::VFS::GetResourcePathVFS(selection[0]);
+			auto scenePath = Runtime::RuntimeCore::GetResourcePathVFS(selection[0]);
 			auto scene = Runtime::GetSceneManager()->LoadScene(scenePath);
 
 			if (scene)
@@ -115,7 +115,7 @@ namespace NN::Editor
 
 	bool EditorScene::SaveCurrentSceneAs()
 	{
-		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
 		auto root = contentPath;
 		root = NN::Core::HFileSystem::ToWindowsPath(root);
 
@@ -124,7 +124,7 @@ namespace NN::Editor
 			return false;
 
 		auto* scene = Runtime::GetSceneManager()->GetCurrentEditorScene();
-		auto scenePath = Runtime::VFS::GetResourcePathVFS(destination);
+		auto scenePath = Runtime::RuntimeCore::GetResourcePathVFS(destination);
 
 		if (Runtime::GetSceneManager()->SaveScene(dynamic_cast<Runtime::Scene*>(scene), scenePath))
 		{

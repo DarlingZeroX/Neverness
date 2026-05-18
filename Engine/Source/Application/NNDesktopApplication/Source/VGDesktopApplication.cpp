@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -16,7 +16,7 @@
 #include <NNRuntimeImGui/Include/Imgui/imgui_impl_opengl3.h>
 #include <NNEditorFramework/Framework.h>
 #include <NNRuntimeRmlui/Interface/UISystem.h>
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNEngineLegacy/Include/Engine/Manager.h"
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 #if defined(VISIONGAL_BUILD_LEGACY_GALGAME)
@@ -106,7 +106,7 @@ namespace VisionGal::Editor
 
 		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
 
-		VFS::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFS::DataRef& data) {
+		VFSService::SafeReadFileFromVFS(Core::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFSService::DataRef& data) {
 			ImGuiIO& io = ImGui::GetIO();
 			ImFontConfig icons_config;
 			icons_config.FontDataOwnedByAtlas = false;

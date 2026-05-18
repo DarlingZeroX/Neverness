@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -69,7 +69,7 @@ namespace NN::Runtime
 		std::fstream m_AssetBinaryDataFile;
 
 		//std::stringstream m_MetaStream;
-		//vfspp::IFilePtr m_OutMetaFile;
+		//NN::Runtime::VFS::IFilePtr m_OutMetaFile;
 
 	};
 }

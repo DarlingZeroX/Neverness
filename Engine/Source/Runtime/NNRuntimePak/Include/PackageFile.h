@@ -11,11 +11,12 @@
 
 #pragma once
 #include "PakReader.h"
-#include <NNFileSystem/Include/VFS/IFile.h>
+#include "NNRuntimeVFS/Include/VFS/IFile.h"
 #include <filesystem>
+#include <mutex>
 #include <sstream>
 
-namespace vfspp
+namespace NN::Runtime::VFS
 {
 	using VGPackageFilePtr = std::shared_ptr<class VGPackageFile>;
 	using VGPackageFileWeakPtr = std::weak_ptr<class VGPackageFile>;
@@ -96,7 +97,7 @@ namespace vfspp
 		 */
 		virtual const FileInfo& GetFileInfo() const override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return GetFileInfoST();
 			}
@@ -110,7 +111,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Size() override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return SizeST();
 			}
@@ -124,7 +125,7 @@ namespace vfspp
 		 */
 		virtual bool IsReadOnly() const override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return IsReadOnlyST();
 			}
@@ -138,7 +139,7 @@ namespace vfspp
 		 */
 		virtual void Open(FileMode mode) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				OpenST(mode);
 			}
@@ -152,7 +153,7 @@ namespace vfspp
 		 */
 		virtual void Close() override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				CloseST();
 			}
@@ -166,7 +167,7 @@ namespace vfspp
 		 */
 		virtual bool IsOpened() const override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return IsOpenedST();
 			}
@@ -180,7 +181,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Seek(uint64_t offset, Origin origin) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return SeekST(offset, origin);
 			}
@@ -193,7 +194,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Tell() override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return TellST();
 			}
@@ -207,7 +208,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Read(uint8_t* buffer, uint64_t size) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return ReadST(buffer, size);
 			}
@@ -220,7 +221,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Write(const uint8_t* buffer, uint64_t size) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return WriteST(buffer, size);
 			}
@@ -234,7 +235,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Read(std::vector<uint8_t>& buffer, uint64_t size) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return ReadST(buffer, size);
 			}
@@ -248,7 +249,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Write(const std::vector<uint8_t>& buffer) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return WriteST(buffer);
 			}
@@ -262,7 +263,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Read(std::ostream& stream, uint64_t size, uint64_t bufferSize = 1024) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return ReadST(stream, size, bufferSize);
 			}
@@ -276,7 +277,7 @@ namespace vfspp
 		 */
 		virtual uint64_t Write(std::istream& stream, uint64_t size, uint64_t bufferSize = 1024) override
 		{
-			if constexpr (VFSPP_MT_SUPPORT_ENABLED) {
+			if constexpr (VFS_MT_SUPPORT_ENABLED) {
 				std::lock_guard<std::mutex> lock(m_Mutex);
 				return WriteST(stream, size, bufferSize);
 			}
@@ -535,5 +536,5 @@ namespace vfspp
 		mutable std::mutex m_Mutex;
 	};
 
-} // namespace vfspp
+} // namespace NN::Runtime::VFS
 

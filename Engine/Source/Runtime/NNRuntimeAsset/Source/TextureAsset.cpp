@@ -12,7 +12,7 @@
 #include "TextureAsset.h"
 #include <SDL3_image/SDL_image.h>
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Runtime
 {
@@ -161,7 +161,7 @@ namespace NN::Runtime
 	{
 		SDL_Surface* surface = nullptr;
 
-		VFS::SafeReadFileFromVFS(path, [&](const VFS::DataRef& data) {
+		VFS::VFSService::SafeReadFileFromVFS(path, [&](const VFS::VFSService::DataRef& data) {
 
 			const size_t i_ext = path.rfind('.');
 			String extension = (i_ext == String::npos ? String() : path.substr(i_ext + 1));

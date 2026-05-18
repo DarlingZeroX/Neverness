@@ -19,19 +19,19 @@
 extern "C" {
 #endif
 
-typedef VGAsyncWaitHandle(VG_ENGINE_ABI_STDCALL* VGAsyncCreateWaitFn)(void);
+typedef NNAsyncWaitHandle(NN_ENGINE_ABI_STDCALL* NNAsyncCreateWaitFn)(void);
 
 /** @brief 輪詢：1 表已完成；0 表尚未/已消費完成狀態。 */
-typedef int(VG_ENGINE_ABI_STDCALL* VGAsyncTryCompleteFn)(VGAsyncWaitHandle wait);
+typedef int(NN_ENGINE_ABI_STDCALL* NNAsyncTryCompleteFn)(NNAsyncWaitHandle wait);
 
-typedef void(VG_ENGINE_ABI_STDCALL* VGAsyncReleaseWaitFn)(VGAsyncWaitHandle wait);
+typedef void(NN_ENGINE_ABI_STDCALL* NNAsyncReleaseWaitFn)(NNAsyncWaitHandle wait);
 
-typedef struct VGAsyncWaitAPI
+typedef struct NNAsyncWaitAPI
 {
-	VGAsyncCreateWaitFn createWait;
-	VGAsyncTryCompleteFn tryComplete;
-	VGAsyncReleaseWaitFn releaseWait;
-} VGAsyncWaitAPI;
+	NNAsyncCreateWaitFn createWait;
+	NNAsyncTryCompleteFn tryComplete;
+	NNAsyncReleaseWaitFn releaseWait;
+} NNAsyncWaitAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

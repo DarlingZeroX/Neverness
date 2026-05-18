@@ -5,7 +5,7 @@
  * @brief ECS-first 运行时场景：Registry + 世代 Handle + System 调度 + 事件/脏跟踪（Phase 2+）。
  *
  * 职责：实体生命周期、POD 组件、Query、组件元数据、System Tick、层级 API。
- * 不负责：Legacy IGameActor、VGNativeEngineAPI 扩展、Prefab/Streaming 完整实现。
+ * 不负责：Legacy IGameActor、NNNativeEngineAPI 扩展、Prefab/Streaming 完整实现。
  *
  * 线程契约：Phase 2 假定单线程；由宿主在 game loop 同一线程调用。
  */

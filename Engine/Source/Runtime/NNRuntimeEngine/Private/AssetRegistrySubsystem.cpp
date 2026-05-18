@@ -19,21 +19,21 @@ namespace
 	}
 } // namespace
 
-bool AssetRegistrySubsystem::GuidIsZero(VGGuid g) noexcept
+bool AssetRegistrySubsystem::GuidIsZero(NNGuid g) noexcept
 {
 	return g.high == 0u && g.low == 0u;
 }
 
-VGGuid AssetRegistrySubsystem::MakeSyntheticGuid(const std::string& path) noexcept
+NNGuid AssetRegistrySubsystem::MakeSyntheticGuid(const std::string& path) noexcept
 {
 	const std::uint64_t h = HashPath(path);
-	VGGuid g{};
+	NNGuid g{};
 	g.high = 0x56474153u; // 'VGAS' 魔數前綴
 	g.low = h == 0u ? 1u : h;
 	return g;
 }
 
-int AssetRegistrySubsystem::RegisterAsset(const char* virtualPathUtf8, VGGuid guid) noexcept
+int AssetRegistrySubsystem::RegisterAsset(const char* virtualPathUtf8, NNGuid guid) noexcept
 {
 	if (virtualPathUtf8 == nullptr || GuidIsZero(guid))
 	{
@@ -50,7 +50,7 @@ int AssetRegistrySubsystem::RegisterAsset(const char* virtualPathUtf8, VGGuid gu
 	return 0;
 }
 
-int AssetRegistrySubsystem::UnregisterByGuid(VGGuid guid) noexcept
+int AssetRegistrySubsystem::UnregisterByGuid(NNGuid guid) noexcept
 {
 	if (GuidIsZero(guid))
 	{
@@ -81,14 +81,14 @@ int AssetRegistrySubsystem::UnregisterByPath(const char* virtualPathUtf8) noexce
 	{
 		return -1;
 	}
-	const VGGuid g = it->second;
+	const NNGuid g = it->second;
 	guidLowToPath_.erase(g.low);
 	pathToGuid_.erase(it);
 	dependencies_.erase(g.low);
 	return 0;
 }
 
-int AssetRegistrySubsystem::ResolvePathByGuid(VGGuid guid, char* outUtf8, std::size_t outCapacity) const noexcept
+int AssetRegistrySubsystem::ResolvePathByGuid(NNGuid guid, char* outUtf8, std::size_t outCapacity) const noexcept
 {
 	if (outUtf8 == nullptr || outCapacity == 0u)
 	{
@@ -110,7 +110,7 @@ int AssetRegistrySubsystem::ResolvePathByGuid(VGGuid guid, char* outUtf8, std::s
 	return static_cast<int>(p.size());
 }
 
-int AssetRegistrySubsystem::ResolveGuidByPath(const char* virtualPathUtf8, VGGuid* outGuid) const noexcept
+int AssetRegistrySubsystem::ResolveGuidByPath(const char* virtualPathUtf8, NNGuid* outGuid) const noexcept
 {
 	if (virtualPathUtf8 == nullptr || outGuid == nullptr)
 	{
@@ -127,7 +127,7 @@ int AssetRegistrySubsystem::ResolveGuidByPath(const char* virtualPathUtf8, VGGui
 	return 0;
 }
 
-std::uint32_t AssetRegistrySubsystem::GetDependencyCount(VGGuid guid) const noexcept
+std::uint32_t AssetRegistrySubsystem::GetDependencyCount(NNGuid guid) const noexcept
 {
 	std::lock_guard<std::mutex> lock(mutex_);
 	const auto it = dependencies_.find(guid.low);
@@ -138,7 +138,7 @@ std::uint32_t AssetRegistrySubsystem::GetDependencyCount(VGGuid guid) const noex
 	return static_cast<std::uint32_t>(it->second.size());
 }
 
-int AssetRegistrySubsystem::GetDependencyAt(VGGuid guid, std::uint32_t index, VGGuid* outDependency) const noexcept
+int AssetRegistrySubsystem::GetDependencyAt(NNGuid guid, std::uint32_t index, NNGuid* outDependency) const noexcept
 {
 	if (outDependency == nullptr)
 	{
@@ -154,15 +154,15 @@ int AssetRegistrySubsystem::GetDependencyAt(VGGuid guid, std::uint32_t index, VG
 	return 0;
 }
 
-VGGuid AssetRegistrySubsystem::ImportAsset(const char* virtualPathUtf8) noexcept
+NNGuid AssetRegistrySubsystem::ImportAsset(const char* virtualPathUtf8) noexcept
 {
 	if (virtualPathUtf8 == nullptr)
 	{
-		VGGuid z{};
+		NNGuid z{};
 		return z;
 	}
 	const std::string path(virtualPathUtf8);
-	const VGGuid g = MakeSyntheticGuid(path);
+	const NNGuid g = MakeSyntheticGuid(path);
 	(void)RegisterAsset(virtualPathUtf8, g);
 	return g;
 }

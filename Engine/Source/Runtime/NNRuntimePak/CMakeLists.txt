@@ -31,6 +31,8 @@ target_sources(NevernessRuntime-Pak
     Source/PakFormat.cpp
     Source/PakReader.cpp
     Source/PakWriter.cpp
+    Include/VFSMount.h
+    Source/VFSMount.cpp
 )
 
 # 添加宏
@@ -47,3 +49,4 @@ find_package(SDL3 CONFIG REQUIRED)
 # 链接库
 target_link_libraries(NevernessRuntime-Pak PRIVATE SDL3::SDL3)
 target_link_libraries(NevernessRuntime-Pak PRIVATE NevernessCore-Core)
+target_link_libraries(NevernessRuntime-Pak PRIVATE NevernessRuntime-VFS)

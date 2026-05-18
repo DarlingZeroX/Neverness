@@ -17,13 +17,13 @@ extern "C" {
 }
 
 //#include "../../Core/VFS.h"
-#include <NNFileSystem/Interface/HVirtualFileSystem.h>
+#include <NNRuntimeVFS/Include/VFS/IFile.h>
 
 namespace NN::Core {
 
     // 自定义 opaque 结构（传递 VFS 文件对象）
     struct VFSFFmpegIOContext {
-        vfspp::IFilePtr file; // VFSpp 文件句柄
+        NN::Runtime::VFS::IFilePtr file; // VFSpp 文件句柄
 		std::vector<uint8_t*> buffers;
 
 		~VFSFFmpegIOContext();

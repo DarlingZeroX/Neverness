@@ -16,7 +16,7 @@
 #include "Project/ProjectSettings.h"
 #include <NNRuntimePak/Include/PakWriter.h>
 
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Runtime
 {
@@ -87,7 +87,7 @@ namespace NN::Runtime
 		context.process = 0.1f;
 
 		// 打包引擎资源
-		auto enginePath = VFS::GetInstance()->AbsolutePath(RuntimeCore::GetEngineResourcePathVFS());
+		auto enginePath = VFS::VFSService::GetInstance()->AbsolutePath(RuntimeCore::GetEngineResourcePathVFS());
 		H_LOG_INFO("Package engine resource: %s", enginePath.c_str());
 		if (NN::Core::HFileSystem::ExistsFile("Data/engine.pak"))		// 应用程序模式
 		{
@@ -106,7 +106,7 @@ namespace NN::Runtime
 		context.process = 0.2f;
 
 		// 打包游戏资产
-		auto assetsPath = VFS::GetInstance()->AbsolutePath(RuntimeCore::GetAssetsPathVFS());
+		auto assetsPath = VFS::VFSService::GetInstance()->AbsolutePath(RuntimeCore::GetAssetsPathVFS());
 		H_LOG_INFO("Package assets: %s", assetsPath.c_str());
 		if (NN::Core::HFileSystem::ExistsDirectory(assetsPath) == false)
 		{
@@ -126,7 +126,7 @@ namespace NN::Runtime
 		context.process = 0.7f;
 
 		// 打包项目设置
-		auto projectSettings = VFS::GetInstance()->AbsolutePath(RuntimeCore::GetProjectSettingsPathVFS());
+		auto projectSettings = VFS::VFSService::GetInstance()->AbsolutePath(RuntimeCore::GetProjectSettingsPathVFS());
 		H_LOG_INFO("Package project settings: %s", projectSettings.c_str());
 		if (NN::Core::HFileSystem::ExistsDirectory(projectSettings) == false)
 		{

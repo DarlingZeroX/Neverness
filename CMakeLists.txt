@@ -108,26 +108,10 @@ foreach(CONFIG Debug Release RelWithDebInfo MinSizeRel)
 
 endforeach()
 
-
-
-
-option(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES "Use VGEngineRuntimeServices for VGNativeApi engineServices (else Stub-only table)" ON)
-
 ############ 模块
 add_subdirectory ("Engine/Source/Core")
 add_subdirectory ("Engine/Source/Runtime")
-
-############ 托管代码（CoreCLR via nethost，预设仅 Windows/MSVC 平台启用）
-if (WIN32 AND MSVC)
-	option(VISIONGAL_ENABLE_MANAGED_HOST "Build VGManagedHost (CoreCLR via nethost)" ON)
-else()
-	option(VISIONGAL_ENABLE_MANAGED_HOST "Build VGManagedHost (CoreCLR via nethost)" OFF)
-endif()
-
-if (VISIONGAL_ENABLE_MANAGED_HOST)
-	add_subdirectory ("Engine/Source/Managed/VGManagedCore")
-	add_subdirectory ("Engine/Source/Managed/VGManagedHost")
-endif()
+add_subdirectory ("Engine/Source/Bridge")
 
 ############ Legacy 兼容层（预设不编译）
 # Phase 5：Legacy Galgame 產品線（預設不編譯）
@@ -154,8 +138,8 @@ add_subdirectory ("Engine/Source/Application/NNLauncher")         # 启动器
 if (ENABLE_TESTS)
     enable_testing()
     # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 VISIONGAL_BUILD_LEGACY_GALGAME=ON）
-    # VGManagedHostTest: add_subdirectory trong VGManagedHost/CMakeLists.txt (ENABLE_TESTS + dotnet).
-    add_subdirectory("Engine/Source/ManagedRuntime/Tests")
+    # VGManagedHostTest: add_subdirectory in NNRuntimeManagedHost when VISIONGAL_ENABLE_MANAGED_HOST=ON.
+    add_subdirectory("Engine/Source/Managed/Runtime/Tests")
       
     # add_subdirectory("Tests/VGLauncherTest")
     # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")
@@ -209,3 +193,5 @@ if(MSVC)
         $<$<CONFIG:Debug>:/Oi>       # 启用 intrinsic（更快）
     )
 endif()
+
+add_subdirectory ("Engine/Source/Managed")

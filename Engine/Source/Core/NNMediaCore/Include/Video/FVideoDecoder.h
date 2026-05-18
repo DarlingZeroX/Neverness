@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -30,7 +30,7 @@ namespace NN::Core {
 		FVideoDecoder();
 		~FVideoDecoder() override;
 
-		bool Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath);
+		bool Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath);
 		bool StartDecode() override;
 		bool StopDecode() override;
 		bool Seek(double seconds) override;

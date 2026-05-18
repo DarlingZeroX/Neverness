@@ -11,7 +11,8 @@
 
 #include "Include/VGPackageApp.h"
 #include <NNRuntimeCore/Include/Core/Core.h>
-#include <NNRuntimeCore/Include/Core/VFS.h>
+#include "NNRuntimeVFS/Include/VFSService.h"
+#include "NNRuntimePak/Include/VFSMount.h"
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
 #include <VGEditorCore/Include/EditorCore/EditorCore.h>
 
@@ -26,11 +27,11 @@ struct ApplicationVFSPath
 /// @param path 路径结构体，包含桌面应用程序和引擎的资源路径。
 void InitializeVFS(ApplicationVFSPath path)
 {
-	auto& vfs = VisionGal::VFS::GetInstance();
+	auto& vfs = VisionGal::VFSService::GetInstance();
 
 	// 添加桌面应用程序资源路径
-	auto editorFS = std::make_unique<vfspp::NativeFileSystem>(path.editor);
-	auto engineFS = std::make_unique<vfspp::NativeFileSystem>(path.engine);
+	auto editorFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.editor);
+	auto engineFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.engine);
 
 	editorFS->Initialize();
 	engineFS->Initialize();

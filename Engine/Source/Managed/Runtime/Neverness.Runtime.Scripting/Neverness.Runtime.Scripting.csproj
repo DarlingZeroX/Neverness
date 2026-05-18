@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Runtime.Scripting</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RollForward>LatestMinor</RollForward>
+    <RootNamespace>Neverness.Managed.Scripting</RootNamespace>
+
+    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+
+    <!-- 直接写死项目名，强制生效，绕过变量解析bug -->
+    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Runtime.Scripting\$(Configuration)\</IntermediateOutputPath>
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Neverness.Runtime.Core\Neverness.Runtime.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+  </ItemGroup>
+</Project>

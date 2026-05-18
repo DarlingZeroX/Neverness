@@ -13,15 +13,15 @@ extern "C" {
 #endif
 
 /** @brief 播放 BGM；回傳非零 voice/bgm 控制代碼，失敗為 0（Stub 固定非零合成值）。 */
-typedef VGAudioHandle(VG_ENGINE_ABI_STDCALL* VGAudioPlayBgmFn)(const char* assetPathUtf8);
+typedef NNAudioHandle(NN_ENGINE_ABI_STDCALL* NNAudioPlayBgmFn)(const char* assetPathUtf8);
 
-typedef VGAudioHandle(VG_ENGINE_ABI_STDCALL* VGAudioPlayVoiceFn)(const char* assetPathUtf8);
+typedef NNAudioHandle(NN_ENGINE_ABI_STDCALL* NNAudioPlayVoiceFn)(const char* assetPathUtf8);
 
-typedef struct VGAudioAPI
+typedef struct NNAudioAPI
 {
-	VGAudioPlayBgmFn playBgm;
-	VGAudioPlayVoiceFn playVoice;
-} VGAudioAPI;
+	NNAudioPlayBgmFn playBgm;
+	NNAudioPlayVoiceFn playVoice;
+} NNAudioAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

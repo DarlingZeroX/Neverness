@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -12,7 +12,7 @@
 #include "ModuleEditorFramework.h"
 #include "AssetImporter/AssetImporterManager.h"
 #include "EditorCore/ContentBrowser.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "../Framework.h"
 
 namespace NN::Editor
@@ -20,7 +20,7 @@ namespace NN::Editor
 	void ModuleEditorFramework::MountToEditor(Ref<Runtime::VGWindow>& editorWindow, Ref<Runtime::CoreGameEngine>& gameEngine)
 	{
 		// 初始化内容浏览器
-		Runtime::String contentPath = Runtime::VFS::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
+		Runtime::String contentPath = Runtime::VFS::VFSService::GetInstance()->AbsolutePath(Runtime::RuntimeCore::GetAssetsPathVFS());
 		ContentBrowser::Create(contentPath);
 
 		// 初始化资源导入管理器

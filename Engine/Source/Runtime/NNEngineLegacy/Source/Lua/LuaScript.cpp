@@ -10,7 +10,7 @@
 */
 
 #include "Lua/LuaScript.h"
-#include "NNRuntimeCore/Include/Core/VFS.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 #include "Lua/LuaInterface.h"
 #include <sol/sol.hpp>
 
@@ -23,7 +23,7 @@ namespace NN::Runtime
 	{
 		auto script = MakeRef<LuaScript>();
 
-		auto result = VFS::ReadTextFromFile(file, script->m_ScriptString);
+		auto result = VFS::VFSService::ReadTextFromFile(file, script->m_ScriptString);
 		 
 		if (!result)
 			return nullptr;

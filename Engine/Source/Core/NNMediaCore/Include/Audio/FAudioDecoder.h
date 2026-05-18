@@ -1,4 +1,4 @@
-/*
+﻿/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -28,7 +28,7 @@ namespace NN::Core
 		FAudioDecoder();
 		~FAudioDecoder() override;
 
-		bool Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath);
+		bool Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath);
 
 		IAudioDataBuffer* GetAudioBuffer() const override { return m_AudioRingBuffer.get(); }
 		double GetAudioClock() const override { return audioClock; }

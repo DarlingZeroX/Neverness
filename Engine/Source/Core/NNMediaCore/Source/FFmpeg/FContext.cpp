@@ -10,11 +10,11 @@
 */
 
 #include "FFmpeg/FContext.h"
-#include <NNFileSystem/Interface/HVirtualFileSystem.h>
+#include <NNRuntimeVFS/Include/VFS/VirtualFileSystem.h>
 
 namespace NN::Core {
 
-	Ref<FfmpegContext> FfmpegContext::Create(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
+	Ref<FfmpegContext> FfmpegContext::Create(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath)
 	{
 		auto context = MakeRef<FfmpegContext>();
 
@@ -39,15 +39,15 @@ namespace NN::Core {
 		return m_AVFormatContext.get();
 	}
 
-	bool FfmpegContext::Open(vfspp::VirtualFileSystemPtr& vfs, const std::string& filePath)
+	bool FfmpegContext::Open(NN::Runtime::VFS::VirtualFileSystemPtr& vfs, const std::string& filePath)
 	{
 		// 初始化 FFmpeg
 		avformat_network_init();
 
-		//auto& vfs = VFS::GetInstance();
+		//auto& vfs = VFSService::GetInstance();
 
 		// 尝试打开文件
-		auto file = vfs->OpenFile(vfspp::FileInfo(filePath), vfspp::IFile::FileMode::Read);
+		auto file = vfs->OpenFile(NN::Runtime::VFS::FileInfo(filePath), NN::Runtime::VFS::IFile::FileMode::Read);
 		if (!file)
 			return false;
 

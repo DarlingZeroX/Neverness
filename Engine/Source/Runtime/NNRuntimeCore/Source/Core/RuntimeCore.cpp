@@ -11,17 +11,12 @@
 
 #include "Core/RuntimeCore.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
-#include <NNFileSystem/Include/VFS/VFS.h>
+#include <NNRuntimeVFS/Include/VFSService.h>
 
 namespace NN::Runtime
 {
 	struct CoreImp
 	{
-		CoreImp()
-		{
-			VFS = MakeRef<vfspp::VirtualFileSystem>();
-		}
-
 		static CoreImp* Get()
 		{
 			static CoreImp imp;
@@ -35,7 +30,6 @@ namespace NN::Runtime
 
 		FileInterface* FileInterface;
 		std::string ContentRootDirectory;
-		vfspp::VirtualFileSystemPtr VFS;
 		std::chrono::time_point<std::chrono::high_resolution_clock> StartTime;
 	};
 
@@ -84,6 +78,11 @@ namespace NN::Runtime
 	std::string RuntimeCore::GetEngineResourcePathVFS()
 	{
 		return "/engine/";
+	}
+
+	std::string RuntimeCore::GetResourcePathVFS(const std::string& absolutePath)
+	{
+		return VFS::VFSService::GetRelativePathVFS(GetAssetsPathVFS(), absolutePath);
 	}
 
 #ifdef _WIN32

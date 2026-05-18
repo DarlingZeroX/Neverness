@@ -1,6 +1,6 @@
 /**
  * @file EntitySubsystem.cpp
- * @brief **EntitySubsystem** 实现：为 **VGEntityAPI::getRuntimeTick** 提供单调计数，为 **getServiceAbiToken** 提供与 Stub 一致的魔数。
+ * @brief **EntitySubsystem** 实现：为 **NNEntityAPI::getRuntimeTick** 提供单调计数，为 **getServiceAbiToken** 提供与 Stub 一致的魔数。
  *
  * **与 `VGEngineRuntime::Tick` 的契约**
  * - 经 **`RuntimeScheduler`** 之 **`RuntimeTickGroup::Update`** 调用 **`IRuntimeSubsystem::Tick`** → **`OnTick`**（宿主单控制线程），故 **`runtimeTick_`** 使用 **`memory_order_relaxed`** 即可满足与托管侧「可观测」语义。
@@ -42,7 +42,7 @@ void EntitySubsystem::Reset() noexcept
 
 std::uint32_t EntitySubsystem::GetServiceAbiToken() const noexcept
 {
-	return VG_ENTITY_SERVICE_ABI_TOKEN;
+	return NN_ENTITY_SERVICE_ABI_TOKEN;
 }
 
 std::uint64_t EntitySubsystem::GetRuntimeTick() const noexcept

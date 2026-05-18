@@ -14,12 +14,12 @@ extern "C" {
 #endif
 
 /** @brief 非零表已按下，0 表未按下。 */
-typedef int(VG_ENGINE_ABI_STDCALL* VGInputIsKeyPressedFn)(int keyCode);
+typedef int(NN_ENGINE_ABI_STDCALL* NNInputIsKeyPressedFn)(int keyCode);
 
-typedef struct VGInputAPI
+typedef struct NNInputAPI
 {
-	VGInputIsKeyPressedFn isKeyPressed;
-} VGInputAPI;
+	NNInputIsKeyPressedFn isKeyPressed;
+} NNInputAPI;
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -69,6 +69,7 @@ target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessCore-FileSys
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessCore-MediaCore)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-Lua)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-RHI)
+target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-VFS)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-Pak)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-ImGui)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-Core)
