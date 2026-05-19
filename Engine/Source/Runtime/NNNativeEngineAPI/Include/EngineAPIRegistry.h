@@ -11,6 +11,7 @@
  * - 擴充規則：僅能在各子表尾或本聚合體尾 **追加** 欄位；禁止重排既有欄位。
  */
 
+#include "ApplicationAPI.h"
 #include "AssetAPI.h"
 #include "AssetRegistryAPI.h"
 #include "AsyncWaitAPI.h"
@@ -28,7 +29,7 @@ extern "C" {
 #endif
 
 /** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 5u
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 6u
 
 typedef struct NNNativeEngineAPI
 {
@@ -46,6 +47,8 @@ typedef struct NNNativeEngineAPI
 	NNAssetRegistryAPI assetRegistry;
 	/** @brief Native ECS／實體服務子表（骨架）；與 `NNSceneAPI` 使用之 `NNEntityHandle` 語意分離，見 `EntityAPI.h`。 */
 	NNEntityAPI entity;
+	/** @brief 统一 Runtime Application 层（SDL 窗口与事件泵）；见 `ApplicationAPI.h`。 */
+	NNApplicationAPI application;
 } NNNativeEngineAPI;
 
 #ifdef __cplusplus

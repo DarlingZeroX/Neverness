@@ -80,7 +80,7 @@ namespace VisionGal::Editor
 		auto& editorConfig = NN::Editor::EditorCore::GetEditorPreferences().Editor;
 
 		// 读取中文字体
-		VFSService::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFSService::DataRef& data) {
+		VFS::VFSService::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const VFS::VFSService::DataRef& data) {
 			ImGuiIO& io = ImGui::GetIO();
 			ImFontConfig icons_config;
 			icons_config.FontDataOwnedByAtlas = false;
@@ -91,7 +91,7 @@ namespace VisionGal::Editor
 			});
 
 		// 读取图标字体
-		VFSService::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const VFSService::DataRef& data) {
+		VFS::VFSService::SafeReadFileFromVFS(RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const VFS::VFSService::DataRef& data) {
 			ImGuiIO& io = ImGui::GetIO();
 			static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 

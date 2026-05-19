@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {}
+    "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {}
   },
   "projects": {
-    "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+    "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
       "version": "2.2.10-prerelease",
       "restore": {
-        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj",
+        "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj",
         "projectName": "Neverness.Editor.ImGui",
-        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj",
+        "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\obj\\",
+        "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "configFilePaths": [

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Runtime.Bootstrap</AssemblyName>
+    <RootNamespace>Neverness.Managed.Bootstrap</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RollForward>LatestMinor</RollForward>
+
+    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Runtime.Bootstrap\$(Configuration)\</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
+  </ItemGroup>
+</Project>

@@ -28,6 +28,22 @@ target_sources(VGEditor PRIVATE ${NNEditor_SOURCES} ${APP_RESOURCES})
 
 target_compile_definitions(VGEditor PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")
 
+option(NEVERNESS_USE_RUNTIME_KERNEL "VGEditor: NNApplicationAPI + NNEngineRuntimeHost loop (not VGEngine)" OFF)
+if (NEVERNESS_USE_RUNTIME_KERNEL)
+	target_compile_definitions(VGEditor PRIVATE NEVERNESS_USE_RUNTIME_KERNEL=1)
+	target_link_libraries(VGEditor PRIVATE NevernessRuntime-EngineServices)
+	target_include_directories(VGEditor PRIVATE
+		${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeEngineServices/Include
+		${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeManagedBridge/Include
+	)
+	if (VISIONGAL_ENABLE_MANAGED_HOST_LEGACY)
+		target_link_libraries(VGEditor PRIVATE NevernessRuntime-ManagedHostLegacy)
+		target_include_directories(VGEditor PRIVATE
+			${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeManagedHostLegacy/Include
+		)
+	endif()
+endif()
+
 # 添加头文件搜索路径
 target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(VGEditor PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)

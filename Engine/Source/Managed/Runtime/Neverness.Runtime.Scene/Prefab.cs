@@ -1,31 +1,29 @@
-﻿using Neverness.Managed.Object;
-
 namespace Neverness.Managed.Scene;
 
 /// <summary>
-/// Prefab 描述：可從場景實體範本實例化新 <see cref="SceneEntity"/>。
+/// Prefab 描述：经 Native <see cref="SceneNativeBridge.Spawn"/> 实例化 <see cref="SceneEntity"/>。
 /// </summary>
 public sealed class Prefab
 {
-	/// <summary>Prefab 名稱。</summary>
+	/// <summary>Prefab 名称。</summary>
 	public string Name { get; }
 
-	/// <summary>範本顯示名稱。</summary>
+	/// <summary>Native Prefab 虚拟路径。</summary>
+	public string VirtualPath { get; }
+
+	/// <summary>模板显示名称。</summary>
 	public string TemplateDisplayName { get; }
 
 	/// <summary>建立 Prefab 描述。</summary>
-	public Prefab(string name, string templateDisplayName)
+	public Prefab(string name, string virtualPath, string templateDisplayName)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(name);
-		TemplateDisplayName = templateDisplayName;
+		ArgumentException.ThrowIfNullOrWhiteSpace(virtualPath);
 		Name = name;
+		VirtualPath = virtualPath;
+		TemplateDisplayName = templateDisplayName;
 	}
 
-	/// <summary>實例化新場景實體並註冊。</summary>
-	public SceneEntity Instantiate()
-	{
-		var entity = LifetimeSystem.CreateAndRegister<SceneEntity>("SceneEntity");
-		entity.DisplayName = TemplateDisplayName;
-		return entity;
-	}
+	/// <summary>经 Native spawn 实例化场景实体。</summary>
+	public SceneEntity? Instantiate() => SceneEntity.Spawn(VirtualPath, TemplateDisplayName);
 }

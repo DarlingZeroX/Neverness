@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Core\Neverness.Runtime.Core.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Serialization\Neverness.Runtime.Serialization.csproj" />
   </ItemGroup>

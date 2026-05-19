@@ -1,28 +1,27 @@
-# VGManagedObject — 託管物件生命週期（VisionGal.Managed.Object）
+# Neverness.Runtime.Object — 托管对象与 Native Handle
 
 ## 1. 定位
 
-| 項目 | 說明 |
+| 项目 | 说明 |
 |------|------|
-| **職責** | 託管 **VGObject** 抽象基底、**VGObjectId** 識別、靜態 **ObjectRegistry**、經 **EngineApi.Object** 之 **NativeHandleBridge**、**LifetimeSystem** retain/release 協調。 |
-| **程式集** | **VisionGal.Managed.Object**（`net10.0`，`AllowUnsafeBlocks`） |
-| **依賴** | **VisionGal.Managed.Engine** |
+| **程序集** | `Neverness.Runtime.Object` |
+| **命名空间** | `Neverness.Managed.Object` |
+| **职责** | `VGObject`、`LifetimeSystem`、`ObjectRegistry`；经 **Interop** 的 `NativeHandleBridge` 操作 Native 控制代码 |
+| **不负责** | Interop 安装（**Neverness.Runtime.Interop**） |
 
-## 2. 生命週期契約（Phase 5 加固）
+## 2. 生命周期
 
-- **`createObject`** 成功時 Native 引用計數為 **1**；**`CreateAndRegister`** 不再額外 `Retain`。
-- **`Dispose`** → **`Release`**；引用歸零後 **`DestroyObject`**。
-- **`ObjectRegistry.ClearForTesting`**：先對所有已註冊物件呼叫 **`Dispose`**，再清空表與 Id 計數器。
-- **`CreateAndRegister<T>`**：以反射匹配 `(VGObjectId, NNObjectHandle)` 或三參數 `(…, string typeName)` 建構子。
+- `LifetimeSystem.CreateAndRegister` → Native `createObject`（ref=1）
+- `Dispose` → retain/release 至 0 后 destroy
 
-## 3. 進展
+## 3. 依赖
 
-| 日期 | 進展 |
+- `Neverness.Runtime.Engine`
+- `Neverness.Runtime.Interop`
+
+## 4. 开发进展
+
+| 日期 | 进展 |
 |------|------|
-| **2026-05-15** | 初始模組：Id / Object / Registry / Native 橋接 / 生命週期系統。 |
-| **2026-05-15** | **Phase 5 加固**：ref-count、`ClearForTesting`、反射建構 **SceneEntity**。 |
-| **2026-05-15** | **Phase 5.3**：**SceneRehydrator** 經 **`LifetimeSystem`** 再水合場景實體（新 Native 控制代碼）。 |
-
-## 4. 後續
-
-- 執行緒安全之讀寫鎖（若多執行緒存取註冊表）。
+| **2026-05-15** | Phase 5 地基 |
+| **2026-05-19** | `NativeHandleBridge` 迁至 Interop |

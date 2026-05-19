@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using Neverness.Managed.Engine;
+using System.Text.Json;
+using Neverness.Managed.Interop;
 using Neverness.Managed.Gameplay;
 using Neverness.Managed.Object;
 using SceneModel = Neverness.Managed.Scene.Scene;
@@ -76,13 +76,16 @@ public sealed class GameplaySessionSnapshotTests
 			return;
 		}
 
-		ObjectRegistry.ClearForTesting();
-		var entity = LifetimeSystem.CreateAndRegister<SceneEntity>("SceneEntity");
-		entity.DisplayName = "SnapEntity";
+		var entity = SceneEntity.Spawn("SceneEntity", "SnapEntity");
+		if (entity == null)
+		{
+			return;
+		}
+
 		var scene = new SceneModel("SnapSceneModel");
 		scene.AddEntity(entity);
 		var sceneJson = scene.ToJson();
-		ObjectRegistry.ClearForTesting();
+		entity.Destroy();
 
 		var store = new GameplayVariableStore();
 		store.Set("v", true);

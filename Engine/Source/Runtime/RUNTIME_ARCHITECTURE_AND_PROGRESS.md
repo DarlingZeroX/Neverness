@@ -129,10 +129,12 @@ flowchart TB
 | NNRuntimeImGui | `NevernessRuntime-ImGui` | VGImgui | [Docs](NNRuntimeImGui/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | ImGui / 工具向 UI 扩展 | 生产 |
 | NNRuntimeCore | `NevernessRuntime-Core` | VGCore | [Docs](NNRuntimeCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 应用壳、窗口、与多子系统绑定的核心动态库 | 生产 |
 | NNRuntimeScene | `NevernessRuntime-Scene` | — | [Docs](NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | ECS-first Scene（System、层级、字段反射、二进制序列化） | **Phase 2–3 已落地** |
-| NNNativeEngineAPI | `NevernessRuntime-NativeEngineAPI` | NNNativeEngineAPI | [Docs](NNNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Engine Service C ABI（仅头文件契约） | ABI 稳定演进 |
+| NNNativeEngineAPI | `NevernessRuntime-NativeEngineAPI` | NNNativeEngineAPI | [Docs](NNNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Engine Service C ABI（仅头文件契约）；**layout v6** 含 **`NNApplicationAPI`** | ABI 稳定演进 |
+| NNRuntimeApplication | `NevernessRuntime-Application` | — | [Docs](NNRuntimeApplication/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 统一 SDL Application 宿主（`NNApplicationAPI` Runtime 实现） | **已落地** |
 | NNRuntimeNativeEngineAPIStub | `NevernessRuntime-NativeEngineAPIStub` | NNNativeEngineAPIStub | [Docs](NNRuntimeNativeEngineAPIStub/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Stub / Mock / GetDefaultTable | 已落地 |
 | NNRuntimeManaged | `NevernessRuntime-Managed` | VGManagedCore | [Docs](NNRuntimeManaged/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | **NNNativeAPI** 函数表 SHARED 导出；托管镜像在 Managed/Runtime/Core | Phase 2–3 已落地 |
-| NNRuntimeManagedHost | `NevernessRuntime-ManagedHost` | VGManagedHost | [Docs](NNRuntimeManagedHost/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | CoreCLR 宿主（**可选**，`VISIONGAL_ENABLE_MANAGED_HOST`）；C# 入口见 Managed/Runtime/Host | Phase 1 已落地 |
+| NNRuntimeManagedHostLegacy | `NevernessRuntime-ManagedHostLegacy` | VGManagedHost（弃用别名） | [Docs](NNRuntimeManagedHostLegacy/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Legacy CoreCLR 宿主（**可选**，`VISIONGAL_ENABLE_MANAGED_HOST_LEGACY`）；主路径见 Entry.Bootstrap | Migration-3 |
+| NNRuntimeManagedBridge | `NevernessRuntime-ManagedBridge` | — | [Docs](NNRuntimeManagedBridge/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `NNEngineRuntimeHost_TickManaged` 桥接 | Migration-6a |
 | NNRuntimeEngine | `NevernessRuntime-Engine` | **VGEngineRuntime** | [Docs](NNRuntimeEngine/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 行程级 Timing / Async / 子系统门面 | Phase4 首包 |
 | NNRuntimeEngineServices | `NevernessRuntime-EngineServices` | VGEngineRuntimeServices | [Docs](NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 将 ABI 表覆写为转发表（别名 **NNEngineRuntimeServices**） | Phase4 首包 |
 | NNRuntimeAsset | `NevernessRuntime-Asset` | VGAsset | [Docs](NNRuntimeAsset/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Galgame 等资源类型与加载 | 生产 |
@@ -147,7 +149,8 @@ flowchart TB
 |------|------|------|
 | `VISIONGAL_USE_ENGINE_RUNTIME_SERVICES` | ON | 为 **NNRuntimeManaged** 的默认 Native 表挂载 `NNNativeEngineApi_GetRuntimeTable()`；OFF 时 Stub 表路径见 [NNRuntimeEngineServices 文档](NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
 | `VISIONGAL_BUILD_LEGACY_GALGAME` | OFF | **Legacy Galgame** 不在 `Source/Runtime` 内；开启后在 `Engine/Source/Legacy` 追加旧产品线目标。 |
-| `VISIONGAL_ENABLE_MANAGED_HOST` | **OFF** | 为 **ON** 时（仅 Win/MSVC）构建 **NNRuntimeManagedHost**；**NNRuntimeManaged** 始终随 Runtime 树构建。 |
+| `VISIONGAL_ENABLE_MANAGED_HOST_LEGACY` | **OFF** | 为 **ON** 时（仅 Win/MSVC）构建 **NNRuntimeManagedHostLegacy**；旧名 `VISIONGAL_ENABLE_MANAGED_HOST` 转发并 WARNING。 |
+| `NEVERNESS_BUILD_RUNTIME_KERNEL_APP` | **OFF** | 构建 **NNRuntimeKernelApplication** 演示（Native+Managed 双 Tick）。 |
 
 ---
 
@@ -214,6 +217,7 @@ flowchart TB
 | 2026-05-15 | 与 MANAGED **§2.5.5** 对齐：**Type** 键 **GetComponent**／**RemoveComponent** 仍纯 C#；**Kernel** 无新增转发。 |
 | 2026-05-15 | **layout v4**：**`NNEntityAPI`** 子表骨架已纳入 **NNNativeEngineAPI**；**`getServiceAbiToken`** 冒烟；**VGEntitySystem** 仍未实现。 |
 | 2026-05-15 | **layout v5**：**`getRuntimeTick`**；**EntitySubsystem**；**`BuildRuntime`** 覆写 **`entity.*`**；**VGEntitySystem** 完整实现仍为后续。 |
+| 2026-05-20 | **layout v6**：**`NNApplicationAPI`**；**NNRuntimeApplication**（SDL 窗口/事件泵）；**`BuildRuntime`** 覆写 **`application.*`**；托管 **Neverness.Runtime.Application**。 |
 | 2026-05-15 | **P0 文档对齐**：**§5.2** 表头日期与 Phase 表「行程级 Runtime」行补充 **Entity** 转发语义；与 MANAGED **§2.5**／**§2.7.1** 一致。 |
 | 2026-05-15 | **P0 对齐审计**：与 MANAGED **§2.7.1** 再核一致；**MERGED** 由 **merge_docs** 源文档刷新；无 Native 行为变更。 |
 | 2026-05-15 | **§0 对齐**：新增本文 **§0** Native 主线分工；与 Managed **§0**（2026 原则、P0–P2）互链；**§5.2** 未来规划指向 **Kernel 化** 阶段表。 |

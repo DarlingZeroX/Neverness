@@ -6,6 +6,8 @@
 #include <mutex>
 
 #include "Internal/RuntimeApiBuilders.h"
+#include "ManagedRuntimeBridge.h"
+#include "NNRuntimeApplication/ApplicationApiExport.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "NativeEngineRuntimeServices.h"
@@ -26,6 +28,7 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildObjectRuntimeApi(&outTable->object);
 	NNBuildAssetRegistryRuntimeApi(&outTable->assetRegistry);
 	NNBuildEntityRuntimeApi(&outTable->entity);
+	NNBuildApplicationRuntimeApi(&outTable->application);
 }
 
 namespace
@@ -56,5 +59,6 @@ extern "C" void NNEngineRuntimeHost_Tick(float deltaTimeSeconds)
 
 extern "C" void NNEngineRuntimeHost_Shutdown(void)
 {
+	NNEngineRuntimeHost_ClearManagedTickCallback();
 	NN::Runtime::engine::NNEngineRuntime::Instance().Shutdown();
 }

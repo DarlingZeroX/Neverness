@@ -14,6 +14,13 @@
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
 
+#if defined(NEVERNESS_USE_RUNTIME_KERNEL) && NEVERNESS_USE_RUNTIME_KERNEL
+#include "RuntimeKernelEditorLoop.h"
+#endif
+
+// 迁移说明：定义 NEVERNESS_USE_RUNTIME_KERNEL 后，可切换为 NNApplicationAPI + NNEngineRuntimeHost_* 双 Tick。
+// 默认仍走 VGEngine Legacy。
+
 int main(int argc, char* argv[])
 {
 	using namespace VisionGal;
@@ -52,6 +59,9 @@ int main(int argc, char* argv[])
 	paths.engine = editorProjectRootDir + "/Resource/Engine/";
 	EditorInitializer::InitializeVFS(paths);
 
+#if defined(NEVERNESS_USE_RUNTIME_KERNEL) && NEVERNESS_USE_RUNTIME_KERNEL
+	return RunRuntimeKernelEditorMainLoop();
+#else
 	// 加载项目
 	NN::Runtime::VGEngine::Get()->LoadProject();
 
@@ -66,4 +76,6 @@ int main(int argc, char* argv[])
 
 	// 运行引擎主循环
 	NN::Runtime::VGEngine::Get()->Run();
+	return 0;
+#endif
 }

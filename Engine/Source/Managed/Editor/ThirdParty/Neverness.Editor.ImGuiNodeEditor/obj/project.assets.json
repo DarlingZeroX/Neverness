@@ -788,11 +788,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
       "projectName": "Neverness.Editor.ImGuiNodeEditor",
-      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\obj\\",
+      "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "configFilePaths": [
@@ -816,8 +816,8 @@
           "framework": "net6.0",
           "targetAlias": "net6.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
             }
           }
         },
@@ -825,8 +825,8 @@
           "framework": "net7.0",
           "targetAlias": "net7.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
             }
           }
         },
@@ -834,8 +834,8 @@
           "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
             }
           }
         },
@@ -843,8 +843,8 @@
           "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
             }
           }
         },
@@ -852,8 +852,8 @@
           "framework": "netstandard2.0",
           "targetAlias": "netstandard2.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
             }
           }
         },
@@ -861,8 +861,8 @@
           "framework": "netstandard2.1",
           "targetAlias": "netstandard2.1",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
             }
           }
         }

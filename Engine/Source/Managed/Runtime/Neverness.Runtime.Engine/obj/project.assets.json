@@ -32,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj",
+      "projectUniqueName": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj",
       "projectName": "Neverness.Runtime.Engine",
-      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj",
+      "projectPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\obj\\",
+      "outputPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -54,8 +54,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj": {
-              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj"
+            "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj": {
+              "projectPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj"
             }
           }
         }

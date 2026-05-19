@@ -1,4 +1,5 @@
 using Neverness.Managed.Engine;
+using Neverness.Managed.Interop;
 
 namespace Neverness.Managed.Gameplay;
 
@@ -205,7 +206,7 @@ public sealed class PresentDialogueSequenceStep : ISequenceStep
 /// </summary>
 /// <remarks>
 /// <para>JSON 须由 <see cref="M:Neverness.Managed.Scene.Scene.ToJson"/> 等正规路径产生；反序列化失败或无法创建实体时返回 <c>false</c>。</para>
-/// <para>再水合会通过 <see cref="T:Neverness.Managed.Object.LifetimeSystem"/> 注册新的 <see cref="T:Neverness.Managed.Scene.SceneEntity"/>；测试或产品级场景切换时须注意与旧实体 ID 的隔离（测试可调用 <see cref="M:Neverness.Managed.Object.ObjectRegistry.ClearForTesting"/>）。</para>
+/// <para>再水合经 <see cref="T:Neverness.Managed.Scene.SceneNativeBridge"/> 调用 Native <c>NNSceneAPI</c> 生成实体；须已安装 Engine ABI。</para>
 /// </remarks>
 public sealed class RehydrateSceneSequenceStep : ISequenceStep
 {

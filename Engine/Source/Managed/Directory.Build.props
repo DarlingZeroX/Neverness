@@ -1,5 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);Build/**;obj/**;bin/**</DefaultItemExcludes>
-  </PropertyGroup>
-</Project>

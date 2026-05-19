@@ -30,9 +30,10 @@
     <ProjectReference Include="..\Neverness.Runtime.Object\Neverness.Runtime.Object.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Reflection\Neverness.Runtime.Reflection.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Bootstrap\Neverness.Runtime.Bootstrap.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Serialization\Neverness.Runtime.Serialization.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Gameplay\Neverness.Runtime.Gameplay.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Entity\Neverness.Runtime.Entity.csproj" />
   </ItemGroup>
 </Project>

@@ -1,31 +1,31 @@
-# VGManagedScene — 場景與 Prefab（VisionGal.Managed.Scene）
+# Neverness.Runtime.Scene — Native 场景 ABI 门面
 
 ## 1. 定位
 
-| 項目 | 說明 |
+| 项目 | 说明 |
 |------|------|
-| **職責** | **Scene** 容器、**SceneEntity**（VGObject 衍生）、**Prefab** 實例化、與 **SceneSerializer** JSON 往返、**SceneRehydrator** 實體再水合。 |
-| **程式集** | **VisionGal.Managed.Scene**（`net10.0`） |
-| **依賴** | **VisionGal.Managed.Object**、**VisionGal.Managed.Serialization** |
+| **程序集** | `Neverness.Runtime.Scene` |
+| **命名空间** | `Neverness.Managed.Scene` |
+| **职责** | `Scene`、`SceneEntity`、`SceneNativeBridge`；经 `NNSceneAPI` 访问 C++ 场景图 |
+| **不负责** | 场景存储与 ECS 迭代（**NNRuntimeScene** / Kernel）；托管不复制实体数据 |
 
-## 2. JSON 語意
+## 2. 与 Native 边界
 
-| API | 說明 |
-|-----|------|
-| **`ToJson`** | 序列化為含 `formatVersion` 之 DTO JSON。 |
-| **`FromJson`** | 僅還原 **`SceneDocument` DTO**，不重建 **`SceneEntity`**。 |
-| **`ValidateRoundTripDocument`** | 驗證名稱、實體數與 **`DisplayName`** 等屬性 payload。 |
-| **`RestoreFromDocument`** | 還原僅託管 **`Scene`** 容器（不含實體）。 |
-| **`RehydrateFromJson`** / **`SceneRehydrator`** | 完整再水合：經 **`LifetimeSystem`** 建立新 Native 控制代碼並套用 DTO 屬性。 |
+- **运行时**：`SceneNativeBridge` → `EngineNativeApiBootstrap.EngineApi.Scene`（`loadScene` / `spawn` / `destroy` / `find` 等）
+- **句柄**：`SceneEntity` 持有 `NNEntityHandle`（与 `NNObjectHandle` / `VGObject` 分离）
+- **JSON**：`SceneSerializer` 为工具/存档 DTO；再水合经 Native `spawn` 创建新句柄，不复活旧控制码
+- **EntityAPI**：`NNEntityAPI`（Kernel 子系统 Tick）与场景图 API 语义分离，见 MANAGED 总览 §2.7.1
 
-**刻意未接線**：Native **`NNSceneAPI`**（spawn / setParent 等）之 C# 橋接層。
+## 3. 依赖
 
-## 3. 進展
+- `Neverness.Runtime.Interop`
+- `Neverness.Runtime.Engine`
+- `Neverness.Runtime.Reflection`
+- `Neverness.Runtime.Serialization`
 
-| 日期 | 進展 |
+## 4. 开发进展
+
+| 日期 | 进展 |
 |------|------|
-| **2026-05-15** | 初始模組：場景實體、Prefab、序列化整合。 |
-| **2026-05-15** | **Phase 5 加固**：`ValidateRoundTripDocument` / `RestoreFromDocument`（僅容器）。 |
-| **2026-05-15** | **Phase 5.3**：**`SceneRehydrator`**、**`RehydrateFromJson`**；Bootstrap 演練 JSON→實體往返。 |
-| **2026-05-15** | **Phase 6 slice 3（消費方）**：**VisionGal.Managed.Gameplay** 之 **SequenceRunner** 經 **SceneRehydrator** 編排場景再水合（劇本層，仍無 Native **NNSceneAPI** C# 橋接）。 |
-| **2026-05-15** | **§0 主線**：本模組維持 **JSON／DTO** 與再水合工具鏈；**Runtime Scene** 目標見 **VisionGal.Managed.Scene.Runtime**（MANAGED **§0.3** **P0-3**）。 |
+| **2026-05-15** | Phase 5.3 JSON 再水合（Object 路径） |
+| **2026-05-19** | 删除 `Neverness.Runtime.Entity`；Scene 改为 Native ABI 薄门面；Stub `spawn` 返回非零句柄供测试 |

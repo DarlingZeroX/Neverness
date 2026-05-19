@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace Neverness.Managed.Engine;
 
@@ -161,8 +161,8 @@ public unsafe struct NNAssetRegistryApi
 /// 與 Native <c>NNEntityAPI</c> 對齊（<c>EntityAPI.h</c>）。**layout v5** 起含 <c>getRuntimeTick</c>（Runtime 覆寫後隨 Tick 遞增；Stub 恒為 **0**）。
 /// </summary>
 /// <remarks>
-/// 與 <see cref="NNSceneApi"/> 所操作之場景句柄（Native <c>NNEntityHandle</c>）語意分離；與託管 <c>Neverness.Managed.Entity.EntityHandle</c> 無數值映射。
-/// **GetRuntimeTick** 僅反映 **EntitySubsystem** 是否已被 **NNEngineRuntime::Tick** 驅動（與 **Stub** 表區分）；**不**代表託管 **EntityWorld** 元件資料已與 Kernel 鏡像或自動同步（總覽 **§2.7.1** 資料策略）。
+/// 與 <see cref="NNSceneApi"/> 所操作之場景句柄（Native <c>NNEntityHandle</c>）語意分離。
+/// **GetRuntimeTick** 僅反映 **EntitySubsystem** 是否已被 **NNEngineRuntime::Tick** 驅動（與 **Stub** 表區分）。
 /// 欄位順序須與 C 端 <c>typedef struct NNEntityAPI</c>（<c>EntityAPI.h</c>）逐欄一致。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
@@ -175,10 +175,23 @@ public unsafe struct NNEntityApi
 }
 
 /// <summary>
+/// 與 Native <c>NNApplicationAPI</c> 對齊（<c>ApplicationAPI.h</c>）：SDL 窗口与事件泵。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public unsafe struct NNApplicationApi
+{
+	public uint Size;
+	public delegate* unmanaged<bool> Initialize;
+	public delegate* unmanaged<byte*, int, int, bool> OpenWindow;
+	public delegate* unmanaged<bool> PumpEvents;
+	public delegate* unmanaged<void> Shutdown;
+}
+
+/// <summary>
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v5** 起末尾為 <see cref="Entity"/>（<c>NNEntityAPI</c>，含 **getRuntimeTick**）；若 Native 遞增 <c>NN_NATIVE_ENGINE_API_LAYOUT_VERSION</c> 而託管未同步，<see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 將拒絕快取。
+/// **layout v6** 起末尾為 <see cref="Application"/>（<c>NNApplicationAPI</c>）；若 Native 遞增 <c>NN_NATIVE_ENGINE_API_LAYOUT_VERSION</c> 而託管未同步，<see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 將拒絕快取。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -195,6 +208,8 @@ public unsafe struct NNNativeEngineApi
 	public NNAsyncWaitApi AsyncWait;
 	public NNObjectApi Object;
 	public NNAssetRegistryApi AssetRegistry;
-	/// <summary>對應 C 聚合體末尾成員 <c>entity</c>（型別 <c>NNEntityAPI</c>）；語義見 <see cref="NNEntityApi"/> 之 remarks。</summary>
+	/// <summary>對應 C 聚合體成員 <c>entity</c>（型別 <c>NNEntityAPI</c>）；語義見 <see cref="NNEntityApi"/> 之 remarks。</summary>
 	public NNEntityApi Entity;
+	/// <summary>對應 C 聚合體末尾成員 <c>application</c>（型別 <c>NNApplicationAPI</c>）。</summary>
+	public NNApplicationApi Application;
 }

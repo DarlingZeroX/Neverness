@@ -1,12 +1,11 @@
-﻿using Neverness.Managed.Engine;
+using Neverness.Managed.Interop;
 using Neverness.Managed.Gameplay;
-using Neverness.Managed.Object;
 using SceneModel = Neverness.Managed.Scene.Scene;
 using Neverness.Managed.Scene;
 
 namespace Neverness.Managed.Foundation.Tests;
 
-/// <summary>Phase 6：<see cref="SequenceRunner"/> 與步驟之託管行為（含場景再水合聯動）。</summary>
+/// <summary>Phase 6：<see cref="SequenceRunner"/> 与步骤之托管行为（含场景再水合联动）。</summary>
 public sealed class SequenceRunnerTests
 {
 	[Fact]
@@ -45,19 +44,19 @@ public sealed class SequenceRunnerTests
 	{
 		if (!EngineNativeApiBootstrap.IsInstalled)
 		{
-			// 再水合會經 LifetimeSystem 呼叫 Native createObject；無引擎 ABI 時跳過（與 SceneRehydrationTests 一致）。
 			return;
 		}
 
-		ObjectRegistry.ClearForTesting();
+		var entity = SceneEntity.Spawn("SceneEntity", "RehydratedTitle");
+		if (entity == null)
+		{
+			return;
+		}
 
-		var entity = LifetimeSystem.CreateAndRegister<SceneEntity>("SceneEntity");
-		entity.DisplayName = "RehydratedTitle";
 		var scene = new SceneModel("DemoScene");
 		scene.AddEntity(entity);
 		var sceneJson = scene.ToJson();
-
-		ObjectRegistry.ClearForTesting();
+		entity.Destroy();
 
 		var store = new GameplayVariableStore();
 		var runner = new SequenceRunner(

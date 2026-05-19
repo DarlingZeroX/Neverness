@@ -5,6 +5,7 @@
  * @brief 各 Engine Service 子表之 Stub 建表函式宣告（僅寫入函數指標，不修改 **layoutVersion**）。
  */
 
+#include "ApplicationAPI.h"
 #include "AssetAPI.h"
 #include "AssetRegistryAPI.h"
 #include "AsyncWaitAPI.h"
@@ -21,6 +22,7 @@
 extern "C" {
 #endif
 
+void NNBuildApplicationApiStubs(NNApplicationAPI* api);
 void NNBuildRenderApiStubs(NNRenderAPI* api);
 void NNBuildUiApiStubs(NNUIAPI* api);
 void NNBuildAudioApiStubs(NNAudioAPI* api);

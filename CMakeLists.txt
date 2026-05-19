@@ -129,8 +129,6 @@ if (ENABLE_TESTS)
     enable_testing()
     # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 NEVERNESS_BUILD_LEGACY_GALGAME=ON）
     # VGLauncherTest: add_subdirectory in NNLauncher.
-    # 托管 Foundation 测试已并入 Engine/Source/Managed/Runtime/Tests（由下方 Managed 子树加载），
-    # 目标名：neverness_managed_foundation_tests（非 ALL，需显式 --target 构建）。
 endif()
 
 ########## 自动加载 Plugins 目录下所有子项目
@@ -175,7 +173,3 @@ if(MSVC)
         $<$<CONFIG:Debug>:/Oi>       # 启用 intrinsic（更快）
     )
 endif()
-
-# 托管 C#（Runtime.Host / NervernessEditor 等）：与 C++ 同次 cmake --build 编译，输出 Build/bin/<Config>/
-# 详见 Engine/Source/Managed/CMakeLists.txt；可通过 -DNEVERNESS_BUILD_MANAGED=OFF 关闭。
-add_subdirectory ("Engine/Source/Managed")

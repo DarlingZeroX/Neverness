@@ -1,0 +1,17 @@
+NNEngineLegacy
+NNNativeEngineAPI
+NNRuntimeAsset
+NNRuntimeCore
+NNRuntimeEngine
+NNRuntimeEngineServices
+NNRuntimeImGui
+NNRuntimeLua
+NNRuntimeManaged
+NNRuntimeManagedHostLegacy
+NNRuntimeManagedBridge
+NNRuntimeNativeEngineAPIStub
+NNRuntimePak
+NNRuntimeRHI
+NNRuntimeRmlui
+NNRuntimeScene
+NNRuntimeVFS

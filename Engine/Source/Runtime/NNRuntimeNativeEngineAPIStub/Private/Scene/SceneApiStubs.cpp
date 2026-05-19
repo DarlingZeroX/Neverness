@@ -1,8 +1,9 @@
-﻿/**
+/**
  * @file SceneApiStubs.cpp
  * @brief **NNSceneAPI** 預設 Stub：記憶體內最小場景語意，供未鏈結 **NNEngineRuntime** 之測試。
  */
 
+#include <atomic>
 #include <cstdint>
 #include <cstring>
 
@@ -14,6 +15,8 @@
 
 namespace
 {
+std::atomic<std::uint64_t> g_nextEntityStubId{1};
+
 int NN_ENGINE_ABI_STDCALL stub_scene_loadScene(const char* sceneNameUtf8)
 {
 	NN::StubRuntime::BumpInvokeCount();
@@ -25,7 +28,8 @@ NNEntityHandle NN_ENGINE_ABI_STDCALL stub_scene_spawn(const char* prefabVirtualP
 {
 	NN::StubRuntime::BumpInvokeCount();
 	(void)prefabVirtualPathUtf8;
-	return 0;
+	const std::uint64_t id = g_nextEntityStubId.fetch_add(1u, std::memory_order_relaxed);
+	return id == 0u ? static_cast<NNEntityHandle>(0) : static_cast<NNEntityHandle>(id);
 }
 
 void NN_ENGINE_ABI_STDCALL stub_scene_destroy(NNEntityHandle entity)

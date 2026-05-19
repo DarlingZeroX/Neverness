@@ -1,16 +1,20 @@
-# VGManagedScripting — 腳本載入與 Roslyn（VisionGal.Managed.Scripting）
+# Neverness.Runtime.Scripting — 脚本与 ALC 脚手架
 
 ## 1. 定位
 
-| 項目 | 說明 |
+| 项目 | 说明 |
 |------|------|
-| **職責** | **ManagedAssemblyLoadContextHost**、**HotReloadCoordinator**、**RoslynScriptCompiler**（`VISIONGAL_ENABLE_ROSLYN` / Microsoft.CodeAnalysis.CSharp 4.14.0）。 |
-| **程式集** | **VisionGal.Managed.Scripting**（`net10.0`） |
-| **依賴** | **VisionGal.Managed.Core** |
+| **程序集** | `Neverness.Runtime.Scripting` |
+| **命名空间** | `Neverness.Managed.Scripting` |
+| **职责** | Hot Reload / `AssemblyLoadContext` 脚手架（Phase 8～9） |
+| **不负责** | Roslyn 编译器集成（未来独立模块） |
 
-## 2. Phase 5 進展
+## 2. 依赖
 
-| 日期 | 進展 |
+- `Neverness.Runtime.Core`
+
+## 3. 开发进展
+
+| 日期 | 进展 |
 |------|------|
-| **2026-05-15** | 初始模組：ALC 宿主、熱重載、Roslyn 條件編譯編譯器。 |
-| **2026-05-15** | **加固**：標記為 **脚手架**（非生產）；**VISIONGAL_ENABLE_ROSLYN** 未接線；Phase 8/9。 |
+| **2026-05-15** | 脚手架 |

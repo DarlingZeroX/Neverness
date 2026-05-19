@@ -1,17 +1,17 @@
 namespace Neverness.Managed.Engine;
 
 /// <summary>
-/// 與 Native <c>NN_NATIVE_ENGINE_API_LAYOUT_VERSION</c>（<c>EngineAPIRegistry.h</c>）數值一致；託管讀表前必須相等，否則 <see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 拒絕快取。
+/// 與 Native <c>NN_NATIVE_ENGINE_API_LAYOUT_VERSION</c>（<c>EngineAPIRegistry.h</c>）數值一致；託管讀表前必須相等，否則 <see cref="Neverness.Managed.Interop.EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 拒絕快取。
 /// </summary>
 /// <remarks>
-/// **layout v5**：<c>NNEntityAPI</c> 子表尾部含 <c>getRuntimeTick</c>（見 MANAGED 總覽 **§2.7.1**）。若僅升 Native 未同步本常數，託管層將無法安裝引擎服務表。
+/// **layout v6**：聚合體尾部含 <c>NNApplicationAPI</c>（SDL 窗口与事件泵）。若僅升 Native 未同步本常數，託管層將無法安裝引擎服務表。
 /// </remarks>
 public static class NNNativeEngineApiConstants
 {
 	/// <summary>
-	/// 當前 <c>NNNativeEngineAPI</c> 聚合體佈局版本；破壞性子表欄位變更時遞增。當前為 **5**（含 <c>NNEntityApi.GetRuntimeTick</c> 鏡像欄位）。
+	/// 當前 <c>NNNativeEngineAPI</c> 聚合體佈局版本；破壞性子表欄位變更時遞增。當前為 **6**（含 <c>NNApplicationApi</c> 鏡像欄位）。
 	/// </summary>
-	public const uint LayoutVersion = 5;
+	public const uint LayoutVersion = 6;
 
 	/// <summary>
 	/// 與 Native <c>NN_ENTITY_SERVICE_ABI_TOKEN</c>（<c>EntityAPI.h</c>）一致之服務子表冒煙魔數（ASCII「NNEn」小端）；僅用於驗證 <c>NNEntityAPI</c> 已接線，不代表託管 <c>EntityWorld</c> 已與 Native 打通。

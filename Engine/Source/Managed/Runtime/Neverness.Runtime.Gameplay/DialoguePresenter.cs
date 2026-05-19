@@ -1,5 +1,6 @@
 using System.Text;
 using Neverness.Managed.Engine;
+using Neverness.Managed.Interop;
 
 namespace Neverness.Managed.Gameplay;
 

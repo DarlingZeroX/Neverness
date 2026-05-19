@@ -1,35 +1,56 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Neverness.Managed.Serialization;
 
 namespace Neverness.Managed.Scene;
 
 /// <summary>
-/// 場景容器：實體清單與 JSON 往返序列化（DTO 層；不直接驅動 Native SceneAPI）。
+/// 场景门面：运行时经 <see cref="SceneNativeBridge"/> 访问 Native 场景图；JSON 为工具/存档 DTO 路径。
 /// </summary>
 public sealed class Scene
 {
-	/// <summary>場景名稱。</summary>
+	/// <summary>场景名称。</summary>
 	public string Name { get; set; }
 
-	/// <summary>場景內實體。</summary>
+	/// <summary>本 Managed 会话跟踪的实体（Native 为权威存储）。</summary>
 	public List<SceneEntity> Entities { get; } = [];
 
-	/// <summary>建立場景。</summary>
-	/// <param name="name">非空白場景名稱。</param>
+	/// <summary>建立场景。</summary>
 	public Scene(string name)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(name);
 		Name = name;
 	}
 
-	/// <summary>新增已建立之實體。</summary>
+	/// <summary>经 Native <c>loadScene</c> 加载本场景名。</summary>
+	public int LoadNative()
+	{
+		var result = SceneNativeBridge.LoadScene(Name);
+		return result;
+	}
+
+	/// <summary>经 Native <c>unloadScene</c> 卸载本场景名。</summary>
+	public int UnloadNative() => SceneNativeBridge.UnloadScene(Name);
+
+	/// <summary>经 Native spawn 生成实体并加入跟踪列表。</summary>
+	public SceneEntity? SpawnEntity(string prefabVirtualPath, string displayName = "Entity")
+	{
+		var entity = SceneEntity.Spawn(prefabVirtualPath, displayName);
+		if (entity != null)
+		{
+			Entities.Add(entity);
+		}
+
+		return entity;
+	}
+
+	/// <summary>登记已存在的实体门面。</summary>
 	public void AddEntity(SceneEntity entity)
 	{
 		ArgumentNullException.ThrowIfNull(entity);
 		Entities.Add(entity);
 	}
 
-	/// <summary>序列化為 JSON 字串（含 <see cref="VersionTolerance.CurrentFormatVersion"/>）。</summary>
+	/// <summary>序列化为 JSON（含实体可序列化属性快照）。</summary>
 	public string ToJson()
 	{
 		var doc = new SceneSerializer.SceneDocument { Name = Name };
@@ -41,14 +62,10 @@ public sealed class Scene
 		return SceneSerializer.Serialize(doc);
 	}
 
-	/// <summary>自 JSON 還原場景描述文件（不重建 <see cref="SceneEntity"/> 實例；僅 DTO）。</summary>
+	/// <summary>自 JSON 还原场景描述文件（不重建实体；仅 DTO）。</summary>
 	public static SceneSerializer.SceneDocument? FromJson(string json) => SceneSerializer.Deserialize(json);
 
-	/// <summary>
-	/// 驗證 JSON 往返後之 DTO 是否與目前場景一致（名稱、實體數、首實體 <c>DisplayName</c> 屬性值）。
-	/// </summary>
-	/// <param name="json">由 <see cref="ToJson"/> 產生之 JSON。</param>
-	/// <param name="expectedDisplayName">預期之首實體顯示名稱；為 null 時跳過屬性比對。</param>
+	/// <summary>验证 JSON 往返 DTO 是否与当前场景一致。</summary>
 	public bool ValidateRoundTripDocument(string json, string? expectedDisplayName = null)
 	{
 		var doc = FromJson(json);
@@ -75,19 +92,13 @@ public sealed class Scene
 		return roundTripName == expectedDisplayName;
 	}
 
-	/// <summary>
-	/// 自場景描述文件還原僅託管層之 <see cref="Scene"/> 容器（不含實體；實體請用 <see cref="RehydrateFromJson"/> 或 <see cref="SceneRehydrator.RestoreFromDocumentWithEntities"/>）。
-	/// </summary>
+	/// <summary>自 DTO 还原仅托管容器（不含实体）。</summary>
 	public static Scene RestoreFromDocument(SceneSerializer.SceneDocument document)
 	{
 		ArgumentNullException.ThrowIfNull(document);
 		return new Scene(document.Name);
 	}
 
-	/// <summary>
-	/// 自 JSON 完整再水合場景（容器 + 經 <see cref="LifetimeSystem"/> 建立之實體與新 Native 控制代碼）。
-	/// </summary>
-	/// <param name="json">由 <see cref="ToJson"/> 產生之 JSON。</param>
-	/// <returns>還原後場景；JSON 無效時回傳 null。</returns>
+	/// <summary>自 JSON 经 Native spawn 再水合（需已安装 Engine Scene API）。</summary>
 	public static Scene? RehydrateFromJson(string json) => SceneRehydrator.RestoreFromJsonWithEntities(json);
 }

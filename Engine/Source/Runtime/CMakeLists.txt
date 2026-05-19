@@ -5,19 +5,27 @@ add_subdirectory ("NNRuntimePak")
 add_subdirectory ("NNRuntimeImGui")
 add_subdirectory ("NNRuntimeCore")
 add_subdirectory ("NNNativeEngineAPI")
+add_subdirectory ("NNRuntimeApplication")
 add_subdirectory ("NNRuntimeNativeEngineAPIStub")
 add_subdirectory ("NNRuntimeManaged")
 add_subdirectory ("NNRuntimeScene")
 
-############ 托管宿主（CoreCLR via nethost，可选；默认不构建）
-option(VISIONGAL_ENABLE_MANAGED_HOST "Build NNRuntimeManagedHost (CoreCLR via nethost)" OFF)
+############ Legacy 托管宿主（CoreCLR via nethost，可选；默认不构建）
+option(VISIONGAL_ENABLE_MANAGED_HOST_LEGACY "Build NNRuntimeManagedHostLegacy (CoreCLR via nethost)" OFF)
 
 if (VISIONGAL_ENABLE_MANAGED_HOST)
-	if (NOT WIN32 OR NOT MSVC)
-		message(FATAL_ERROR "VISIONGAL_ENABLE_MANAGED_HOST requires WIN32 and MSVC (nethost).")
-	endif()
-	add_subdirectory("NNRuntimeManagedHost")
+	message(WARNING "VISIONGAL_ENABLE_MANAGED_HOST is deprecated; use VISIONGAL_ENABLE_MANAGED_HOST_LEGACY")
+	set(VISIONGAL_ENABLE_MANAGED_HOST_LEGACY ON CACHE BOOL "Legacy managed host" FORCE)
 endif()
+
+if (VISIONGAL_ENABLE_MANAGED_HOST_LEGACY)
+	if (NOT WIN32 OR NOT MSVC)
+		message(FATAL_ERROR "VISIONGAL_ENABLE_MANAGED_HOST_LEGACY requires WIN32 and MSVC (nethost).")
+	endif()
+	add_subdirectory("NNRuntimeManagedHostLegacy")
+endif()
+
+add_subdirectory("NNRuntimeManagedBridge")
 add_subdirectory ("NNRuntimeEngine")
 add_subdirectory ("NNRuntimeEngineServices")
 add_subdirectory ("NNRuntimeAsset")

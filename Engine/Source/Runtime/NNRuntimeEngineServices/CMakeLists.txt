@@ -1,4 +1,4 @@
-﻿# NevernessRuntime-EngineServices — 將 NNNativeEngineAPI 轉發至 NNEngineRuntime（不鏈結 VGEngine）。
+# NevernessRuntime-EngineServices — 將 NNNativeEngineAPI 轉發至 NNEngineRuntime（不鏈結 VGEngine）。
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -37,10 +37,16 @@ target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRE
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 
+target_include_directories(NevernessRuntime-EngineServices PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeApplication/Include
+)
+
 target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-NativeEngineAPI
 	NevernessRuntime-NativeEngineAPIStub
 	NevernessRuntime-Engine
+	NevernessRuntime-ManagedBridge
+	NevernessRuntime-Application
 )
 
 add_library(NNEngineRuntimeServices ALIAS NevernessRuntime-EngineServices)

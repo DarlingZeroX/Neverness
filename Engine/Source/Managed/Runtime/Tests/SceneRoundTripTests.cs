@@ -1,17 +1,16 @@
 using Neverness.Managed.Engine;
-using Neverness.Managed.Object;
 using Neverness.Managed.Serialization;
 using SceneType = Neverness.Managed.Scene.Scene;
 
 namespace Neverness.Managed.Foundation.Tests;
 
-/// <summary>場景 JSON 往返與 DTO 驗證測試。</summary>
+/// <summary>场景 JSON 往返与 DTO 验证测试。</summary>
 public sealed class SceneRoundTripTests
 {
 	[Fact]
 	public void ValidateRoundTripDocument_PreservesDisplayName()
 	{
-		var entity = new Neverness.Managed.Scene.SceneEntity(new VGObjectId(1), new NNObjectHandle(1), "RoundTripEntity");
+		var entity = new Neverness.Managed.Scene.SceneEntity(new NNEntityHandle(1), "RoundTripEntity");
 		var scene = new SceneType("TestScene");
 		scene.AddEntity(entity);
 

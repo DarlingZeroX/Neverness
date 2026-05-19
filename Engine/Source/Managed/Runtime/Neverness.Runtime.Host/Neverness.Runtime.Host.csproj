@@ -7,34 +7,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <!-- Library projects omit .runtimeconfig.json by default; hostfxr_initialize_for_runtime_config requires it. -->
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 
     <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-
-    <!-- 直接写死项目名，强制生效，绕过变量解析bug -->
     <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Runtime.Host\$(Configuration)\</IntermediateOutputPath>
-
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Neverness.Runtime.Core\Neverness.Runtime.Core.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.EngineRuntime\Neverness.Runtime.EngineRuntime.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Object\Neverness.Runtime.Object.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Reflection\Neverness.Runtime.Reflection.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Serialization\Neverness.Runtime.Serialization.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Assets\Neverness.Runtime.Assets.csproj" />
-    <ProjectReference Include="..\..\Editor\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Inspector\Neverness.Runtime.Inspector.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Graph\Neverness.Runtime.Graph.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Gameplay\Neverness.Runtime.Gameplay.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Entity\Neverness.Runtime.Entity.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.UndoRedo\Neverness.Runtime.UndoRedo.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Scripting\Neverness.Runtime.Scripting.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Bootstrap\Neverness.Runtime.Bootstrap.csproj" />
   </ItemGroup>
 </Project>

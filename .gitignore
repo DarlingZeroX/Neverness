@@ -2,8 +2,8 @@
 out/
 Build/
 Backup/
-.vs/
 .cursor/
+.vs/
 Engine/Source/Managed/VGManagedCore/Managed/VisionGal.Managed.Core/bin/
 Engine/Source/Managed/VGManagedCore/Managed/VisionGal.Managed.Core/obj/
 

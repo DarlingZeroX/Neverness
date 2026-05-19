@@ -20,5 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Object\Neverness.Runtime.Object.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
   </ItemGroup>
 </Project>

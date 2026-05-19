@@ -1,7 +1,7 @@
-﻿namespace Neverness.Managed.RuntimeLoop;
+namespace Neverness.Managed.RuntimeLoop;
 
 /// <summary>
-/// 可注册到 <see cref="ManagedRuntimeScheduler"/> 的托管子系统接口，与 Native <c>IRuntimeSubsystem</c> 对称（纯 C#、无 P/Invoke 依赖）。
+/// 可注册到 <see cref="RuntimeLoop"/> 的托管子系统接口，与 Native <c>IRuntimeSubsystem</c> 对称（纯 C#、无 P/Invoke 依赖）。
 /// </summary>
 public interface IManagedRuntimeSubsystem
 {

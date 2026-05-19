@@ -9,7 +9,7 @@
  *
  * **與託管 ECS 及 EntityAPI 的邊界（簡體中文摘要）**
  * - 本表所涉 **NNEntityHandle** 僅表示 **場景圖／Prefab 實例** 控制碼，由 `spawn`/`destroy` 等場景 API 管理。
- * - **VisionGal.Managed.Entity** 之 **EntityHandle** 為純 C# ECS 首包，與 `NNEntityHandle` **無自動映射**。
+ * - 託管 **Neverness.Managed.Scene.SceneEntity** 為 **NNEntityHandle** 薄門面，與本表一一對應，**不**在 C# 側複製場景存儲。
  * - 未來 Native ECS 能力掛載於 **`NNNativeEngineAPI::entity`**（`EntityAPI.h`），與本 `NNSceneAPI` 子表分離設計。
  */
 
