@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj": {}
+    "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj": {}
   },
   "projects": {
-    "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj": {
+    "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj",
+        "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj",
         "projectName": "Neverness.Runtime.Entity",
-        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj",
+        "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\obj\\",
+        "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",

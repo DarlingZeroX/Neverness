@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Neverness.Editor.ImGui</id>
+    <version>2.2.10-prerelease</version>
+    <authors>Juna Meinhold</authors>
+    <license type="file">LICENSE.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/HexaEngine/Hexa.NET.ImGui</projectUrl>
+    <description>A .NET wrapper for the Dear ImGui library. (1.92.3)</description>
+    <copyright>Copyright (c) 2023 Juna Meinhold</copyright>
+    <tags>ImGui UI Immidate GUI Hexa HexaGen Source Generator C# .NET DotNet Sharp Windows macOS Android Bindings Wrapper Native</tags>
+    <repository type="git" url="https://github.com/HexaEngine/Hexa.NET.ImGui" commit="f836ae47fcb156a765f47fd1a8066f79a8c60456" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="HexaGen.Runtime" version="1.1.21" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net7.0">
+        <dependency id="HexaGen.Runtime" version="1.1.21" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="HexaGen.Runtime" version="1.1.21" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net9.0">
+        <dependency id="HexaGen.Runtime" version="1.1.21" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="HexaGen.Runtime" version="1.1.21" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="HexaGen.Runtime" version="1.1.21" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.dll" target="lib\net6.0\Neverness.Editor.ImGui.dll" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.xml" target="lib\net6.0\Neverness.Editor.ImGui.xml" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.dll" target="lib\net7.0\Neverness.Editor.ImGui.dll" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.xml" target="lib\net7.0\Neverness.Editor.ImGui.xml" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.dll" target="lib\net8.0\Neverness.Editor.ImGui.dll" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.xml" target="lib\net8.0\Neverness.Editor.ImGui.xml" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.dll" target="lib\net9.0\Neverness.Editor.ImGui.dll" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.xml" target="lib\net9.0\Neverness.Editor.ImGui.xml" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.dll" target="lib\netstandard2.0\Neverness.Editor.ImGui.dll" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.xml" target="lib\netstandard2.0\Neverness.Editor.ImGui.xml" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.dll" target="lib\netstandard2.1\Neverness.Editor.ImGui.dll" />
+    <file src="E:\VisionGal\Build\cmake-managed-verify\Build\bin\Debug\Neverness.Editor.ImGui.xml" target="lib\netstandard2.1\Neverness.Editor.ImGui.xml" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\buildTransitive\Hexa.NET.ImGui.targets" target="buildTransitive\Hexa.NET.ImGui.targets" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\LICENSE.txt" target="\LICENSE.txt" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\README.md" target="\README.md" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\android-arm64\cimgui.so" target="runtimes\android-arm64\native\cimgui.so" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\android-x64\cimgui.so" target="runtimes\android-x64\native\cimgui.so" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\osx-arm64\cimgui.dylib" target="runtimes\osx-arm64\native\cimgui.dylib" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\osx-x64\cimgui.dylib" target="runtimes\osx-x64\native\cimgui.dylib" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\linux-arm64\cimgui.so" target="runtimes\linux-arm64\native\cimgui.so" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\linux-x64\cimgui.so" target="runtimes\linux-x64\native\cimgui.so" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\win-arm64\cimgui.dll" target="runtimes\win-arm64\native\cimgui.dll" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\win-x64\cimgui.dll" target="runtimes\win-x64\native\cimgui.dll" />
+    <file src="E:\VisionGal\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\native\win-x86\cimgui.dll" target="runtimes\win-x86\native\cimgui.dll" />
+  </files>
+</package>

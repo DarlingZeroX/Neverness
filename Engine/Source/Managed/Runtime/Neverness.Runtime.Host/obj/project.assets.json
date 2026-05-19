@@ -1264,11 +1264,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Host\\Neverness.Runtime.Host.csproj",
-      "projectName": "NevernessRuntimeManaged-Runtime",
-      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Host\\Neverness.Runtime.Host.csproj",
+      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Host\\Neverness.Runtime.Host.csproj",
+      "projectName": "Neverness.Runtime.Host",
+      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Host\\Neverness.Runtime.Host.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Host\\obj\\",
+      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Host\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1286,53 +1286,53 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.EngineRuntime\\Neverness.Runtime.EngineRuntime.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.EngineRuntime\\Neverness.Runtime.EngineRuntime.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.EngineRuntime\\Neverness.Runtime.EngineRuntime.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.EngineRuntime\\Neverness.Runtime.EngineRuntime.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Entity\\Neverness.Runtime.Entity.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Gameplay\\Neverness.Runtime.Gameplay.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Gameplay\\Neverness.Runtime.Gameplay.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Gameplay\\Neverness.Runtime.Gameplay.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Gameplay\\Neverness.Runtime.Gameplay.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Graph\\Neverness.Runtime.Graph.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Graph\\Neverness.Runtime.Graph.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Graph\\Neverness.Runtime.Graph.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Graph\\Neverness.Runtime.Graph.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Object\\Neverness.Runtime.Object.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Object\\Neverness.Runtime.Object.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Object\\Neverness.Runtime.Object.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Object\\Neverness.Runtime.Object.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scene\\Neverness.Runtime.Scene.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scene\\Neverness.Runtime.Scene.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scene\\Neverness.Runtime.Scene.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scene\\Neverness.Runtime.Scene.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scripting\\Neverness.Runtime.Scripting.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scripting\\Neverness.Runtime.Scripting.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scripting\\Neverness.Runtime.Scripting.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scripting\\Neverness.Runtime.Scripting.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Serialization\\Neverness.Runtime.Serialization.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Serialization\\Neverness.Runtime.Serialization.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Serialization\\Neverness.Runtime.Serialization.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Serialization\\Neverness.Runtime.Serialization.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.UndoRedo\\Neverness.Runtime.UndoRedo.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.UndoRedo\\Neverness.Runtime.UndoRedo.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.UndoRedo\\Neverness.Runtime.UndoRedo.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.UndoRedo\\Neverness.Runtime.UndoRedo.csproj"
             }
           }
         }

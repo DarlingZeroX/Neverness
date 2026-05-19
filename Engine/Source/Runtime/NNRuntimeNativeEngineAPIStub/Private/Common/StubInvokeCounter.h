@@ -2,7 +2,7 @@
 
 /**
  * @file StubInvokeCounter.h
- * @brief Stub Runtime 跨子系統呼叫計數（供 **VGManagedHostTest** 等斷言 ABI 鏈路已觸達）。
+ * @brief Stub Runtime 跨子系統呼叫計數（供託管 **ExerciseStubInteropPath** 等斷言 ABI 鏈路已觸達）。
  */
 
 #include <cstdint>

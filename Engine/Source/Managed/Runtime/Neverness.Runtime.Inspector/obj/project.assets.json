@@ -105,11 +105,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj",
+      "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj",
       "projectName": "Neverness.Runtime.Inspector",
-      "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj",
+      "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\Neverness.Runtime.Inspector.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\obj\\",
+      "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Inspector\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -127,11 +127,11 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
             },
-            "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj": {
-              "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj"
+            "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj": {
+              "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Reflection\\Neverness.Runtime.Reflection.csproj"
             }
           }
         }

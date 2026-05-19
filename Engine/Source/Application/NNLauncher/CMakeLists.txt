@@ -49,3 +49,10 @@ target_include_directories(VGLauncher PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Includ
 # 链接库
 target_link_libraries(VGLauncher PRIVATE VGEditorFramework)
 
+if (ENABLE_TESTS)
+	find_package(GTest CONFIG QUIET)
+	if (GTest_FOUND)
+		add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Test")
+	endif()
+endif()
+

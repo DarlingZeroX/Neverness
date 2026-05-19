@@ -69,6 +69,6 @@ target_include_directories(NevernessRuntime-Scene PRIVATE ${PROJECT_SOURCE_DIR}/
 if (ENABLE_TESTS)
 	find_package(GTest CONFIG QUIET)
 	if (GTest_FOUND)
-		add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Tests")
+		add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Test")
 	endif()
 endif()

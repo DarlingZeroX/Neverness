@@ -18,6 +18,6 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NevernessRuntime.Engine\NevernessRuntime.Engine.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
   </ItemGroup>
 </Project>

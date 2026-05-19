@@ -15,7 +15,7 @@ namespace
  * @brief **NNEntityAPI** 首包 Stub：`getServiceAbiToken`。
  *
  * 語義（與 MANAGED **§2.7.1** 一致）：
- * - 僅用於宿主／**VGManagedHostTest**／託管 **ExerciseStubInteropPath** 驗證「**`NNNativeEngineAPI::entity`** 已接線」；
+ * - 僅用於宿主／託管 **ExerciseStubInteropPath** 驗證「**`NNNativeEngineAPI::entity`** 已接線」；
  *   返回值固定為 **NN_ENTITY_SERVICE_ABI_TOKEN**，與 **VisionGal.Managed.Engine.NNNativeEngineApiConstants.EntityServiceAbiToken** 對齊。
  * - **不**表示已存在 Native ECS 世界、**不**與 **NNSceneAPI** 之 **NNEntityHandle**（場景圖）互通。
  * - 每次呼叫仍執行 **BumpInvokeCount**，納入 **NNNativeEngineApi_GetStubInvokeCount** 統計。

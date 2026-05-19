@@ -1,4 +1,4 @@
-﻿# NNRuntimeNativeEngineAPIStub — Stub / 虚拟 Runtime
+# NNRuntimeNativeEngineAPIStub — Stub / 虚拟 Runtime
 
 > CMake 目标 **`NevernessRuntime-NativeEngineAPIStub`**；别名 **`NNNativeEngineAPIStub`**。C 导出符号为 **`NNNativeEngineApi_*`**（与 **NNNativeEngineAPI** 契约一致）。
 
@@ -10,7 +10,7 @@
 | **不负责** | 不链接 **NNEngineRuntime**、RHI、Legacy；不承载 Gameplay 产品逻辑。 |
 | **CMake 目标** | `NevernessRuntime-NativeEngineAPIStub`（`STATIC`） |
 | **依赖** | `NevernessRuntime-NativeEngineAPI`（`PUBLIC`，仅 ABI 头文件） |
-| **典型消费者** | **NNRuntimeManaged**（`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES=OFF` 或作为 Runtime 表基底）、**NevernessRuntime-EngineServices**（`BuildRuntime` 先调 `BuildDefault`）、**VGManagedHostTest**。 |
+| **典型消费者** | **NNRuntimeManaged**（`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES=OFF` 或作为 Runtime 表基底）、**NevernessRuntime-EngineServices**（`BuildRuntime` 先调 `BuildDefault`）、**NevernessRuntime-ManagedHost**。 |
 
 ## 2. 目录结构
 

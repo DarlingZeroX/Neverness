@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj": {}
+    "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj": {}
   },
   "projects": {
-    "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj": {
+    "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj",
+        "projectUniqueName": "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj",
         "projectName": "NevernessEditor",
-        "projectPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj",
+        "projectPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\NervernessEditor.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\obj\\",
+        "outputPath": "e:\\VisionGal\\Engine\\Source\\Managed\\Editor\\NervernessEditor\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",

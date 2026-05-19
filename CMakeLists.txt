@@ -115,40 +115,22 @@ add_subdirectory ("Engine/Source/Bridge")
 
 ############ Legacy 兼容层（预设不编译）
 # Phase 5：Legacy Galgame 產品線（預設不編譯）
-option(VISIONGAL_BUILD_LEGACY_GALGAME "Build Legacy Galgame stack (Frozen / Compatibility Only)" OFF)
-if(VISIONGAL_BUILD_LEGACY_GALGAME)
+option(NEVERNESS_BUILD_LEGACY_GALGAME "Build Legacy Galgame stack (Frozen / Compatibility Only)" OFF)
+if(NEVERNESS_BUILD_LEGACY_GALGAME)
 	add_subdirectory("Engine/Source/Legacy")
 endif()
 
-############ 编辑器（主線；Galgame 編輯器和附属模組已移至 Legacy/）
-add_subdirectory ("Engine/Source/Editor/NNEditorFramework")
-add_subdirectory ("Engine/Source/Editor/NNEditor")
+############ 模块
+add_subdirectory ("Engine/Source/Editor")
+add_subdirectory ("Engine/Source/Application")
 
-############ 应用
-add_subdirectory ("Engine/Source/Application/NNLauncher")         # 启动器
-#add_subdirectory ("Engine/Source/Application/VGDesktopApplication")   # 桌面应用程序
-#add_subdirectory ("Engine/Source/Application/VGPackageTool")      # 打包工具
-#if(VISIONGAL_BUILD_LEGACY_GALGAME)
-#	add_subdirectory ("Engine/Source/Application/VGNodeGraphApp")     # 节点图应用程序（Legacy Galgame）
-#endif()
-#add_subdirectory ("Engine/Source/Application/HNGRuntimeCoreDemo")     # 节点图应用程序
-
-
-########## 加载 Tests 目录下所有子测试项目
+########## 测试
 if (ENABLE_TESTS)
     enable_testing()
-    # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 VISIONGAL_BUILD_LEGACY_GALGAME=ON）
-    # VGManagedHostTest: add_subdirectory in NNRuntimeManagedHost when VISIONGAL_ENABLE_MANAGED_HOST=ON.
-    add_subdirectory("Engine/Source/Managed/Runtime/Tests")
-      
-    # add_subdirectory("Tests/VGLauncherTest")
-    # add_subdirectory("Engine/Source/Tests/HNodeGraphTest")
-    #file(GLOB TESTS_DIRS RELATIVE ${CMAKE_SOURCE_DIR}/Tests ${CMAKE_SOURCE_DIR}/Tests/*)
-    #foreach(child ${TESTS_DIRS})
-    #    if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/Tests/${child}")
-    #        add_subdirectory(${CMAKE_SOURCE_DIR}/Tests/${child})
-    #    endif()
-    #endforeach()
+    # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 NEVERNESS_BUILD_LEGACY_GALGAME=ON）
+    # VGLauncherTest: add_subdirectory in NNLauncher.
+    # 托管 Foundation 测试已并入 Engine/Source/Managed/Runtime/Tests（由下方 Managed 子树加载），
+    # 目标名：neverness_managed_foundation_tests（非 ALL，需显式 --target 构建）。
 endif()
 
 ########## 自动加载 Plugins 目录下所有子项目
@@ -194,4 +176,6 @@ if(MSVC)
     )
 endif()
 
+# 托管 C#（Runtime.Host / NervernessEditor 等）：与 C++ 同次 cmake --build 编译，输出 Build/bin/<Config>/
+# 详见 Engine/Source/Managed/CMakeLists.txt；可通过 -DNEVERNESS_BUILD_MANAGED=OFF 关闭。
 add_subdirectory ("Engine/Source/Managed")

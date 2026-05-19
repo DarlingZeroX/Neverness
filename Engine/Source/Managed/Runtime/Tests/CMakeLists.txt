@@ -1,11 +1,33 @@
-# Managed Foundation 單元測試（dotnet test，無 CoreCLR Host）
+# =============================================================================
+# Engine/Source/Managed/Runtime/Tests — 托管 Foundation 单元测试
+# -----------------------------------------------------------------------------
+# 项目：NevernessRuntimeManaged-Foundation.Tests.csproj
+# 运行方式：dotnet test（不经过 CoreCLR Native Host）
+#
+# CMake 目标：neverness_managed_foundation_tests
+#   - 不属于 ALL，需显式构建：
+#       cmake --build <dir> --config Debug --target neverness_managed_foundation_tests
+#
+# 前置条件：
+#   - ENABLE_TESTS=ON（根 CMakeLists.txt）
+#   - NEVERNESS_BUILD_MANAGED=ON 且已安装 dotnet SDK
+#
+# 依赖：
+#   - neverness_managed_runtime — 先 dotnet build Host 及其引用链，避免并行 dotnet 竞态
+#
+# 说明：测试固定使用 -c Debug；SolutionDir 与正式构建一致，输出仍在 Build/bin/Debug/
+# =============================================================================
+
 if(NOT ENABLE_TESTS)
 	return()
 endif()
 
-find_program(VISIONGAL_DOTNET_EXECUTABLE dotnet DOC ".NET SDK CLI")
-if(NOT VISIONGAL_DOTNET_EXECUTABLE)
-	message(STATUS "dotnet not found — skip Neverness.Managed.Foundation.Tests")
+if(NOT NEVERNESS_BUILD_MANAGED)
+	return()
+endif()
+
+if(NOT NEVERNESS_DOTNET_EXECUTABLE)
+	message(STATUS "未找到 dotnet，跳过 Neverness.Managed.Foundation.Tests")
 	return()
 endif()
 
@@ -13,14 +35,19 @@ set(_foundation_test_csproj
 	"${CMAKE_CURRENT_SOURCE_DIR}/NevernessRuntimeManaged-Foundation.Tests.csproj"
 )
 
-add_custom_target(visiongal_managed_foundation_tests
-	COMMAND "${VISIONGAL_DOTNET_EXECUTABLE}" test "${_foundation_test_csproj}" -c Debug
+# 与 NevernessDotNet.cmake 中 build 目标保持相同的 SolutionDir 约定
+file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}" _neverness_solution_dir)
+set(_neverness_solution_dir "${_neverness_solution_dir}/")
+
+add_custom_target(neverness_managed_foundation_tests
+	COMMAND "${NEVERNESS_DOTNET_EXECUTABLE}" test "${_foundation_test_csproj}"
+		-c Debug
+		-p:SolutionDir=${_neverness_solution_dir}
 	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-	COMMENT "Running Neverness.Managed.Foundation.Tests (dotnet test)"
+	COMMENT "正在运行 Neverness.Managed.Foundation.Tests (dotnet test)"
 	VERBATIM
 )
 
-# 與 **visiongal_managed_runtime_publish** 並行時曾出現多個 **dotnet** 同寫 **obj/** 之競態；強制先完成 publish 再跑 Foundation，避免 **SceneRehydrationTests** 等類在 **Dispose** 時觸發字典損壞假陽性。
-if(TARGET visiongal_managed_runtime_publish)
-	add_dependencies(visiongal_managed_foundation_tests visiongal_managed_runtime_publish)
+if(TARGET neverness_managed_runtime)
+	add_dependencies(neverness_managed_foundation_tests neverness_managed_runtime)
 endif()

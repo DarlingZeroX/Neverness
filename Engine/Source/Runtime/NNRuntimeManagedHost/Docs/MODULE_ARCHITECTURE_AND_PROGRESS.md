@@ -1,4 +1,4 @@
-﻿# NNRuntimeManagedHost — CoreCLR 托管宿主（可选 Native 模块）
+# NNRuntimeManagedHost — CoreCLR 托管宿主（可选 Native 模块）
 
 ## 1. 定位
 
@@ -10,7 +10,7 @@
 | **依赖** | vcpkg **`nethost`**；**`PRIVATE`** **`NevernessRuntime-Managed`** |
 | **构建选项** | **`VISIONGAL_ENABLE_MANAGED_HOST`**（定义于 [Runtime/CMakeLists.txt](../../CMakeLists.txt)），**默认 OFF**；仅 Win/MSVC 可启用 |
 
-**C# 入口程序集**（`[UnmanagedCallersOnly]`）位于 [`Managed/Runtime/Host/`](../../../Managed/Runtime/Host/)（**NevernessRuntimeManaged-Runtime**），不在本目录。
+**C# 入口程序集**（`[UnmanagedCallersOnly]`）位于 [`Managed/Runtime/Neverness.Runtime.Host/`](../../../Managed/Runtime/Neverness.Runtime.Host/)（**Neverness.Runtime.Host**），不在本目录；由 solution / `dotnet build` 产出至 **`Build/bin/<Config>/`**，本模块不触发 C# 编译。
 
 ---
 
@@ -38,23 +38,24 @@ Engine/Source/Runtime/NNRuntimeManagedHost/
 
 ## 3. 部署与边界
 
-- 运行目录需同时存在 **`NevernessRuntime-ManagedHost.dll`**（或 VS 输出名 `NevernessRuntime-ManagedHost.dll`）与 **`NevernessRuntime-Managed.dll`**。
+- 运行目录需同时存在 **`NevernessRuntime-ManagedHost.dll`** 与 **`NevernessRuntime-Managed.dll`**（与 C# 程序集同属 **`Build/bin/<Config>/`**，无需 POST_BUILD 拷贝）。
 - **`NNNativeApi_GetDefaultTable()`** 由 **NNRuntimeManaged** 导出；宿主将表指针传入托管 **`Entry.BootstrapNativeApi`**。
 - 公共 C++ 类名仍为 **`VGManagedHost`**（稳定门面）；CMake 目标已更名为 **NevernessRuntime-ManagedHost**。
 
 ---
 
-## 4. 构建与测试
+## 4. 构建
 
 ```bat
-cmake -B build -DVISIONGAL_ENABLE_MANAGED_HOST=ON -DENABLE_TESTS=ON
-cmake --build build --config Debug --target NevernessRuntime-ManagedHost visiongal_managed_runtime_publish VGManagedHostTest
+cmake -B build -DVISIONGAL_ENABLE_MANAGED_HOST=ON
+dotnet build Engine/Source/Managed/Runtime/Neverness.Runtime.Host/Neverness.Runtime.Host.csproj -c Debug
+cmake --build build --config Debug --target NevernessRuntime-ManagedHost
 ```
 
 | 项目 | 说明 |
 |------|------|
-| **publish** | `visiongal_managed_runtime_publish` → `${CMAKE_BINARY_DIR}/ManagedRuntimePublish` |
-| **测试** | **`VGManagedHostTest`**（`ENABLE_TESTS` + `dotnet`）；`POST_BUILD` 拷贝 Host 与 Managed DLL |
+| **C# 产出** | **`Neverness.Runtime.Host`** 等 → **`Build/bin/Debug/`**（与 C++ 统一输出目录） |
+| **验证** | 托管侧以 **dotnet test**（如 **VisionGal.Managed.Foundation.Tests**）为主；本模块不再提供 C++ 集成测试目标。 |
 
 ---
 
@@ -64,3 +65,4 @@ cmake --build build --config Debug --target NevernessRuntime-ManagedHost visiong
 |------|------|
 | **2026-05-14** | **Phase 1**：`VGManagedHost` 模块、nethost、UCO Smoke。 |
 | **2026-05-18** | 自 `Managed/VGManagedHost` 迁至 **`Runtime/NNRuntimeManagedHost`**；**`Include/`** 为头文件根；**`VISIONGAL_ENABLE_MANAGED_HOST` 默认 OFF**；选项移至 **Runtime/CMakeLists.txt**。 |
+| **2026-05-19** | 移除 **`Test/`** 与 **`VGManagedHostTest`**；托管宿主验证改由 **dotnet test** 承担。 |
