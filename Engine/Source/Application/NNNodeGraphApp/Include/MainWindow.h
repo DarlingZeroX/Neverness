@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include <NNEditorFramework/Interface/UIInterface.h>
+#include <NNEditorFrameworkLegacy/Interface/UIInterface.h>
 #include <HNGEditorCore/Interface/NodeGraphEditor.h>
 
 #include "VGEditorGalgame/Module.h"

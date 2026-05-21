@@ -1,4 +1,4 @@
-namespace Neverness.Managed.Scene;
+namespace Neverness.Runtime.Scene;
 
 /// <summary>
 /// Prefab 描述：经 Native <see cref="SceneNativeBridge.Spawn"/> 实例化 <see cref="SceneEntity"/>。

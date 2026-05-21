@@ -1,7 +1,6 @@
-using Neverness.Managed.Engine;
-using Neverness.Managed.Reflection;
+using Neverness.Runtime.Engine;
 
-namespace Neverness.Managed.Scene;
+namespace Neverness.Runtime.Scene;
 
 /// <summary>
 /// 场景实体薄门面：持有 Native <see cref="NNEntityHandle"/>，属性经 <see cref="SceneNativeBridge"/> 读写。
@@ -11,8 +10,7 @@ public sealed class SceneEntity
 	/// <summary>Native 场景图实体句柄。</summary>
 	public NNEntityHandle Handle { get; private set; }
 
-	/// <summary>实体显示名称（序列化与工具路径；写入时同步至 Native）。</summary>
-	[SerializeField]
+	/// <summary>实体显示名称（写入时同步至 Native）。</summary>
 	public string DisplayName
 	{
 		get => _displayName;

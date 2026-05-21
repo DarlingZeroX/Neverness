@@ -18,7 +18,7 @@
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimePak/Include/VFSMount.h"
 #include <NNRuntimeRmlui/Interface/UISystem.h>
-#include <NNEditorFramework/Framework.h>
+#include <NNEditorFrameworkLegacy/Framework.h>
 
 namespace VisionGal::Editor
 {	

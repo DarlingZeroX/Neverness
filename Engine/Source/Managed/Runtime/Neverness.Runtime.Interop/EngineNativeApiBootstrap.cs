@@ -1,24 +1,21 @@
 // Neverness.Runtime.Interop — Engine Service 函数表安装；禁止 DllImport。
 
 using System.Runtime.InteropServices;
-using Neverness.Managed.Core;
-using Neverness.Managed.Engine;
+using Neverness.Runtime.Core;
+using Neverness.Runtime.Engine;
 
-namespace Neverness.Managed.Interop;
+namespace Neverness.Runtime.Interop;
 
 /// <summary>
 /// 从 <c>NNNativeAPI.engineServices</c> 安装 <see cref="NNNativeEngineApi"/> 镜像（按值复制函数指针）。
 /// </summary>
 public static unsafe class EngineNativeApiBootstrap
 {
-	private static NNNativeEngineApi s_engineApi;
-	private static volatile bool s_installed;
-
 	/// <summary>是否已成功校验 layoutVersion 并缓存子表。</summary>
-	public static bool IsInstalled => s_installed;
+	public static bool IsInstalled => EngineNativeApiCache.IsInstalled;
 
 	/// <summary>已安装引擎服务表；未安装时为零结构。</summary>
-	public static ref readonly NNNativeEngineApi EngineApi => ref s_engineApi;
+	public static ref readonly NNNativeEngineApi EngineApi => ref EngineNativeApiCache.EngineApi;
 
 	/// <summary>由 <c>NNNativeAPI*</c> 解析并安装 engineServices。</summary>
 	public static void InstallFromNativeApiTable(nint nativeApiTable)
@@ -45,8 +42,7 @@ public static unsafe class EngineNativeApiBootstrap
 			return;
 		}
 
-		s_engineApi = *pe;
-		s_installed = true;
+		EngineNativeApiCache.Install(in *pe);
 	}
 
 	/// <summary>
@@ -55,10 +51,12 @@ public static unsafe class EngineNativeApiBootstrap
 	/// </summary>
 	public static void ExerciseStubInteropPath()
 	{
-		if (!s_installed)
+		if (!IsInstalled)
 		{
 			return;
 		}
+
+		ref readonly var s_engineApi = ref EngineApi;
 
 		if (s_engineApi.Timing.GetDeltaTime != null)
 		{
@@ -108,4 +106,7 @@ public static unsafe class EngineNativeApiBootstrap
 			_ = s_engineApi.Application.PumpEvents();
 		}
 	}
+
+	/// <summary>测试重置。</summary>
+	internal static void ResetForTesting() => EngineNativeApiCache.ResetForTesting();
 }

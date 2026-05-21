@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file SceneRuntimeApi.cpp
  * @brief **NNSceneAPI** Runtime 轉發至 **NNEngineRuntime::Scene()**。
  */
@@ -110,4 +110,6 @@ extern "C" void NNBuildSceneRuntimeApi(NNSceneAPI* api)
 	api->setTransform = &rt_scene_setTransform;
 	api->setEntityName = &rt_scene_setEntityName;
 	api->getEntityName = &rt_scene_getEntityName;
+	api->serializeScene = nullptr;
+	api->deserializeScene = nullptr;
 }

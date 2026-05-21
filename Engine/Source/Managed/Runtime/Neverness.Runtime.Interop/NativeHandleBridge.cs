@@ -2,9 +2,9 @@
 
 using System.Runtime.InteropServices;
 using System.Text;
-using Neverness.Managed.Engine;
+using Neverness.Runtime.Engine;
 
-namespace Neverness.Managed.Interop;
+namespace Neverness.Runtime.Interop;
 
 /// <summary>
 /// 经 <see cref="EngineNativeApiBootstrap.EngineApi"/> 的 Object 子表与 Native 互操作。

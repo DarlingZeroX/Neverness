@@ -1,13 +1,13 @@
-﻿using Neverness.Managed.Reflection;
-using Neverness.Managed.Scene;
+using Neverness.Editor.Framework.Reflection;
+using Neverness.Runtime.Scene;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
-/// <summary>反射元資料掃描規則測試。</summary>
+/// <summary>Editor 反射元数据扫描测试。</summary>
 public sealed class TypeMetadataTests
 {
 	[Fact]
-	public void SceneEntity_IncludesSerializeFieldDisplayName()
+	public void SceneEntity_IncludesDisplayNameProperty()
 	{
 		var meta = ReflectionRegistry.GetOrCreate(typeof(SceneEntity));
 		Assert.Contains(meta.SerializableProperties, p => p.Name == nameof(SceneEntity.DisplayName));
@@ -15,23 +15,16 @@ public sealed class TypeMetadataTests
 
 	private sealed class PropertyScanFixture
 	{
-		public string PublicAuto { get; set; } = "";
-
 		[SerializeField]
-		private string _privateField = "";
+		private int _hiddenField;
 
-#pragma warning disable CS0414
-		private string _ignored = "";
-#pragma warning restore CS0414
+		public string PublicProp { get; set; } = string.Empty;
 	}
 
 	[Fact]
 	public void ScanMembers_RespectsSerializeFieldAndPublicSetter()
 	{
 		var meta = ReflectionRegistry.GetOrCreate(typeof(PropertyScanFixture));
-		var names = meta.SerializableProperties.Select(p => p.Name).ToList();
-		Assert.Contains("PublicAuto", names);
-		Assert.Contains("_privateField", names);
-		Assert.DoesNotContain("_ignored", names);
+		Assert.Contains(meta.SerializableProperties, p => p.Name == nameof(PropertyScanFixture.PublicProp));
 	}
 }

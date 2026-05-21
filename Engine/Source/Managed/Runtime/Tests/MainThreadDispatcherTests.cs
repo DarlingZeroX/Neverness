@@ -1,6 +1,6 @@
-using Neverness.Managed.RuntimeLoop;
+using Neverness.Runtime.RuntimeLoop;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
 /// <summary>
 /// <see cref="MainThreadDispatcher"/> 跨线程 Post 与主线程 Drain 顺序。

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Editor.Serialization</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RollForward>LatestMinor</RollForward>
+    <RootNamespace>Neverness.Editor.Serialization</RootNamespace>
+
+    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Editor.Serialization\$(Configuration)\</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <DefaultItemExcludes>$(DefaultItemExcludes);Build/**</DefaultItemExcludes>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Neverness.Editor.Reflection\Neverness.Editor.Reflection.csproj" />
+    <ProjectReference Include="..\..\Runtime\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
+    <ProjectReference Include="..\..\Runtime\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
+  </ItemGroup>
+</Project>

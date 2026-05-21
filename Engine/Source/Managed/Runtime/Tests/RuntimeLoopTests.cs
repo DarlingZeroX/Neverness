@@ -1,6 +1,6 @@
-using Neverness.Managed.RuntimeLoop;
+using Neverness.Runtime.RuntimeLoop;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
 /// <summary>
 /// <see cref="RuntimeLoop"/> 与 Native RuntimeScheduler 管线顺序对称。
@@ -60,7 +60,7 @@ public sealed class RuntimeLoopTests
 	public void Tick_invokes_early_update_before_update()
 	{
 		var log = new List<string>();
-		var loop = new Neverness.Managed.RuntimeLoop.RuntimeLoop();
+		var loop = new RuntimeLoop.RuntimeLoop();
 		loop.Register(new PhaseLogSubsystem(RuntimeTickGroup.Update, log));
 		loop.Register(new PhaseLogSubsystem(RuntimeTickGroup.EarlyUpdate, log));
 		loop.InitializeRegistered();
@@ -77,7 +77,7 @@ public sealed class RuntimeLoopTests
 	[Fact]
 	public void Fixed_update_runs_at_most_max_steps_per_frame()
 	{
-		var loop = new Neverness.Managed.RuntimeLoop.RuntimeLoop();
+		var loop = new RuntimeLoop.RuntimeLoop();
 		loop.Frames.FixedDeltaTimeSeconds = 0.02f;
 		var fixedCounter = new FixedCounterSubsystem();
 		loop.Register(fixedCounter);

@@ -7,7 +7,9 @@
 
 #include "Internal/RuntimeApiBuilders.h"
 #include "ManagedRuntimeBridge.h"
-#include "NNRuntimeApplication/ApplicationApiExport.h"
+#include "ApplicationApiExport.h"
+#include "WindowApiExport.h"
+#include "VfsApiExport.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "NativeEngineRuntimeServices.h"
@@ -29,6 +31,8 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildAssetRegistryRuntimeApi(&outTable->assetRegistry);
 	NNBuildEntityRuntimeApi(&outTable->entity);
 	NNBuildApplicationRuntimeApi(&outTable->application);
+	NNBuildWindowRuntimeApi(&outTable->window);
+	NNBuildVfsRuntimeApi(&outTable->vfs);
 }
 
 namespace

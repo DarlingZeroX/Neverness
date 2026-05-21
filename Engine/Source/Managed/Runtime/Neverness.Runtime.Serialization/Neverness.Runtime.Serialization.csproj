@@ -8,16 +8,31 @@
     <RollForward>LatestMinor</RollForward>
     <RootNamespace>Neverness.Managed.Serialization</RootNamespace>
 
-    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
 
-    <!-- 直接写死项目名，强制生效，绕过变量解析bug -->
-    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Runtime.Serialization\$(Configuration)\</IntermediateOutputPath>
+	  <!-- ========================= -->
+	  <!--  关闭 pack（开发阶段） -->
+	  <!-- ========================= -->
+	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	  <GenerateDocumentationFile>false</GenerateDocumentationFile>
 
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	  <!-- ========================= -->
+	  <!--  输出优化 -->
+	  <!-- ========================= -->
+	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	  <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+	  <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+
+	  <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+
+	  <BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+	  <!-- 允许并行（反而更快） -->
+	  <BuildInParallel>true</BuildInParallel>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Neverness.Runtime.Reflection\Neverness.Runtime.Reflection.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
   </ItemGroup>
 </Project>

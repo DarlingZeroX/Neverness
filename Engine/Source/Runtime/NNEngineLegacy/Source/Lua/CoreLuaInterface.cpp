@@ -66,12 +66,10 @@ namespace NN::Runtime
 
 		void ApplicationLuaInterface::ApplicationQuit()
 		{
-			Application::Quit();
 		}
 
 		void ApplicationLuaInterface::ApplicationOpenURL(const std::string& url)
 		{
-			Application::OpenURL(url);
 		}
 
 		void ApplicationLuaInterface::Initialize(sol::state& lua)

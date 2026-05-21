@@ -1,8 +1,8 @@
 // Neverness.Runtime.Bootstrap — 单帧推进门面；对齐 Native NNEngineRuntimeHost_Tick 之后的托管 Tick。
 
-using Neverness.Managed.RuntimeLoop;
+using Neverness.Runtime.RuntimeLoop;
 
-namespace Neverness.Managed.Bootstrap;
+namespace Neverness.Runtime.Bootstrap;
 
 /// <summary>
 /// 托管主循环单帧推进；由 Native <c>Entry.RuntimeTick</c> 或 <see cref="RuntimeBootstrap"/> 外循环调用。

@@ -16,7 +16,7 @@
 
 ## 2. 构建与选项
 
-无独立 CMake `option`；由根 CMake 的 **`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES`** 决定是否链接 **NevernessRuntime-EngineServices**（进而使用本库状态机）。
+无独立 CMake `option`；由根 CMake 的 **`NEVERNESS_USE_ENGINE_RUNTIME_SERVICES`** 决定是否链接 **NevernessRuntime-EngineServices**（进而使用本库状态机）。
 
 ---
 

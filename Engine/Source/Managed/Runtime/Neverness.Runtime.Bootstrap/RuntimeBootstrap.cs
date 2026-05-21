@@ -1,8 +1,8 @@
 // Neverness.Runtime.Bootstrap — 进程级托管 Runtime 启动/关闭门面（Runtime 主导权迁移 Phase 1）。
 
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Interop;
 
-namespace Neverness.Managed.Bootstrap;
+namespace Neverness.Runtime.Bootstrap;
 
 /// <summary>
 /// 托管 Runtime 启动入口：对接 <c>Entry.Bootstrap</c>（非阻塞）或 <see cref="Neverness.Runtime.App"/> 外循环。

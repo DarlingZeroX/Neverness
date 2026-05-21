@@ -108,39 +108,8 @@ foreach(CONFIG Debug Release RelWithDebInfo MinSizeRel)
 
 endforeach()
 
-############ 模块
-add_subdirectory ("Engine/Source/Core")
-add_subdirectory ("Engine/Source/Runtime")
-add_subdirectory ("Engine/Source/Bridge")
-
-############ Legacy 兼容层（预设不编译）
-# Phase 5：Legacy Galgame 產品線（預設不編譯）
-option(NEVERNESS_BUILD_LEGACY_GALGAME "Build Legacy Galgame stack (Frozen / Compatibility Only)" OFF)
-if(NEVERNESS_BUILD_LEGACY_GALGAME)
-	add_subdirectory("Engine/Source/Legacy")
-endif()
-
-############ 模块
-add_subdirectory ("Engine/Source/Editor")
-add_subdirectory ("Engine/Source/Application")
-
-########## 测试
-if (ENABLE_TESTS)
-    enable_testing()
-    # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 NEVERNESS_BUILD_LEGACY_GALGAME=ON）
-    # VGLauncherTest: add_subdirectory in NNLauncher.
-endif()
-
-########## 自动加载 Plugins 目录下所有子项目
-file(GLOB PLUGINS_DIRS RELATIVE ${CMAKE_SOURCE_DIR}/Plugins ${CMAKE_SOURCE_DIR}/Plugins/*)
-foreach(child ${PLUGINS_DIRS})
-    if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/Plugins/${child}")
-        add_subdirectory(${CMAKE_SOURCE_DIR}/Plugins/${child})
-    endif()
-endforeach()
-
-############ 或者全局设置
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+############ 源码
+add_subdirectory("Engine/Source")
 
 ############ 编译时间输出设置
 if(MSVC)

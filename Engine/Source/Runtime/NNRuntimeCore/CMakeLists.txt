@@ -29,7 +29,6 @@ target_sources(NevernessRuntime-Core
     Include/Core/Input.h
     Include/Core/RuntimeCore.h
     Include/Core/Viewport.h
-    Include/Core/Window.h
     Include/Data/DataContainer.h
     Include/Data/DataNamespace.h
     Include/Data/DataVariant.h
@@ -38,12 +37,11 @@ target_sources(NevernessRuntime-Core
     Include/Utils/TimeHelper.h
     Include/Utils/TransitionHelper.h
     RuntimeCoreExport.h
-    Source/Core/Application.cpp
+    
     Source/Core/EventBus.cpp
     Source/Core/Input.cpp
     Source/Core/RuntimeCore.cpp
     Source/Core/Viewport.cpp
-    Source/Core/Window.cpp
     Source/Data/DataContainer.cpp
     Source/Data/DataNamespace.cpp
     Source/Data/DataVariant.cpp
@@ -69,15 +67,10 @@ target_include_directories(NevernessRuntime-Core PRIVATE ${PROJECT_SOURCE_DIR}/E
  
 find_package(SDL3 CONFIG REQUIRED)
 find_package(RmlUi REQUIRED)
-find_package(SDL3_image CONFIG REQUIRED)
-
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-Lua)
 target_link_libraries(NevernessRuntime-Core PUBLIC SDL3::SDL3)
-target_link_libraries(NevernessRuntime-Core PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-Core)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-PlatformCore)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-FileSystem)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-VFS)
-target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-ImGui)
-target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-RHI)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-Pak)

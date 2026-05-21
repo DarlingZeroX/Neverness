@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Neverness.Managed.Bootstrap;
+using Neverness.Runtime.Bootstrap;
 
-namespace Neverness.Managed.Runtime;
+namespace Neverness.Runtime.Runtime;
 
 /// <summary>
 /// 托管 Runtime 薄 UCO 入口：仅转发至 <see cref="RuntimeBootstrap"/> / <see cref="RuntimeMainLoop"/>。

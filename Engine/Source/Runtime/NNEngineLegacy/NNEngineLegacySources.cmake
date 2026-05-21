@@ -14,7 +14,6 @@ set(NNEngineLegacy_SOURCES
     Include/Animation/Interface/AnimationScriptManager.h
     Include/Engine/AudioPlayer.h
     Include/Engine/EngineResource.h
-    Include/Engine/ImGuiLayer.h
     Include/Engine/Manager.h
     Include/Engine/Manager/SceneManager.h
     Include/Engine/Manager/ShaderManager.h
@@ -66,7 +65,6 @@ set(NNEngineLegacy_SOURCES
     Source/Animation/Interface/Animation2DScript.cpp
     Source/Animation/Interface/AnimationScriptManager.cpp
     Source/Engine/EngineResource.cpp
-    Source/Engine/ImGuiLayer.cpp
     Source/Engine/Manager.cpp
     Source/Engine/Manager/SceneManager.cpp
     Source/Engine/Manager/ShaderManager.cpp

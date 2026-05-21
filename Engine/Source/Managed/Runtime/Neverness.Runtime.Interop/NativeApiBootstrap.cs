@@ -1,9 +1,9 @@
 // Neverness.Runtime.Interop — 禁止 DllImport；仅通过 NNNativeAPI 函数表间接调用 Native。
 
 using System.Runtime.InteropServices;
-using Neverness.Managed.Core;
+using Neverness.Runtime.Core;
 
-namespace Neverness.Managed.Interop;
+namespace Neverness.Runtime.Interop;
 
 /// <summary>
 /// 将 Native 传入的 <c>NNNativeAPI*</c> 安装到进程内静态缓存，并提供 UTF-8 日志封装。

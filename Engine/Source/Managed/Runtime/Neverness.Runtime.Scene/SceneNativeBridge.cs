@@ -2,10 +2,10 @@
 
 using System.Runtime.InteropServices;
 using System.Text;
-using Neverness.Managed.Engine;
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Interop;
 
-namespace Neverness.Managed.Scene;
+namespace Neverness.Runtime.Scene;
 
 /// <summary>
 /// <see cref="NNSceneApi"/> 薄封装：Managed 不持有场景存储，仅经 ABI 转发。

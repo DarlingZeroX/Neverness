@@ -1,11 +1,9 @@
-﻿using Neverness.Managed.Serialization;
-using Xunit;
+using Neverness.Editor.Framework.Serialization;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
 /// <summary>
-/// 驗證 <see cref="VersionTolerance.CreateOptions"/> 下 JSON 反序列化對「未知欄位」之寬鬆行為，
-/// 以利未來格式演進時舊客戶端仍可讀取核心欄位。
+/// 验证 Editor <see cref="VersionTolerance.CreateOptions"/> 下 JSON 反序列化对未知字段的宽松行为。
 /// </summary>
 public sealed class VersionToleranceTests
 {

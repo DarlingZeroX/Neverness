@@ -7,7 +7,7 @@
 | **职责** | 定义并实现 **VisionGal Native ↔ Managed 共享 ABI**：**`NNNativeAPI`** 函数表、默认 Native 实现（如 **`LogInfo`**）、默认 API 表单例、建表服务（**`NNNativeApiTable_BuildDefault`**）。**Phase 3**：表尾挂载 **`engineServices`** → **`NNNativeEngineAPI`**（见 **NNNativeEngineAPI**）。**不包含** CoreCLR 启动、hostfxr、程序集加载（见 **NNRuntimeManagedHost**）。 |
 | **不负责** | Gameplay、对白、Editor、Hot Reload、Roslyn、反射式 Invoke、扩展元数据。 |
 | **CMake 目标** | **`NevernessRuntime-Managed`**（**`SHARED`**）；别名 **`NNRuntimeManaged`** |
-| **依赖** | **`NevernessRuntime-NativeEngineAPI`**、**`NevernessRuntime-NativeEngineAPIStub`**（**`PUBLIC`**）；可选 **`NevernessRuntime-EngineServices`**（`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES=ON`）。**不**链接 `nethost`。 |
+| **依赖** | **`NevernessRuntime-NativeEngineAPI`**、**`NevernessRuntime-NativeEngineAPIStub`**（**`PUBLIC`**）；可选 **`NevernessRuntime-EngineServices`**（`NEVERNESS_USE_ENGINE_RUNTIME_SERVICES=ON`）。**不**链接 `nethost`。 |
 
 **托管镜像（C#）** 位于 [`Engine/Source/Managed/Runtime/Core/`](../../../Managed/Runtime/Core/)（程序集 **`NevernessRuntimeManaged-Core`**，命名空间 **`Neverness.Managed.Core`**），不在本目录。
 

@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 #endif
 
-namespace Neverness.Managed.Scripting;
+namespace Neverness.Runtime.Scripting;
 
 /// <summary>
 /// Roslyn C# 腳本編譯器；定義 <c>VISIONGAL_ENABLE_ROSLYN</c> 時使用 Microsoft.CodeAnalysis.CSharp。

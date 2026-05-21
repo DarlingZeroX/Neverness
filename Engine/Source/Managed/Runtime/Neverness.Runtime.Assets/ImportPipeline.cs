@@ -1,8 +1,8 @@
 using System.Text;
-using Neverness.Managed.Engine;
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Interop;
 
-namespace Neverness.Managed.Assets;
+namespace Neverness.Runtime.Assets;
 
 /// <summary>
 /// 資產匯入管線：虛擬路徑 → Native <c>importAsset</c> → 登記至 <see cref="AssetDatabase"/>。

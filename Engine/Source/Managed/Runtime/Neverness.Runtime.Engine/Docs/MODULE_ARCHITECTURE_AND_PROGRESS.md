@@ -1,26 +1,18 @@
-# Neverness.Runtime.Engine — NNNativeEngineAPI 托管镜像
+# Neverness.Runtime.Engine
 
-## 1. 定位
+## 职责
 
-| 项目 | 说明 |
-|------|------|
-| **程序集** | `Neverness.Runtime.Engine` |
-| **命名空间** | `Neverness.Managed.Engine` |
-| **职责** | `NNNativeEngineApi` 及子表结构体镜像、`NNNativeEngineApiConstants` |
-| **不负责** | Bootstrap（**Neverness.Runtime.Interop**）、Gameplay |
+单一引擎 ABI 镜像程序集（已合并原 `Neverness.Runtime.Core` 与 `Neverness.Runtime.EngineRuntime`）：
 
-## 2. 版本
+- `Neverness.Managed.Core` — `NNNativeApi`、`NNNativeApiConstants`
+- `Neverness.Managed.Engine` — `NNNativeEngineApiTypes`、句柄、`EngineNativeApiCache`
+- `Neverness.Managed.Engine.Runtime` — `EngineTime`
 
-- `NNNativeEngineApiConstants.LayoutVersion` — 当前 **6**（含 `NNEntityApi`、`NNApplicationApi`）
+## 依赖
 
-## 3. 边界
+- 无其他 Runtime 项目引用；`Neverness.Runtime.Interop` 引用本程序集并调用 `EngineNativeApiCache.Install`。
 
-- 从 `NNNativeAPI.engineServices` 解析；安装由 `EngineNativeApiBootstrap`（Interop）完成
-- 与 Native `EntitySubsystem` **无**自动数据同步
+## 进度
 
-## 4. 开发进展
-
-| 日期 | 进展 |
-|------|------|
-| **2026-05-14** | Phase 3 Engine Service ABI |
-| **2026-05-19** | Bootstrap 迁至 Interop |
+- Layout version **10**（`NNNativeEngineApiConstants.LayoutVersion`；含 `NNVfsApi` 等）
+- `NNSceneAPI` 已追加 `serializeScene` / `deserializeScene` 字段（Stub 默认 no-op）

@@ -27,6 +27,8 @@ namespace NN::Runtime::VFS
 
 		static std::string GetRelativePathVFS(const std::string& relativePath, const std::string& absolutePath);
 
+		static std::string GetAbsolutePath(const std::string& relativePath);
+
 		static VirtualFileSystemPtr& GetInstance();
 
 		static int SafeReadFileFromVFS(const std::string& path, std::function<int(const DataRef&)> callback);
@@ -34,6 +36,8 @@ namespace NN::Runtime::VFS
 		static bool ReadTextFromFile(const std::string& path, std::string& text);
 
 		static bool WriteTextToFile(const std::string& path, const std::string& str);
+
+		static bool RebuildNativeFileSystemFiles(const std::string& path);
 
 		static bool MountFileSystem(const std::string& alias, IFileSystemPtr fs);
 	};

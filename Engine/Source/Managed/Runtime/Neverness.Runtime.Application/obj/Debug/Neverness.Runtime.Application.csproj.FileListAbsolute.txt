@@ -1,0 +1,12 @@
+E:\Neverness\Build\bin\Debug\Neverness.Runtime.Application.deps.json
+E:\Neverness\Build\bin\Debug\Neverness.Runtime.Application.dll
+E:\Neverness\Build\bin\Debug\Neverness.Runtime.Application.pdb
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\Neverness.Runtime.Application.csproj.AssemblyReference.cache
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\Neverness.Runtime.Application.GeneratedMSBuildEditorConfig.editorconfig
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\Neverness.Runtime.Application.csproj.CoreCompileInputs.cache
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\Neverness.Runtime.Application.sourcelink.json
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\Nevernes.071675FA.Up2Date
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\Neverness.Runtime.Application.dll
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\refint\Neverness.Runtime.Application.dll
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\Neverness.Runtime.Application.pdb
+E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.Application\obj\Debug\ref\Neverness.Runtime.Application.dll

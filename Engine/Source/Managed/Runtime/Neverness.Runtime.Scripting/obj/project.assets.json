@@ -124,14 +124,14 @@
           }
         }
       },
-      "Neverness.Runtime.Core/1.0.0": {
+      "Neverness.Runtime.Engine/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "compile": {
-          "bin/placeholder/Neverness.Runtime.Core.dll": {}
+          "bin/placeholder/Neverness.Runtime.Engine.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Neverness.Runtime.Core.dll": {}
+          "bin/placeholder/Neverness.Runtime.Engine.dll": {}
         }
       }
     }
@@ -961,16 +961,16 @@
         "microsoft.codeanalysis.csharp.nuspec"
       ]
     },
-    "Neverness.Runtime.Core/1.0.0": {
+    "Neverness.Runtime.Engine/1.0.0": {
       "type": "project",
-      "path": "../Neverness.Runtime.Core/Neverness.Runtime.Core.csproj",
-      "msbuildProject": "../Neverness.Runtime.Core/Neverness.Runtime.Core.csproj"
+      "path": "../Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj",
+      "msbuildProject": "../Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
       "Microsoft.CodeAnalysis.CSharp >= 4.14.0",
-      "Neverness.Runtime.Core >= 1.0.0"
+      "Neverness.Runtime.Engine >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -1001,8 +1001,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj": {
-              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj"
             }
           }
         }

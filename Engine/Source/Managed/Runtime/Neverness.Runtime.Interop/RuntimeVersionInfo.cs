@@ -1,7 +1,7 @@
-using Neverness.Managed.Core;
-using Neverness.Managed.Engine;
+using Neverness.Runtime.Core;
+using Neverness.Runtime.Engine;
 
-namespace Neverness.Managed.Interop;
+namespace Neverness.Runtime.Interop;
 
 /// <summary>打包 Native/Managed API 版本号，供 Entry.GetApiVersion UCO 使用。</summary>
 public static class RuntimeVersionInfo

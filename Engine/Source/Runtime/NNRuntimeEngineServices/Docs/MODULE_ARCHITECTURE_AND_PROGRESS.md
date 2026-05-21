@@ -10,7 +10,7 @@
 | **不负责** | 纯 Stub 表（**`NNNativeEngineApi_GetDefaultTable`**，见 Stub 模块）；Render / UI / Audio / Input 仍沿用 Stub 指针。 |
 | **CMake 目标** | `NevernessRuntime-EngineServices`（`STATIC`） |
 | **依赖** | `NevernessRuntime-NativeEngineAPI`、`NevernessRuntime-NativeEngineAPIStub`、`NevernessRuntime-Engine`（PUBLIC） |
-| **典型消费者** | **NNRuntimeManaged**（`VISIONGAL_USE_ENGINE_RUNTIME_SERVICES=ON`） |
+| **典型消费者** | **NNRuntimeManaged**（`NEVERNESS_USE_ENGINE_RUNTIME_SERVICES=ON`） |
 
 ---
 

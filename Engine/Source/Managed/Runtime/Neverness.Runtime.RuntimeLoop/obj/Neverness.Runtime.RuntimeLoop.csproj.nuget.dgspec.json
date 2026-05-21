@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {}
+    "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {}
   },
   "projects": {
-    "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {
+    "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj",
+        "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj",
         "projectName": "Neverness.Runtime.RuntimeLoop",
-        "projectPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj",
+        "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\obj\\",
+        "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",

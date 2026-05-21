@@ -1,6 +1,6 @@
 // Neverness.Runtime.RuntimeLoop — FixedUpdate 累加与每帧最大步数限制。
 
-namespace Neverness.Managed.RuntimeLoop;
+namespace Neverness.Runtime.RuntimeLoop;
 
 /// <summary>
 /// 固定时间步累加器；与 Native <c>RuntimeScheduler::RunFixedPasses</c> 语义对齐。

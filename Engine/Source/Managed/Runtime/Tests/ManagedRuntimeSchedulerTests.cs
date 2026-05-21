@@ -1,6 +1,6 @@
-﻿using Neverness.Managed.RuntimeLoop;
+﻿using Neverness.Runtime.RuntimeLoop;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
 /// <summary>
 /// P0-1：<see cref="ManagedRuntimeScheduler"/> 與 Native <c>RuntimeScheduler</c> 管線順序對稱（Early → Fixed → Update → Late → Render）。

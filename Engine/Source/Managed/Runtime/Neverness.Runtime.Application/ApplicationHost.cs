@@ -1,13 +1,13 @@
 // Neverness.Runtime.Application — NNApplicationAPI 托管门面；禁止在产品代码中散落 delegate*。
 
-using System.Text;
-using Neverness.Managed.Engine;
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Interop;
 
-namespace Neverness.Managed.Application;
+namespace Neverness.Runtime.Application;
 
 /// <summary>
-/// 统一 Runtime Application 层封装（SDL 生命周期、主窗口、事件泵）。
+/// Runtime Host 生命周期封装（SDL 子系统、事件泵、帧边界）。
+/// 窗口创建请使用 <see cref="WindowHost"/>。
 /// </summary>
 public static unsafe class ApplicationHost
 {
@@ -27,22 +27,6 @@ public static unsafe class ApplicationHost
 		return api.Initialize();
 	}
 
-	/// <summary>打开主窗口。</summary>
-	public static bool OpenWindow(string title, int width, int height)
-	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(title);
-		if (!TryGetApplicationApi(out var api) || api.OpenWindow == null)
-		{
-			return false;
-		}
-
-		var utf8 = Encoding.UTF8.GetBytes(title);
-		fixed (byte* p = utf8)
-		{
-			return api.OpenWindow(p, width, height);
-		}
-	}
-
 	/// <summary>泵送事件；返回 false 表示应退出主循环。</summary>
 	public static bool PumpEvents()
 	{
@@ -54,7 +38,7 @@ public static unsafe class ApplicationHost
 		return api.PumpEvents();
 	}
 
-	/// <summary>关闭窗口并退出 SDL。</summary>
+	/// <summary>关闭所有窗口并退出 SDL。</summary>
 	public static void Shutdown()
 	{
 		if (!TryGetApplicationApi(out var api) || api.Shutdown == null)
@@ -63,6 +47,26 @@ public static unsafe class ApplicationHost
 		}
 
 		api.Shutdown();
+	}
+
+	public static void BeginFrame()
+	{
+		if (!TryGetApplicationApi(out var api) || api.BeginFrame == null)
+		{
+			return;
+		}
+
+		api.BeginFrame();
+	}
+
+	public static void EndFrame()
+	{
+		if (!TryGetApplicationApi(out var api) || api.EndFrame == null)
+		{
+			return;
+		}
+
+		api.EndFrame();
 	}
 
 	private static bool TryGetApplicationApi(out NNApplicationApi api)

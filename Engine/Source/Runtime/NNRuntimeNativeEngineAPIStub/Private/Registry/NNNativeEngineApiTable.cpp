@@ -32,6 +32,8 @@ extern "C" void NNNativeEngineApiTable_BuildDefault(NNNativeEngineAPI* outTable)
 	NNBuildAssetRegistryApiStubs(&outTable->assetRegistry);
 	NNBuildEntityApiStubs(&outTable->entity);
 	NNBuildApplicationApiStubs(&outTable->application);
+	NNBuildWindowApiStubs(&outTable->window);
+	NNBuildVfsApiStubs(&outTable->vfs);
 }
 
 namespace

@@ -17,6 +17,8 @@
 #include "SceneAPI.h"
 #include "TimingAPI.h"
 #include "UIAPI.h"
+#include "VfsAPI.h"
+#include "WindowAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,6 +36,8 @@ void NNBuildAsyncWaitApiStubs(NNAsyncWaitAPI* api);
 void NNBuildObjectApiStubs(NNObjectAPI* api);
 void NNBuildAssetRegistryApiStubs(NNAssetRegistryAPI* api);
 void NNBuildEntityApiStubs(NNEntityAPI* api);
+void NNBuildWindowApiStubs(NNWindowAPI* api);
+void NNBuildVfsApiStubs(NNVfsAPI* api);
 
 #ifdef __cplusplus
 } /* extern "C" */

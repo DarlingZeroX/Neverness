@@ -21,3 +21,5 @@
 #endif
 
 #endif
+
+#define CIMGUI_VARGS0

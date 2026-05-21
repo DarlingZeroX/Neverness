@@ -10,15 +10,15 @@
 */ 
 
 #pragma once
-#include "../../RuntimeCoreExport.h"
-#include <string>
-
-namespace NN::Runtime
-{
-	struct NN_RUNTIME_CORE_API Application
-	{
-	 	static void Quit();
-		
-		static void OpenURL(std::string url);
-	};
-}
+//#include "../../RuntimeCoreExport.h"
+//#include <string>
+//
+//namespace NN::Runtime
+//{
+//	struct NN_RUNTIME_CORE_API Application
+//	{
+//	 	static void Quit();
+//		
+//		static void OpenURL(std::string url);
+//	};
+//}

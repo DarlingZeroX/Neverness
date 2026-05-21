@@ -1,6 +1,6 @@
 // Neverness.Runtime.RuntimeLoop — 子系统分桶注册与按 TickGroup 调度。
 
-namespace Neverness.Managed.RuntimeLoop;
+namespace Neverness.Runtime.RuntimeLoop;
 
 /// <summary>
 /// 管理 <see cref="IManagedRuntimeSubsystem"/> 注册与按 <see cref="RuntimeTickGroup"/> 分桶 Tick；

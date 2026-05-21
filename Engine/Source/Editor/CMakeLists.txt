@@ -1,2 +1,2 @@
-add_subdirectory ("NNEditorFramework")
-add_subdirectory ("NNEditor")
+add_subdirectory ("NNEditorFrameworkLegacy")
+add_subdirectory ("NNEditorLegacy")

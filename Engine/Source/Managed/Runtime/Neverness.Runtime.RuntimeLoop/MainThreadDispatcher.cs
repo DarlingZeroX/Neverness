@@ -1,6 +1,6 @@
 // Neverness.Runtime.RuntimeLoop — 主线程委托队列；对齐 Native RuntimeScheduler::FlushMainThreadDelegates。
 
-namespace Neverness.Managed.RuntimeLoop;
+namespace Neverness.Runtime.RuntimeLoop;
 
 /// <summary>
 /// 线程安全的主线程工作队列；在 <see cref="RuntimeLoop.Tick"/> 的 LateUpdate 之后、Render 之前排空。

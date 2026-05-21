@@ -10,7 +10,7 @@
  */
 
 #include "GalComDrawer.h"
-#include <NNEditorFramework/Include/EditorCore/Localization.h>
+#include <NNEditorFrameworkLegacy/Include/EditorCore/Localization.h>
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNRuntimeImGui/Include/ImGuiEx/ImGuiVector.h>
 #include <VGGalgame/Include/GalGameEngine.h>

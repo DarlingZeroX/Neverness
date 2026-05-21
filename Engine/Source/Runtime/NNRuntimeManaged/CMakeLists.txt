@@ -1,4 +1,4 @@
-﻿# NNRuntimeManaged — Native ↔ Managed ABI（NNNativeAPI 函数表，SHARED 导出）
+# NNRuntimeManaged — Native ↔ Managed ABI（NNNativeAPI 函数表，SHARED 导出）
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,6 +25,7 @@ target_compile_definitions(NevernessRuntime-Managed
 	PRIVATE
 		NN_RUNTIME_MANAGED_EXPORT
 		NN_RUNTIME_MANAGED_BUILD_SHARED
+		NEVERNESS_USE_ENGINE_RUNTIME_SERVICES=1
 	INTERFACE
 		NN_RUNTIME_MANAGED_BUILD_SHARED
 )
@@ -39,8 +40,11 @@ target_include_directories(NevernessRuntime-Managed
 target_link_libraries(NevernessRuntime-Managed PUBLIC
 	NevernessRuntime-NativeEngineAPI
 	NevernessRuntime-NativeEngineAPIStub
+	NevernessRuntime-EngineServices
+	NevernessBridge-ImGui
 )
 
 target_link_libraries(NevernessRuntime-Managed PUBLIC NevernessRuntime-EngineServices)
+target_include_directories(NevernessRuntime-Managed PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 
 add_library(NNRuntimeManaged ALIAS NevernessRuntime-Managed)

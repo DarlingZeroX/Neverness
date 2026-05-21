@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		
+		<LangVersion>13</LangVersion>
+
+		<!-- ========================= -->
+		<!-- ❌ 关闭所有重型分析器 -->
+		<!-- ========================= -->
+		<EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+		<EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+		<EnableAotAnalyzer>false</EnableAotAnalyzer>
+		<IsAotCompatible>false</IsAotCompatible>
+
+		<!-- ========================= -->
+		<!--  关闭 pack（开发阶段） -->
+		<!-- ========================= -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+
+		<!-- ========================= -->
+		<!--  输出优化 -->
+		<!-- ========================= -->
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+
+		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+
+		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+		<!-- 允许并行（反而更快） -->
+		<BuildInParallel>true</BuildInParallel>
+
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+
+	<Target Name="CopyNuGetPackage" AfterTargets="Pack" Condition=" '$(Configuration)' == 'Release' ">
+		<PropertyGroup>
+			<NuPkgFile>$(PackageOutputPath)$(PackageId).$(PackageVersion).nupkg</NuPkgFile>
+		</PropertyGroup>
+		<Copy SourceFiles="$(NuPkgFile)" DestinationFolder="C:\nuget" SkipUnchangedFiles="true" Condition="Exists('$(NuPkgFile)')" />
+	</Target>
+</Project>

@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
-using Neverness.Managed.Engine;
+using Neverness.Runtime.Engine;
 
-namespace Neverness.Managed.Assets;
+namespace Neverness.Runtime.Assets;
 
 /// <summary>
 /// 128-bit 資產 GUID；與 Native <see cref="NNGuid"/> 記憶體佈局一致，可零拷貝互操作。

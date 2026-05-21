@@ -1,13 +1,13 @@
 using System.Runtime.InteropServices;
 using System.Text;
-using Neverness.Managed.Engine;
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Interop;
 
-namespace Neverness.Managed.Assets;
+namespace Neverness.Runtime.Assets;
 
 /// <summary>
 /// 託管資產登記表薄封裝；優先經 <see cref="EngineNativeApiBootstrap.EngineApi.AssetRegistry"/> 與 Native 同步。
-/// 未安裝 ABI 時回退至進程內字典（Stub / 單元測試）。
+/// Release 僅經 Native；<c>DEBUG</c> 在未安裝 ABI 時允許進程內字典（單元測試）。
 /// </summary>
 public static class AssetDatabase
 {
@@ -32,6 +32,7 @@ public static class AssetDatabase
 			return true;
 		}
 
+#if DEBUG
 		if (s_pathToGuid.ContainsKey(virtualPath))
 		{
 			return false;
@@ -39,6 +40,9 @@ public static class AssetDatabase
 
 		Cache(virtualPath, guid);
 		return true;
+#else
+		return false;
+#endif
 	}
 
 	/// <summary>依路徑解析 GUID。</summary>
@@ -50,7 +54,11 @@ public static class AssetDatabase
 			return true;
 		}
 
+#if DEBUG
 		return s_pathToGuid.TryGetValue(virtualPath, out guid);
+#else
+		return false;
+#endif
 	}
 
 	/// <summary>依 GUID 解析虛擬路徑。</summary>
@@ -67,7 +75,11 @@ public static class AssetDatabase
 			return true;
 		}
 
+#if DEBUG
 		return s_guidToPath.TryGetValue(guid.ToHexString(), out virtualPath);
+#else
+		return false;
+#endif
 	}
 
 	private static void Cache(string virtualPath, GUID guid)

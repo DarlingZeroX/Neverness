@@ -12,7 +12,7 @@
 #pragma once
 #include "../VGUIConfig.h"
 //#include "../Scene/Scene.h"
-#include "NNRuntimeCore/Include/Core/Window.h"
+#include "NNRuntimeApplication/Include/Core/Window.h"
 #include "NNRuntimeCore/Interface/EngineInterface.h"
 #include "NNRuntimeCore/Include/Core/Viewport.h"
 #include "UIDocument.h"

@@ -1,9 +1,9 @@
 // Neverness.Runtime.App — 纯托管 Headless 调试宿主（不进入默认 CMake 产品目标）。
 
-using Neverness.Managed.Bootstrap;
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Interop;
+using Neverness.Runtime.Bootstrap;
 
-namespace Neverness.Managed.Runtime.App;
+namespace Neverness.Runtime.Runtime.App;
 
 internal static class Program
 {

@@ -6,6 +6,9 @@
 #include "ManagedRuntimeBridge.h"
 #include "NativeEngineRuntimeServices.h"
 
+#include "NNNativeEngineAPI/Include/WindowAPI.h"
+#include "NNNativeEngineAPI/Include/WindowTypes.h"
+
 #include <chrono>
 #include <cmath>
 #include <iostream>
@@ -29,9 +32,10 @@ int main()
 	}
 
 	const NNApplicationAPI& app = engineTable->application;
-	if (app.initialize == nullptr || app.openWindow == nullptr || app.pumpEvents == nullptr)
+	const NNWindowAPI& window = engineTable->window;
+	if (app.initialize == nullptr || app.pumpEvents == nullptr || window.create == nullptr)
 	{
-		std::cerr << "NNApplicationAPI is not wired\n";
+		std::cerr << "NNApplicationAPI / NNWindowAPI is not wired\n";
 		return 1;
 	}
 
@@ -50,9 +54,18 @@ int main()
 		return 1;
 	}
 
-	if (!app.openWindow("Neverness Kernel", 1280, 720))
+	NNWindowDesc windowDesc{};
+	windowDesc.title = "Neverness Kernel";
+	windowDesc.width = 1280;
+	windowDesc.height = 720;
+	windowDesc.resizable = true;
+	windowDesc.maximized = false;
+	windowDesc.hidden = false;
+
+	const NNWindowHandle mainWindow = window.create(&windowDesc);
+	if (mainWindow == NN_INVALID_WINDOW_HANDLE)
 	{
-		std::cerr << "application.openWindow failed\n";
+		std::cerr << "window.create failed\n";
 		if (app.shutdown != nullptr)
 		{
 			app.shutdown();

@@ -13,6 +13,9 @@
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <filesystem>
 
+#include "NNRuntimeCore/Include/Core/RuntimeCore.h"
+#include "VFS/NativeFileSystem.h"
+
 namespace NN::Runtime::VFS
 {
 	struct VFSImp
@@ -42,6 +45,11 @@ namespace NN::Runtime::VFS
 			return relativePath;
 
 		return relativePath + relative.string();
+	}
+
+	std::string VFSService::GetAbsolutePath(const std::string& relativePath)
+	{
+		return GetInstance()->AbsolutePath(relativePath);
 	}
 
 	VirtualFileSystemPtr& VFSService::GetInstance()
@@ -115,6 +123,21 @@ namespace NN::Runtime::VFS
 
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	bool VFSService::RebuildNativeFileSystemFiles(const std::string& path)
+	{		// 需要刷新虚拟文件系统
+		auto fsList = GetInstance()->GetFilesystems(path);
+		if (fsList.size() == 1)
+		{
+			auto fs = fsList.begin()->get();
+			NativeFileSystem* nfs = dynamic_cast<NativeFileSystem*>(fs);
+			nfs->RebuildFileList();
+
+			return true;
 		}
 
 		return false;

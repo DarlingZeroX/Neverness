@@ -85,7 +85,7 @@ target_link_libraries(YourTarget PRIVATE NevernessRuntime-Core)
 | 头文件 | 主要职责 |
 |--------|----------|
 | [`Core/Application.h`](../Include/Core/Application.h) | 应用主对象。 |
-| [`Core/Window.h`](../Include/Core/Window.h) | 窗口与 GL 上下文创建。 |
+| [`NNRuntimeApplication/Include/Core/Window.h`](../../NNRuntimeApplication/Include/Core/Window.h) | 窗口与 GL 上下文创建（已迁至 Application 模块）。 |
 | [`Core/Viewport.h`](../Include/Core/Viewport.h) | 视口矩形与 DPI。 |
 | [`Core/Input.h`](../Include/Core/Input.h) | 输入状态缓存。 |
 | [`Core/EventBus.h`](../Include/Core/EventBus.h) / [`Events.h`](../Include/Core/Events.h) | 事件系统。 |

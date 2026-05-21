@@ -22,7 +22,7 @@
 
 ### 0.2 阶段定位
 
-- **NNNativeEngineAPI** 与托管镜像已版本化（ApiVersion **2**，LayoutVersion **6**，含 **`NNApplicationAPI`**）。
+- **NNNativeEngineAPI** 与托管镜像已版本化（ApiVersion **2**，LayoutVersion **10**，含 **`NNVfsAPI`** 等）。
 - 重心：**Runtime Kernel 化**（统一排程、实体子系统、场景运行时），而非仅「服务表聚合」。
 
 ### 0.3 P0：Runtime Kernel 化
@@ -110,7 +110,8 @@ flowchart TB
 | **Interop** | `Neverness.Runtime.Interop` | `NativeApiBootstrap`、`EngineNativeApiBootstrap`、`NativeHandleBridge` |
 | **托管 Kernel** | `Neverness.Runtime.RuntimeLoop` | 帧管线：Early → Fixed → Update → Late → MainThread → Render |
 | **ABI 镜像** | `Neverness.Runtime.Core` / `.Engine` | 结构体镜像与常量；**不含** Bootstrap 逻辑 |
-| **Application** | `Neverness.Runtime.Application` | `ApplicationHost` 封装 `NNApplicationAPI`（SDL 窗口与事件泵） |
+| **Application** | `Neverness.Runtime.Application` | `ApplicationHost`（SDL 生命周期/事件泵/帧边界）+ `WindowHost`（`NNWindowAPI`） |
+| **VFS** | `Neverness.Runtime.VFS` | `VFS.ReadText` / `WriteText` / `ReadBytes`（`NNVfsAPI` 函数表） |
 | **地基** | Object、Reflection、Serialization、Assets | Unity 式基础设施 |
 | **产品** | Gameplay、Scene、Graph、Inspector | Galgame / 工具向产品逻辑；场景实体经 **NNSceneAPI** |
 | **Native ABI DLL** | `NevernessRuntime-Managed` | `NNNativeApi_GetDefaultTable()` 等 C 导出 |

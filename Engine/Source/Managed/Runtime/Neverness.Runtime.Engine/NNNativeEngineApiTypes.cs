@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Neverness.Managed.Engine;
+namespace Neverness.Runtime.Engine;
 
 /// <summary>
 /// 與 Native <c>NNRenderAPI</c> 逐欄位對齊（<c>RenderAPI.h</c>）。
@@ -92,6 +92,8 @@ public unsafe struct NNSceneApi
 	public delegate* unmanaged<ulong, NNTransform3*, void> SetTransform;
 	public delegate* unmanaged<ulong, byte*, int> SetEntityName;
 	public delegate* unmanaged<ulong, byte*, nuint, int> GetEntityName;
+	public delegate* unmanaged<byte*, void*, nuint, nuint> SerializeScene;
+	public delegate* unmanaged<void*, nuint, byte*, int> DeserializeScene;
 }
 
 /// <summary>
@@ -175,23 +177,78 @@ public unsafe struct NNEntityApi
 }
 
 /// <summary>
-/// 與 Native <c>NNApplicationAPI</c> 對齊（<c>ApplicationAPI.h</c>）：SDL 窗口与事件泵。
+/// 與 Native <c>NNWindowDesc</c> 對齊（<c>WindowAPI.h</c>）：創建窗口時的描述塊。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct NNWindowDesc
+{
+	public byte* Title;
+	public int Width;
+	public int Height;
+	public bool Resizable;
+	public bool Maximized;
+	public bool Hidden;
+}
+
+/// <summary>
+/// 與 Native <c>NNWindowAPI</c> 對齊（<c>WindowAPI.h</c>）：多窗口、Native 句柄。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public unsafe struct NNWindowApi
+{
+	public uint Size;
+	public delegate* unmanaged<NNWindowDesc*, ulong> Create;
+	public delegate* unmanaged<ulong, void> Destroy;
+	public delegate* unmanaged<ulong, byte*, void> SetTitle;
+	public delegate* unmanaged<ulong, int, int, void> SetSize;
+	public delegate* unmanaged<ulong, int*, int*, void> GetSize;
+	public delegate* unmanaged<ulong, int, int, void> SetPosition;
+	public delegate* unmanaged<ulong, int*, int*, void> GetPosition;
+	public delegate* unmanaged<ulong, bool, void> SetResizable;
+	public delegate* unmanaged<ulong, void> Maximize;
+	public delegate* unmanaged<ulong, void> Minimize;
+	public delegate* unmanaged<ulong, void> Restore;
+	public delegate* unmanaged<ulong, void> Show;
+	public delegate* unmanaged<ulong, void> Hide;
+	public delegate* unmanaged<ulong, void*> GetNativeHandle;
+}
+
+/// <summary>
+/// 與 Native <c>NNVfsAPI</c> 對齊（<c>VfsAPI.h</c>）：VFS 文本/二进制 IO；缓冲区由 Native <c>malloc</c>，须 <see cref="FreeBuffer"/>。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public unsafe struct NNVfsApi
+{
+	public uint Size;
+	/// <summary>非 0 成功；<paramref name="outText"/> 为 malloc 缓冲区。</summary>
+	public delegate* unmanaged<byte*, byte**, int> ReadText;
+	public delegate* unmanaged<byte*, byte*, int> WriteText;
+	public delegate* unmanaged<byte*, byte**, uint*, int> ReadBytes;
+	public delegate* unmanaged<void*, void> FreeBuffer;
+	public delegate* unmanaged<byte*, byte*, byte**, int> GetRelativePath;
+	public delegate* unmanaged<byte*, int> RebuildNativeFileSystemFiles;
+	public delegate* unmanaged<byte*, byte**, int> GetAbsolutePath;
+}
+
+/// <summary>
+/// 與 Native <c>NNApplicationAPI</c> 對齊（<c>ApplicationAPI.h</c>）：SDL 子系統、事件泵、幀邊界。
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 8)]
 public unsafe struct NNApplicationApi
 {
 	public uint Size;
 	public delegate* unmanaged<bool> Initialize;
-	public delegate* unmanaged<byte*, int, int, bool> OpenWindow;
 	public delegate* unmanaged<bool> PumpEvents;
 	public delegate* unmanaged<void> Shutdown;
+	public delegate* unmanaged<void> BeginFrame;
+	public delegate* unmanaged<void> EndFrame;
 }
 
 /// <summary>
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v6** 起末尾為 <see cref="Application"/>（<c>NNApplicationAPI</c>）；若 Native 遞增 <c>NN_NATIVE_ENGINE_API_LAYOUT_VERSION</c> 而託管未同步，<see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 將拒絕快取。
+/// **layout v10** 起 <see cref="Vfs"/> 含 <c>getAbsolutePath</c> 等；若 Native 遞增 layout 而託管未同步，<see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 將拒絕快取。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -210,6 +267,10 @@ public unsafe struct NNNativeEngineApi
 	public NNAssetRegistryApi AssetRegistry;
 	/// <summary>對應 C 聚合體成員 <c>entity</c>（型別 <c>NNEntityAPI</c>）；語義見 <see cref="NNEntityApi"/> 之 remarks。</summary>
 	public NNEntityApi Entity;
-	/// <summary>對應 C 聚合體末尾成員 <c>application</c>（型別 <c>NNApplicationAPI</c>）。</summary>
+	/// <summary>對應 C 聚合體成員 <c>application</c>（型別 <c>NNApplicationAPI</c>）。</summary>
 	public NNApplicationApi Application;
+	/// <summary>對應 C 聚合體成員 <c>window</c>（型別 <c>NNWindowAPI</c>）。</summary>
+	public NNWindowApi Window;
+	/// <summary>對應 C 聚合體末尾成員 <c>vfs</c>（型別 <c>NNVfsAPI</c>）。</summary>
+	public NNVfsApi Vfs;
 }

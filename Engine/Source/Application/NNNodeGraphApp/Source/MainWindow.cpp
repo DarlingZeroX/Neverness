@@ -11,7 +11,7 @@
 
 #include "MainWindow.h"
 #include <NNRuntimeImGui/IncludeImGui.h>
-#include <NNEditorFramework/Include/EditorCore/Localization.h>
+#include <NNEditorFrameworkLegacy/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor
 {

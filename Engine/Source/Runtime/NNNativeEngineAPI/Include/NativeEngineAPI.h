@@ -5,6 +5,7 @@
  * @brief NNNativeEngineAPI 模組總包含檔（Engine Runtime ABI）。
  */
 
+#include "ApplicationAPI.h"
 #include "AsyncWaitAPI.h"
 #include "AudioAPI.h"
 #include "AssetAPI.h"
@@ -16,3 +17,6 @@
 #include "SceneAPI.h"
 #include "TimingAPI.h"
 #include "UIAPI.h"
+#include "WindowAPI.h"
+#include "VfsAPI.h"
+#include "WindowTypes.h"

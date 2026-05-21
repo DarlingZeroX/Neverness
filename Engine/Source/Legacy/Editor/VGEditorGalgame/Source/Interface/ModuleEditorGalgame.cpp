@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -14,9 +14,9 @@
 #include "SequenceEditor.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
-#include "NNEditorFramework/Interface/ComponentDrawerRegistry.h"
-#include "NNEditorFramework/Include/EditorCore/AssetWatcher.h"
-#include "NNEditorFramework/Interface/AssetEditor.h"
+#include "NNEditorFrameworkLegacy/Interface/ComponentDrawerRegistry.h"
+#include "NNEditorFrameworkLegacy/Include/EditorCore/AssetWatcher.h"
+#include "NNEditorFrameworkLegacy/Interface/AssetEditor.h"
 #include "VGGalgame/Include/GalGameEngine.h"
 #include "VGGalgameCore/Include/GalGameEngineAccess.h"
 #include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"

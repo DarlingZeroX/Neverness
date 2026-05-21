@@ -1,7 +1,7 @@
-using Neverness.Managed.Engine;
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Interop;
 
-namespace Neverness.Managed.Assets;
+namespace Neverness.Runtime.Assets;
 
 /// <summary>
 /// 資產依賴關係追蹤；經 Native AssetRegistry 或託管側快取查詢。

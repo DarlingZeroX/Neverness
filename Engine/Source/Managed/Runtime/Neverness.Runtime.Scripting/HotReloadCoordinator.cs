@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Neverness.Managed.Scripting;
+namespace Neverness.Runtime.Scripting;
 
 /// <summary>
 /// 熱重載協調器：卸載可收集 ALC 並以新程序集路徑重新載入。

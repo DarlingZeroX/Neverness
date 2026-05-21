@@ -1,21 +1,19 @@
-using Neverness.Managed.Engine;
-using Neverness.Managed.Serialization;
-using SceneType = Neverness.Managed.Scene.Scene;
+using Neverness.Editor.Framework.Serialization;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Scene;
+using SceneType = Neverness.Runtime.Scene.Scene;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
-/// <summary>场景 JSON 往返与 DTO 验证测试。</summary>
+/// <summary>场景 JSON 往返与 DTO 验证测试（Editor 序列化路径）。</summary>
 public sealed class SceneRoundTripTests
 {
 	[Fact]
-	public void ValidateRoundTripDocument_PreservesDisplayName()
+	public void CaptureObject_PreservesDisplayName()
 	{
-		var entity = new Neverness.Managed.Scene.SceneEntity(new NNEntityHandle(1), "RoundTripEntity");
-		var scene = new SceneType("TestScene");
-		scene.AddEntity(entity);
-
-		var json = scene.ToJson();
-		Assert.True(scene.ValidateRoundTripDocument(json, "RoundTripEntity"));
+		var entity = new SceneEntity(new NNEntityHandle(1), "RoundTripEntity");
+		var entry = SceneSerializer.CaptureObject(entity.DisplayName, entity);
+		Assert.Equal("RoundTripEntity", entry.Properties[nameof(SceneEntity.DisplayName)].GetString());
 	}
 
 	[Fact]
@@ -27,10 +25,17 @@ public sealed class SceneRoundTripTests
 	}
 
 	[Fact]
-	public void RestoreFromDocument_PreservesName()
+	public void SceneDocument_RoundTrip_PreservesEntityDisplayName()
 	{
-		var doc = new SceneSerializer.SceneDocument { Name = "Restored" };
-		var scene = SceneType.RestoreFromDocument(doc);
-		Assert.Equal("Restored", scene.Name);
+		var entity = new SceneEntity(new NNEntityHandle(1), "RoundTripEntity");
+		var doc = new SceneSerializer.SceneDocument { Name = "TestScene" };
+		doc.Entities.Add(SceneSerializer.CaptureObject(entity.DisplayName, entity));
+
+		var json = SceneSerializer.Serialize(doc);
+		var restored = SceneSerializer.Deserialize(json);
+		Assert.NotNull(restored);
+		Assert.Equal("TestScene", restored!.Name);
+		Assert.Single(restored.Entities);
+		Assert.Equal("RoundTripEntity", restored.Entities[0].Properties[nameof(SceneEntity.DisplayName)].GetString());
 	}
 }

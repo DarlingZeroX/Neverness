@@ -1,9 +1,9 @@
 // Neverness.Runtime.Bootstrap — 有序安装 Interop 与子系统（禁止 DllImport；仅函数表）。
 
-using Neverness.Managed.Interop;
-using Neverness.Managed.RuntimeLoop;
+using Neverness.Runtime.Interop;
+using Neverness.Runtime.RuntimeLoop;
 
-namespace Neverness.Managed.Bootstrap;
+namespace Neverness.Runtime.Bootstrap;
 
 /// <summary>
 /// 托管 Runtime 初始化器：安装 Native API 表、注册默认子系统并调用 <see cref="RuntimeLoop.InitializeRegistered"/>。
@@ -16,7 +16,7 @@ public static class RuntimeInitializer
 	public static bool IsInitialized => s_initialized;
 
 	/// <summary>供 <see cref="RuntimeMainLoop"/> 使用的运行时调度器实例。</summary>
-	internal static Neverness.Managed.RuntimeLoop.RuntimeLoop? Loop { get; private set; }
+	internal static RuntimeLoop.RuntimeLoop? Loop { get; private set; }
 
 	/// <summary>
 	/// 从 Native 表指针安装 Interop 并初始化已注册子系统。
@@ -34,7 +34,7 @@ public static class RuntimeInitializer
 
 		EngineNativeApiBootstrap.InstallFromNativeApiTable(nativeApiTable);
 
-		Loop ??= new Neverness.Managed.RuntimeLoop.RuntimeLoop();
+		Loop ??= new RuntimeLoop.RuntimeLoop();
 		RegisterDefaultSubsystems(Loop);
 		Loop.InitializeRegistered();
 
@@ -46,7 +46,7 @@ public static class RuntimeInitializer
 	/// <summary>
 	/// 注册首包占位子系统；Gameplay / Scene 逻辑子系统在 Phase 6 由上层模块扩展。
 	/// </summary>
-	public static void RegisterDefaultSubsystems(Neverness.Managed.RuntimeLoop.RuntimeLoop loop)
+	public static void RegisterDefaultSubsystems(RuntimeLoop.RuntimeLoop loop)
 	{
 		ArgumentNullException.ThrowIfNull(loop);
 		// 首包无默认子系统；产品层通过 Bootstrap 扩展点注册。

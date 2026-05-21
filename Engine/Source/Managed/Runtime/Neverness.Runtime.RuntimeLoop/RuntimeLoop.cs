@@ -1,6 +1,6 @@
 // Neverness.Runtime.RuntimeLoop — 托管 Kernel 主循环：组合帧调度、子系统调度与主线程队列。
 
-namespace Neverness.Managed.RuntimeLoop;
+namespace Neverness.Runtime.RuntimeLoop;
 
 /// <summary>
 /// 托管 Runtime 主循环；管线顺序与 Native <c>RuntimeScheduler</c> 一致：

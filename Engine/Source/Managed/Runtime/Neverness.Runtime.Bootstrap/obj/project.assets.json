@@ -2,22 +2,9 @@
   "version": 4,
   "targets": {
     "net10.0": {
-      "Neverness.Runtime.Core/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "compile": {
-          "bin/placeholder/Neverness.Runtime.Core.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Runtime.Core.dll": {}
-        }
-      },
       "Neverness.Runtime.Engine/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "Neverness.Runtime.Core": "1.0.0"
-        },
         "compile": {
           "bin/placeholder/Neverness.Runtime.Engine.dll": {}
         },
@@ -29,7 +16,6 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "Neverness.Runtime.Core": "1.0.0",
           "Neverness.Runtime.Engine": "1.0.0"
         },
         "compile": {
@@ -52,11 +38,6 @@
     }
   },
   "libraries": {
-    "Neverness.Runtime.Core/1.0.0": {
-      "type": "project",
-      "path": "../Neverness.Runtime.Core/Neverness.Runtime.Core.csproj",
-      "msbuildProject": "../Neverness.Runtime.Core/Neverness.Runtime.Core.csproj"
-    },
     "Neverness.Runtime.Engine/1.0.0": {
       "type": "project",
       "path": "../Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj",
@@ -85,11 +66,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\Neverness.Runtime.Bootstrap.csproj",
+      "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\Neverness.Runtime.Bootstrap.csproj",
       "projectName": "Neverness.Runtime.Bootstrap",
-      "projectPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\Neverness.Runtime.Bootstrap.csproj",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\Neverness.Runtime.Bootstrap.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\obj\\",
+      "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -107,11 +88,11 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Interop\\Neverness.Runtime.Interop.csproj": {
-              "projectPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Interop\\Neverness.Runtime.Interop.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Interop\\Neverness.Runtime.Interop.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Interop\\Neverness.Runtime.Interop.csproj"
             },
-            "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {
-              "projectPath": "e:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj"
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.RuntimeLoop\\Neverness.Runtime.RuntimeLoop.csproj"
             }
           }
         }

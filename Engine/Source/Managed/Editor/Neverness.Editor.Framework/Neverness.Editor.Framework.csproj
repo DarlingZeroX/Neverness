@@ -8,26 +8,36 @@
 
 		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
 		<DebugType>portable</DebugType>
+		<RootNamespace>Neverness.Editor.Framework</RootNamespace>
 
-		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-		<OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-
-		<!-- 强制独立 Intermediate -->
-		<IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Editor.Framework\$(Configuration)\</IntermediateOutputPath>
-
+		<!-- ========================= -->
+		<!--  关闭 pack（开发阶段） -->
+		<!-- ========================= -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 
-		<!-- 关键 -->
-		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-
+		<!-- ========================= -->
+		<!--  输出优化 -->
+		<!-- ========================= -->
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<RollForward>LatestMinor</RollForward>
-		<RootNamespace>VisionGal.Managed.Editor</RootNamespace>
+		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+
+		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+
+		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+		<!-- 允许并行（反而更快） -->
+		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Object\Neverness.Runtime.Object.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
+		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Panel\" />
 	</ItemGroup>
 </Project>

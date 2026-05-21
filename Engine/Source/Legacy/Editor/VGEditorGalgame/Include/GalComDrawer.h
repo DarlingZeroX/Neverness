@@ -13,7 +13,7 @@
 //#include "VGEditorComponent/Interface.h"
 #include <VGGalgameCore/Include/Components.h>
 #include <NNEngineLegacy/Include/Scene/Components.h>
-#include <NNEditorFramework/Interface/IComponentDrawer.h>
+#include <NNEditorFrameworkLegacy/Interface/IComponentDrawer.h>
 
 namespace VisionGal::Editor
 {

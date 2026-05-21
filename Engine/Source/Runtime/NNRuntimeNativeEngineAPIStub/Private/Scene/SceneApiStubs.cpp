@@ -136,6 +136,30 @@ int NN_ENGINE_ABI_STDCALL stub_scene_getEntityName(NNEntityHandle entity, char* 
 	outUtf8[0] = '\0';
 	return 0;
 }
+
+std::size_t NN_ENGINE_ABI_STDCALL stub_scene_serializeScene(
+	const char* sceneNameUtf8,
+	void* outBlob,
+	std::size_t outCapacity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)sceneNameUtf8;
+	(void)outBlob;
+	(void)outCapacity;
+	return 0u;
+}
+
+int NN_ENGINE_ABI_STDCALL stub_scene_deserializeScene(
+	const void* blob,
+	std::size_t blobSize,
+	const char* sceneNameUtf8)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)blob;
+	(void)blobSize;
+	(void)sceneNameUtf8;
+	return 0;
+}
 } // namespace
 
 extern "C" void NNBuildSceneApiStubs(NNSceneAPI* api)
@@ -159,4 +183,6 @@ extern "C" void NNBuildSceneApiStubs(NNSceneAPI* api)
 	api->setTransform = &stub_scene_setTransform;
 	api->setEntityName = &stub_scene_setEntityName;
 	api->getEntityName = &stub_scene_getEntityName;
+	api->serializeScene = &stub_scene_serializeScene;
+	api->deserializeScene = &stub_scene_deserializeScene;
 }

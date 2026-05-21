@@ -10,10 +10,7 @@
 
     <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-
-    <!-- 直接写死项目名，强制生效，绕过变量解析bug -->
     <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\NevernessRuntimeManaged-Foundation.Tests\$(Configuration)\</IntermediateOutputPath>
-
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
@@ -27,13 +24,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Assets\Neverness.Runtime.Assets.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Object\Neverness.Runtime.Object.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Reflection\Neverness.Runtime.Reflection.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Bootstrap\Neverness.Runtime.Bootstrap.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Serialization\Neverness.Runtime.Serialization.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Gameplay\Neverness.Runtime.Gameplay.csproj" />
+    <ProjectReference Include="..\..\Editor\Neverness.Editor.Serialization\Neverness.Editor.Serialization.csproj" />
+    <ProjectReference Include="..\..\Editor\Neverness.Editor.Reflection\Neverness.Editor.Reflection.csproj" />
   </ItemGroup>
 </Project>

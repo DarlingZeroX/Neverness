@@ -11,9 +11,9 @@
 
 
 #pragma once
-#include <NNRuntimeCore/Include/Core/Window.h>
+#include <NNRuntimeApplication/Include/Core/Window.h>
 #include <NNEngineLegacy/Include/Game/GameEngine.h>
-#include <NNEngineLegacy/Include/Engine/ImGuiLayer.h>
+#include <NNRuntimeApplication/Include/Engine/ImGuiLayer.h>
 #include <NNRuntimeCore/Interface/EngineInterface.h>
 
 namespace VisionGal::Editor

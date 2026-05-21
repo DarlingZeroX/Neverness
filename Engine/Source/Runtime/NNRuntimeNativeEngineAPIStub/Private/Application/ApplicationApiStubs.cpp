@@ -17,12 +17,6 @@ bool NN_ENGINE_ABI_STDCALL stub_application_initialize(void)
 	return false;
 }
 
-bool NN_ENGINE_ABI_STDCALL stub_application_openWindow(const char* /*title*/, int /*width*/, int /*height*/)
-{
-	NN::StubRuntime::BumpInvokeCount();
-	return false;
-}
-
 bool NN_ENGINE_ABI_STDCALL stub_application_pumpEvents(void)
 {
 	NN::StubRuntime::BumpInvokeCount();
@@ -30,6 +24,16 @@ bool NN_ENGINE_ABI_STDCALL stub_application_pumpEvents(void)
 }
 
 void NN_ENGINE_ABI_STDCALL stub_application_shutdown(void)
+{
+	NN::StubRuntime::BumpInvokeCount();
+}
+
+void NN_ENGINE_ABI_STDCALL stub_application_beginFrame(void)
+{
+	NN::StubRuntime::BumpInvokeCount();
+}
+
+void NN_ENGINE_ABI_STDCALL stub_application_endFrame(void)
 {
 	NN::StubRuntime::BumpInvokeCount();
 }
@@ -44,7 +48,8 @@ extern "C" void NNBuildApplicationApiStubs(NNApplicationAPI* api)
 
 	api->size = static_cast<std::uint32_t>(sizeof(NNApplicationAPI));
 	api->initialize = &stub_application_initialize;
-	api->openWindow = &stub_application_openWindow;
 	api->pumpEvents = &stub_application_pumpEvents;
 	api->shutdown = &stub_application_shutdown;
+	api->beginFrame = &stub_application_beginFrame;
+	api->endFrame = &stub_application_endFrame;
 }

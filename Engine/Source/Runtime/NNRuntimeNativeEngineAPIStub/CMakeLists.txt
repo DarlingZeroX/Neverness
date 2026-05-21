@@ -32,6 +32,8 @@ target_sources(NevernessRuntime-NativeEngineAPIStub
 		Private/AssetRegistry/AssetRegistryApiStubs.cpp
 		Private/Entity/EntityApiStubs.cpp
 		Private/Application/ApplicationApiStubs.cpp
+		Private/Window/WindowApiStubs.cpp
+		Private/Vfs/VfsApiStubs.cpp
 		Private/Timing/TimingApiStubs.cpp
 		Private/Async/AsyncWaitApiStubs.cpp
 )

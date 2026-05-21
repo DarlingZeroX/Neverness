@@ -38,6 +38,8 @@ target_sources(NevernessRuntime-VFS
     Include/VFS/ZipFileSystem.h
     Include/VFS/zip_file.h
     Include/VFSService.h
+    Include/VfsApiExport.h
+    ABI/VfsRuntimeApi.cpp
     Source/FileInfo.cpp
     Source/StringUtils.cpp
     Source/VFSService.cpp
@@ -49,5 +51,6 @@ target_include_directories(NevernessRuntime-VFS PUBLIC ${PROJECT_SOURCE_DIR}/Eng
 target_include_directories(NevernessRuntime-VFS PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 target_include_directories(NevernessRuntime-VFS PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 
+target_link_libraries(NevernessRuntime-VFS PUBLIC NevernessRuntime-NativeEngineAPI)
 target_link_libraries(NevernessRuntime-VFS PRIVATE NevernessCore-Core)
 target_link_libraries(NevernessRuntime-VFS PRIVATE NevernessCore-FileSystem)

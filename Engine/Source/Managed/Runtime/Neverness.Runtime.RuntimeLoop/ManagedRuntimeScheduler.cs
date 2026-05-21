@@ -1,6 +1,6 @@
 using System;
 
-namespace Neverness.Managed.RuntimeLoop;
+namespace Neverness.Runtime.RuntimeLoop;
 
 /// <summary>
 /// <b>已弃用</b>：请使用 <see cref="RuntimeLoop"/>。本类为兼容测试保留的薄包装。

@@ -29,6 +29,9 @@ https://github.com/cimgui/cimgui/tree/207fca2d361179c349f3c9d1893b8274f4bbfebf
 #endif
 
 #endif
+
+#define CIMGUI_VARGS0
+
 ```
 
 3. cimgui.h包含cimconfig.h后，修改CIMGUI_API定义

@@ -1,6 +1,6 @@
-using Neverness.Managed.Interop;
+using Neverness.Runtime.Interop;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
 /// <summary>
 /// Interop Stub 演练（原 <c>Entry.BootstrapNativeApi</c> 内 <see cref="EngineNativeApiBootstrap.ExerciseStubInteropPath"/>）。

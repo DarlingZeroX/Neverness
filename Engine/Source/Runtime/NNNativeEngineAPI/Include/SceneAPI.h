@@ -45,6 +45,18 @@ typedef void(NN_ENGINE_ABI_STDCALL* NNSceneSetTransformFn)(NNEntityHandle entity
 typedef int(NN_ENGINE_ABI_STDCALL* NNSceneSetEntityNameFn)(NNEntityHandle entity, const char* nameUtf8);
 typedef int(NN_ENGINE_ABI_STDCALL* NNSceneGetEntityNameFn)(NNEntityHandle entity, char* outUtf8, std::size_t outCapacity);
 
+/** @brief 将命名场景序列化为二进制 blob；返回写入字节数，0 表示失败或容量不足。 */
+typedef std::size_t(NN_ENGINE_ABI_STDCALL* NNSceneSerializeSceneFn)(
+	const char* sceneNameUtf8,
+	void* outBlob,
+	std::size_t outCapacity);
+
+/** @brief 自二进制 blob 还原场景；非 0 表示成功。 */
+typedef int(NN_ENGINE_ABI_STDCALL* NNSceneDeserializeSceneFn)(
+	const void* blob,
+	std::size_t blobSize,
+	const char* sceneNameUtf8);
+
 typedef struct NNSceneAPI
 {
 	NNSceneLoadSceneFn loadScene;
@@ -62,6 +74,8 @@ typedef struct NNSceneAPI
 	NNSceneSetTransformFn setTransform;
 	NNSceneSetEntityNameFn setEntityName;
 	NNSceneGetEntityNameFn getEntityName;
+	NNSceneSerializeSceneFn serializeScene;
+	NNSceneDeserializeSceneFn deserializeScene;
 } NNSceneAPI;
 
 #ifdef __cplusplus

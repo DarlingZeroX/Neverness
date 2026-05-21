@@ -15,7 +15,7 @@
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimePak/Include/VFSMount.h"
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
-#include <NNEditorFramework/Include/EditorCore/EditorCore.h>
+#include <NNEditorFrameworkLegacy/Include/EditorCore/EditorCore.h>
 using namespace NN::Runtime;
 /// @brief 表示启动器虚拟文件系统（VFS）中各类资源和设置的路径。
 struct LauncherVFSPath

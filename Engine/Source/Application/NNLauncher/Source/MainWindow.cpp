@@ -16,7 +16,7 @@
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
-#include <NNEditorFramework/Include/EditorCore/Localization.h>
+#include <NNEditorFrameworkLegacy/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor
 {	using namespace NN::Editor;

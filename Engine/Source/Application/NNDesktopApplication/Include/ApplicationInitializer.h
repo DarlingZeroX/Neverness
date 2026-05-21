@@ -11,7 +11,7 @@
 
 #pragma once
 #include <string>
-#include <NNEditorFramework/Include/EditorCore/EditorCore.h>
+#include <NNEditorFrameworkLegacy/Include/EditorCore/EditorCore.h>
 
 struct VGDesktopApplicationVFSPath
 {

@@ -1,10 +1,10 @@
-﻿#include <cstring>
+#include <cstring>
 
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "ManagedRuntimeServices.h"
 #include "NativeAPI.h"
 
-#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+#if defined(NEVERNESS_USE_ENGINE_RUNTIME_SERVICES) && NEVERNESS_USE_ENGINE_RUNTIME_SERVICES
 #include "NativeEngineRuntimeServices.h"
 #endif
 
@@ -21,7 +21,7 @@ extern "C" void NNNativeApiTable_BuildDefault(NNNativeAPI* outTable)
 	// 預設實作：帶診斷計數，便於測試斷言 ABI 鏈路。
 	outTable->logInfo = &NNNativeApi_DefaultLogInfo;
 	// Phase 3：掛載行程單例 Engine Service ABI（Stub）；指標生命週期與進程靜態表一致。
-#if defined(VISIONGAL_USE_ENGINE_RUNTIME_SERVICES) && VISIONGAL_USE_ENGINE_RUNTIME_SERVICES
+#if defined(NEVERNESS_USE_ENGINE_RUNTIME_SERVICES) && NEVERNESS_USE_ENGINE_RUNTIME_SERVICES
 	outTable->engineServices = NNNativeEngineApi_GetRuntimeTable();
 #else
 	outTable->engineServices = NNNativeEngineApi_GetDefaultTable();

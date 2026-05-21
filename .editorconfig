@@ -1,6 +1,14 @@
 # Visual Studio 生成了具有 C++ 设置的 .editorconfig 文件。
 root = true
 
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+[*.sln]
+end_of_line = crlf
+
 [*.{c++,cc,cl,cpp,cppm,cu,cuh,cxx,glsl,h,h++,hh,hpp,hxx,inl,ipp,ixx,shdbg,tlh,tli}]
 
 # Visual C++ 代码样式设置

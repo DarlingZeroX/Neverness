@@ -1,21 +1,21 @@
-using Neverness.Managed.Engine;
-using Neverness.Managed.Interop;
-using Neverness.Managed.Scene;
-using Neverness.Managed.Serialization;
-using SceneType = Neverness.Managed.Scene.Scene;
+using Neverness.Editor.Framework.Serialization;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Interop;
+using Neverness.Runtime.Scene;
+using SceneType = Neverness.Runtime.Scene.Scene;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
-/// <summary>场景实体再水合与属性套用测试。</summary>
+/// <summary>场景实体再水合与属性套用测试（Editor 序列化路径）。</summary>
 public sealed class SceneRehydrationTests
 {
 	[Fact]
 	public void ApplyEntryProperties_RestoresDisplayName()
 	{
-		var source = new Neverness.Managed.Scene.SceneEntity(new NNEntityHandle(1), "SourceName");
+		var source = new SceneEntity(new NNEntityHandle(1), "SourceName");
 		var entry = SceneSerializer.CaptureObject("Entity", source);
 
-		var target = new Neverness.Managed.Scene.SceneEntity(new NNEntityHandle(2), "Placeholder");
+		var target = new SceneEntity(new NNEntityHandle(2), "Placeholder");
 		SceneSerializer.ApplyEntryProperties(target, entry);
 
 		Assert.Equal("SourceName", target.DisplayName);
@@ -35,13 +35,15 @@ public sealed class SceneRehydrationTests
 			return;
 		}
 
-		var scene = new SceneType("RehydrateScene");
+		var scene = new Scene.Scene("RehydrateScene");
 		scene.AddEntity(entity);
-		var json = scene.ToJson();
+		var doc = new SceneSerializer.SceneDocument { Name = scene.Name };
+		doc.Entities.Add(SceneSerializer.CaptureObject(entity.DisplayName, entity));
+		var json = SceneSerializer.Serialize(doc);
 
-		var restored = SceneType.RehydrateFromJson(json);
+		var restored = SceneRehydrator.RestoreFromJsonWithEntities(json);
 		Assert.NotNull(restored);
-		Assert.Equal("RehydrateScene", restored.Name);
+		Assert.Equal("RehydrateScene", restored!.Name);
 		Assert.Single(restored.Entities);
 		Assert.Equal("RehydratedDisplay", restored.Entities[0].DisplayName);
 		Assert.True(restored.Entities[0].IsAlive);

@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>NevernessEditor</AssemblyName>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
+		<DebugType>portable</DebugType>
+
+		<!-- ========================= -->
+		<!--  关闭 pack（开发阶段） -->
+		<!-- ========================= -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+		<!-- ========================= -->
+		<!--  输出优化 -->
+		<!-- ========================= -->
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+
+		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+
+		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+		<!-- 允许并行（反而更快） -->
+		<BuildInParallel>true</BuildInParallel>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Bootstrap\Neverness.Runtime.Bootstrap.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
+		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
+	</ItemGroup>
+
+	<!-- Native 运行时 DLL：CMake 产物目录（与 Engine/CMakeLists NN_OUTPUT_ROOT 对齐） -->
+	<PropertyGroup>
+		<NevernessNativeBinDir Condition="'$(NevernessNativeBinDir)' == '' and Exists('$(SolutionDir)Build\bin\$(Configuration)\NevernessRuntime-Managed.dll')">$(SolutionDir)Build\bin\$(Configuration)\</NevernessNativeBinDir>
+		<NevernessNativeBinDir Condition="'$(NevernessNativeBinDir)' == ''">$(SolutionDir)Engine\Build\bin\$(Configuration)\</NevernessNativeBinDir>
+		<NevernessManagedDll>$(NevernessNativeBinDir)NevernessRuntime-Managed.dll</NevernessManagedDll>
+		<!-- 可通过 MSBuild 属性覆盖，例如 /p:NevernessSdl3DllDir=C:\vcpkg\installed\x64-windows\bin -->
+		<NevernessSdl3Dll Condition="'$(NevernessSdl3Dll)' == '' and Exists('$(NevernessNativeBinDir)SDL3.dll')">$(NevernessNativeBinDir)SDL3.dll</NevernessSdl3Dll>
+	</PropertyGroup>
+
+	<Target Name="CopyNativeRuntimeDependencies" AfterTargets="Build">
+		<Copy SourceFiles="$(NevernessManagedDll)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" Condition="Exists('$(NevernessManagedDll)')" />
+		<Copy SourceFiles="$(NevernessSdl3Dll)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" Condition="'$(NevernessSdl3Dll)' != '' and Exists('$(NevernessSdl3Dll)')" />
+		<Warning Text="未找到 $(NevernessManagedDll)。请先 CMake 构建 NevernessRuntime-Managed。" Condition="!Exists('$(NevernessManagedDll)')" />
+	</Target>
+</Project>

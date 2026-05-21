@@ -39,6 +39,7 @@ target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRE
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeApplication/Include
+	${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeVFS/Include
 )
 
 target_link_libraries(NevernessRuntime-EngineServices PUBLIC
@@ -47,6 +48,7 @@ target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-Engine
 	NevernessRuntime-ManagedBridge
 	NevernessRuntime-Application
+	NevernessRuntime-VFS
 )
 
 add_library(NNEngineRuntimeServices ALIAS NevernessRuntime-EngineServices)

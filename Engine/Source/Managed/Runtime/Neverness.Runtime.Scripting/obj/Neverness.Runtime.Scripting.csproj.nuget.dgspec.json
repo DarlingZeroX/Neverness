@@ -4,14 +4,14 @@
     "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scripting\\Neverness.Runtime.Scripting.csproj": {}
   },
   "projects": {
-    "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj": {
+    "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj",
-        "projectName": "Neverness.Runtime.Core",
-        "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj",
+        "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj",
+        "projectName": "Neverness.Runtime.Engine",
+        "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\obj\\",
+        "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -366,8 +366,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj": {
-                "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Core\\Neverness.Runtime.Core.csproj"
+              "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj": {
+                "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj"
               }
             }
           }

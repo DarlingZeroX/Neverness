@@ -1,6 +1,6 @@
 // Neverness.Runtime.Bootstrap — 托管 Runtime 启动上下文（与 Native 外循环 / 纯托管 Exe 双模式对齐）。
 
-namespace Neverness.Managed.Bootstrap;
+namespace Neverness.Runtime.Bootstrap;
 
 /// <summary>
 /// 描述托管 Runtime 的启动参数；由 Native <c>Entry.Bootstrap</c> 或 <see cref="RuntimeBootstrap.Start"/> 传入。

@@ -1,6 +1,6 @@
-﻿using Neverness.Managed.Assets;
+﻿using Neverness.Runtime.Assets;
 
-namespace Neverness.Managed.Foundation.Tests;
+namespace Neverness.Runtime.Foundation.Tests;
 
 /// <summary>資產 GUID 與匯入管線單元測試（無 CoreCLR Host）。</summary>
 public sealed class GuidAndImportTests

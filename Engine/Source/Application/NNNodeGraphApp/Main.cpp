@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -13,7 +13,7 @@
 #include <NNRuntimeCore/Include/Core/Core.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
-#include <NNEditorFramework/Include/EditorCore/EditorCore.h>
+#include <NNEditorFrameworkLegacy/Include/EditorCore/EditorCore.h>
 
 /// @brief 表示程序虚拟文件系统（VFS）中各类资源和设置的路径。
 struct ApplicationVFSPath

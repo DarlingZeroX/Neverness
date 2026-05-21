@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -14,7 +14,7 @@
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNRuntimeImGui/Include/ImGuiLayer/SDL3Decorator.h>
 #include <NNRuntimeImGui/Include/Imgui/imgui_impl_opengl3.h>
-#include <NNEditorFramework/Framework.h>
+#include <NNEditorFrameworkLegacy/Framework.h>
 #include <NNRuntimeRmlui/Interface/UISystem.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNEngineLegacy/Include/Engine/Manager.h"
