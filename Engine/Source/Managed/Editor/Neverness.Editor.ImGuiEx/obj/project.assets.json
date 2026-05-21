@@ -24,84 +24,6 @@
         "runtime": {
           "bin/placeholder/Neverness.Editor.ImGui.dll": {}
         }
-      },
-      "Neverness.Editor.ImGuiEx/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "Neverness.Editor.ImGui": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Neverness.Editor.ImGuiEx.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Editor.ImGuiEx.dll": {}
-        }
-      },
-      "Neverness.Editor.ProjectSystem/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "Neverness.Runtime.Application": "1.0.0",
-          "Neverness.Runtime.VFS": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Neverness.Editor.ProjectSystem.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Editor.ProjectSystem.dll": {}
-        }
-      },
-      "Neverness.Runtime.Application/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "Neverness.Runtime.Engine": "1.0.0",
-          "Neverness.Runtime.Interop": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Neverness.Runtime.Application.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Runtime.Application.dll": {}
-        }
-      },
-      "Neverness.Runtime.Engine/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "compile": {
-          "bin/placeholder/Neverness.Runtime.Engine.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Runtime.Engine.dll": {}
-        }
-      },
-      "Neverness.Runtime.Interop/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "Neverness.Runtime.Engine": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Neverness.Runtime.Interop.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Runtime.Interop.dll": {}
-        }
-      },
-      "Neverness.Runtime.VFS/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "Neverness.Runtime.Engine": "1.0.0",
-          "Neverness.Runtime.Interop": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Neverness.Runtime.VFS.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Runtime.VFS.dll": {}
-        }
       }
     }
   },
@@ -115,44 +37,11 @@
       "type": "project",
       "path": "../ThirdParty/Neverness.Editor.ImGui/Neverness.Editor.ImGui.csproj",
       "msbuildProject": "../ThirdParty/Neverness.Editor.ImGui/Neverness.Editor.ImGui.csproj"
-    },
-    "Neverness.Editor.ImGuiEx/1.0.0": {
-      "type": "project",
-      "path": "../Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj",
-      "msbuildProject": "../Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj"
-    },
-    "Neverness.Editor.ProjectSystem/1.0.0": {
-      "type": "project",
-      "path": "../Neverness.Editor.ProjectSystem/Neverness.Editor.ProjectSystem.csproj",
-      "msbuildProject": "../Neverness.Editor.ProjectSystem/Neverness.Editor.ProjectSystem.csproj"
-    },
-    "Neverness.Runtime.Application/1.0.0": {
-      "type": "project",
-      "path": "../../Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj",
-      "msbuildProject": "../../Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj"
-    },
-    "Neverness.Runtime.Engine/1.0.0": {
-      "type": "project",
-      "path": "../../Runtime/Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj",
-      "msbuildProject": "../../Runtime/Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj"
-    },
-    "Neverness.Runtime.Interop/1.0.0": {
-      "type": "project",
-      "path": "../../Runtime/Neverness.Runtime.Interop/Neverness.Runtime.Interop.csproj",
-      "msbuildProject": "../../Runtime/Neverness.Runtime.Interop/Neverness.Runtime.Interop.csproj"
-    },
-    "Neverness.Runtime.VFS/1.0.0": {
-      "type": "project",
-      "path": "../../Runtime/Neverness.Runtime.VFS/Neverness.Runtime.VFS.csproj",
-      "msbuildProject": "../../Runtime/Neverness.Runtime.VFS/Neverness.Runtime.VFS.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "Neverness.Editor.ImGui >= 1.0.0",
-      "Neverness.Editor.ImGuiEx >= 1.0.0",
-      "Neverness.Editor.ProjectSystem >= 1.0.0",
-      "Neverness.Runtime.Application >= 1.0.0"
+      "Neverness.Editor.ImGui >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -161,11 +50,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj",
-      "projectName": "Neverness.Editor.Framework",
-      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj",
+      "projectUniqueName": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiEx\\Neverness.Editor.ImGuiEx.csproj",
+      "projectName": "Neverness.Editor.ImGuiEx",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiEx\\Neverness.Editor.ImGuiEx.csproj",
       "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-      "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\obj\\",
+      "outputPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiEx\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -183,17 +72,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiEx\\Neverness.Editor.ImGuiEx.csproj": {
-              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiEx\\Neverness.Editor.ImGuiEx.csproj"
-            },
-            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ProjectSystem\\Neverness.Editor.ProjectSystem.csproj": {
-              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ProjectSystem\\Neverness.Editor.ProjectSystem.csproj"
-            },
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
-            },
-            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj": {
-              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj"
             }
           }
         }

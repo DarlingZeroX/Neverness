@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<AssemblyName>Neverness.Editor.Framework</AssemblyName>
+		<AssemblyName>Neverness.Editor.ImGuiEx</AssemblyName>
 		<TargetFramework>net10.0</TargetFramework>
 
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -8,7 +8,7 @@
 
 		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
 		<DebugType>portable</DebugType>
-		<RootNamespace>Neverness.Editor.Framework</RootNamespace>
+		<RootNamespace>Neverness.Editor.ImGuiEx</RootNamespace>
 
 		<!-- ========================= -->
 		<!--  关闭 pack（开发阶段） -->
@@ -33,12 +33,11 @@
 		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
-		<ProjectReference Include="..\Neverness.Editor.ImGuiEx\Neverness.Editor.ImGuiEx.csproj" />
-		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
-		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
+	  <Compile Remove="Panel\**" />
+	  <EmbeddedResource Remove="Panel\**" />
+	  <None Remove="Panel\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Panel\" />
+	  <ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
 	</ItemGroup>
 </Project>

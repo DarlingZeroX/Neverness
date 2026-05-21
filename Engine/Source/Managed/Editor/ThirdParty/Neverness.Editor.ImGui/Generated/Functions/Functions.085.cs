@@ -2520,7 +2520,7 @@ namespace Hexa.NET.ImGui
 		/// <summary>
 		/// To be documented.
 		/// </summary>
-		public static void Columns(int count, bool borders)
+		public static void Columns(int count, object id, bool borders)
 		{
 			ColumnsNative(count, (byte*)(default), borders ? (byte)1 : (byte)0);
 		}

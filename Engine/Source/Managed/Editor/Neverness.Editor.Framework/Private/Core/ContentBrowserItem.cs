@@ -4,7 +4,7 @@ public abstract class ContentItem
 {
     public bool Selected { get; set; }
     public bool Renaming { get; set; }
-    public string Name { get; set; } = string.Empty; 
+    public string Name = string.Empty; 
     public int UIFlags { get; set; }
 
     public string AbsolutePath { get; set; } = string.Empty;
