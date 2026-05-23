@@ -1,59 +1,80 @@
 #pragma once
 
-#include <atomic>
+/**
+ * @file SceneSubsystem.h
+ * @brief 场景子系统：管理 NNRuntimeScene 实例，桥接 C 平面 API。
+ *
+ * 方法签名对齐 NNSceneAPI ABI（layoutVersion = 4）：
+ * - 返回值统一为 NNSceneResult
+ * - Handle 统一为 uint64_t
+ * - 组件操作基于 FNV-1a name hash（componentTypeId）
+ *
+ * 本类不再持有自有 Entity 存储，所有实体操作委托 NNRuntimeScene（entt::registry）。
+ */
+
+#include <cstdint>
+#include <memory>
 #include <mutex>
-#include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "NNNativeEngineAPI/Include/EngineHandles.h"
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
+#include "NNNativeEngineAPI/Include/SceneAPI.h"
+#include "NNNativeEngineAPI/Include/VfsAPI.h"
+
+namespace NN::Runtime::Scene
+{
+	class NNRuntimeScene;  /* 前向声明，避免引入完整头 */
+}
 
 namespace NN::Runtime::engine
 {
-/**
- * @brief 場景子系統：Phase 5 提供最小 **實體層級 / 變換 / 命名** 記憶體模型（未接 VGEngine）。
- */
+/** @brief 场景子系统：管理 NNRuntimeScene 实例的生命周期与 ECS 操作。 */
 class SceneSubsystem final
 {
 public:
-	int LoadScene(const char* sceneNameUtf8) noexcept;
-	NNEntityHandle Spawn(const char* prefabVirtualPathUtf8) noexcept;
-	void Destroy(NNEntityHandle entity) noexcept;
-	NNEntityHandle Find(const char* entityNameUtf8) noexcept;
-	void Activate(NNEntityHandle entity, int active) noexcept;
+	// ── 场景管理 ──
+	NNSceneResult CreateScene(NNSceneHandle* outScene) noexcept;
+	NNSceneResult DestroyScene(NNSceneHandle scene) noexcept;
+	NNSceneResult TickSystems(NNSceneHandle scene, float deltaTime) noexcept;
 
-	int UnloadScene(const char* sceneNameUtf8) noexcept;
-	int GetActiveSceneName(char* outUtf8, std::size_t outCapacity) const noexcept;
-	void SetParent(NNEntityHandle child, NNEntityHandle parent) noexcept;
-	NNEntityHandle GetParent(NNEntityHandle entity) const noexcept;
-	std::uint32_t GetChildCount(NNEntityHandle entity) const noexcept;
-	NNEntityHandle GetChildAt(NNEntityHandle entity, std::uint32_t index) const noexcept;
-	void GetTransform(NNEntityHandle entity, NNTransform3* outTransform) const noexcept;
-	void SetTransform(NNEntityHandle entity, const NNTransform3* transform) noexcept;
-	int SetEntityName(NNEntityHandle entity, const char* nameUtf8) noexcept;
-	int GetEntityName(NNEntityHandle entity, char* outUtf8, std::size_t outCapacity) const noexcept;
+	// ── 实体 CRUD ──
+	NNSceneResult CreateEntity(NNSceneHandle scene, NNEntityHandle* outEntity) noexcept;
+	NNSceneResult DestroyEntity(NNSceneHandle scene, NNEntityHandle entity) noexcept;
+
+	// ── 组件操作（基于 FNV-1a name hash）──
+	NNSceneResult AddComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId) noexcept;
+	NNSceneResult RemoveComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId) noexcept;
+	NNSceneResult HasComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId, int32_t* outHas) noexcept;
+	NNSceneResult GetComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId, void* outData, uint32_t dataSize) noexcept;
+	NNSceneResult SetComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId, const void* data, uint32_t dataSize) noexcept;
+
+	// ── 层级 ──
+	NNSceneResult SetParent(NNSceneHandle scene, NNEntityHandle child, NNEntityHandle parent) noexcept;
+	NNSceneResult GetParent(NNSceneHandle scene, NNEntityHandle entity, NNEntityHandle* outParent) noexcept;
+
+	// ── 序列化（经 VFS 路径）──
+	NNSceneResult SerializeScene(NNSceneHandle scene, const char* vfsPath) noexcept;
+	NNSceneResult DeserializeScene(NNSceneHandle* outScene, const char* vfsPath) noexcept;
+
+	// ── 批量查询（layoutVersion = 6）──
+	NNSceneResult QueryEntities(NNSceneHandle scene, uint64_t componentTypeId,
+		NNEntityHandle* outEntities, uint32_t maxCount, uint32_t* outCount) noexcept;
+	NNSceneResult QueryComponents(NNSceneHandle scene, uint64_t componentTypeId,
+		const NNEntityHandle* entities, uint32_t entityCount,
+		void* outData, uint32_t componentSize) noexcept;
+	NNSceneResult QueryCount2(NNSceneHandle scene, uint64_t typeId1, uint64_t typeId2,
+		uint32_t* outCount) noexcept;
+
+	/** @brief 设置 VFS API 函数指针（由 EngineServices 在构建 API 表后注入）。 */
+	void SetVfsApi(const NNVfsAPI* vfs) noexcept;
 
 private:
-	struct Entity
-	{
-		NNEntityHandle id{0};
-		std::string name{};
-		NNEntityHandle parent{0};
-		std::vector<NNEntityHandle> children{};
-		NNTransform3 transform{};
-		int active{1};
-		bool alive{true};
-	};
-
-	static NNTransform3 DefaultTransform() noexcept;
-
-	void RemoveFromParent(NNEntityHandle child) noexcept;
-	NNEntityHandle AllocateEntity() noexcept;
+	/** @brief 根据句柄查找 NNRuntimeScene 实例。 */
+	NN::Runtime::Scene::NNRuntimeScene* FindScene(NNSceneHandle handle) noexcept;
 
 	mutable std::mutex mutex_{};
-	std::string activeScene_{};
-	std::unordered_map<NNEntityHandle, Entity> entities_{};
-	std::atomic<NNEntityHandle> nextEntity_{1};
+	std::unordered_map<NNSceneHandle, std::unique_ptr<NN::Runtime::Scene::NNRuntimeScene>> scenes_{};
+	NNSceneHandle nextHandle_{1};  /* 从 1 开始，0 = Invalid */
+	const NNVfsAPI* vfs_{nullptr}; /* VFS 函数指针（可选；序列化时需要） */
 };
-} // namespace visiongal::engine
+} // namespace NN::Runtime::engine

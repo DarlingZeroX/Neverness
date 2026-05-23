@@ -2,9 +2,7 @@
 set(NNEditor_SOURCES
     Include/EditorInitializer.h
     Include/EngineEditor.h
-    Include/RuntimeKernelEditorLoop.h
     Main.cpp
     Source/EditorInitializer.cpp
     Source/EngineEditor.cpp
-    Source/RuntimeKernelEditorLoop.cpp
 )

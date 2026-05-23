@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "Systems/ISceneSystem.h"
-#include "Systems/NNSceneTickGroup.h"
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../Systems/ISceneSystem.h"
+#include "../Systems/NNSceneTickGroup.h"
+#include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {

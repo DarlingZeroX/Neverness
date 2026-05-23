@@ -79,6 +79,15 @@ int NN_ENGINE_ABI_STDCALL stub_vfs_getAbsolutePath(const char* /*relativePathUtf
 	return 0;
 }
 
+int NN_ENGINE_ABI_STDCALL stub_vfs_writeBufferToFile(
+	const char* /*pathUtf8*/,
+	const std::uint8_t* /*buffer*/,
+	std::uint64_t /*size*/)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	return 0;
+}
+
 } // namespace
 
 extern "C" void NNBuildVfsApiStubs(NNVfsAPI* api)
@@ -96,4 +105,5 @@ extern "C" void NNBuildVfsApiStubs(NNVfsAPI* api)
 	api->getRelativePath = &stub_vfs_getRelativePath;
 	api->rebuildNativeFileSystemFiles = &stub_vfs_rebuildNativeFileSystemFiles;
 	api->getAbsolutePath = &stub_vfs_getAbsolutePath;
+	api->writeBufferToFile = &stub_vfs_writeBufferToFile;
 }

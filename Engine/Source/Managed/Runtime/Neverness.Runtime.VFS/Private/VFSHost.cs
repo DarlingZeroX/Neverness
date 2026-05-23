@@ -185,6 +185,24 @@ internal static unsafe class VFSHost
 		}
 	}
 
+	/// <summary>将二进制缓冲区写入 VFS 路径（覆盖写）。</summary>
+	public static bool WriteBuffer(string path, byte[] buffer)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(path);
+		ArgumentNullException.ThrowIfNull(buffer);
+		if (!TryGetVfsApi(out var api) || api.WriteBufferToFile == null)
+		{
+			return false;
+		}
+
+		var utf8Path = Encoding.UTF8.GetBytes(path + '\0');
+		fixed (byte* pPath = utf8Path)
+		fixed (byte* pData = buffer)
+		{
+			return api.WriteBufferToFile(pPath, pData, (ulong)buffer.Length) != 0;
+		}
+	}
+
 	private static bool TryGetVfsApi(out NNVfsApi api)
 	{
 		api = default;

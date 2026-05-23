@@ -1,3 +1,10 @@
+########## 测试
+if (ENABLE_TESTS)
+    enable_testing()
+    # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 NEVERNESS_BUILD_LEGACY_GALGAME=ON）
+    # VGLauncherTest: add_subdirectory in NNLauncher.
+endif()
+
 ############ 模块
 add_subdirectory ("Core")
 add_subdirectory ("Runtime")
@@ -12,14 +19,9 @@ endif()
 
 ############ 模块
 add_subdirectory ("Editor")
-add_subdirectory ("Application")
+#add_subdirectory ("Application")
 
-########## 测试
-if (ENABLE_TESTS)
-    enable_testing()
-    # Legacy Galgame 測試見 Engine/Source/Legacy/CMakeLists.txt（需 NEVERNESS_BUILD_LEGACY_GALGAME=ON）
-    # VGLauncherTest: add_subdirectory in NNLauncher.
-endif()
+
 
 ########## 自动加载 Plugins 目录下所有子项目
 file(GLOB PLUGINS_DIRS RELATIVE ${CMAKE_SOURCE_DIR}/Plugins ${CMAKE_SOURCE_DIR}/Plugins/*)

@@ -9,9 +9,9 @@
 #include <functional>
 #include <vector>
 
-#include "Reflection/NNComponentTypeId.h"
-#include "Scene/NNEntity.h"
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../Reflection/NNComponentTypeId.h"
+#include "../Scene/NNEntity.h"
+#include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {

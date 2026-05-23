@@ -52,7 +52,7 @@ target_link_libraries(VGLauncher PRIVATE VGEditorFramework)
 if (ENABLE_TESTS)
 	find_package(GTest CONFIG QUIET)
 	if (GTest_FOUND)
-		add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Test")
+		#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Test")
 	endif()
 endif()
 

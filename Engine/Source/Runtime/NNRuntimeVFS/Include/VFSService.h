@@ -37,6 +37,8 @@ namespace NN::Runtime::VFS
 
 		static bool WriteTextToFile(const std::string& path, const std::string& str);
 
+		static bool WriteBufferToFile(const std::string& path, uint8_t* buffer, uint64_t size);
+
 		static bool RebuildNativeFileSystemFiles(const std::string& path);
 
 		static bool MountFileSystem(const std::string& alias, IFileSystemPtr fs);

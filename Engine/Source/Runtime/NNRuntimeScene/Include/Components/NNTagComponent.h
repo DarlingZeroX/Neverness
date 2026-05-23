@@ -2,18 +2,20 @@
 
 /**
  * @file NNTagComponent.h
- * @brief 轻量标签位掩码组件（纯 POD），用于查询过滤与编辑器标记。
+ * @brief 轻量标签组件（纯 POD）：位标志 + 实体名称。
  */
 
 #include <cstdint>
+#include <cstring>
 
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../..//NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {
-	/** @brief 位标志标签；具体语义由游戏/工具层约定。 */
+	/** @brief 标签组件：Flags 位掩码 + 固定大小 Name 缓冲区（POD 兼容）。 */
 	struct NN_RUNTIME_SCENE_API NNTagComponent
 	{
 		std::uint32_t Flags = 0u;
+		char Name[64] = {};  // 实体显示名（UTF-8，零结尾）
 	};
 } // namespace NN::Runtime::Scene

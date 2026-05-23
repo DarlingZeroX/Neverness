@@ -1,66 +1,71 @@
+using System.Runtime.InteropServices;
 using Neverness.Runtime.Engine;
 
 namespace Neverness.Runtime.Scene;
 
 /// <summary>
-/// 场景实体薄门面：持有 Native <see cref="NNEntityHandle"/>，属性经 <see cref="SceneNativeBridge"/> 读写。
+/// 场景实体薄门面：持有 Native <see cref="NNEntityHandle"/> 和所属场景句柄，
+/// 属性经 <see cref="SceneNativeBridge"/> 泛型方法读写 ECS 组件。
 /// </summary>
 public sealed class SceneEntity
 {
-	/// <summary>Native 场景图实体句柄。</summary>
-	public NNEntityHandle Handle { get; private set; }
+    /// <summary>Native ECS 实体句柄。</summary>
+    public NNEntityHandle Handle { get; private set; }
 
-	/// <summary>实体显示名称（写入时同步至 Native）。</summary>
-	public string DisplayName
-	{
-		get => _displayName;
-		set
-		{
-			_displayName = value ?? string.Empty;
-			if (IsAlive)
-			{
-				SceneNativeBridge.SetEntityName(Handle, _displayName);
-			}
-		}
-	}
+    /// <summary>所属 Native 场景句柄（ulong，对齐 uint64）。</summary>
+    public ulong SceneHandle { get; private set; }
 
-	private string _displayName;
+    /// <summary>显示名称（仅作本地缓存，Native 端通过 Tag 组件存储）。</summary>
+    public string DisplayName { get; set; }
 
-	/// <summary>句柄非零时视为可参与场景 API 操作。</summary>
-	public bool IsAlive => SceneNativeBridge.IsEntityAlive(Handle);
+    /// <summary>句柄非零时视为可参与场景 API 操作。</summary>
+    public bool IsAlive => Handle.Value != 0;
 
-	/// <summary>由已有 Native 句柄建立门面（不调用 spawn）。</summary>
-	public SceneEntity(NNEntityHandle handle, string displayName = "Entity")
-	{
-		Handle = handle;
-		_displayName = displayName ?? string.Empty;
-	}
+    /// <summary>由已有 Native 句柄建立门面。</summary>
+    public SceneEntity(NNEntityHandle handle, ulong sceneHandle = 0, string displayName = "Entity")
+    {
+        Handle = handle;
+        SceneHandle = sceneHandle;
+        DisplayName = displayName ?? string.Empty;
+    }
 
-	/// <summary>经 Native spawn 建立实体并设置显示名。</summary>
-	/// <param name="prefabVirtualPathUtf8">Prefab 虚拟路径，传 null 时使用 <c>SceneEntity</c>。</param>
-	public static SceneEntity? Spawn(string? prefabVirtualPathUtf8 = null, string displayName = "Entity")
-	{
-		var path = string.IsNullOrWhiteSpace(prefabVirtualPathUtf8) ? "SceneEntity" : prefabVirtualPathUtf8;
-		var handle = SceneNativeBridge.Spawn(path);
-		if (handle.Value == 0)
-		{
-			return null;
-		}
+    // ── 组件操作（泛型封装）──
 
-		var entity = new SceneEntity(handle, displayName);
-		SceneNativeBridge.SetEntityName(handle, entity._displayName);
-		return entity;
-	}
+    /// <summary>添加组件。</summary>
+    public NNSceneResult AddComponent<T>() where T : struct =>
+        SceneNativeBridge.AddComponent<T>(SceneHandle, Handle);
 
-	/// <summary>销毁 Native 实体并使句柄失效。</summary>
-	public void Destroy()
-	{
-		if (!IsAlive)
-		{
-			return;
-		}
+    /// <summary>移除组件。</summary>
+    public NNSceneResult RemoveComponent<T>() where T : struct =>
+        SceneNativeBridge.RemoveComponent<T>(SceneHandle, Handle);
 
-		SceneNativeBridge.Destroy(Handle);
-		Handle = default;
-	}
+    /// <summary>查询是否拥有组件。</summary>
+    public bool HasComponent<T>() where T : struct =>
+        SceneNativeBridge.HasComponent<T>(SceneHandle, Handle);
+
+    /// <summary>读取组件数据；无组件时返回 null。</summary>
+    public T? GetComponent<T>() where T : struct =>
+        SceneNativeBridge.GetComponent<T>(SceneHandle, Handle);
+
+    /// <summary>写入组件数据。</summary>
+    public NNSceneResult SetComponent<T>(T data) where T : struct =>
+        SceneNativeBridge.SetComponent<T>(SceneHandle, Handle, data);
+
+    // ── 层级 ──
+
+    /// <summary>设置父实体。</summary>
+    public NNSceneResult SetParent(SceneEntity parent) =>
+        SceneNativeBridge.SetParent(SceneHandle, Handle, parent.Handle);
+
+    /// <summary>获取父实体句柄；无父时返回零句柄。</summary>
+    public NNEntityHandle GetParent() =>
+        SceneNativeBridge.GetParent(SceneHandle, Handle);
+
+    // ── 内部 ──
+
+    /// <summary>使句柄失效（由 <see cref="SceneManager.DestroyEntity"/> 调用）。</summary>
+    internal void Invalidate()
+    {
+        Handle = default;
+    }
 }

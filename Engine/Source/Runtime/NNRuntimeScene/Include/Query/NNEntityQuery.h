@@ -5,9 +5,9 @@
  * @brief 对 entt::view 的薄封装：迭代时向上层暴露 NNEntity，而非 entt::entity。
  */
 
-#include "Scene/NNEntity.h"
-#include "Scene/NNRuntimeScene.h"
-#include "Scene/NNWorld.h"
+#include "../Scene/NNEntity.h"
+#include "../Scene/NNRuntimeScene.h"
+#include "../Scene/NNWorld.h"
 
 namespace NN::Runtime::Scene
 {

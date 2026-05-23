@@ -1,7 +1,9 @@
 using Hexa.NET.ImGui;
 using Neverness.Editor.Framework.Private.Core;
+using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Private.Panel;
 using Neverness.Editor.Framework.Private.Panel.ContentBrowser;
+using Neverness.Editor.Framework.Public;
 using Neverness.Editor.ProjectSystem.Public;
 using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.VFS.Public;
@@ -24,6 +26,17 @@ public static class EditorFrameworkModuleImp
         {
             throw new InvalidOperationException("Failed to get absolute path for assets directory.");
         }
+
+        // 注册主菜单贡献者
+        EditorMenuRegistry.RegisterContributor(new BuiltinMenuContributor());
+
+        // 注册上下文菜单贡献者
+        EditorMenuRegistry.RegisterContextMenuContributor(new ContentBrowserContextMenuContributor());
+
+        // 注册 Toolbar 按钮
+        ImGuiToolbarRenderer.Register(new ToolbarCommand("save", FontAwesome5Pro.Save, "Save Scene", "file.save", 100));
+        ImGuiToolbarRenderer.Register(new ToolbarCommand("play", FontAwesome5Pro.Play, "Play", "game.play", 200));
+        ImGuiToolbarRenderer.Register(new ToolbarCommand("stop", FontAwesome5Pro.Stop, "Stop", "game.stop", 300));
 
         //ImGui.ImGui()
         Panel.Main.EditorMainWindow mainWindow = new Panel.Main.EditorMainWindow();

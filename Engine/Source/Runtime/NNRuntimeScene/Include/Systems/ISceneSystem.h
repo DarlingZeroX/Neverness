@@ -5,7 +5,7 @@
  * @brief 场景 System 接口：行为逻辑由 System 驱动，组件保持 POD。
  */
 
-#include "Systems/NNSceneTickGroup.h"
+#include "../Systems/NNSceneTickGroup.h"
 
 namespace NN::Runtime::Scene
 {

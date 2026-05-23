@@ -1,6 +1,6 @@
 /**
  * @file NNSceneSerializer.cpp
- * @brief **NNSceneSerializer** 二进制快照实现。
+ * @brief **NNSceneSerializer** 二进制快照实现（Phase 4-B：FNV-1a 稳定 TypeId）。
  */
 
 #include "Serialization/NNSceneSerializer.h"
@@ -39,6 +39,26 @@ bool ReadU32(const std::vector<std::uint8_t>& buffer, std::size_t& offset, std::
 		| (static_cast<std::uint32_t>(buffer[offset + 2u]) << 16u)
 		| (static_cast<std::uint32_t>(buffer[offset + 3u]) << 24u);
 	offset += 4u;
+	return true;
+}
+
+/** @brief 写入 64 位值（低 32 位在前，小端序）。 */
+void WriteU64(std::vector<std::uint8_t>& buffer, const std::uint64_t value)
+{
+	WriteU32(buffer, static_cast<std::uint32_t>(value & 0xFFFFFFFFu));
+	WriteU32(buffer, static_cast<std::uint32_t>((value >> 32u) & 0xFFFFFFFFu));
+}
+
+/** @brief 读取 64 位值（低 32 位在前，小端序）。 */
+bool ReadU64(const std::vector<std::uint8_t>& buffer, std::size_t& offset, std::uint64_t& out)
+{
+	std::uint32_t lo = 0u;
+	std::uint32_t hi = 0u;
+	if (!ReadU32(buffer, offset, lo) || !ReadU32(buffer, offset, hi))
+	{
+		return false;
+	}
+	out = static_cast<std::uint64_t>(lo) | (static_cast<std::uint64_t>(hi) << 32u);
 	return true;
 }
 
@@ -98,6 +118,13 @@ std::vector<std::uint8_t> SerializeComponentBlob(
 		case NNComponentFieldType::Float3:
 			WriteBytes(blob, fieldPtr, sizeof(float) * 3u);
 			break;
+		case NNComponentFieldType::Float4:
+		case NNComponentFieldType::Quaternion:
+			WriteBytes(blob, fieldPtr, sizeof(float) * 4u);
+			break;
+		case NNComponentFieldType::Float4x4:
+			WriteBytes(blob, fieldPtr, sizeof(float) * 16u);
+			break;
 		case NNComponentFieldType::UInt32:
 		{
 			std::uint32_t value = 0u;
@@ -113,6 +140,10 @@ std::vector<std::uint8_t> SerializeComponentBlob(
 			WriteU32(blob, EntityToArchiveIndex(handleToArchive, entityValue));
 			break;
 		}
+		case NNComponentFieldType::CharArray:
+			/* 固定大小字符数组，按字段 Size 字节直接 memcpy */
+			WriteBytes(blob, fieldPtr, field.Size);
+			break;
 		default:
 			break;
 		}
@@ -150,6 +181,19 @@ bool DeserializeComponentBlob(
 				return false;
 			}
 			break;
+		case NNComponentFieldType::Float4:
+		case NNComponentFieldType::Quaternion:
+			if (!ReadBytes(blob, blobOffset, fieldPtr, sizeof(float) * 4u))
+			{
+				return false;
+			}
+			break;
+		case NNComponentFieldType::Float4x4:
+			if (!ReadBytes(blob, blobOffset, fieldPtr, sizeof(float) * 16u))
+			{
+				return false;
+			}
+			break;
 		case NNComponentFieldType::UInt32:
 		{
 			std::uint32_t value = 0u;
@@ -180,6 +224,13 @@ bool DeserializeComponentBlob(
 			std::memcpy(fieldPtr, &handle, sizeof(NNEntity));
 			break;
 		}
+		case NNComponentFieldType::CharArray:
+			/* 固定大小字符数组，按字段 Size 字节直接读取 */
+			if (!ReadBytes(blob, blobOffset, fieldPtr, field.Size))
+			{
+				return false;
+			}
+			break;
 		default:
 			break;
 		}
@@ -212,6 +263,7 @@ std::vector<std::uint8_t> NNSceneSerializer::Serialize(const NNRuntimeScene& sce
 		std::vector<std::uint8_t> componentsPayload;
 		std::uint32_t componentCount = 0u;
 
+		/* 追加单个组件到 payload（写入稳定的 nameHash 而非自增 typeId） */
 		auto appendComponent = [&](const NNComponentTypeId typeId, const void* data)
 		{
 			const NNComponentTypeDesc* desc = registry.FindDesc(typeId);
@@ -221,7 +273,7 @@ std::vector<std::uint8_t> NNSceneSerializer::Serialize(const NNRuntimeScene& sce
 			}
 			const std::vector<std::uint8_t> blob =
 				SerializeComponentBlob(*desc, data, handleToArchive);
-			WriteU32(componentsPayload, typeId);
+			WriteU64(componentsPayload, desc->NameHash);  /* FNV-1a 稳定哈希，8 字节 */
 			WriteU32(componentsPayload, static_cast<std::uint32_t>(blob.size()));
 			WriteBytes(componentsPayload, blob.data(), blob.size());
 			++componentCount;
@@ -269,9 +321,10 @@ bool NNSceneSerializer::Deserialize(
 	NNSceneEntityArchiveMap archiveToHandle;
 	archiveToHandle.reserve(entityCount);
 
+	/* 待反序列化的组件（按 nameHash 匹配） */
 	struct PendingComponent
 	{
-		NNComponentTypeId TypeId = NNComponentTypeIdInvalid;
+		std::uint64_t NameHash = 0u;  /* FNV-1a 稳定哈希 */
 		std::vector<std::uint8_t> Blob{};
 	};
 	std::vector<std::vector<PendingComponent>> pendingPerEntity;
@@ -289,7 +342,7 @@ bool NNSceneSerializer::Deserialize(
 		for (std::uint32_t c = 0; c < componentCount; ++c)
 		{
 			PendingComponent pc{};
-			if (!ReadU32(buffer, offset, pc.TypeId))
+			if (!ReadU64(buffer, offset, pc.NameHash))  /* 读取 8 字节 nameHash */
 			{
 				return false;
 			}
@@ -315,7 +368,8 @@ bool NNSceneSerializer::Deserialize(
 		const NNEntity handle = archiveToHandle[e];
 		for (const PendingComponent& pc : pendingPerEntity[e])
 		{
-			const NNComponentTypeDesc* desc = registry.FindDesc(pc.TypeId);
+			/* 按 nameHash 查找描述符（而非自增 typeId） */
+			const NNComponentTypeDesc* desc = registry.FindDescByNameHash(pc.NameHash);
 			if (desc == nullptr || desc->Fields.empty())
 			{
 				continue;

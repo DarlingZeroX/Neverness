@@ -212,8 +212,9 @@ namespace NN::Runtime::Application
 			{
 				if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
 				{
-					SDL_Window* evtWindow = SDL_GetWindowFromID(event.window.windowID);
-					if (evtWindow == primary->GetSDLWindow())
+					//SDL_Window* evtWindow = SDL_GetWindowFromID(event.window.windowID);
+					//if (evtWindow == primary->GetSDLWindow())
+					// 目前是Window自己判断是否处理窗口事件，因为有ImGui的窗口事件分发机制，如果在RuntimeApplication这里过滤窗口事件，可能会导致ImGui的窗口事件无法正确分发到对应窗口。
 					{
 						primary->ProcessEvent(event);
 					}

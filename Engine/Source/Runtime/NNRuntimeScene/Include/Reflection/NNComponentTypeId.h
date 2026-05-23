@@ -2,15 +2,16 @@
 
 /**
  * @file NNComponentTypeId.h
- * @brief 组件类型稳定整数标识（用于序列化、C# 绑定与编辑器反射，Phase 1 仅元数据登记）。
+ * @brief 组件类型稳定整数标识（FNV-1a name hash，跨进程/跨版本稳定）。
  */
 
 #include <cstdint>
 
 namespace NN::Runtime::Scene
 {
-	using NNComponentTypeId = std::uint32_t;
+		/** @brief 组件类型标识 = FNV-1a 64-bit(name)，跨平台稳定。 */
+		using NNComponentTypeId = std::uint64_t;
 
-	/** @brief 无效组件类型 id。 */
-	inline constexpr NNComponentTypeId NNComponentTypeIdInvalid = 0u;
+		/** @brief 无效组件类型 id。 */
+		inline constexpr NNComponentTypeId NNComponentTypeIdInvalid = 0u;
 } // namespace NN::Runtime::Scene

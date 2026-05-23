@@ -5,6 +5,7 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/Editor/">
+    <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Assets/Neverness.Editor.Assets.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Framework/Neverness.Editor.Framework.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Inspector/Neverness.Editor.Inspector.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.ProjectSystem/Neverness.Editor.ProjectSystem.csproj" />

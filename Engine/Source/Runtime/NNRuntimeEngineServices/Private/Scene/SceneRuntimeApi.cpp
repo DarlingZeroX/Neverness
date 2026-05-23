@@ -1,91 +1,109 @@
 /**
  * @file SceneRuntimeApi.cpp
- * @brief **NNSceneAPI** Runtime 轉發至 **NNEngineRuntime::Scene()**。
+ * @brief NNSceneAPI Runtime 转发至 NNEngineRuntime::Scene()。
+ *
+ * 函数签名对齐新 ABI（layoutVersion = 4）：NNSceneResult 返回值、NNSceneHandle = uint64。
  */
 
 #include "Internal/RuntimeApiBuilders.h"
 
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
 #include "NNNativeEngineAPI/Include/NativeInterop.h"
+#include "NNNativeEngineAPI/Include/SceneAPI.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 
 namespace
 {
 using NN::Runtime::engine::NNEngineRuntime;
 
-int NN_ENGINE_ABI_STDCALL rt_scene_loadScene(const char* sceneNameUtf8)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_createScene(NNSceneHandle* outScene)
 {
-	return NNEngineRuntime::Instance().Scene().LoadScene(sceneNameUtf8);
+	return NNEngineRuntime::Instance().Scene().CreateScene(outScene);
 }
 
-NNEntityHandle NN_ENGINE_ABI_STDCALL rt_scene_spawn(const char* prefabVirtualPathUtf8)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_destroyScene(NNSceneHandle scene)
 {
-	return NNEngineRuntime::Instance().Scene().Spawn(prefabVirtualPathUtf8);
+	return NNEngineRuntime::Instance().Scene().DestroyScene(scene);
 }
 
-void NN_ENGINE_ABI_STDCALL rt_scene_destroy(NNEntityHandle entity)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_tickSystems(NNSceneHandle scene, float deltaTime)
 {
-	NNEngineRuntime::Instance().Scene().Destroy(entity);
+	return NNEngineRuntime::Instance().Scene().TickSystems(scene, deltaTime);
 }
 
-NNEntityHandle NN_ENGINE_ABI_STDCALL rt_scene_find(const char* entityNameUtf8)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_createEntity(NNSceneHandle scene, NNEntityHandle* outEntity)
 {
-	return NNEngineRuntime::Instance().Scene().Find(entityNameUtf8);
+	return NNEngineRuntime::Instance().Scene().CreateEntity(scene, outEntity);
 }
 
-void NN_ENGINE_ABI_STDCALL rt_scene_activate(NNEntityHandle entity, int active)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_destroyEntity(NNSceneHandle scene, NNEntityHandle entity)
 {
-	NNEngineRuntime::Instance().Scene().Activate(entity, active);
+	return NNEngineRuntime::Instance().Scene().DestroyEntity(scene, entity);
 }
 
-int NN_ENGINE_ABI_STDCALL rt_scene_unloadScene(const char* sceneNameUtf8)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_addComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId)
 {
-	return NNEngineRuntime::Instance().Scene().UnloadScene(sceneNameUtf8);
+	return NNEngineRuntime::Instance().Scene().AddComponent(scene, entity, componentTypeId);
 }
 
-int NN_ENGINE_ABI_STDCALL rt_scene_getActiveSceneName(char* outUtf8, std::size_t outCapacity)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_removeComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId)
 {
-	return NNEngineRuntime::Instance().Scene().GetActiveSceneName(outUtf8, outCapacity);
+	return NNEngineRuntime::Instance().Scene().RemoveComponent(scene, entity, componentTypeId);
 }
 
-void NN_ENGINE_ABI_STDCALL rt_scene_setParent(NNEntityHandle child, NNEntityHandle parent)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_hasComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId, int32_t* outHas)
 {
-	NNEngineRuntime::Instance().Scene().SetParent(child, parent);
+	return NNEngineRuntime::Instance().Scene().HasComponent(scene, entity, componentTypeId, outHas);
 }
 
-NNEntityHandle NN_ENGINE_ABI_STDCALL rt_scene_getParent(NNEntityHandle entity)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_getComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId, void* outData, uint32_t dataSize)
 {
-	return NNEngineRuntime::Instance().Scene().GetParent(entity);
+	return NNEngineRuntime::Instance().Scene().GetComponent(scene, entity, componentTypeId, outData, dataSize);
 }
 
-std::uint32_t NN_ENGINE_ABI_STDCALL rt_scene_getChildCount(NNEntityHandle entity)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_setComponent(NNSceneHandle scene, NNEntityHandle entity, uint64_t componentTypeId, const void* data, uint32_t dataSize)
 {
-	return NNEngineRuntime::Instance().Scene().GetChildCount(entity);
+	return NNEngineRuntime::Instance().Scene().SetComponent(scene, entity, componentTypeId, data, dataSize);
 }
 
-NNEntityHandle NN_ENGINE_ABI_STDCALL rt_scene_getChildAt(NNEntityHandle entity, std::uint32_t index)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_setParent(NNSceneHandle scene, NNEntityHandle child, NNEntityHandle parent)
 {
-	return NNEngineRuntime::Instance().Scene().GetChildAt(entity, index);
+	return NNEngineRuntime::Instance().Scene().SetParent(scene, child, parent);
 }
 
-void NN_ENGINE_ABI_STDCALL rt_scene_getTransform(NNEntityHandle entity, NNTransform3* outTransform)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_getParent(NNSceneHandle scene, NNEntityHandle entity, NNEntityHandle* outParent)
 {
-	NNEngineRuntime::Instance().Scene().GetTransform(entity, outTransform);
+	return NNEngineRuntime::Instance().Scene().GetParent(scene, entity, outParent);
 }
 
-void NN_ENGINE_ABI_STDCALL rt_scene_setTransform(NNEntityHandle entity, const NNTransform3* transform)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_serializeScene(NNSceneHandle scene, const char* vfsPath)
 {
-	NNEngineRuntime::Instance().Scene().SetTransform(entity, transform);
+	return NNEngineRuntime::Instance().Scene().SerializeScene(scene, vfsPath);
 }
 
-int NN_ENGINE_ABI_STDCALL rt_scene_setEntityName(NNEntityHandle entity, const char* nameUtf8)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_deserializeScene(NNSceneHandle* outScene, const char* vfsPath)
 {
-	return NNEngineRuntime::Instance().Scene().SetEntityName(entity, nameUtf8);
+	return NNEngineRuntime::Instance().Scene().DeserializeScene(outScene, vfsPath);
 }
 
-int NN_ENGINE_ABI_STDCALL rt_scene_getEntityName(NNEntityHandle entity, char* outUtf8, std::size_t outCapacity)
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_queryEntities(
+	NNSceneHandle scene, uint64_t componentTypeId,
+	NNEntityHandle* outEntities, uint32_t maxCount, uint32_t* outCount)
 {
-	return NNEngineRuntime::Instance().Scene().GetEntityName(entity, outUtf8, outCapacity);
+	return NNEngineRuntime::Instance().Scene().QueryEntities(scene, componentTypeId, outEntities, maxCount, outCount);
+}
+
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_queryComponents(
+	NNSceneHandle scene, uint64_t componentTypeId,
+	const NNEntityHandle* entities, uint32_t entityCount,
+	void* outData, uint32_t componentSize)
+{
+	return NNEngineRuntime::Instance().Scene().QueryComponents(scene, componentTypeId, entities, entityCount, outData, componentSize);
+}
+
+NNSceneResult NN_ENGINE_ABI_STDCALL rt_scene_queryCount2(
+	NNSceneHandle scene, uint64_t typeId1, uint64_t typeId2, uint32_t* outCount)
+{
+	return NNEngineRuntime::Instance().Scene().QueryCount2(scene, typeId1, typeId2, outCount);
 }
 } // namespace
 
@@ -95,21 +113,22 @@ extern "C" void NNBuildSceneRuntimeApi(NNSceneAPI* api)
 	{
 		return;
 	}
-	api->loadScene = &rt_scene_loadScene;
-	api->spawn = &rt_scene_spawn;
-	api->destroy = &rt_scene_destroy;
-	api->find = &rt_scene_find;
-	api->activate = &rt_scene_activate;
-	api->unloadScene = &rt_scene_unloadScene;
-	api->getActiveSceneName = &rt_scene_getActiveSceneName;
+	api->layoutVersion = 6;
+	api->createScene = &rt_scene_createScene;
+	api->destroyScene = &rt_scene_destroyScene;
+	api->tickSystems = &rt_scene_tickSystems;
+	api->createEntity = &rt_scene_createEntity;
+	api->destroyEntity = &rt_scene_destroyEntity;
+	api->addComponent = &rt_scene_addComponent;
+	api->removeComponent = &rt_scene_removeComponent;
+	api->hasComponent = &rt_scene_hasComponent;
+	api->getComponent = &rt_scene_getComponent;
+	api->setComponent = &rt_scene_setComponent;
 	api->setParent = &rt_scene_setParent;
 	api->getParent = &rt_scene_getParent;
-	api->getChildCount = &rt_scene_getChildCount;
-	api->getChildAt = &rt_scene_getChildAt;
-	api->getTransform = &rt_scene_getTransform;
-	api->setTransform = &rt_scene_setTransform;
-	api->setEntityName = &rt_scene_setEntityName;
-	api->getEntityName = &rt_scene_getEntityName;
-	api->serializeScene = nullptr;
-	api->deserializeScene = nullptr;
+	api->serializeScene = &rt_scene_serializeScene;
+	api->deserializeScene = &rt_scene_deserializeScene;
+	api->queryEntities = &rt_scene_queryEntities;
+	api->queryComponents = &rt_scene_queryComponents;
+	api->queryCount2 = &rt_scene_queryCount2;
 }

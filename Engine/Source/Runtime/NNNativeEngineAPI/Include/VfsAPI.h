@@ -84,6 +84,18 @@ typedef int(NN_ENGINE_ABI_STDCALL* NNVfsGetAbsolutePathFn)(
 	const char* relativePathUtf8,
 	char** outAbsolutePathUtf8);
 
+/**
+ * @brief 将二进制缓冲区写入 VFS 路径（覆盖写）。
+ * @param pathUtf8 NUL 结尾 VFS 虚拟路径。
+ * @param buffer   数据指针。
+ * @param size     数据字节数。
+ * @return 非 0 成功；0 失败。
+ */
+typedef int(NN_ENGINE_ABI_STDCALL* NNVfsWriteBufferToFileFn)(
+	const char* pathUtf8,
+	const std::uint8_t* buffer,
+	std::uint64_t size);
+
 typedef struct NNVfsAPI
 {
 	std::uint32_t size;
@@ -94,6 +106,7 @@ typedef struct NNVfsAPI
 	NNVfsGetRelativePathFn getRelativePath;
 	NNVfsRebuildNativeFileSystemFilesFn rebuildNativeFileSystemFiles;
 	NNVfsGetAbsolutePathFn getAbsolutePath;
+	NNVfsWriteBufferToFileFn writeBufferToFile;
 } NNVfsAPI;
 
 #ifdef __cplusplus

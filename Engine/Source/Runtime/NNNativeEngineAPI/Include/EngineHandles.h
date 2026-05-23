@@ -26,5 +26,7 @@ typedef std::uint64_t NNAsyncWaitHandle;
  *（`EntityAPI.h` 子表，預留 Native ECS）混淆——後者首包僅含服務魔數校驗，本句柄仍專屬場景子系統。
  */
 typedef std::uint64_t NNEntityHandle;
+/** @brief NNEntity 全局别名——与 NNEntityHandle 为同一类型，收口实体句柄定义。 */
+using NNEntity = NNEntityHandle;
 /** @brief 託管 VGObject 與 Native 子系統對應之不透明控制代碼。 */
 typedef std::uint64_t NNObjectHandle;

@@ -128,6 +128,24 @@ namespace NN::Runtime::VFS
 		return false;
 	}
 
+	bool VFSService::WriteBufferToFile(const std::string& path, uint8_t* buffer, uint64_t size)
+	{
+		auto& vfs = GetInstance();
+
+		if (auto file = vfs->OpenFile(FileInfo(path), IFile::FileMode::Write))
+		{
+			if (file->IsOpened())
+			{
+				file->Write(buffer, size);
+				file->Close();
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	bool VFSService::RebuildNativeFileSystemFiles(const std::string& path)
 	{		// 需要刷新虚拟文件系统
 		auto fsList = GetInstance()->GetFilesystems(path);

@@ -5,8 +5,8 @@
  * @brief 场景帧更新 System（Phase 2 占位：可扩展全局逻辑，当前仅递增帧计数供测试）。
  */
 
-#include "Systems/ISceneSystem.h"
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../Systems/ISceneSystem.h"
+#include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {

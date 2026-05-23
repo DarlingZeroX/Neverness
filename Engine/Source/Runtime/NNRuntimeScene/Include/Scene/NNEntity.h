@@ -14,12 +14,13 @@
 
 #include <cstdint>
 
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "NNNativeEngineAPI/Include/EngineHandles.h"
+#include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {
-	/** @brief 不透明实体句柄（ABI 与未来 C# `readonly struct Entity { ulong Handle; }` 对齐）。 */
-	using NNEntity = std::uint64_t;
+	/** @brief 不透明实体句柄——复用全局 NNEntityHandle 定义，两者类型完全一致。 */
+	using NNEntity = NNEntityHandle;
 
 	/** @brief 全局无效句柄（Index=0, Generation=0）。 */
 	inline constexpr NNEntity NNEntityInvalid = 0u;

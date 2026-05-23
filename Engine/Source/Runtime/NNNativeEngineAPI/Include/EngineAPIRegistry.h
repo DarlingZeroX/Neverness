@@ -30,8 +30,8 @@
 extern "C" {
 #endif
 
-/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 10u
+/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v13：NNSceneAPI 序列化改為 VFS 路徑（serializeScene/deserializeScene 签名变更）。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 13u
 
 typedef struct NNNativeEngineAPI
 {

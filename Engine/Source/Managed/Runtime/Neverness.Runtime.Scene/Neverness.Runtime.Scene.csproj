@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-    <RootNamespace>Neverness.Managed.Scene</RootNamespace>
+    <RootNamespace>Neverness.Runtime.Scene</RootNamespace>
 
 
 	  <!-- ========================= -->

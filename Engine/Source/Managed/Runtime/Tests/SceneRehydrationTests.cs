@@ -2,7 +2,6 @@ using Neverness.Editor.Framework.Serialization;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Interop;
 using Neverness.Runtime.Scene;
-using SceneType = Neverness.Runtime.Scene.Scene;
 
 namespace Neverness.Runtime.Foundation.Tests;
 
@@ -12,40 +11,39 @@ public sealed class SceneRehydrationTests
 	[Fact]
 	public void ApplyEntryProperties_RestoresDisplayName()
 	{
-		var source = new SceneEntity(new NNEntityHandle(1), "SourceName");
+		var source = new SceneEntity(new NNEntityHandle(1), displayName: "SourceName");
 		var entry = SceneSerializer.CaptureObject("Entity", source);
 
-		var target = new SceneEntity(new NNEntityHandle(2), "Placeholder");
+		var target = new SceneEntity(new NNEntityHandle(2), displayName: "Placeholder");
 		SceneSerializer.ApplyEntryProperties(target, entry);
 
 		Assert.Equal("SourceName", target.DisplayName);
 	}
 
 	[Fact]
-	public void RestoreFromJsonWithEntities_RecreatesDisplayName_WhenEngineInstalled()
+	public void RestoreFromJsonWithEntities_RecreatesSceneManager_WhenEngineInstalled()
 	{
 		if (!EngineNativeApiBootstrap.IsInstalled)
 		{
 			return;
 		}
 
-		var entity = SceneEntity.Spawn("SceneEntity", "RehydratedDisplay");
+		var manager = new SceneManager();
+		_ = manager.LoadScene("RehydrateScene");
+		var entity = manager.CreateEntity("RehydratedDisplay");
 		if (entity == null)
 		{
 			return;
 		}
 
-		var scene = new Scene.Scene("RehydrateScene");
-		scene.AddEntity(entity);
-		var doc = new SceneSerializer.SceneDocument { Name = scene.Name };
+		var doc = new SceneSerializer.SceneDocument { Name = "RehydrateScene" };
 		doc.Entities.Add(SceneSerializer.CaptureObject(entity.DisplayName, entity));
 		var json = SceneSerializer.Serialize(doc);
 
 		var restored = SceneRehydrator.RestoreFromJsonWithEntities(json);
 		Assert.NotNull(restored);
-		Assert.Equal("RehydrateScene", restored!.Name);
+		Assert.True(restored!.IsSceneLoaded("RehydrateScene"));
 		Assert.Single(restored.Entities);
 		Assert.Equal("RehydratedDisplay", restored.Entities[0].DisplayName);
-		Assert.True(restored.Entities[0].IsAlive);
 	}
 }

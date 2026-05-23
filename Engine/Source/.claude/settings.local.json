@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmake -S \"E:/Neverness/Engine/Source\" -B \"E:/Neverness/Build/vs/x64-debug\")",
+      "Bash(cmake -S \"E:/Neverness\" -B \"E:/Neverness/Build/vs/x64-debug\")",
+      "Bash(cmake *)",
+      "Bash(dotnet build *)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(dotnet test *)"
+    ]
+  }
+}

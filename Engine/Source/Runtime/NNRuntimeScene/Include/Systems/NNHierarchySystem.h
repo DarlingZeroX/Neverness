@@ -8,9 +8,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Systems/ISceneSystem.h"
-#include "Scene/NNEntity.h"
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../Systems/ISceneSystem.h"
+#include "../Scene/NNEntity.h"
+#include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {

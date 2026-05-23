@@ -204,6 +204,22 @@ int NN_ENGINE_ABI_STDCALL VfsGetAbsolutePath(const char* relativePathUtf8, char*
 	return 1;
 }
 
+int NN_ENGINE_ABI_STDCALL VfsWriteBufferToFile(
+	const char* pathUtf8,
+	const std::uint8_t* buffer,
+	std::uint64_t size)
+{
+	if (pathUtf8 == nullptr || (buffer == nullptr && size > 0))
+	{
+		return 0;
+	}
+
+	return NN::Runtime::VFS::VFSService::WriteBufferToFile(
+		pathUtf8,
+		const_cast<std::uint8_t*>(buffer),
+		size) ? 1 : 0;
+}
+
 } // namespace
 
 extern "C" void NNBuildVfsRuntimeApi(NNVfsAPI* api)
@@ -222,5 +238,6 @@ extern "C" void NNBuildVfsRuntimeApi(NNVfsAPI* api)
 	built.getRelativePath = &VfsGetRelativePath;
 	built.rebuildNativeFileSystemFiles = &VfsRebuildNativeFileSystemFiles;
 	built.getAbsolutePath = &VfsGetAbsolutePath;
+	built.writeBufferToFile = &VfsWriteBufferToFile;
 	*api = built;
 }

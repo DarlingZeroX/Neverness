@@ -10,19 +10,19 @@
  * 线程契约：Phase 2 假定单线程；由宿主在 game loop 同一线程调用。
  */
 
-#include "Components/NNRelationshipComponent.h"
-#include "Components/NNTagComponent.h"
-#include "Components/NNTransformComponent.h"
-#include "Reflection/NNComponentRegistry.h"
-#include "Runtime/NNDirtyTracker.h"
-#include "Runtime/NNSceneEventBus.h"
-#include "Scene/NNEntityHandle.h"
-#include "Scene/NNWorld.h"
-#include "Systems/NNHierarchySystem.h"
-#include "Systems/NNSceneSystemScheduler.h"
-#include "Systems/NNSceneUpdateSystem.h"
-#include "Systems/NNTransformSystem.h"
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../Components/NNRelationshipComponent.h"
+#include "../Components/NNTagComponent.h"
+#include "../Components/NNTransformComponent.h"
+#include "../Reflection/NNComponentRegistry.h"
+#include "../Runtime/NNDirtyTracker.h"
+#include "../Runtime/NNSceneEventBus.h"
+#include "../Scene/NNEntityHandle.h"
+#include "../Scene/NNWorld.h"
+#include "../Systems/NNHierarchySystem.h"
+#include "../Systems/NNSceneSystemScheduler.h"
+#include "../Systems/NNSceneUpdateSystem.h"
+#include "../Systems/NNTransformSystem.h"
+#include "../../NNRuntimeSceneExport.h"
 
 #include <vector>
 

@@ -1,8 +1,9 @@
-using Neverness.Editor.Framework.Public;
+﻿using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Bootstrap;
 using Neverness.Runtime.Engine.Runtime;
+using Neverness.Editor.Assets.Public;
 
 namespace NevernessEditor;
 
@@ -69,6 +70,7 @@ internal static class EditorApplicationRunner
 				{
 					s_isInstalled = true;
 					EditorFrameworkModule.Install(window);
+					AssetsModule.Install();
 				}
 
 				var deltaTime = EngineTime.DeltaTime;

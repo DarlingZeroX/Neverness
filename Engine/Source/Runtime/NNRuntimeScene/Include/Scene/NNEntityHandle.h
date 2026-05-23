@@ -11,8 +11,8 @@
 
 #include <NNCore/Include/Scene/entt.hpp>
 
-#include "Scene/NNEntity.h"
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../Scene/NNEntity.h"
+#include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {

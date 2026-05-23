@@ -1,6 +1,6 @@
 /**
  * @file NNComponentRegistry.cpp
- * @brief 组件类型注册表实现（含字段元数据）。
+ * @brief 组件类型注册表实现（FNV-1a 稳定 TypeId，Phase 4-B）。
  */
 
 #include "Reflection/NNComponentRegistry.h"
@@ -42,20 +42,33 @@ NNComponentTypeId NNComponentRegistry::RegisterTypeWithFields(
 	const std::size_t sizeBytes,
 	const std::vector<NNComponentFieldDesc>& fields)
 {
+	const std::uint64_t nameHash = fnv1a_64(nameUtf8);
+
+	// 查重：按 nameHash 幂等（同一名称重复注册返回已有 typeId）
+	if (const auto it = m_NameHashToDesc.find(nameHash); it != m_NameHashToDesc.end())
+	{
+		return m_Descriptors[it->second].TypeId;
+	}
+
+	// 查重：按 typeIndex（同一 C++ 类型重复注册返回已有 typeId）
 	if (const auto found = m_TypeToId.find(typeIndex); found != m_TypeToId.end())
 	{
 		return found->second;
 	}
 
-	const NNComponentTypeId typeId = m_NextTypeId++;
+	const NNComponentTypeId typeId = nameHash;
+	const std::size_t descIndex = m_Descriptors.size();
+
 	NNComponentTypeDesc desc{};
 	desc.TypeId = typeId;
+	desc.NameHash = nameHash;
 	desc.TypeIndex = typeIndex;
 	desc.NameUtf8 = nameUtf8;
 	desc.SizeBytes = sizeBytes;
 	desc.Fields = fields;
 
 	m_TypeToId.emplace(typeIndex, typeId);
+	m_NameHashToDesc.emplace(nameHash, descIndex);
 	m_Descriptors.push_back(std::move(desc));
 	return typeId;
 }
@@ -82,16 +95,29 @@ NNComponentTypeId NNComponentRegistry::FindTypeId(const std::type_index& typeInd
 
 const NNComponentTypeDesc* NNComponentRegistry::FindDesc(const NNComponentTypeId typeId) const noexcept
 {
-	if (typeId == 0u || typeId > m_Descriptors.size())
+	for (const auto& desc : m_Descriptors)
 	{
-		return nullptr;
+		if (desc.TypeId == typeId)
+		{
+			return &desc;
+		}
 	}
-	return &m_Descriptors[static_cast<std::size_t>(typeId - 1u)];
+	return nullptr;
 }
 
 const NNComponentTypeDesc* NNComponentRegistry::FindDesc(const std::type_index& typeIndex) const noexcept
 {
 	return FindDesc(FindTypeId(typeIndex));
+}
+
+const NNComponentTypeDesc* NNComponentRegistry::FindDescByNameHash(const std::uint64_t nameHash) const noexcept
+{
+	const auto it = m_NameHashToDesc.find(nameHash);
+	if (it == m_NameHashToDesc.end())
+	{
+		return nullptr;
+	}
+	return &m_Descriptors[it->second];
 }
 
 const NNComponentFieldDesc* NNComponentRegistry::GetFieldByName(

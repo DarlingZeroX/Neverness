@@ -40,6 +40,12 @@ public static class VFS
 		VFSHost.GetRelativePath(relativePath, absolutePath);
 
 	/// <summary>
+	/// 将二进制缓冲区写入 VFS 路径（覆盖写）。
+	/// </summary>
+	public static bool WriteBuffer(string path, byte[] buffer) =>
+		VFSHost.WriteBuffer(path, buffer);
+
+	/// <summary>
 	/// 刷新指定路径下 Native 文件系统文件列表（<c>VFSService::RebuildNativeFileSystemFiles</c>）。
 	/// </summary>
 	public static bool RebuildNativeFileSystemFiles(string path) =>

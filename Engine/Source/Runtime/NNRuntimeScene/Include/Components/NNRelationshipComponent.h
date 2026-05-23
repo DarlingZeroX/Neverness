@@ -5,8 +5,8 @@
  * @brief 层级关系组件（纯 POD）：仅存 Handle 与计数，不持有 IEntity* 或 entt 指针图。
  */
 
-#include "Scene/NNEntity.h"
-#include "NNRuntimeScene/NNRuntimeSceneExport.h"
+#include "../Scene/NNEntity.h"
+#include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {

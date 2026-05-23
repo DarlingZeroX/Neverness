@@ -55,45 +55,96 @@ public unsafe struct NNInputApi
 }
 
 /// <summary>
-/// 與 Native <c>NNTransform3</c> 對齊（<c>EngineTypes.h</c>）：position[3]、rotation[3]、scale[3]。
+/// 與 Native <c>NNVec3</c> 對齊（<c>SceneAPI.h</c>）：三維向量（位置 / 縮放）。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct NNTransform3
+public struct NNVec3
 {
-	public float PositionX;
-	public float PositionY;
-	public float PositionZ;
-	public float RotationX;
-	public float RotationY;
-	public float RotationZ;
-	public float ScaleX;
-	public float ScaleY;
-	public float ScaleZ;
+	public float X;
+	public float Y;
+	public float Z;
 }
 
 /// <summary>
-/// 與 Native <c>NNSceneAPI</c> 對齊。
+/// 與 Native <c>NNQuat</c> 對齊（<c>SceneAPI.h</c>）：四元數旋轉。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNQuat
+{
+	public float X;
+	public float Y;
+	public float Z;
+	public float W;
+}
+
+/// <summary>
+/// 與 Native <c>NNTransformData</c> 對齊（<c>SceneAPI.h</c>）：完整變換（位置 + 旋轉 + 縮放）。
+/// TypeId = FNV-1a("Transform")，須與 Native BuiltinComponentRegistration.cpp 一致。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+[ComponentId(0xC1FFF4F356DFB2FB, Name = "Transform")]
+public struct NNTransformData
+{
+	public NNVec3 Position;
+	public NNQuat Rotation;
+	public NNVec3 Scale;
+}
+
+/// <summary>
+/// 與 Native <c>NNSceneResult</c> 對齊（<c>SceneAPI.h</c>）：場景操作結果碼。
+/// </summary>
+public enum NNSceneResult : int
+{
+	/// <summary>成功。</summary>
+	Ok = 0,
+	/// <summary>實體 / 場景未找到。</summary>
+	NotFound = 1,
+	/// <summary>句柄無效。</summary>
+	Invalid = 2,
+	/// <summary>輸出緩衝區容量不足。</summary>
+	BufferSmall = 3,
+	/// <summary>序列化 / 反序列化 I/O 錯誤。</summary>
+	IO = 4,
+}
+
+/// <summary>
+/// 與 Native <c>NNSceneAPI</c> 對齊（<c>SceneAPI.h</c>，layoutVersion = 6）。
+/// 首字段為 <c>LayoutVersion</c>，後接 17 個函數指標。
+/// NNSceneHandle = ulong（uint64），componentTypeId = ulong（FNV-1a name hash）。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNSceneApi
 {
-	public delegate* unmanaged<byte*, int> LoadScene;
-	public delegate* unmanaged<byte*, ulong> Spawn;
-	public delegate* unmanaged<ulong, void> Destroy;
-	public delegate* unmanaged<byte*, ulong> Find;
-	public delegate* unmanaged<ulong, int, void> Activate;
-	public delegate* unmanaged<byte*, int> UnloadScene;
-	public delegate* unmanaged<byte*, nuint, int> GetActiveSceneName;
-	public delegate* unmanaged<ulong, ulong, void> SetParent;
-	public delegate* unmanaged<ulong, ulong> GetParent;
-	public delegate* unmanaged<ulong, uint> GetChildCount;
-	public delegate* unmanaged<ulong, uint, ulong> GetChildAt;
-	public delegate* unmanaged<ulong, NNTransform3*, void> GetTransform;
-	public delegate* unmanaged<ulong, NNTransform3*, void> SetTransform;
-	public delegate* unmanaged<ulong, byte*, int> SetEntityName;
-	public delegate* unmanaged<ulong, byte*, nuint, int> GetEntityName;
-	public delegate* unmanaged<byte*, void*, nuint, nuint> SerializeScene;
-	public delegate* unmanaged<void*, nuint, byte*, int> DeserializeScene;
+	public uint LayoutVersion;  // = 6
+
+	// 场景管理
+	public delegate* unmanaged<ulong*, NNSceneResult> CreateScene;
+	public delegate* unmanaged<ulong, NNSceneResult> DestroyScene;
+	public delegate* unmanaged<ulong, float, NNSceneResult> TickSystems;
+
+	// 实体 CRUD
+	public delegate* unmanaged<ulong, ulong*, NNSceneResult> CreateEntity;
+	public delegate* unmanaged<ulong, ulong, NNSceneResult> DestroyEntity;
+
+	// 组件操作（FNV-1a name hash）
+	public delegate* unmanaged<ulong, ulong, ulong, NNSceneResult> AddComponent;
+	public delegate* unmanaged<ulong, ulong, ulong, NNSceneResult> RemoveComponent;
+	public delegate* unmanaged<ulong, ulong, ulong, int*, NNSceneResult> HasComponent;
+	public delegate* unmanaged<ulong, ulong, ulong, void*, uint, NNSceneResult> GetComponent;
+	public delegate* unmanaged<ulong, ulong, ulong, void*, uint, NNSceneResult> SetComponent;
+
+	// 层级
+	public delegate* unmanaged<ulong, ulong, ulong, NNSceneResult> SetParent;
+	public delegate* unmanaged<ulong, ulong, ulong*, NNSceneResult> GetParent;
+
+	// 序列化（经 VFS 路径）
+	public delegate* unmanaged<ulong, byte*, NNSceneResult> SerializeScene;
+	public delegate* unmanaged<ulong*, byte*, NNSceneResult> DeserializeScene;
+
+	// 批量查询（layoutVersion = 6 追加）
+	public delegate* unmanaged<ulong, ulong, ulong*, uint, uint*, NNSceneResult> QueryEntities;
+	public delegate* unmanaged<ulong, ulong, ulong*, uint, void*, uint, NNSceneResult> QueryComponents;
+	public delegate* unmanaged<ulong, ulong, ulong, uint*, NNSceneResult> QueryCount2;
 }
 
 /// <summary>
@@ -228,6 +279,8 @@ public unsafe struct NNVfsApi
 	public delegate* unmanaged<byte*, byte*, byte**, int> GetRelativePath;
 	public delegate* unmanaged<byte*, int> RebuildNativeFileSystemFiles;
 	public delegate* unmanaged<byte*, byte**, int> GetAbsolutePath;
+	/// <summary>非 0 成功；将二进制缓冲区写入 VFS 路径。</summary>
+	public delegate* unmanaged<byte*, byte*, ulong, int> WriteBufferToFile;
 }
 
 /// <summary>

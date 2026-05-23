@@ -1,6 +1,7 @@
 using System.Numerics;
 using Hexa.NET.ImGui;
 using Neverness.Editor.Framework.Interface;
+using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Public;
@@ -37,83 +38,14 @@ public class EditorMenuBar : IEditorPanel
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new System.Numerics.Vector2(4, 7));
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new System.Numerics.Vector2(10, 4));
 
-        if (ImGui.BeginMainMenuBar())
+        // 使用菜单框架渲染主菜单栏
+        var tree = MenuRegistryImp.Instance.GetTree();
+        if (ImGuiMenuRenderer.BeginMainMenuBar())
         {
             HandleDraggingWindow();
-
-            // ===== Engine Icon (UI only) =====
-            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new System.Numerics.Vector2(0, 0));
-            //ImGui.Image(0, new System.Numerics.Vector2(40, ImGui.GetFrameHeight() * 2)); // texture placeholder
-            ImGui.PopStyleVar();
-
-            // ================= FILE =================
-            if (ImGui.BeginMenu("File"))
-            {
-                ImGui.Separator();
-                ImGui.MenuItem("New Scene");
-                ImGui.MenuItem("Open Scene");
-                ImGui.MenuItem("Save Scene");
-                ImGui.MenuItem("Save Scene As...");
-
-                ImGui.Separator();
-
-                ImGui.MenuItem("Build Settings...");
-
-                ImGui.Separator();
-
-                ImGui.MenuItem("Exit");
-
-                ImGui.EndMenu();
-            }
-
-            // ================= EDIT =================
-            if (ImGui.BeginMenu("Edit"))
-            {
-                ImGui.MenuItem("Undo");
-                ImGui.MenuItem("Redo");
-                ImGui.Separator();
-
-                ImGui.MenuItem("Cut");
-                ImGui.MenuItem("Copy");
-                ImGui.MenuItem("Paste");
-
-                ImGui.Separator();
-
-                if (ImGui.MenuItem("ImGui Demo"))
-                {
-                    m_ShowImGuiDemo = true;
-                    ImGui.ShowDemoWindow(ref m_ShowImGuiDemo);
-                }
-
-                ImGui.MenuItem("Project Settings...");
-                ImGui.MenuItem("Preferences...");
-
-                ImGui.EndMenu();
-            }
-
-            // ================= WINDOW =================
-            if (ImGui.BeginMenu("Window"))
-            {
-                // panel list placeholder
-                ImGui.MenuItem("Panel A");
-                ImGui.MenuItem("Panel B");
-                ImGui.MenuItem("Panel C");
-
-                ImGui.EndMenu();
-            }
-
-            // ================= HELP =================
-            if (ImGui.BeginMenu("Help"))
-            {
-                ImGui.MenuItem("Engine Homepage");
-                ImGui.MenuItem("GitHub");
-
-                ImGui.EndMenu();
-            }
-
+            ImGuiMenuRenderer.RenderMenuItems(tree);
             HandleWindowControl();
-
-            ImGui.EndMainMenuBar();
+            ImGuiMenuRenderer.EndMainMenuBar();
         }
 
         ImGui.PopStyleVar(2);
