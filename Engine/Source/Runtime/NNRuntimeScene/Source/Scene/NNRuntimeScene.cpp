@@ -7,6 +7,7 @@
 
 #include <typeindex>
 
+#include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "Runtime/NNSceneEventBus.h"
 
 namespace NN::Runtime::Scene
@@ -30,6 +31,7 @@ void NNRuntimeScene::RegisterBuiltinComponents()
 		(void)m_ComponentRegistry.Register<NNTransformComponent>("Transform");
 		(void)m_ComponentRegistry.Register<NNRelationshipComponent>("Relationship");
 		(void)m_ComponentRegistry.Register<NNTagComponent>("Tag");
+		(void)m_ComponentRegistry.Register<NNCameraComponent>("Camera");
 	}
 }
 
@@ -38,6 +40,7 @@ void NNRuntimeScene::RegisterDefaultSystems()
 	RegisterSystem(&m_HierarchySystem);
 	RegisterSystem(&m_SceneUpdateSystem);
 	RegisterSystem(&m_TransformSystem);
+	RegisterSystem(&m_CameraSystem);
 }
 
 void NNRuntimeScene::RegisterSystem(ISceneSystem* const system) noexcept
@@ -64,6 +67,8 @@ NNEntity NNRuntimeScene::CreateEntity() noexcept
 	evt.Entity = handle;
 	m_EventBus.Emit(evt);
 	m_DirtyTracker.MarkEntityDirty(handle);
+	MarkHierarchyDirty(handle, NN_DIRTY_NAME_CHANGED | NN_DIRTY_PARENT_CHANGED | NN_DIRTY_CHILDREN_CHANGED);
+	IncrementHierarchyVersion();
 	return handle;
 }
 
@@ -93,11 +98,14 @@ bool NNRuntimeScene::DestroyEntity(const NNEntity handle) noexcept
 	evt.Type = NNSceneEventType::EntityDestroyed;
 	evt.Entity = handle;
 	m_EventBus.Emit(evt);
+	m_DirtyTracker.MarkEntityDirty(handle);
+	MarkHierarchyDirty(handle, NN_DIRTY_NAME_CHANGED | NN_DIRTY_PARENT_CHANGED | NN_DIRTY_CHILDREN_CHANGED);
 
 	const bool destroyed = m_EntityTable.Destroy(m_Registry, handle);
 	if (destroyed)
 	{
 		m_DirtyTracker.MarkEntityDirty(handle);
+		IncrementHierarchyVersion();
 	}
 	return destroyed;
 }
@@ -109,7 +117,19 @@ bool NNRuntimeScene::IsAlive(const NNEntity handle) const noexcept
 
 bool NNRuntimeScene::SetParent(const NNEntity child, const NNEntity parent) noexcept
 {
-	return m_HierarchySystem.SetParent(*this, child, parent);
+	const bool ok = m_HierarchySystem.SetParent(*this, child, parent);
+	if (ok)
+	{
+		// child：parent + children 均变化
+		MarkHierarchyDirty(child, NN_DIRTY_PARENT_CHANGED | NN_DIRTY_CHILDREN_CHANGED);
+		// parent：children 列表变化
+		if (parent != NNEntityInvalid)
+		{
+			MarkHierarchyDirty(parent, NN_DIRTY_CHILDREN_CHANGED);
+		}
+		IncrementHierarchyVersion();
+	}
+	return ok;
 }
 
 NNEntity NNRuntimeScene::GetParent(const NNEntity entity) const noexcept
@@ -125,5 +145,19 @@ std::vector<NNEntity> NNRuntimeScene::GetChildren(const NNEntity entity) const
 NNEntity NNRuntimeScene::HandleFromEntt(const entt::entity entity) const noexcept
 {
 	return m_EntityTable.HandleFromEntt(entity);
+}
+
+void NNRuntimeScene::MarkHierarchyDirty(const NNEntity entity, const std::uint32_t changeFlags) noexcept
+{
+	// 查找已有条目，合并 changeFlags（同一实体多次变更只保留最终标志位）
+	for (auto& entry : m_DirtyHierarchyEntries)
+	{
+		if (entry.entity == entity)
+		{
+			entry.changeFlags |= changeFlags;
+			return;
+		}
+	}
+	m_DirtyHierarchyEntries.push_back({entity, changeFlags});
 }
 } // namespace NN::Runtime::Scene

@@ -14,7 +14,7 @@
 #include "NNEditorFrameworkLegacy/Include/EditorCore/ContentBrowser.h"
 #include <unordered_map>
 #include <NNEngineLegacy/Include/Render/Texture2D.h>
-#include <NNRuntimeAsset/Include/TextureAsset.h>
+#include <NNRuntimeAssetLegacy/Include/TextureAsset.h>
 
 namespace NN::Editor {
 

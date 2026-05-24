@@ -13,9 +13,9 @@
 #include "Engine/Manager.h"
 //#include "Graphics/OpenGL/OpenGL.h"
 #include <NNRuntimeRHI/Include/OpenGL/OpenGL.h>
-#include "NNRuntimeAsset/Include/TextureAsset.h"
-#include "NNRuntimeAsset/Include/VideoAsset.h"
-#include "NNRuntimeAsset/Include/AudioAsset.h"
+#include "NNRuntimeAssetLegacy/Include/TextureAsset.h"
+#include "NNRuntimeAssetLegacy/Include/VideoAsset.h"
+#include "NNRuntimeAssetLegacy/Include/AudioAsset.h"
 #include "Engine/AudioPlayer.h"
 #include "Engine/VideoPlayer.h"
 

@@ -14,7 +14,16 @@ public sealed class SceneManager
     /// <summary>当前激活的世界。</summary>
     private SceneWorld? _activeWorld;
 
-    /// <summary>当前激活的世界。</summary>
+    /// <summary>场景加载完成事件（激活前触发）。</summary>
+    public event Action<SceneWorld>? SceneLoaded;
+
+        /// <summary>场景激活事件。</summary>
+    public event Action<SceneWorld>? SceneActivated;
+
+        /// <summary>场景卸载事件（Dispose 前触发）。</summary>
+    public event Action<SceneWorld>? SceneUnloaded;
+
+        /// <summary>当前激活的世界。</summary>
     public SceneWorld? ActiveWorld => _activeWorld;
 
     /// <summary>当前激活场景的 Native 句柄（兼容旧 API）。</summary>
@@ -47,8 +56,12 @@ public sealed class SceneManager
 
         _worlds[name] = world;
 
+        SceneLoaded?.Invoke(world);
+
         // 首个加载的场景自动激活
         _activeWorld ??= world;
+        if (_activeWorld == world)
+            SceneActivated?.Invoke(world);
 
         return NNSceneResult.Ok;
     }
@@ -65,6 +78,7 @@ public sealed class SceneManager
 
         var isActive = _activeWorld == world;
 
+        SceneUnloaded?.Invoke(world);
         world.Dispose();
         _worlds.Remove(name);
 
@@ -90,6 +104,35 @@ public sealed class SceneManager
         }
 
         _activeWorld = world;
+        SceneActivated?.Invoke(world);
+            return NNSceneResult.Ok;
+    }
+
+        /// <summary>从 VFS 资产路径加载并激活场景世界。</summary>
+    public NNSceneResult LoadSceneFromAsset(string name, string vfsPath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        if (_worlds.ContainsKey(name))
+        {
+            // 已加载同名场景，直接激活
+            return ActivateScene(name);
+        }
+
+        var world = SceneWorld.LoadFromAsset(name, vfsPath);
+        if (world == null)
+        {
+            return NNSceneResult.Invalid;
+        }
+
+        _worlds[name] = world;
+        SceneLoaded?.Invoke(world);
+
+        // 首个加载的场景自动激活
+        _activeWorld ??= world;
+        if (_activeWorld == world)
+            SceneActivated?.Invoke(world);
+
         return NNSceneResult.Ok;
     }
 

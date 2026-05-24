@@ -23,26 +23,31 @@ public static unsafe class EngineNativeApiBootstrap
 		var p = (NNNativeApi*)nativeApiTable;
 		if (p == null)
 		{
+			Console.WriteLine("[EngineNativeApiBootstrap] nativeApiTable 指针为空");
 			return;
 		}
 
 		if (p->ApiVersion != NNNativeApiConstants.ApiVersion)
 		{
+			Console.WriteLine($"[EngineNativeApiBootstrap] ApiVersion 不匹配: 期望 {NNNativeApiConstants.ApiVersion}, 实际 {p->ApiVersion}");
 			return;
 		}
 
 		if (p->EngineServices == 0)
 		{
+			Console.WriteLine("[EngineNativeApiBootstrap] EngineServices 指针为空");
 			return;
 		}
 
 		var pe = (NNNativeEngineApi*)p->EngineServices;
 		if (pe->LayoutVersion != NNNativeEngineApiConstants.LayoutVersion)
 		{
+			Console.WriteLine($"[EngineNativeApiBootstrap] LayoutVersion 不匹配: 期望 {NNNativeEngineApiConstants.LayoutVersion}, 实际 {pe->LayoutVersion}");
 			return;
 		}
 
 		EngineNativeApiCache.Install(in *pe);
+		Console.WriteLine("[EngineNativeApiBootstrap] 安装成功");
 	}
 
 	/// <summary>

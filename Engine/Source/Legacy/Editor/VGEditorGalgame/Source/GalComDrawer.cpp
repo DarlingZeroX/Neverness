@@ -16,10 +16,10 @@
 #include <VGGalgame/Include/GalGameEngine.h>
 #include <VGGalgameCore/Include/Components.h>
 #include "VGGalgameCore/Interface/IStoryScript.h"
-#include <NNRuntimeAsset/Interface/Package.h>
+#include <NNRuntimeAssetLegacy/Interface/Package.h>
 #include <VGGalgameCore/Include/GalGameEngineAccess.h>
 
-#include "NNRuntimeAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAssetLegacy/Include/GalGameAsset.h"
 #include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
 
 namespace VisionGal::Editor

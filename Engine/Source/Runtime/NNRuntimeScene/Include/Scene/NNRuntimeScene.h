@@ -10,6 +10,7 @@
  * 线程契约：Phase 2 假定单线程；由宿主在 game loop 同一线程调用。
  */
 
+#include "../Components/NNCameraComponent.h"
 #include "../Components/NNRelationshipComponent.h"
 #include "../Components/NNTagComponent.h"
 #include "../Components/NNTransformComponent.h"
@@ -22,8 +23,10 @@
 #include "../Systems/NNSceneSystemScheduler.h"
 #include "../Systems/NNSceneUpdateSystem.h"
 #include "../Systems/NNTransformSystem.h"
+#include "../Systems/NNCameraSystem.h"
 #include "../../NNRuntimeSceneExport.h"
 
+#include <atomic>
 #include <vector>
 
 namespace NN::Runtime::Scene
@@ -55,6 +58,9 @@ namespace NN::Runtime::Scene
 		[[nodiscard]] NNWorld& GetRegistry() noexcept { return m_Registry; }
 		[[nodiscard]] const NNWorld& GetRegistry() const noexcept { return m_Registry; }
 
+		[[nodiscard]] NNEntityHandleTable& GetHandleTable() noexcept { return m_EntityTable; }
+		[[nodiscard]] const NNEntityHandleTable& GetHandleTable() const noexcept { return m_EntityTable; }
+
 		[[nodiscard]] NNComponentRegistry& GetComponentRegistry() noexcept { return m_ComponentRegistry; }
 		[[nodiscard]] const NNComponentRegistry& GetComponentRegistry() const noexcept
 		{
@@ -79,6 +85,7 @@ namespace NN::Runtime::Scene
 
 		[[nodiscard]] NNHierarchySystem& GetHierarchySystem() noexcept { return m_HierarchySystem; }
 		[[nodiscard]] NNTransformSystem& GetTransformSystem() noexcept { return m_TransformSystem; }
+		[[nodiscard]] NNCameraSystem& GetCameraSystem() noexcept { return m_CameraSystem; }
 
 		bool SetParent(NNEntity child, NNEntity parent) noexcept;
 
@@ -154,6 +161,49 @@ namespace NN::Runtime::Scene
 
 		[[nodiscard]] NNEntity HandleFromEntt(entt::entity entity) const noexcept;
 
+		// ── Editor Snapshot 版本号 + 增量脏条目 ──
+
+		/** @brief 层级版本号——Entity 创建/销毁/Parent 变更时递增。 */
+		[[nodiscard]] std::uint64_t HierarchyVersion() const noexcept
+		{
+			return m_HierarchyVersion.load(std::memory_order_relaxed);
+		}
+
+		void IncrementHierarchyVersion() noexcept
+		{
+			m_HierarchyVersion.fetch_add(1u, std::memory_order_relaxed);
+		}
+
+		/** @brief 增量脏条目——层级变化时追加，全量快照拉取后清空。 */
+		struct DirtyHierarchyEntry
+		{
+			NNEntity   entity{NNEntityInvalid};
+			std::uint32_t changeFlags{0};
+		};
+
+		void MarkHierarchyDirty(NNEntity entity, std::uint32_t changeFlags) noexcept;
+
+		[[nodiscard]] const std::vector<DirtyHierarchyEntry>& GetDirtyHierarchyEntries() const noexcept
+		{
+			return m_DirtyHierarchyEntries;
+		}
+
+		void ClearDirtyHierarchyEntries() noexcept
+		{
+			m_DirtyHierarchyEntries.clear();
+		}
+
+		/** @brief Transform 版本号——NNTransformSystem 计算 WorldMatrix 时递增。 */
+		[[nodiscard]] std::uint64_t TransformVersion() const noexcept
+		{
+			return m_TransformVersion.load(std::memory_order_relaxed);
+		}
+
+		void IncrementTransformVersion() noexcept
+		{
+			m_TransformVersion.fetch_add(1u, std::memory_order_relaxed);
+		}
+
 		/** @brief 遍历存活实体（序列化、调试）。 */
 		template <typename Func>
 		void ForEachAliveEntity(Func&& func) const
@@ -186,6 +236,12 @@ namespace NN::Runtime::Scene
 		NNHierarchySystem m_HierarchySystem{};
 		NNTransformSystem m_TransformSystem{};
 		NNSceneUpdateSystem m_SceneUpdateSystem{};
+		NNCameraSystem m_CameraSystem{};
+
+		// ── Editor Snapshot 版本号 + 增量脏条目 ──
+		std::atomic<std::uint64_t> m_HierarchyVersion{0u};
+		std::atomic<std::uint64_t> m_TransformVersion{0u};
+		std::vector<DirtyHierarchyEntry> m_DirtyHierarchyEntries{};
 	};
 } // namespace NN::Runtime::Scene
 

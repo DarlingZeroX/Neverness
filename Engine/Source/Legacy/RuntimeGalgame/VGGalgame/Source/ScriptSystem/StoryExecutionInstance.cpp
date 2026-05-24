@@ -8,7 +8,7 @@
 #include "ScriptSystem/StoryExecutionInstance.h"
 
 #include "VGGalgameCore/Include/SubsystemBusGuard.h"
-#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 

@@ -90,6 +90,48 @@ public struct NNTransformData
 	public NNVec3 Scale;
 }
 
+/// <summary>投影類型枚舉（與 Native <c>NNProjectionType</c> 對齊）。</summary>
+public enum NNProjectionType : uint
+{
+	Perspective = 0,
+	Orthographic = 1,
+}
+
+/// <summary>
+/// 4x4 浮點矩陣，與 <c>glm::mat4</c> 內存佈局一致（列主序，64 字節）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNMat4
+{
+	public float M00, M10, M20, M30;
+	public float M01, M11, M21, M31;
+	public float M02, M12, M22, M32;
+	public float M03, M13, M23, M33;
+}
+
+/// <summary>
+/// 相機組件——blittable 結構體，與 Native <c>NNCameraComponent</c> 內存佈局一致。
+/// ProjectionMatrix 由 Native NNCameraSystem 每幀計算，C# 端只讀。
+/// TypeId = FNV-1a("Camera")，須與 Native BuiltinComponentRegistration.cpp 一致。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x54D1B2A64667E32E, Name = "Camera")]
+public struct NNCameraComponentData
+{
+	public NNProjectionType Projection;
+	public float NearPlane;
+	public float FarPlane;
+	public uint _padding0;
+
+	public float FovY;
+	public float AspectRatio;
+	public float OrthoWidth;
+	public float OrthoHeight;
+
+	public NNMat4 ProjectionMatrix;
+}
+
+
 /// <summary>
 /// 與 Native <c>NNSceneResult</c> 對齊（<c>SceneAPI.h</c>）：場景操作結果碼。
 /// </summary>
@@ -145,6 +187,97 @@ public unsafe struct NNSceneApi
 	public delegate* unmanaged<ulong, ulong, ulong*, uint, uint*, NNSceneResult> QueryEntities;
 	public delegate* unmanaged<ulong, ulong, ulong*, uint, void*, uint, NNSceneResult> QueryComponents;
 	public delegate* unmanaged<ulong, ulong, ulong, uint*, NNSceneResult> QueryCount2;
+}
+
+// ── Editor Scene Snapshot 类型（与 EditorSceneAPI.h 对齐）──────────────────
+
+/// <summary>
+/// 快照头部——位于 buffer 开头，描述后续 Node 数组和名字池的布局。32 字节。
+/// 与 Native <c>NNSceneSnapshotHeader</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNSceneSnapshotHeader
+{
+	public uint  Magic;            // 0x56475343
+	public uint  LayoutVersion;    // = 1
+	public ulong HierarchyVersion;
+	public uint  NodeCount;
+	public uint  NamePoolBytes;
+	public uint  RootCount;
+	public uint  Pad;
+}
+
+/// <summary>
+/// 场景层级节点快照——单个 Entity 的 Hierarchy 信息。40 字节。
+/// 名字通过 NameOffset + NameLen 引用 Header 之后的 namePool。
+/// 与 Native <c>NNSceneNodeSnapshot</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNSceneNodeSnapshot
+{
+	public ulong Entity;
+	public ulong Parent;
+	public uint  Depth;
+	public uint  ChildCount;
+	public uint  NameOffset;
+	public uint  NameLen;
+	public uint  Flags;
+	public uint  Pad;
+}
+
+/// <summary>
+/// 脏节点条目——增量快照使用。16 字节。
+/// 与 Native <c>NNDirtyNodeEntry</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNDirtyNodeEntry
+{
+	public ulong Entity;
+	public uint  ChangeFlags;
+	public uint  Pad;
+}
+
+/// <summary>
+/// Transform 快照数据——批量读取 Transform 组件。48 字节。
+/// 与 Native <c>NNEditorTransformData</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNEditorTransformData
+{
+	public ulong Entity;
+	public float PosX, PosY, PosZ;
+	public float RotX, RotY, RotZ, RotW;
+	public float SclX, SclY, SclZ;
+}
+
+/// <summary>ChangeFlags 常量（与 Native <c>NN_DIRTY_*</c> 宏对齐）。</summary>
+public static class SnapshotChangeFlags
+{
+	public const uint NameChanged     = 1u << 0;
+	public const uint ParentChanged   = 1u << 1;
+	public const uint ChildrenChanged = 1u << 2;
+	public const uint ActiveChanged   = 1u << 3;
+	public const uint FlagsChanged    = 1u << 4;
+}
+
+/// <summary>
+/// Editor 专用场景查询函数表——独立于 <see cref="NNSceneApi"/>，layoutVersion = 2。
+/// 与 Native <c>NNEditorSceneAPI</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct NNEditorSceneApi
+{
+	public uint LayoutVersion;  // = 2
+
+	public delegate* unmanaged<ulong, ulong> GetHierarchyVersion;
+	public delegate* unmanaged<ulong, uint> GetSnapshotSize;
+	public delegate* unmanaged<ulong, void*, uint, uint> GetHierarchySnapshot;
+
+	public delegate* unmanaged<ulong, ulong> GetTransformVersion;
+	public delegate* unmanaged<ulong, ulong*, uint, NNEditorTransformData*, uint> GetTransformSnapshot;
+
+	// ── 增量快照（layoutVersion = 2 追加）──
+	public delegate* unmanaged<ulong, void*, uint, uint> GetIncrementalSnapshot;
 }
 
 /// <summary>
@@ -208,6 +341,16 @@ public unsafe struct NNAssetRegistryApi
 	public delegate* unmanaged<NNGuid, uint> GetDependencyCount;
 	public delegate* unmanaged<NNGuid, uint, NNGuid*, int> GetDependencyAt;
 	public delegate* unmanaged<byte*, NNGuid> ImportAsset;
+
+	// Phase 1 依赖管理（append-only，与 C++ NNAssetRegistryAPI 对齐）
+	public delegate* unmanaged<NNGuid, NNGuid*, uint, int> SetDependencies;
+	public delegate* unmanaged<NNGuid, NNGuid, int> AddDependency;
+	public delegate* unmanaged<NNGuid, NNGuid, int> RemoveDependency;
+	public delegate* unmanaged<NNGuid, uint> GetReverseDependencyCount;
+	public delegate* unmanaged<NNGuid, uint, NNGuid*, int> GetReverseDependencyAt;
+	public delegate* unmanaged<int> HasCycle;
+	public delegate* unmanaged<uint> GetAssetCount;
+	public delegate* unmanaged<uint> GetEdgeCount;
 }
 
 /// <summary>
@@ -290,7 +433,7 @@ public unsafe struct NNVfsApi
 public unsafe struct NNApplicationApi
 {
 	public uint Size;
-	public delegate* unmanaged<bool> Initialize;
+	public delegate* unmanaged<int> Initialize;
 	public delegate* unmanaged<bool> PumpEvents;
 	public delegate* unmanaged<void> Shutdown;
 	public delegate* unmanaged<void> BeginFrame;
@@ -298,10 +441,70 @@ public unsafe struct NNApplicationApi
 }
 
 /// <summary>
+/// 與 Native <c>NNAssetManagerAPI</c> 對齊（<c>AssetManagerAPI.h</c>）：Runtime 資產管理器（同步/異步載入、卸載、包管理）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public unsafe struct NNAssetManagerApi
+{
+	public delegate* unmanaged[Stdcall]<NNGuid, ulong, NNAssetHandle> LoadAssetSync;
+	public delegate* unmanaged[Stdcall]<NNGuid, ulong, int, delegate* unmanaged[Stdcall]<NNAssetHandle, int, void*, void>, void*, NNAsyncWaitHandle> LoadAssetAsync;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, void> UnloadAsset;
+	public delegate* unmanaged[Stdcall]<NNGuid, void> UnloadAssetByGuid;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, int> IsAssetLoaded;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, int> IsAssetLoading;
+	public delegate* unmanaged[Stdcall]<NNGuid, NNAssetHandle> GetAssetByGuid;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, NNGuid> GetGuidByAsset;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, void> AddRef;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, void> ReleaseRef;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint> GetRefCount;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, void*> GetAssetData;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, ulong> GetAssetDataSize;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint> GetBlobCount;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint, void*> GetBlobData;
+	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint, ulong> GetBlobSize;
+	public delegate* unmanaged[Stdcall]<byte*, int> MountPackage;
+	public delegate* unmanaged[Stdcall]<byte*, void> UnmountPackage;
+	public delegate* unmanaged[Stdcall]<NNGuid, int> IsAssetInPackage;
+	public delegate* unmanaged[Stdcall]<NNGuid, void> MarkForReload;
+	public delegate* unmanaged[Stdcall]<void> ReloadMarkedAssets;
+	public delegate* unmanaged[Stdcall]<ulong> GetLoadedAssetCount;
+	public delegate* unmanaged[Stdcall]<ulong> GetTotalMemoryUsage;
+}
+
+/// <summary>
+/// 與 Native <c>NNCookResultData</c> 對齊（<c>AssetCookerAPI.h</c>）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNCookResultData
+{
+	public int Success;
+	public uint TotalAssets;
+	public uint CookedAssets;
+	public uint FailedAssets;
+	public uint GeneratedPacks;
+	public double ElapsedSeconds;
+}
+
+/// <summary>
+/// 與 Native <c>NNAssetCookerAPI</c> 對齊（<c>AssetCookerAPI.h</c>）：資產編譯/打包器。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public unsafe struct NNAssetCookerApi
+{
+	public delegate* unmanaged[Stdcall]<ulong> CreateManifest;
+	public delegate* unmanaged[Stdcall]<ulong, void> DestroyManifest;
+	public delegate* unmanaged[Stdcall]<ulong, byte*, void> SetOutputRoot;
+	public delegate* unmanaged[Stdcall]<ulong, byte*, void> SetLibraryRoot;
+	public delegate* unmanaged[Stdcall]<ulong, NNGuid, ulong, byte*, uint, void> AddAsset;
+	public delegate* unmanaged[Stdcall]<ulong, byte*, byte*, uint, byte*, void> AddGroup;
+	public delegate* unmanaged[Stdcall]<ulong, NNCookResultData> Cook;
+}
+
+/// <summary>
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v10** 起 <see cref="Vfs"/> 含 <c>getAbsolutePath</c> 等；若 Native 遞增 layout 而託管未同步，<see cref="EngineNativeApiBootstrap.InstallFromNativeApiTable"/> 將拒絕快取。
+/// **layout v17**：新增 <c>NNAssetManagerAPI</c>、<c>NNAssetCookerAPI</c> 子表。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -314,6 +517,8 @@ public unsafe struct NNNativeEngineApi
 	public NNAssetApi Asset;
 	public NNInputApi Input;
 	public NNSceneApi Scene;
+	/// <summary>對應 C 聚合體成員 <c>editorScene</c>（型別 <c>NNEditorSceneAPI</c>）；Editor 快照查詢。</summary>
+	public NNEditorSceneApi EditorScene;
 	public NNTimingApi Timing;
 	public NNAsyncWaitApi AsyncWait;
 	public NNObjectApi Object;
@@ -326,4 +531,8 @@ public unsafe struct NNNativeEngineApi
 	public NNWindowApi Window;
 	/// <summary>對應 C 聚合體末尾成員 <c>vfs</c>（型別 <c>NNVfsAPI</c>）。</summary>
 	public NNVfsApi Vfs;
+	/// <summary>對應 C 聚合體成員 <c>assetManager</c>（型別 <c>NNAssetManagerAPI</c>）；Runtime 資產管理器。</summary>
+	public NNAssetManagerApi AssetManager;
+	/// <summary>對應 C 聚合體成員 <c>assetCooker</c>（型別 <c>NNAssetCookerAPI</c>）；資產編譯/打包器。</summary>
+	public NNAssetCookerApi AssetCooker;
 }

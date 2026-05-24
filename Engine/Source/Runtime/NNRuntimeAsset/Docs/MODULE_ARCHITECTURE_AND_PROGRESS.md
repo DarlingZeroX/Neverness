@@ -1,87 +1,99 @@
-# NNRuntimeAsset — 游戏资产类型与加载
+# NNRuntimeAsset 模組架構與進度
 
-> 曾用名：**VGAsset**；CMake 目标 **`NevernessRuntime-Asset`**；C++ 命名空间 **`NN::Runtime`**。
+## 概述
 
-## 1. 定位与边界
+Runtime 資產系統核心模組。提供 .nnasset 格式定義、資產管理器、Handle 系統、快取、串流管理。
 
-| 项目 | 说明 |
-|------|------|
-| **职责** | 提供 **Galgame** 等资源类型（音频/视频片段、场景访问器等）、**`AssetManager`** 与工厂；头文件主要在 **`Interface/`**。 |
-| **不负责** | 不负责 Pak 物理格式（**NNRuntimePak**）；不负责 FFmpeg 底层解码（**NevernessCore-MediaCore**）。 |
-| **CMake 目标** | `NevernessRuntime-Asset`（`SHARED`） |
-| **宏** | `VG_ASSET_EXPORT`（历史宏名） |
-| **依赖** | `SDL3`、`SDL3_image`、`NevernessCore-Core`、`NevernessCore-PlatformCore`、`NevernessCore-FileSystem`、`NevernessRuntime-Core`、`NevernessCore-MediaCore`（PRIVATE）。 |
-| **典型消费者** | **NevernessRuntime-EngineLegacy**。 |
+**模組類型：** STATIC
+**CMake 目標：** `NevernessRuntime-Asset`
+**依賴：** `NevernessRuntime-NativeEngineAPI`
 
----
-
-## 2. 构建与选项
-
-- 包含目录：**PRIVATE** `Engine/Source/Runtime`、`Engine/Source/Core`、`Include`、`Interface`。
-
----
-
-## 3. 目录结构（摘要）
+## 目錄結構
 
 ```
-Engine/Source/Runtime/NNRuntimeAsset/
+NNRuntimeAsset/
 ├── CMakeLists.txt
-├── Docs/
-│   └── MODULE_ARCHITECTURE_AND_PROGRESS.md   ← 本文件
-├── Interface/
-├── Include/                   ← 具体资产类声明（若有）
-└── Source/
+├── Include/
+│   ├── NNAssetManager.h       # 資產管理器（核心）
+│   ├── NNAssetHandle.h        # 類型化 Handle + HandleTable
+│   ├── NNAssetFormat.h        # .nnasset 二進位格式定義
+│   ├── NNAssetTypes.h         # 型別註冊系統
+│   ├── NNAssetCache.h         # LRU 快取
+│   ├── NNAssetRef.h           # RAII 引用計數智慧指標
+│   └── NNStreamingManager.h   # 異步串流管理器
+├── Private/
+│   ├── NNAssetManager.cpp
+│   ├── NNHandleTable.cpp
+│   ├── NNAssetCache.cpp
+│   ├── NNStreamingManager.cpp
+│   ├── NNAssetFormat.cpp      # 檔案讀寫
+│   └── NNAssetManagerApi.cpp  # C ABI 橋接
+└── Docs/
+    └── MODULE_ARCHITECTURE_AND_PROGRESS.md
 ```
 
----
+## 核心設計
 
-## 4. 使用说明
+### NNAssetHandleT<T>
+- 模板類型化 Handle（8 位元組）
+- uint64 編碼：低 32 位 = 索引，高 32 位 = generation
+- HandleTable 支援 free list 復用 + generation 防 ABA
 
-### 4.1 包含方式
+### NNAssetManager
+- 單例模式
+- GUID → Handle 映射
+- 同步/異步載入
+- .nnasset 檔案解析
+- 引用計數管理
+- 包掛載（預留）
+- Hot Reload 支援
 
-```cpp
-#include "NNRuntimeAsset/Interface/AssetManager.h"
-#include "GalGameAsset.h"
-```
+### NNAssetCache
+- LRU 驅逐策略
+- 可設定記憶體預算
+- 釘選機制（不被驅逐）
 
-`GalGameAsset.h` 位于 [`Include/GalGameAsset.h`](../Include/GalGameAsset.h)（非 `Interface/`）；包含路径以链接目标的 CMake 配置为准。
+### NNStreamingManager
+- IO 執行緒池 + 解碼執行緒池
+- 優先級佇列
+- 框架已建立，完整實作在 Phase 5
 
-### 4.2 与 NNRuntimeCore / 虚拟文件系统
+### .nnasset 格式
+- Header 固定 64 位元組
+- 依賴 GUID 表
+- Blob 描述符表
+- 對齊填充
+- 連續 payload
 
-资产加载通常通过 **NNRuntimeCore** 暴露的 VFS/文件接口访问包内路径；详见 [`AssetManager.h`](../Interface/AssetManager.h) 注释。
+## 狀態
 
----
+**Phase 1：完成** ✅
 
-## 5. 接口与 API 文档（`Interface/`）
+- [x] 目錄結構建立
+- [x] CMakeLists.txt
+- [x] NNAssetFormat.h/.cpp — .nnasset 格式定義 + 檔案讀寫
+- [x] NNHandleTable — Handle 分配/釋放/查詢
+- [x] NNAssetHandle.h — 類型化 Handle 模板
+- [x] NNAssetTypes.h — 型別註冊系統
+- [x] NNAssetManager.h/.cpp — 資產管理器核心
+- [x] NNAssetCache.h/.cpp — LRU 快取
+- [x] NNStreamingManager.h/.cpp — 串流管理器框架
+- [x] NNAssetRef.h — RAII 引用計數
+- [x] NNAssetManagerApi.cpp — C ABI 橋接
 
-| 头文件 | 主要职责 |
-|--------|----------|
-| [`AssetManager.h`](../Interface/AssetManager.h) | 资源索引、异步/同步加载策略（以实现为准）。 |
-| [`AssetFactory.h`](../Interface/AssetFactory.h) | 类型注册与实例创建。 |
-| [`AudioClip.h`](../Interface/AudioClip.h) / [`VideoClip.h`](../Interface/VideoClip.h) | 音视频资产句柄。 |
-| [`SceneAccessor.h`](../Interface/SceneAccessor.h) | 场景数据访问器。 |
-| [`ISceneSerializer.h`](../Interface/ISceneSerializer.h) / [`SceneSerializerFactory.h`](../Interface/SceneSerializerFactory.h) | 场景序列化插件点。 |
-| [`Package.h`](../Interface/Package.h) | 与包体协同的辅助声明（若存在与 **NNRuntimePak** 重叠，以头文件注释区分职责）。 |
+**後續 Phase：**
+- Phase 5：完善異步 IO（Overlapped IO / IOCP）
+- Phase 5：完善解碼管線
+- Phase 6：包管理完整實作
+- Phase 7：Hot Reload 整合
 
-### 5.2 `Include/`（补充）
+## 介面
 
-| 头文件 | 主要职责 |
-|--------|----------|
-| [`GalGameAsset.h`](../Include/GalGameAsset.h) | Galgame 资产聚合类型或工厂（以实现为准）。 |
+### C ABI
+- `NNAssetManagerAPI` — 在 `AssetManagerAPI.h` 中定義
+- 透過 `NNBuildAssetManagerRuntimeApi()` 接線
 
----
-
-## 6. 开发进展
-
-| 日期 | 进展 |
-|------|------|
-| 2026-05-17 | 文档与 **NN/Neverness** 命名对齐（无行为变更）。 |
-| 2026-05-15 | 文档首版。 |
-
----
-
-## 7. 相关链接
-
-- [Runtime 总览](../../RUNTIME_ARCHITECTURE_AND_PROGRESS.md)
-- [NNRuntimePak](../NNRuntimePak/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
-- [NNMediaCore](../../Core/NNMediaCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)
+### C++
+- `NNAssetManager::Instance()` — 單例存取
+- `NNAssetHandleT<T>` — 類型化 Handle
+- `NNAssetRef<T>` — RAII 引用計數

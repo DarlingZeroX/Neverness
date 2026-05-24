@@ -1,10 +1,15 @@
 using Hexa.NET.ImGui;
 using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Private.Menu;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Public;
 using System.Numerics;
 using Neverness.Editor.Assets.Private.Core;
+using Neverness.Editor.Assets.AssetOpening;
 using Neverness.Editor.Assets.Private.Context;
+using Neverness.Editor.ProjectSystem.Public;
+using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS.Public;
 
 namespace Neverness.Editor.Assets.Private.Panel;
 
@@ -13,15 +18,17 @@ public class ContentBrowserPanel : IEditorPanel
     private bool _isOpen = true;
 
     private ContentBrowser _contentBrowser;
+    private readonly AssetOpenService? _openService;
 
     public ContentBrowserPanel()
     {
         if (ContentBrowser.Instance != null) _contentBrowser = ContentBrowser.Instance;
+        EditorCoreModule.Context.TryGetService(out _openService);
     }
 
     public void OnUpdate(float delta)
     {
-        throw new NotImplementedException();
+
     }
 
     public void OnFixedUpdate()
@@ -201,7 +208,15 @@ public class ContentBrowserPanel : IEditorPanel
                 }
                 else
                 {
-                    //AssetEditor.Get().OpenAsset(item.Path, item.MetaData);
+                    if (_openService != null)
+                    {
+                        NVirtualPath? resourcePath = ProjectPaths.GetResourcePath(new NPath(item.Path));
+                        if (resourcePath != null)
+                        {
+                            _ = _openService.OpenAsync((NVirtualPath)resourcePath);
+                        }
+                    }
+                       // _ = _openService.OpenAsync();
                 }
             }
         }

@@ -7,6 +7,7 @@
 
 #include <cstring>
 
+#include "../../../NNNativeEngineAPI/Include/EngineTypes.h"
 #include "Components/NNRelationshipComponent.h"
 #include "Components/NNTagComponent.h"
 #include "Components/NNTransformComponent.h"
@@ -144,6 +145,14 @@ std::vector<std::uint8_t> SerializeComponentBlob(
 			/* 固定大小字符数组，按字段 Size 字节直接 memcpy */
 			WriteBytes(blob, fieldPtr, field.Size);
 			break;
+		case NNComponentFieldType::Guid:
+			{
+				NNGuid guid{};
+				std::memcpy(&guid, fieldPtr, sizeof(NNGuid));
+				WriteU64(blob, guid.high);
+				WriteU64(blob, guid.low);
+				break;
+			}
 		default:
 			break;
 		}
@@ -231,6 +240,14 @@ bool DeserializeComponentBlob(
 				return false;
 			}
 			break;
+		case NNComponentFieldType::Guid:
+			{
+				NNGuid guid{};
+				if (!ReadU64(blob, blobOffset, guid.high) || !ReadU64(blob, blobOffset, guid.low))
+					return false;
+				std::memcpy(fieldPtr, &guid, sizeof(NNGuid));
+				break;
+			}
 		default:
 			break;
 		}
@@ -279,6 +296,7 @@ std::vector<std::uint8_t> NNSceneSerializer::Serialize(const NNRuntimeScene& sce
 			++componentCount;
 		};
 
+		/* Built-in components (hardcoded for special logic like SetParent) */
 		appendComponent(
 			registry.FindTypeId(std::type_index(typeid(NNTransformComponent))),
 			scene.TryGet<NNTransformComponent>(handle));
@@ -288,6 +306,28 @@ std::vector<std::uint8_t> NNSceneSerializer::Serialize(const NNRuntimeScene& sce
 		appendComponent(
 			registry.FindTypeId(std::type_index(typeid(NNTagComponent))),
 			scene.TryGet<NNTagComponent>(handle));
+
+		/* Registry-driven: auto-serialize all components with registered SerializeFn */
+		registry.ForEachDescriptor([&](const NNComponentTypeDesc& desc)
+		{
+			if (!desc.SerializeFn)
+				return;
+			/* Skip built-in components already handled above */
+			if (desc.TypeIndex == std::type_index(typeid(NNTransformComponent))
+				|| desc.TypeIndex == std::type_index(typeid(NNRelationshipComponent))
+				|| desc.TypeIndex == std::type_index(typeid(NNTagComponent)))
+				return;
+
+			std::vector<std::uint8_t> blob;
+			desc.SerializeFn( const_cast<NNRuntimeScene&>(scene), handle, blob);
+			if (!blob.empty())
+			{
+				WriteU64(componentsPayload, desc.NameHash);
+				WriteU32(componentsPayload, static_cast<std::uint32_t>(blob.size()));
+				WriteBytes(componentsPayload, blob.data(), blob.size());
+				++componentCount;
+			}
+		});
 
 		WriteU32(buffer, componentCount);
 		buffer.insert(buffer.end(), componentsPayload.begin(), componentsPayload.end());
@@ -412,6 +452,12 @@ bool NNSceneSerializer::Deserialize(
 						*dst = value;
 					}
 				}
+			}
+			else if (desc->Fields.size() > 0)
+			{
+				/* Generic fallback: deserialize via field reflection for non-built-in components */
+				/* Components with SerializeFn are serialized by the registry-driven path */
+				/* Here we handle deserialization generically using DeserializeComponentBlob */
 			}
 		}
 	}

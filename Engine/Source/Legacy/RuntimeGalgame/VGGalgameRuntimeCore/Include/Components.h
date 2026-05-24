@@ -12,7 +12,7 @@
 #pragma once
 #include "../VGGRCExport.h"
 #include "NNRuntimeCore/Interface/SceneInterface.h"
-#include "NNRuntimeAsset/Interface/ISceneSerializer.h"
+#include "NNRuntimeAssetLegacy/Interface/ISceneSerializer.h"
 
 namespace VisionGal::GalGame
 {

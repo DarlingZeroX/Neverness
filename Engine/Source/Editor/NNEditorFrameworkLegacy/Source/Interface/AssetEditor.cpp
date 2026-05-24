@@ -20,7 +20,7 @@
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNEngineLegacy/Include/Engine/Manager.h>
 
-#include "NNRuntimeAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAssetLegacy/Include/GalGameAsset.h"
 
 namespace NN::Editor
 {

@@ -13,7 +13,7 @@
 #include "NNEditorFrameworkLegacy/Include/EditorCore/Localization.h"
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNRuntimeImGui/Include/ImGuiEx/ImGuiVector.h>
-#include <NNRuntimeAsset/Interface/Package.h>
+#include <NNRuntimeAssetLegacy/Interface/Package.h>
 #include <NNRuntimeRmlui/Interface/UISystem.h>
 #include <NNRuntimeCore/Interface/Loader.h>
 #include <NNEngineLegacy/Include/Lua/LuaScript.h>

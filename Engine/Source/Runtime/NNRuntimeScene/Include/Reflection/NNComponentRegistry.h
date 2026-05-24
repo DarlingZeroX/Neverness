@@ -16,10 +16,12 @@
 
 #include "NNComponentFieldType.h"
 #include "NNComponentTypeId.h"
+#include "../Scene/NNEntity.h"
 #include "../../NNRuntimeScene/NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene
 {
+		class NNRuntimeScene;
 	/** @brief FNV-1a 64-bit 字符串哈希（编译期常量，跨平台稳定）。 */
 	inline constexpr std::uint64_t fnv1a_64(
 		const char* str,
@@ -39,6 +41,17 @@ namespace NN::Runtime::Scene
 		NNComponentFieldType FieldType = NNComponentFieldType::Float;
 	};
 
+	/**
+	 * @brief 组件序列化回调（通用序列化/反序列化入口）。
+	 *
+	 * 用于注册表驱动的场景序列化：新组件注册时提供此回调，
+	 * NNSceneSerializer 通过回调实现通用序列化，无需硬编码。
+	 */
+	using NNSceneComponentSerializeFn = std::function<void(
+		NNRuntimeScene& scene,
+		NNEntity entity,
+		std::vector<std::uint8_t>& outBlob)>;
+
 	/** @brief 组件类型描述（名称、字段列表、稳定 NameHash）。 */
 	struct NN_RUNTIME_SCENE_API NNComponentTypeDesc
 	{
@@ -48,6 +61,7 @@ namespace NN::Runtime::Scene
 		const char* NameUtf8 = nullptr;
 		std::size_t SizeBytes = 0u;
 		std::vector<NNComponentFieldDesc> Fields{};
+		NNSceneComponentSerializeFn SerializeFn{};            // 通用序列化回调（可选）
 	};
 
 	class NN_RUNTIME_SCENE_API NNComponentRegistryGlobal;
@@ -95,6 +109,13 @@ namespace NN::Runtime::Scene
 			const std::function<void(const NNComponentFieldDesc&)>& visitor) const;
 
 		[[nodiscard]] std::size_t GetRegisteredCount() const noexcept { return m_Descriptors.size(); }
+
+		/** @brief 遍历所有已注册的组件类型描述符。 */
+		void ForEachDescriptor(const std::function<void(const NNComponentTypeDesc&)>& visitor) const
+		{
+			for (const auto& desc : m_Descriptors)
+				visitor(desc);
+		}
 
 	private:
 		NNComponentTypeId RegisterType(

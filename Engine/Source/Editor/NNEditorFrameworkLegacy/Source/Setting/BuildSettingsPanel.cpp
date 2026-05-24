@@ -14,7 +14,7 @@
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include "NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
-#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "NNEngineLegacy/Include/Project/ProjectSettings.h"
 #include "NNEngineLegacy/Include/Project/ProjectBuilder.h"
 

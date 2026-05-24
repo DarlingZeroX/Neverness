@@ -9,8 +9,13 @@
 #include <array>
 #include <SDL3/SDL.h>
 #include <cctype>
+#include <cstdio>
 #include <filesystem>
 #include <iostream>
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 #include "Core/WindowRegistry.h"
 #include "Editor/EditorInitializer.h"
@@ -20,12 +25,36 @@
 #include "NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
 #include "NNRuntimeImGui/Include/ImGuiLayer/SDL3Decorator.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
+#include <SDL3\SDL_oldnames.h>
 
 namespace NN::Runtime::Application
 {
 	namespace
 	{
 		namespace fs = std::filesystem;
+
+		/* 双通道输出：OutputDebugStringA（VS 输出窗口）+ stderr（控制台） */
+		void LogError(const char* msg)
+		{
+#ifdef _WIN32
+			OutputDebugStringA("[NNRuntimeApp] ");
+			OutputDebugStringA(msg);
+			OutputDebugStringA("\n");
+#endif
+			fprintf(stderr, "[NNRuntimeApp] %s\n", msg);
+			fflush(stderr);
+		}
+
+		void LogInfo(const char* msg)
+		{
+#ifdef _WIN32
+			OutputDebugStringA("[NNRuntimeApp] ");
+			OutputDebugStringA(msg);
+			OutputDebugStringA("\n");
+#endif
+			printf("[NNRuntimeApp] %s\n", msg);
+			fflush(stdout);
+		}
 
 		std::string TrimWhitespace(std::string value)
 		{
@@ -97,76 +126,114 @@ namespace NN::Runtime::Application
 		}
 	} // namespace
 
-	bool RuntimeApplication::Initialize()
+	int RuntimeApplication::Initialize()
 	{
-		if (m_sdlInitialized)
+		try
 		{
-			return true;
-		}
+			if (m_sdlInitialized)
+			{
+				LogInfo("Initialize: 已初始化，直接返回 1");
+				return 1;
+			}
 
-		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO))
-		{
-			std::cerr << "SDL 初始化失败: " << SDL_GetError() << std::endl;
-			return false;
-		}
+			SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
+			LogInfo("Initialize: 开始 SDL_Init");
 
-		if (SDL_InitSubSystem(SDL_INIT_AUDIO) == false)
-		{
-			std::cerr << "音频子系统初始化失败: " << SDL_GetError() << std::endl;
-			return false;
-		}
+			if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO))
+			{
+				std::string msg = std::string("SDL 初始化失败: ") + SDL_GetError();
+				LogError(msg.c_str());
+				return -1;
+			}
+			LogInfo("Initialize: SDL_Init 成功");
 
-		m_sdlInitialized = true;
-		m_shouldQuit = false;
+			if (SDL_InitSubSystem(SDL_INIT_AUDIO) == false)
+			{
+				std::string msg = std::string("音频子系统初始化失败: ") + SDL_GetError();
+				LogError(msg.c_str());
+				return -2;
+			}
+			LogInfo("Initialize: SDL 音频子系统成功");
 
-		std::string editorProjectRootDir;
+			m_sdlInitialized = true;
+			m_shouldQuit = false;
+
+			std::string editorProjectRootDir;
 #ifdef EDITOR_PROJECT_ROOT_DIR
-		std::cout << "VisionGal Project root is: " << EDITOR_PROJECT_ROOT_DIR << std::endl;
-		editorProjectRootDir = EDITOR_PROJECT_ROOT_DIR;
+			LogInfo(std::string("Initialize: EDITOR_PROJECT_ROOT_DIR = " + std::string(EDITOR_PROJECT_ROOT_DIR)).c_str());
+			editorProjectRootDir = EDITOR_PROJECT_ROOT_DIR;
 #endif
 
-		std::locale::global(std::locale(".utf8"));
-
-		std::string projectRootDir = FindDefaultProjectRoot(editorProjectRootDir);
-		std::string projectPath;
-		if (NN::Core::HFileSystem::ReadTextFromFile("Data/EditorStartupData.txt", projectPath))
-		{
-			projectPath = TrimWhitespace(projectPath);
-			if (!projectPath.empty())
+			LogInfo("Initialize: 设置 locale");
+			try
 			{
-				projectRootDir = projectPath;
+				std::locale::global(std::locale(".utf8"));
+				LogInfo("Initialize: locale 设置成功");
 			}
+			catch (const std::exception& ex)
+			{
+				std::string msg = std::string("locale 设置失败: ") + ex.what();
+				LogError(msg.c_str());
+				return -5;
+			}
+
+			LogInfo("Initialize: 查找项目目录");
+			std::string projectRootDir = FindDefaultProjectRoot(editorProjectRootDir);
+			std::string projectPath;
+			if (NN::Core::HFileSystem::ReadTextFromFile("Data/EditorStartupData.txt", projectPath))
+			{
+				projectPath = TrimWhitespace(projectPath);
+				if (!projectPath.empty())
+				{
+					projectRootDir = projectPath;
+				}
+			}
+
+			LogInfo(std::string("Initialize: Project path = " + projectRootDir).c_str());
+
+			if (projectRootDir.empty())
+			{
+				LogError("Initialize: 未找到可用的编辑器启动项目");
+				return -3;
+			}
+
+			LogInfo("Initialize: 检查项目目录有效性");
+			if (!EditorInitializer::CheckProjectRootDir(projectRootDir))
+			{
+				std::string msg = std::string("编辑器启动项目无效: ") + projectRootDir;
+				LogError(msg.c_str());
+				return -4;
+			}
+			LogInfo("Initialize: 项目目录有效");
+
+			EditorVFSPath paths;
+			paths.assets = projectRootDir + "/Assets/";
+			paths.library = projectRootDir + "/Library/";
+			paths.build = projectRootDir + "/Build/";
+			paths.packages = projectRootDir + "/Packages/";
+
+			paths.projectSettings = projectRootDir + "/ProjectSettings/";
+			paths.projectIntermediate = projectRootDir + "/Intermediate/";
+			paths.editor = editorProjectRootDir + "/Resource/Editor/";
+			paths.engine = editorProjectRootDir + "/Resource/Engine/";
+			EditorInitializer::InitializeVFS(paths);
+			LogInfo("Initialize: VFS 初始化完成");
+
+			return 1;
 		}
-
-		H_LOG_INFO("Project path: %s", projectRootDir.c_str());
-
-		if (projectRootDir.empty())
+		catch (const std::exception& ex)
 		{
-			std::cerr
-				<< "未找到可用的编辑器启动项目。请创建 Data/EditorStartupData.txt 指向项目目录，"
-				<< "或确保仓库下存在有效的 Project/* 项目目录。"
-				<< std::endl;
-			return false;
+			std::string msg = std::string("Initialize 异常: ") + ex.what();
+			LogError(msg.c_str());
+			return -99;
 		}
-
-		if (!EditorInitializer::CheckProjectRootDir(projectRootDir))
+		catch (...)
 		{
-			std::cerr << "编辑器启动项目无效: " << projectRootDir << std::endl;
-			return false;
+			LogError("Initialize 未知异常");
+			return -100;
 		}
-
-		EditorVFSPath paths;
-		paths.assets = projectRootDir + "/Assets/";
-		paths.projectSettings = projectRootDir + "/ProjectSettings/";
-		paths.projectIntermediate = projectRootDir + "/Intermediate/";
-		paths.editor = editorProjectRootDir + "/Resource/Editor/";
-		paths.engine = editorProjectRootDir + "/Resource/Engine/";
-		EditorInitializer::InitializeVFS(paths);
-
-		return true;
 	}
-
-	void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
+void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 	{
 		if (handle == NN_INVALID_WINDOW_HANDLE || m_imguiAttached)
 		{

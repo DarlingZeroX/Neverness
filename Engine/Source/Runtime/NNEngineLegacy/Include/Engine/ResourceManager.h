@@ -13,7 +13,7 @@
 #include "../Render/Texture2D.h"
 //#include "Video.h"
 #include "NNRuntimeCore/Interface/Loader.h"
-#include "NNRuntimeAsset/Include/TextureAsset.h"
+#include "NNRuntimeAssetLegacy/Include/TextureAsset.h"
 #include <NNCore/Interface/HSingleton.h>
 
 namespace NN::Runtime {

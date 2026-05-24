@@ -13,7 +13,7 @@
 #include "Scene/SceneFactory.h"
 #include "Scene/ComponentSerializer.h"
 #include "Scene/GameActorFactory.h"
-#include "NNRuntimeAsset/Interface/SceneSerializerFactory.h"
+#include "NNRuntimeAssetLegacy/Interface/SceneSerializerFactory.h"
 
 namespace NN::Runtime
 {

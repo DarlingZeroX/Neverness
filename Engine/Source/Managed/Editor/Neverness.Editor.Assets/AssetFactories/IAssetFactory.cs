@@ -1,3 +1,5 @@
+using Neverness.Runtime.Assets;
+
 namespace Neverness.Editor.Assets.AssetFactories;
 
 /// <summary>
@@ -20,6 +22,6 @@ public interface IAssetFactory
 
     /// <summary>在指定目录创建资产文件。</summary>
     /// <param name="directoryPath">目标目录的绝对路径。</param>
-    /// <returns>创建成功返回 true。</returns>
-    bool CreateAsset(string directoryPath);
+    /// <returns>创建成功返回实际文件路径，失败返回 null。</returns>
+    NPath? CreateAsset(NPath directoryPath);
 }

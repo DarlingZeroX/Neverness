@@ -28,4 +28,16 @@ typedef struct NNTransform3
 
 #ifdef __cplusplus
 } /* extern "C" */
+
+/** @brief NNGuid 相等性比较。 */
+inline bool operator==(const NNGuid& a, const NNGuid& b) noexcept
+{
+	return a.high == b.high && a.low == b.low;
+}
+
+/** @brief NNGuid 不等性比较。 */
+inline bool operator!=(const NNGuid& a, const NNGuid& b) noexcept
+{
+	return !(a == b);
+}
 #endif

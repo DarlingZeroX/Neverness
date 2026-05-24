@@ -4,7 +4,7 @@
 
 #include "ScriptSystem/GalAssetTypeScriptRuntime.h"
 
-#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "VGGalgameContract/Interface/IStoryScriptSystem.h"
 #include "VGGalgameRuntimeCore/Interface/IStoryScript.h"
 

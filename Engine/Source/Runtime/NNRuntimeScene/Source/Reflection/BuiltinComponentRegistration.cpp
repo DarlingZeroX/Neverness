@@ -3,6 +3,7 @@
  * @brief 内置组件静态注册（含 Phase 4-B 字段反射元数据）。
  */
 
+#include "Components/NNCameraComponent.h"
 #include "Components/NNRelationshipComponent.h"
 #include "Components/NNTagComponent.h"
 #include "Components/NNTransformComponent.h"
@@ -30,4 +31,17 @@ NN_REGISTER_COMPONENT(
 	"Tag",
 	NN_FIELD(NN::Runtime::Scene::NNTagComponent, Flags, UInt32),
 	NN_FIELD(NN::Runtime::Scene::NNTagComponent, Name, CharArray));
+
+NN_REGISTER_COMPONENT(
+		NN::Runtime::Scene::NNCameraComponent,
+		"Camera",
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, Projection, UInt32),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, NearPlane, Float),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, FarPlane, Float),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, _padding0, UInt32),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, FovY, Float),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, AspectRatio, Float),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, OrthoWidth, Float),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, OrthoHeight, Float),
+		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, ProjectionMatrix, Float4x4));
 } // namespace

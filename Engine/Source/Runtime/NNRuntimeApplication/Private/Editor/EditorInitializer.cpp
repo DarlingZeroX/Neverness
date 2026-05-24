@@ -82,14 +82,23 @@ namespace NN::Runtime::Application
 		);
 
 		auto assetsFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.assets);
+		auto libraryFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.library);
+		auto buildFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.build);
+		auto packagesFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.packages);
 		auto projectSettingsFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectSettings);
 		auto projectIntermediateFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectIntermediate);
 
 		assetsFS->Initialize();
+		libraryFS->Initialize();
+		buildFS->Initialize();
+		packagesFS->Initialize();
 		projectSettingsFS->Initialize();
 		projectIntermediateFS->Initialize();
 
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetAssetsPathVFS(), std::move(assetsFS));
+		vfs->AddFileSystem("Library", std::move(libraryFS));
+		vfs->AddFileSystem("Build", std::move(buildFS));
+		vfs->AddFileSystem("Packages", std::move(packagesFS));
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectSettingsPathVFS(), std::move(projectSettingsFS));
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectIntermediatePathVFS(), std::move(projectIntermediateFS));
 

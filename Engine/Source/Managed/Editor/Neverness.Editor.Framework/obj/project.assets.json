@@ -43,6 +43,7 @@
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "Neverness.Runtime.Application": "1.0.0",
+          "Neverness.Runtime.Assets": "1.0.0",
           "Neverness.Runtime.VFS": "1.0.0"
         },
         "compile": {
@@ -64,6 +65,20 @@
         },
         "runtime": {
           "bin/placeholder/Neverness.Runtime.Application.dll": {}
+        }
+      },
+      "Neverness.Runtime.Assets/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Neverness.Runtime.Engine": "1.0.0",
+          "Neverness.Runtime.Interop": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Neverness.Runtime.Assets.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Runtime.Assets.dll": {}
         }
       },
       "Neverness.Runtime.Engine/1.0.0": {
@@ -159,6 +174,11 @@
       "type": "project",
       "path": "../../Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj",
       "msbuildProject": "../../Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj"
+    },
+    "Neverness.Runtime.Assets/1.0.0": {
+      "type": "project",
+      "path": "../../Runtime/Neverness.Runtime.Assets/Neverness.Runtime.Assets.csproj",
+      "msbuildProject": "../../Runtime/Neverness.Runtime.Assets/Neverness.Runtime.Assets.csproj"
     },
     "Neverness.Runtime.Engine/1.0.0": {
       "type": "project",

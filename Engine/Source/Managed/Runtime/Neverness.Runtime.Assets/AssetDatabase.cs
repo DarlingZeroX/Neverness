@@ -11,84 +11,90 @@ namespace Neverness.Runtime.Assets;
 /// </summary>
 public static class AssetDatabase
 {
-	private static readonly Dictionary<string, GUID> s_pathToGuid = new(StringComparer.OrdinalIgnoreCase);
-	private static readonly Dictionary<string, string> s_guidToPath = new(StringComparer.OrdinalIgnoreCase);
+	private static readonly Dictionary<NVirtualPath, GUID> s_pathToGuid = new();
+	private static readonly Dictionary<string, NVirtualPath> s_guidToPath = new(StringComparer.OrdinalIgnoreCase);
 
 	/// <summary>已登記資產數量（託管快取）。</summary>
 	public static int Count => s_pathToGuid.Count;
 
 	/// <summary>登記虛擬路徑與 GUID。</summary>
-	public static bool Register(string virtualPath, GUID guid)
+	public static bool Register(NVirtualPath path, GUID guid)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(virtualPath);
-		if (guid.IsZero)
+		if (path.IsEmpty || guid.IsZero)
 		{
 			return false;
 		}
 
-		if (TryRegisterNative(virtualPath, guid))
+		if (TryRegisterNative(path, guid))
 		{
-			Cache(virtualPath, guid);
+			Cache(path, guid);
 			return true;
 		}
 
-#if DEBUG
-		if (s_pathToGuid.ContainsKey(virtualPath))
+	#if DEBUG
+		if (s_pathToGuid.ContainsKey(path))
 		{
 			return false;
 		}
 
-		Cache(virtualPath, guid);
+		Cache(path, guid);
 		return true;
-#else
+	#else
 		return false;
-#endif
+	#endif
 	}
 
 	/// <summary>依路徑解析 GUID。</summary>
-	public static bool TryResolveGuid(string virtualPath, out GUID guid)
+	public static bool TryResolveGuid(NVirtualPath path, out GUID guid)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(virtualPath);
-		if (TryResolveGuidNative(virtualPath, out guid))
+		guid = GUID.Zero;
+		if (path.IsEmpty)
 		{
-			return true;
-		}
-
-#if DEBUG
-		return s_pathToGuid.TryGetValue(virtualPath, out guid);
-#else
-		return false;
-#endif
-	}
-
-	/// <summary>依 GUID 解析虛擬路徑。</summary>
-	public static bool TryResolvePath(GUID guid, out string? virtualPath)
-	{
-		if (guid.IsZero)
-		{
-			virtualPath = null;
 			return false;
 		}
 
-		if (TryResolvePathNative(guid, out virtualPath))
+		if (TryResolveGuidNative(path, out guid))
 		{
 			return true;
 		}
 
-#if DEBUG
-		return s_guidToPath.TryGetValue(guid.ToHexString(), out virtualPath);
-#else
+	#if DEBUG
+		return s_pathToGuid.TryGetValue(path, out guid);
+	#else
 		return false;
-#endif
+	#endif
 	}
 
-	private static void Cache(string virtualPath, GUID guid)
+	/// <summary>依 GUID 解析虛擬路徑。</summary>
+	public static bool TryResolvePath(GUID guid, out NVirtualPath path)
 	{
-		s_pathToGuid[virtualPath] = guid;
-		s_guidToPath[guid.ToHexString()] = virtualPath;
+		path = default;
+		if (guid.IsZero)
+		{
+			return false;
+		}
+
+		string? nativePath;
+		if (TryResolvePathNative(guid, out nativePath))
+		{
+			path = new NVirtualPath(nativePath!);
+			return true;
+		}
+
+	#if DEBUG
+		return s_guidToPath.TryGetValue(guid.ToHexString(), out path);
+	#else
+		return false;
+	#endif
 	}
 
-	private static unsafe bool TryRegisterNative(string virtualPath, GUID guid)
+	private static void Cache(NVirtualPath path, GUID guid)
+	{
+		s_pathToGuid[path] = guid;
+		s_guidToPath[guid.ToHexString()] = path;
+	}
+
+	private static unsafe bool TryRegisterNative(NVirtualPath path, GUID guid)
 	{
 		if (!EngineNativeApiBootstrap.IsInstalled)
 		{
@@ -101,14 +107,14 @@ public static class AssetDatabase
 			return false;
 		}
 
-		var bytes = Encoding.UTF8.GetBytes(virtualPath);
+		var bytes = Encoding.UTF8.GetBytes(path.FullPath);
 		fixed (byte* p = bytes)
 		{
 			return fn(p, guid.ToNative()) == 0;
 		}
 	}
 
-	private static unsafe bool TryResolveGuidNative(string virtualPath, out GUID guid)
+	private static unsafe bool TryResolveGuidNative(NVirtualPath path, out GUID guid)
 	{
 		guid = GUID.Zero;
 		if (!EngineNativeApiBootstrap.IsInstalled)
@@ -122,7 +128,7 @@ public static class AssetDatabase
 			return false;
 		}
 
-		var bytes = Encoding.UTF8.GetBytes(virtualPath);
+		var bytes = Encoding.UTF8.GetBytes(path.FullPath);
 		NNGuid native;
 		fixed (byte* p = bytes)
 		{

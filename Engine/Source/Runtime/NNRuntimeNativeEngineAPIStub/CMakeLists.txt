@@ -30,6 +30,8 @@ target_sources(NevernessRuntime-NativeEngineAPIStub
 		Private/Object/ObjectApiStubs.cpp
 		Private/AssetRegistry/AssetRegistryStubDatabase.cpp
 		Private/AssetRegistry/AssetRegistryApiStubs.cpp
+		Private/AssetManager/AssetManagerApiStubs.cpp
+		Private/AssetCooker/AssetCookerApiStubs.cpp
 		Private/Entity/EntityApiStubs.cpp
 		Private/Application/ApplicationApiStubs.cpp
 		Private/Window/WindowApiStubs.cpp

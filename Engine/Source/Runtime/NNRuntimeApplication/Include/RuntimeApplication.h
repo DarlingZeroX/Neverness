@@ -15,7 +15,7 @@ namespace NN::Runtime::Application
 class RuntimeApplication
 {
 public:
-	bool Initialize();
+	int Initialize();
 	bool PumpEvents();
 	void Shutdown();
 	void BeginFrame();

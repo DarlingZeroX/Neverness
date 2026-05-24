@@ -13,7 +13,7 @@
 #include "../../Config.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNCore/Interface/HSingleton.h>
-//#include <NNRuntimeAsset/Include/HAsset.h>
+//#include <NNRuntimeAssetLegacy/Include/HAsset.h>
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 #include <NNRuntimeCore/Interface/VGAsset.h>
 

@@ -46,10 +46,10 @@ Engine/Source/Runtime/NNRuntimeScene/
 ├── Docs/
 ├── Include/
 │   ├── Scene/           # NNEntity, NNEntityHandleTable, NNWorld, NNRuntimeScene
-│   ├── Components/      # Transform / Relationship / Tag（POD）
+│   ├── Components/      # Transform / Relationship / Tag / Camera（POD）
 │   ├── Query/           # NNEntityQuery
 │   ├── Reflection/      # NNComponentRegistry, NN_FIELD, NNComponentFieldType
-│   ├── Systems/         # ISceneSystem, Scheduler, Transform/Hierarchy/SceneUpdate
+│   ├── Systems/         # ISceneSystem, Scheduler, Transform/Hierarchy/SceneUpdate/Camera
 │   ├── Serialization/   # NNSceneSerializer（二进制 VGSC）
 │   ├── Prefab/          # NNPrefab 占位
 │   └── Runtime/         # NNSceneEventBus, NNDirtyTracker, NNSceneRuntime 占位
@@ -87,7 +87,7 @@ Engine/Source/Runtime/NNRuntimeScene/
 | API | 说明 |
 |-----|------|
 | `CreateEntity()` / `DestroyEntity(NNEntity)` | 世代校验 + entt 生命周期 |
-| `CreateEntityWithDefaults()` | Transform + Relationship + Tag 默认 POD |
+| `CreateEntityWithDefaults()` | Transform + Relationship + Tag 默认 POD（Camera 需手动 Emplace） |
 | `Emplace<T>` / `TryGet<T>` / `Has<T>` / `Remove<T>` | entt 组件 CRUD |
 | `Query<Components...>()` | `NNEntityQuery::Each` |
 | `RegisterSystem` / `TickSystems` | **NNSceneSystemScheduler** |
@@ -95,12 +95,12 @@ Engine/Source/Runtime/NNRuntimeScene/
 | `Events()` / `Dirty()` | **NNSceneEventBus** / **NNDirtyTracker** |
 | `ForEachAliveEntity` | 序列化与编辑器遍历 |
 
-构造时默认注册：**HierarchySystem → SceneUpdateSystem → TransformSystem**。
+构造时默认注册：**HierarchySystem → SceneUpdateSystem → TransformSystem → CameraSystem**。
 
 ### 4.4 反射与序列化
 
 - **`NN_REGISTER_COMPONENT`** + **`NN_FIELD`**：字段 `offset`/`size`/`NNComponentFieldType`/`nameUtf8`。
-- 内置：**Transform**、**Relationship**、**Tag** 全字段已注册。
+- 内置：**Transform**、**Relationship**、**Tag**、**Camera** 全字段已注册。
 - **`NNSceneSerializer`**：魔数 **`VGSC`**（格式版本 2），按注册表字段 `memcpy` 快照；组件 TypeId 为 **FNV-1a name hash**（8 字节，跨进程稳定）；反序列化按 name hash 查表重建实体（Index/Generation 由运行时重新分配）；Relationship 经 **`SetParent`** 恢复层级。
 
 ### 4.5 Engine 适配（依赖方向：Engine → Scene）
@@ -277,6 +277,18 @@ Engine/Source/Runtime/NNRuntimeScene/
 | 编译验证：Scene + Editor.Serialization + Tests 全部通过 | **已完成** |
 | 测试验证：31/34 测试通过（3 个预存 window API 失败） | **已完成** |
 
+### Phase 4-J（2026-05-23）— NNCameraComponent
+
+| 项 | 状态 |
+|----|------|
+| `NNCameraComponent` POD 结构体：`NNProjectionType` 枚举 + 透视参数（FovY/AspectRatio）+ 正交参数（OrthoWidth/OrthoHeight）+ `ProjectionMatrix` 输出 | **已完成** |
+| `NNCameraSystem`：`ISceneSystem` 实现，TickGroup = Update，`glm::perspectiveRH_NO` / `glm::orthoRH_NO` 投影矩阵计算 | **已完成** |
+| `BuiltinComponentRegistration`：`NN_REGISTER_COMPONENT` 注册 Camera，FNV-1a TypeId `0x54D1B2A64667E32E` | **已完成** |
+| `NNRuntimeScene`：`NNCameraSystem m_CameraSystem` 成员 + `RegisterDefaultSystems` 注册 + `GetCameraSystem()` 访问器 | **已完成** |
+| C# 端：`NNProjectionType` 枚举 + `NNMat4` 结构体 + `NNCameraComponentData` blittable 结构体 + `[ComponentId(0x54D1B2A64667E32E, Name = "Camera")]` | **已完成** |
+| 无 ABI 变更：复用现有 `AddComponent/GetComponent/SetComponent` 泛型接口 | **已完成** |
+| 编译验证：C# Engine + Scene 全部通过 | **已完成** |
+
 ---
 
 ## 6. 开发进展
@@ -297,6 +309,7 @@ Engine/Source/Runtime/NNRuntimeScene/
 | 2026-05-23 | **Phase 4-G** 合入：Managed System 框架 — `TickGroup` 枚举（对齐 Native NNSceneTickGroup）、`ISceneSystem` + 5 个子接口（Initialize/Shutdown/Tick/FixedTick/LateTick）、`SystemDependencyAttribute` 依赖声明、`SceneSystemScheduler`（Kahn 拓扑排序 + 按 TickGroup 分组 + 延迟 Initialize + 循环依赖检测）、`SceneWorld.Tick()` 完整 Tick 流（EarlyUpdate → Update → Native TickSystems → LateUpdate → Render）、`SceneWorld.FixedTick()` 独立固定步长、`SceneManager.TickActiveScene` 返回值改为 void。 |
 | 2026-05-23 | **Phase 4-H** 合入：Prefab 系统 — `PrefabAsset`（Guid/Name/Entities + `FromEntity()` BFS 构建）、`PrefabEntityData`（LocalIndex/ParentIndex/Components）、`PrefabOverride`（5 种覆盖类型）、`PrefabInstance`（Source/RootEntity/InstanceMap/Overrides）、`PrefabInstantiator`（Instantiate 完整流程 + ApplyOverrides + RevertToPrefab + DetectDifferences）、`SceneNativeBridge` 新增 `SetComponentData` / 原始 TypeId `AddComponent`/`RemoveComponent` 重载、旧 `Prefab` 类重构为便捷包装器（保留 builder API）。 |
 | 2026-05-23 | **Phase 4-I** 合入：事件系统 + 热重载 — `SceneEventType` 枚举（对齐 Native NNSceneEventType）、`SceneEvent` 结构体（Type/Entity/OtherEntity/ComponentTypeId + 工厂方法）、`SceneEventBus`（Subscribe/Unsubscribe/Emit/EmitDeferred/FlushDeferred，递归 Emit 自动降级为 deferred）、`NativeEventBridge`（Native 回调桥接 stub，待 ABI layoutVersion 7 后启用自动桥接）、`HotReloadSnapshot` + `GlobalHotReloadSnapshot`（Managed 侧状态快照）、`SceneWorld` 新增 Events 属性 + SaveSnapshot / RestoreFromSnapshot / RebuildAfterReload、`SceneSystemScheduler.Rebuild()`（热重载用 Shutdown+清空）、`EntityRegistry` 新增 Get/TryGet/SyncFromHandles/ExportHandleValues、`SceneManager` 新增 SaveAllSnapshots/RestoreAllSnapshots/RebuildAllAfterReload、`SceneWorld.Tick` 末尾 FlushDeferred、`SceneWorld.Dispose` 完整清理 Events+NativeEventBridge。 |
+| 2026-05-23 | **Phase 4-J** 合入：NNCameraComponent — `NNCameraComponent` POD 结构体（`NNProjectionType` + 透视/正交参数 + `ProjectionMatrix`）、`NNCameraSystem`（`glm::perspectiveRH_NO` / `glm::orthoRH_NO` 投影矩阵计算）、`BuiltinComponentRegistration` 注册 Camera 组件（FNV-1a TypeId `0x54D1B2A64667E32E`）、`NNRuntimeScene` 注册 CameraSystem、C# 端 `NNProjectionType` / `NNMat4` / `NNCameraComponentData` blittable 结构体（`[ComponentId(0x54D1B2A64667E32E, Name = "Camera")]`）。无 ABI 变更。 |
 
 ---
 

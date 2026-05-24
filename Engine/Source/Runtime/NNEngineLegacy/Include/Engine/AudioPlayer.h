@@ -13,7 +13,7 @@
 #include "../EngineConfig.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include <NNMediaCore/Include/Audio.h>
-#include <NNRuntimeAsset/Interface/AudioClip.h>
+#include <NNRuntimeAssetLegacy/Interface/AudioClip.h>
 
 namespace NN::Runtime
 {

@@ -19,12 +19,28 @@ public static unsafe class ApplicationHost
 	/// <summary>初始化 SDL（可重复调用；已初始化则成功）。</summary>
 	public static bool Initialize()
 	{
-		if (!TryGetApplicationApi(out var api) || api.Initialize == null)
+		if (!EngineNativeApiBootstrap.IsInstalled)
 		{
+			Console.WriteLine("[ApplicationHost] EngineNativeApiBootstrap 未安装");
 			return false;
 		}
 
-		return api.Initialize();
+		if (!TryGetApplicationApi(out var api))
+		{
+			Console.WriteLine("[ApplicationHost] TryGetApplicationApi 失败");
+			return false;
+		}
+
+		if (api.Initialize == null)
+		{
+			Console.WriteLine("[ApplicationHost] api.Initialize 指针为空");
+			return false;
+		}
+
+		Console.WriteLine("[ApplicationHost] 正在调用 api.Initialize()...");
+		var result = api.Initialize();
+		Console.WriteLine($"[ApplicationHost] api.Initialize() 返回: {result}");
+		return result != 0;
 	}
 
 	/// <summary>泵送事件；返回 false 表示应退出主循环。</summary>

@@ -10,18 +10,18 @@
  */
 
 #include "EditorCore/ContentBrowser.h"
-#include <NNRuntimeAsset/Interface/Package.h>
+#include <NNRuntimeAssetLegacy/Interface/Package.h>
 #include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNCore/Interface/HStringTools.h>
 #include <NNPlatformCore/Interface/HClipboard.h>
 #include <NNFileSystem/Interface/HFileSystemGenerator.h>
-//#include <NNRuntimeAsset/Include/HPackage.h>
+//#include <NNRuntimeAssetLegacy/Include/HPackage.h>
 //#include "Engine/Manager/AssetManager.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeVFS/Include/VFS/VFSNative.h"
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>
-#include "NNRuntimeAsset/Interface/AssetManager.h"
+#include "NNRuntimeAssetLegacy/Interface/AssetManager.h"
 
 namespace NN::Editor{
 

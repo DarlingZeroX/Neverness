@@ -14,8 +14,8 @@
 #include "../Include/PanelInterface.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>
-//#include <NNRuntimeAsset/Include/HAsset.h>
-#include <NNRuntimeAsset/Interface/Package.h>
+//#include <NNRuntimeAssetLegacy/Include/HAsset.h>
+#include <NNRuntimeAssetLegacy/Interface/Package.h>
 
 namespace NN::Editor
 {

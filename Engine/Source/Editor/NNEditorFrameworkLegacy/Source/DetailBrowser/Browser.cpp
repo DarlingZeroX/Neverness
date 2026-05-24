@@ -16,7 +16,7 @@
 #include <NNRuntimeImGui/IncludeImGui.h>
 #include <NNCore/Interface/HStringTools.h>
 
-#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "NNEngineLegacy/Include/Lua/LuaScript.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/ImGuiEx.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/ImNotify.h"

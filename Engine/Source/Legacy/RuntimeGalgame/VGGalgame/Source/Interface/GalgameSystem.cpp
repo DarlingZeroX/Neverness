@@ -12,7 +12,7 @@
 #include "GalgameSystem.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "GalGameEngine.h"
-#include "NNRuntimeAsset/Interface/SceneSerializerFactory.h"
+#include "NNRuntimeAssetLegacy/Interface/SceneSerializerFactory.h"
 #include "NNEngineLegacy/Include/Scene/GameActorFactory.h"
 #include "NNEngineLegacy/Interface/CoreLua.h"
 #include "VGGalgameLuaRuntime/Interface/LuaBinding.h"

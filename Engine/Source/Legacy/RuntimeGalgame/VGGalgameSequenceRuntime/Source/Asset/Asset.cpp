@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -10,7 +10,7 @@
 */
 
 #include "Asset/Asset.h"
-#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "Sequence/DataContainerSerialization.h"
 

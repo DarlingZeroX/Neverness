@@ -34,6 +34,9 @@ target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRE
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeEngine/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeScene/Include)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeAsset/Include)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNAssetRegistry/Include)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNAssetCooker/Include)
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 
@@ -46,6 +49,9 @@ target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-NativeEngineAPI
 	NevernessRuntime-NativeEngineAPIStub
 	NevernessRuntime-Engine
+	NevernessRuntime-Asset
+	NevernessRuntime-AssetRegistry
+	NevernessRuntime-AssetCooker
 	NevernessRuntime-ManagedBridge
 	NevernessRuntime-Application
 	NevernessRuntime-VFS

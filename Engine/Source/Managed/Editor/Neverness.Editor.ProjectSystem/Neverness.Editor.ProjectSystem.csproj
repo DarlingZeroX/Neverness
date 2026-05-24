@@ -33,12 +33,13 @@
 		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="Panel\**" />
-	  <EmbeddedResource Remove="Panel\**" />
-	  <None Remove="Panel\**" />
+		<Compile Remove="Panel\**" />
+		<EmbeddedResource Remove="Panel\**" />
+		<None Remove="Panel\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Assets\Neverness.Runtime.Assets.csproj" />
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
 	</ItemGroup>
 </Project>

@@ -14,8 +14,11 @@
 #include "ApplicationAPI.h"
 #include "WindowAPI.h"
 #include "AssetAPI.h"
+#include "AssetManagerAPI.h"
 #include "AssetRegistryAPI.h"
+#include "AssetCookerAPI.h"
 #include "AsyncWaitAPI.h"
+#include "EditorSceneAPI.h"
 #include "EntityAPI.h"
 #include "AudioAPI.h"
 #include "InputAPI.h"
@@ -30,8 +33,8 @@
 extern "C" {
 #endif
 
-/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v13：NNSceneAPI 序列化改為 VFS 路徑（serializeScene/deserializeScene 签名变更）。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 13u
+/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v16：新增 NNAssetManagerAPI 子表；NNAssetRegistryAPI 新增依賴管理欄位。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 17u
 
 typedef struct NNNativeEngineAPI
 {
@@ -43,6 +46,8 @@ typedef struct NNNativeEngineAPI
 	NNAssetAPI asset;
 	NNInputAPI input;
 	NNSceneAPI scene;
+	/** @brief Editor 专用场景查询子表（独立 ABI，layoutVersion = 2）。见 EditorSceneAPI.h。 */
+	NNEditorSceneAPI editorScene;
 	NNTimingAPI timing;
 	NNAsyncWaitAPI asyncWait;
 	NNObjectAPI object;
@@ -55,6 +60,10 @@ typedef struct NNNativeEngineAPI
 	NNWindowAPI window;
 	/** @brief 虚拟文件系统（Phase 1 文本/二进制 IO）；见 `VfsAPI.h`。 */
 	NNVfsAPI vfs;
+	/** @brief Runtime 資產管理器（同步/異步載入、卸載、包管理、Hot Reload）；見 `AssetManagerAPI.h`。 */
+	NNAssetManagerAPI assetManager;
+	/** @brief 資產編譯/打包器（.nnpack 構建）；見 `AssetCookerAPI.h`。 */
+	NNAssetCookerAPI assetCooker;
 } NNNativeEngineAPI;
 
 #ifdef __cplusplus

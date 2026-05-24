@@ -20,8 +20,8 @@
 extern "C" {
 #endif
 
-/** @brief 初始化 SDL 子系统；可幂等，已初始化则返回 true。 */
-typedef bool(NN_ENGINE_ABI_STDCALL* NNApplicationInitializeFn)(void);
+/** @brief 初始化 SDL 子系统；可幂等，已初始化则返回 1，失败返回 0。 */
+typedef int(NN_ENGINE_ABI_STDCALL* NNApplicationInitializeFn)(void);
 
 /** @brief 泵送事件；返回 false 表示应退出主循环（例如收到 Quit）。 */
 typedef bool(NN_ENGINE_ABI_STDCALL* NNApplicationPumpEventsFn)(void);

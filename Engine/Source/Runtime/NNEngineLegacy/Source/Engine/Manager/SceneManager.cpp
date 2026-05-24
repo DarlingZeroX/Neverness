@@ -11,8 +11,8 @@
 
 #include "Engine/Manager/SceneManager.h"
 
-#include "NNRuntimeAsset/Interface/Package.h"
-#include "NNRuntimeAsset/Interface/SceneAccessor.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/SceneAccessor.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "Scene/GameActorFactory.h"
 #include "NNRuntimeCore/Interface/EngineState.h"

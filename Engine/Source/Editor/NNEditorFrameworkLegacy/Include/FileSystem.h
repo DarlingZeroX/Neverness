@@ -13,7 +13,7 @@
 #include "../Config.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/ContentBrowser.h"
 #include <NNRuntimeCore/Include/Core\RuntimeCore.h>
-//#include "NNRuntimeAsset/Include/HAsset.h"
+//#include "NNRuntimeAssetLegacy/Include/HAsset.h"
 
 namespace NN::Editor {
 

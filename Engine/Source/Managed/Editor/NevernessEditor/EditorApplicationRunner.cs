@@ -3,7 +3,10 @@ using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Bootstrap;
 using Neverness.Runtime.Engine.Runtime;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Assets.Public;
+using Neverness.Editor.Scene.Public;
+using Neverness.Runtime.Scene;
 
 namespace NevernessEditor;
 
@@ -69,8 +72,12 @@ internal static class EditorApplicationRunner
 				if (!s_isInstalled)
 				{
 					s_isInstalled = true;
+					var sceneManager = new SceneManager();
+
 					EditorFrameworkModule.Install(window);
-					AssetsModule.Install();
+					EditorCoreModule.Install();
+					AssetsModule.Install(sceneManager);
+					SceneModule.Install(sceneManager);
 				}
 
 				var deltaTime = EngineTime.DeltaTime;
@@ -81,6 +88,7 @@ internal static class EditorApplicationRunner
 
 				RuntimeMainLoop.Tick(deltaTime);
 				EditorFrameworkModule.TickEditorUI();
+				AssetsModule.Tick();
 				ApplicationHost.EndFrame();
 			}
 

@@ -30,8 +30,33 @@ typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryGetDependencyAtFn)(
 	NNGuid* outDependency);
 typedef NNGuid(NN_ENGINE_ABI_STDCALL* NNAssetRegistryImportAssetFn)(const char* virtualPathUtf8);
 
+/** @brief 設定資產完整依賴列表（替換舊列表）。成功回傳 0。 */
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistrySetDependenciesFn)(NNGuid guid, const NNGuid* deps, std::uint32_t count);
+
+/** @brief 新增單個依賴。成功回傳 0。 */
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryAddDependencyFn)(NNGuid guid, NNGuid dependency);
+
+/** @brief 移除單個依賴。成功回傳 0。 */
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryRemoveDependencyFn)(NNGuid guid, NNGuid dependency);
+
+/** @brief 取得反向依賴數量（哪些資產引用了 guid）。 */
+typedef std::uint32_t(NN_ENGINE_ABI_STDCALL* NNAssetRegistryGetReverseDependencyCountFn)(NNGuid guid);
+
+/** @brief 取得反向依賴。成功回傳 0。 */
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryGetReverseDependencyAtFn)(NNGuid guid, std::uint32_t index, NNGuid* outDep);
+
+/** @brief 檢測依賴圖是否存在環。有環回傳 1，無環回傳 0。 */
+typedef int(NN_ENGINE_ABI_STDCALL* NNAssetRegistryHasCycleFn)(void);
+
+/** @brief 取得依賴圖中資產總數。 */
+typedef std::uint32_t(NN_ENGINE_ABI_STDCALL* NNAssetRegistryGetAssetCountFn)(void);
+
+/** @brief 取得依賴圖中邊（依賴關係）總數。 */
+typedef std::uint32_t(NN_ENGINE_ABI_STDCALL* NNAssetRegistryGetEdgeCountFn)(void);
+
 typedef struct NNAssetRegistryAPI
 {
+	/* --- 原有欄位（Phase 5，保持順序不變） --- */
 	NNAssetRegistryRegisterFn registerAsset;
 	NNAssetRegistryUnregisterByGuidFn unregisterByGuid;
 	NNAssetRegistryUnregisterByPathFn unregisterByPath;
@@ -40,6 +65,16 @@ typedef struct NNAssetRegistryAPI
 	NNAssetRegistryGetDependencyCountFn getDependencyCount;
 	NNAssetRegistryGetDependencyAtFn getDependencyAt;
 	NNAssetRegistryImportAssetFn importAsset;
+
+	/* --- Phase 1 新增欄位（僅追加，禁止重排） --- */
+	NNAssetRegistrySetDependenciesFn setDependencies;
+	NNAssetRegistryAddDependencyFn addDependency;
+	NNAssetRegistryRemoveDependencyFn removeDependency;
+	NNAssetRegistryGetReverseDependencyCountFn getReverseDependencyCount;
+	NNAssetRegistryGetReverseDependencyAtFn getReverseDependencyAt;
+	NNAssetRegistryHasCycleFn hasCycle;
+	NNAssetRegistryGetAssetCountFn getAssetCount;
+	NNAssetRegistryGetEdgeCountFn getEdgeCount;
 } NNAssetRegistryAPI;
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 using Neverness.Runtime.Engine;
-
+using System.Buffers.Binary;
 namespace Neverness.Runtime.Assets;
 
 /// <summary>
@@ -83,6 +83,49 @@ public readonly struct GUID : IEquatable<GUID>
 
 	/// <summary>轉為 32 字元小寫十六進位（無連字號）。</summary>
 	public string ToHexString() => $"{High:x16}{Low:x16}";
+
+	/// <summary>
+	/// 產生隨機 GUID（UUID v4）。
+	/// 由 Editor 使用，首次匯入 source asset 時寫入 .meta。
+	/// Runtime 不應呼叫此方法。
+	/// </summary>
+	public static GUID NewRandom()
+	{
+		Span<byte> bytes = stackalloc byte[16];
+		System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
+
+		/* 設定 version = 4（UUID v4） */
+		bytes[6] = (byte)((bytes[6] & 0x0F) | 0x40);
+		/* 設定 variant = RFC 4122 */
+		bytes[8] = (byte)((bytes[8] & 0x3F) | 0x80);
+
+		ulong high = System.Buffers.Binary.BinaryPrimitives.ReadUInt64BigEndian(bytes[..8]);
+		ulong low = System.Buffers.Binary.BinaryPrimitives.ReadUInt64BigEndian(bytes[8..]);
+		return new GUID(high, low);
+	}
+
+	/// <summary>
+	/// 從舊版 64-bit HUUID 遷移。
+	/// 高位填入特定魔數標記此 GUID 為遷移而來，低位 = legacyId。
+	/// </summary>
+	/// <param name="legacyId">舊版 64-bit UUID。</param>
+	public static GUID FromLegacy(ulong legacyId)
+	{
+		/* 0x4C454741 = 'LEGA' 標記為 Legacy 遷移 */
+		const ulong legacyMarker = 0x4C454741_00000000UL;
+		return new GUID(legacyMarker, legacyId == 0 ? 1 : legacyId);
+	}
+
+	/// <summary>
+	/// 將 GUID 格式化為標準 UUID 字串（8-4-4-4-12）。
+	/// </summary>
+	public string ToUuidString()
+	{
+		Span<byte> bytes = stackalloc byte[16];
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt64BigEndian(bytes[..8], High);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt64BigEndian(bytes[8..], Low);
+		return new Guid(bytes).ToString();
+	}
 
 	/// <inheritdoc />
 	public bool Equals(GUID other) => High == other.High && Low == other.Low;

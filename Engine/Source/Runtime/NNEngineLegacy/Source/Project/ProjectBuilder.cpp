@@ -10,7 +10,7 @@
 */
 
 #include "Project/ProjectBuilder.h"
-#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "Project/ProjectSettings.h"

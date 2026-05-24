@@ -20,11 +20,11 @@
 #include <NNPlatformCore/Interface/HClipboard.h>
 
 #include "AssetEditor.h"
-#include "NNRuntimeAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAssetLegacy/Include/GalGameAsset.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/AssetWatcher.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/EditorCore.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/Localization.h"
-#include "NNRuntimeAsset/Interface/AssetFactory.h"
+#include "NNRuntimeAssetLegacy/Interface/AssetFactory.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeCore/Interface/Loader.h"
 

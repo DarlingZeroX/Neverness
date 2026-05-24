@@ -1,4 +1,5 @@
 using Neverness.Editor.Framework.Public;
+using Neverness.Runtime.Assets;
 
 namespace Neverness.Editor.Assets.AssetFactories;
 
@@ -12,18 +13,18 @@ public sealed class LuaScriptAssetFactory : IAssetFactory
     public string Icon => FontAwesome5Pro.Code;
     public string FileExtension => ".lua";
 
-    public bool CreateAsset(string directoryPath)
+    public NPath? CreateAsset(NPath directoryPath)
     {
         try
         {
-            var filePath = System.IO.Path.Combine(directoryPath, "New Script.lua");
+            var filePath = directoryPath.Combine("New Script.lua");
             int index = 1;
-            while (File.Exists(filePath))
+            while (File.Exists(filePath.FullPath))
             {
-                filePath = System.IO.Path.Combine(directoryPath, $"New Script {index++}.lua");
+                filePath = directoryPath.Combine($"New Script {index++}.lua");
             }
 
-            var scriptName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+            var scriptName = filePath.FileNameWithoutExtension;
 
             var content = $$"""
                 --- {{scriptName}}
@@ -40,13 +41,13 @@ public sealed class LuaScriptAssetFactory : IAssetFactory
                 return M
                 """;
 
-            File.WriteAllText(filePath, content);
-            return true;
+            File.WriteAllText(filePath.FullPath, content);
+            return filePath;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            return false;
+            return null;
         }
     }
 }

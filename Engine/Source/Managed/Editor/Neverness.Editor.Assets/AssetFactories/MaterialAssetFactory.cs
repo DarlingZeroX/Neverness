@@ -1,4 +1,5 @@
 using Neverness.Editor.Framework.Public;
+using Neverness.Runtime.Assets;
 
 namespace Neverness.Editor.Assets.AssetFactories;
 
@@ -12,15 +13,15 @@ public sealed class MaterialAssetFactory : IAssetFactory
     public string Icon => FontAwesome5Pro.Palette;
     public string FileExtension => ".material";
 
-    public bool CreateAsset(string directoryPath)
+    public NPath? CreateAsset(NPath directoryPath)
     {
         try
         {
-            var filePath = System.IO.Path.Combine(directoryPath, "New Material.material");
+            var filePath = directoryPath.Combine("New Material.material");
             int index = 1;
-            while (File.Exists(filePath))
+            while (File.Exists(filePath.FullPath))
             {
-                filePath = System.IO.Path.Combine(directoryPath, $"New Material {index++}.material");
+                filePath = directoryPath.Combine($"New Material {index++}.material");
             }
 
             // TODO:
@@ -34,13 +35,13 @@ public sealed class MaterialAssetFactory : IAssetFactory
                 }
                 """;
 
-            File.WriteAllText(filePath, json);
-            return true;
+            File.WriteAllText(filePath.FullPath, json);
+            return filePath;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            return false;
+            return null;
         }
     }
 }

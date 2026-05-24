@@ -9,7 +9,7 @@
 #include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
 #include "VGGalgameSequenceRuntime/Include/Asset/AssetFactory.h"
 #include "VGGalgameSequenceRuntime/Include/ExecutorCreator.h"
-#include "NNRuntimeAsset/Interface/AssetFactory.h"
+#include "NNRuntimeAssetLegacy/Interface/AssetFactory.h"
 #include "VGGalgameCore/Interface/IStoryScript.h"
 
 namespace VisionGal::GalGame

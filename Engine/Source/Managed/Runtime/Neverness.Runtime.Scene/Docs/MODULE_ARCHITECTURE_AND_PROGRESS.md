@@ -8,7 +8,7 @@
 |------|------|
 | **职责** | C# 侧 Gameplay Runtime Root：**SceneWorld**（世界管理）、**EntityRegistry**（实体映射）、**零 GC Query**（SceneView/SceneQuery）、**System 调度**（Kahn 拓扑排序 + TickGroup）、**Prefab 系统**（PrefabAsset/Instantiator/Override）、**事件总线**（SceneEventBus）、**热重载**（HotReloadSnapshot）。Native ECS 数据不复制到 C#，所有操作经 ABI 转发。 |
 | **不负责** | Legacy `IGameActor`/`IComponent`、**NNRuntimeScene** Native 实现（C++ entt::registry）、**SceneSubsystem** 替换或数据迁移、**Editor** UI 层（由 `Neverness.Editor.Framework` 消费）、并行 Job 调度。 |
-| **依赖** | `Neverness.Runtime.Engine`（`NNEntityHandle` / `NNSceneResult` / `NNTransformData` / `ComponentIdAttribute`）；`Neverness.Runtime.Interop`（`EngineNativeApiBootstrap`）。**不**引用任何 Editor 模块。 |
+| **依赖** | `Neverness.Runtime.Engine`（`NNEntityHandle` / `NNSceneResult` / `NNTransformData` / `NNCameraComponentData` / `ComponentIdAttribute`）；`Neverness.Runtime.Interop`（`EngineNativeApiBootstrap`）。**不**引用任何 Editor 模块。 |
 
 ### 1.1 与 Native 边界
 
@@ -45,46 +45,53 @@ C# SceneWorld                        Native NNRuntimeScene
 Neverness.Runtime.Scene/
 ├── Neverness.Runtime.Scene.csproj
 │
-├── SceneWorld.cs                                  # 场景世界根（Gameplay Runtime Root）
-├── SceneManager.cs                                # 场景管理器（降级为世界管理器）
-├── SceneEntity.cs                                 # 实体句柄门面
-├── SceneNativeBridge.cs                           # NNSceneApi ABI 薄封装
-├── ComponentTypeCache.cs                          # 泛型组件类型缓存（[ComponentId] → TypeId）
-├── TickGroup.cs                                   # Tick 分组枚举（对齐 Native NNSceneTickGroup）
-├── HotReloadSnapshot.cs                           # 热重载快照（HotReloadSnapshot + GlobalHotReloadSnapshot）
-├── Prefab.cs                                      # Prefab 便捷包装器（保留 builder API）
+├── Public/                                        # namespace Neverness.Runtime.Scene
+│   ├── SceneWorld.cs                              # 场景世界根（Gameplay Runtime Root）
+│   ├── SceneManager.cs                            # 场景管理器（降级为世界管理器）
+│   ├── SceneEntity.cs                             # 实体句柄门面
+│   ├── TickGroup.cs                               # Tick 分组枚举（对齐 Native NNSceneTickGroup）
+│   ├── HotReloadSnapshot.cs                       # 热重载快照（HotReloadSnapshot + GlobalHotReloadSnapshot）
+│   ├── Prefab.cs                                  # Prefab 便捷包装器（保留 builder API）
+│   │
+│   ├── Entities/
+│   │   ├── EntityRegistry.cs                      # 实体注册表（handle↔entity 双向映射）
+│   │   └── EntityFactory.cs                       # 实体工厂（CreateCamera 等快捷创建）
+│   │
+│   ├── Queries/
+│   │   ├── SceneView.cs                           # ref struct 单组件零 GC 视图
+│   │   ├── SceneView2.cs                          # ref struct 双组件零 GC 视图
+│   │   ├── SceneQuery.cs                          # 缓存式查询对象
+│   │   └── SceneQueryCache.cs                     # 查询对象池
+│   │
+│   ├── Systems/
+│   │   ├── ISceneSystem.cs                        # System 标记接口
+│   │   ├── ISystemInitialize.cs                   # void Initialize(SceneWorld)
+│   │   ├── ISystemShutdown.cs                     # void Shutdown(SceneWorld)
+│   │   ├── ISystemTick.cs                         # TickGroup + void Tick(SceneWorld, float)
+│   │   ├── ISystemFixedTick.cs                    # TickGroup + void FixedTick(SceneWorld, float)
+│   │   ├── ISystemLateTick.cs                     # TickGroup + void LateTick(SceneWorld, float)
+│   │   ├── SystemDependencyAttribute.cs           # [SystemDependency(typeof(X))] 依赖声明
+│   │   └── SceneSystemScheduler.cs                # Kahn 拓扑排序 + TickGroup 分组
+│   │
+│   ├── Prefabs/
+│   │   ├── PrefabAsset.cs                         # Prefab 资产（Guid/Name/Entities + FromEntity BFS）
+│   │   ├── PrefabEntityData.cs                    # 实体数据容器（LocalIndex/ParentIndex/Components）
+│   │   ├── PrefabInstance.cs                      # Prefab 实例（Source/RootEntity/InstanceMap/Overrides）
+│   │   ├── PrefabOverride.cs                      # 覆盖类型枚举 + 覆盖记录
+│   │   └── PrefabInstantiator.cs                  # 实例化器（Instantiate/ApplyOverrides/RevertToPrefab）
+│   │
+│   └── Events/
+│       ├── SceneEvent.cs                          # SceneEventType 枚举 + SceneEvent 结构体
+│       ├── SceneEventBus.cs                       # C# 事件总线（Subscribe/Emit/FlushDeferred）
+│       └── NativeEventBridge.cs                   # Native EventBus → C# 桥接（stub）
 │
-├── Entities/
-│   └── EntityRegistry.cs                          # 实体注册表（handle↔entity 双向映射 + SyncFromHandles）
-│
-├── Queries/
-│   ├── SceneView.cs                               # ref struct 单组件零 GC 视图
-│   ├── SceneView2.cs                              # ref struct 双组件零 GC 视图
-│   ├── SceneQuery.cs                              # 缓存式查询对象（SceneQuery<T> / SceneQuery<T1,T2>）
-│   ├── SceneQueryCache.cs                         # 查询对象池（GetQuery<T> / GetQuery<T1,T2>）
+├── Private/                                       # namespace Neverness.Runtime.Scene.Internal
+│   ├── SceneNativeBridge.cs                       # NNSceneApi ABI 薄封装（不对外暴露）
+│   ├── ComponentTypeCache.cs                      # 泛型组件类型缓存（[ComponentId] → TypeId）
 │   └── NativeQueryBridge.cs                       # Native 批量查询 ABI 封装
 │
-├── Systems/
-│   ├── ISceneSystem.cs                            # System 标记接口（含默认 Name 属性）
-│   ├── ISystemInitialize.cs                       # void Initialize(SceneWorld)
-│   ├── ISystemShutdown.cs                         # void Shutdown(SceneWorld)
-│   ├── ISystemTick.cs                             # TickGroup + void Tick(SceneWorld, float)
-│   ├── ISystemFixedTick.cs                        # TickGroup + void FixedTick(SceneWorld, float)
-│   ├── ISystemLateTick.cs                         # TickGroup + void LateTick(SceneWorld, float)
-│   ├── SystemDependencyAttribute.cs               # [SystemDependency(typeof(X))] 依赖声明
-│   └── SceneSystemScheduler.cs                    # Kahn 拓扑排序 + TickGroup 分组 + Rebuild
-│
-├── Prefabs/
-│   ├── PrefabAsset.cs                             # Prefab 资产（Guid/Name/Entities + FromEntity BFS）
-│   ├── PrefabEntityData.cs                        # 实体数据容器（LocalIndex/ParentIndex/Components）
-│   ├── PrefabInstance.cs                          # Prefab 实例（Source/RootEntity/InstanceMap/Overrides）
-│   ├── PrefabOverride.cs                          # 覆盖类型枚举 + 覆盖记录
-│   └── PrefabInstantiator.cs                      # 实例化器（Instantiate/ApplyOverrides/RevertToPrefab/DetectDifferences）
-│
-└── Events/
-    ├── SceneEvent.cs                              # SceneEventType 枚举 + SceneEvent 结构体
-    ├── SceneEventBus.cs                           # C# 事件总线（Subscribe/Emit/FlushDeferred）
-    └── NativeEventBridge.cs                       # Native EventBus → C# 桥接（stub，待 ABI 扩展）
+├── Docs/
+└── obj/ / Build/
 ```
 
 ---
@@ -216,6 +223,27 @@ PrefabInstantiator.RevertToPrefab(instance, world);
 
 便捷 API（旧 `Prefab` 类保留）：`new Prefab("Name").WithComponent<T>().Instantiate(world)`
 
+### 3.6 EntityFactory — Unity 风格实体工厂
+
+```csharp
+// 创建 Camera 实体（自动挂载 Transform + Camera 组件）
+var camera = EntityFactory.CreateCamera(world);
+var camera2 = EntityFactory.CreateCamera(world, "Main Camera",
+    position: new NNVec3 { X = 0, Y = 5, Z = -10 },
+    fovY: 75.0f);
+
+// 后续可扩展
+// var light = EntityFactory.CreateDirectionalLight(world);
+// var sprite = EntityFactory.CreateSprite(world, textureId);
+```
+
+`EntityFactory.CreateCamera` 内部流程：
+1. `world.Entities.Create(displayName)` — 创建并注册实体
+2. `entity.AddComponent<NNTransformData>()` + `entity.SetComponent(...)` — Identity 变换
+3. `entity.AddComponent<NNCameraComponentData>()` + `entity.SetComponent(...)` — 透视投影默认参数
+
+所有组件操作均经 `SceneEntity` 接口，不直接引用 `SceneNativeBridge`。
+
 ### 3.6 事件总线 — 同步 + 延迟
 
 ```csharp
@@ -277,6 +305,9 @@ dotnet test Engine/Source/Managed/Runtime/Tests/NevernessRuntimeManaged-Foundati
 | 2026-05-23 | **Phase 4-G** 合入：System 框架 — `TickGroup` 枚举、`ISceneSystem` + 5 子接口、`SystemDependencyAttribute`、`SceneSystemScheduler`（Kahn 拓扑排序 + TickGroup 分组 + 延迟 Initialize + Rebuild）、`SceneWorld.Tick()` 完整 Tick 流。 |
 | 2026-05-23 | **Phase 4-H** 合入：Prefab 系统 — `PrefabAsset`/`PrefabEntityData`/`PrefabInstance`/`PrefabOverride`/`PrefabInstantiator`（全部 5 种覆盖类型 Apply + Revert）、`SceneNativeBridge` 新增 SetComponentData + 原始 TypeId AddComponent/RemoveComponent、旧 `Prefab` 类重构为便捷包装器。 |
 | 2026-05-23 | **Phase 4-I** 合入：事件系统 + 热重载 — `SceneEventBus`/`SceneEvent`/`NativeEventBridge`（stub）、`HotReloadSnapshot`/`GlobalHotReloadSnapshot`、`SceneWorld.SaveSnapshot`/`RestoreFromSnapshot`/`RebuildAfterReload`、`SceneSystemScheduler.Rebuild()`、`EntityRegistry.Get`/`TryGet`/`SyncFromHandles`/`ExportHandleValues`、`SceneManager.SaveAllSnapshots`/`RestoreAllSnapshots`/`RebuildAllAfterReload`。 |
+| 2026-05-23 | **Phase 4-J** 合入：NNCameraComponent — C# 端 `NNProjectionType` 枚举 + `NNMat4` 列主序 4x4 矩阵 + `NNCameraComponentData` blittable 结构体（`[ComponentId(0x54D1B2A64667E32E, Name = "Camera")]`），无 ABI 变更，复用现有泛型组件 API。 |
+| 2026-05-23 | **EntityFactory** 合入：Unity 风格实体工厂 — `EntityFactory.CreateCamera()` 快捷创建 Camera 实体（自动挂载 Transform + Camera 组件 + 合理默认值），后续可扩展 CreateDirectionalLight / CreateSprite 等。 |
+| 2026-05-23 | **目录重构**：从 Entities/Queries/Systems/Prefabs/Events 改为 Public/ + Private/ 两目录。Public（`Neverness.Runtime.Scene`）26 个文件；Private（`Neverness.Runtime.Scene.Internal`）2 个文件（ComponentTypeCache + NativeQueryBridge）。 |
 
 ---
 

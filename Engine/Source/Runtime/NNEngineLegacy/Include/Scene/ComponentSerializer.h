@@ -10,7 +10,7 @@
 */
 
 #pragma once
-#include "NNRuntimeAsset/Interface/ISceneSerializer.h"
+#include "NNRuntimeAssetLegacy/Interface/ISceneSerializer.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "Components.h"
 #include <NNCore/Interface/HSerialization.h>

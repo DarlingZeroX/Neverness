@@ -1,6 +1,7 @@
 using Neverness.Editor.Assets.AssetActions;
 using Neverness.Editor.Assets.AssetFactories;
 using Neverness.Editor.Framework.Public;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Editor.Assets.Public;
 
@@ -11,8 +12,14 @@ namespace Neverness.Editor.Assets.Public;
 public static class AssetsModule
 {
     /// <summary>安装资产工厂模块（自动发现 + 注册贡献者）。</summary>
-    public static void Install()
+    public static void Install(SceneManager sceneManager)
     {
-        Private.AssetsModuleImp.Install();
+        Private.AssetsModuleImp.Install(sceneManager);
+    }
+
+    /// <summary>每帧 Tick——批量保存脏缓存。</summary>
+    public static void Tick()
+    {
+        Private.AssetsModuleImp.Tick();
     }
 }

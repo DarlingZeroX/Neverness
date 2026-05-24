@@ -37,6 +37,12 @@ namespace NN::Runtime::Scene
 
 		[[nodiscard]] std::vector<NNEntity> GetChildren(const NNRuntimeScene& scene, NNEntity entity) const;
 
+		/** @brief 获取完整的 Parent→Children 映射（供 Snapshot Builder DFS 遍历使用）。 */
+		[[nodiscard]] const std::unordered_map<NNEntity, std::vector<NNEntity>>& GetAllChildrenMap() const noexcept
+		{
+			return m_ParentToChildren;
+		}
+
 		void OnEntityDestroyed(NNEntity entity) noexcept;
 
 	private:

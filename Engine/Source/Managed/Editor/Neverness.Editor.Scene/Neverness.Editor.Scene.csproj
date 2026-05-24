@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>Neverness.Editor.Scene</AssemblyName>
+		<TargetFramework>net10.0</TargetFramework>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
+		<DebugType>portable</DebugType>
+		<RootNamespace>Neverness.Editor.Scene</RootNamespace>
+
+		<!-- ========================= -->
+		<!--  关闭 pack（开发阶段） -->
+		<!-- ========================= -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+		<!-- ========================= -->
+		<!--  输出优化 -->
+		<!-- ========================= -->
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+
+		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+
+		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+		<!-- 允许并行（反而更快） -->
+		<BuildInParallel>true</BuildInParallel>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
+		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
+	</ItemGroup>
+</Project>

@@ -14,7 +14,7 @@
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "../EngineConfig.h"
 #include <NNMediaCore/Include/FVideo.h>
-#include <NNRuntimeAsset/Interface/VideoClip.h>
+#include <NNRuntimeAssetLegacy/Interface/VideoClip.h>
 
 namespace NN::Runtime {
 

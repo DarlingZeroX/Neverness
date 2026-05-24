@@ -1,5 +1,6 @@
 using System.Numerics;
 using Hexa.NET.ImGui;
+using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Public;
 
 namespace Neverness.Editor.Framework.Private.Menu;
@@ -8,7 +9,7 @@ namespace Neverness.Editor.Framework.Private.Menu;
 /// 上下文菜单管理——支持静态项、回调式动态菜单、贡献者模式。
 /// 可泛化：任何面板/区域通过 contextId 注册和渲染各自的右键菜单。
 /// </summary>
-public sealed class ContextMenuManager
+public sealed class ContextMenuManager : IContextMenuRegistry
 {
     /// <summary>全局单例。</summary>
     public static ContextMenuManager Instance { get; } = new();

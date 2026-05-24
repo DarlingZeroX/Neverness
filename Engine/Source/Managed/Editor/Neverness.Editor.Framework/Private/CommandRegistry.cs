@@ -1,9 +1,11 @@
+using Neverness.Editor.Framework.Interface;
+
 namespace Neverness.Editor.Framework.Private;
 
 /// <summary>
 /// 編輯器命令註冊表與執行分發。
 /// </summary>
-public sealed class CommandRegistry
+public sealed class CommandRegistry : ICommandRegistry
 {
 	private readonly Dictionary<string, IEditorCommand> _commands = new(StringComparer.OrdinalIgnoreCase);
 

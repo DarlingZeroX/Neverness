@@ -11,7 +11,7 @@
 
 namespace
 {
-bool NN_ENGINE_ABI_STDCALL AppInitialize(void)
+int NN_ENGINE_ABI_STDCALL AppInitialize(void)
 {
 	return NN::Runtime::Application::GetRuntimeApplicationInstance().Initialize();
 }

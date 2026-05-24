@@ -17,6 +17,10 @@ namespace NN::Runtime::Application
 	struct EditorVFSPath
 	{
 		std::string assets;
+		std::string library;
+		std::string build;
+		std::string packages;
+
 		std::string editor;
 		std::string engine;
 		std::string projectSettings;

@@ -13,6 +13,7 @@
 #include "NNRuntimeScene/Include/Reflection/NNComponentRegistry.h"
 #include "NNRuntimeScene/Include/Scene/NNRuntimeScene.h"
 #include "NNRuntimeScene/Include/Serialization/NNSceneSerializer.h"
+#include "NNRuntimeScene/Include/Snapshot/NNHierarchySnapshotBuilder.h"
 
 using NN::Runtime::Scene::NNRuntimeScene;
 using NN::Runtime::Scene::NNSceneSerializer;
@@ -23,6 +24,7 @@ using NN::Runtime::Scene::NNEntityInvalid;
 using NN::Runtime::Scene::NNTransformComponent;
 using NN::Runtime::Scene::NNRelationshipComponent;
 using NN::Runtime::Scene::NNTagComponent;
+using NN::Runtime::Scene::NNHierarchySnapshotBuilder;
 
 namespace NN::Runtime::engine
 {
@@ -588,5 +590,122 @@ NNSceneResult SceneSubsystem::QueryCount2(
 
 	*outCount = intersectionCount;
 	return NN_SCENE_OK;
+}
+
+// ── Editor 快照查询（NNEditorSceneAPI）──
+
+uint64_t SceneSubsystem::GetHierarchyVersion(const NNSceneHandle scene) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	return s != nullptr ? s->HierarchyVersion() : 0u;
+}
+
+uint32_t SceneSubsystem::GetSnapshotSize(const NNSceneHandle scene) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	return s != nullptr ? NNHierarchySnapshotBuilder::EstimateSize(*s) : 0u;
+}
+
+uint32_t SceneSubsystem::GetHierarchySnapshot(
+	const NNSceneHandle scene,
+	void* const outBuffer,
+	const uint32_t capacity) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	return s != nullptr ? NNHierarchySnapshotBuilder::Build(*s, outBuffer, capacity) : 0u;
+}
+
+uint64_t SceneSubsystem::GetTransformVersion(const NNSceneHandle scene) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	return s != nullptr ? s->TransformVersion() : 0u;
+}
+
+uint32_t SceneSubsystem::GetTransformSnapshot(
+	const NNSceneHandle scene,
+	const uint64_t* entities,
+	const uint32_t entityCount,
+	NNEditorTransformData* const outArray) noexcept
+{
+	if (entities == nullptr || outArray == nullptr || entityCount == 0)
+	{
+		return 0u;
+	}
+
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr)
+	{
+		return 0u;
+	}
+
+	uint32_t written = 0u;
+	for (uint32_t i = 0u; i < entityCount; ++i)
+	{
+		const NNEntity e = static_cast<NNEntity>(entities[i]);
+		const auto* tf = s->TryGet<NNTransformComponent>(e);
+		if (tf == nullptr)
+		{
+			continue;
+		}
+
+		auto& d = outArray[written++];
+		d.entity = entities[i];
+		d.posX = tf->Position.x;
+		d.posY = tf->Position.y;
+		d.posZ = tf->Position.z;
+		d.rotX = tf->Rotation.x;
+		d.rotY = tf->Rotation.y;
+		d.rotZ = tf->Rotation.z;
+		d.rotW = tf->Rotation.w;
+		d.sclX = tf->Scale.x;
+		d.sclY = tf->Scale.y;
+		d.sclZ = tf->Scale.z;
+	}
+	return written;
+}
+
+uint32_t SceneSubsystem::GetIncrementalSnapshot(
+	const NNSceneHandle scene,
+	void* const outBuffer,
+	const uint32_t capacity) noexcept
+{
+	if (outBuffer == nullptr || capacity < sizeof(NNDirtyNodeEntry))
+	{
+		return 0u;
+	}
+
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr)
+	{
+		return 0u;
+	}
+
+	const auto& entries = s->GetDirtyHierarchyEntries();
+	if (entries.empty())
+	{
+		return 0u;
+	}
+
+	const std::size_t maxEntries = capacity / sizeof(NNDirtyNodeEntry);
+	const std::size_t copyCount = std::min(entries.size(), maxEntries);
+
+	auto* dst = static_cast<NNDirtyNodeEntry*>(outBuffer);
+	for (std::size_t i = 0; i < copyCount; ++i)
+	{
+		dst[i].entity = static_cast<uint64_t>(entries[i].entity);
+		dst[i].changeFlags = entries[i].changeFlags;
+		dst[i]._pad = 0;
+	}
+
+	// 一次性消费：清空 dirty 条目
+	s->ClearDirtyHierarchyEntries();
+
+	return static_cast<uint32_t>(copyCount * sizeof(NNDirtyNodeEntry));
 }
 } // namespace NN::Runtime::engine

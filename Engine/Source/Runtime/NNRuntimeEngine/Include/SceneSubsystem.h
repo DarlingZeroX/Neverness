@@ -17,6 +17,7 @@
 #include <mutex>
 #include <unordered_map>
 
+#include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "NNNativeEngineAPI/Include/EngineHandles.h"
 #include "NNNativeEngineAPI/Include/SceneAPI.h"
 #include "NNNativeEngineAPI/Include/VfsAPI.h"
@@ -64,6 +65,15 @@ public:
 		void* outData, uint32_t componentSize) noexcept;
 	NNSceneResult QueryCount2(NNSceneHandle scene, uint64_t typeId1, uint64_t typeId2,
 		uint32_t* outCount) noexcept;
+
+	// ── Editor 快照查询（NNEditorSceneAPI，layoutVersion = 2）──
+	uint64_t GetHierarchyVersion(NNSceneHandle scene) noexcept;
+	uint32_t GetSnapshotSize(NNSceneHandle scene) noexcept;
+	uint32_t GetHierarchySnapshot(NNSceneHandle scene, void* outBuffer, uint32_t capacity) noexcept;
+	uint64_t GetTransformVersion(NNSceneHandle scene) noexcept;
+	uint32_t GetTransformSnapshot(NNSceneHandle scene, const uint64_t* entities,
+		uint32_t entityCount, NNEditorTransformData* outArray) noexcept;
+	uint32_t GetIncrementalSnapshot(NNSceneHandle scene, void* outBuffer, uint32_t capacity) noexcept;
 
 	/** @brief 设置 VFS API 函数指针（由 EngineServices 在构建 API 表后注入）。 */
 	void SetVfsApi(const NNVfsAPI* vfs) noexcept;

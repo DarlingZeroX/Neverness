@@ -11,10 +11,10 @@
 
 namespace
 {
-bool NN_ENGINE_ABI_STDCALL stub_application_initialize(void)
+int NN_ENGINE_ABI_STDCALL stub_application_initialize(void)
 {
 	NN::StubRuntime::BumpInvokeCount();
-	return false;
+	return -9999;
 }
 
 bool NN_ENGINE_ABI_STDCALL stub_application_pumpEvents(void)

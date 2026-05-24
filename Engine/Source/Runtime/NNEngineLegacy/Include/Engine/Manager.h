@@ -13,7 +13,7 @@
 #include "../EngineConfig.h"
 #include "Manager/ViewportManager.h"
 #include "Manager/ShaderManager.h"
-#include "NNRuntimeAsset/Interface/AssetManager.h"
+#include "NNRuntimeAssetLegacy/Interface/AssetManager.h"
 #include "Manager/SceneManager.h"
 
 namespace NN::Runtime

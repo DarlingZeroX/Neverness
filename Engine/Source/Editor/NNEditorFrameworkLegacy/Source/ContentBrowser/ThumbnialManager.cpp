@@ -14,7 +14,7 @@
 #include <NNRuntimeCore/Interface/Loader.h>
 #include <NNEngineLegacy/Include/Engine/ResourceManager.h>
 
-#include "NNRuntimeAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAssetLegacy/Include/GalGameAsset.h"
 
 
 namespace NN::Editor {

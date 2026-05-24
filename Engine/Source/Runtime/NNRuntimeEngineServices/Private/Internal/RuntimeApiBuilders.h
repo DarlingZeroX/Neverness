@@ -6,8 +6,11 @@
  */
 
 #include "NNNativeEngineAPI/Include/AssetAPI.h"
+#include "NNNativeEngineAPI/Include/AssetManagerAPI.h"
 #include "NNNativeEngineAPI/Include/AssetRegistryAPI.h"
+#include "NNNativeEngineAPI/Include/AssetCookerAPI.h"
 #include "NNNativeEngineAPI/Include/AsyncWaitAPI.h"
+#include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "NNNativeEngineAPI/Include/EntityAPI.h"
 #include "NNNativeEngineAPI/Include/ObjectAPI.h"
 #include "NNNativeEngineAPI/Include/SceneAPI.h"
@@ -20,9 +23,12 @@ extern "C" {
 void NNBuildTimingRuntimeApi(NNTimingAPI* api);
 void NNBuildAsyncWaitRuntimeApi(NNAsyncWaitAPI* api);
 void NNBuildSceneRuntimeApi(NNSceneAPI* api);
+void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api);
 void NNBuildAssetRuntimeApi(NNAssetAPI* api);
 void NNBuildObjectRuntimeApi(NNObjectAPI* api);
 void NNBuildAssetRegistryRuntimeApi(NNAssetRegistryAPI* api);
+void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api);
+void NNBuildAssetCookerRuntimeApi(NNAssetCookerAPI* api);
 void NNBuildEntityRuntimeApi(NNEntityAPI* api);
 
 #ifdef __cplusplus

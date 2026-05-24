@@ -1,19 +1,21 @@
-namespace Neverness.Editor.ProjectSystem.Public;
-
+using Neverness.Runtime.Assets;
 using Neverness.Runtime.VFS.Public;
+
+namespace Neverness.Editor.ProjectSystem.Public;
 
 public static class ProjectPaths
 {
-    public static string Assets => "/assets/";
+    public static NVirtualPath Assets { get; } = new("/assets/");
 
-    public static string Intermediate => "/projectIntermediate/";
+    public static NVirtualPath Intermediate { get; } = new("/projectIntermediate/");
 
-    public static string Settings => "/projectSettings/";
-    public static string EngineResource => "/engine/";
-    public static string DefaultSpriteTexture => EngineResource + "textures/white.png";
+    public static NVirtualPath Settings { get; } = new("/projectSettings/");
+    public static NVirtualPath EngineResource { get; } = new("/engine/");
+    public static NVirtualPath DefaultSpriteTexture { get; } = new("/engine/textures/white.png");
 
-    public static string? GetResourcePath(string absolutePath)
+    public static NVirtualPath? GetResourcePath(NPath absolutePath)
     {
-        return VFS.GetRelativePath(Assets, absolutePath);
+        var result = VFS.GetRelativePath(Assets.FullPath, absolutePath.FullPath);
+        return result != null ? new NVirtualPath(result) : null;
     }
 }

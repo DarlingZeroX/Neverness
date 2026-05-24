@@ -12,7 +12,7 @@
 
 #include "ScriptSystem/GalAssetTypeScriptRuntime.h"
 #include "ScriptSystem/GalRuntimeScriptLoader.h"
-#include "NNRuntimeAsset/Include/GalGameAsset.h"
+#include "NNRuntimeAssetLegacy/Include/GalGameAsset.h"
 #include "VGGalgameSequenceRuntime/Include/Asset/Asset.h"
 #include "VGGalgameCore/Include/Components.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"

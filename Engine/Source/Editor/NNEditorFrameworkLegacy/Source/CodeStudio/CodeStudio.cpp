@@ -12,7 +12,7 @@
 #include "CodeStudio/CodeStudio.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/Localization.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
-#include "NNRuntimeAsset/Interface/Package.h"
+#include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"

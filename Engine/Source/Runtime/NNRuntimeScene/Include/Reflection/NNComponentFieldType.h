@@ -21,5 +21,6 @@ namespace NN::Runtime::Scene
 			UInt64,
 			Entity,
 			CharArray,  // 固定大小字符数组（按 NNComponentFieldDesc.Size 字节 memcpy）
+			Guid,       // 128-bit NNGuid {uint64 high, uint64 low}，blittable，用于资产引用
 		};
 } // namespace NN::Runtime::Scene

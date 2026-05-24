@@ -32,6 +32,10 @@
 	  <BuildInParallel>true</BuildInParallel>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Neverness.Runtime.Serialization" />
+    <InternalsVisibleTo Include="Neverness.Editor.Assets" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
   </ItemGroup>

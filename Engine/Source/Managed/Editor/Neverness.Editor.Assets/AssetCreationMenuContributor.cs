@@ -1,7 +1,10 @@
 using Neverness.Editor.Assets.AssetFactories;
-using Neverness.Editor.Framework.Private.Core;
+using Neverness.Editor.Assets.Private.Context;
+using Neverness.Editor.Assets.Private.Core;
 using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
+using Neverness.Editor.ProjectSystem.Public;
+using Neverness.Runtime.Assets;
 
 namespace Neverness.Editor.Assets;
 
@@ -56,15 +59,37 @@ internal sealed class AssetCreationMenuContributor : IContextMenuContributor
                             var path = ContextMenuManager.Instance.GetContext<string>(ContentBrowserContextMenu.KeyPath);
                             if (cb != null && path != null)
                             {
-                                capturedFactory.CreateAsset(path);
-                                cb.RefreshDirectory();
-                                cb.RefreshDirectoryTreeRoot();
+                                var createdPath = capturedFactory.CreateAsset(new NPath(path));
+                                if (createdPath != null)
+                                {
+                                    RegisterCreatedAsset(createdPath.Value);
+                                    cb.RefreshDirectory();
+                                    cb.RefreshDirectoryTreeRoot();
+                                }
                             }
                         },
                     },
                     Icon: capturedFactory.Icon,
                     SortOrder: sortOrder++));
             }
+        }
+    }
+
+    /// <summary>注册新创建的资产到 EditorAssetDatabase（生成 .meta、推断 TypeId）。</summary>
+    private static void RegisterCreatedAsset(NPath filePath)
+    {
+        // 1. 获取或创建 .meta（自动分配 GUID）
+        var importerName = MetaFileManager.InferImporterName(filePath.Extension);
+        var meta = MetaFileManager.GetOrCreateMeta(filePath, importerName);
+
+        // 2. 推断资产类型 ID
+        var typeId = AssetMeta.InferAssetTypeId(filePath.Extension);
+
+        // 3. 绝对路径 → VFS 虚拟路径 → 注册
+        var virtualPath = ProjectPaths.GetResourcePath(filePath);
+        if (virtualPath is { IsEmpty: false } vp)
+        {
+            EditorAssetDatabase.Register(vp, meta.Guid, typeId);
         }
     }
 }

@@ -17,7 +17,7 @@ public class EditorViewport : IEditorPanel
 
     public void OnUpdate(float delta)
     {
-        throw new NotImplementedException();
+
     }
 
     public void OnFixedUpdate()

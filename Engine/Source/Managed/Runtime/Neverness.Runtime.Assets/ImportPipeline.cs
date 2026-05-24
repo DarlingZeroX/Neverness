@@ -11,26 +11,29 @@ public static class ImportPipeline
 {
 	/// <summary>
 	/// 匯入指定虛擬路徑之資產。
-	/// 優先經 Native <c>AssetRegistry.importAsset</c>；若回傳零 GUID 則使用 <see cref="GUID.FromDeterministicPath"/> 穩定合成 ID（不再對路徑做 <see cref="GUID.Parse"/>）。
+	/// 優先經 Native <c>AssetRegistry.importAsset</c>；若回傳零 GUID 則使用 <see cref="GUID.FromDeterministicPath"/> 穩定合成 ID。
 	/// </summary>
-	/// <param name="virtualPath">NUL 結尾語意之虛擬路徑字串。</param>
+	/// <param name="path">虛擬路徑。</param>
 	/// <returns>已登記之 GUID。</returns>
-	public static GUID Import(string virtualPath)
+	public static GUID Import(NVirtualPath path)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(virtualPath);
-
-		var guid = ImportNative(virtualPath);
-		if (guid.IsZero)
+		if (path.IsEmpty)
 		{
-			guid = GUID.FromDeterministicPath(virtualPath);
+			return GUID.Zero;
 		}
 
-		AssetDatabase.Register(virtualPath, guid);
+		var guid = ImportNative(path);
+		if (guid.IsZero)
+		{
+			guid = GUID.FromDeterministicPath(path.FullPath);
+		}
+
+		AssetDatabase.Register(path, guid);
 		return guid;
 	}
 
 	/// <summary>僅呼叫 Native 匯入，不寫入 <see cref="AssetDatabase"/>。</summary>
-	private static unsafe GUID ImportNative(string virtualPath)
+	private static unsafe GUID ImportNative(NVirtualPath path)
 	{
 		if (!EngineNativeApiBootstrap.IsInstalled)
 		{
@@ -43,7 +46,7 @@ public static class ImportPipeline
 			return GUID.Zero;
 		}
 
-		var bytes = Encoding.UTF8.GetBytes(virtualPath);
+		var bytes = Encoding.UTF8.GetBytes(path.FullPath);
 		fixed (byte* p = bytes)
 		{
 			return GUID.FromNative(fn(p));

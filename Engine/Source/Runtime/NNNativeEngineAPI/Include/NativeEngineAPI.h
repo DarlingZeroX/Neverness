@@ -9,6 +9,7 @@
 #include "AsyncWaitAPI.h"
 #include "AudioAPI.h"
 #include "AssetAPI.h"
+#include "AssetManagerAPI.h"
 #include "EngineAPIRegistry.h"
 #include "EngineHandles.h"
 #include "InputAPI.h"

@@ -15,6 +15,7 @@
 #include "Common/StubInvokeCounter.h"
 #include "Internal/ApiStubBuilders.h"
 
+#include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "NNNativeEngineAPI/Include/NativeInterop.h"
 #include "NNNativeEngineAPI/Include/SceneAPI.h"
 
@@ -233,4 +234,80 @@ extern "C" void NNBuildSceneApiStubs(NNSceneAPI* api)
 	api->queryEntities = &stub_scene_queryEntities;
 	api->queryComponents = &stub_scene_queryComponents;
 	api->queryCount2 = &stub_scene_queryCount2;
+}
+
+// ── Editor Scene API Stubs ──
+
+namespace
+{
+uint64_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getHierarchyVersion(NNSceneHandle scene)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	return 0u; /* Stub 返回 0，表示无数据 */
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getSnapshotSize(NNSceneHandle scene)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	return 0u; /* Stub 不持有场景数据 */
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getHierarchySnapshot(
+	NNSceneHandle scene, void* outBuffer, uint32_t capacity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)outBuffer;
+	(void)capacity;
+	return 0u; /* Stub 不持有场景数据 */
+}
+
+uint64_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getTransformVersion(NNSceneHandle scene)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getTransformSnapshot(
+	NNSceneHandle scene, const uint64_t* entities,
+	uint32_t entityCount, NNEditorTransformData* outArray)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)entities;
+	(void)entityCount;
+	if (outArray != nullptr && entityCount > 0)
+	{
+		std::memset(outArray, 0, static_cast<std::size_t>(entityCount) * sizeof(NNEditorTransformData));
+	}
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getIncrementalSnapshot(
+	NNSceneHandle scene, void* outBuffer, uint32_t capacity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)outBuffer;
+	(void)capacity;
+	return 0u; /* Stub 不持有场景数据 */
+}
+} // namespace
+
+extern "C" void NNBuildEditorSceneApiStubs(NNEditorSceneAPI* api)
+{
+	if (api == nullptr)
+	{
+		return;
+	}
+	api->layoutVersion          = 2;
+	api->getHierarchyVersion    = &stub_editor_scene_getHierarchyVersion;
+	api->getSnapshotSize        = &stub_editor_scene_getSnapshotSize;
+	api->getHierarchySnapshot   = &stub_editor_scene_getHierarchySnapshot;
+	api->getTransformVersion    = &stub_editor_scene_getTransformVersion;
+	api->getTransformSnapshot   = &stub_editor_scene_getTransformSnapshot;
+	api->getIncrementalSnapshot = &stub_editor_scene_getIncrementalSnapshot;
 }

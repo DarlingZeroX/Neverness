@@ -1,6 +1,7 @@
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Interop;
 using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Internal;
 
 namespace Neverness.Runtime.Serialization;
 

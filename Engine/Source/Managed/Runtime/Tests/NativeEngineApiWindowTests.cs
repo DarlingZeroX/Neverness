@@ -12,9 +12,9 @@ namespace Neverness.Runtime.Foundation.Tests;
 public sealed class NativeEngineApiWindowTests
 {
 	[Fact]
-	public void NativeEngineApi_LayoutVersion_Is13()
+	public void NativeEngineApi_LayoutVersion_Is17()
 	{
-		Assert.Equal(13u, NNNativeEngineApiConstants.LayoutVersion);
+		Assert.Equal(17u, NNNativeEngineApiConstants.LayoutVersion);
 	}
 
 	[Fact]

@@ -13,11 +13,11 @@ namespace Neverness.Runtime.Foundation.Tests;
 /// </remarks>
 public sealed class NativeEngineApiEntityServiceTests
 {
-	/// <summary>與 Native <c>NN_NATIVE_ENGINE_API_LAYOUT_VERSION</c>（<c>EngineAPIRegistry.h</c>）及託管 <see cref="NNNativeEngineApiConstants.LayoutVersion"/> 一致，當前為 <b>13</b>。</summary>
+	/// <summary>與 Native <c>NN_NATIVE_ENGINE_API_LAYOUT_VERSION</c>（<c>EngineAPIRegistry.h</c>）及託管 <see cref="NNNativeEngineApiConstants.LayoutVersion"/> 一致，當前為 <b>17</b>。</summary>
 	[Fact]
-	public void NativeEngineApi_LayoutVersion_Is13()
+	public void NativeEngineApi_LayoutVersion_Is17()
 	{
-		Assert.Equal(13u, NNNativeEngineApiConstants.LayoutVersion);
+		Assert.Equal(17u, NNNativeEngineApiConstants.LayoutVersion);
 	}
 
 	/// <summary>

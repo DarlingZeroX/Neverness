@@ -1,3 +1,4 @@
+using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Public;
 
 namespace Neverness.Editor.Framework.Private.Menu;
@@ -6,7 +7,7 @@ namespace Neverness.Editor.Framework.Private.Menu;
 /// 菜单注册表——管理菜单项、命令、动态供应器、贡献者。
 /// 单例模式，NativeAOT 友好。
 /// </summary>
-public sealed class MenuRegistryImp
+public sealed class MenuRegistryImp : IMenuRegistry
 {
     /// <summary>全局单例。</summary>
     public static MenuRegistryImp Instance { get; } = new();

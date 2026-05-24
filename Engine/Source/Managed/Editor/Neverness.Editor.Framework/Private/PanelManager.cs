@@ -8,7 +8,7 @@ namespace Neverness.Editor.Framework.Private
     /// <summary>
     /// 全局 Panel 管理器
     /// </summary>
-    public sealed class PanelManager : IPanel
+    public sealed class PanelManager : IPanel, IPanelManager
     {
         // =========================
         // Singleton
@@ -271,6 +271,22 @@ namespace Neverness.Editor.Framework.Private
         public uint GetWindowDockID()
         {
             return m_TopLevelDockId;
+        }
+
+        // =========================
+        // IPanelManager.AddChildPanel
+        // =========================
+
+        /// <summary>向主窗口添加子面板。</summary>
+        public bool AddChildPanel(string id, IEditorPanel panel)
+        {
+            var mainWindow = GetPanelWithID("EditorMainWindow");
+            if (mainWindow is Panel.Main.EditorMainWindow main)
+            {
+                main.AddPanelWithID(id, panel);
+                return true;
+            }
+            return false;
         }
     }
 }

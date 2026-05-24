@@ -12,6 +12,20 @@
           "bin/placeholder/HexaGen.Runtime.dll": {}
         }
       },
+      "Neverness.Editor.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Neverness.Editor.Framework": "1.0.0",
+          "Neverness.Editor.UndoRedo": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Neverness.Editor.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Editor.Core.dll": {}
+        }
+      },
       "Neverness.Editor.Framework/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
@@ -60,6 +74,7 @@
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "Neverness.Runtime.Application": "1.0.0",
+          "Neverness.Runtime.Assets": "1.0.0",
           "Neverness.Runtime.VFS": "1.0.0"
         },
         "compile": {
@@ -94,6 +109,16 @@
           "bin/placeholder/Neverness.Editor.Serialization.dll": {}
         }
       },
+      "Neverness.Editor.UndoRedo/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/Neverness.Editor.UndoRedo.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Editor.UndoRedo.dll": {}
+        }
+      },
       "Neverness.Runtime.Application/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
@@ -106,6 +131,20 @@
         },
         "runtime": {
           "bin/placeholder/Neverness.Runtime.Application.dll": {}
+        }
+      },
+      "Neverness.Runtime.Assets/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Neverness.Runtime.Engine": "1.0.0",
+          "Neverness.Runtime.Interop": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Neverness.Runtime.Assets.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Runtime.Assets.dll": {}
         }
       },
       "Neverness.Runtime.Engine/1.0.0": {
@@ -182,6 +221,11 @@
       "path": "../ThirdParty/HexaGen.Runtime/HexaGen.Runtime.csproj",
       "msbuildProject": "../ThirdParty/HexaGen.Runtime/HexaGen.Runtime.csproj"
     },
+    "Neverness.Editor.Core/1.0.0": {
+      "type": "project",
+      "path": "../Neverness.Editor.Core/Neverness.Editor.Core.csproj",
+      "msbuildProject": "../Neverness.Editor.Core/Neverness.Editor.Core.csproj"
+    },
     "Neverness.Editor.Framework/1.0.0": {
       "type": "project",
       "path": "../Neverness.Editor.Framework/Neverness.Editor.Framework.csproj",
@@ -212,10 +256,20 @@
       "path": "../Neverness.Editor.Serialization/Neverness.Editor.Serialization.csproj",
       "msbuildProject": "../Neverness.Editor.Serialization/Neverness.Editor.Serialization.csproj"
     },
+    "Neverness.Editor.UndoRedo/1.0.0": {
+      "type": "project",
+      "path": "../Neverness.Editor.UndoRedo/Neverness.Editor.UndoRedo.csproj",
+      "msbuildProject": "../Neverness.Editor.UndoRedo/Neverness.Editor.UndoRedo.csproj"
+    },
     "Neverness.Runtime.Application/1.0.0": {
       "type": "project",
       "path": "../../Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj",
       "msbuildProject": "../../Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj"
+    },
+    "Neverness.Runtime.Assets/1.0.0": {
+      "type": "project",
+      "path": "../../Runtime/Neverness.Runtime.Assets/Neverness.Runtime.Assets.csproj",
+      "msbuildProject": "../../Runtime/Neverness.Runtime.Assets/Neverness.Runtime.Assets.csproj"
     },
     "Neverness.Runtime.Engine/1.0.0": {
       "type": "project",
@@ -245,10 +299,13 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "Neverness.Editor.Core >= 1.0.0",
       "Neverness.Editor.Framework >= 1.0.0",
       "Neverness.Editor.ProjectSystem >= 1.0.0",
       "Neverness.Editor.Reflection >= 1.0.0",
-      "Neverness.Editor.Serialization >= 1.0.0"
+      "Neverness.Editor.Serialization >= 1.0.0",
+      "Neverness.Runtime.Assets >= 1.0.0",
+      "Neverness.Runtime.Scene >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -279,6 +336,9 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Core\\Neverness.Editor.Core.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Core\\Neverness.Editor.Core.csproj"
+            },
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
             },
@@ -290,6 +350,12 @@
             },
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Serialization\\Neverness.Editor.Serialization.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Serialization\\Neverness.Editor.Serialization.csproj"
+            },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj"
+            },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scene\\Neverness.Runtime.Scene.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Scene\\Neverness.Runtime.Scene.csproj"
             }
           }
         }

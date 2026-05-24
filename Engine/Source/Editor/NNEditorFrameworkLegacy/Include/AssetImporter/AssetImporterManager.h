@@ -11,11 +11,11 @@
 
 #pragma once
 #include "../../Config.h"
-//#include <NNRuntimeAsset/Include/HAsset.h>
+//#include <NNRuntimeAssetLegacy/Include/HAsset.h>
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>
 #include <NNRuntimeApplication/Include/Core/Window.h>
-#include <NNRuntimeAsset/Interface/Package.h>
+#include <NNRuntimeAssetLegacy/Interface/Package.h>
 
 namespace NN::Editor
 {

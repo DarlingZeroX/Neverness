@@ -1,73 +1,34 @@
-# CMakeList.txt: GalEngine µÄ CMake ÏîÄ¿£¬ÔÚ´Ë´¦°üÀ¨Ô´´úÂë²¢¶¨Òå
-# ÏîÄ¿ÌØ¶¨µÄÂß¼­¡£
-#
+# NNRuntimeAsset â€” Runtime è³‡ç”¢ç³»çµ±ï¼ˆAssetManager / Loader / Streaming / Cache / Formatï¼‰ã€‚
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-
-# ¿ªÆôutf-8±àÂëÖ§³Ö
 if (MSVC)
-    add_compile_options(/utf-8)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+	add_compile_options(/utf-8)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+	add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-add_library(NevernessRuntime-Asset SHARED)
+add_library(NevernessRuntime-Asset STATIC)
 
 target_sources(NevernessRuntime-Asset
-  PRIVATE
-    Include/AudioAsset.h
-    Include/GalGameAsset.h
-    Include/LuaScriptAsset.h
-    Include/SceneAsset.h
-    Include/SceneSerializer.h
-    Include/TextureAsset.h
-    Include/UIAsset.h
-    Include/VideoAsset.h
-    Interface/AssetFactory.h
-    Interface/AssetManager.h
-    Interface/AudioClip.h
-    Interface/ISceneSerializer.h
-    Interface/Package.h
-    Interface/SceneAccessor.h
-    Interface/SceneSerializerFactory.h
-    Interface/VideoClip.h
-    Source/AssetFactory.cpp
-    Source/AssetManager.cpp
-    Source/AudioAsset.cpp
-    Source/AudioClip.cpp
-    Source/GalGameAsset.cpp
-    Source/LuaScriptAsset.cpp
-    Source/Package.cpp
-    Source/SceneAccessor.cpp
-    Source/SceneSerializer.cpp
-    Source/SceneSerializerFactory.cpp
-    Source/TextureAsset.cpp
-    Source/UIAsset.cpp
-    Source/VideoAsset.cpp
-    Source/VideoClip.cpp
+	PRIVATE
+		Private/NNAssetManager.cpp
+		Private/NNHandleTable.cpp
+		Private/NNAssetCache.cpp
+		Private/NNStreamingManager.cpp
+		Private/NNAssetFormat.cpp
+		Private/NNAssetManagerApi.cpp
+		Private/NNPackManager.cpp
+		Private/NNAssetMemoryPool.cpp
 )
 
-target_compile_definitions(NevernessRuntime-Asset PRIVATE VG_ASSET_EXPORT)
-
+target_include_directories(NevernessRuntime-Asset PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
-target_include_directories(NevernessRuntime-Asset PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-target_include_directories(NevernessRuntime-Asset PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-find_package(SDL3 CONFIG REQUIRED)
-target_link_libraries(NevernessRuntime-Asset PRIVATE SDL3::SDL3)
-
-find_package(SDL3_image CONFIG REQUIRED)
-target_link_libraries(NevernessRuntime-Asset PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
-
-target_link_libraries(NevernessRuntime-Asset PRIVATE NevernessCore-Core)
-target_link_libraries(NevernessRuntime-Asset PRIVATE NevernessCore-PlatformCore)
-target_link_libraries(NevernessRuntime-Asset PRIVATE NevernessCore-FileSystem)
-target_link_libraries(NevernessRuntime-Asset PRIVATE NevernessCore-MediaCore)
-target_link_libraries(NevernessRuntime-Asset PRIVATE NevernessRuntime-Core)
-target_link_libraries(NevernessRuntime-Asset PRIVATE NevernessRuntime-VFS)
+target_link_libraries(NevernessRuntime-Asset PUBLIC NevernessRuntime-NativeEngineAPI)

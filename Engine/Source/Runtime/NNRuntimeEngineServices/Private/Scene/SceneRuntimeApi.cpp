@@ -7,6 +7,7 @@
 
 #include "Internal/RuntimeApiBuilders.h"
 
+#include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "NNNativeEngineAPI/Include/NativeInterop.h"
 #include "NNNativeEngineAPI/Include/SceneAPI.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
@@ -131,4 +132,58 @@ extern "C" void NNBuildSceneRuntimeApi(NNSceneAPI* api)
 	api->queryEntities = &rt_scene_queryEntities;
 	api->queryComponents = &rt_scene_queryComponents;
 	api->queryCount2 = &rt_scene_queryCount2;
+}
+
+// ── Editor Scene API 转发 ──
+
+namespace
+{
+uint64_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getHierarchyVersion(NNSceneHandle scene)
+{
+	return NNEngineRuntime::Instance().Scene().GetHierarchyVersion(scene);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getSnapshotSize(NNSceneHandle scene)
+{
+	return NNEngineRuntime::Instance().Scene().GetSnapshotSize(scene);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getHierarchySnapshot(
+	NNSceneHandle scene, void* outBuffer, uint32_t capacity)
+{
+	return NNEngineRuntime::Instance().Scene().GetHierarchySnapshot(scene, outBuffer, capacity);
+}
+
+uint64_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getTransformVersion(NNSceneHandle scene)
+{
+	return NNEngineRuntime::Instance().Scene().GetTransformVersion(scene);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getTransformSnapshot(
+	NNSceneHandle scene, const uint64_t* entities,
+	uint32_t entityCount, NNEditorTransformData* outArray)
+{
+	return NNEngineRuntime::Instance().Scene().GetTransformSnapshot(scene, entities, entityCount, outArray);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getIncrementalSnapshot(
+	NNSceneHandle scene, void* outBuffer, uint32_t capacity)
+{
+	return NNEngineRuntime::Instance().Scene().GetIncrementalSnapshot(scene, outBuffer, capacity);
+}
+} // namespace
+
+extern "C" void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api)
+{
+	if (api == nullptr)
+	{
+		return;
+	}
+	api->layoutVersion          = 2;
+	api->getHierarchyVersion    = &rt_editor_scene_getHierarchyVersion;
+	api->getSnapshotSize        = &rt_editor_scene_getSnapshotSize;
+	api->getHierarchySnapshot   = &rt_editor_scene_getHierarchySnapshot;
+	api->getTransformVersion    = &rt_editor_scene_getTransformVersion;
+	api->getTransformSnapshot   = &rt_editor_scene_getTransformSnapshot;
+	api->getIncrementalSnapshot = &rt_editor_scene_getIncrementalSnapshot;
 }

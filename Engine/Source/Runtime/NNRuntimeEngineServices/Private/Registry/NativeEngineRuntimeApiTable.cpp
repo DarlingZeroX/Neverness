@@ -26,9 +26,12 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildTimingRuntimeApi(&outTable->timing);
 	NNBuildAsyncWaitRuntimeApi(&outTable->asyncWait);
 	NNBuildSceneRuntimeApi(&outTable->scene);
+	NNBuildEditorSceneRuntimeApi(&outTable->editorScene);
 	NNBuildAssetRuntimeApi(&outTable->asset);
 	NNBuildObjectRuntimeApi(&outTable->object);
 	NNBuildAssetRegistryRuntimeApi(&outTable->assetRegistry);
+	NNBuildAssetManagerRuntimeApi(&outTable->assetManager);
+	NNBuildAssetCookerRuntimeApi(&outTable->assetCooker);
 	NNBuildEntityRuntimeApi(&outTable->entity);
 	NNBuildApplicationRuntimeApi(&outTable->application);
 	NNBuildWindowRuntimeApi(&outTable->window);

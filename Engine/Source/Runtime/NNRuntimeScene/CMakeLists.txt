@@ -26,6 +26,7 @@ target_sources(NevernessRuntime-Scene
 		Include/Components/NNTransformComponent.h
 		Include/Components/NNRelationshipComponent.h
 		Include/Components/NNTagComponent.h
+		Include/Components/NNCameraComponent.h
 		Include/Query/NNEntityQuery.h
 		Include/Reflection/NNComponentTypeId.h
 		Include/Reflection/NNComponentFieldType.h
@@ -36,10 +37,14 @@ target_sources(NevernessRuntime-Scene
 		Include/Systems/NNTransformSystem.h
 		Include/Systems/NNHierarchySystem.h
 		Include/Systems/NNSceneUpdateSystem.h
+		Include/Systems/NNCameraSystem.h
 		Include/Runtime/NNSceneEventBus.h
 		Include/Runtime/NNDirtyTracker.h
 		Include/Serialization/NNSceneSerializer.h
+		Include/Snapshot/NNHierarchySnapshotBuilder.h
 		Include/Prefab/NNPrefab.h
+		Include/Scene/NNSceneAssetLoader.h
+		Include/Scene/NNStreamingZone.h
 		Include/Runtime/NNSceneRuntime.h
 		Source/Scene/NNEntity.cpp
 		Source/Scene/NNEntityHandle.cpp
@@ -50,9 +55,12 @@ target_sources(NevernessRuntime-Scene
 		Source/Systems/NNTransformSystem.cpp
 		Source/Systems/NNHierarchySystem.cpp
 		Source/Systems/NNSceneUpdateSystem.cpp
+		Source/Systems/NNCameraSystem.cpp
 		Source/Runtime/NNSceneEventBus.cpp
 		Source/Runtime/NNDirtyTracker.cpp
 		Source/Serialization/NNSceneSerializer.cpp
+		Source/Snapshot/NNHierarchySnapshotBuilder.cpp
+		Source/Prefab/NNPrefab.cpp
 )
 
 target_compile_definitions(NevernessRuntime-Scene PRIVATE NN_RUNTIME_SCENE_EXPORT NN_RUNTIME_SCENE_DYNAMIC)
