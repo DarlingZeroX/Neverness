@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices.JavaScript;
+using Neverness.Editor.Assets;
+using Neverness.Runtime.Assets;
 using Neverness.Runtime.VFS.Public;
 
 namespace Neverness.Editor.Assets.Private.Core;
@@ -92,7 +94,7 @@ public sealed class ContentBrowser
         _currentDirectoryNode = new ContentDirectory
         {
             Name = System.IO.Path.GetFileName(path),
-            AbsolutePath = path,
+            AssetPath = new NPath(path),
         };
 
         foreach (var entry in Directory.EnumerateFileSystemEntries(path))
@@ -102,8 +104,8 @@ public sealed class ContentBrowser
                 var dir = new ContentDirectory
                 {
                     Name = System.IO.Path.GetFileName(entry),
-                    AbsolutePath = entry,
-                    Path = GetResourcePathVFS(entry),
+                    AssetPath = new NPath(entry),
+                    Path = new NVirtualPath(GetResourcePathVFS(entry)),
 
                     // TODO:
                     // ImGui tree flags abstraction
@@ -114,23 +116,20 @@ public sealed class ContentBrowser
             }
             else
             {
+                var entryNPath = new NPath(entry);
+                var meta = MetaFileManager.ReadMeta(entryNPath);
+
                 var file = new ContentFile
                 {
                     Name = System.IO.Path.GetFileNameWithoutExtension(entry),
-
-                    AbsolutePath = entry,
-
+                    AssetPath = entryNPath,
                     Extension = System.IO.Path.GetExtension(entry),
-
-                    Path = GetResourcePathVFS(entry),
-
+                    Path = new NVirtualPath(GetResourcePathVFS(entry)),
+                    AssetType = meta?.Importer
+                        ?? MetaFileManager.InferImporterName(
+                            System.IO.Path.GetExtension(entry)),
                     UIFlags = 0,
                 };
-
-                // TODO:
-                // AssetDatabase.GetMetadata(...)
-                // AssetType resolve
-                // MetaData loading
 
                 _currentDirectoryNode.Files.Add(file);
             }
@@ -146,9 +145,9 @@ public sealed class ContentBrowser
         {
             if (item is ContentDirectory)
             {
-                if (Directory.Exists(item.AbsolutePath))
+                if (Directory.Exists(item.AssetPath.FullPath))
                 {
-                    Directory.Delete(item.AbsolutePath, true);
+                    Directory.Delete(item.AssetPath.FullPath, true);
                 }
 
                 RefreshDirectory();
@@ -157,13 +156,13 @@ public sealed class ContentBrowser
                 return;
             }
 
-            if (File.Exists(item.AbsolutePath))
+            if (File.Exists(item.AssetPath.FullPath))
             {
-                File.Delete(item.AbsolutePath);
+                File.Delete(item.AssetPath.FullPath);
             }
 
             // TODO:
-            // AssetDatabase.RemoveAsset(item.Path)
+            // AssetDatabase.RemoveAsset(item.NVirtualPath)
 
             RefreshDirectory();
         }
@@ -184,18 +183,18 @@ public sealed class ContentBrowser
         {
             if (item is ContentDirectory)
             {
-                var parent = Directory.GetParent(item.AbsolutePath);
+                var parent = Directory.GetParent(item.AssetPath.FullPath);
 
                 if (parent == null)
                     return;
 
                 var newPath = System.IO.Path.Combine(parent.FullName, name);
 
-                Directory.Move(item.AbsolutePath, newPath);
+                Directory.Move(item.AssetPath.FullPath, newPath);
             }
             else
             {
-                var parent = Directory.GetParent(item.AbsolutePath);
+                var parent = Directory.GetParent(item.AssetPath.FullPath);
 
                 if (parent == null)
                     return;
@@ -204,7 +203,7 @@ public sealed class ContentBrowser
                     parent.FullName,
                     name + item.Extension);
 
-                File.Move(item.AbsolutePath, newPath);
+                File.Move(item.AssetPath.FullPath, newPath);
 
                 // TODO:
                 // Move .meta file
@@ -333,7 +332,7 @@ public sealed class ContentBrowser
         _directoryTreeRootNode = new ContentDirectory
         {
             Name = "Content",
-            AbsolutePath = _projectDirectory,
+            AssetPath = new NPath(_projectDirectory),
             UIFlags = 0,
         };
 
@@ -355,16 +354,16 @@ public sealed class ContentBrowser
 
         foreach (var dir in Directory.EnumerateDirectories(path))
         {
-            if (ExistChildDirectory(node, dir))
+            if (ExistChildDirectory(node, new NPath(dir)))
                 continue;
 
             var child = new ContentDirectory
             {
                 Name = System.IO.Path.GetFileName(dir),
 
-                AbsolutePath = dir,
+                AssetPath = new NPath(dir),
 
-                Path = GetResourcePathVFS(dir),
+                Path = new NVirtualPath(GetResourcePathVFS(dir)),
 
                 UIFlags = 0,
             };
@@ -376,17 +375,17 @@ public sealed class ContentBrowser
         {
             RefreshDirectoryTree(
                 subChild,
-                subChild.AbsolutePath);
+                subChild.AssetPath.FullPath);
         }
     }
 
     public bool ExistChildDirectory(
         ContentDirectory node,
-        string path)
+        NPath path)
     {
         foreach (var child in node.Directories)
         {
-            if (child.AbsolutePath == path)
+            if (child.AssetPath == path)
             {
                 return true;
             }

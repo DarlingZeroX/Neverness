@@ -60,4 +60,67 @@ public static class EntityFactory
 
         return entity;
     }
+
+    /// <summary>
+    /// 创建 Sprite 实体：自动挂载 <see cref="NNTransformData"/> + <see cref="NNSpriteRendererComponentData"/>。
+    /// 类似 Unity 中 new GameObject + AddComponent&lt;SpriteRenderer&gt; 的效果。
+    /// </summary>
+    /// <param name="world">目标场景世界。</param>
+    /// <param name="displayName">显示名称（默认 "Sprite"）。</param>
+    /// <param name="position">初始位置（默认原点）。</param>
+    /// <param name="colorR">Tint 红色分量（默认 1）。</param>
+    /// <param name="colorG">Tint 绿色分量（默认 1）。</param>
+    /// <param name="colorB">Tint 蓝色分量（默认 1）。</param>
+    /// <param name="colorA">Tint Alpha 分量（默认 1，不透明）。</param>
+    /// <param name="layer">渲染层级（默认 0）。</param>
+    /// <param name="sortOrder">层级内排序（默认 0）。</param>
+    /// <returns>配置好的实体；创建失败时返回 null。</returns>
+    public static SceneEntity? CreateSprite(
+        SceneWorld world,
+        string displayName = "Sprite",
+        NNVec3? position = null,
+        float colorR = 1.0f,
+        float colorG = 1.0f,
+        float colorB = 1.0f,
+        float colorA = 1.0f,
+        uint layer = 0,
+        uint sortOrder = 0)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+
+        var entity = world.Entities.Create(displayName);
+        if (entity == null)
+        {
+            return null;
+        }
+
+        // Transform — Identity 默认值（位置原点、无旋转、缩放 1）
+        entity.AddComponent<NNTransformData>();
+        entity.SetComponent(new NNTransformData
+        {
+            Position = position ?? default,
+            Rotation = new NNQuat { W = 1.0f },
+            Scale = new NNVec3 { X = 1, Y = 1, Z = 1 },
+        });
+
+        // SpriteRenderer — 默认可见、白色、全 UV、Alpha 混合
+        entity.AddComponent<NNSpriteRendererComponentData>();
+        entity.SetComponent(new NNSpriteRendererComponentData
+        {
+            ColorR = colorR,
+            ColorG = colorG,
+            ColorB = colorB,
+            ColorA = colorA,
+            UvU0 = 0f,
+            UvV0 = 0f,
+            UvU1 = 1f,
+            UvV1 = 1f,
+            Layer = layer,
+            SortOrder = sortOrder,
+            BlendMode = (uint)NNBlendMode.Alpha,
+            Flags = (uint)NNSpriteFlags.Visible,
+        });
+
+        return entity;
+    }
 }

@@ -5,6 +5,8 @@
 
 #include "RuntimeApplication.h"
 
+#include "Core/SDL3EventTranslator.h"
+
 #include <algorithm>
 #include <array>
 #include <SDL3/SDL.h>
@@ -126,6 +128,8 @@ namespace NN::Runtime::Application
 		}
 	} // namespace
 
+	RuntimeApplication::~RuntimeApplication() = default;
+
 	int RuntimeApplication::Initialize()
 	{
 		try
@@ -157,6 +161,8 @@ namespace NN::Runtime::Application
 
 			m_sdlInitialized = true;
 			m_shouldQuit = false;
+
+			m_eventTranslator = std::make_unique<SDL3EventTranslator>(m_eventQueue);
 
 			std::string editorProjectRootDir;
 #ifdef EDITOR_PROJECT_ROOT_DIR
@@ -275,6 +281,12 @@ void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 				return false;
 			}
 
+			/* 翻译 SDL 事件到 NNEvent 队列（供 C# 消费） */
+			if (m_eventTranslator)
+			{
+				m_eventTranslator->TranslateAndPush(event);
+			}
+
 			if (VGWindow* primary = WindowRegistry::Resolve(m_primaryWindowHandle))
 			{
 				if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
@@ -298,6 +310,9 @@ void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 
 	void RuntimeApplication::Shutdown()
 	{
+		m_eventTranslator.reset();
+		m_eventQueue.Clear();
+
 		m_ImguiOpengl3Layer.reset();
 		m_imguiAttached = false;
 		m_primaryWindowHandle = NN_INVALID_WINDOW_HANDLE;

@@ -12,6 +12,7 @@
 
 #include "../Components/NNCameraComponent.h"
 #include "../Components/NNRelationshipComponent.h"
+#include "../Components/NNSpriteRendererComponent.h"
 #include "../Components/NNTagComponent.h"
 #include "../Components/NNTransformComponent.h"
 #include "../Reflection/NNComponentRegistry.h"
@@ -99,6 +100,7 @@ namespace NN::Runtime::Scene
 			const entt::entity enttEntity = m_EntityTable.Resolve(handle);
 			T& component = m_Registry.emplace<T>(enttEntity, std::forward<Args>(args)...);
 			NotifyComponentEmplaced(handle, component);
+			IncrementReflectionVersion();
 			return component;
 		}
 
@@ -150,6 +152,7 @@ namespace NN::Runtime::Scene
 			m_Registry.remove<T>(enttEntity);
 			const NNComponentTypeId typeId = m_ComponentRegistry.FindTypeId(std::type_index(typeid(T)));
 			m_DirtyTracker.MarkComponentDirty(handle, typeId);
+			IncrementReflectionVersion();
 			return true;
 		}
 
@@ -157,6 +160,58 @@ namespace NN::Runtime::Scene
 		[[nodiscard]] NNEntityQuery<Components...> Query() noexcept
 		{
 			return NNEntityQuery<Components...>(*this);
+		}
+
+		/**
+		 * @brief 绑定组件类型的 Runtime Access 函数指针到注册表描述符。
+		 *
+		 * 此模板方法在 NNRuntimeScene 完整定义可见处声明，
+		 * 可安全访问 TryGet<T>/Has<T>/Emplace<T>/Remove<T> 等模板方法，
+		 * 避免 NN_REGISTER_COMPONENT 宏中的循环包含问题。
+		 *
+		 * 调用时机：RegisterBuiltinComponents() 或插件初始化时。
+		 * 与 NN_REGISTER_COMPONENT 宏的配合：宏注册字段元数据，此方法补充函数指针。
+		 */
+		template <typename T>
+		void BindComponentType(const char* nameUtf8)
+		{
+			NNComponentTypeDesc desc{};
+			desc.TypeIndex = std::type_index(typeid(T));
+			desc.NameUtf8 = nameUtf8;
+			desc.NameHash = fnv1a_64(nameUtf8);
+			desc.TypeId = desc.NameHash;
+			desc.SizeBytes = sizeof(T);
+
+			// Runtime Type-Erased ECS Access 函数指针
+			desc.GetComponentPtrFn = [](NNRuntimeScene* s, NNEntity e) -> void* {
+				return s->TryGet<T>(e);
+			};
+			desc.GetComponentConstPtrFn = [](const NNRuntimeScene* s, NNEntity e) -> const void* {
+				return s->TryGet<T>(e);
+			};
+			desc.HasComponentFn = [](const NNRuntimeScene* s, NNEntity e) -> bool {
+				return s->Has<T>(e);
+			};
+			desc.AddComponentFn = [](NNRuntimeScene* s, NNEntity e) -> bool {
+				if (s->Has<T>(e)) return false;
+				(void)s->Emplace<T>(e);
+				return true;
+			};
+			desc.RemoveComponentFn = [](NNRuntimeScene* s, NNEntity e) -> bool {
+				return s->Remove<T>(e);
+			};
+			desc.ForEachEntityFn = [](NNRuntimeScene* s,
+				void(*cb)(NNEntity, void*, void*), void* ud) {
+				auto view = s->GetRegistry().view<T>();
+				for (auto enttEnt : view)
+				{
+					NNEntity h = s->HandleFromEntt(enttEnt);
+					void* p = s->TryGet<T>(h);
+					if (p) cb(h, p, ud);
+				}
+			};
+
+			m_ComponentRegistry.RegisterTypeWithFields(desc);
 		}
 
 		[[nodiscard]] NNEntity HandleFromEntt(entt::entity entity) const noexcept;
@@ -204,6 +259,17 @@ namespace NN::Runtime::Scene
 			m_TransformVersion.fetch_add(1u, std::memory_order_relaxed);
 		}
 
+		/** @brief Reflection 版本号——组件增删时递增，C# 每帧 poll 以决定是否重建 Inspector 缓存。 */
+		[[nodiscard]] std::uint64_t ReflectionVersion() const noexcept
+		{
+			return m_ReflectionVersion.load(std::memory_order_relaxed);
+		}
+
+		void IncrementReflectionVersion() noexcept
+		{
+			m_ReflectionVersion.fetch_add(1u, std::memory_order_relaxed);
+		}
+
 		/** @brief 遍历存活实体（序列化、调试）。 */
 		template <typename Func>
 		void ForEachAliveEntity(Func&& func) const
@@ -241,6 +307,7 @@ namespace NN::Runtime::Scene
 		// ── Editor Snapshot 版本号 + 增量脏条目 ──
 		std::atomic<std::uint64_t> m_HierarchyVersion{0u};
 		std::atomic<std::uint64_t> m_TransformVersion{0u};
+		std::atomic<std::uint64_t> m_ReflectionVersion{0u};
 		std::vector<DirtyHierarchyEntry> m_DirtyHierarchyEntries{};
 	};
 } // namespace NN::Runtime::Scene

@@ -217,6 +217,10 @@ public sealed class AssetWatcher : IDisposable
             {
                 if (File.Exists(path.FullPath))
                 {
+                    /* 跳过已由 DropImportService 预导入的文件 */
+                    if (!_stateCache.HasChanged(path))
+                        continue;
+
                     OnAssetCreated?.Invoke(path);
                 }
             }

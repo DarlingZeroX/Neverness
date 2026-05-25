@@ -171,6 +171,48 @@ uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getIncrementalSnapshot(
 {
 	return NNEngineRuntime::Instance().Scene().GetIncrementalSnapshot(scene, outBuffer, capacity);
 }
+
+// ── Reflection API 转发（layoutVersion = 3）──
+
+uint64_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getReflectionVersion(NNSceneHandle scene)
+{
+	return NNEngineRuntime::Instance().Scene().GetReflectionVersion(scene);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getTypeInfoSnapshotSize(NNSceneHandle scene)
+{
+	return NNEngineRuntime::Instance().Scene().GetTypeInfoSnapshotSize(scene);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getTypeInfoSnapshot(
+	NNSceneHandle scene, void* outBuffer, uint32_t capacity)
+{
+	return NNEngineRuntime::Instance().Scene().GetTypeInfoSnapshot(scene, outBuffer, capacity);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getEntityComponentCount(
+	NNSceneHandle scene, uint64_t entity)
+{
+	return NNEngineRuntime::Instance().Scene().GetEntityComponentCount(scene, entity);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getEntityComponents(
+	NNSceneHandle scene, uint64_t entity, NNEditorComponentInfo* outInfos, uint32_t capacity)
+{
+	return NNEngineRuntime::Instance().Scene().GetEntityComponents(scene, entity, outInfos, capacity);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getComponentFieldInfos(
+	NNSceneHandle scene, uint64_t componentTypeId, NNEditorFieldInfo* outFields, uint32_t capacity)
+{
+	return NNEngineRuntime::Instance().Scene().GetComponentFieldInfos(scene, componentTypeId, outFields, capacity);
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL rt_editor_scene_getComponentRawData(
+	NNSceneHandle scene, uint64_t entity, uint64_t componentTypeId, void* outData, uint32_t capacity)
+{
+	return NNEngineRuntime::Instance().Scene().GetComponentRawData(scene, entity, componentTypeId, outData, capacity);
+}
 } // namespace
 
 extern "C" void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api)
@@ -179,11 +221,18 @@ extern "C" void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api)
 	{
 		return;
 	}
-	api->layoutVersion          = 2;
-	api->getHierarchyVersion    = &rt_editor_scene_getHierarchyVersion;
-	api->getSnapshotSize        = &rt_editor_scene_getSnapshotSize;
-	api->getHierarchySnapshot   = &rt_editor_scene_getHierarchySnapshot;
-	api->getTransformVersion    = &rt_editor_scene_getTransformVersion;
-	api->getTransformSnapshot   = &rt_editor_scene_getTransformSnapshot;
-	api->getIncrementalSnapshot = &rt_editor_scene_getIncrementalSnapshot;
+	api->layoutVersion              = 3;
+	api->getHierarchyVersion        = &rt_editor_scene_getHierarchyVersion;
+	api->getSnapshotSize            = &rt_editor_scene_getSnapshotSize;
+	api->getHierarchySnapshot       = &rt_editor_scene_getHierarchySnapshot;
+	api->getTransformVersion        = &rt_editor_scene_getTransformVersion;
+	api->getTransformSnapshot       = &rt_editor_scene_getTransformSnapshot;
+	api->getIncrementalSnapshot     = &rt_editor_scene_getIncrementalSnapshot;
+	api->getReflectionVersion       = &rt_editor_scene_getReflectionVersion;
+	api->getTypeInfoSnapshotSize    = &rt_editor_scene_getTypeInfoSnapshotSize;
+	api->getTypeInfoSnapshot        = &rt_editor_scene_getTypeInfoSnapshot;
+	api->getEntityComponentCount    = &rt_editor_scene_getEntityComponentCount;
+	api->getEntityComponents        = &rt_editor_scene_getEntityComponents;
+	api->getComponentFieldInfos     = &rt_editor_scene_getComponentFieldInfos;
+	api->getComponentRawData        = &rt_editor_scene_getComponentRawData;
 }

@@ -74,6 +74,81 @@ internal static unsafe class EditorSceneNativeBridge
 		return api.GetIncrementalSnapshot(sceneHandle, buffer, capacity);
 	}
 
+	// ── Reflection API（layoutVersion = 3）──
+
+	/// <summary>查询 reflection 版本号（组件增删时递增）。C# 每帧 poll。</summary>
+	public static ulong GetReflectionVersion(ulong sceneHandle)
+	{
+		if (sceneHandle == 0 || !TryGetApi(out var api) || api.GetReflectionVersion == null)
+			return 0;
+		return api.GetReflectionVersion(sceneHandle);
+	}
+
+	/// <summary>查询类型信息快照所需缓冲区大小（字节）。</summary>
+	public static uint GetTypeInfoSnapshotSize(ulong sceneHandle)
+	{
+		if (sceneHandle == 0 || !TryGetApi(out var api) || api.GetTypeInfoSnapshotSize == null)
+			return 0;
+		return api.GetTypeInfoSnapshotSize(sceneHandle);
+	}
+
+	/// <summary>拷贝类型信息快照到调用方缓冲区。返回实际写入字节数。</summary>
+	public static uint GetTypeInfoSnapshot(ulong sceneHandle, void* buffer, uint capacity)
+	{
+		if (sceneHandle == 0 || buffer == null || !TryGetApi(out var api) || api.GetTypeInfoSnapshot == null)
+			return 0;
+		return api.GetTypeInfoSnapshot(sceneHandle, buffer, capacity);
+	}
+
+	/// <summary>查询实体拥有的组件数量。</summary>
+	public static uint GetEntityComponentCount(ulong sceneHandle, ulong entity)
+	{
+		if (sceneHandle == 0 || !TryGetApi(out var api) || api.GetEntityComponentCount == null)
+			return 0;
+		return api.GetEntityComponentCount(sceneHandle, entity);
+	}
+
+	/// <summary>拷贝实体的组件信息数组。返回实际写入的条目数。</summary>
+	public static uint GetEntityComponents(
+		ulong sceneHandle,
+		ulong entity,
+		Span<NNEditorComponentInfo> outInfos)
+	{
+		if (sceneHandle == 0 || !TryGetApi(out var api) || api.GetEntityComponents == null)
+			return 0;
+		fixed (NNEditorComponentInfo* pOut = outInfos)
+		{
+			return api.GetEntityComponents(sceneHandle, entity, pOut, (uint)outInfos.Length);
+		}
+	}
+
+	/// <summary>拷贝指定组件类型的字段信息。返回实际写入的条目数。</summary>
+	public static uint GetComponentFieldInfos(
+		ulong sceneHandle,
+		ulong componentTypeId,
+		Span<NNEditorFieldInfo> outFields)
+	{
+		if (sceneHandle == 0 || !TryGetApi(out var api) || api.GetComponentFieldInfos == null)
+			return 0;
+		fixed (NNEditorFieldInfo* pOut = outFields)
+		{
+			return api.GetComponentFieldInfos(sceneHandle, componentTypeId, pOut, (uint)outFields.Length);
+		}
+	}
+
+	/// <summary>拷贝实体的指定组件原始数据到调用方缓冲区。返回实际写入字节数。</summary>
+	public static uint GetComponentRawData(
+		ulong sceneHandle,
+		ulong entity,
+		ulong componentTypeId,
+		void* outData,
+		uint capacity)
+	{
+		if (sceneHandle == 0 || outData == null || !TryGetApi(out var api) || api.GetComponentRawData == null)
+			return 0;
+		return api.GetComponentRawData(sceneHandle, entity, componentTypeId, outData, capacity);
+	}
+
 	private static bool TryGetApi(out NNEditorSceneApi api)
 	{
 		if (!EngineNativeApiBootstrap.IsInstalled)

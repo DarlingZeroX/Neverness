@@ -8,6 +8,7 @@
 #include "Internal/RuntimeApiBuilders.h"
 #include "ManagedRuntimeBridge.h"
 #include "ApplicationApiExport.h"
+#include "EventApiExport.h"
 #include "WindowApiExport.h"
 #include "VfsApiExport.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
@@ -36,6 +37,7 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildApplicationRuntimeApi(&outTable->application);
 	NNBuildWindowRuntimeApi(&outTable->window);
 	NNBuildVfsRuntimeApi(&outTable->vfs);
+	NNBuildEventRuntimeApi(&outTable->events);
 
 	/* 将 VFS 函数表注入 SceneSubsystem，供序列化/反序列化使用 */
 	NN::Runtime::engine::NNEngineRuntime::Instance().Scene().SetVfsApi(&outTable->vfs);

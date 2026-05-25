@@ -21,6 +21,7 @@ namespace Neverness.Editor.Assets.Private;
 internal static class AssetsModuleImp
 {
     private static HotReloadCoordinator? s_hotReloadCoordinator;
+    private static DropImportService? s_dropImportService;
 
     public static void Install(SceneManager sceneManager)
     {
@@ -89,6 +90,10 @@ internal static class AssetsModuleImp
 
             s_hotReloadCoordinator = new HotReloadCoordinator(new NPath(path));
             s_hotReloadCoordinator.Start();
+
+            // 8. 启动 DropImportService（拖放外部文件导入）
+            s_dropImportService = new DropImportService(EditorCoreModule.Context.Events, path);
+            s_dropImportService.Start();
         }
 
     }
@@ -102,6 +107,8 @@ internal static class AssetsModuleImp
     /// <summary>关闭模块（停止热重载、强制保存）。</summary>
     public static void Shutdown()
     {
+        s_dropImportService?.Stop();
+        s_dropImportService = null;
         s_hotReloadCoordinator?.Dispose();
         s_hotReloadCoordinator = null;
         EditorAssetDatabase.SaveIfDirty();

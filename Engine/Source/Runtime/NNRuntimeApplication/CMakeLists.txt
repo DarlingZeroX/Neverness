@@ -23,6 +23,9 @@ target_sources(NevernessRuntime-Application
 		ApplicationExport.h
 		Include/ApplicationApiExport.h
 		Include/WindowApiExport.h
+		Include/EventApiExport.h
+		Include/Core/EventQueue.h
+		Include/Core/SDL3EventTranslator.h
 		Include/Core/Window.h
 		Include/Core/WindowRegistry.h
 		Include/Engine/ImGuiLayer.h
@@ -35,6 +38,7 @@ target_sources(NevernessRuntime-Application
 		Private/RuntimeApplicationInstance.cpp
 		Private/BuildApplicationApi.cpp
 		Private/BuildWindowApi.cpp
+		Private/BuildEventApi.cpp
  "Include/Editor/EditorInitializer.h" "Private/Editor/EditorInitializer.cpp" "Include/Editor/EditorCore.h" "Private/Editor/EditorCore.cpp")
 
 target_compile_definitions(NevernessRuntime-Application PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")

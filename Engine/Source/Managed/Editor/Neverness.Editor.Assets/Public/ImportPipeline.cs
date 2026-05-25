@@ -653,7 +653,7 @@ public static class ImportPipeline
         return s_libraryRoot.Combine("Cache/Dependency.cache");
     }
 
-    private static byte[] ComputeContentHash(NPath filePath)
+    internal static byte[] ComputeContentHash(NPath filePath)
     {
         try
         {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/EventQueue.h"
+#include "Core/SDL3EventTranslator.h"
 #include "Core/Window.h"
 #include "Engine/ImGuiLayer.h"
 
@@ -15,6 +17,7 @@ namespace NN::Runtime::Application
 class RuntimeApplication
 {
 public:
+	~RuntimeApplication();
 	int Initialize();
 	bool PumpEvents();
 	void Shutdown();
@@ -23,6 +26,9 @@ public:
 
 	/** @brief 首个窗口创建后由 BuildWindowApi 调用，挂接 ImGui 与主窗口句柄。 */
 	void OnPrimaryWindowCreated(NNWindowHandle handle);
+
+	/** @brief 获取事件队列引用（供 BuildEventApi 绑定函数指针）。 */
+	NN::Runtime::EventQueue& GetEventQueue() noexcept { return m_eventQueue; }
 
 private:
 	void AddImguiLayer(VGWindow* window);
@@ -33,6 +39,10 @@ private:
 
 	NNWindowHandle m_primaryWindowHandle = NN_INVALID_WINDOW_HANDLE;
 	Scope<ImguiOpengl3Layer> m_ImguiOpengl3Layer;
+
+	/* ── 事件系统 ── */
+	NN::Runtime::EventQueue m_eventQueue;
+	Scope<SDL3EventTranslator> m_eventTranslator;
 };
 
 } // namespace NN::Runtime::Application

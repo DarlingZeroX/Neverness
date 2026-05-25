@@ -78,6 +78,18 @@ public struct NNQuat
 }
 
 /// <summary>
+/// 4x4 浮點矩陣，與 <c>glm::mat4</c> 內存佈局一致（列主序，64 字節）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNMat4
+{
+    public float M00, M10, M20, M30;
+    public float M01, M11, M21, M31;
+    public float M02, M12, M22, M32;
+    public float M03, M13, M23, M33;
+}
+
+/// <summary>
 /// 與 Native <c>NNTransformData</c> 對齊（<c>SceneAPI.h</c>）：完整變換（位置 + 旋轉 + 縮放）。
 /// TypeId = FNV-1a("Transform")，須與 Native BuiltinComponentRegistration.cpp 一致。
 /// </summary>
@@ -88,6 +100,7 @@ public struct NNTransformData
 	public NNVec3 Position;
 	public NNQuat Rotation;
 	public NNVec3 Scale;
+    public NNMat4 Matrix;
 }
 
 /// <summary>投影類型枚舉（與 Native <c>NNProjectionType</c> 對齊）。</summary>
@@ -95,18 +108,6 @@ public enum NNProjectionType : uint
 {
 	Perspective = 0,
 	Orthographic = 1,
-}
-
-/// <summary>
-/// 4x4 浮點矩陣，與 <c>glm::mat4</c> 內存佈局一致（列主序，64 字節）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNMat4
-{
-	public float M00, M10, M20, M30;
-	public float M01, M11, M21, M31;
-	public float M02, M12, M22, M32;
-	public float M03, M13, M23, M33;
 }
 
 /// <summary>
@@ -129,6 +130,48 @@ public struct NNCameraComponentData
 	public float OrthoHeight;
 
 	public NNMat4 ProjectionMatrix;
+}
+
+/// <summary>精灵混合模式（与 Native <c>NNBlendMode</c> 對齊）。</summary>
+public enum NNBlendMode : uint
+{
+	Alpha = 0,
+	Additive = 1,
+	Multiply = 2,
+	Opaque = 3,
+	Premultiplied = 4,
+}
+
+/// <summary>精灵渲染标志位（与 Native <c>NNSpriteFlags</c> 對齊）。</summary>
+[Flags]
+public enum NNSpriteFlags : uint
+{
+	None = 0,
+	Visible = 1 << 0,
+	FlipX = 1 << 1,
+	FlipY = 1 << 2,
+	CastShadow = 1 << 3,
+	ReceiveShadow = 1 << 4,
+	Instanced = 1 << 5,
+	CustomShader = 1 << 6,
+}
+
+/// <summary>
+/// 精灵渲染组件——blittable 結構體，與 Native <c>NNSpriteRendererComponent</c> 內存佈局一致（64 字節）。
+/// TypeId = FNV-1a("SpriteRenderer")，須與 Native BuiltinComponentRegistration.cpp 一致。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x51387BA3968C343B, Name = "SpriteRenderer")]
+public struct NNSpriteRendererComponentData
+{
+	public ulong TextureAsset;          // 8B offset 0
+	public ulong MaterialAsset;         // 8B offset 8
+	public float ColorR, ColorG, ColorB, ColorA;  // 16B offset 16
+	public float UvU0, UvV0, UvU1, UvV1;          // 16B offset 32
+	public uint Layer;                  // 4B offset 48
+	public uint SortOrder;              // 4B offset 52
+	public uint BlendMode;              // 4B offset 56 (NNBlendMode)
+	public uint Flags;                  // 4B offset 60 (NNSpriteFlags)
 }
 
 
@@ -261,14 +304,48 @@ public static class SnapshotChangeFlags
 }
 
 /// <summary>
-/// Editor 专用场景查询函数表——独立于 <see cref="NNSceneApi"/>，layoutVersion = 2。
+/// 组件类型信息——描述单个组件类型的元数据。24 字节。
+/// 与 Native <c>NNEditorComponentInfo</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// nameOffset + nameLen 引用快照内嵌的 namePool。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNEditorComponentInfo
+{
+	public ulong TypeId;       ///< FNV-1a name hash，与 componentTypeId 一致
+	public uint NameOffset;    ///< 在 namePool 中的字节偏移
+	public uint NameLen;       ///< 名字字节长度（不含 NUL）
+	public uint FieldCount;    ///< 该组件类型的字段数量
+	public uint Flags;         ///< 保留
+}
+
+/// <summary>
+/// 组件字段信息——描述单个字段的反射元数据。24 字节。
+/// 与 Native <c>NNEditorFieldInfo</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct NNEditorFieldInfo
+{
+	public uint NameOffset;    ///< 在 namePool 中的字节偏移
+	public uint NameLen;       ///< 名字字节长度（不含 NUL）
+	public uint FieldType;     ///< NNComponentFieldType 枚举值
+	public uint DataOffset;    ///< 字段在组件原始数据中的字节偏移
+	public uint DataSize;      ///< 字段占用字节数
+	public uint Pad;           ///< 对齐填充
+}
+
+/// <summary>
+/// Editor 专用场景查询函数表——独立于 <see cref="NNSceneApi"/>，layoutVersion = 3。
 /// 与 Native <c>NNEditorSceneAPI</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
+/// v1: hierarchy + transform 快照
+/// v2: 增量快照
+/// v3: Runtime Reflection API
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNEditorSceneApi
 {
-	public uint LayoutVersion;  // = 2
+	public uint LayoutVersion;  // = 3
 
+	// ── Phase 1：Hierarchy / Transform 快照 ──
 	public delegate* unmanaged<ulong, ulong> GetHierarchyVersion;
 	public delegate* unmanaged<ulong, uint> GetSnapshotSize;
 	public delegate* unmanaged<ulong, void*, uint, uint> GetHierarchySnapshot;
@@ -276,8 +353,17 @@ public unsafe struct NNEditorSceneApi
 	public delegate* unmanaged<ulong, ulong> GetTransformVersion;
 	public delegate* unmanaged<ulong, ulong*, uint, NNEditorTransformData*, uint> GetTransformSnapshot;
 
-	// ── 增量快照（layoutVersion = 2 追加）──
+	// ── Phase 2：增量快照（layoutVersion = 2 追加）──
 	public delegate* unmanaged<ulong, void*, uint, uint> GetIncrementalSnapshot;
+
+	// ── Phase 3：Runtime Reflection（layoutVersion = 3 追加）──
+	public delegate* unmanaged<ulong, ulong> GetReflectionVersion;
+	public delegate* unmanaged<ulong, uint> GetTypeInfoSnapshotSize;
+	public delegate* unmanaged<ulong, void*, uint, uint> GetTypeInfoSnapshot;
+	public delegate* unmanaged<ulong, ulong, uint> GetEntityComponentCount;
+	public delegate* unmanaged<ulong, ulong, NNEditorComponentInfo*, uint, uint> GetEntityComponents;
+	public delegate* unmanaged<ulong, ulong, NNEditorFieldInfo*, uint, uint> GetComponentFieldInfos;
+	public delegate* unmanaged<ulong, ulong, ulong, void*, uint, uint> GetComponentRawData;
 }
 
 /// <summary>
@@ -501,6 +587,118 @@ public unsafe struct NNAssetCookerApi
 }
 
 /// <summary>
+/// 與 Native <c>NNEventType</c> 對齊（<c>EventTypes.h</c>）：事件粗分类。
+/// type = 粗分类（Engine-Level Category），subtype = 细分类（Per-Type Specific）。
+/// </summary>
+public enum NNEventType : uint
+{
+    None   = 0,
+    Window = 1,  /* 窗口生命周期 */
+    Input  = 2,  /* 鼠标/键盘/拖放 */
+    System = 3,  /* 应用退出 */
+    /* 4-63 预留给未来：SCENE=4, ENTITY=5, ASSET=6... */
+}
+
+/// <summary>
+/// 與 Native <c>NNWindowEventSubtype</c> 對齊：窗口事件细分类。
+/// </summary>
+public enum NNWindowEventSubtype : uint
+{
+    None              =  0,
+    Shown             =  1,
+    Hidden            =  2,
+    Exposed           =  3,
+    Moved             =  4,
+    Resized           =  5,
+    SizeChanged       =  6,
+    PixelSizeChanged  =  7,
+    Minimized         =  8,
+    Maximized         =  9,
+    Restored          = 10,
+    MouseEnter        = 11,
+    MouseLeave        = 12,
+    FocusGained       = 13,
+    FocusLost         = 14,
+    Close             = 15,
+    DpiChanged        = 16,
+    DisplayChanged    = 17,
+    EnterFullscreen   = 18,
+    LeaveFullscreen   = 19,
+    Terminating       = 20,
+    LowMemory         = 21,
+}
+
+/// <summary>
+/// 與 Native <c>NNInputEventSubtype</c> 對齊：输入事件细分类（鼠标/键盘/拖放）。
+/// </summary>
+public enum NNInputEventSubtype : uint
+{
+    None            =  0,
+    MouseMotion     =  1,
+    MouseButtonDown =  2,
+    MouseButtonUp   =  3,
+    MouseWheel      =  4,
+    KeyDown         =  5,
+    KeyUp           =  6,
+    TextInput       =  7,
+    TextEditing     =  8,
+    DropBegin       =  9,
+    DropFile        = 10,
+    DropText        = 11,
+    DropComplete    = 12,
+}
+
+/// <summary>
+/// 與 Native <c>NNSystemEventSubtype</c> 對齊：系统事件细分类。
+/// </summary>
+public enum NNSystemEventSubtype : uint
+{
+    None = 0,
+    Quit = 1,
+}
+
+/// <summary>
+/// 與 Native <c>NNEvent</c> 對齊（<c>EventTypes.h</c>）：128 字节 ABI 事件结构体。
+/// Blittable，NativeAOT 兼容，零 GC Alloc。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Size = 128)]
+public struct NNEvent
+{
+    public uint Type;           // NNEventType         4B  offset 0x00
+    public uint Subtype;        // subtype enum        4B  offset 0x04
+    public ulong Timestamp;     // SDL ticks ms        8B  offset 0x08
+    public ulong Source;        // NNWindowHandle      8B  offset 0x10
+
+    public int Data1;           // 通用数据 1          4B  offset 0x18
+    public int Data2;           // 通用数据 2          4B  offset 0x1C
+    public int Data3;           // 通用数据 3          4B  offset 0x20
+    public int Data4;           // 通用数据 4          4B  offset 0x24
+
+    public uint Flags;          // 事件标志            4B  offset 0x28
+    public uint StringPoolIdx;  // String Pool 偏移    4B  offset 0x2C
+
+    // reservedPad[20] = 80B padding (offset 0x30 - 0x7F)
+    // Total = 128B
+}
+
+/// <summary>
+/// 與 Native <c>NNEventAPI</c> 對齊（<c>EventAPI.h</c>）：事件队列函数表。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public unsafe struct NNEventApi
+{
+    public uint Size;
+
+    public delegate* unmanaged<NNEvent*, uint> PollEvent;
+    public delegate* unmanaged<NNEvent*, uint> PeekEvent;
+    public delegate* unmanaged<NNEvent*, uint, uint> WaitEvent;
+    public delegate* unmanaged<NNEvent*, byte**, ushort*, uint> GetEventString;
+    public delegate* unmanaged<uint> GetQueueCount;
+    public delegate* unmanaged<void> FlushEvents;
+    public delegate* unmanaged<NNEvent*, uint> PushUserEvent;
+}
+
+/// <summary>
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
@@ -535,4 +733,6 @@ public unsafe struct NNNativeEngineApi
 	public NNAssetManagerApi AssetManager;
 	/// <summary>對應 C 聚合體成員 <c>assetCooker</c>（型別 <c>NNAssetCookerAPI</c>）；資產編譯/打包器。</summary>
 	public NNAssetCookerApi AssetCooker;
+	/// <summary>對應 C 聚合體成員 <c>events</c>（型別 <c>NNEventAPI</c>）；事件队列（Pull-Based）。</summary>
+	public NNEventApi Events;
 }

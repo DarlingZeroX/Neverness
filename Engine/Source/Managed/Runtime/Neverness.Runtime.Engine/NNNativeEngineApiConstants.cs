@@ -9,9 +9,10 @@ namespace Neverness.Runtime.Engine;
 public static class NNNativeEngineApiConstants
 {
 	/// <summary>
-	/// 當前 <c>NNNativeEngineAPI</c> 聚合體佈局版本；破壞性子表欄位變更時遞增。當前為 **17**。
+	/// 當前 <c>NNNativeEngineAPI</c> 聚合體佈局版本；破壞性子表欄位變更時遞增。當前為 **19**。
+	/// v19：新增 NNEventAPI 子表（Pull-Based 事件队列）。
 	/// </summary>
-	public const uint LayoutVersion = 17;
+	public const uint LayoutVersion = 19;
 
 	/// <summary>
 	/// 與 Native <c>NN_ENTITY_SERVICE_ABI_TOKEN</c>（<c>EntityAPI.h</c>）一致之服務子表冒煙魔數（ASCII「NNEn」小端）；僅用於驗證 <c>NNEntityAPI</c> 已接線，不代表託管 <c>EntityWorld</c> 已與 Native 打通。

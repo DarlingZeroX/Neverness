@@ -152,4 +152,22 @@ NNWindowHandle WindowRegistry::GetPrimaryHandle()
 	return GPrimaryHandle;
 }
 
+NNWindowHandle WindowRegistry::FindHandle(SDL_Window* sdlWindow)
+{
+	if (sdlWindow == nullptr)
+	{
+		return 0;
+	}
+
+	std::lock_guard lock(GMutex);
+	for (const auto& [handle, entry] : GWindows)
+	{
+		if (entry.sdlWindow == sdlWindow)
+		{
+			return handle;
+		}
+	}
+	return 0;
+}
+
 } // namespace NN::Runtime

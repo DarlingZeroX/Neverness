@@ -8,9 +8,6 @@
 #include <cstring>
 
 #include "../../../NNNativeEngineAPI/Include/EngineTypes.h"
-#include "Components/NNRelationshipComponent.h"
-#include "Components/NNTagComponent.h"
-#include "Components/NNTransformComponent.h"
 #include "Reflection/NNComponentRegistry.h"
 #include "Scene/NNRuntimeScene.h"
 
@@ -280,53 +277,26 @@ std::vector<std::uint8_t> NNSceneSerializer::Serialize(const NNRuntimeScene& sce
 		std::vector<std::uint8_t> componentsPayload;
 		std::uint32_t componentCount = 0u;
 
-		/* 追加单个组件到 payload（写入稳定的 nameHash 而非自增 typeId） */
-		auto appendComponent = [&](const NNComponentTypeId typeId, const void* data)
+		/* 统一 registry-driven 序列化：遍历所有已注册组件类型 */
+		registry.ForEachDescriptor([&](const NNComponentTypeDesc& desc)
 		{
-			const NNComponentTypeDesc* desc = registry.FindDesc(typeId);
-			if (desc == nullptr || desc->Fields.empty() || data == nullptr)
+			if (!desc.GetComponentConstPtrFn || desc.Fields.empty())
 			{
 				return;
 			}
+
+			const void* ptr = desc.GetComponentConstPtrFn(&scene, handle);
+			if (ptr == nullptr)
+			{
+				return;
+			}
+
 			const std::vector<std::uint8_t> blob =
-				SerializeComponentBlob(*desc, data, handleToArchive);
-			WriteU64(componentsPayload, desc->NameHash);  /* FNV-1a 稳定哈希，8 字节 */
+				SerializeComponentBlob(desc, ptr, handleToArchive);
+			WriteU64(componentsPayload, desc.NameHash);
 			WriteU32(componentsPayload, static_cast<std::uint32_t>(blob.size()));
 			WriteBytes(componentsPayload, blob.data(), blob.size());
 			++componentCount;
-		};
-
-		/* Built-in components (hardcoded for special logic like SetParent) */
-		appendComponent(
-			registry.FindTypeId(std::type_index(typeid(NNTransformComponent))),
-			scene.TryGet<NNTransformComponent>(handle));
-		appendComponent(
-			registry.FindTypeId(std::type_index(typeid(NNRelationshipComponent))),
-			scene.TryGet<NNRelationshipComponent>(handle));
-		appendComponent(
-			registry.FindTypeId(std::type_index(typeid(NNTagComponent))),
-			scene.TryGet<NNTagComponent>(handle));
-
-		/* Registry-driven: auto-serialize all components with registered SerializeFn */
-		registry.ForEachDescriptor([&](const NNComponentTypeDesc& desc)
-		{
-			if (!desc.SerializeFn)
-				return;
-			/* Skip built-in components already handled above */
-			if (desc.TypeIndex == std::type_index(typeid(NNTransformComponent))
-				|| desc.TypeIndex == std::type_index(typeid(NNRelationshipComponent))
-				|| desc.TypeIndex == std::type_index(typeid(NNTagComponent)))
-				return;
-
-			std::vector<std::uint8_t> blob;
-			desc.SerializeFn( const_cast<NNRuntimeScene&>(scene), handle, blob);
-			if (!blob.empty())
-			{
-				WriteU64(componentsPayload, desc.NameHash);
-				WriteU32(componentsPayload, static_cast<std::uint32_t>(blob.size()));
-				WriteBytes(componentsPayload, blob.data(), blob.size());
-				++componentCount;
-			}
 		});
 
 		WriteU32(buffer, componentCount);
@@ -415,49 +385,33 @@ bool NNSceneSerializer::Deserialize(
 				continue;
 			}
 
-			if (desc->TypeIndex == std::type_index(typeid(NNTransformComponent)))
+			if (desc->GetComponentPtrFn == nullptr)
 			{
-				NNTransformComponent value{};
-				std::size_t blobOffset = 0u;
-				if (DeserializeComponentBlob(*desc, &value, pc.Blob, blobOffset, archiveToHandle))
-				{
-					if (NNTransformComponent* dst = scene.TryGet<NNTransformComponent>(handle))
-					{
-						*dst = value;
-					}
-				}
+				continue;
 			}
-			else if (desc->TypeIndex == std::type_index(typeid(NNRelationshipComponent)))
+
+			/* 若实体尚无此组件（如 Camera 不在 CreateEntityWithDefaults 中），先添加 */
+			if (desc->HasComponentFn != nullptr && desc->AddComponentFn != nullptr
+			    && !desc->HasComponentFn(&scene, handle))
 			{
-				NNRelationshipComponent value{};
-				std::size_t blobOffset = 0u;
-				if (DeserializeComponentBlob(*desc, &value, pc.Blob, blobOffset, archiveToHandle))
-				{
-					scene.SetParent(handle, value.Parent);
-					if (NNRelationshipComponent* dst = scene.TryGet<NNRelationshipComponent>(handle))
-					{
-						dst->ChildCount = value.ChildCount;
-						dst->Depth = value.Depth;
-					}
-				}
+				desc->AddComponentFn(&scene, handle);
 			}
-			else if (desc->TypeIndex == std::type_index(typeid(NNTagComponent)))
+
+			/* 通用反序列化：反序列化到临时缓冲区 → 写入 ECS */
+			std::vector<std::uint8_t> temp(desc->SizeBytes);
+			std::size_t blobOffset = 0u;
+			if (DeserializeComponentBlob(*desc, temp.data(), pc.Blob, blobOffset, archiveToHandle))
 			{
-				NNTagComponent value{};
-				std::size_t blobOffset = 0u;
-				if (DeserializeComponentBlob(*desc, &value, pc.Blob, blobOffset, archiveToHandle))
+				void* dst = desc->GetComponentPtrFn(&scene, handle);
+				if (dst != nullptr)
 				{
-					if (NNTagComponent* dst = scene.TryGet<NNTagComponent>(handle))
-					{
-						*dst = value;
-					}
+					std::memcpy(dst, temp.data(), desc->SizeBytes);
 				}
-			}
-			else if (desc->Fields.size() > 0)
-			{
-				/* Generic fallback: deserialize via field reflection for non-built-in components */
-				/* Components with SerializeFn are serialized by the registry-driven path */
-				/* Here we handle deserialization generically using DeserializeComponentBlob */
+				/* 可选的后处理回调（如 Relationship 的 SetParent） */
+				if (desc->PostDeserializeFn != nullptr)
+				{
+					desc->PostDeserializeFn(scene, handle);
+				}
 			}
 		}
 	}

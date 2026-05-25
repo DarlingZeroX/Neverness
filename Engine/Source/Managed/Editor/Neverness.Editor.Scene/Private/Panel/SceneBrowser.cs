@@ -1,4 +1,5 @@
 using Hexa.NET.ImGui;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Scene.Private.Cache;
@@ -34,6 +35,9 @@ public class SceneBrowser : IEditorPanel
     /// <summary>重命名输入缓冲区。</summary>
     private string _renameBuf = "";
 
+    /// <summary>编辑器事件总线引用（用于发出 SelectionChanged 事件）。</summary>
+    private IEditorEventBus? _eventBus;
+
     public SceneBrowser(SceneManager sceneManager)
         : this(sceneManager, 0)
     {
@@ -51,6 +55,16 @@ public class SceneBrowser : IEditorPanel
         get => _sceneHandle;
         set => _sceneHandle = value;
     }
+
+    /// <summary>设置编辑器事件总线（用于发出 SelectionChanged 事件）。</summary>
+    public IEditorEventBus? EventBus
+    {
+        get => _eventBus;
+        set => _eventBus = value;
+    }
+
+    /// <summary>暴露场景层级缓存引用（供 <see cref="DetailInspector"/> 直接查询选中状态）。</summary>
+    public SceneHierarchyCache Cache => _cache;
 
     // ── IEditorPanel ──
 
@@ -180,7 +194,12 @@ public class SceneBrowser : IEditorPanel
                     if (world != null)
                         EntityFactory.CreateCamera(world);
                 }
-
+                if (ImGui.MenuItem("Sprite"))
+                {
+                    var world = _sceneManager.ActiveWorld;
+                    if (world != null)
+                        EntityFactory.CreateSprite(world);
+                }
                 ImGui.EndMenu();
             }
 
@@ -224,7 +243,12 @@ public class SceneBrowser : IEditorPanel
 
         // 点击选中（排除展开/折叠操作）
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left) && !ImGui.IsItemToggledOpen())
+        {
             _cache.Select(node.Entity, ImGui.GetIO().KeyCtrl);
+            // 发出 SelectionChanged 事件，通知 DetailInspector 等面板刷新
+            _eventBus?.Emit(new EditorEvent(
+                EditorEventType.SelectionChanged, node.Entity));
+        }
 
         // ── 拖放源 ──
         if (ImGui.BeginDragDropSource())

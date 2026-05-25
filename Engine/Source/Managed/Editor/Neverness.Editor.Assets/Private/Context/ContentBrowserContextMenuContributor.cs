@@ -146,7 +146,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                     var cb = ContextMenuManager.Instance.GetContext<ContentBrowser>(ContentBrowserContextMenu.KeyContentBrowser);
                     var item = ContextMenuManager.Instance.GetContext<ContentItem>(ContentBrowserContextMenu.KeyItem);
                     if (cb != null && item != null)
-                        cb.ShowInExplorer(item.AbsolutePath);
+                        cb.ShowInExplorer(item.AssetPath.ToString());
                 },
             },
             Icon: FontAwesome5Pro.ExternalLinkAlt,

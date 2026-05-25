@@ -7,24 +7,21 @@
 
 #include <cstring>
 
-#include "NNRuntimeScene/Include/Components/NNRelationshipComponent.h"
-#include "NNRuntimeScene/Include/Components/NNTagComponent.h"
-#include "NNRuntimeScene/Include/Components/NNTransformComponent.h"
 #include "NNRuntimeScene/Include/Reflection/NNComponentRegistry.h"
 #include "NNRuntimeScene/Include/Scene/NNRuntimeScene.h"
 #include "NNRuntimeScene/Include/Serialization/NNSceneSerializer.h"
 #include "NNRuntimeScene/Include/Snapshot/NNHierarchySnapshotBuilder.h"
+#include "NNRuntimeScene/Include/Snapshot/NNReflectionSnapshotBuilder.h"
+#include "NNRuntimeScene/Include/Serialization/NNJsonSceneSerializer.h"
+#include "NNRuntimeVFS/Include/VFSService.h"
 
 using NN::Runtime::Scene::NNRuntimeScene;
 using NN::Runtime::Scene::NNSceneSerializer;
-using NN::Runtime::Scene::NNComponentRegistry;
 using NN::Runtime::Scene::NNComponentTypeDesc;
 using NN::Runtime::Scene::NNEntity;
 using NN::Runtime::Scene::NNEntityInvalid;
-using NN::Runtime::Scene::NNTransformComponent;
-using NN::Runtime::Scene::NNRelationshipComponent;
-using NN::Runtime::Scene::NNTagComponent;
 using NN::Runtime::Scene::NNHierarchySnapshotBuilder;
+using NN::Runtime::Scene::NNReflectionSnapshotBuilder;
 
 namespace NN::Runtime::engine
 {
@@ -126,61 +123,35 @@ struct ComponentAccess
 	std::size_t size = 0;
 };
 
+/** @brief 通过注册表函数指针获取组件只读访问（零 typeid 分发）。 */
 ComponentAccess GetComponentRead(
 	NNRuntimeScene* scene,
 	const NNEntity entity,
 	const std::uint64_t componentTypeId)
 {
-	const NNComponentRegistry& registry = scene->GetComponentRegistry();
-	const NNComponentTypeDesc* desc = registry.FindDescByNameHash(componentTypeId);
-	if (desc == nullptr)
+	const NNComponentTypeDesc* desc = scene->GetComponentRegistry().FindDescByNameHash(componentTypeId);
+	if (desc == nullptr || desc->GetComponentConstPtrFn == nullptr)
 	{
+		//std::cout << "Component not found: " << componentTypeId << std::endl;
 		return {};
 	}
-
-	if (desc->TypeIndex == std::type_index(typeid(NNTransformComponent)))
-	{
-		auto* ptr = scene->TryGet<NNTransformComponent>(entity);
-		return {ptr, sizeof(NNTransformComponent)};
-	}
-	if (desc->TypeIndex == std::type_index(typeid(NNRelationshipComponent)))
-	{
-		auto* ptr = scene->TryGet<NNRelationshipComponent>(entity);
-		return {ptr, sizeof(NNRelationshipComponent)};
-	}
-	if (desc->TypeIndex == std::type_index(typeid(NNTagComponent)))
-	{
-		auto* ptr = scene->TryGet<NNTagComponent>(entity);
-		return {ptr, sizeof(NNTagComponent)};
-	}
-	return {};
+	const void* ptr = desc->GetComponentConstPtrFn(scene, entity);
+	//std::cout << "Component ptr: " << ptr << " Component size: " << desc->SizeBytes << std::endl;
+	return {ptr, desc->SizeBytes};
 }
 
+/** @brief 通过注册表函数指针获取组件可写访问（零 typeid 分发）。 */
 void* GetComponentWrite(
 	NNRuntimeScene* scene,
 	const NNEntity entity,
 	const std::uint64_t componentTypeId)
 {
-	const NNComponentRegistry& registry = scene->GetComponentRegistry();
-	const NNComponentTypeDesc* desc = registry.FindDescByNameHash(componentTypeId);
-	if (desc == nullptr)
+	const NNComponentTypeDesc* desc = scene->GetComponentRegistry().FindDescByNameHash(componentTypeId);
+	if (desc == nullptr || desc->GetComponentPtrFn == nullptr)
 	{
 		return nullptr;
 	}
-
-	if (desc->TypeIndex == std::type_index(typeid(NNTransformComponent)))
-	{
-		return scene->TryGet<NNTransformComponent>(entity);
-	}
-	if (desc->TypeIndex == std::type_index(typeid(NNRelationshipComponent)))
-	{
-		return scene->TryGet<NNRelationshipComponent>(entity);
-	}
-	if (desc->TypeIndex == std::type_index(typeid(NNTagComponent)))
-	{
-		return scene->TryGet<NNTagComponent>(entity);
-	}
-	return nullptr;
+	return desc->GetComponentPtrFn(scene, entity);
 }
 } // namespace
 
@@ -189,12 +160,26 @@ NNSceneResult SceneSubsystem::AddComponent(
 	const NNEntityHandle entity,
 	const std::uint64_t componentTypeId) noexcept
 {
-	/* 当前设计：CreateEntityWithDefaults 已添加所有内置组件，
-	   AddComponent 用于未来扩展组件（需 entt registry 支持动态添加）。 */
-	(void)scene;
-	(void)entity;
-	(void)componentTypeId;
-	return NN_SCENE_OK;
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr)
+	{
+		return NN_SCENE_ERR_NOT_FOUND;
+	}
+
+	const NNComponentTypeDesc* desc = s->GetComponentRegistry().FindDescByNameHash(componentTypeId);
+	if (desc == nullptr || desc->AddComponentFn == nullptr)
+	{
+		return NN_SCENE_ERR_INVALID;
+	}
+
+	const NNEntity e = static_cast<NNEntity>(entity);
+	if (!s->IsAlive(e))
+	{
+		return NN_SCENE_ERR_NOT_FOUND;
+	}
+
+	return desc->AddComponentFn(s, e) ? NN_SCENE_OK : NN_SCENE_ERR_INVALID;
 }
 
 NNSceneResult SceneSubsystem::RemoveComponent(
@@ -202,11 +187,26 @@ NNSceneResult SceneSubsystem::RemoveComponent(
 	const NNEntityHandle entity,
 	const std::uint64_t componentTypeId) noexcept
 {
-	/* 当前设计：内置组件不可移除（Transform/Relationship/Tag 是必需的）。 */
-	(void)scene;
-	(void)entity;
-	(void)componentTypeId;
-	return NN_SCENE_ERR_INVALID;
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr)
+	{
+		return NN_SCENE_ERR_NOT_FOUND;
+	}
+
+	const NNComponentTypeDesc* desc = s->GetComponentRegistry().FindDescByNameHash(componentTypeId);
+	if (desc == nullptr || desc->RemoveComponentFn == nullptr)
+	{
+		return NN_SCENE_ERR_INVALID;
+	}
+
+	const NNEntity e = static_cast<NNEntity>(entity);
+	if (!s->IsAlive(e))
+	{
+		return NN_SCENE_ERR_NOT_FOUND;
+	}
+
+	return desc->RemoveComponentFn(s, e) ? NN_SCENE_OK : NN_SCENE_ERR_INVALID;
 }
 
 NNSceneResult SceneSubsystem::HasComponent(
@@ -373,13 +373,18 @@ NNSceneResult SceneSubsystem::SerializeScene(
 	}
 
 	/* 序列化为 VGSC 二进制 blob */
-	const std::vector<std::uint8_t> blob = NNSceneSerializer::Serialize(*s);
+	//const std::vector<std::uint8_t> blob = NNSceneSerializer::Serialize(*s);
+	//
+	///* 经 VFS writeBufferToFile 直接写入二进制 */
+	//return vfs_->writeBufferToFile(
+	//	vfsPath,
+	//	blob.data(),
+	//	static_cast<std::uint64_t>(blob.size())) != 0 ? NN_SCENE_OK : NN_SCENE_ERR_IO;
 
-	/* 经 VFS writeBufferToFile 直接写入二进制 */
-	return vfs_->writeBufferToFile(
-		vfsPath,
-		blob.data(),
-		static_cast<std::uint64_t>(blob.size())) != 0 ? NN_SCENE_OK : NN_SCENE_ERR_IO;
+	// Json
+	const std::string jsonStr = Scene::NNJsonSceneSerializer::Serialize(*s);
+	return vfs_->writeText != nullptr && vfs_->writeText(vfsPath, jsonStr.c_str()) != 0
+		? NN_SCENE_OK : NN_SCENE_ERR_IO;
 }
 
 NNSceneResult SceneSubsystem::DeserializeScene(
@@ -397,26 +402,49 @@ NNSceneResult SceneSubsystem::DeserializeScene(
 	}
 
 	/* 经 VFS readBytes 读取二进制 */
-	std::uint8_t* rawData = nullptr;
-	std::uint32_t rawSize = 0;
-	if (vfs_->readBytes(vfsPath, &rawData, &rawSize) == 0 || rawData == nullptr)
+	//std::uint8_t* rawData = nullptr;
+	//std::uint32_t rawSize = 0;
+	//if (vfs_->readBytes(vfsPath, &rawData, &rawSize) == 0 || rawData == nullptr)
+	//{
+	//	return NN_SCENE_ERR_IO;
+	//}
+	//
+	//const std::vector<std::uint8_t> blob(rawData, rawData + rawSize);
+	//
+	//if (vfs_->freeBuffer != nullptr)
+	//{
+	//	vfs_->freeBuffer(rawData);
+	//}
+	//
+	///* 创建新场景 */
+	//std::lock_guard<std::mutex> lock(mutex_);
+	//const NNSceneHandle handle = nextHandle_++;
+	//auto scene = std::make_unique<NNRuntimeScene>();
+	//
+	//if (!NNSceneSerializer::Deserialize(*scene, blob))
+	//{
+	//	return NN_SCENE_ERR_IO;
+	//}
+	//
+	//scenes_.emplace(handle, std::move(scene));
+	//*outScene = handle;
+	//return NN_SCENE_OK;
+
+	// Json
+	std::string text;
+	if (VFS::VFSService::ReadTextFromFile(vfsPath, text) == 0)
 	{
 		return NN_SCENE_ERR_IO;
 	}
 
-	const std::vector<std::uint8_t> blob(rawData, rawData + rawSize);
-
-	if (vfs_->freeBuffer != nullptr)
-	{
-		vfs_->freeBuffer(rawData);
-	}
+	const std::string jsonStr(text);
 
 	/* 创建新场景 */
 	std::lock_guard<std::mutex> lock(mutex_);
 	const NNSceneHandle handle = nextHandle_++;
 	auto scene = std::make_unique<NNRuntimeScene>();
 
-	if (!NNSceneSerializer::Deserialize(*scene, blob))
+	if (!Scene::NNJsonSceneSerializer::Deserialize(*scene, jsonStr))
 	{
 		return NN_SCENE_ERR_IO;
 	}
@@ -453,50 +481,37 @@ NNSceneResult SceneSubsystem::QueryEntities(
 		return NN_SCENE_ERR_NOT_FOUND;
 	}
 
-	const NNComponentRegistry& registry = s->GetComponentRegistry();
-	const NNComponentTypeDesc* desc = registry.FindDescByNameHash(componentTypeId);
-	if (desc == nullptr)
+	const NNComponentTypeDesc* desc = s->GetComponentRegistry().FindDescByNameHash(componentTypeId);
+	if (desc == nullptr || desc->ForEachEntityFn == nullptr)
 	{
 		return NN_SCENE_ERR_NOT_FOUND;
 	}
 
-	/* 类型分派：遍历注册组件的 entt view，收集 NNEntity 句柄 */
-	auto collect = [&](auto typeTag) -> NNSceneResult
+	struct CollectCtx
 	{
-		using ComponentType = decltype(typeTag);
-		auto view = s->GetRegistry().view<ComponentType>();
-		uint32_t count = 0;
-		for (const auto enttEntity : view)
-		{
-			const NNEntity handle = s->HandleFromEntt(enttEntity);
-			if (!s->IsAlive(handle))
-			{
-				continue;
-			}
-			if (outEntities != nullptr && count < maxCount)
-			{
-				outEntities[count] = static_cast<NNEntityHandle>(handle);
-			}
-			++count;
-		}
-		*outCount = count;
-		return NN_SCENE_OK;
+		NNEntityHandle* out;
+		std::uint32_t max;
+		std::uint32_t count;
+		NNRuntimeScene* scene;
 	};
+	CollectCtx ctx{outEntities, maxCount, 0, s};
 
-	if (desc->TypeIndex == std::type_index(typeid(NNTransformComponent)))
+	desc->ForEachEntityFn(s, [](NNEntity entity, void* /*comp*/, void* ud)
 	{
-		return collect(NNTransformComponent{});
-	}
-	if (desc->TypeIndex == std::type_index(typeid(NNRelationshipComponent)))
-	{
-		return collect(NNRelationshipComponent{});
-	}
-	if (desc->TypeIndex == std::type_index(typeid(NNTagComponent)))
-	{
-		return collect(NNTagComponent{});
-	}
+		auto* c = static_cast<CollectCtx*>(ud);
+		if (!c->scene->IsAlive(entity))
+		{
+			return;
+		}
+		if (c->out != nullptr && c->count < c->max)
+		{
+			c->out[c->count] = static_cast<NNEntityHandle>(entity);
+		}
+		++c->count;
+	}, &ctx);
 
-	return NN_SCENE_ERR_NOT_FOUND;
+	*outCount = ctx.count;
+	return NN_SCENE_OK;
 }
 
 NNSceneResult SceneSubsystem::QueryComponents(
@@ -647,7 +662,7 @@ uint32_t SceneSubsystem::GetTransformSnapshot(
 	for (uint32_t i = 0u; i < entityCount; ++i)
 	{
 		const NNEntity e = static_cast<NNEntity>(entities[i]);
-		const auto* tf = s->TryGet<NNTransformComponent>(e);
+		const auto* tf = s->TryGet<Scene::NNTransformComponent>(e);
 		if (tf == nullptr)
 		{
 			continue;
@@ -707,5 +722,180 @@ uint32_t SceneSubsystem::GetIncrementalSnapshot(
 	s->ClearDirtyHierarchyEntries();
 
 	return static_cast<uint32_t>(copyCount * sizeof(NNDirtyNodeEntry));
+}
+
+// ── Reflection 查询（NNEditorSceneAPI，layoutVersion = 3）──────────────
+
+uint64_t SceneSubsystem::GetReflectionVersion(const NNSceneHandle scene) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	return s != nullptr ? s->ReflectionVersion() : 0u;
+}
+
+uint32_t SceneSubsystem::GetTypeInfoSnapshotSize(const NNSceneHandle scene) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	return s != nullptr ? NNReflectionSnapshotBuilder::EstimateSize(*s) : 0u;
+}
+
+uint32_t SceneSubsystem::GetTypeInfoSnapshot(
+	const NNSceneHandle scene,
+	void* const outBuffer,
+	const uint32_t capacity) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	return s != nullptr ? NNReflectionSnapshotBuilder::Build(*s, outBuffer, capacity) : 0u;
+}
+
+uint32_t SceneSubsystem::GetEntityComponentCount(
+	const NNSceneHandle scene,
+	const NNEntityHandle entity) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr)
+	{
+		return 0u;
+	}
+
+	const NNEntity e = static_cast<NNEntity>(entity);
+	if (!s->IsAlive(e))
+	{
+		return 0u;
+	}
+
+	std::uint32_t count = 0u;
+	const auto& registry = s->GetComponentRegistry();
+	registry.ForEachDescriptor([&](const NNComponentTypeDesc& desc)
+	{
+		if (desc.HasComponentFn != nullptr && desc.HasComponentFn(s, e))
+		{
+			++count;
+		}
+	});
+	return count;
+}
+
+uint32_t SceneSubsystem::GetEntityComponents(
+	const NNSceneHandle scene,
+	const NNEntityHandle entity,
+	NNEditorComponentInfo* const outInfos,
+	const uint32_t capacity) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr || outInfos == nullptr || capacity == 0u)
+	{
+		return 0u;
+	}
+
+	const NNEntity e = static_cast<NNEntity>(entity);
+	if (!s->IsAlive(e))
+	{
+		return 0u;
+	}
+
+	const auto& registry = s->GetComponentRegistry();
+	std::uint32_t written = 0u;
+
+	registry.ForEachDescriptor([&](const NNComponentTypeDesc& desc)
+	{
+		if (written >= capacity)
+		{
+			return;
+		}
+		if (desc.HasComponentFn != nullptr && desc.HasComponentFn(s, e))
+		{
+			auto& info = outInfos[written++];
+			info.typeId     = desc.NameHash;
+			info.nameOffset = 0u;  // 名字通过类型快照获取
+			info.nameLen    = 0u;
+			info.fieldCount = static_cast<std::uint32_t>(desc.Fields.size());
+			info.flags      = 0u;
+		}
+	});
+	return written;
+}
+
+uint32_t SceneSubsystem::GetComponentFieldInfos(
+	const NNSceneHandle scene,
+	const uint64_t componentTypeId,
+	NNEditorFieldInfo* const outFields,
+	const uint32_t capacity) noexcept
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr || outFields == nullptr || capacity == 0u)
+	{
+		return 0u;
+	}
+
+	const auto& registry = s->GetComponentRegistry();
+	const NNComponentTypeDesc* desc = registry.FindDescByNameHash(componentTypeId);
+	if (desc == nullptr)
+	{
+		return 0u;
+	}
+
+	const std::uint32_t fieldCount = static_cast<std::uint32_t>(desc->Fields.size());
+	const std::uint32_t copyCount = (fieldCount < capacity) ? fieldCount : capacity;
+
+	for (std::uint32_t i = 0u; i < copyCount; ++i)
+	{
+		const auto& field = desc->Fields[i];
+		auto& fi = outFields[i];
+		fi.nameOffset = 0u;  // 名字通过类型快照获取
+		fi.nameLen    = 0u;
+		fi.fieldType  = static_cast<std::uint32_t>(field.FieldType);
+		fi.dataOffset = field.Offset;
+		fi.dataSize   = field.Size;
+		fi._pad       = 0u;
+	}
+	return copyCount;
+}
+
+uint32_t SceneSubsystem::GetComponentRawData(
+	const NNSceneHandle scene,
+	const NNEntityHandle entity,
+	const uint64_t componentTypeId,
+	void* const outData,
+	const uint32_t capacity) noexcept
+{
+	if (outData == nullptr || capacity == 0u)
+	{
+		return 0u;
+	}
+
+	std::lock_guard<std::mutex> lock(mutex_);
+	NNRuntimeScene* s = FindScene(scene);
+	if (s == nullptr)
+	{
+		return 0u;
+	}
+
+	const auto& registry = s->GetComponentRegistry();
+	const NNComponentTypeDesc* desc = registry.FindDescByNameHash(componentTypeId);
+	if (desc == nullptr || desc->GetComponentConstPtrFn == nullptr)
+	{
+		return 0u;
+	}
+
+	const NNEntity e = static_cast<NNEntity>(entity);
+	const void* ptr = desc->GetComponentConstPtrFn(s, e);
+	if (ptr == nullptr)
+	{
+		return 0u;
+	}
+
+	if (capacity < desc->SizeBytes)
+	{
+		return 0u;
+	}
+
+	std::memcpy(outData, ptr, desc->SizeBytes);
+	return desc->SizeBytes;
 }
 } // namespace NN::Runtime::engine

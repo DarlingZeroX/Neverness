@@ -52,9 +52,19 @@ namespace NN::Runtime::Scene
 		NNEntity entity,
 		std::vector<std::uint8_t>& outBlob)>;
 
-	/** @brief 组件类型描述（名称、字段列表、稳定 NameHash）。 */
+	/**
+	 * @brief Runtime 类型擦除的 ECS 操作回调签名（C-compatible，跨 DLL 安全）。
+	 * 使用 void* 传递组件数据，避免暴露 entt 内部类型。
+	 */
+	using NNComponentForEachEntityFn = void(*)(
+		NNRuntimeScene* scene,
+		void(*callback)(NNEntity entity, void* component, void* userData),
+		void* userData);
+
+	/** @brief 组件类型描述——从字段元数据升级为 Runtime Type Object。 */
 	struct NN_RUNTIME_SCENE_API NNComponentTypeDesc
 	{
+		// ── 元数据（现有字段）──
 		NNComponentTypeId TypeId = NNComponentTypeIdInvalid;  // 等于 NameHash
 		std::uint64_t NameHash = 0u;                          // FNV-1a(name)
 		std::type_index TypeIndex{typeid(void)};
@@ -62,6 +72,29 @@ namespace NN::Runtime::Scene
 		std::size_t SizeBytes = 0u;
 		std::vector<NNComponentFieldDesc> Fields{};
 		NNSceneComponentSerializeFn SerializeFn{};            // 通用序列化回调（可选）
+
+		// ── Runtime Type-Erased ECS Access ──
+
+		/// 获取组件可写指针（无组件时返回 nullptr）。
+		void* (*GetComponentPtrFn)(NNRuntimeScene* scene, NNEntity entity) = nullptr;
+
+		/// 获取组件只读指针（无组件时返回 nullptr）。
+		const void* (*GetComponentConstPtrFn)(const NNRuntimeScene* scene, NNEntity entity) = nullptr;
+
+		/// 查询实体是否拥有此组件。
+		bool (*HasComponentFn)(const NNRuntimeScene* scene, NNEntity entity) = nullptr;
+
+		/// 动态添加组件（已有时返回 false）。
+		bool (*AddComponentFn)(NNRuntimeScene* scene, NNEntity entity) = nullptr;
+
+		/// 动态移除组件（无组件时返回 false）。
+		bool (*RemoveComponentFn)(NNRuntimeScene* scene, NNEntity entity) = nullptr;
+
+		/// 遍历拥有此组件的所有实体（回调式迭代器）。
+		NNComponentForEachEntityFn ForEachEntityFn = nullptr;
+
+		/// 反序列化后处理回调（可选，如 Relationship 需要调用 SetParent）。
+		void (*PostDeserializeFn)(NNRuntimeScene& scene, NNEntity entity) = nullptr;
 	};
 
 	class NN_RUNTIME_SCENE_API NNComponentRegistryGlobal;
@@ -91,6 +124,9 @@ namespace NN::Runtime::Scene
 			std::size_t sizeBytes,
 			const std::vector<NNComponentFieldDesc>& fields);
 
+		/** @brief 注册完整描述符（含 Runtime 函数指针）——Phase 5 新增。 */
+		NNComponentTypeId RegisterTypeWithFields(const NNComponentTypeDesc& fullDesc);
+
 		[[nodiscard]] NNComponentTypeId FindTypeId(const std::type_index& typeIndex) const noexcept;
 
 		[[nodiscard]] const NNComponentTypeDesc* FindDesc(NNComponentTypeId typeId) const noexcept;
@@ -99,6 +135,9 @@ namespace NN::Runtime::Scene
 
 		/** @brief 通过稳定的 FNV-1a name hash 查找描述符（O(1)）。 */
 		[[nodiscard]] const NNComponentTypeDesc* FindDescByNameHash(std::uint64_t nameHash) const noexcept;
+
+		/** @brief 非 const 版本，允许修改描述符（如设置 PostDeserializeFn）。 */
+		[[nodiscard]] NNComponentTypeDesc* FindDescByNameHash(std::uint64_t nameHash) noexcept;
 
 		[[nodiscard]] const NNComponentFieldDesc* GetFieldByName(
 			NNComponentTypeId typeId,
@@ -147,6 +186,12 @@ namespace NN::Runtime::Scene
 			std::initializer_list<NNComponentFieldDesc> fields)
 		{
 			return m_Registry.RegisterTypeWithFields(typeIndex, nameUtf8, sizeBytes, fields);
+		}
+
+		/** @brief 注册完整描述符（含 Runtime 函数指针）。 */
+		NNComponentTypeId RegisterTypeWithFields(const NNComponentTypeDesc& fullDesc)
+		{
+			return m_Registry.RegisterTypeWithFields(fullDesc);
 		}
 
 		[[nodiscard]] const NNComponentRegistry& GetRegistry() const noexcept { return m_Registry; }

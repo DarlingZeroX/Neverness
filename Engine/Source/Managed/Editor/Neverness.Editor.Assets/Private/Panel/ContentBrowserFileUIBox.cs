@@ -36,7 +36,7 @@ public class ContentBrowserFileUIBox
         AssetTypeColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.39f, 0.39f, 0.39f, 1.0f)); // 100, 100, 100
     }
 
-    public void Draw(ContentBrowser browser, ImDrawListPtr drawList, ref ContentItem item, Vector2 p0, Vector2 p1, bool isDir = false)
+    public void Draw(ContentBrowser browser, ImDrawListPtr drawList, ref ContentItem item, Vector2 p0, Vector2 p1, bool isDir = true, string assetType = "")
     {
         Vector2 textPosStart = new Vector2(p0.X, p0.Y + Size.Y - ThumbnailTextSizeY);
         Vector2 assetTypeStart = new Vector2(p0.X, p0.Y + Size.Y - 18);
@@ -80,8 +80,8 @@ public class ContentBrowserFileUIBox
         {
             drawList.AddText(textPosStart, ImGui.ColorConvertFloat4ToU32(Vector4.One), item.Name);
 
-            //if (isDir = false)
-            //    drawList.AddText(assetTypeStart, AssetTypeColor, item.AssetType);
+            if (isDir == false)
+                drawList.AddText(assetTypeStart, AssetTypeColor, assetType);
         }
 
         // 边框高亮

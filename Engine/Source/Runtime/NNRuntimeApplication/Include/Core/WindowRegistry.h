@@ -46,6 +46,9 @@ public:
 
 	/** @brief 获取主窗口句柄；未设置时返回 `NN_INVALID_WINDOW_HANDLE`。 */
 	static NNWindowHandle GetPrimaryHandle();
+
+	/** @brief 反向查找：SDL_Window* → NNWindowHandle；未找到返回 0。 */
+	static NNWindowHandle FindHandle(SDL_Window* sdlWindow);
 };
 
 } // namespace NN::Runtime

@@ -295,6 +295,75 @@ uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getIncrementalSnapshot(
 	(void)capacity;
 	return 0u; /* Stub 不持有场景数据 */
 }
+
+// ── Reflection API Stubs（layoutVersion = 3）──
+
+uint64_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getReflectionVersion(NNSceneHandle scene)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getTypeInfoSnapshotSize(NNSceneHandle scene)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getTypeInfoSnapshot(
+	NNSceneHandle scene, void* outBuffer, uint32_t capacity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)outBuffer;
+	(void)capacity;
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getEntityComponentCount(
+	NNSceneHandle scene, uint64_t entity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)entity;
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getEntityComponents(
+	NNSceneHandle scene, uint64_t entity, NNEditorComponentInfo* outInfos, uint32_t capacity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)entity;
+	(void)outInfos;
+	(void)capacity;
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getComponentFieldInfos(
+	NNSceneHandle scene, uint64_t componentTypeId, NNEditorFieldInfo* outFields, uint32_t capacity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)componentTypeId;
+	(void)outFields;
+	(void)capacity;
+	return 0u;
+}
+
+uint32_t NN_ENGINE_ABI_STDCALL stub_editor_scene_getComponentRawData(
+	NNSceneHandle scene, uint64_t entity, uint64_t componentTypeId, void* outData, uint32_t capacity)
+{
+	NN::StubRuntime::BumpInvokeCount();
+	(void)scene;
+	(void)entity;
+	(void)componentTypeId;
+	(void)outData;
+	(void)capacity;
+	return 0u;
+}
 } // namespace
 
 extern "C" void NNBuildEditorSceneApiStubs(NNEditorSceneAPI* api)
@@ -303,11 +372,18 @@ extern "C" void NNBuildEditorSceneApiStubs(NNEditorSceneAPI* api)
 	{
 		return;
 	}
-	api->layoutVersion          = 2;
-	api->getHierarchyVersion    = &stub_editor_scene_getHierarchyVersion;
-	api->getSnapshotSize        = &stub_editor_scene_getSnapshotSize;
-	api->getHierarchySnapshot   = &stub_editor_scene_getHierarchySnapshot;
-	api->getTransformVersion    = &stub_editor_scene_getTransformVersion;
-	api->getTransformSnapshot   = &stub_editor_scene_getTransformSnapshot;
-	api->getIncrementalSnapshot = &stub_editor_scene_getIncrementalSnapshot;
+	api->layoutVersion              = 3;
+	api->getHierarchyVersion        = &stub_editor_scene_getHierarchyVersion;
+	api->getSnapshotSize            = &stub_editor_scene_getSnapshotSize;
+	api->getHierarchySnapshot       = &stub_editor_scene_getHierarchySnapshot;
+	api->getTransformVersion        = &stub_editor_scene_getTransformVersion;
+	api->getTransformSnapshot       = &stub_editor_scene_getTransformSnapshot;
+	api->getIncrementalSnapshot     = &stub_editor_scene_getIncrementalSnapshot;
+	api->getReflectionVersion       = &stub_editor_scene_getReflectionVersion;
+	api->getTypeInfoSnapshotSize    = &stub_editor_scene_getTypeInfoSnapshotSize;
+	api->getTypeInfoSnapshot        = &stub_editor_scene_getTypeInfoSnapshot;
+	api->getEntityComponentCount    = &stub_editor_scene_getEntityComponentCount;
+	api->getEntityComponents        = &stub_editor_scene_getEntityComponents;
+	api->getComponentFieldInfos     = &stub_editor_scene_getComponentFieldInfos;
+	api->getComponentRawData        = &stub_editor_scene_getComponentRawData;
 }

@@ -28,13 +28,14 @@
 #include "TimingAPI.h"
 #include "UIAPI.h"
 #include "VfsAPI.h"
+#include "EventAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v16：新增 NNAssetManagerAPI 子表；NNAssetRegistryAPI 新增依賴管理欄位。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 17u
+/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v19：新增 NNEventAPI 子表（Pull-Based 事件队列）。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 19u
 
 typedef struct NNNativeEngineAPI
 {
@@ -64,6 +65,8 @@ typedef struct NNNativeEngineAPI
 	NNAssetManagerAPI assetManager;
 	/** @brief 資產編譯/打包器（.nnpack 構建）；見 `AssetCookerAPI.h`。 */
 	NNAssetCookerAPI assetCooker;
+	/** @brief 事件队列（Pull-Based Event Pump）；見 `EventAPI.h`。 */
+	NNEventAPI events;
 } NNNativeEngineAPI;
 
 #ifdef __cplusplus

@@ -129,14 +129,14 @@ public class ContentBrowserPanel : IEditorPanel
             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
 
             // 定义绘制逻辑的 Action
-            void DrawItemFunction(ref ContentItem item, bool isDir)
+            void DrawItemFunction(ref ContentItem item, bool isDir, string assetType = "")
             {
                 ImGui.PushID(item.GetHashCode()); // 使用 HashCode 或唯一 ID 替代指针
 
                 if (item.Renaming)
-                    ImGui.InvisibleButton(item.AbsolutePath, thumbnail.ImageSize);
+                    ImGui.InvisibleButton(item.AssetPath.ToString(), thumbnail.ImageSize);
                 else
-                    ImGui.InvisibleButton(item.AbsolutePath, thumbnail.Size);
+                    ImGui.InvisibleButton(item.AssetPath.ToString(), thumbnail.Size);
 
                 Vector2 p0 = ImGui.GetItemRectMin();
                 Vector2 p1 = new Vector2(p0.X + thumbnail.Size.X, p0.Y + thumbnail.Size.Y);
@@ -148,7 +148,10 @@ public class ContentBrowserPanel : IEditorPanel
                     return;
                 }
 
-                thumbnail.Draw(_contentBrowser, drawList, ref item, p0, p1);
+                if(isDir)
+                    thumbnail.Draw(_contentBrowser, drawList, ref item, p0, p1);
+                else
+                    thumbnail.Draw(_contentBrowser, drawList, ref item, p0, p1, false, assetType);
                 ImGui.PopID();
             }
 
@@ -170,7 +173,7 @@ public class ContentBrowserPanel : IEditorPanel
             foreach (var item in _contentBrowser.GetCurrentDirectoryNode().Files)
             {
                 ContentItem tempItem = item;
-                DrawItemFunction(ref tempItem, false);
+                DrawItemFunction(ref tempItem, false, item.AssetType);
                 if (_contentBrowser.IsRefreshed()) break;
 
                 ImGui.PushID(item.GetHashCode());
@@ -189,7 +192,7 @@ public class ContentBrowserPanel : IEditorPanel
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.Text(item.AbsolutePath.ToString());
+            ImGui.Text(item.AssetPath.ToString());
             ImGui.EndTooltip();
 
             // 单击
@@ -203,14 +206,14 @@ public class ContentBrowserPanel : IEditorPanel
             {
                 if (isDir)
                 {
-                    _contentBrowser.OpenDirectory(item.AbsolutePath);
+                    _contentBrowser.OpenDirectory(item.AssetPath.ToString());
                     return true;
                 }
                 else
                 {
                     if (_openService != null)
                     {
-                        NVirtualPath? resourcePath = ProjectPaths.GetResourcePath(new NPath(item.Path));
+                        NVirtualPath? resourcePath = ProjectPaths.GetResourcePath(new NPath(item.Path.FullPath));
                         if (resourcePath != null)
                         {
                             _ = _openService.OpenAsync((NVirtualPath)resourcePath);
@@ -244,7 +247,7 @@ public class ContentBrowserPanel : IEditorPanel
 
     public void DrawDirectoryTree(ContentDirectory node)
     {
-        ImGui.PushID(node.AbsolutePath);
+        ImGui.PushID(node.AssetPath.ToString());
 
         string nodeName = $"{FontAwesome5Pro.Folder} {node.Name}";
 
@@ -268,7 +271,7 @@ public class ContentBrowserPanel : IEditorPanel
     {
         if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
-            _contentBrowser.OpenDirectory(node.AbsolutePath);
+            _contentBrowser.OpenDirectory(node.AssetPath.ToString());
         }
     }
 
@@ -316,7 +319,7 @@ public class ContentBrowserPanel : IEditorPanel
             // 刷新按钮
             if (ImGui.Button(FontAwesome5Pro.Redo + "##Refresh", thumbnailSize))
             {
-                //RefreshDirectory();
+                _contentBrowser.RefreshDirectory();
             }
 
             // 绘制路径栏

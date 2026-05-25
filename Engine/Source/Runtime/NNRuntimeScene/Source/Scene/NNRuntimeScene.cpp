@@ -5,8 +5,6 @@
 
 #include "Scene/NNRuntimeScene.h"
 
-#include <typeindex>
-
 #include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "Runtime/NNSceneEventBus.h"
 
@@ -25,14 +23,36 @@ void NNRuntimeScene::RegisterBuiltinComponents()
 {
 	// 字段元数据由 BuiltinComponentRegistration.cpp 静态注册并 MergeInto；
 	// 若静态注册未执行（单测静态链接），回退为无字段的类型登记。
-	if (m_ComponentRegistry.FindTypeId(std::type_index(typeid(NNTransformComponent))) ==
-		NNComponentTypeIdInvalid)
+	if (m_ComponentRegistry.FindDescByNameHash(fnv1a_64("Transform")) == nullptr)
 	{
 		(void)m_ComponentRegistry.Register<NNTransformComponent>("Transform");
 		(void)m_ComponentRegistry.Register<NNRelationshipComponent>("Relationship");
 		(void)m_ComponentRegistry.Register<NNTagComponent>("Tag");
 		(void)m_ComponentRegistry.Register<NNCameraComponent>("Camera");
 	}
+
+	// Phase 5：绑定 Runtime Type-Erased ECS Access 函数指针
+	// 已有字段元数据（来自 NN_REGISTER_COMPONENT 宏）会被合并，函数指针补充到描述符中
+	BindComponentType<NNTransformComponent>("Transform");
+	BindComponentType<NNRelationshipComponent>("Relationship");
+	// Relationship 反序列化后需要调用 SetParent 恢复层级关系
+	{
+		auto* desc = m_ComponentRegistry.FindDescByNameHash(fnv1a_64("Relationship"));
+		if (desc != nullptr)
+		{
+			desc->PostDeserializeFn = [](NNRuntimeScene& scene, NNEntity entity)
+			{
+				auto* rel = scene.TryGet<NNRelationshipComponent>(entity);
+				if (rel != nullptr && rel->Parent != NNEntityInvalid)
+				{
+					scene.SetParent(entity, rel->Parent);
+				}
+			};
+		}
+	}
+	BindComponentType<NNTagComponent>("Tag");
+	BindComponentType<NNCameraComponent>("Camera");
+	BindComponentType<NNSpriteRendererComponent>("SpriteRenderer");
 }
 
 void NNRuntimeScene::RegisterDefaultSystems()

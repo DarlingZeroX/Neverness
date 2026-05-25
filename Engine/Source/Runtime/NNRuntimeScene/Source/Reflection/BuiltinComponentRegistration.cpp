@@ -5,6 +5,7 @@
 
 #include "Components/NNCameraComponent.h"
 #include "Components/NNRelationshipComponent.h"
+#include "Components/NNSpriteRendererComponent.h"
 #include "Components/NNTagComponent.h"
 #include "Components/NNTransformComponent.h"
 #include "Reflection/NNComponentRegistry.h"
@@ -44,4 +45,16 @@ NN_REGISTER_COMPONENT(
 		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, OrthoWidth, Float),
 		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, OrthoHeight, Float),
 		NN_FIELD(NN::Runtime::Scene::NNCameraComponent, ProjectionMatrix, Float4x4));
+
+NN_REGISTER_COMPONENT(
+	NN::Runtime::Scene::NNSpriteRendererComponent,
+	"SpriteRenderer",
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, TextureAsset, UInt64),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, MaterialAsset, UInt64),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, Color, Float4),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, UvRect, Float4),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, Layer, UInt32),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, SortOrder, UInt32),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, Blend, UInt32),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, Flags, UInt32));
 } // namespace

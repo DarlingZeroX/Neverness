@@ -144,7 +144,7 @@ public static unsafe class SceneNativeBridge
 
 		var typeId = ComponentTypeCache<T>.TypeId;
 		int has = 0;
-		api.HasComponent(sceneHandle, entity.Value, typeId, &has);
+        NNSceneResult result = api.HasComponent(sceneHandle, entity.Value, typeId, &has);
 		return has != 0;
 	}
 
