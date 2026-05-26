@@ -23,9 +23,25 @@ public sealed class SpriteRendererInspector
         // ── Texture Asset ──
         ImGui.Text("Texture");
         ImGui.SameLine(100f);
-        // TODO: Asset Picker（后续 Phase 实现）
         ulong textureHash = data.TextureAsset;
-        ImGui.Text($"0x{textureHash:X16}");
+        if (textureHash != 0)
+        {
+            // 获取 GPU 纹理的 ImGui Handle 并显示预览缩略图
+            ulong imTexHandle = TextureInterop.GetImGuiTextureHandle(textureHash);
+            if (imTexHandle != 0)
+            {
+                float previewSize = Math.Min(ImGui.GetContentRegionAvail().X, 128f);
+                unsafe { ImGui.Image(new ImTextureRef(null, imTexHandle), new Vector2(previewSize, previewSize)); }
+            }
+            else
+            {
+                ImGui.Text($"0x{textureHash:X16} (未加载)");
+            }
+        }
+        else
+        {
+            ImGui.Text("None");
+        }
 
         // ── Material Asset ──
         ImGui.Text("Material");

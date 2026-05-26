@@ -23,6 +23,7 @@
 #include "VfsAPI.h"
 #include "WindowAPI.h"
 #include "EventAPI.h"
+#include "RenderAssetAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,6 +47,7 @@ void NNBuildEntityApiStubs(NNEntityAPI* api);
 void NNBuildWindowApiStubs(NNWindowAPI* api);
 void NNBuildVfsApiStubs(NNVfsAPI* api);
 void NNBuildEventApiStubs(NNEventAPI* api);
+void NNBuildRenderAssetApiStubs(NNRenderAssetAPI* api);
 
 #ifdef __cplusplus
 } /* extern "C" */

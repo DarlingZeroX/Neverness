@@ -291,8 +291,9 @@ public static class ImportPipeline
             return ImportResult.Ok(assetGuid, 0);
 
         /* Phase 3: Import */
-        var importer = ImporterRegistry.GetImporter(meta.Importer)
-            ?? ImporterRegistry.GetImporter("DefaultImporter")
+        var importer = ImporterRegistry.GetImporterByName(meta.Importer)
+            ?? ImporterRegistry.GetImporter(sourceAssetPath.Extension)
+            ?? ImporterRegistry.GetImporterByName("DefaultImporter")
             ?? new DefaultImporter();
 
         var virtualPath = ResolveVirtualPath(sourceAssetPath);
@@ -418,11 +419,13 @@ public static class ImportPipeline
             }
 
             /* ========== Phase 3: Import ========== */
-            var importer = ImporterRegistry.GetImporter(meta.Importer);
+            /* meta.Importer 是类型名称（如 "TextureImporter"），优先按名称查找 */
+            var importer = ImporterRegistry.GetImporterByName(meta.Importer)
+                ?? ImporterRegistry.GetImporter(sourceAssetPath.Extension);
             if (importer == null)
             {
                 /* 降级到 DefaultImporter */
-                importer = ImporterRegistry.GetImporter("DefaultImporter")
+                importer = ImporterRegistry.GetImporterByName("DefaultImporter")
                     ?? new DefaultImporter();
             }
 
@@ -511,27 +514,33 @@ public static class ImportPipeline
     /// </summary>
     private static void CompileToNnasset(ImportResult result, NPath outputPath)
     {
-        using var ms = new MemoryStream();
-        using var w = new BinaryWriter(ms, Encoding.UTF8, leaveOpen: true);
-
         var depCount = result.Dependencies.Count;
         var blobCount = result.Blobs.Count;
 
-        /* 计算各段偏移 */
-        var headerSize = 96;
-        var depSectionSize = depCount * 16;
-        var blobTableSize = blobCount * 32;
-
-        var depOffset = (long)headerSize;
-        var blobTableOffset = Align64(depOffset + depSectionSize);
-        var payloadOffset = Align64(blobTableOffset + blobTableSize);
-
-        /* 计算 payload 总大小 */
-        long payloadSize = 0;
+        /* ====== 阶段 1：准备 blob 数据，记录实际偏移 ====== */
+        var blobInfos = new List<(uint blobType, uint flags, long size, long compressedSize, long offset, byte[] payload)>();
+        long runningOffset = 0;
         foreach (var blob in result.Blobs)
-            payloadSize += Align64(blob.Payload.Length);
+        {
+            var payload = blob.Payload;
+            long size = payload.Length;
+            long compressedSize = blob.CompressedData != null ? blob.CompressedData.Length : 0;
 
-        /* ====== Header (96 bytes) ====== */
+            blobInfos.Add((blob.BlobType, blob.Flags, size, compressedSize, runningOffset, payload));
+            runningOffset += Align64(size);
+        }
+        long payloadSize = runningOffset;
+
+        /* ====== 阶段 2：计算各段偏移 ====== */
+        long depOffset = 96;
+        long blobTableOffset = Align64(depOffset + depCount * 16);
+        long payloadFileOffset = Align64(blobTableOffset + blobCount * 32);
+
+        /* ====== 阶段 3：写入完整文件 ====== */
+        using var ms = new MemoryStream();
+        using var w = new BinaryWriter(ms, Encoding.UTF8, leaveOpen: true);
+
+        /* Header (96 bytes) */
         w.Write(0x4E4E4153u);          /* magic: "NNAS" */
         w.Write(1u);                   /* version */
         w.Write(result.AssetGuid.High); /* assetGuid.high */
@@ -541,60 +550,42 @@ public static class ImportPipeline
         w.Write(blobCount);            /* blobCount */
         w.Write(depOffset);            /* dependencyOffset */
         w.Write(blobTableOffset);      /* blobTableOffset */
-        w.Write(payloadOffset);        /* payloadOffset */
+        w.Write(payloadFileOffset);    /* payloadOffset */
         w.Write(payloadSize);          /* payloadSize */
 
-        /* flags */
-        uint flags = 0;
+        uint headerFlags = 0;
         if (result.TypeInfo != null)
-            flags |= 0x8; /* HAS_TYPE_INFO */
-        w.Write(flags);
+            headerFlags |= 0x8; /* HAS_TYPE_INFO */
+        w.Write(headerFlags);
 
-        /* 填充到 64 字节 */
-        PadTo(w, headerSize);
+        PadTo(w, 96);
 
-        /* ====== Dependency GUIDs ====== */
+        /* Dependency GUIDs */
         foreach (var depGuid in result.Dependencies)
         {
             w.Write(depGuid.High);
             w.Write(depGuid.Low);
         }
 
-        /* 对齐到 64 字节 */
         PadTo(w, blobTableOffset);
 
-        /* ====== Blob Descriptors ====== */
-        long blobPayloadOffset = payloadOffset;
-        foreach (var blob in result.Blobs)
+        /* Blob Descriptors — offset 来自阶段 1 的实际写入位置 */
+        foreach (var info in blobInfos)
         {
-            var blobData = blob.Payload;
-            var blobSize = blobData.Length;
-            var compressedSize = blob.CompressedData != null ? blob.CompressedData.Length : 0;
-
-            w.Write(blobPayloadOffset);   /* offset */
-            w.Write(blobSize);            /* size */
-            w.Write(compressedSize);      /* compressedSize */
-            w.Write(blob.BlobType);       /* blobType */
-            w.Write(blob.Flags);          /* flags */
-
-            /* 填充 descriptor 到 32 字节 */
-            PadTo(w, (int)(ms.Position + 12)); /* 32 - 20 = 12 bytes padding */
-            for (int p = 0; p < 12; p++) w.Write((byte)0);
-
-            blobPayloadOffset += Align64(blobSize);
+            w.Write(info.offset);          /* offset — 相对于 payloadOffset */
+            w.Write(info.size);            /* size */
+            w.Write(info.compressedSize);  /* compressedSize */
+            w.Write(info.blobType);        /* blobType */
+            w.Write(info.flags);           /* flags */
         }
 
-        /* 对齐到 64 字节 */
-        PadTo(w, payloadOffset);
+        PadTo(w, payloadFileOffset);
 
-        /* ====== Payload ====== */
-        foreach (var blob in result.Blobs)
+        /* Payload — 按阶段 1 的记录写出 */
+        foreach (var info in blobInfos)
         {
-            var blobData = blob.Payload;
-            w.Write(blobData);
-            /* 64-byte 对齐 */
-            var aligned = Align64(blobData.Length);
-            var pad = aligned - blobData.Length;
+            w.Write(info.payload);
+            var pad = Align64(info.size) - info.size;
             for (int p = 0; p < pad; p++) w.Write((byte)0);
         }
 
@@ -604,6 +595,19 @@ public static class ImportPipeline
             Directory.CreateDirectory(dir);
 
         File.WriteAllBytes(outputPath.FullPath, ms.ToArray());
+
+        /* 诊断日志 */
+        Console.WriteLine($"[CompileToNnasset] {outputPath.FileName}: blobs={blobCount} payloadSize={payloadSize}");
+        foreach (var info in blobInfos)
+        {
+            Console.WriteLine($"  blob type={info.blobType} size={info.size} offset={info.offset}");
+            /* TypeInfo blob hex dump */
+            if (info.blobType == 9)
+            {
+                var hex = string.Join(" ", info.payload.Take(24).Select(b => b.ToString("x2")));
+                Console.WriteLine($"  TypeInfo payload hex: {hex}");
+            }
+        }
     }
 
     /* ========== 工具方法 ========== */

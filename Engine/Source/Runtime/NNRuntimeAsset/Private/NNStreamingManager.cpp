@@ -1,7 +1,7 @@
 #include "NNStreamingManager.h"
 
 #include <cstring>
-#include <fstream>
+#include <NNRuntimeVFS/Include/VFSService.h>
 
 namespace NN::Runtime::Asset
 {
@@ -186,28 +186,25 @@ void NNStreamingManager::IoThreadFunc()
 			fileName
 		};
 
-		/* 非同步讀取檔案（同步 fallback，實際可使用 Windows Overlapped IO） */
+		/* 通過 VFS 讀取檔案 */
 		for (const auto& path : searchPaths)
 		{
-			std::ifstream file(path, std::ios::binary | std::ios::ate);
-			if (!file.is_open())
+			namespace VFS = NN::Runtime::VFS;
+			auto file = VFS::VFSService::GetInstance()->OpenFile(
+				VFS::FileInfo(path), VFS::IFile::FileMode::Read);
+			if (!file || !file->IsOpened())
 				continue;
 
-			const auto fileSize = static_cast<std::size_t>(file.tellg());
-			file.seekg(0);
-
+			const auto fileSize = static_cast<std::size_t>(file->Size());
 			if (fileSize < 64) /* 至少要有 NNAssetHeader */
 				continue;
 
 			result.data.resize(fileSize);
-			file.read(reinterpret_cast<char*>(result.data.data()),
-			          static_cast<std::streamsize>(fileSize));
+			file->Read(result.data.data(), fileSize);
+			file->Close();
 
-			if (file)
-			{
-				result.success = true;
-				break;
-			}
+			result.success = true;
+			break;
 		}
 
 		/* 送入解碼佇列 */

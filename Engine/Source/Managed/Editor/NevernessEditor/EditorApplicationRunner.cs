@@ -6,6 +6,7 @@ using Neverness.Runtime.Engine;
 using Neverness.Runtime.Engine.Runtime;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.Private;
+using Neverness.Editor.Core.Private.Features;
 using Neverness.Editor.Assets.Public;
 using Neverness.Editor.Scene.Public;
 using Neverness.Runtime.Scene;
@@ -109,6 +110,7 @@ internal static class EditorApplicationRunner
 
 				RuntimeMainLoop.Tick(deltaTime);
 				EditorFrameworkModule.TickEditorUI();
+				ImGuiWindowFeature.Tick(deltaTime);
 				AssetsModule.Tick();
 
 				/* 刷新延迟事件 */

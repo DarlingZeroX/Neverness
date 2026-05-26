@@ -69,6 +69,7 @@ struct NNAssetEntry
 	/* 資料 */
 	std::vector<std::uint8_t> data;           /* 完整 .nnasset 資料 */
 	std::vector<NNBlobDescriptor> blobs;      /* blob 描述符快取 */
+	std::uint64_t        payloadOffset{0};    /* payload 區段在 data 中的偏移 */
 
 	/* IO */
 	std::string          sourcePath;          /* .nnasset 路徑（或包內路徑） */
@@ -126,6 +127,7 @@ public:
 	std::uint32_t GetBlobCount(std::uint64_t rawHandle) const;
 	const void* GetBlobData(std::uint64_t rawHandle, std::uint32_t index) const;
 	std::uint64_t GetBlobSize(std::uint64_t rawHandle, std::uint32_t index) const;
+	const NNBlobDescriptor* GetBlobByType(std::uint64_t rawHandle, std::uint32_t blobType, const void** outData = nullptr) const;
 
 	/* === 包管理 === */
 	bool MountPackage(const std::string& packPath);

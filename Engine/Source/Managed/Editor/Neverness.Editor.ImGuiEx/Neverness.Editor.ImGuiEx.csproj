@@ -9,6 +9,7 @@
 		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
 		<DebugType>portable</DebugType>
 		<RootNamespace>Neverness.Editor.ImGuiEx</RootNamespace>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
 		<!-- ========================= -->
 		<!--  关闭 pack（开发阶段） -->
@@ -32,11 +33,6 @@
 		<!-- 允许并行（反而更快） -->
 		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
-	<ItemGroup>
-	  <Compile Remove="Panel\**" />
-	  <EmbeddedResource Remove="Panel\**" />
-	  <None Remove="Panel\**" />
-	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
 	</ItemGroup>

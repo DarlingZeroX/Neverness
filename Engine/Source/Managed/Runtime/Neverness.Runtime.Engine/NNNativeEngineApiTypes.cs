@@ -14,6 +14,24 @@ public unsafe struct NNRenderApi
 }
 
 /// <summary>
+/// 與 Native <c>NNRenderAssetAPI</c> 逐欄位對齊（<c>RenderAssetAPI.h</c>）。
+/// v20 新增：GPU Texture 資源管理（CPU Asset → GPU Resource）。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct NNRenderAssetApi
+{
+	public delegate* unmanaged<ulong, ulong> GetImGuiTextureHandle;
+	public delegate* unmanaged<uint, uint, byte*, nuint, int, ulong> CreateTextureFromPixels;
+	public delegate* unmanaged<ulong, void> ReleaseTexture;
+	public delegate* unmanaged<ulong, uint, uint, byte*, nuint, int, void> ReloadTextureFromPixels;
+	public delegate* unmanaged<ulong, uint*, uint*, int> GetTextureDesc;
+	public delegate* unmanaged<ulong, int> IsTextureResident;
+	public delegate* unmanaged<ulong> GetCachedTextureCount;
+	public delegate* unmanaged<ulong> GetTotalGPUMemory;
+	public delegate* unmanaged<ulong, ulong> LoadTextureFromAsset;
+}
+
+/// <summary>
 /// 與 Native <c>NNUIAPI</c> 對齊；語義層抽象 RmlUi，不暴露任何 Rml 原生指標。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -555,6 +573,7 @@ public unsafe struct NNAssetManagerApi
 	public delegate* unmanaged[Stdcall]<void> ReloadMarkedAssets;
 	public delegate* unmanaged[Stdcall]<ulong> GetLoadedAssetCount;
 	public delegate* unmanaged[Stdcall]<ulong> GetTotalMemoryUsage;
+	public delegate* unmanaged[Stdcall]<byte*, int> initializeAssetManager;
 }
 
 /// <summary>
@@ -735,4 +754,6 @@ public unsafe struct NNNativeEngineApi
 	public NNAssetCookerApi AssetCooker;
 	/// <summary>對應 C 聚合體成員 <c>events</c>（型別 <c>NNEventAPI</c>）；事件队列（Pull-Based）。</summary>
 	public NNEventApi Events;
+	/// <summary>對應 C 聚合體成員 <c>renderAsset</c>（型別 <c>NNRenderAssetAPI</c>）；GPU Texture 資源管理（v20）。</summary>
+	public NNRenderAssetApi RenderAsset;
 }

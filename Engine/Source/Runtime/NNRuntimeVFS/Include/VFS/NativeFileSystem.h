@@ -313,23 +313,31 @@ private:
         }
 
         IFilePtr file = FindFile(filePath, m_FileList);
-        bool isExists = (file != nullptr);
-        if (!isExists && !IsReadOnlyST()) {
-            mode = mode | IFile::FileMode::Truncate;
-            file.reset(new NativeFile(filePath));
+        bool isInCache = (file != nullptr);
+
+        if (!isInCache && !IsReadOnlyST()) {
+            /* 快取未命中 ≠ 檔案不存在：先檢查磁碟上的真實檔案系統，
+             * 避免外部建立的檔案被誤加 Truncate 而清空。 */
+            bool existsOnDisk = fs::exists(filePath.AbsolutePath());
+            if (existsOnDisk) {
+                /* 檔案在磁碟上存在但不在快取中（例如被外部程序建立），
+                 * 直接以呼叫者指定的 mode 開啟，不附加 Truncate。 */
+                file.reset(new NativeFile(filePath));
+            } else {
+                /* 檔案確實不存在，建立新檔並附加 Truncate。 */
+                mode = mode | IFile::FileMode::Truncate;
+                file.reset(new NativeFile(filePath));
+            }
         }
 
         if (file) {
-			// 淇閲嶅鎵撳紑涓€涓枃浠舵寚閽堢殑閿欒
-			file.reset(new NativeFile(filePath));
-
             file->Open(mode);
-       
-            if (!isExists && file->IsOpened()) {
+
+            if (!isInCache && file->IsOpened()) {
                 m_FileList[filePath.AbsolutePath()] = file;
             }
         }
-        
+
         return file;
     }
 

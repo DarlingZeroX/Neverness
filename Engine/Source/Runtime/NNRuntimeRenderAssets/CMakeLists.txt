@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.20)
+
+set(MODULE_NAME "NevernessRuntime-RenderAssets")
+
+file(GLOB_RECURSE MODULE_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
+)
+
+file(GLOB_RECURSE MODULE_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/*.cpp"
+)
+
+add_library(${MODULE_NAME} STATIC
+    ${MODULE_HEADERS}
+    ${MODULE_SOURCES}
+)
+
+target_include_directories(${MODULE_NAME}
+    PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/Include"
+    PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Private"
+        "${PROJECT_SOURCE_DIR}/Engine/Source/Runtime"
+        "${PROJECT_SOURCE_DIR}/Engine/Source/Core"
+)
+
+target_compile_features(${MODULE_NAME} PUBLIC cxx_std_17)
+
+# 开启utf-8编码支持（中文注释）
+if (MSVC)
+    target_compile_options(${MODULE_NAME} PRIVATE /utf-8)
+endif()
+
+target_link_libraries(${MODULE_NAME}
+    PUBLIC
+        NevernessRuntime-RHI          # VGFX::ITexture, OpenGL::Texture2D
+        NevernessRuntime-Asset         # NNAssetHandleT, NNAssetManager
+        NevernessRuntime-NativeEngineAPI  # EngineTypes.h (NNAssetManager 依赖)
+    PRIVATE
+        NevernessCore-Core             # NN::Ref (shared_ptr)
+)
+
+set_target_properties(${MODULE_NAME} PROPERTIES
+    FOLDER "Engine/Runtime"
+)

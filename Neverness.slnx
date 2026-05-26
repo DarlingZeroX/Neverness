@@ -25,7 +25,6 @@
     <Project Path="Engine/Source/Managed/Editor/ThirdParty/Neverness.Editor.ImGuiNodeEditor/Neverness.Editor.ImGuiNodeEditor.csproj" />
     <Project Path="Engine/Source/Managed/Editor/ThirdParty/Neverness.Editor.ImGuizmo/Neverness.Editor.ImGuizmo.csproj" />
   </Folder>
-  <Folder Name="/NewFolder1/" />
   <Folder Name="/Runtime/">
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.App/Neverness.Runtime.App.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj" />

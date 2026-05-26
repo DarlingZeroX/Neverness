@@ -3,6 +3,7 @@
  * @brief Runtime 表：先 **BuildDefault**（Stub），再 **NNBuild*RuntimeApi** 覆写指向 **NNEngineRuntime** 的字段。
  */
 
+#include <iostream>
 #include <mutex>
 
 #include "Internal/RuntimeApiBuilders.h"
@@ -14,6 +15,7 @@
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "NativeEngineRuntimeServices.h"
+#include "NNRuntimeRenderAssets/Include/NNRenderAssetManager.h"
 
 extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 {
@@ -22,7 +24,11 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 		return;
 	}
 
-	NNNativeEngineApiTable_BuildDefault(outTable);
+	//NNNativeEngineApiTable_BuildDefault(outTable);
+	std::cout << "---------------------------------------" << std::endl;
+	std::cout << "Building NNNative Engine Api Table..." << std::endl;
+	outTable->layoutVersion = NN_NATIVE_ENGINE_API_LAYOUT_VERSION;
+	outTable->reserved0 = 0;
 
 	NNBuildTimingRuntimeApi(&outTable->timing);
 	NNBuildAsyncWaitRuntimeApi(&outTable->asyncWait);
@@ -38,9 +44,16 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildWindowRuntimeApi(&outTable->window);
 	NNBuildVfsRuntimeApi(&outTable->vfs);
 	NNBuildEventRuntimeApi(&outTable->events);
+	NNBuildRenderAssetRuntimeApi(&outTable->renderAsset);
 
 	/* 将 VFS 函数表注入 SceneSubsystem，供序列化/反序列化使用 */
 	NN::Runtime::engine::NNEngineRuntime::Instance().Scene().SetVfsApi(&outTable->vfs);
+
+	/* 初始化 RenderAssetManager（GPU 纹理缓存） */
+	NN::Runtime::Render::NNRenderAssetManager::Get().Initialize();
+
+	std::cout << "NNNative Engine Api Table built." << std::endl;
+	std::cout << "---------------------------------------" << std::endl;
 }
 
 namespace
@@ -72,5 +85,6 @@ extern "C" void NNEngineRuntimeHost_Tick(float deltaTimeSeconds)
 extern "C" void NNEngineRuntimeHost_Shutdown(void)
 {
 	NNEngineRuntimeHost_ClearManagedTickCallback();
+	NN::Runtime::Render::NNRenderAssetManager::Get().Shutdown();
 	NN::Runtime::engine::NNEngineRuntime::Instance().Shutdown();
 }

@@ -18,6 +18,9 @@ public static class ImporterRegistry
     private static readonly Dictionary<string, IAssetImporter> s_extensionToImporter
         = new(StringComparer.OrdinalIgnoreCase);
 
+    private static readonly Dictionary<string, IAssetImporter> s_nameToImporter
+        = new(StringComparer.OrdinalIgnoreCase);
+
     private static readonly List<IAssetImporter> s_allImporters = new();
 
     private static bool s_discovered;
@@ -48,6 +51,7 @@ public static class ImporterRegistry
                 return;
 
             s_extensionToImporter.Clear();
+            s_nameToImporter.Clear();
             s_allImporters.Clear();
 
             var importerTypes = new List<(Type type, AssetImporterAttribute attr)>();
@@ -100,6 +104,11 @@ public static class ImporterRegistry
 
                 s_allImporters.Add(importer);
 
+                /* 按类型名称注册（用于 meta 文件中的 importer 名称查找） */
+                var typeName = type.Name;
+                if (!s_nameToImporter.ContainsKey(typeName))
+                    s_nameToImporter[typeName] = importer;
+
                 foreach (var ext in attr.Extensions)
                 {
                     if (!s_extensionToImporter.ContainsKey(ext))
@@ -124,6 +133,16 @@ public static class ImporterRegistry
                 ext = '.' + ext;
 
             return s_extensionToImporter.TryGetValue(ext, out var importer) ? importer : null;
+        }
+    }
+
+    /// <summary>按类型名称获取对应的 importer（如 "TextureImporter"）。未找到返回 null。</summary>
+    public static IAssetImporter? GetImporterByName(string name)
+    {
+        lock (s_lock)
+        {
+            EnsureDiscovered();
+            return s_nameToImporter.TryGetValue(name, out var importer) ? importer : null;
         }
     }
 

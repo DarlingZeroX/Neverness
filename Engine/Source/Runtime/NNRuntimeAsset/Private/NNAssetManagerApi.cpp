@@ -136,6 +136,11 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_am_getTotalMemoryUsage()
 	return NNAssetManager::Instance().GetTotalMemoryUsage();
 }
 
+int NN_ENGINE_ABI_STDCALL rt_am_initializeAssetManager(const char* projectRootUtf8)
+{
+	return NNAssetManager::Instance().Initialize(projectRootUtf8 ? projectRootUtf8 : "") ? 1 : 0;
+}
+
 } // namespace
 
 extern "C" void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api)
@@ -166,4 +171,5 @@ extern "C" void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api)
 	api->reloadMarkedAssets = &rt_am_reloadMarkedAssets;
 	api->getLoadedAssetCount = &rt_am_getLoadedAssetCount;
 	api->getTotalMemoryUsage = &rt_am_getTotalMemoryUsage;
+	api->initializeAssetManager = &rt_am_initializeAssetManager;
 }

@@ -53,11 +53,17 @@ public sealed class ImportResult
 /// </summary>
 public sealed class ImportedBlob
 {
+    private byte[] _data = Array.Empty<byte>();
+
     /// <summary>Blob 类型（参见 NNAssetFormat 的 blob type 常量）。</summary>
     public uint BlobType { get; set; }
 
     /// <summary>原始数据。</summary>
-    public byte[] Data { get; set; } = Array.Empty<byte>();
+    public byte[] Data
+    {
+        get => _data;
+        set => _data = value ?? Array.Empty<byte>();
+    }
 
     /// <summary>压缩后的数据（可选，null 表示不压缩）。</summary>
     public byte[]? CompressedData { get; set; }
@@ -66,7 +72,7 @@ public sealed class ImportedBlob
     public uint Flags { get; set; }
 
     /// <summary>实际写入 .nnasset 的数据（优先使用压缩数据）。</summary>
-    public byte[] Payload => CompressedData ?? Data;
+    public byte[] Payload => CompressedData ?? _data;
 }
 
 /// <summary>

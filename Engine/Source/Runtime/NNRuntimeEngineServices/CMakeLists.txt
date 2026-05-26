@@ -25,6 +25,7 @@ target_sources(NevernessRuntime-EngineServices
 		Private/Object/ObjectRuntimeApi.cpp
 		Private/AssetRegistry/AssetRegistryRuntimeApi.cpp
 		Private/Entity/EntityRuntimeApi.cpp
+		Private/RenderAsset/RenderAssetRuntimeApi.cpp
 )
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
@@ -37,6 +38,7 @@ target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRE
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeAsset/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNAssetRegistry/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNAssetCooker/Include)
+target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeRenderAssets/Include)
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 
@@ -55,6 +57,7 @@ target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-ManagedBridge
 	NevernessRuntime-Application
 	NevernessRuntime-VFS
+	NevernessRuntime-RenderAssets
 )
 
 add_library(NNEngineRuntimeServices ALIAS NevernessRuntime-EngineServices)

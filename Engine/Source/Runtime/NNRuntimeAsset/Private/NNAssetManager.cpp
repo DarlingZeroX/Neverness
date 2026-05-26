@@ -1,10 +1,10 @@
 #include "NNAssetManager.h"
 
 #include "NNPackManager.h"
+#include <NNCore/Interface/HLog.h>
+#include <NNRuntimeVFS/Include/VFSService.h>
 
 #include <cstring>
-#include <filesystem>
-#include <fstream>
 
 namespace NN::Runtime::Asset
 {
@@ -188,7 +188,15 @@ NNAssetHandleT<void> NNAssetManager::LoadAssetSync(const NNGuid& guid, std::uint
 NNAssetHandleT<void> NNAssetManager::LoadAssetInternal(const NNGuid& guid, std::uint64_t typeId)
 {
 	if (GuidIsZero(guid))
+	{
+		H_LOG_WARN("[AssetManager] LoadAssetInternal: GUID 為零，跳過載入");
 		return NNAssetHandleT<void>();
+	}
+
+	H_LOG_INFO("[AssetManager] LoadAssetInternal: 開始載入資產 GUID=%016llx%016llx typeId=%llu",
+	           static_cast<unsigned long long>(guid.high),
+	           static_cast<unsigned long long>(guid.low),
+	           static_cast<unsigned long long>(typeId));
 
 	/* 檢查是否已載入 */
 	auto itGuid = guidToEntry_.Find(guid.low);
@@ -196,13 +204,23 @@ NNAssetHandleT<void> NNAssetManager::LoadAssetInternal(const NNGuid& guid, std::
 	{
 		auto entry = (*itGuid);
 		handleTable_.AddRef(entry->handle);
+		H_LOG_INFO("[AssetManager] LoadAssetInternal: 資產已載入，增加引用 handle=%llu refCount=%u",
+		           static_cast<unsigned long long>(entry->handle),
+		           entry->refCount.load(std::memory_order_relaxed));
 		return NNAssetHandleT<void>(entry->handle);
 	}
 
 	/* 解析路徑 */
 	std::string path = ResolveAssetPath(guid);
 	if (path.empty())
+	{
+		H_LOG_ERROR("[AssetManager] LoadAssetInternal: 無法解析資產路徑 GUID=%016llx%016llx",
+		            static_cast<unsigned long long>(guid.high),
+		            static_cast<unsigned long long>(guid.low));
 		return NNAssetHandleT<void>();
+	}
+
+	H_LOG_INFO("[AssetManager] LoadAssetInternal: 解析路徑為 %s", path.c_str());
 
 	/* 建立條目 */
 	auto entry = std::make_shared<NNAssetEntry>();
@@ -215,6 +233,7 @@ NNAssetHandleT<void> NNAssetManager::LoadAssetInternal(const NNGuid& guid, std::
 	if (!ReadNnAsset(path, *entry))
 	{
 		entry->state.store(NNAssetEntry::State::Failed, std::memory_order_release);
+		H_LOG_ERROR("[AssetManager] LoadAssetInternal: 讀取 .nnasset 失敗 path=%s", path.c_str());
 		return NNAssetHandleT<void>();
 	}
 
@@ -229,6 +248,12 @@ NNAssetHandleT<void> NNAssetManager::LoadAssetInternal(const NNGuid& guid, std::
 
 	/* 更新快取 */
 	cache_.Touch(guid, entry->data.size(), rawHandle);
+
+	H_LOG_INFO("[AssetManager] LoadAssetInternal: 載入成功 handle=%llu data=%zu bytes deps=%zu blobs=%zu",
+	           static_cast<unsigned long long>(rawHandle),
+	           entry->data.size(),
+	           entry->dependencies.size(),
+	           entry->blobs.size());
 
 	return NNAssetHandleT<void>(rawHandle);
 }
@@ -414,7 +439,7 @@ const void* NNAssetManager::GetBlobData(std::uint64_t rawHandle, std::uint32_t i
 	if ((*it)->data.empty())
 		return nullptr;
 
-	return (*it)->data.data() + blob.offset;
+	return (*it)->data.data() + (*it)->payloadOffset + blob.offset;
 }
 
 std::uint64_t NNAssetManager::GetBlobSize(std::uint64_t rawHandle, std::uint32_t index) const
@@ -424,6 +449,32 @@ std::uint64_t NNAssetManager::GetBlobSize(std::uint64_t rawHandle, std::uint32_t
 	if (it == nullptr || index >= (*it)->blobs.size())
 		return 0;
 	return (*it)->blobs[index].size;
+}
+
+const NNBlobDescriptor* NNAssetManager::GetBlobByType(std::uint64_t rawHandle, std::uint32_t blobType, const void** outData) const
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	auto it = handleToEntry_.Find(rawHandle);
+	if (it == nullptr)
+		return nullptr;
+	for (const auto& b : (*it)->blobs)
+	{
+		if (b.blobType == blobType)
+		{
+			/* blob offset 是相对于 payloadOffset 的，需要加上 payloadOffset */
+			auto absOffset = (*it)->payloadOffset + b.offset;
+			if (absOffset + b.size > (*it)->data.size())
+			{
+				H_LOG_ERROR("[AssetManager] GetBlobByType: blob type=%u payloadOffset=%llu relOffset=%llu size=%llu 越界 (data size=%llu)",
+					blobType, (*it)->payloadOffset, b.offset, b.size, (unsigned long long)(*it)->data.size());
+				return nullptr;
+			}
+			if (outData)
+				*outData = (*it)->data.data() + absOffset;
+			return &b;
+		}
+	}
+	return nullptr;
 }
 
 /* ======================== 包管理 ======================== */
@@ -509,21 +560,40 @@ bool NNAssetManager::GuidIsZero(const NNGuid& g) noexcept
 
 bool NNAssetManager::ReadNnAsset(const std::string& path, NNAssetEntry& entry)
 {
-	std::ifstream file(path, std::ios::binary | std::ios::ate);
-	if (!file.is_open())
+	namespace VFS = NN::Runtime::VFS;
+
+	auto file = VFS::VFSService::GetInstance()->OpenFile(
+		VFS::FileInfo(path), VFS::IFile::FileMode::Read);
+	if (!file || !file->IsOpened())
 		return false;
 
-	const auto fileSize = static_cast<std::size_t>(file.tellg());
-	file.seekg(0);
-
+	const auto fileSize = static_cast<std::size_t>(file->Size());
 	if (fileSize < sizeof(NNAssetHeader))
 		return false;
 
 	/* 讀取整個檔案到 entry.data */
 	entry.data.resize(fileSize);
-	file.read(reinterpret_cast<char*>(entry.data.data()), static_cast<std::streamsize>(fileSize));
-	if (!file)
-		return false;
+	auto bytesRead = file->Read(entry.data.data(), fileSize);
+	file->Close();
+
+	if (bytesRead < fileSize)
+	{
+		H_LOG_WARN("[AssetManager] ReadNnAsset: 请求 %llu 字节但只读取了 %llu 字节 path=%s",
+			(unsigned long long)fileSize, (unsigned long long)bytesRead, path.c_str());
+	}
+
+	/* 尾部 hex dump（最后 32 字节） */
+	if (fileSize >= 32)
+	{
+		auto* tail = entry.data.data() + fileSize - 32;
+		H_LOG_INFO("[AssetManager] ReadNnAsset: 文件尾部 hex: "
+			"%02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x "
+			"%02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x",
+			tail[0], tail[1], tail[2], tail[3], tail[4], tail[5], tail[6], tail[7],
+			tail[8], tail[9], tail[10], tail[11], tail[12], tail[13], tail[14], tail[15],
+			tail[16], tail[17], tail[18], tail[19], tail[20], tail[21], tail[22], tail[23],
+			tail[24], tail[25], tail[26], tail[27], tail[28], tail[29], tail[30], tail[31]);
+	}
 
 	/* 解析 Header */
 	NNAssetHeader header{};
@@ -533,6 +603,7 @@ bool NNAssetManager::ReadNnAsset(const std::string& path, NNAssetEntry& entry)
 		return false;
 
 	entry.typeId = header.typeId;
+	entry.payloadOffset = header.payloadOffset;
 
 	/* 解析依賴 */
 	entry.dependencies.clear();
@@ -555,30 +626,18 @@ bool NNAssetManager::ReadNnAsset(const std::string& path, NNAssetEntry& entry)
 
 std::string NNAssetManager::ResolveAssetPath(const NNGuid& guid) const
 {
-	/* 策略：
-	 * 1. 先查 assetRoot_/Library/Imported/XX/guid.nnasset
-	 * 2. 再查已掛載的 packages
+	/* VFS 路徑：Library/Imported/XX/guid.nnasset
+	 * 由 VFS 自動路由到對應的檔案系統
 	 */
-	if (!assetRoot_.empty())
-	{
-		/* Library/Imported/XX/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.nnasset */
-		char hexBuf[33];
-		std::snprintf(hexBuf, sizeof(hexBuf), "%016llx%016llx",
-		              static_cast<unsigned long long>(guid.high),
-		              static_cast<unsigned long long>(guid.low));
+	char hexBuf[33];
+	std::snprintf(hexBuf, sizeof(hexBuf), "%016llx%016llx",
+	              static_cast<unsigned long long>(guid.high),
+	              static_cast<unsigned long long>(guid.low));
 
-		const std::string dir = assetRoot_ + "/Library/Imported/" + std::string(hexBuf, 2);
-		const std::string path = dir + "/" + std::string(hexBuf) + ".nnasset";
+	const std::string prefix(hexBuf, 2);
+	const std::string fileName(hexBuf);
 
-		if (std::filesystem::exists(path))
-			return path;
-	}
-
-	/* 查已掛載的 packages */
-	/* 注意：包內資產不走文件路徑，直接由 NNPackManager::ReadAssetFromPackage 讀取
-	 * 此處回傳空串表示走包內路徑 */
-
-	return {};
+	return "Library/Imported/" + prefix + "/" + fileName + ".nnasset";
 }
 
 } // namespace NN::Runtime::Asset

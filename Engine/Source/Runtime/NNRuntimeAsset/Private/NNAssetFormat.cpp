@@ -1,7 +1,7 @@
 #include "NNAssetFormat.h"
 
 #include <cstring>
-#include <fstream>
+#include <NNRuntimeVFS/Include/VFSService.h>
 #include <vector>
 
 namespace NN::Runtime::Asset
@@ -9,13 +9,14 @@ namespace NN::Runtime::Asset
 
 bool ReadAssetHeader(const std::string& path, NNAssetHeader& outHeader)
 {
-	std::ifstream file(path, std::ios::binary);
-	if (!file.is_open())
+	namespace VFS = NN::Runtime::VFS;
+	auto file = VFS::VFSService::GetInstance()->OpenFile(
+		VFS::FileInfo(path), VFS::IFile::FileMode::Read);
+	if (!file || !file->IsOpened())
 		return false;
 
-	file.read(reinterpret_cast<char*>(&outHeader), sizeof(NNAssetHeader));
-	if (!file)
-		return false;
+	file->Read(reinterpret_cast<uint8_t*>(&outHeader), sizeof(NNAssetHeader));
+	file->Close();
 
 	return NNAssetHeaderIsValid(&outHeader) != 0;
 }
@@ -26,18 +27,19 @@ bool ReadAssetFile(const std::string& path,
                    std::vector<NNBlobDescriptor>& outBlobs,
                    std::vector<std::uint8_t>& outPayload)
 {
-	std::ifstream file(path, std::ios::binary | std::ios::ate);
-	if (!file.is_open())
+	namespace VFS = NN::Runtime::VFS;
+	auto file = VFS::VFSService::GetInstance()->OpenFile(
+		VFS::FileInfo(path), VFS::IFile::FileMode::Read);
+	if (!file || !file->IsOpened())
 		return false;
 
-	const auto fileSize = static_cast<std::size_t>(file.tellg());
-	file.seekg(0);
+	const auto fileSize = static_cast<std::size_t>(file->Size());
 
 	/* 讀取 Header */
 	if (fileSize < sizeof(NNAssetHeader))
 		return false;
 
-	file.read(reinterpret_cast<char*>(&outHeader), sizeof(NNAssetHeader));
+	file->Read(reinterpret_cast<uint8_t*>(&outHeader), sizeof(NNAssetHeader));
 	if (NNAssetHeaderIsValid(&outHeader) == 0)
 		return false;
 
@@ -45,30 +47,31 @@ bool ReadAssetFile(const std::string& path,
 	outDeps.resize(outHeader.dependencyCount);
 	if (outHeader.dependencyCount > 0)
 	{
-		file.seekg(static_cast<std::streamoff>(outHeader.dependencyOffset));
-		file.read(reinterpret_cast<char*>(outDeps.data()),
-		          static_cast<std::streamsize>(outHeader.dependencyCount * sizeof(NNGuid)));
+		file->Seek(outHeader.dependencyOffset, VFS::IFile::Origin::Begin);
+		file->Read(reinterpret_cast<uint8_t*>(outDeps.data()),
+		           outHeader.dependencyCount * sizeof(NNGuid));
 	}
 
 	/* 讀取 Blob 描述符 */
 	outBlobs.resize(outHeader.blobCount);
 	if (outHeader.blobCount > 0)
 	{
-		file.seekg(static_cast<std::streamoff>(outHeader.blobTableOffset));
-		file.read(reinterpret_cast<char*>(outBlobs.data()),
-		          static_cast<std::streamsize>(outHeader.blobCount * sizeof(NNBlobDescriptor)));
+		file->Seek(outHeader.blobTableOffset, VFS::IFile::Origin::Begin);
+		file->Read(reinterpret_cast<uint8_t*>(outBlobs.data()),
+		           outHeader.blobCount * sizeof(NNBlobDescriptor));
 	}
 
 	/* 讀取 Payload */
 	if (outHeader.payloadSize > 0)
 	{
 		outPayload.resize(static_cast<std::size_t>(outHeader.payloadSize));
-		file.seekg(static_cast<std::streamoff>(outHeader.payloadOffset));
-		file.read(reinterpret_cast<char*>(outPayload.data()),
-		          static_cast<std::streamsize>(outHeader.payloadSize));
+		file->Seek(outHeader.payloadOffset, VFS::IFile::Origin::Begin);
+		file->Read(reinterpret_cast<uint8_t*>(outPayload.data()),
+		           outHeader.payloadSize);
 	}
 
-	return static_cast<bool>(file);
+	file->Close();
+	return true;
 }
 
 bool WriteAssetFile(const std::string& path,
@@ -80,9 +83,8 @@ bool WriteAssetFile(const std::string& path,
                     const std::vector<std::uint8_t>& payload,
                     std::uint32_t flags)
 {
-	std::ofstream file(path, std::ios::binary);
-	if (!file.is_open())
-		return false;
+	/* 先在內存中構建完整文件，再通過 VFS 寫入 */
+	std::vector<std::uint8_t> buffer;
 
 	/* 計算偏移 */
 	const std::uint64_t depOffset = sizeof(NNAssetHeader);
@@ -106,20 +108,21 @@ bool WriteAssetFile(const std::string& path,
 	header.flags = flags;
 
 	/* 寫入 Header */
-	file.write(reinterpret_cast<const char*>(&header), sizeof(NNAssetHeader));
+	buffer.insert(buffer.end(), reinterpret_cast<std::uint8_t*>(&header),
+	              reinterpret_cast<std::uint8_t*>(&header) + sizeof(NNAssetHeader));
 
 	/* 寫入依賴 */
 	if (!deps.empty())
 	{
-		file.write(reinterpret_cast<const char*>(deps.data()),
-		           static_cast<std::streamsize>(depSize));
+		buffer.insert(buffer.end(), reinterpret_cast<const std::uint8_t*>(deps.data()),
+		              reinterpret_cast<const std::uint8_t*>(deps.data()) + depSize);
 	}
 
 	/* 寫入 Blob 表 */
 	if (!blobsRaw.empty())
 	{
-		file.write(reinterpret_cast<const char*>(blobsRaw.data()),
-		           static_cast<std::streamsize>(blobTableSize));
+		buffer.insert(buffer.end(), reinterpret_cast<const std::uint8_t*>(blobsRaw.data()),
+		              reinterpret_cast<const std::uint8_t*>(blobsRaw.data()) + blobTableSize);
 	}
 
 	/* 對齊填充 */
@@ -128,18 +131,17 @@ bool WriteAssetFile(const std::string& path,
 	{
 		const std::uint64_t padSize = payloadOffset - currentOffset;
 		std::vector<std::uint8_t> padding(static_cast<std::size_t>(padSize), 0);
-		file.write(reinterpret_cast<const char*>(padding.data()),
-		           static_cast<std::streamsize>(padSize));
+		buffer.insert(buffer.end(), padding.begin(), padding.end());
 	}
 
 	/* 寫入 Payload */
 	if (!payload.empty())
 	{
-		file.write(reinterpret_cast<const char*>(payload.data()),
-		           static_cast<std::streamsize>(payload.size()));
+		buffer.insert(buffer.end(), payload.begin(), payload.end());
 	}
 
-	return static_cast<bool>(file);
+	namespace VFS = NN::Runtime::VFS;
+	return VFS::VFSService::WriteBufferToFile(path, buffer.data(), buffer.size());
 }
 
 } // namespace NN::Runtime::Asset

@@ -99,11 +99,11 @@ private:
 	};
 
 	/* --- Handle 編解碼 --- */
-	static std::uint32_t HandleToIndex(std::uint64_t h) { return static_cast<std::uint32_t>(h & 0xFFFFFFFFull); }
+	static std::uint32_t HandleToIndex(std::uint64_t h) { return static_cast<std::uint32_t>(h & 0xFFFFFFFFull) - 1; }
 	static std::uint32_t HandleToGen(std::uint64_t h)   { return static_cast<std::uint32_t>(h >> 32); }
 	static std::uint64_t MakeHandle(std::uint32_t idx, std::uint32_t gen)
 	{
-		return (static_cast<std::uint64_t>(gen) << 32) | static_cast<std::uint64_t>(idx);
+		return (static_cast<std::uint64_t>(gen) << 32) | static_cast<std::uint64_t>(idx + 1);
 	}
 
 	mutable std::mutex       mutex_;

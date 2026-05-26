@@ -1,4 +1,5 @@
 using Neverness.Runtime.Assets;
+using StbImageSharp;
 
 namespace Neverness.Editor.Assets;
 
@@ -27,59 +28,71 @@ public class TextureImporter : ISettingsAwareImporter
         {
             var result = ImportResult.Ok(context.AssetGuid, AssetTypeId.Texture2D);
 
-            /* 读取源文件 */
+            // 读取源文件
             var sourceData = context.ReadAllBytes();
 
-            /* TODO: 实际应使用图像解码库（如 StbImageSharp）
-             * 解析为 RGBA 像素数据，此处为骨架实现 */
+            // 使用 StbImageSharp 解码为 RGBA8
             var (width, height, pixelData) = DecodeImage(context.Extension, sourceData);
 
             if (pixelData == null || width == 0 || height == 0)
                 return ImportResult.Fail($"无法解码纹理: {context.SourceAssetPath}");
 
-            /* 读取设置 */
+            // 读取设置
             var generateMipmaps = context.GetSettingBool("generateMipmaps", true);
             var maxSize = context.GetSettingInt("maxSize", 4096);
+            var isSRGB = context.GetSettingBool("srgb", true);
 
-            /* 尺寸限制 */
+            // 尺寸限制
             if (width > maxSize || height > maxSize)
             {
-                /* TODO: 缩放至 maxSize */
+                // TODO: 缩放至 maxSize
             }
 
-            /* 生成 mipmap 链 */
+            // 生成 mipmap 链
             var mipLevels = generateMipmaps ? CalculateMipCount(width, height) : 1;
 
-            /* 写入主数据 blob */
+            // 写入主数据 blob（mip0）
             result.Blobs.Add(new ImportedBlob
             {
                 BlobType = AssetTypeId.BlobType.Data,
                 Data = pixelData
             });
 
-            /* 写入 mipmap blobs（骨架：仅写入 level 0） */
-            if (generateMipmaps)
+            // 生成并写入 mipmap blobs
+            if (generateMipmaps && mipLevels > 1)
             {
-                /* TODO: 实际生成各层 mip level */
+                var mipChain = GenerateMipChain(pixelData, width, height, mipLevels);
                 for (int i = 1; i < mipLevels; i++)
                 {
                     result.Blobs.Add(new ImportedBlob
                     {
                         BlobType = AssetTypeId.BlobType.MipLevel,
-                        Data = Array.Empty<byte>() /* TODO: 下采样数据 */
+                        Data = mipChain[i]
                     });
                 }
             }
 
-            /* 写入 TypeInfo */
+            // 写入 TypeInfo blob（与 C++ NNTextureTypeInfo 24字节布局对齐）
+            // C++ 布局：width:u32, height:u32, format:u32, mipCount:u32, arraySize:u32, flags:u32
             var typeInfo = new NNTextureTypeInfoCSharp
             {
                 Width = (uint)width,
                 Height = (uint)height,
-                MipLevels = (uint)mipLevels,
-                Format = 0 /* TODO: 映射到实际格式枚举 */
+                Format = 4, // NNTextureFormat::RGBA8_UNorm = 4 (Unknown=0, R8=1, RG8=2, RGB8=3, RGBA8=4)
+                MipCount = (uint)mipLevels,
+                ArraySize = 1,
+                Flags = isSRGB ? 1u : 0u
             };
-            result.TypeInfo = typeInfo.ToBytes();
+            result.Blobs.Add(new ImportedBlob
+            {
+                BlobType = AssetTypeId.BlobType.TypeInfo,
+                Data = typeInfo.ToBytes()
+            });
+
+            /* 诊断日志 */
+            Console.WriteLine($"[TextureImporter] {context.SourceAssetPath.FileName}: {width}x{height} sRGB={isSRGB} mips={mipLevels} blobs={result.Blobs.Count}");
+            foreach (var b in result.Blobs)
+                Console.WriteLine($"  blob type={b.BlobType} size={b.Data.Length}");
 
             return result;
         }
@@ -122,31 +135,86 @@ public class TextureImporter : ISettingsAwareImporter
         return true;
     }
 
-    /// <summary>解码图像（骨架实现）。</summary>
+    /// <summary>
+    /// 使用 StbImageSharp 解码图像为 RGBA8。
+    /// </summary>
     private static (int width, int height, byte[]? data) DecodeImage(string extension, byte[] raw)
     {
-        /* TODO: 集成 StbImageSharp 或其他解码库 */
-        /* 当前返回占位数据，标记源文件长度以便调试 */
-        if (raw.Length < 8)
+        if (raw == null || raw.Length < 8)
             return (0, 0, null);
 
-        /* DDS 文件可直接读取头部 */
+        // DDS 文件直接读取头部
         if (extension == ".dds" && raw.Length > 128)
         {
-            /* DDS 头部 magic = "DDS " (0x20534444) */
             var magic = BitConverter.ToUInt32(raw, 0);
             if (magic == 0x20534444)
             {
                 var h = BitConverter.ToInt32(raw, 12);
                 var w = BitConverter.ToInt32(raw, 16);
-                return (w, h, raw); /* DDS 原始数据直接传递 */
+                return (w, h, raw);
             }
         }
 
-        /* 其他格式：返回占位 4x4 RGBA */
-        /* TODO: 实际解码 */
-        var placeholder = new byte[4 * 4 * 4]; /* 4x4 RGBA8 */
-        return (4, 4, placeholder);
+        // 使用 StbImageSharp 解码
+        try
+        {
+            using var stream = new MemoryStream(raw);
+            var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+
+            if (image == null || image.Data == null)
+                return (0, 0, null);
+
+            return (image.Width, image.Height, image.Data);
+        }
+        catch
+        {
+            return (0, 0, null);
+        }
+    }
+
+    /// <summary>
+    /// CPU 侧生成 mipmap 链（box filter 下采样）。
+    /// </summary>
+    private static byte[][] GenerateMipChain(byte[] basePixels, int baseWidth, int baseHeight, int mipLevels)
+    {
+        var chain = new byte[mipLevels][];
+        chain[0] = basePixels;
+
+        int prevW = baseWidth, prevH = baseHeight;
+        var prevPixels = basePixels;
+
+        for (int mip = 1; mip < mipLevels && prevW > 1 && prevH > 1; mip++)
+        {
+            int newW = Math.Max(1, prevW / 2);
+            int newH = Math.Max(1, prevH / 2);
+            var mipPixels = new byte[newW * newH * 4];
+
+            for (int y = 0; y < newH; y++)
+            {
+                for (int x = 0; x < newW; x++)
+                {
+                    int sx0 = x * 2, sy0 = y * 2;
+                    int sx1 = Math.Min(sx0 + 1, prevW - 1);
+                    int sy1 = Math.Min(sy0 + 1, prevH - 1);
+
+                    for (int c = 0; c < 4; c++)
+                    {
+                        int a = prevPixels[(sy0 * prevW + sx0) * 4 + c];
+                        int b = prevPixels[(sy0 * prevW + sx1) * 4 + c];
+                        int cc = prevPixels[(sy1 * prevW + sx0) * 4 + c];
+                        int d = prevPixels[(sy1 * prevW + sx1) * 4 + c];
+                        mipPixels[(y * newW + x) * 4 + c] = (byte)((a + b + cc + d + 2) / 4);
+                    }
+                }
+            }
+
+            chain[mip] = mipPixels;
+            prevPixels = mipPixels;
+            prevW = newW;
+            prevH = newH;
+        }
+
+        return chain;
     }
 
     private static int CalculateMipCount(int width, int height)
@@ -163,22 +231,27 @@ public class TextureImporter : ISettingsAwareImporter
 }
 
 /// <summary>
-/// C# 侧纹理 TypeInfo（镜像 C++ NNTextureTypeInfo）。
+/// C# 侧纹理 TypeInfo（镜像 C++ NNTextureTypeInfo，24 字节）。
+/// C++ 布局：width, height, format, mipCount, arraySize, flags
 /// </summary>
 internal struct NNTextureTypeInfoCSharp
 {
     public uint Width;
     public uint Height;
-    public uint MipLevels;
     public uint Format;
+    public uint MipCount;
+    public uint ArraySize;
+    public uint Flags;
 
     public byte[] ToBytes()
     {
-        var buf = new byte[16];
+        var buf = new byte[24];
         BitConverter.GetBytes(Width).CopyTo(buf, 0);
         BitConverter.GetBytes(Height).CopyTo(buf, 4);
-        BitConverter.GetBytes(MipLevels).CopyTo(buf, 8);
-        BitConverter.GetBytes(Format).CopyTo(buf, 12);
+        BitConverter.GetBytes(Format).CopyTo(buf, 8);
+        BitConverter.GetBytes(MipCount).CopyTo(buf, 12);
+        BitConverter.GetBytes(ArraySize).CopyTo(buf, 16);
+        BitConverter.GetBytes(Flags).CopyTo(buf, 20);
         return buf;
     }
 }

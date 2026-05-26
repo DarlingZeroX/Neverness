@@ -32,3 +32,4 @@ target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/
 target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 
 target_link_libraries(NevernessRuntime-Asset PUBLIC NevernessRuntime-NativeEngineAPI)
+target_link_libraries(NevernessRuntime-Asset PUBLIC NevernessRuntime-VFS)

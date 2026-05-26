@@ -169,15 +169,86 @@ public readonly unsafe struct AssetHandle : IEquatable<AssetHandle>
 /* ========== 原生 API 存取 ========== */
 
 /// <summary>
-/// Native API 存取器（暫時簡單實作，未來整合至 EngineNativeApiBootstrap）。
+/// Native API 存取器。
 /// </summary>
-public static class NativeApiProvider
+public static unsafe class NativeApiProvider
 {
     /// <summary>AssetManagerAPI 函數表。</summary>
     public static AssetManagerApiTable AssetManagerApi { get; set; } = new();
 
     /// <summary>取得 AssetManager API（便捷方法）。</summary>
     public static AssetManagerApiTable Manager => AssetManagerApi;
+
+    /// <summary>
+    /// 從 <see cref="EngineNativeApiCache"/> 橋接函數指針到 <see cref="AssetManagerApi"/>。
+    /// 必須在 Editor 啟動時、首次資產操作前調用。
+    /// </summary>
+    public static void WireFromEngineCache()
+    {
+        if (!EngineNativeApiCache.IsInstalled)
+        {
+            Console.WriteLine("[NativeApiProvider] EngineNativeApiCache 未安裝，跳過接線");
+            return;
+        }
+
+        ref readonly var native = ref EngineNativeApiCache.EngineApi.AssetManager;
+
+        AssetManagerApi = new AssetManagerApiTable
+        {
+            LoadAssetSync = (delegate* unmanaged[Stdcall]<NNGuid, ulong, ulong>)native.LoadAssetSync,
+            LoadAssetAsync = (delegate* unmanaged[Stdcall]<NNGuid, ulong, int, void*, void*, ulong>)native.LoadAssetAsync,
+            UnloadAsset = (delegate* unmanaged[Stdcall]<ulong, void>)native.UnloadAsset,
+            UnloadAssetByGuid = (delegate* unmanaged[Stdcall]<NNGuid, void>)native.UnloadAssetByGuid,
+            IsAssetLoaded = (delegate* unmanaged[Stdcall]<ulong, int>)native.IsAssetLoaded,
+            IsAssetLoading = (delegate* unmanaged[Stdcall]<ulong, int>)native.IsAssetLoading,
+            GetAssetByGuid = (delegate* unmanaged[Stdcall]<NNGuid, ulong>)native.GetAssetByGuid,
+            GetGuidByAsset = (delegate* unmanaged[Stdcall]<ulong, NNGuid>)native.GetGuidByAsset,
+            AddRef = (delegate* unmanaged[Stdcall]<ulong, void>)native.AddRef,
+            ReleaseRef = (delegate* unmanaged[Stdcall]<ulong, void>)native.ReleaseRef,
+            GetRefCount = (delegate* unmanaged[Stdcall]<ulong, uint>)native.GetRefCount,
+            GetAssetData = (delegate* unmanaged[Stdcall]<ulong, void*>)native.GetAssetData,
+            GetAssetDataSize = (delegate* unmanaged[Stdcall]<ulong, ulong>)native.GetAssetDataSize,
+            GetBlobCount = (delegate* unmanaged[Stdcall]<ulong, uint>)native.GetBlobCount,
+            GetBlobData = (delegate* unmanaged[Stdcall]<ulong, uint, void*>)native.GetBlobData,
+            GetBlobSize = (delegate* unmanaged[Stdcall]<ulong, uint, ulong>)native.GetBlobSize,
+            MountPackage = (delegate* unmanaged[Stdcall]<byte*, int>)native.MountPackage,
+            UnmountPackage = (delegate* unmanaged[Stdcall]<byte*, void>)native.UnmountPackage,
+            IsAssetInPackage = (delegate* unmanaged[Stdcall]<NNGuid, int>)native.IsAssetInPackage,
+            MarkForReload = (delegate* unmanaged[Stdcall]<NNGuid, void>)native.MarkForReload,
+            ReloadMarkedAssets = (delegate* unmanaged[Stdcall]<void>)native.ReloadMarkedAssets,
+            GetLoadedAssetCount = (delegate* unmanaged[Stdcall]<ulong>)native.GetLoadedAssetCount,
+            GetTotalMemoryUsage = (delegate* unmanaged[Stdcall]<ulong>)native.GetTotalMemoryUsage,
+            InitializeAssetManager = native.initializeAssetManager,
+        };
+
+        Console.WriteLine("[NativeApiProvider] AssetManager API 已接線");
+    }
+
+    /// <summary>
+    /// 初始化 Native AssetManager（設定項目根路徑）。
+    /// </summary>
+    /// <param name="projectRoot">項目根目錄絕對路徑（Library 的父目錄）。</param>
+    /// <returns>是否成功。</returns>
+    public static bool InitializeAssetManager(string projectRoot)
+    {
+        var api = AssetManagerApi;
+        if (api.InitializeAssetManager == null)
+        {
+            Console.WriteLine("[NativeApiProvider] InitializeAssetManager 函數指針為 null");
+            return false;
+        }
+
+        var utf8 = System.Text.Encoding.UTF8.GetBytes(projectRoot);
+        fixed (byte* p = utf8)
+        {
+            var result = api.InitializeAssetManager(p);
+            if (result != 0)
+                Console.WriteLine($"[NativeApiProvider] AssetManager 初始化成功: {projectRoot}");
+            else
+                Console.WriteLine($"[NativeApiProvider] AssetManager 初始化失敗: {projectRoot}");
+            return result != 0;
+        }
+    }
 }
 
 /// <summary>
@@ -228,6 +299,9 @@ public sealed unsafe class AssetManagerApiTable
     /* ---------- 統計 ---------- */
     public delegate* unmanaged[Stdcall]<ulong> GetLoadedAssetCount { get; init; }
     public delegate* unmanaged[Stdcall]<ulong> GetTotalMemoryUsage { get; init; }
+
+    /* ---------- 初始化 ---------- */
+    public delegate* unmanaged[Stdcall]<byte*, int> InitializeAssetManager { get; init; }
 }
 
 /// <summary>

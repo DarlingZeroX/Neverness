@@ -48,6 +48,8 @@ internal static class AssetsModuleImp
 
         // 2. 初始化 Asset Open Pipeline（在面板创建前注册服务）
         EditorCoreModule.Context.RegisterService(sceneManager);
+        var assetEditorManager = new AssetEditorManager();
+        EditorCoreModule.Context.RegisterService(assetEditorManager);
         var openerRegistry = new AssetOpenerRegistry();
         openerRegistry.Discover(EditorCoreModule.Context);
         var openService = new AssetOpenService(openerRegistry);
@@ -55,6 +57,9 @@ internal static class AssetsModuleImp
 
         // 3. 添加 ContentBrowser 面板到主窗口（此时 AssetOpenService 已可用）
         PanelManager.Instance.AddChildPanel("ContentBrowser", new ContentBrowserPanel());
+
+        // 3.1 Asset Debug 面板（开发阶段调试用）
+        PanelManager.Instance.AddChildPanel("AssetDebug", new AssetDebugPanel());
 
         // 4. 注册 ContentBrowser 上下文菜单贡献者
         EditorMenuRegistry.RegisterContextMenuContributor(new ContentBrowserContextMenuContributor());
@@ -86,6 +91,14 @@ internal static class AssetsModuleImp
             if (libraryPath != null)
             {
                 ImportPipeline.Initialize(new NPath(libraryPath));
+
+                // 接线 Native AssetManager API 函数指针
+                NativeApiProvider.WireFromEngineCache();
+
+                // 初始化 Native AssetManager（projectRoot = Library 的父目录）
+                var projectRoot = System.IO.Path.GetDirectoryName(libraryPath);
+                if (projectRoot != null)
+                    NativeApiProvider.InitializeAssetManager(projectRoot);
             }
 
             s_hotReloadCoordinator = new HotReloadCoordinator(new NPath(path));
@@ -112,5 +125,7 @@ internal static class AssetsModuleImp
         s_hotReloadCoordinator?.Dispose();
         s_hotReloadCoordinator = null;
         EditorAssetDatabase.SaveIfDirty();
+        if (EditorCoreModule.Context.TryGetService<AssetEditorManager>(out var mgr))
+            mgr.Clear();
     }
 }

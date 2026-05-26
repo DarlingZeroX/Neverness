@@ -1,8 +1,7 @@
 #include "NNPackManager.h"
 
 #include <cstring>
-#include <filesystem>
-#include <fstream>
+#include <NNRuntimeVFS/Include/VFSService.h>
 
 namespace NN::Runtime::Asset
 {
@@ -26,24 +25,22 @@ bool NNPackManager::MountPackage(const std::string& packPath)
             return true;
     }
 
-    /* 读取整个包文件 */
-    std::ifstream file(packPath, std::ios::binary | std::ios::ate);
-    if (!file.is_open())
+    /* 通过 VFS 读取整个包文件 */
+    namespace VFS = NN::Runtime::VFS;
+    auto file = VFS::VFSService::GetInstance()->OpenFile(
+        VFS::FileInfo(packPath), VFS::IFile::FileMode::Read);
+    if (!file || !file->IsOpened())
         return false;
 
-    const auto fileSize = static_cast<std::size_t>(file.tellg());
-    file.seekg(0);
-
+    const auto fileSize = static_cast<std::size_t>(file->Size());
     if (fileSize < NN_PACK_HEADER_SIZE)
         return false;
 
     auto mount = std::make_unique<NNPackMount>();
     mount->path = packPath;
     mount->fileData.resize(fileSize);
-    file.read(reinterpret_cast<char*>(mount->fileData.data()),
-              static_cast<std::streamsize>(fileSize));
-    if (!file)
-        return false;
+    file->Read(mount->fileData.data(), fileSize);
+    file->Close();
 
     /* 解析 Header */
     std::memcpy(&mount->header, mount->fileData.data(), sizeof(NNPackHeader));

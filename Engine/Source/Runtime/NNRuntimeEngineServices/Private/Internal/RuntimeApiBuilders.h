@@ -15,6 +15,7 @@
 #include "NNNativeEngineAPI/Include/ObjectAPI.h"
 #include "NNNativeEngineAPI/Include/SceneAPI.h"
 #include "NNNativeEngineAPI/Include/TimingAPI.h"
+#include "NNNativeEngineAPI/Include/RenderAssetAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,6 +31,7 @@ void NNBuildAssetRegistryRuntimeApi(NNAssetRegistryAPI* api);
 void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api);
 void NNBuildAssetCookerRuntimeApi(NNAssetCookerAPI* api);
 void NNBuildEntityRuntimeApi(NNEntityAPI* api);
+void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api);
 
 #ifdef __cplusplus
 } /* extern "C" */

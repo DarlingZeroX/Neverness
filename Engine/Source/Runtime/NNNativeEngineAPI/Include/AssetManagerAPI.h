@@ -135,6 +135,11 @@ typedef struct NNAssetManagerAPI
 	/** @brief 取得資產系統總記憶體使用量（位元組）。 */
 	std::uint64_t(NN_ENGINE_ABI_STDCALL *getTotalMemoryUsage)(void);
 
+	/* ---------- 初始化 ---------- */
+
+	/** @brief 初始化 AssetManager（設定專案根路徑，供 ResolveAssetPath 使用）。成功回傳 1。 */
+	int(NN_ENGINE_ABI_STDCALL *initializeAssetManager)(const char* projectRootUtf8);
+
 } NNAssetManagerAPI;
 
 #ifdef __cplusplus
