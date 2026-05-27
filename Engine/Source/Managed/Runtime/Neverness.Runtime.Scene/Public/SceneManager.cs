@@ -158,6 +158,27 @@ public sealed class SceneManager
         _activeWorld?.Tick(deltaTime);
     }
 
+    /// <summary>保存激活场景到其资产路径。无路径或无激活场景时返回 Invalid。</summary>
+    public NNSceneResult SaveActiveScene()
+    {
+        if (_activeWorld == null)
+            return NNSceneResult.Invalid;
+        if (string.IsNullOrEmpty(_activeWorld.AssetPath))
+            return NNSceneResult.Invalid;
+        return _activeWorld.Save(_activeWorld.AssetPath);
+    }
+
+    /// <summary>保存激活场景到指定路径，并更新 AssetPath。</summary>
+    public NNSceneResult SaveActiveSceneAs(string vfsPath)
+    {
+        if (_activeWorld == null)
+            return NNSceneResult.Invalid;
+        var result = _activeWorld.Save(vfsPath);
+        if (result == NNSceneResult.Ok)
+            _activeWorld.AssetPath = vfsPath;
+        return result;
+    }
+
     /// <summary>在激活场景中创建实体（兼容旧 API，委托激活世界）。</summary>
     public SceneEntity? CreateEntity(string? displayName = null)
     {

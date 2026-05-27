@@ -52,8 +52,10 @@ public:
 
     /// 从已加载的 .nnasset 资源句柄创建 GPU Texture
     /// 读取 blob[0]（DATA）反序列化为 NNTextureSourceAsset，再上传 GPU
+    /// @param assetHandle AssetManager 返回的资源句柄
+    /// @param guidLow 资产 GUID.Low（可选，用于建立 GUID→cacheKey 索引）
     /// @return 缓存 key，0 = 失败
-    uint64_t LoadTextureFromAsset(uint64_t assetHandle);
+    uint64_t LoadTextureFromAsset(uint64_t assetHandle, uint64_t guidLow = 0);
 
     /// 注册一个 TextureResource 到缓存（返回用于查询的 key）
     uint64_t CacheResource(std::unique_ptr<NNTextureResource> resource);
@@ -80,6 +82,12 @@ public:
     size_t GetCachedTextureCount() const;
     size_t GetEstimatedGPUMemory() const;
 
+    /// 通过 GUID.Low 查询已缓存的 cache key（O(1)），0 = 未找到
+    uint64_t GetCacheKeyByGuidLow(uint64_t guidLow) const;
+
+    /// 通过 cache key 获取 GL texture ID（GLuint 零扩展为 uint64_t），0 = 未找到
+    uint64_t GetGLTextureId(uint64_t cacheKey) const;
+
     bool IsInitialized() const { return m_Initialized; }
 
 private:
@@ -90,6 +98,7 @@ private:
 
     mutable std::mutex m_Mutex;
     std::unordered_map<uint64_t, std::unique_ptr<RenderAssetCacheEntry>> m_EntryCache;
+    std::unordered_map<uint64_t, uint64_t> m_GuidToCacheKeyMap;  // GUID.Low → cache key
     uint64_t m_CurrentFrame = 0;
     uint64_t m_NextKey = 1;  // 自增 key 分配器
     bool m_Initialized = false;

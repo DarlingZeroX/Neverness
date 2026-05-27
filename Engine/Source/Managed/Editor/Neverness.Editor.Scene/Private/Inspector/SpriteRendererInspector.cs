@@ -1,6 +1,7 @@
 using System.Numerics;
 using Hexa.NET.ImGui;
 using Neverness.Runtime.Engine;
+using Neverness.Runtime.Assets;
 
 namespace Neverness.Editor.Scene.Private.Inspector;
 
@@ -20,28 +21,87 @@ public sealed class SpriteRendererInspector
     {
         bool modified = false;
 
-        // ── Texture Asset ──
+        // ── Texture Asset（Drop Zone）──
         ImGui.Text("Texture");
         ImGui.SameLine(100f);
+
+        float dropWidth = Math.Max(ImGui.GetContentRegionAvail().X, 128f);
+        float dropHeight = 128f;
+        ImGui.InvisibleButton("##TextureDropZone", new Vector2(dropWidth, dropHeight));
+        var dropMin = ImGui.GetItemRectMin();
+        ImDrawListPtr drawList = ImGui.GetWindowDrawList();
+
         ulong textureHash = data.TextureAsset;
+        ulong imTexHandle = 0;
+
         if (textureHash != 0)
         {
-            // 获取 GPU 纹理的 ImGui Handle 并显示预览缩略图
-            ulong imTexHandle = TextureInterop.GetImGuiTextureHandle(textureHash);
+            // textureHash = GUID.Low，需要解析为 GPU texture
+            var texGuid = new GUID(0, textureHash);
+            var texHandle = AssetHandleExtensions.LoadSync(texGuid, 1);
+            ulong cacheKey = 0;
+            if (!texHandle.IsZero)
+                cacheKey = TextureInterop.LoadTextureFromAsset(texHandle.Value, textureHash);
+            if (cacheKey != 0)
+                imTexHandle = TextureInterop.GetImGuiTextureHandle(cacheKey);
             if (imTexHandle != 0)
             {
-                float previewSize = Math.Min(ImGui.GetContentRegionAvail().X, 128f);
-                unsafe { ImGui.Image(new ImTextureRef(null, imTexHandle), new Vector2(previewSize, previewSize)); }
+                float previewSize = Math.Min(dropWidth, dropHeight);
+                unsafe
+                {
+                    drawList.AddImage(
+                        new ImTextureRef(null, imTexHandle),
+                        dropMin,
+                        dropMin + new Vector2(previewSize, previewSize));
+                }
             }
             else
             {
-                ImGui.Text($"0x{textureHash:X16} (未加载)");
+                drawList.AddText(dropMin, ImGui.GetColorU32(ImGuiCol.Text),
+                    $"0x{textureHash:X16} (未加载)");
             }
         }
         else
         {
-            ImGui.Text("None");
+            drawList.AddText(dropMin, ImGui.GetColorU32(ImGuiCol.TextDisabled),
+                "None (drop texture here)");
         }
+
+        // ── Drop Target：接收纹理资产拖拽 ──
+        if (ImGui.BeginDragDropTarget())
+        {
+            var payload = ImGui.AcceptDragDropPayload("TEXTURE_ASSET");
+            if (!payload.IsNull)
+            {
+                unsafe
+                {
+                    ulong* ptr = (ulong*)payload.Data;
+                    var droppedGuid = new GUID(ptr[0], ptr[1]);
+                    if (!droppedGuid.IsZero)
+                    {
+                        // 存储 GUID.Low（持久化标识），Renderer 在 Collect 时懒解析为 GL ID
+                        data.TextureAsset = droppedGuid.Low;
+                        modified = true;
+                        Console.WriteLine($"[Inspector] Drop: GUID=({droppedGuid.High},{droppedGuid.Low}) → TextureAsset={data.TextureAsset}");
+                    }
+                }
+            }
+            ImGui.EndDragDropTarget();
+        }
+
+        // ── 右键清除纹理 ──
+        if (ImGui.BeginPopupContextItem("##TextureCtx"))
+        {
+            if (data.TextureAsset != 0 && ImGui.MenuItem("Clear Texture"))
+            {
+                data.TextureAsset = 0;
+                modified = true;
+            }
+            ImGui.EndPopup();
+        }
+
+        ImGui.Text($"textureHash: 0x{textureHash:X16}");
+        ImGui.Text($"imTexHandle: {imTexHandle}");
 
         // ── Material Asset ──
         ImGui.Text("Material");

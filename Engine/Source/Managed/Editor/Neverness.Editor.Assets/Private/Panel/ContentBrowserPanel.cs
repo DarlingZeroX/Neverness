@@ -110,6 +110,8 @@ public class ContentBrowserPanel : IEditorPanel
 
     private void DrawContentBrowser()
     {
+        ImGui.ShowDemoWindow();
+
         _contentBrowser.ClearRefreshedFlag();
         // 使用 using 语句替代 C++ 的 Scoped 作用域管理
         using (new ImGuiEx.StyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0)))
@@ -176,6 +178,26 @@ public class ContentBrowserPanel : IEditorPanel
                 DrawItemFunction(ref tempItem, false, item.AssetType);
                 if (_contentBrowser.IsRefreshed()) break;
 
+                // ── 纹理资产拖拽源 ──
+                if (item is ContentFile file && file.AssetType == "TextureImporter")
+                {
+                    if (EditorAssetDatabase.TryGetGuid(file.Path, out var guid) && !guid.IsZero)
+                    {
+                        if (ImGui.BeginDragDropSource())
+                        {
+                            unsafe
+                            {
+                                ulong* payload = stackalloc ulong[2];
+                                payload[0] = guid.High;
+                                payload[1] = guid.Low;
+                                ImGui.SetDragDropPayload("TEXTURE_ASSET", payload, (nuint)(sizeof(ulong) * 2));
+                            }
+                            ImGui.Text(file.Name);
+                            ImGui.EndDragDropSource();
+                        }
+                    }
+                }
+
                 ImGui.PushID(item.GetHashCode());
                 if (ItemFunction(ref tempItem, false)) { ImGui.PopID(); break; }
                 ImGui.PopID();
@@ -213,11 +235,8 @@ public class ContentBrowserPanel : IEditorPanel
                 {
                     if (_openService != null)
                     {
-                        NVirtualPath? resourcePath = ProjectPaths.GetResourcePath(new NPath(item.Path.FullPath));
-                        if (resourcePath != null)
-                        {
-                            _ = _openService.OpenAsync((NVirtualPath)resourcePath);
-                        }
+                        NVirtualPath resourcePath = item.Path;
+                        _ = _openService.OpenAsync((NVirtualPath)resourcePath);
                     }
                        // _ = _openService.OpenAsync();
                 }

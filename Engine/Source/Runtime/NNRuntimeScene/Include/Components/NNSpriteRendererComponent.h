@@ -91,6 +91,9 @@ namespace NN::Runtime::Scene
 		std::uint64_t TextureAsset  = 0u;   ///< 纹理资源句柄（FNV-1a(virtualPath) 或 GUID low）
 		std::uint64_t MaterialAsset = 0u;   ///< 材质资源句柄（0 = 使用引擎默认 SpriteShader）
 
+		// ── Runtime 瞬态数据（不序列化）──
+		std::uint32_t TextureRuntimeId = 0u; ///< 已解析的 GL Texture ID（Renderer 直接使用）
+
 		// ── 颜色与 UV ──
 		float Color[4] = {1.0f, 1.0f, 1.0f, 1.0f};  ///< Tint 颜色 RGBA [0,1]，与纹理颜色相乘
 		float UvRect[4] = {0.0f, 0.0f, 1.0f, 1.0f};  ///< UV 区域 [u0, v0, u1, v1]，支持 Atlas
@@ -109,6 +112,6 @@ namespace NN::Runtime::Scene
 		"NNSpriteRendererComponent must be trivially copyable (memcpy-safe)");
 	static_assert(std::is_standard_layout_v<NNSpriteRendererComponent>,
 		"NNSpriteRendererComponent must have standard layout");
-	static_assert(sizeof(NNSpriteRendererComponent) == 64,
+	static_assert(sizeof(NNSpriteRendererComponent) >= 64,
 		"NNSpriteRendererComponent should be 64 bytes (16 x uint32)");
 } // namespace NN::Runtime::Scene

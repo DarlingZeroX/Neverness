@@ -33,7 +33,9 @@ public static unsafe class TextureInterop
 	{
 		if (!IsReady || textureKey == 0)
 			return 0;
-		return Api.GetImGuiTextureHandle(textureKey);
+		ulong handle = Api.GetImGuiTextureHandle(textureKey);
+		//Console.WriteLine($"[TextureInterop] GetImGuiTextureHandle key={textureKey} → handle=0x{handle:X} ({handle})");
+		return handle;
 	}
 
 	/// <summary>
@@ -139,11 +141,12 @@ public static unsafe class TextureInterop
 	/// 读取 blob[0] 反序列化为纹理源资产，再上传 GPU。
 	/// </summary>
 	/// <param name="assetHandle">AssetManager 返回的资源句柄</param>
+	/// <param name="guidLow">资产 GUID.Low（可选，用于建立 GUID→cacheKey 索引）</param>
 	/// <returns>缓存 key，0 = 失败</returns>
-	public static ulong LoadTextureFromAsset(ulong assetHandle)
+	public static ulong LoadTextureFromAsset(ulong assetHandle, ulong guidLow = 0)
 	{
 		if (!IsReady || assetHandle == 0 || Api.LoadTextureFromAsset == null)
 			return 0;
-		return Api.LoadTextureFromAsset(assetHandle);
+		return Api.LoadTextureFromAsset(assetHandle, guidLow);
 	}
 }

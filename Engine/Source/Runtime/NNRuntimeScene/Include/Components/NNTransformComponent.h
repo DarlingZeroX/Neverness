@@ -28,8 +28,8 @@ namespace NN::Runtime::Scene
 
 		NNTransformComponent()
 			:Position(0.f, 0.f, 0.f),
-			Rotation(0.f, 0.f, 0.f,0.f),
-			Scale(0.f, 0.f, 0.f),
+			Rotation(0.f, 0.f, 0.f, 1.f),
+			Scale(1.f, 1.f, 1.f),
 			WorldMatrix(1.f)
 		{
 		}

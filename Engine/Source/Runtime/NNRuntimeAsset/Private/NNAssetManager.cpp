@@ -185,6 +185,17 @@ NNAssetHandleT<void> NNAssetManager::LoadAssetSync(const NNGuid& guid, std::uint
 	return LoadAssetInternal(guid, typeId);
 }
 
+NNAssetHandleT<void> NNAssetManager::LoadAssetByGuidLow(std::uint64_t guidLow, std::uint64_t typeId)
+{
+	if (guidLow == 0)
+		return NNAssetHandleT<void>();
+
+	NNGuid guid{};
+	guid.low = guidLow;
+	std::lock_guard<std::mutex> lock(mutex_);
+	return LoadAssetInternal(guid, typeId);
+}
+
 NNAssetHandleT<void> NNAssetManager::LoadAssetInternal(const NNGuid& guid, std::uint64_t typeId)
 {
 	if (GuidIsZero(guid))

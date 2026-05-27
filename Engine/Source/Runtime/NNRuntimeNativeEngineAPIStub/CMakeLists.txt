@@ -40,6 +40,7 @@ target_sources(NevernessRuntime-NativeEngineAPIStub
 		Private/Async/AsyncWaitApiStubs.cpp
 		Private/Event/EventApiStubs.cpp
 		Private/RenderAsset/RenderAssetApiStubs.cpp
+		Private/ViewportRender/ViewportRenderApiStubs.cpp
 )
 
 target_include_directories(NevernessRuntime-NativeEngineAPIStub

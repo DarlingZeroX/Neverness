@@ -52,6 +52,20 @@ public static class RuntimeInitializer
 		// 首包无默认子系统；产品层通过 Bootstrap 扩展点注册。
 	}
 
+	/// <summary>
+	/// 注册子系统到运行时调度器；若已初始化则立即调用 Initialize。
+	/// 用于在 <see cref="Initialize"/> 完成后补充注册子系统（如 Editor 场景子系统）。
+	/// </summary>
+	public static void RegisterSubsystem(IManagedRuntimeSubsystem subsystem)
+	{
+		ArgumentNullException.ThrowIfNull(subsystem);
+		Loop?.Register(subsystem);
+		if (s_initialized)
+		{
+			subsystem.Initialize();
+		}
+	}
+
 	/// <summary>逆序关闭子系统并清除初始化标记（进程退出或域卸载时调用）。</summary>
 	public static void Shutdown()
 	{

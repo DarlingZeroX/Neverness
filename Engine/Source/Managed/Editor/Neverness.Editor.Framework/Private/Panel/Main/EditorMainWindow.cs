@@ -83,6 +83,9 @@ public sealed class EditorMainWindow : IEditorPanel
                 ref m_DockSpaceWindowClass);
 
             DrawPanels();
+
+            // 全局快捷键
+            HandleKeyboardShortcuts();
         }
 
         ImGui.End();
@@ -161,8 +164,7 @@ public sealed class EditorMainWindow : IEditorPanel
 
         if (ImGui.Button("Save Scene"))
         {
-            // TODO:
-            // EditorScene.SaveCurrentScene();
+            EditorMenuRegistry.ExecuteCommand("file.save");
         }
 
         ImGui.SameLine();
@@ -204,6 +206,19 @@ public sealed class EditorMainWindow : IEditorPanel
 
         ImGui.PopStyleColor(4);
         ImGui.PopStyleVar();
+    }
+
+    // =========================================
+    // Keyboard Shortcuts
+    // =========================================
+
+    private static void HandleKeyboardShortcuts()
+    {
+        // Ctrl+S 保存场景
+        if (ImGui.IsKeyDown(ImGuiKey.ModCtrl) && ImGui.IsKeyPressed(ImGuiKey.S))
+        {
+            EditorMenuRegistry.ExecuteCommand("file.save");
+        }
     }
 
     // =========================================

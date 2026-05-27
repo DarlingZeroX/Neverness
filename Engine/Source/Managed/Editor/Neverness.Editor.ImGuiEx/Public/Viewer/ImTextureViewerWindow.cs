@@ -119,6 +119,10 @@ public sealed class ImTextureViewerWindow : ImWindow
 
     // ── 内容渲染 ──
 
+    // 调试开关：为 true 时输出每帧纹理句柄值
+    private static bool s_DebugLog = true;
+    private static int s_DebugFrameCount;
+
     protected override void OnRender()
     {
         if (m_TextureHandle == 0)
@@ -133,6 +137,13 @@ public sealed class ImTextureViewerWindow : ImWindow
         var available = ImGui.GetContentRegionAvail();
         if (available.X <= 0 || available.Y <= 0) return;
 
+        // ── 调试日志：前 5 帧输出纹理句柄值 ──
+        if (s_DebugLog && s_DebugFrameCount < 5)
+        {
+            s_DebugFrameCount++;
+            Console.WriteLine($"[ImTextureViewerWindow] OnRender frame={s_DebugFrameCount} handle=0x{m_TextureHandle:X} size={m_TextureSize}");
+        }
+
         var drawList = ImGui.GetWindowDrawList();
         var cursor = ImGui.GetCursorScreenPos();
 
@@ -146,13 +157,18 @@ public sealed class ImTextureViewerWindow : ImWindow
         Vector2 displaySize = CalculateDisplaySize(available);
         var displayPos = cursor + (available - displaySize) * 0.5f + m_PanOffset;
 
-        // 绘制纹理
+        // ── 使用 ImGui.Image 绘制纹理 ──
+        // ImGui.Image 是高层 widget，内部正确处理 ImTextureRef 和 draw list 管理
+        ImGui.SetCursorScreenPos(displayPos);
         unsafe
         {
-            drawList.AddImage(
-                new ImTextureRef(null, m_TextureHandle),
-                displayPos,
-                displayPos + displaySize);
+            ImGui.Image(new ImTextureRef(null, m_TextureHandle), displaySize);
+        }
+
+        // ── 调试信息叠加：显示句柄值 ──
+        if (s_DebugLog)
+        {
+            drawList.AddText(cursor, 0xFFFFFFFF, $"TexHandle: 0x{m_TextureHandle:X}");
         }
 
         // 鼠标交互

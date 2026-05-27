@@ -11,6 +11,7 @@
 
 #include "OpenGL/Texture2D.h"
 #include "OpenGL/ThrowMarco.h"
+#include <NNCore/Interface/HLog.h>
 
 namespace NN::Runtime::OpenGL {
 
@@ -85,31 +86,45 @@ namespace NN::Runtime::OpenGL {
 	bool Texture2D::CreateFromMemoryImp(const VGFX::TextureDesc& desc)
 	{
 		m_Desc = desc;
-	
+
+		// 参数校验
+		if (!desc.Data || desc.Width <= 0 || desc.Height <= 0)
+			return false;
+
 		GenTex();
+		H_LOG_INFO("[Texture2D] CreateFromMemoryImp: glGenTextures → m_RendererID=%u (0x%x) this=%p",
+		           m_RendererID, m_RendererID, this);
 		BindTex();
-	
+
 		// 设置纹理参数
-	
 		TexWrapping(GL_CLAMP_TO_EDGE);
 		TexFlitering(GL_LINEAR);
-	
+
 		// 上传纹理数据
 		GL_THROW_INFO(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
 		GL_THROW_INFO(glTexImage2D(GL_TEXTURE_2D, 0, desc.InternalFormat, desc.Width, desc.Height, 0, desc.Format, desc.Type, desc.Data));
-	
+
+		// GL 错误检查（Release 模式下 GL_THROW_INFO 不检查）
+		GLenum err = glGetError();
+		if (err != GL_NO_ERROR)
+		{
+			H_LOG_ERROR("[Texture2D] glTexImage2D GL error: 0x%x", err);
+			UnBindTex();
+			return false;
+		}
+
 		GenMipmap();
-	
 		UnBindTex();
-	
-		return false;
+
+		return true;
 	}
 
 	NN::Ref<Texture2D> Texture2D::CreateFromMemory(const VGFX::TextureDesc& desc)
 	{
 		auto Tex = std::make_shared<Texture2D>();
 
-		Tex->CreateFromMemoryImp(desc);
+		if (!Tex->CreateFromMemoryImp(desc))
+			return nullptr;
 
 		return Tex;
 	}
@@ -130,7 +145,10 @@ namespace NN::Runtime::OpenGL {
 
 	void* Texture2D::GetShaderResourceView()
 	{
-		return reinterpret_cast<void*>(GetRendererID());;
+		auto* srv = reinterpret_cast<void*>(GetRendererID());
+		H_LOG_INFO("[Texture2D] GetShaderResourceView: m_RendererID=%u (0x%x) → SRV=%p this=%p",
+		           GetRendererID(), GetRendererID(), srv, this);
+		return srv;
 	}
 
 	bool Texture2D::ReadPixels(VGFX::TexturePixels& outPixels)

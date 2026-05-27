@@ -24,6 +24,7 @@
 #include "WindowAPI.h"
 #include "EventAPI.h"
 #include "RenderAssetAPI.h"
+#include "ViewportRenderAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,6 +49,7 @@ void NNBuildWindowApiStubs(NNWindowAPI* api);
 void NNBuildVfsApiStubs(NNVfsAPI* api);
 void NNBuildEventApiStubs(NNEventAPI* api);
 void NNBuildRenderAssetApiStubs(NNRenderAssetAPI* api);
+void NNBuildViewportRenderApiStubs(NNViewportRenderAPI* api);
 
 #ifdef __cplusplus
 } /* extern "C" */

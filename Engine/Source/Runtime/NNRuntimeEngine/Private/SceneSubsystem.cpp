@@ -31,6 +31,11 @@ NNRuntimeScene* SceneSubsystem::FindScene(const NNSceneHandle handle) noexcept
 	return (it != scenes_.end()) ? it->second.get() : nullptr;
 }
 
+NNRuntimeScene* SceneSubsystem::GetRuntimeScene(const NNSceneHandle handle) noexcept
+{
+	return FindScene(handle);
+}
+
 // ── 场景管理 ──
 
 NNSceneResult SceneSubsystem::CreateScene(NNSceneHandle* outScene) noexcept

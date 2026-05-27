@@ -1,5 +1,7 @@
 using Neverness.Editor.Framework.Private;
+using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Scene;
+using Neverness.Runtime.Engine;
 using Neverness.Editor.Scene.Private.Panel;
 
 namespace Neverness.Editor.Scene.Private;
@@ -13,6 +15,7 @@ internal static class SceneModuleImp
     private static SceneBrowser? s_sceneBrowser;
     private static DetailInspector? s_detailInspector;
     private static SceneEditorBridge? s_bridge;
+    private static EditorViewport? s_editorViewport;
 
     /// <summary>获取 SceneBrowser 的层级缓存（Debug / 诊断用）。</summary>
     public static Cache.SceneHierarchyCache? HierarchyCache => s_sceneBrowser?.Cache;
@@ -28,13 +31,45 @@ internal static class SceneModuleImp
         s_detailInspector = new DetailInspector(sceneManager);
         PanelManager.Instance.AddChildPanel("DetailInspector", s_detailInspector);
 
-        PanelManager.Instance.AddChildPanel("EditorViewport", new EditorViewport());
+        s_editorViewport = new EditorViewport();
+        PanelManager.Instance.AddChildPanel("EditorViewport", s_editorViewport);
 
         // 创建场景编辑器桥接（事件驱动）
         s_bridge = new SceneEditorBridge(sceneManager);
 
         // 连接事件总线和缓存引用
         ConnectPanels();
+
+        // 注册 Save Scene 命令
+        var saveCommand = new EditorCommand
+        {
+            Id = "file.save",
+            DisplayName = "Save Scene",
+            Execute = _ =>
+            {
+                var result = sceneManager.SaveActiveScene();
+                if (result == NNSceneResult.Ok)
+                {
+                    Console.WriteLine("[Scene] 场景已保存");
+                }
+                else
+                {
+                    Console.WriteLine($"[Scene] 保存失败: {result}");
+                    // TODO: 弹出 Save As 对话框
+                }
+            },
+            CanExecute = () => sceneManager.HasActiveScene,
+        };
+
+        EditorMenuRegistry.RegisterCommand(saveCommand);
+
+        // 覆盖菜单项，绑定命令（BuiltinMenuContributor 注册的无 Command）
+        EditorMenuRegistry.Register(new EditorMenuItem(
+            "File/Save Scene",
+            Command: saveCommand,
+            Icon: FontAwesome5Pro.Save,
+            Shortcut: "Ctrl+S",
+            SortOrder: 300));
     }
 
     /// <summary>设置场景浏览器关联的场景句柄。</summary>
@@ -44,6 +79,8 @@ internal static class SceneModuleImp
             s_sceneBrowser.SceneHandle = sceneHandle;
         if (s_detailInspector != null)
             s_detailInspector.SceneHandle = sceneHandle;
+        if(s_editorViewport != null)
+            s_editorViewport.SetScene(sceneHandle);
     }
 
     /// <summary>连接面板之间的引用（事件总线、层级缓存）。</summary>

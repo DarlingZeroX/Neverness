@@ -86,7 +86,7 @@ std::uint64_t NN_ENGINE_ABI_STDCALL stub_renderAsset_getTotalGPUMemory(void)
     return 0;
 }
 
-std::uint64_t NN_ENGINE_ABI_STDCALL stub_renderAsset_loadTextureFromAsset(std::uint64_t assetHandle)
+std::uint64_t NN_ENGINE_ABI_STDCALL stub_renderAsset_loadTextureFromAsset(std::uint64_t assetHandle , std::uint64_t guidLow)
 {
     NN::StubRuntime::BumpInvokeCount();
     (void)assetHandle;

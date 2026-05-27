@@ -84,9 +84,9 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_renderAsset_getTotalGPUMemory(void)
 	return static_cast<std::uint64_t>(NNRenderAssetManager::Get().GetEstimatedGPUMemory());
 }
 
-std::uint64_t NN_ENGINE_ABI_STDCALL rt_renderAsset_loadTextureFromAsset(std::uint64_t assetHandle)
+std::uint64_t NN_ENGINE_ABI_STDCALL rt_renderAsset_loadTextureFromAsset(std::uint64_t assetHandle, std::uint64_t guidLow)
 {
-	return NNRenderAssetManager::Get().LoadTextureFromAsset(assetHandle);
+	return NNRenderAssetManager::Get().LoadTextureFromAsset(assetHandle, guidLow);
 }
 
 } // namespace

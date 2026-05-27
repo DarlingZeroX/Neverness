@@ -28,7 +28,19 @@ public unsafe struct NNRenderAssetApi
 	public delegate* unmanaged<ulong, int> IsTextureResident;
 	public delegate* unmanaged<ulong> GetCachedTextureCount;
 	public delegate* unmanaged<ulong> GetTotalGPUMemory;
-	public delegate* unmanaged<ulong, ulong> LoadTextureFromAsset;
+	public delegate* unmanaged<ulong, ulong, ulong> LoadTextureFromAsset;
+}
+
+/// <summary>
+/// 與 Native <c>NNViewportRenderAPI</c> 逐欄位對齊（<c>ViewportRenderAPI.h</c>）。
+/// v21 新增：场景渲染到离屏 Framebuffer，返回 OpenGL Texture ID。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct NNViewportRenderApi
+{
+	public delegate* unmanaged<ulong, uint, uint, ulong> RenderSceneToTexture;
+	public delegate* unmanaged<ulong> GetLastRenderedTexture;
+	public delegate* unmanaged<uint*, uint*, void> GetRenderStats;
 }
 
 /// <summary>
@@ -184,12 +196,13 @@ public struct NNSpriteRendererComponentData
 {
 	public ulong TextureAsset;          // 8B offset 0
 	public ulong MaterialAsset;         // 8B offset 8
-	public float ColorR, ColorG, ColorB, ColorA;  // 16B offset 16
-	public float UvU0, UvV0, UvU1, UvV1;          // 16B offset 32
-	public uint Layer;                  // 4B offset 48
-	public uint SortOrder;              // 4B offset 52
-	public uint BlendMode;              // 4B offset 56 (NNBlendMode)
-	public uint Flags;                  // 4B offset 60 (NNSpriteFlags)
+	public uint TextureRuntimeId;       // 4B offset 16（瞬态，不序列化）
+	public float ColorR, ColorG, ColorB, ColorA;  // 16B offset 20
+	public float UvU0, UvV0, UvU1, UvV1;          // 16B offset 36
+	public uint Layer;                  // 4B offset 52
+	public uint SortOrder;              // 4B offset 56
+	public uint BlendMode;              // 4B offset 60 (NNBlendMode)
+	public uint Flags;                  // 4B offset 64 (NNSpriteFlags)
 }
 
 
@@ -756,4 +769,6 @@ public unsafe struct NNNativeEngineApi
 	public NNEventApi Events;
 	/// <summary>對應 C 聚合體成員 <c>renderAsset</c>（型別 <c>NNRenderAssetAPI</c>）；GPU Texture 資源管理（v20）。</summary>
 	public NNRenderAssetApi RenderAsset;
+	/// <summary>對應 C 聚合體成員 <c>viewportRender</c>（型別 <c>NNViewportRenderAPI</c>）；场景渲染到离屏 FBO（v21）。</summary>
+	public NNViewportRenderApi ViewportRender;
 }

@@ -58,8 +58,8 @@ typedef struct NNRenderAssetAPI
     /** @brief 取得 GPU 紋理總記憶體使用量（位元組）。 */
     std::uint64_t(NN_ENGINE_ABI_STDCALL *getTotalGPUMemory)(void);
 
-    /** @brief 從已載入的 .nnasset 資源句柄建立 GPU Texture（讀 blob[0] 反序列化）。回傳快取 key（0 = 失敗）。 */
-    std::uint64_t(NN_ENGINE_ABI_STDCALL *loadTextureFromAsset)(std::uint64_t assetHandle);
+    /** @brief 從已載入的 .nnasset 資源句柄建立 GPU Texture（讀 blob[0] 反序列化）。回傳快取 key（0 = 失敗）。guidLow 非零時建立 GUID→cacheKey 索引。 */
+    std::uint64_t(NN_ENGINE_ABI_STDCALL *loadTextureFromAsset)(std::uint64_t assetHandle, std::uint64_t guidLow);
 
 } NNRenderAssetAPI;
 

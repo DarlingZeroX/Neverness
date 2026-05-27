@@ -1,0 +1,178 @@
+{
+    "entities": [
+        {
+            "components": {
+                "Camera": {
+                    "AspectRatio": 1.7777777910232544,
+                    "FarPlane": 1000.0,
+                    "FovY": 60.0,
+                    "NearPlane": 0.30000001192092896,
+                    "OrthoHeight": 108.0,
+                    "OrthoWidth": 192.0,
+                    "Projection": 1,
+                    "ProjectionMatrix": [
+                        [
+                            0.010416666977107525,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.018518518656492233,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            -0.0020006000995635986,
+                            0.0
+                        ],
+                        [
+                            -0.0,
+                            -0.0,
+                            -1.0006000995635986,
+                            1.0
+                        ]
+                    ],
+                    "_padding0": 0
+                },
+                "Relationship": {
+                    "ChildCount": 0,
+                    "Depth": 0,
+                    "Parent": null
+                },
+                "Tag": {
+                    "Flags": 0,
+                    "Name": ""
+                },
+                "Transform": {
+                    "Position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "WorldMatrix": [
+                        [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            1.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            1.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    ]
+                }
+            },
+            "id": "0x100000001"
+        },
+        {
+            "components": {
+                "Relationship": {
+                    "ChildCount": 0,
+                    "Depth": 0,
+                    "Parent": null
+                },
+                "SpriteRenderer": {
+                    "Blend": 1,
+                    "Color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "Flags": 1,
+                    "Layer": 0,
+                    "MaterialAsset": 0,
+                    "SortOrder": 0,
+                    "TextureAsset": 0,
+                    "UvRect": [
+                        0.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ]
+                },
+                "Tag": {
+                    "Flags": 0,
+                    "Name": ""
+                },
+                "Transform": {
+                    "Position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "WorldMatrix": [
+                        [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            1.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            1.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    ]
+                }
+            },
+            "id": "0x100000002"
+        }
+    ],
+    "format": "NNScene",
+    "version": 1
+}

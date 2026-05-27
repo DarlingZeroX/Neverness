@@ -9,6 +9,7 @@ NNRuntimeCore
 NNRuntimeEngine
 NNRuntimeEngineServices
 NNRuntimeImGui
+NNRuntimeImageCodec
 NNRuntimeLua
 NNRuntimeManaged
 NNRuntimeManagedBridge
@@ -16,6 +17,8 @@ NNRuntimeManagedHostLegacy
 NNRuntimeNativeEngineAPIStub
 NNRuntimePak
 NNRuntimeRHI
+NNRuntimeRenderAssets
+NNRuntimeRenderer2D
 NNRuntimeRmlui
 NNRuntimeScene
 NNRuntimeVFS

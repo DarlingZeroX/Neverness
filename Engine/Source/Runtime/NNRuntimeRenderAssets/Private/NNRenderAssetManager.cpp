@@ -101,12 +101,24 @@ uint64_t NNRenderAssetManager::CreateTextureFromPixels(
     return m_NextKey - 1;
 }
 
-uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle)
+uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle, uint64_t guidLow)
 {
     if (!m_Initialized || assetHandle == 0)
     {
         H_LOG_WARN("[RenderAssetManager] LoadTextureFromAsset: 未初始化或 handle=0");
         return 0;
+    }
+
+    // 如果有 guidLow，先检查是否已缓存
+    if (guidLow != 0)
+    {
+        std::lock_guard lock(m_Mutex);
+        auto it = m_GuidToCacheKeyMap.find(guidLow);
+        if (it != m_GuidToCacheKeyMap.end() && m_EntryCache.count(it->second))
+        {
+            H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: GUID.Low=%llu 已缓存 key=%llu", guidLow, it->second);
+            return it->second;
+        }
     }
 
     H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: 开始加载 handle=%llu", assetHandle);
@@ -195,6 +207,11 @@ uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle)
     uint64_t key = m_NextKey - 1;
     H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: 成功 handle=%llu → key=%llu %ux%u",
                assetHandle, key, source.GetWidth(), source.GetHeight());
+
+    // 注册 GUID → cache key 映射
+    if (guidLow != 0)
+        m_GuidToCacheKeyMap[guidLow] = key;
+
     return key;
 }
 
@@ -267,6 +284,31 @@ void NNRenderAssetManager::ReloadTexture(uint64_t key, const NNTextureSourceAsse
 uint64_t NNRenderAssetManager::GetImGuiTextureHandle(uint64_t key)
 {
     auto* res = GetTextureResource(key);
+    if (!res)
+        return 0;
+    return res->GetImGuiHandle();
+}
+
+uint64_t NNRenderAssetManager::GetCacheKeyByGuidLow(uint64_t guidLow) const
+{
+    if (guidLow == 0)
+        return 0;
+    std::lock_guard lock(m_Mutex);
+    auto it = m_GuidToCacheKeyMap.find(guidLow);
+    if (it != m_GuidToCacheKeyMap.end())
+        return it->second;
+    return 0;
+}
+
+uint64_t NNRenderAssetManager::GetGLTextureId(uint64_t cacheKey) const
+{
+    if (cacheKey == 0)
+        return 0;
+    std::lock_guard lock(m_Mutex);
+    auto it = m_EntryCache.find(cacheKey);
+    if (it == m_EntryCache.end())
+        return 0;
+    auto* res = it->second->Resource.get();
     if (!res)
         return 0;
     return res->GetImGuiHandle();

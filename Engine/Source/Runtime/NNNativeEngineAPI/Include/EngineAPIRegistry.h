@@ -30,13 +30,14 @@
 #include "VfsAPI.h"
 #include "EventAPI.h"
 #include "RenderAssetAPI.h"
+#include "ViewportRenderAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v20：新增 NNRenderAssetAPI 子表（GPU Texture 資源管理）。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 20u
+/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v21：新增 NNViewportRenderAPI 子表（视口渲染）。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 21u
 
 typedef struct NNNativeEngineAPI
 {
@@ -70,6 +71,8 @@ typedef struct NNNativeEngineAPI
 	NNEventAPI events;
 	/** @brief Render 資產 GPU 管理器（CPU Asset → GPU Resource、ImGui Handle）；見 `RenderAssetAPI.h`。 */
 	NNRenderAssetAPI renderAsset;
+	/** @brief 视口渲染 API（场景 → 离屏 Framebuffer → Texture ID）；見 `ViewportRenderAPI.h`。 */
+	NNViewportRenderAPI viewportRender;
 } NNNativeEngineAPI;
 
 #ifdef __cplusplus

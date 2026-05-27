@@ -49,7 +49,7 @@ namespace NN::Runtime::OpenGL {
 
 		/// CLAMP_TO_BORDER 环绕方式时，纹理超过边界时的颜色
 		virtual void TexBorderColor(const NN::Core::float4& color) const;
-	private:
+	protected:
 		unsigned int m_RendererID = 0;
 		unsigned int  m_Slot = 0;
 	};

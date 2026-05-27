@@ -25,6 +25,9 @@ public sealed class SceneWorld : IDisposable
     /// <summary>场景资产 GUID（可选，用于序列化和热重载）。</summary>
     public NNGuid AssetGuid { get; set; }
 
+    /// <summary>场景资产 VFS 路径（null = 未保存的新场景）。</summary>
+    public string? AssetPath { get; set; }
+
     // ── 子系统 ──
 
     /// <summary>实体注册表。</summary>
@@ -175,6 +178,7 @@ public sealed class SceneWorld : IDisposable
         }
 
         var world = new SceneWorld(handle, name);
+        world.AssetPath = vfsPath;
         return world;
     }
 
@@ -191,6 +195,7 @@ public sealed class SceneWorld : IDisposable
             Name = Name,
             NativeHandle = NativeHandle,
             AssetGuid = AssetGuid,
+            AssetPath = AssetPath,
             EntityHandles = Entities.ExportHandleValues(),
             CapturedAt = DateTimeOffset.UtcNow,
         };
@@ -206,6 +211,7 @@ public sealed class SceneWorld : IDisposable
 
         var world = new SceneWorld(snapshot.NativeHandle, snapshot.Name);
         world.AssetGuid = snapshot.AssetGuid;
+        world.AssetPath = snapshot.AssetPath;
 
         // 从快照恢复实体注册表
         world.Entities.SyncFromHandles(snapshot.EntityHandles);

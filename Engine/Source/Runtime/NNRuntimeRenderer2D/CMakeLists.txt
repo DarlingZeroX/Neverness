@@ -1,0 +1,71 @@
+# NNRuntimeRenderer2D — 最小 2D 渲染管线 MVP
+# 职责：Sprite Batch / Quad Renderer / Builtin Shader / Camera MVP / Scene Rendering / Render Target
+# 依赖：NNRuntimeScene（ECS Query）、NNRuntimeRHI（OpenGL）、NevernessCore-Core
+# 严禁：Scene/ECS 直接调用 OpenGL API（必须经过 Renderer2D → RHI 分层）
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+    add_compile_options(/utf-8)
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()
+
+add_library(NevernessRuntime-Renderer2D SHARED)
+
+target_sources(NevernessRuntime-Renderer2D
+    PRIVATE
+        # ── 公开头文件 ──
+        Include/Renderer2D/Renderer2DExport.h
+        Include/Renderer2D/SpriteDrawCommand.h
+        Include/Renderer2D/CameraData.h
+        Include/Renderer2D/BuiltinShaders.h
+        Include/Renderer2D/FramebufferObject.h
+        Include/Renderer2D/Renderer2D.h
+        Include/Renderer2D/SpriteRenderSystem.h
+        Include/Renderer2D/SceneRenderer.h
+
+        # ── 实现文件 ──
+        Source/FramebufferObject.cpp
+        Source/Renderer2D.cpp
+        Source/SpriteRenderSystem.cpp
+        Source/SceneRenderer.cpp
+)
+
+target_compile_definitions(NevernessRuntime-Renderer2D PRIVATE NN_RUNTIME_RENDERER2D_EXPORT)
+
+target_include_directories(NevernessRuntime-Renderer2D
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Include
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime
+        ${PROJECT_SOURCE_DIR}/Engine/Source/Core
+        ${CMAKE_CURRENT_SOURCE_DIR}/Include/Renderer2D
+)
+
+# 依赖 Scene（ECS Query）
+target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-Scene)
+
+# 依赖 RenderAssets + Asset（纹理缓存解析、GUID→GPU 资源映射）
+target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-RenderAssets)
+target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-Asset)
+
+# 依赖 RHI（OpenGL 后端、GLAD）
+target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-RHI)
+
+# 依赖 Core（基础数学类型）
+target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessCore-Core)
+
+# OpenGL 链接
+if (WIN32)
+    target_link_libraries(NevernessRuntime-Renderer2D PRIVATE opengl32)
+elseif (APPLE)
+    target_link_libraries(NevernessRuntime-Renderer2D PRIVATE "-framework OpenGL")
+elseif (UNIX)
+    target_link_libraries(NevernessRuntime-Renderer2D PRIVATE GL)
+endif()

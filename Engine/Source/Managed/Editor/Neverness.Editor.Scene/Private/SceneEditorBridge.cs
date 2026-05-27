@@ -1,3 +1,4 @@
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Scene.Private.Panel;
 using Neverness.Runtime.Scene;
 
@@ -31,6 +32,11 @@ internal sealed class SceneEditorBridge : IDisposable
     {
         Console.WriteLine($"[SceneEditorBridge] 场景已激活: {world.Name} (handle={world.NativeHandle})");
         SceneModuleImp.SetSceneHandle(world.NativeHandle);
+
+        // 同步 EditorState：记录当前场景路径和句柄
+        var state = EditorCoreModule.Context.State;
+        state.CurrentScenePath = world.AssetPath;
+        state.CurrentSceneHandle = world.NativeHandle;
     }
 
     private void OnSceneUnloaded(SceneWorld world)

@@ -96,6 +96,9 @@ internal static class EditorApplicationRunner
 					AssetsModule.Install(sceneManager);
 					SceneModule.Install(sceneManager);
 
+					/* 注册场景子系统到 RuntimeLoop，驱动 ECS Tick */
+					RuntimeInitializer.RegisterSubsystem(new SceneSubsystem(sceneManager));
+
 					/* 模块就绪后创建编辑器事件路由器 */
 					s_editorEventPump = new EditorEventPump(
 						nativePump,

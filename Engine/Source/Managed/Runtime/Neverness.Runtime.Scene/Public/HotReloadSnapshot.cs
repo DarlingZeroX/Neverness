@@ -20,6 +20,9 @@ public sealed class HotReloadSnapshot
     /// <summary>场景资产 GUID（如有）。</summary>
     public NNGuid AssetGuid { get; init; }
 
+    /// <summary>场景资产 VFS 路径（null = 未保存的新场景）。</summary>
+    public string? AssetPath { get; init; }
+
     /// <summary>所有存活实体的 Native 句柄值（用于重建 EntityRegistry）。</summary>
     public IReadOnlyList<ulong> EntityHandles { get; init; } = [];
 

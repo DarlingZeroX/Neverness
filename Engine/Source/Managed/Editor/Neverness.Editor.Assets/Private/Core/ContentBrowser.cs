@@ -1,8 +1,9 @@
-using System.Collections.Concurrent;
-using System.Runtime.InteropServices.JavaScript;
 using Neverness.Editor.Assets;
+using Neverness.Editor.ProjectSystem.Public;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.VFS.Public;
+using System.Collections.Concurrent;
+using System.Runtime.InteropServices.JavaScript;
 
 namespace Neverness.Editor.Assets.Private.Core;
 
@@ -105,7 +106,7 @@ public sealed class ContentBrowser
                 {
                     Name = System.IO.Path.GetFileName(entry),
                     AssetPath = new NPath(entry),
-                    Path = new NVirtualPath(GetResourcePathVFS(entry)),
+                    Path = GetResourcePathVFS(entry),
 
                     // TODO:
                     // ImGui tree flags abstraction
@@ -124,7 +125,7 @@ public sealed class ContentBrowser
                     Name = System.IO.Path.GetFileNameWithoutExtension(entry),
                     AssetPath = entryNPath,
                     Extension = System.IO.Path.GetExtension(entry),
-                    Path = new NVirtualPath(GetResourcePathVFS(entry)),
+                    Path = GetResourcePathVFS(entry),
                     AssetType = meta?.Importer
                         ?? MetaFileManager.InferImporterName(
                             System.IO.Path.GetExtension(entry)),
@@ -363,7 +364,7 @@ public sealed class ContentBrowser
 
                 AssetPath = new NPath(dir),
 
-                Path = new NVirtualPath(GetResourcePathVFS(dir)),
+                Path = GetResourcePathVFS(dir),
 
                 UIFlags = 0,
             };
@@ -440,13 +441,14 @@ public sealed class ContentBrowser
     /// <summary>
     /// absolute path -> asset:// path
     /// </summary>
-    private static string GetResourcePathVFS(string absolutePath)
+    private static NVirtualPath GetResourcePathVFS(string absolutePath)
     {
         // TODO:
         // Migrate from RuntimeCore
         // ProjectPaths + VFSHost
+        return (NVirtualPath)ProjectPaths.GetResourcePath(new NPath(absolutePath));
 
-        return absolutePath;
+        //return absolutePath;
     }
 }
 

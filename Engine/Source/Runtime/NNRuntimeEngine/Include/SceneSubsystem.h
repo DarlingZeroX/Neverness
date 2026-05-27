@@ -90,6 +90,9 @@ public:
 	/** @brief 设置 VFS API 函数指针（由 EngineServices 在构建 API 表后注入）。 */
 	void SetVfsApi(const NNVfsAPI* vfs) noexcept;
 
+	/** @brief 根据句柄获取 NNRuntimeScene 实例（ViewportRender 等子系统使用）。 */
+	NN::Runtime::Scene::NNRuntimeScene* GetRuntimeScene(NNSceneHandle handle) noexcept;
+
 private:
 	/** @brief 根据句柄查找 NNRuntimeScene 实例。 */
 	NN::Runtime::Scene::NNRuntimeScene* FindScene(NNSceneHandle handle) noexcept;

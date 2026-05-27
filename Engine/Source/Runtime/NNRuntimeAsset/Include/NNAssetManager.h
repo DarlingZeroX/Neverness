@@ -98,6 +98,9 @@ public:
 	/* === 同步載入 === */
 	NNAssetHandleT<void> LoadAssetSync(const NNGuid& guid, std::uint64_t typeId = 0);
 
+	/// 仅通过 guid.low 同步加载资产（用于 TextureAsset 仅存 guid.low 的场景）
+	NNAssetHandleT<void> LoadAssetByGuidLow(std::uint64_t guidLow, std::uint64_t typeId = 0);
+
 	/* === 異步載入 === */
 	NNAsyncWaitHandle LoadAssetAsync(
 		const NNGuid& guid,
