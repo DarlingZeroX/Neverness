@@ -248,6 +248,9 @@ NNAssetHandleT<void> NNAssetManager::LoadAssetInternal(const NNGuid& guid, std::
 		return NNAssetHandleT<void>();
 	}
 
+	H_LOG_INFO("[AssetManager] LoadAssetInternal: ReadNnAsset 成功 entry.blobs=%zu entry.data=%zu entry.payloadOffset=%llu",
+		entry->blobs.size(), entry->data.size(), (unsigned long long)entry->payloadOffset);
+
 	/* 分配 Handle */
 	const std::uint64_t rawHandle = handleTable_.Allocate(entry.get(), typeId);
 	entry->handle = rawHandle;
@@ -256,6 +259,15 @@ NNAssetHandleT<void> NNAssetManager::LoadAssetInternal(const NNGuid& guid, std::
 	/* 更新索引 */
 	guidToEntry_.Insert(guid.low, entry);
 	handleToEntry_.Insert(rawHandle, entry);
+
+	/* 验证插入后立即查找 */
+	{
+		auto* verify = handleToEntry_.Find(rawHandle);
+		H_LOG_INFO("[AssetManager] LoadAssetInternal: 插入后验证 this=%p handle=%llu entry=%p verify=%p verify.blobs=%zu verify.data=%zu",
+		           (void*)this, (unsigned long long)rawHandle, (void*)entry.get(), (void*)verify,
+		           verify ? (*verify)->blobs.size() : (std::size_t)-1,
+		           verify ? (*verify)->data.size() : (std::size_t)-1);
+	}
 
 	/* 更新快取 */
 	cache_.Touch(guid, entry->data.size(), rawHandle);
@@ -435,8 +447,15 @@ std::uint32_t NNAssetManager::GetBlobCount(std::uint64_t rawHandle) const
 	std::lock_guard<std::mutex> lock(mutex_);
 	auto it = handleToEntry_.Find(rawHandle);
 	if (it == nullptr)
+	{
+		H_LOG_WARN("[AssetManager] GetBlobCount: this=%p handle=%llu NOT FOUND in handleToEntry_ (size=%zu)", (void*)this, (unsigned long long)rawHandle, handleToEntry_.Size());
 		return 0;
-	return static_cast<std::uint32_t>((*it)->blobs.size());
+	}
+	auto count = static_cast<std::uint32_t>((*it)->blobs.size());
+	auto dataSz = (*it)->data.size();
+	H_LOG_INFO("[AssetManager] GetBlobCount: handle=%llu entry.blobs=%u entry.data=%zu entry.payloadOffset=%llu",
+		(unsigned long long)rawHandle, count, dataSz, (unsigned long long)(*it)->payloadOffset);
+	return count;
 }
 
 const void* NNAssetManager::GetBlobData(std::uint64_t rawHandle, std::uint32_t index) const
@@ -460,6 +479,15 @@ std::uint64_t NNAssetManager::GetBlobSize(std::uint64_t rawHandle, std::uint32_t
 	if (it == nullptr || index >= (*it)->blobs.size())
 		return 0;
 	return (*it)->blobs[index].size;
+}
+
+const NNBlobDescriptor* NNAssetManager::GetBlobDesc(std::uint64_t rawHandle, std::uint32_t index) const
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	auto it = handleToEntry_.Find(rawHandle);
+	if (it == nullptr || index >= (*it)->blobs.size())
+		return nullptr;
+	return &(*it)->blobs[index];
 }
 
 const NNBlobDescriptor* NNAssetManager::GetBlobByType(std::uint64_t rawHandle, std::uint32_t blobType, const void** outData) const
@@ -613,6 +641,10 @@ bool NNAssetManager::ReadNnAsset(const std::string& path, NNAssetEntry& entry)
 	if (NNAssetHeaderIsValid(&header) == 0)
 		return false;
 
+	H_LOG_INFO("[AssetManager] ReadNnAsset: header parsed blobCount=%u blobTableOffset=%llu payloadOffset=%llu payloadSize=%llu fileSize=%zu",
+		header.blobCount, (unsigned long long)header.blobTableOffset,
+		(unsigned long long)header.payloadOffset, (unsigned long long)header.payloadSize, fileSize);
+
 	entry.typeId = header.typeId;
 	entry.payloadOffset = header.payloadOffset;
 
@@ -630,6 +662,12 @@ bool NNAssetManager::ReadNnAsset(const std::string& path, NNAssetEntry& entry)
 	{
 		const auto* blobs = reinterpret_cast<const NNBlobDescriptor*>(entry.data.data() + header.blobTableOffset);
 		entry.blobs.assign(blobs, blobs + header.blobCount);
+		H_LOG_INFO("[AssetManager] ReadNnAsset: parsed %zu blobs, first blob type=%u", entry.blobs.size(), entry.blobs.empty() ? 0u : entry.blobs[0].blobType);
+	}
+	else
+	{
+		H_LOG_WARN("[AssetManager] ReadNnAsset: blob parse skipped blobCount=%u condition=%llu<=%zu",
+			header.blobCount, (unsigned long long)(header.blobTableOffset + header.blobCount * sizeof(NNBlobDescriptor)), fileSize);
 	}
 
 	return true;

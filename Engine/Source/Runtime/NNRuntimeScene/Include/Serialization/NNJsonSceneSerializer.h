@@ -30,8 +30,8 @@ namespace NN::Runtime::Scene
 	class NN_RUNTIME_SCENE_API NNJsonSceneSerializer
 	{
 	public:
-		/** @brief 当前 JSON 格式版本。 */
-		static constexpr std::uint32_t kFormatVersion = 1u;
+		/** @brief 当前 JSON 格式版本 2 = Asset 引用改用完整 128-bit NNGuid。 */
+		static constexpr std::uint32_t kFormatVersion = 2u;
 
 		/** @brief 场景 → 格式化 JSON 字符串（4 空格缩进）。 */
 		[[nodiscard]] static std::string Serialize(const NNRuntimeScene& scene);

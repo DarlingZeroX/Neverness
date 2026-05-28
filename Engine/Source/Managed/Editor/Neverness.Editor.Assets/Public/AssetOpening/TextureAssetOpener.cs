@@ -60,8 +60,8 @@ public sealed class TextureAssetOpener : IAssetOpener
         {
             try
             {
-                // 上传 GPU 纹理（C++ 内部：读 blob → 反序列化 → OpenGL Texture2D）
-                var textureKey = TextureInterop.LoadTextureFromAsset(assetHandle.Value);
+                // 上传 GPU 纹理（通过 blob 数据直接传递，避免跨模块单例问题）
+                var textureKey = TextureInterop.LoadTextureFromBlob(new NNAssetHandle(assetHandle.Value), effectiveGuid.ToNative());
                 if (textureKey == 0)
                 {
                     Console.WriteLine($"[TextureAssetOpener] GPU 上传失败: {path}");

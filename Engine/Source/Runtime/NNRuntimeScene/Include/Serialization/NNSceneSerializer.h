@@ -28,8 +28,8 @@ namespace NN::Runtime::Scene
 	class NN_RUNTIME_SCENE_API NNSceneSerializer
 	{
 	public:
-		/** @brief 格式版本 2 = FNV-1a name hash 作为 TypeId（8 字节）。 */
-		static constexpr std::uint32_t kFormatVersion = 2u;
+		/** @brief 格式版本 3 = Asset 引用改用完整 128-bit NNGuid（修复 UInt64/Entity 共用 bug）。 */
+		static constexpr std::uint32_t kFormatVersion = 3u;
 
 		[[nodiscard]] static std::vector<std::uint8_t> Serialize(const NNRuntimeScene& scene);
 

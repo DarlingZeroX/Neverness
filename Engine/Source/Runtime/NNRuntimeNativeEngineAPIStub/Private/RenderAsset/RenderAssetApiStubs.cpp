@@ -93,6 +93,22 @@ std::uint64_t NN_ENGINE_ABI_STDCALL stub_renderAsset_loadTextureFromAsset(std::u
     return 0;
 }
 
+std::uint64_t NN_ENGINE_ABI_STDCALL stub_renderAsset_loadTextureFromBlob(
+    const void* typeInfoData,
+    std::uint64_t typeInfoSize,
+    const void* pixelData,
+    std::uint64_t pixelDataSize,
+    std::uint64_t guidLow)
+{
+    NN::StubRuntime::BumpInvokeCount();
+    (void)typeInfoData;
+    (void)typeInfoSize;
+    (void)pixelData;
+    (void)pixelDataSize;
+    (void)guidLow;
+    return 0;
+}
+
 } // namespace
 
 extern "C" void NNBuildRenderAssetApiStubs(NNRenderAssetAPI* api)
@@ -110,4 +126,5 @@ extern "C" void NNBuildRenderAssetApiStubs(NNRenderAssetAPI* api)
     api->getCachedTextureCount = &stub_renderAsset_getCachedTextureCount;
     api->getTotalGPUMemory = &stub_renderAsset_getTotalGPUMemory;
     api->loadTextureFromAsset = &stub_renderAsset_loadTextureFromAsset;
+    api->loadTextureFromBlob = &stub_renderAsset_loadTextureFromBlob;
 }

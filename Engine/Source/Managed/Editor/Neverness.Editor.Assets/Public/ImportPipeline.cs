@@ -287,7 +287,8 @@ public static class ImportPipeline
         var outputDir = GetImportedDir(assetGuid);
         var outputPath = GetImportedPath(assetGuid);
 
-        if (!s_stateCache.HasChanged(sourceAssetPath) && File.Exists(outputPath.FullPath))
+        if (!s_stateCache.HasChanged(sourceAssetPath) && File.Exists(outputPath.FullPath)
+            && IsAssetFormatCurrent(outputPath))
             return ImportResult.Ok(assetGuid, 0);
 
         /* Phase 3: Import */
@@ -412,7 +413,8 @@ public static class ImportPipeline
             var outputDir = GetImportedDir(assetGuid);
             var outputPath = GetImportedPath(assetGuid);
 
-            if (!s_stateCache.HasChanged(sourceAssetPath) && File.Exists(outputPath.FullPath))
+            if (!s_stateCache.HasChanged(sourceAssetPath) && File.Exists(outputPath.FullPath)
+                && IsAssetFormatCurrent(outputPath))
             {
                 /* 未变化，跳过导入 */
                 return ImportResult.Ok(assetGuid, 0);
@@ -542,7 +544,7 @@ public static class ImportPipeline
 
         /* Header (96 bytes) */
         w.Write(0x4E4E4153u);          /* magic: "NNAS" */
-        w.Write(1u);                   /* version */
+        w.Write(2u);                   /* version */
         w.Write(result.AssetGuid.High); /* assetGuid.high */
         w.Write(result.AssetGuid.Low);  /* assetGuid.low */
         w.Write(result.TypeId);         /* typeId */
@@ -645,6 +647,25 @@ public static class ImportPipeline
     private static NPath GetImportedPath(GUID guid)
     {
         return GetImportedDir(guid).Combine(guid.ToHexString() + ".nnasset");
+    }
+
+    /// <summary>检查已存在的 .nnasset 格式版本是否为当前版本。文件不存在或读取失败时返回 false。</summary>
+    private static bool IsAssetFormatCurrent(NPath assetPath)
+    {
+        try
+        {
+            using var fs = File.OpenRead(assetPath.FullPath);
+            if (fs.Length < 8) return false;
+            var buf = new byte[4];
+            fs.Read(buf, 0, 4); // skip magic (4 bytes)
+            fs.Read(buf, 0, 4); // read version (4 bytes)
+            var version = BitConverter.ToUInt32(buf, 0);
+            return version == 2u; /* 当前 NN_ASSET_VERSION */
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static NPath GetStateCachePath()

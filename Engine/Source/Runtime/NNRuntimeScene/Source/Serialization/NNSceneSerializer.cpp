@@ -131,6 +131,12 @@ std::vector<std::uint8_t> SerializeComponentBlob(
 			break;
 		}
 		case NNComponentFieldType::UInt64:
+		{
+			std::uint64_t value = 0u;
+			std::memcpy(&value, fieldPtr, sizeof(std::uint64_t));
+			WriteU64(blob, value);
+			break;
+		}
 		case NNComponentFieldType::Entity:
 		{
 			NNEntity entityValue = NNEntityInvalid;
@@ -162,7 +168,8 @@ bool DeserializeComponentBlob(
 	void* componentData,
 	const std::vector<std::uint8_t>& blob,
 	std::size_t& blobOffset,
-	const NNSceneEntityArchiveMap& archiveToHandle)
+	const NNSceneEntityArchiveMap& archiveToHandle,
+	std::uint32_t archiveVersion)
 {
 	for (const NNComponentFieldDesc& field : desc.Fields)
 	{
@@ -211,6 +218,15 @@ bool DeserializeComponentBlob(
 			break;
 		}
 		case NNComponentFieldType::UInt64:
+		{
+			std::uint64_t value = 0u;
+			if (!ReadU64(blob, blobOffset, value))
+			{
+				return false;
+			}
+			std::memcpy(fieldPtr, &value, sizeof(std::uint64_t));
+			break;
+		}
 		case NNComponentFieldType::Entity:
 		{
 			std::uint32_t archiveIndex = kInvalidArchiveIndex;
@@ -240,8 +256,23 @@ bool DeserializeComponentBlob(
 		case NNComponentFieldType::Guid:
 			{
 				NNGuid guid{};
-				if (!ReadU64(blob, blobOffset, guid.high) || !ReadU64(blob, blobOffset, guid.low))
-					return false;
+				if (archiveVersion <= 2u)
+				{
+					// v2 旧格式：Guid 字段实际以 UInt64/Entity 共用路径序列化（仅 4 字节）
+					// 因 UInt64/Entity bug，原 asset 值已被 entity archive index 重映射
+					// 降级读取：读 U32，构造 LEGA 标记 GUID
+					std::uint32_t rawValue = 0u;
+					if (!ReadU32(blob, blobOffset, rawValue))
+						return false;
+					guid.high = 0x4C45474100000000ULL;  // 'LEGA' 标记
+					guid.low = static_cast<std::uint64_t>(rawValue);
+				}
+				else
+				{
+					// v3+：标准 Guid 路径（high + low，各 8 字节）
+					if (!ReadU64(blob, blobOffset, guid.high) || !ReadU64(blob, blobOffset, guid.low))
+						return false;
+				}
 				std::memcpy(fieldPtr, &guid, sizeof(NNGuid));
 				break;
 			}
@@ -319,7 +350,7 @@ bool NNSceneSerializer::Deserialize(
 	std::size_t offset = 4u;
 	std::uint32_t version = 0u;
 	std::uint32_t entityCount = 0u;
-	if (!ReadU32(buffer, offset, version) || version != kFormatVersion)
+	if (!ReadU32(buffer, offset, version) || (version != 2u && version != 3u))
 	{
 		return false;
 	}
@@ -400,7 +431,7 @@ bool NNSceneSerializer::Deserialize(
 			/* 通用反序列化：反序列化到临时缓冲区 → 写入 ECS */
 			std::vector<std::uint8_t> temp(desc->SizeBytes);
 			std::size_t blobOffset = 0u;
-			if (DeserializeComponentBlob(*desc, temp.data(), pc.Blob, blobOffset, archiveToHandle))
+			if (DeserializeComponentBlob(*desc, temp.data(), pc.Blob, blobOffset, archiveToHandle, version))
 			{
 				void* dst = desc->GetComponentPtrFn(&scene, handle);
 				if (dst != nullptr)

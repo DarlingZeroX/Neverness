@@ -29,6 +29,7 @@ public unsafe struct NNRenderAssetApi
 	public delegate* unmanaged<ulong> GetCachedTextureCount;
 	public delegate* unmanaged<ulong> GetTotalGPUMemory;
 	public delegate* unmanaged<ulong, ulong, ulong> LoadTextureFromAsset;
+	public delegate* unmanaged<void*, ulong, void*, ulong, ulong, ulong> LoadTextureFromBlob;
 }
 
 /// <summary>
@@ -187,22 +188,22 @@ public enum NNSpriteFlags : uint
 }
 
 /// <summary>
-/// 精灵渲染组件——blittable 結構體，與 Native <c>NNSpriteRendererComponent</c> 內存佈局一致（64 字節）。
+/// 精灵渲染组件——blittable 結構體，與 Native <c>NNSpriteRendererComponent</c> 內存佈局一致（88 字節）。
 /// TypeId = FNV-1a("SpriteRenderer")，須與 Native BuiltinComponentRegistration.cpp 一致。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 [ComponentId(0x51387BA3968C343B, Name = "SpriteRenderer")]
 public struct NNSpriteRendererComponentData
 {
-	public ulong TextureAsset;          // 8B offset 0
-	public ulong MaterialAsset;         // 8B offset 8
-	public uint TextureRuntimeId;       // 4B offset 16（瞬态，不序列化）
-	public float ColorR, ColorG, ColorB, ColorA;  // 16B offset 20
-	public float UvU0, UvV0, UvU1, UvV1;          // 16B offset 36
-	public uint Layer;                  // 4B offset 52
-	public uint SortOrder;              // 4B offset 56
-	public uint BlendMode;              // 4B offset 60 (NNBlendMode)
-	public uint Flags;                  // 4B offset 64 (NNSpriteFlags)
+	public NNGuid TextureAsset;         // 16B offset 0
+	public NNGuid MaterialAsset;        // 16B offset 16
+	public uint TextureRuntimeId;       // 4B offset 32（瞬态，不序列化）
+	public float ColorR, ColorG, ColorB, ColorA;  // 16B offset 36
+	public float UvU0, UvV0, UvU1, UvV1;          // 16B offset 52
+	public uint Layer;                  // 4B offset 68
+	public uint SortOrder;              // 4B offset 72
+	public uint BlendMode;              // 4B offset 76 (NNBlendMode)
+	public uint Flags;                  // 4B offset 80 (NNSpriteFlags)
 }
 
 

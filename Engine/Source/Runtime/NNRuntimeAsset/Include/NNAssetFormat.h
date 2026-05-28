@@ -31,7 +31,7 @@ extern "C" {
 #define NN_ASSET_MAGIC 0x4E4E4153u
 
 /** @brief 當前格式版本 */
-#define NN_ASSET_VERSION 1u
+#define NN_ASSET_VERSION 2u
 
 /** @brief Header 大小（位元組，两行 cache line） */
 #define NN_ASSET_HEADER_SIZE 96u

@@ -89,6 +89,17 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_renderAsset_loadTextureFromAsset(std::uin
 	return NNRenderAssetManager::Get().LoadTextureFromAsset(assetHandle, guidLow);
 }
 
+std::uint64_t NN_ENGINE_ABI_STDCALL rt_renderAsset_loadTextureFromBlob(
+	const void* typeInfoData,
+	std::uint64_t typeInfoSize,
+	const void* pixelData,
+	std::uint64_t pixelDataSize,
+	std::uint64_t guidLow)
+{
+	return NNRenderAssetManager::Get().LoadTextureFromBlob(
+		typeInfoData, typeInfoSize, pixelData, pixelDataSize, guidLow);
+}
+
 } // namespace
 
 extern "C" void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api)
@@ -108,6 +119,7 @@ extern "C" void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api)
 	api->getCachedTextureCount   = &rt_renderAsset_getCachedTextureCount;
 	api->getTotalGPUMemory       = &rt_renderAsset_getTotalGPUMemory;
 	api->loadTextureFromAsset    = &rt_renderAsset_loadTextureFromAsset;
+	api->loadTextureFromBlob     = &rt_renderAsset_loadTextureFromBlob;
 
 	std::cout << "RenderAsset Runtime API built." << std::endl;
 }

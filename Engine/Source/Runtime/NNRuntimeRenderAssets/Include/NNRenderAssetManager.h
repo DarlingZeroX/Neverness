@@ -15,12 +15,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include "../../NNRuntimeRenderAssets/NNRuntimeRenderAssetsExport.h"
+
 namespace NN::Runtime:: Render
 {
 
 /// 缓存条目：通过 shared_ptr<void> 持有 GPU 纹理所有权
 /// shared_ptr<void> 保留原始 shared_ptr<Texture2D> 的 deleter，无需完整类型定义
-struct RenderAssetCacheEntry
+struct NN_RUNTIME_RENDER_ASSETS_API RenderAssetCacheEntry
 {
     std::shared_ptr<void> OwnedTexture;   // 实际是 shared_ptr<OpenGL::Texture2D>，deleter 已捕获
     std::unique_ptr<NNTextureResource> Resource;
@@ -29,7 +31,7 @@ struct RenderAssetCacheEntry
 
 /// Render Asset Manager
 /// 负责 CPU Asset → GPU Resource 的生命周期管理
-class NNRenderAssetManager
+class NN_RUNTIME_RENDER_ASSETS_API NNRenderAssetManager
 {
 public:
     static NNRenderAssetManager& Get();
@@ -56,6 +58,11 @@ public:
     /// @param guidLow 资产 GUID.Low（可选，用于建立 GUID→cacheKey 索引）
     /// @return 缓存 key，0 = 失败
     uint64_t LoadTextureFromAsset(uint64_t assetHandle, uint64_t guidLow = 0);
+
+    /// 从已解析的 blob 数据直接创建 GPU Texture（避免跨模块单例问题）
+    uint64_t LoadTextureFromBlob(const void* typeInfoData, uint64_t typeInfoSize,
+                                 const void* pixelData, uint64_t pixelDataSize,
+                                 uint64_t guidLow = 0);
 
     /// 注册一个 TextureResource 到缓存（返回用于查询的 key）
     uint64_t CacheResource(std::unique_ptr<NNTextureResource> resource);

@@ -49,8 +49,8 @@ NN_REGISTER_COMPONENT(
 NN_REGISTER_COMPONENT(
 	NN::Runtime::Scene::NNSpriteRendererComponent,
 	"SpriteRenderer",
-	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, TextureAsset, UInt64),
-	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, MaterialAsset, UInt64),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, TextureAsset, Guid),
+	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, MaterialAsset, Guid),
 	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, Color, Float4),
 	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, UvRect, Float4),
 	NN_FIELD(NN::Runtime::Scene::NNSpriteRendererComponent, Layer, UInt32),

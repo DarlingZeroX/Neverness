@@ -35,23 +35,43 @@ namespace NN::Runtime::Renderer2D
             if (!Scene::HasFlag(sprite.Flags, Scene::NNSpriteFlags::Visible))
                 continue;
 
-            // 懒解析：TextureAsset (GUID.Low) → TextureRuntimeId (GL texture ID)
-            H_LOG_INFO("[Collect] Sprite: TextureAsset=%llu TextureRuntimeId=%u",
-                       sprite.TextureAsset, sprite.TextureRuntimeId);
-            if (sprite.TextureRuntimeId == 0 && sprite.TextureAsset != 0)
+            // 懒解析：TextureAsset (NNGuid) → TextureRuntimeId (GL texture ID)
+            H_LOG_INFO("[Collect] Sprite: TextureGuid=%llx:%llx TextureRuntimeId=%u",
+                       sprite.TextureAsset.high, sprite.TextureAsset.low, sprite.TextureRuntimeId);
+            if (sprite.TextureRuntimeId == 0 && sprite.TextureAsset.low != 0)
             {
                 auto& renderMgr = NN::Runtime::Render::NNRenderAssetManager::Get();
-                uint64_t cacheKey = renderMgr.GetCacheKeyByGuidLow(sprite.TextureAsset);
-                H_LOG_INFO("[Collect] GetCacheKeyByGuidLow(%llu) → cacheKey=%llu", sprite.TextureAsset, cacheKey);
+                uint64_t cacheKey = renderMgr.GetCacheKeyByGuidLow(sprite.TextureAsset.low);
+                H_LOG_INFO("[Collect] GetCacheKeyByGuidLow(%llx) → cacheKey=%llu", sprite.TextureAsset.low, cacheKey);
                 if (cacheKey == 0)
                 {
                     // 首次访问：加载资产 → 上传 GPU → 注册 GUID 映射
+                    // 使用 LoadTextureFromBlob 代替 LoadTextureFromAsset，
+                    // 从本模块 NNAssetManager 单例直接获取 blob 数据，避免跨模块单例问题
                     auto& assetMgr = NN::Runtime::Asset::NNAssetManager::Instance();
-                    auto handle = assetMgr.LoadAssetByGuidLow(sprite.TextureAsset, 1);
-                    H_LOG_INFO("[Collect] LoadAssetByGuidLow(%llu) → handle=%llu", sprite.TextureAsset, handle ? handle.Value() : 0);
+                    auto handle = assetMgr.LoadAssetSync(sprite.TextureAsset, 1);
+                    H_LOG_INFO("[Collect] LoadAssetSync(%llx:%llx) → handle=%llu", sprite.TextureAsset.high, sprite.TextureAsset.low, handle ? handle.Value() : 0);
                     if (handle)
-                        cacheKey = renderMgr.LoadTextureFromAsset(handle.Value(), sprite.TextureAsset);
-                    H_LOG_INFO("[Collect] LoadTextureFromAsset → cacheKey=%llu", cacheKey);
+                    {
+                        const void* typeInfoData = nullptr;
+                        auto* typeInfoDesc = assetMgr.GetBlobByType(handle.Value(), NN_BLOB_TYPE_TYPE_INFO, &typeInfoData);
+
+                        const void* pixelData = nullptr;
+                        auto* dataDesc = assetMgr.GetBlobByType(handle.Value(), NN_BLOB_TYPE_DATA, &pixelData);
+
+                        if (typeInfoDesc && typeInfoData && dataDesc && pixelData)
+                        {
+                            cacheKey = renderMgr.LoadTextureFromBlob(
+                                typeInfoData, typeInfoDesc->size,
+                                pixelData, dataDesc->size,
+                                sprite.TextureAsset.low);
+                        }
+                        else
+                        {
+                            H_LOG_ERROR("[Collect] LoadTextureFromBlob: handle=%llu 缺少 TypeInfo 或 DATA blob", handle.Value());
+                        }
+                    }
+                    H_LOG_INFO("[Collect] LoadTextureFromBlob → cacheKey=%llu", cacheKey);
                 }
                 if (cacheKey != 0)
                 {

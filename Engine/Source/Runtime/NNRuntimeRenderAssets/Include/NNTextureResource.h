@@ -8,13 +8,14 @@
 #pragma once
 
 #include "NNTextureFormat.h"
+#include "../../NNRuntimeRenderAssets/NNRuntimeRenderAssetsExport.h"
 #include <cstdint>
 
 namespace NN::Runtime::Render
 {
 
 /// GPU Texture 描述
-struct NNTextureDesc
+struct NN_RUNTIME_RENDER_ASSETS_API NNTextureDesc
 {
     uint32_t Width = 0;
     uint32_t Height = 0;
@@ -35,7 +36,7 @@ enum class NNTextureResidency : uint8_t
 
 /// GPU 纹理资源
 /// 封装 RHI Texture，不暴露原生 Handle 类型
-class NNTextureResource
+class NN_RUNTIME_RENDER_ASSETS_API NNTextureResource
 {
 public:
     NNTextureResource();

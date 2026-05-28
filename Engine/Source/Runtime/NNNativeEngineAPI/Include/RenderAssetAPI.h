@@ -61,6 +61,14 @@ typedef struct NNRenderAssetAPI
     /** @brief 從已載入的 .nnasset 資源句柄建立 GPU Texture（讀 blob[0] 反序列化）。回傳快取 key（0 = 失敗）。guidLow 非零時建立 GUID→cacheKey 索引。 */
     std::uint64_t(NN_ENGINE_ABI_STDCALL *loadTextureFromAsset)(std::uint64_t assetHandle, std::uint64_t guidLow);
 
+    /** @brief 從已解析的 blob 資料直接建立 GPU Texture（避免跨模組單例問題）。回傳快取 key（0 = 失敗）。 */
+    std::uint64_t(NN_ENGINE_ABI_STDCALL *loadTextureFromBlob)(
+        const void* typeInfoData,
+        std::uint64_t typeInfoSize,
+        const void* pixelData,
+        std::uint64_t pixelDataSize,
+        std::uint64_t guidLow);
+
 } NNRenderAssetAPI;
 
 #ifdef __cplusplus

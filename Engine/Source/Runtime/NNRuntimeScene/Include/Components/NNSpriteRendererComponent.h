@@ -10,7 +10,7 @@
  * 约束：
  * - trivially_copyable + standard_layout（可直接 memcpy）
  * - 无 std::string / shared_ptr / 虚函数
- * - 资源引用使用 uint64_t Asset Handle（非直接对象引用）
+ * - 资源引用使用 128-bit NNGuid（永久稳定资产标识，非直接对象引用）
  * - 字段布局对 GPU Instancing 友好
  * - 所有字段可通过 NNComponentRegistry 反射自动编辑
  */
@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <type_traits>
 #include "../../NNRuntimeSceneExport.h"
+#include "../../../NNNativeEngineAPI/Include/EngineTypes.h"
 
 namespace NN::Runtime::Scene
 {
@@ -67,29 +68,31 @@ namespace NN::Runtime::Scene
 	/**
 	 * @brief 精灵渲染组件：纯数据描述，行为由 SpriteRenderSystem 驱动。
 	 *
-	 * 内存布局（64 字节）：
+	 * 内存布局（88 字节）：
 	 * ┌──────────────────────────────────────────────────────┐
-	 * │ TextureAsset    uint64_t   8B   纹理资源句柄          │
-	 * │ MaterialAsset   uint64_t   8B   材质资源句柄          │
-	 * │ Color           float[4]  16B  RGBA tint 颜色        │
-	 * │ UvRect          float[4]  16B  UV 区域 [u0,v0,u1,v1]│
-	 * │ Layer           uint32_t   4B  渲染层级              │
-	 * │ SortOrder       uint32_t   4B  层级内排序            │
-	 * │ BlendMode       uint32_t   4B  混合模式枚举          │
-	 * │ Flags           uint32_t   4B  标志位掩码            │
+	 * │ TextureAsset    NNGuid    16B   纹理资源 128-bit GUID │
+	 * │ MaterialAsset   NNGuid    16B   材质资源 128-bit GUID │
+	 * │ TextureRuntimeId uint32_t  4B   已解析的 GL Texture ID│
+	 * │ (padding)                 4B                          │
+	 * │ Color           float[4] 16B   RGBA tint 颜色        │
+	 * │ UvRect          float[4] 16B   UV 区域 [u0,v0,u1,v1] │
+	 * │ Layer           uint32_t  4B   渲染层级               │
+	 * │ SortOrder       uint32_t  4B   层级内排序             │
+	 * │ BlendMode       uint32_t  4B   混合模式枚举           │
+	 * │ Flags           uint32_t  4B   标志位掩码             │
 	 * └──────────────────────────────────────────────────────┘
-	 * 对齐：8 字节，共 64 字节（16 × 4B）
+	 * 对齐：8 字节，共 88 字节（22 × 4B）
 	 *
-	 * GPU Instancing：相邻实例 stride = 64B，cache line 对齐。
+	 * GPU Instancing：相邻实例 stride = 88B。
 	 * SIMD 友好：Color 和 UvRect 各 16B，对齐到 16 字节边界。
 	 */
 	struct NN_RUNTIME_SCENE_API NNSpriteRendererComponent
 	{
-		// ── 资源引用（Asset Handle，非直接对象引用）──
-		// 值为 0 表示未设置 / 使用默认资源。
-		// 序列化时作为 UInt64 持久化；Renderer 通过 Asset System 解析为 GPU 资源。
-		std::uint64_t TextureAsset  = 0u;   ///< 纹理资源句柄（FNV-1a(virtualPath) 或 GUID low）
-		std::uint64_t MaterialAsset = 0u;   ///< 材质资源句柄（0 = 使用引擎默认 SpriteShader）
+		// ── 资源引用（128-bit 永久稳定 GUID，序列化层）──
+		// 值为全零表示未设置 / 使用默认资源。
+		// 序列化时作为 Guid（high:low）持久化；Renderer 通过 Asset System 解析为 GPU 资源。
+		NNGuid TextureAsset{};   ///< 纹理资源 128-bit GUID
+		NNGuid MaterialAsset{};  ///< 材质资源 128-bit GUID（全零 = 使用引擎默认 SpriteShader）
 
 		// ── Runtime 瞬态数据（不序列化）──
 		std::uint32_t TextureRuntimeId = 0u; ///< 已解析的 GL Texture ID（Renderer 直接使用）
@@ -112,6 +115,6 @@ namespace NN::Runtime::Scene
 		"NNSpriteRendererComponent must be trivially copyable (memcpy-safe)");
 	static_assert(std::is_standard_layout_v<NNSpriteRendererComponent>,
 		"NNSpriteRendererComponent must have standard layout");
-	static_assert(sizeof(NNSpriteRendererComponent) >= 64,
-		"NNSpriteRendererComponent should be 64 bytes (16 x uint32)");
+	static_assert(sizeof(NNSpriteRendererComponent) >= 80,
+		"NNSpriteRendererComponent should be >= 80 bytes (NNGuid asset fields)");
 } // namespace NN::Runtime::Scene

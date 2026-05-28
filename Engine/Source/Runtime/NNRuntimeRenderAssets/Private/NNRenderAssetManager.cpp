@@ -105,7 +105,8 @@ uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle, uint64
 {
     if (!m_Initialized || assetHandle == 0)
     {
-        H_LOG_WARN("[RenderAssetManager] LoadTextureFromAsset: 未初始化或 handle=0");
+        H_LOG_WARN("[RenderAssetManager] LoadTextureFromAsset: 未初始化或 handle=0 (m_Initialized=%d handle=%llu this=%p)",
+                   (int)m_Initialized, assetHandle, (void*)this);
         return 0;
     }
 
@@ -116,7 +117,7 @@ uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle, uint64
         auto it = m_GuidToCacheKeyMap.find(guidLow);
         if (it != m_GuidToCacheKeyMap.end() && m_EntryCache.count(it->second))
         {
-            H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: GUID.Low=%llu 已缓存 key=%llu", guidLow, it->second);
+            H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: GUID.Low=%llu 已缓存 key=%llu this=%p", guidLow, it->second, (void*)this);
             return it->second;
         }
     }
@@ -135,18 +136,6 @@ uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle, uint64
     }
 
     auto* texInfo = static_cast<const NNTextureTypeInfo*>(typeInfoData);
-    H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: TypeInfo desc offset=%llu size=%llu",
-               typeInfoDesc->offset, typeInfoDesc->size);
-
-    /* Hex dump 前 24 字节 */
-    {
-        auto* raw = static_cast<const unsigned char*>(typeInfoData);
-        H_LOG_INFO("[RenderAssetManager] TypeInfo hex: %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x",
-            raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7],
-            raw[8], raw[9], raw[10], raw[11], raw[12], raw[13], raw[14], raw[15],
-            raw[16], raw[17], raw[18], raw[19], raw[20], raw[21], raw[22], raw[23]);
-    }
-
     H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: TypeInfo %ux%u format=%u mipCount=%u flags=0x%x",
                texInfo->width, texInfo->height, texInfo->format, texInfo->mipCount, texInfo->flags);
 
@@ -172,15 +161,7 @@ uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle, uint64
         return 0;
     }
 
-    H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: DATA blob desc offset=%llu size=%llu", dataDesc->offset, dataDesc->size);
-
-    /* DATA blob hex dump 前 16 字节 */
-    {
-        auto* raw = static_cast<const unsigned char*>(pixelData);
-        H_LOG_INFO("[RenderAssetManager] DATA hex: %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x",
-            raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7],
-            raw[8], raw[9], raw[10], raw[11], raw[12], raw[13], raw[14], raw[15]);
-    }
+    H_LOG_INFO("[RenderAssetManager] LoadTextureFromAsset: DATA blob size=%llu", dataDesc->size);
 
     /* 构造 Source Asset */
     auto format = static_cast<NNTextureFormat>(texInfo->format);
@@ -209,6 +190,85 @@ uint64_t NNRenderAssetManager::LoadTextureFromAsset(uint64_t assetHandle, uint64
                assetHandle, key, source.GetWidth(), source.GetHeight());
 
     // 注册 GUID → cache key 映射
+    if (guidLow != 0)
+        m_GuidToCacheKeyMap[guidLow] = key;
+
+    return key;
+}
+
+uint64_t NNRenderAssetManager::LoadTextureFromBlob(
+    const void* typeInfoData, uint64_t typeInfoSize,
+    const void* pixelData, uint64_t pixelDataSize,
+    uint64_t guidLow)
+{
+    if (!m_Initialized)
+    {
+        H_LOG_WARN("[RenderAssetManager] LoadTextureFromBlob: 未初始化");
+        return 0;
+    }
+
+    if (!typeInfoData || typeInfoSize < sizeof(NNTextureTypeInfo))
+    {
+        H_LOG_ERROR("[RenderAssetManager] LoadTextureFromBlob: TypeInfo 数据无效 size=%llu", (unsigned long long)typeInfoSize);
+        return 0;
+    }
+    if (!pixelData || pixelDataSize == 0)
+    {
+        H_LOG_ERROR("[RenderAssetManager] LoadTextureFromBlob: 像素数据无效 size=%llu", (unsigned long long)pixelDataSize);
+        return 0;
+    }
+
+    // 如果有 guidLow，先检查是否已缓存
+    if (guidLow != 0)
+    {
+        std::lock_guard lock(m_Mutex);
+        auto it = m_GuidToCacheKeyMap.find(guidLow);
+        if (it != m_GuidToCacheKeyMap.end() && m_EntryCache.count(it->second))
+        {
+            H_LOG_INFO("[RenderAssetManager] LoadTextureFromBlob: GUID.Low=%llu 已缓存 key=%llu", guidLow, it->second);
+            return it->second;
+        }
+    }
+
+    auto* texInfo = static_cast<const NNTextureTypeInfo*>(typeInfoData);
+
+    // 合理性校验
+    if (texInfo->width == 0 || texInfo->height == 0 || texInfo->width > 16384 || texInfo->height > 16384)
+    {
+        H_LOG_ERROR("[RenderAssetManager] LoadTextureFromBlob: TypeInfo 宽高无效 %ux%u", texInfo->width, texInfo->height);
+        return 0;
+    }
+    if (texInfo->format > 4)
+    {
+        H_LOG_ERROR("[RenderAssetManager] LoadTextureFromBlob: TypeInfo format=%u 无效", texInfo->format);
+        return 0;
+    }
+
+    auto format = static_cast<NNTextureFormat>(texInfo->format);
+    bool isSRGB = (texInfo->flags & 1) != 0;
+    bool hasAlpha = (format == NNTextureFormat::RGBA8_UNorm);
+
+    std::vector<uint8_t> pixelCopy(
+        static_cast<const uint8_t*>(pixelData),
+        static_cast<const uint8_t*>(pixelData) + pixelDataSize);
+
+    NNTextureSourceAsset source;
+    source.SetFromDecodedImage(texInfo->width, texInfo->height, format,
+                               std::move(pixelCopy), isSRGB, hasAlpha);
+
+    std::lock_guard lock(m_Mutex);
+    auto* res = UploadTextureInternal(source);
+    if (!res)
+    {
+        H_LOG_ERROR("[RenderAssetManager] LoadTextureFromBlob: GPU 上传失败 %ux%u",
+                    source.GetWidth(), source.GetHeight());
+        return 0;
+    }
+
+    uint64_t key = m_NextKey - 1;
+    H_LOG_INFO("[RenderAssetManager] LoadTextureFromBlob: 成功 key=%llu %ux%u",
+               key, source.GetWidth(), source.GetHeight());
+
     if (guidLow != 0)
         m_GuidToCacheKeyMap[guidLow] = key;
 
@@ -294,6 +354,8 @@ uint64_t NNRenderAssetManager::GetCacheKeyByGuidLow(uint64_t guidLow) const
     if (guidLow == 0)
         return 0;
     std::lock_guard lock(m_Mutex);
+    H_LOG_INFO("[RenderAssetManager] GetCacheKeyByGuidLow: guidLow=%llu mapSize=%zu cacheSize=%zu this=%p",
+               guidLow, m_GuidToCacheKeyMap.size(), m_EntryCache.size(), (void*)this);
     auto it = m_GuidToCacheKeyMap.find(guidLow);
     if (it != m_GuidToCacheKeyMap.end())
         return it->second;

@@ -257,6 +257,10 @@ namespace NN::Runtime::Renderer2D
 
         glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 
+        // 2D 渲染不需要深度测试和面剔除，关闭防止其他渲染通道的 GL 状态泄漏
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+
         // 使用 Sprite Shader
         glUseProgram(m_Impl->SpriteShaderProgram);
 
@@ -269,13 +273,6 @@ namespace NN::Runtime::Renderer2D
 
         // 纹理单元 0
         glUniform1i(m_Impl->Loc_Texture, 0);
-
-		H_LOG_INFO("--------------Sprite Loc_ViewProjection");
-		H_LOG_INFO("ViewProjection1: %f, %f, %f, %f", camera.ViewProjectionMatrix[0], camera.ViewProjectionMatrix[1], camera.ViewProjectionMatrix[2], camera.ViewProjectionMatrix[3]);
-		H_LOG_INFO("ViewProjection2: %f, %f, %f, %f", camera.ViewProjectionMatrix[4], camera.ViewProjectionMatrix[5], camera.ViewProjectionMatrix[6], camera.ViewProjectionMatrix[7]);
-		H_LOG_INFO("ViewProjection3: %f, %f, %f, %f", camera.ViewProjectionMatrix[8], camera.ViewProjectionMatrix[9], camera.ViewProjectionMatrix[10], camera.ViewProjectionMatrix[11]);
-		H_LOG_INFO("ViewProjection4: %f, %f, %f, %f", camera.ViewProjectionMatrix[12], camera.ViewProjectionMatrix[13], camera.ViewProjectionMatrix[14], camera.ViewProjectionMatrix[15]);
-		H_LOG_INFO("--------------x");
     }
 
     void Renderer2D::Submit(const std::vector<SpriteDrawCommand>& commands)
@@ -297,13 +294,6 @@ namespace NN::Runtime::Renderer2D
             // 设置 Transform 矩阵
             glUniformMatrix4fv(m_Impl->Loc_Transform, 1, GL_FALSE, cmd.Transform);
 
-			H_LOG_INFO("--------------Sprite Transform");
-			H_LOG_INFO("Transform1: %f, %f, %f, %f", cmd.Transform[0], cmd.Transform[1], cmd.Transform[2], cmd.Transform[3]);
-			H_LOG_INFO("Transform2: %f, %f, %f, %f", cmd.Transform[4], cmd.Transform[5], cmd.Transform[6], cmd.Transform[7]);
-			H_LOG_INFO("Transform3: %f, %f, %f, %f", cmd.Transform[8], cmd.Transform[9], cmd.Transform[10], cmd.Transform[11]);
-			H_LOG_INFO("Transform4: %f, %f, %f, %f", cmd.Transform[12], cmd.Transform[13], cmd.Transform[14], cmd.Transform[15]);
-			H_LOG_INFO("--------------x");
-
             // 设置 Color
             glUniform4fv(m_Impl->Loc_Color, 1, cmd.Color);
 
@@ -314,20 +304,16 @@ namespace NN::Runtime::Renderer2D
             glUniform1i(m_Impl->Loc_FlipX, cmd.FlipX ? 1 : 0);
             glUniform1i(m_Impl->Loc_FlipY, cmd.FlipY ? 1 : 0);
 
-			H_LOG_INFO("--------------Sprite TextureHandle");
             // 绑定纹理（TextureHandle 已在 SpriteRenderSystem 中解析为 GL texture ID）
             glActiveTexture(GL_TEXTURE0);
             if (cmd.TextureHandle == 0)
             {
                 glBindTexture(GL_TEXTURE_2D, m_Impl->WhiteTexture);
-				H_LOG_INFO("WhiteTexture");
             }
             else
             {
                 glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(cmd.TextureHandle));
-				H_LOG_INFO("TextureHandle(GL): %u", static_cast<GLuint>(cmd.TextureHandle));
             }
-			H_LOG_INFO("--------------");
 
             // 绘制 Quad
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

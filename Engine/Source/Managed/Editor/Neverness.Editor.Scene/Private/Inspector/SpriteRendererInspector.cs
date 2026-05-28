@@ -20,7 +20,7 @@ public sealed class SpriteRendererInspector
     protected override bool DrawFields(ref NNSpriteRendererComponentData data)
     {
         bool modified = false;
-
+        
         // ── Texture Asset（Drop Zone）──
         ImGui.Text("Texture");
         ImGui.SameLine(100f);
@@ -31,17 +31,15 @@ public sealed class SpriteRendererInspector
         var dropMin = ImGui.GetItemRectMin();
         ImDrawListPtr drawList = ImGui.GetWindowDrawList();
 
-        ulong textureHash = data.TextureAsset;
+        GUID textureGuid = GUID.FromNative(data.TextureAsset);
         ulong imTexHandle = 0;
 
-        if (textureHash != 0)
+        if (!textureGuid.IsZero)
         {
-            // textureHash = GUID.Low，需要解析为 GPU texture
-            var texGuid = new GUID(0, textureHash);
-            var texHandle = AssetHandleExtensions.LoadSync(texGuid, 1);
+            var texHandle = AssetHandleExtensions.LoadSync(textureGuid, 1);
             ulong cacheKey = 0;
             if (!texHandle.IsZero)
-                cacheKey = TextureInterop.LoadTextureFromAsset(texHandle.Value, textureHash);
+                cacheKey = TextureInterop.LoadTextureFromBlob(new NNAssetHandle(texHandle.Value), data.TextureAsset);
             if (cacheKey != 0)
                 imTexHandle = TextureInterop.GetImGuiTextureHandle(cacheKey);
             if (imTexHandle != 0)
@@ -58,7 +56,7 @@ public sealed class SpriteRendererInspector
             else
             {
                 drawList.AddText(dropMin, ImGui.GetColorU32(ImGuiCol.Text),
-                    $"0x{textureHash:X16} (未加载)");
+                    $"0x{textureGuid.Low:X16} (未加载)");
             }
         }
         else
@@ -79,10 +77,10 @@ public sealed class SpriteRendererInspector
                     var droppedGuid = new GUID(ptr[0], ptr[1]);
                     if (!droppedGuid.IsZero)
                     {
-                        // 存储 GUID.Low（持久化标识），Renderer 在 Collect 时懒解析为 GL ID
-                        data.TextureAsset = droppedGuid.Low;
+                        // 存储完整 128-bit GUID（持久化标识），Renderer 在 Collect 时懒解析为 GL ID
+                        data.TextureAsset = droppedGuid.ToNative();
                         modified = true;
-                        Console.WriteLine($"[Inspector] Drop: GUID=({droppedGuid.High},{droppedGuid.Low}) → TextureAsset={data.TextureAsset}");
+                        Console.WriteLine($"[Inspector] Drop: GUID=({droppedGuid.High},{droppedGuid.Low}) → TextureAsset");
                     }
                 }
             }
@@ -92,22 +90,22 @@ public sealed class SpriteRendererInspector
         // ── 右键清除纹理 ──
         if (ImGui.BeginPopupContextItem("##TextureCtx"))
         {
-            if (data.TextureAsset != 0 && ImGui.MenuItem("Clear Texture"))
+            if (data.TextureAsset.Low != 0 && ImGui.MenuItem("Clear Texture"))
             {
-                data.TextureAsset = 0;
+                data.TextureAsset = default;
                 modified = true;
             }
             ImGui.EndPopup();
         }
 
-        ImGui.Text($"textureHash: 0x{textureHash:X16}");
+        ImGui.Text($"textureGuid: 0x{textureGuid.Low:X16}");
         ImGui.Text($"imTexHandle: {imTexHandle}");
 
         // ── Material Asset ──
         ImGui.Text("Material");
         ImGui.SameLine(100f);
-        ulong materialHash = data.MaterialAsset;
-        ImGui.Text($"0x{materialHash:X16}");
+        GUID materialGuid = GUID.FromNative(data.MaterialAsset);
+        ImGui.Text(materialGuid.IsZero ? "Default" : $"0x{materialGuid.Low:X16}");
 
         // ── Color (RGBA) ──
         var color = new Vector4(data.ColorR, data.ColorG, data.ColorB, data.ColorA);

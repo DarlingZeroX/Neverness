@@ -10,10 +10,12 @@ file(GLOB_RECURSE MODULE_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/*.cpp"
 )
 
-add_library(${MODULE_NAME} STATIC
+add_library(${MODULE_NAME} SHARED
     ${MODULE_HEADERS}
     ${MODULE_SOURCES}
 )
+
+target_compile_definitions(${MODULE_NAME} PRIVATE NN_RUNTIME_RENDER_ASSETS_EXPORT NN_RUNTIME_RENDER_ASSETS_DYNAMIC)
 
 target_include_directories(${MODULE_NAME}
     PUBLIC

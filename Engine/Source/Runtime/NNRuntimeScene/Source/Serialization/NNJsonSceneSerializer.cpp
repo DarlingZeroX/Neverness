@@ -7,6 +7,7 @@
 
 #include <charconv>
 #include <cstring>
+#include <iomanip>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -128,9 +129,9 @@ json FieldToJson(
 	{
 		NNGuid guid{};
 		std::memcpy(&guid, fieldPtr, sizeof(NNGuid));
-		// 输出 "high:low" hex 格式
+		// 输出 "high:low" hex 格式，固定 16 位零填充
 		std::ostringstream oss;
-		oss << std::hex << guid.high << ":" << guid.low;
+		oss << std::hex << std::setfill('0') << std::setw(16) << guid.high << ":" << std::setw(16) << guid.low;
 		return oss.str();
 	}
 	default:
@@ -255,12 +256,23 @@ void JsonToField(
 		if (value.is_string())
 		{
 			std::string str = value.get<std::string>();
-			auto colonPos = str.find(':');
+			// 剥离逗号等非十六进制字符（兼容旧版 locale 千位分隔符格式）
+			std::string clean;
+			clean.reserve(str.size());
+			for (char c : str)
+			{
+				if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
+				    (c >= 'A' && c <= 'F') || c == ':')
+				{
+					clean.push_back(c);
+				}
+			}
+			auto colonPos = clean.find(':');
 			if (colonPos != std::string::npos)
 			{
 				NNGuid guid{};
-				std::from_chars(str.data(), str.data() + colonPos, guid.high, 16);
-				std::from_chars(str.data() + colonPos + 1, str.data() + str.size(), guid.low, 16);
+				std::from_chars(clean.data(), clean.data() + colonPos, guid.high, 16);
+				std::from_chars(clean.data() + colonPos + 1, clean.data() + clean.size(), guid.low, 16);
 				std::memcpy(fieldPtr, &guid, sizeof(NNGuid));
 			}
 		}

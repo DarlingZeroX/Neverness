@@ -419,8 +419,8 @@ TEST(NNRuntimeSceneTest, SerializeRoundTripStableTypeId)
 	const std::vector<std::uint8_t> blob = NNSceneSerializer::Serialize(scene);
 	ASSERT_FALSE(blob.empty());
 
-	// 验证 VGSC 格式版本为 2（FNV-1a name hash 格式）
-	EXPECT_EQ(NNSceneSerializer::kFormatVersion, 2u);
+	// 验证 VGSC 格式版本为 3（Asset 引用改用完整 128-bit NNGuid）
+	EXPECT_EQ(NNSceneSerializer::kFormatVersion, 3u);
 
 	NNRuntimeScene loaded;
 	ASSERT_TRUE(NNSceneSerializer::Deserialize(loaded, blob));

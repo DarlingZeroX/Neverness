@@ -130,6 +130,7 @@ public:
 	std::uint32_t GetBlobCount(std::uint64_t rawHandle) const;
 	const void* GetBlobData(std::uint64_t rawHandle, std::uint32_t index) const;
 	std::uint64_t GetBlobSize(std::uint64_t rawHandle, std::uint32_t index) const;
+	const NNBlobDescriptor* GetBlobDesc(std::uint64_t rawHandle, std::uint32_t index) const;
 	const NNBlobDescriptor* GetBlobByType(std::uint64_t rawHandle, std::uint32_t blobType, const void** outData = nullptr) const;
 
 	/* === 包管理 === */

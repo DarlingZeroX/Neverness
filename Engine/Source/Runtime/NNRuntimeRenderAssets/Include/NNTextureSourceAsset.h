@@ -8,6 +8,7 @@
 #pragma once
 
 #include "NNTextureFormat.h"
+#include "../../NNRuntimeRenderAssets/NNRuntimeRenderAssetsExport.h"
 #include <cstdint>
 #include <vector>
 
@@ -25,7 +26,7 @@ struct NNMipLevel
 /// 纹理源资产（CPU 侧）
 /// 代表 import pipeline 产物
 /// 纯 CPU，不允许 GPU API
-class NNTextureSourceAsset
+class NN_RUNTIME_RENDER_ASSETS_API NNTextureSourceAsset
 {
 public:
     NNTextureSourceAsset() = default;
