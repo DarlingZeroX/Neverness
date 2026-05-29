@@ -65,7 +65,8 @@
           "Neverness.Editor.ImGuiEx": "1.0.0",
           "Neverness.Editor.ProjectSystem": "1.0.0",
           "Neverness.Runtime.Application": "1.0.0",
-          "Neverness.Runtime.Serialization": "1.0.0"
+          "Neverness.Runtime.Serialization": "1.0.0",
+          "StbImageSharp": "2.30.15"
         },
         "compile": {
           "bin/placeholder/Neverness.Editor.Framework.dll": {}
@@ -98,6 +99,40 @@
         },
         "runtime": {
           "bin/placeholder/Neverness.Editor.ImGuiEx.dll": {}
+        }
+      },
+      "Neverness.Editor.Media/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Neverness.Editor.Assets": "1.0.0",
+          "Neverness.Editor.Core": "1.0.0",
+          "Neverness.Editor.ImGuiEx": "1.0.0",
+          "Neverness.Editor.MediaImporter": "1.0.0",
+          "Neverness.Editor.Scene": "1.0.0",
+          "Neverness.Runtime.Assets": "1.0.0",
+          "Neverness.Runtime.Audio": "1.0.0",
+          "Neverness.Runtime.Engine": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Neverness.Editor.Media.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Editor.Media.dll": {}
+        }
+      },
+      "Neverness.Editor.MediaImporter/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Neverness.Editor.Assets": "1.0.0",
+          "Neverness.Runtime.Assets": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Neverness.Editor.MediaImporter.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Editor.MediaImporter.dll": {}
         }
       },
       "Neverness.Editor.ProjectSystem/1.0.0": {
@@ -193,6 +228,29 @@
         },
         "runtime": {
           "bin/placeholder/Neverness.Runtime.Assets.dll": {}
+        }
+      },
+      "Neverness.Runtime.Audio/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/Neverness.Runtime.Audio.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Runtime.Audio.dll": {}
+        }
+      },
+      "Neverness.Runtime.Audio.Native/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Neverness.Runtime.Audio": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Neverness.Runtime.Audio.Native.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Runtime.Audio.Native.dll": {}
         }
       },
       "Neverness.Runtime.Bootstrap/1.0.0": {
@@ -332,6 +390,16 @@
       "path": "../Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj",
       "msbuildProject": "../Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj"
     },
+    "Neverness.Editor.Media/1.0.0": {
+      "type": "project",
+      "path": "../Neverness.Editor.Media/Neverness.Editor.Media.csproj",
+      "msbuildProject": "../Neverness.Editor.Media/Neverness.Editor.Media.csproj"
+    },
+    "Neverness.Editor.MediaImporter/1.0.0": {
+      "type": "project",
+      "path": "../Neverness.Editor.MediaImporter/Neverness.Editor.MediaImporter.csproj",
+      "msbuildProject": "../Neverness.Editor.MediaImporter/Neverness.Editor.MediaImporter.csproj"
+    },
     "Neverness.Editor.ProjectSystem/1.0.0": {
       "type": "project",
       "path": "../Neverness.Editor.ProjectSystem/Neverness.Editor.ProjectSystem.csproj",
@@ -366,6 +434,16 @@
       "type": "project",
       "path": "../../Runtime/Neverness.Runtime.Assets/Neverness.Runtime.Assets.csproj",
       "msbuildProject": "../../Runtime/Neverness.Runtime.Assets/Neverness.Runtime.Assets.csproj"
+    },
+    "Neverness.Runtime.Audio/1.0.0": {
+      "type": "project",
+      "path": "../../Runtime/Neverness.Runtime.Audio/Neverness.Runtime.Audio.csproj",
+      "msbuildProject": "../../Runtime/Neverness.Runtime.Audio/Neverness.Runtime.Audio.csproj"
+    },
+    "Neverness.Runtime.Audio.Native/1.0.0": {
+      "type": "project",
+      "path": "../../Runtime/Neverness.Runtime.Audio.Native/Neverness.Runtime.Audio.Native.csproj",
+      "msbuildProject": "../../Runtime/Neverness.Runtime.Audio.Native/Neverness.Runtime.Audio.Native.csproj"
     },
     "Neverness.Runtime.Bootstrap/1.0.0": {
       "type": "project",
@@ -409,8 +487,12 @@
       "Neverness.Editor.Core >= 1.0.0",
       "Neverness.Editor.Framework >= 1.0.0",
       "Neverness.Editor.ImGui >= 1.0.0",
+      "Neverness.Editor.Media >= 1.0.0",
+      "Neverness.Editor.MediaImporter >= 1.0.0",
       "Neverness.Editor.Scene >= 1.0.0",
       "Neverness.Runtime.Application >= 1.0.0",
+      "Neverness.Runtime.Audio >= 1.0.0",
+      "Neverness.Runtime.Audio.Native >= 1.0.0",
       "Neverness.Runtime.Bootstrap >= 1.0.0",
       "Neverness.Runtime.Engine >= 1.0.0"
     ]
@@ -452,6 +534,12 @@
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
             },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.MediaImporter\\Neverness.Editor.MediaImporter.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.MediaImporter\\Neverness.Editor.MediaImporter.csproj"
+            },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Media\\Neverness.Editor.Media.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Media\\Neverness.Editor.Media.csproj"
+            },
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Scene\\Neverness.Editor.Scene.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Scene\\Neverness.Editor.Scene.csproj"
             },
@@ -460,6 +548,12 @@
             },
             "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj"
+            },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Audio.Native\\Neverness.Runtime.Audio.Native.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Audio.Native\\Neverness.Runtime.Audio.Native.csproj"
+            },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Audio\\Neverness.Runtime.Audio.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Audio\\Neverness.Runtime.Audio.csproj"
             },
             "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\Neverness.Runtime.Bootstrap.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Bootstrap\\Neverness.Runtime.Bootstrap.csproj"

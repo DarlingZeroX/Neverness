@@ -10,6 +10,8 @@
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Framework/Neverness.Editor.Framework.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Inspector/Neverness.Editor.Inspector.csproj" />
+    <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Media/Neverness.Editor.Media.csproj" />
+    <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.MediaImporter/Neverness.Editor.MediaImporter.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.ProjectSystem/Neverness.Editor.ProjectSystem.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Reflection/Neverness.Editor.Reflection.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Scene/Neverness.Editor.Scene.csproj" />
@@ -30,6 +32,8 @@
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.VFS/Neverness.Runtime.VFS.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Assets/Neverness.Runtime.Assets.csproj" />
+    <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Audio.Native/Neverness.Runtime.Audio.Native.csproj" />
+    <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Audio/Neverness.Runtime.Audio.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Bootstrap/Neverness.Runtime.Bootstrap.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Host/Neverness.Runtime.Host.csproj" />

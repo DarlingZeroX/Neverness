@@ -9,6 +9,10 @@ using Neverness.Editor.Core.Private;
 using Neverness.Editor.Core.Private.Features;
 using Neverness.Editor.Assets.Public;
 using Neverness.Editor.Scene.Public;
+using Neverness.Editor.MediaImporter;
+using Neverness.Editor.Media;
+using Neverness.Runtime.Audio;
+using Neverness.Runtime.Audio.Native;
 using Neverness.Runtime.Scene;
 
 namespace NevernessEditor;
@@ -93,6 +97,9 @@ internal static class EditorApplicationRunner
 
 					EditorFrameworkModule.Install(window);
 					EditorCoreModule.Install();
+					MediaImporterModule.Install();
+					MediaModule.Install();
+				CoreModuleImp.Context.RegisterService<IAudioService>(new NativeAudioService());
 					AssetsModule.Install(sceneManager);
 					SceneModule.Install(sceneManager);
 

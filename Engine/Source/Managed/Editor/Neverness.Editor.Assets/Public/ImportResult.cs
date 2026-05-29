@@ -89,6 +89,7 @@ public static class AssetTypeId
     public const ulong Prefab = 7;
     public const ulong Animation = 8;
     public const ulong LuaScript = 9;
+    public const ulong VideoClip = 10;
 
     /// <summary>
     /// 预定义 blob 类型常量。
@@ -105,5 +106,8 @@ public static class AssetTypeId
         public const uint EntityHierarchy = 7;
         public const uint ComponentData = 8;
         public const uint TypeInfo = 9;
+        public const uint VideoFrame = 10;
+        public const uint VideoSeek = 11;
+        public const uint Subtitle = 12;
     }
 }

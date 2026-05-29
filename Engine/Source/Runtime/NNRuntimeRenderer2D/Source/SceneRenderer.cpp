@@ -86,7 +86,7 @@ namespace NN::Runtime::Renderer2D
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		H_LOG_INFO("Command count: %d", (int)m_Commands.size());
+		//H_LOG_INFO("Command count: %d", (int)m_Commands.size());
 
         // 6. 渲染
         m_Renderer.BeginScene(camera, width, height);

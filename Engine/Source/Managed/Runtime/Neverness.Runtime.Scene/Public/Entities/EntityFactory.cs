@@ -123,4 +123,97 @@ public static class EntityFactory
 
         return entity;
     }
+
+    /// <summary>
+    /// 创建 AudioSource 实体：自动挂载 <see cref="NNTransformData"/> + <see cref="NNAudioSourceComponentData"/>。
+    /// </summary>
+    /// <param name="world">目标场景世界。</param>
+    /// <param name="displayName">显示名称（默认 "Audio Source"）。</param>
+    /// <param name="volume">音量（默认 1.0）。</param>
+    /// <param name="pitch">音调（默认 1.0）。</param>
+    /// <param name="minDistance">最小衰减距离（默认 1.0）。</param>
+    /// <param name="maxDistance">最大衰减距离（默认 100.0）。</param>
+    /// <param name="flags">标志位（默认 PlayOnAwake）。</param>
+    /// <returns>配置好的实体；创建失败时返回 null。</returns>
+    public static SceneEntity? CreateAudioSource(
+        SceneWorld world,
+        string displayName = "Audio Source",
+        float volume = 1.0f,
+        float pitch = 1.0f,
+        float minDistance = 1.0f,
+        float maxDistance = 100.0f,
+        NNAudioSourceFlags flags = NNAudioSourceFlags.PlayOnAwake)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+
+        var entity = world.Entities.Create(displayName);
+        if (entity == null)
+        {
+            return null;
+        }
+
+        // Transform — Identity 默认值（位置原点、无旋转、缩放 1）
+        entity.AddComponent<NNTransformData>();
+        entity.SetComponent(new NNTransformData
+        {
+            Position = default,
+            Rotation = new NNQuat { W = 1.0f },
+            Scale = new NNVec3 { X = 1, Y = 1, Z = 1 },
+        });
+
+        // AudioSource — 默认参数
+        entity.AddComponent<NNAudioSourceComponentData>();
+        entity.SetComponent(new NNAudioSourceComponentData
+        {
+            Volume = volume,
+            Pitch = pitch,
+            MinDistance = minDistance,
+            MaxDistance = maxDistance,
+            Flags = (uint)flags,
+        });
+
+        return entity;
+    }
+
+    /// <summary>
+    /// 创建 VideoPlayer 实体：自动挂载 <see cref="NNTransformData"/> + <see cref="NNVideoPlayerComponentData"/>。
+    /// </summary>
+    /// <param name="world">目标场景世界。</param>
+    /// <param name="displayName">显示名称（默认 "Video Player"）。</param>
+    /// <param name="volume">音量（默认 1.0）。</param>
+    /// <param name="flags">标志位（默认 PlayOnAwake）。</param>
+    /// <returns>配置好的实体；创建失败时返回 null。</returns>
+    public static SceneEntity? CreateVideoPlayer(
+        SceneWorld world,
+        string displayName = "Video Player",
+        float volume = 1.0f,
+        NNVideoPlayerFlags flags = NNVideoPlayerFlags.PlayOnAwake)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+
+        var entity = world.Entities.Create(displayName);
+        if (entity == null)
+        {
+            return null;
+        }
+
+        // Transform — Identity 默认值（位置原点、无旋转、缩放 1）
+        entity.AddComponent<NNTransformData>();
+        entity.SetComponent(new NNTransformData
+        {
+            Position = default,
+            Rotation = new NNQuat { W = 1.0f },
+            Scale = new NNVec3 { X = 1, Y = 1, Z = 1 },
+        });
+
+        // VideoPlayer — 默认参数
+        entity.AddComponent<NNVideoPlayerComponentData>();
+        entity.SetComponent(new NNVideoPlayerComponentData
+        {
+            Volume = volume,
+            Flags = (uint)flags,
+        });
+
+        return entity;
+    }
 }

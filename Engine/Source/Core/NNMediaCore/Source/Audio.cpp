@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This source file is part of VisionGal, the Visual Novel Engine
 *
 * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -183,6 +183,9 @@ namespace NN::Core
     {
 		if (m_AudioClip == nullptr)
 			return false;
+
+		if (IsStop() == true)
+			return Play();
 
 		if (m_AudioStream.HasStream() == false)
 			return false;

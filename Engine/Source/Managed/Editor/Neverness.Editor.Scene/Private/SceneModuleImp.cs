@@ -25,6 +25,8 @@ internal static class SceneModuleImp
     {
         // 创建场景浏览器
         s_sceneBrowser = new SceneBrowser(sceneManager);
+
+        EditorMenuRegistry.RegisterContextMenuContributor(new SceneBrowserContextMenuContributor());
         PanelManager.Instance.AddChildPanel("SceneBrowser", s_sceneBrowser);
 
         // 创建 Detail Inspector

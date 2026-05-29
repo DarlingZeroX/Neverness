@@ -95,6 +95,13 @@ public:
     /// 通过 cache key 获取 GL texture ID（GLuint 零扩展为 uint64_t），0 = 未找到
     uint64_t GetGLTextureId(uint64_t cacheKey) const;
 
+    /// 热更新已存在纹理的像素数据（用于视频帧逐帧更新）
+    /// @param cacheKey 已缓存的纹理 key
+    /// @param pixels 新的 RGBA 像素数据
+    /// @param pixelSize 像素数据大小（bytes）
+    /// @return 是否更新成功
+    bool UpdateTexturePixels(uint64_t cacheKey, const uint8_t* pixels, size_t pixelSize);
+
     bool IsInitialized() const { return m_Initialized; }
 
 private:

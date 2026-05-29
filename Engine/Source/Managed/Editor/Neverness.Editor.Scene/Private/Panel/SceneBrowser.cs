@@ -4,6 +4,8 @@ using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Scene.Private.Cache;
 using Neverness.Runtime.Engine;
+using Neverness.Editor.Framework.Private.Menu;
+using Neverness.Editor.Scene.Public;
 using Neverness.Runtime.Scene;
 using System.Numerics;
 
@@ -181,30 +183,16 @@ public class SceneBrowser : IEditorPanel
     /// <summary>空白区域右键菜单——添加实体等操作。</summary>
     private void DrawBackgroundContextMenu()
     {
+        var ctx = ContextMenuManager.Instance;
+        var bgId = SceneBrowserContextMenu.BackgroundId;
+
         if (ImGui.IsWindowHovered() && !ImGui.IsAnyItemHovered() && ImGui.IsMouseReleased(ImGuiMouseButton.Right))
-            ImGui.OpenPopup("##scene_bg_ctx");
-
-        if (ImGui.BeginPopup("##scene_bg_ctx"))
         {
-            if (ImGui.BeginMenu("Add Entity"))
-            {
-                if (ImGui.MenuItem("Camera"))
-                {
-                    var world = _sceneManager.ActiveWorld;
-                    if (world != null)
-                        EntityFactory.CreateCamera(world);
-                }
-                if (ImGui.MenuItem("Sprite"))
-                {
-                    var world = _sceneManager.ActiveWorld;
-                    if (world != null)
-                        EntityFactory.CreateSprite(world);
-                }
-                ImGui.EndMenu();
-            }
-
-            ImGui.EndPopup();
+            ctx.SetContext(SceneBrowserContextMenu.KeyActiveWorld, _sceneManager.ActiveWorld);
+            ImGui.OpenPopup(bgId);
         }
+
+        ctx.RenderWindowContextMenu(bgId);
     }
 
     // ── 单个节点绘制 ──

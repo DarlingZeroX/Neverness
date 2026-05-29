@@ -66,7 +66,7 @@ namespace NN::Core
 		SDL3AudioDevice m_AudioDevice;
 
 		// 状态
-		bool m_IsFinished = false;
+		bool m_IsFinished = true;
         bool m_IsPlaying = false;
 		bool m_IsLoopPlay = false;
         float m_Volume = 1.0f;

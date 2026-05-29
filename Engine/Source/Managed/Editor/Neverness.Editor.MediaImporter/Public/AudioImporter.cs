@@ -50,13 +50,15 @@ public class AudioImporter : ISettingsAwareImporter
                 });
             }
 
-            /* 写入 TypeInfo */
+            /* 写入 TypeInfo（24 字节，匹配 C++ NNAudioTypeInfo） */
+            var isStreaming = context.GetSettingBool("streaming", false);
             var typeInfo = new NNAudioTypeInfoCSharp
             {
                 SampleRate = (uint)audioData.SampleRate,
                 Channels = (uint)audioData.Channels,
-                SampleCount = (uint)audioData.SampleCount,
-                DurationMs = (uint)(audioData.DurationSeconds * 1000)
+                SampleCount = (ulong)audioData.SampleCount,
+                Format = 0, // NN_AUDIO_FORMAT_PCM16
+                Flags = isStreaming ? 1u : 0u // bit0 = streaming
             };
             result.TypeInfo = typeInfo.ToBytes();
 
@@ -149,20 +151,26 @@ public class AudioImporter : ISettingsAwareImporter
     }
 }
 
+/// <summary>
+/// C# 侧音频 TypeInfo（镜像 C++ NNAudioTypeInfo，24 字节，8 字节对齐）。
+/// C++ 布局：sampleRate:u32, channels:u32, sampleCount:u64, format:u32, flags:u32
+/// </summary>
 internal struct NNAudioTypeInfoCSharp
 {
-    public uint SampleRate;
-    public uint Channels;
-    public uint SampleCount;
-    public uint DurationMs;
+    public uint SampleRate;      // 4B — 偏移 0
+    public uint Channels;        // 4B — 偏移 4
+    public ulong SampleCount;    // 8B — 偏移 8（注意：u64，与 C++ uint64_t 对齐）
+    public uint Format;          // 4B — 偏移 16（PCM16=0, Float32=1, Opus=2, Vorbis=3）
+    public uint Flags;           // 4B — 偏移 20（bit0=streaming）
 
     public byte[] ToBytes()
     {
-        var buf = new byte[16];
+        var buf = new byte[24];
         BitConverter.GetBytes(SampleRate).CopyTo(buf, 0);
         BitConverter.GetBytes(Channels).CopyTo(buf, 4);
         BitConverter.GetBytes(SampleCount).CopyTo(buf, 8);
-        BitConverter.GetBytes(DurationMs).CopyTo(buf, 12);
+        BitConverter.GetBytes(Format).CopyTo(buf, 16);
+        BitConverter.GetBytes(Flags).CopyTo(buf, 20);
         return buf;
     }
 }

@@ -36,7 +36,7 @@ public class ContentBrowserFileUIBox
         AssetTypeColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.39f, 0.39f, 0.39f, 1.0f)); // 100, 100, 100
     }
 
-    public void Draw(ContentBrowser browser, ImDrawListPtr drawList, ref ContentItem item, Vector2 p0, Vector2 p1, bool isDir = true, string assetType = "")
+    public unsafe void Draw(ContentBrowser browser, ImDrawListPtr drawList, ref ContentItem item, Vector2 p0, Vector2 p1, bool isDir = true, string assetType = "")
     {
         Vector2 textPosStart = new Vector2(p0.X, p0.Y + Size.Y - ThumbnailTextSizeY);
         Vector2 assetTypeStart = new Vector2(p0.X, p0.Y + Size.Y - 18);
@@ -54,8 +54,8 @@ public class ContentBrowserFileUIBox
 
         drawList.AddRectFilled(imagePosStart, imagePosEnd, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1.0f)));
 
-        //if (item.IconView != IntPtr.Zero)
-        //    drawList.AddImage(item.IconView, imagePosStart, imagePosEnd);
+        //if (item.Icon != IntPtr.Zero)
+        drawList.AddImage(new ImTextureRef(null, item.Icon), imagePosStart, imagePosEnd);
 
         drawList.AddRectFilled(textPosStart, textPosEnd, ImGui.ColorConvertFloat4ToU32(new Vector4(0.04f, 0.04f, 0.04f, 1.0f)));
 

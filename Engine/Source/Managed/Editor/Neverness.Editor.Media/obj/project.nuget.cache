@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "g/ULFT5Oet4=",
+  "success": true,
+  "projectFilePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Media\\Neverness.Editor.Media.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\30749\\.nuget\\packages\\stbimagesharp\\2.30.15\\stbimagesharp.2.30.15.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -39,6 +39,10 @@
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.MediaImporter\Neverness.Editor.MediaImporter.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.Media\Neverness.Editor.Media.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Audio\Neverness.Runtime.Audio.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Audio.Native\Neverness.Runtime.Audio.Native.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
 	</ItemGroup>

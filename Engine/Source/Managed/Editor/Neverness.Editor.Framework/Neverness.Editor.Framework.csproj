@@ -4,6 +4,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 
 		<ImplicitUsings>enable</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
 
 		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
@@ -33,9 +34,9 @@
 		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="Panel\**" />
-	  <EmbeddedResource Remove="Panel\**" />
-	  <None Remove="Panel\**" />
+		<Compile Remove="Panel\**" />
+		<EmbeddedResource Remove="Panel\**" />
+		<None Remove="Panel\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
@@ -43,5 +44,8 @@
 		<ProjectReference Include="..\Neverness.Editor.ImGuiEx\Neverness.Editor.ImGuiEx.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
 		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="StbImageSharp" Version="2.30.15" />
 	</ItemGroup>
 </Project>

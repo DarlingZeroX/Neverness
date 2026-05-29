@@ -54,7 +54,7 @@ public sealed class EditorMainWindow : IEditorPanel
         //
         // 顶层 Window Class
         ImGui.SetNextWindowClass(ref panelManager.GetImGuiWindowClass());
-
+        //ImGui.ShowDemoWindow();
         bool useWorkArea = true;
 
         ImGuiWindowFlags flags =

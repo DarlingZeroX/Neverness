@@ -10,15 +10,18 @@ public abstract class ContentItem
     public string Name = string.Empty; 
     public int UIFlags { get; set; }
 
-    public NPath AssetPath { get; set; } = NPath.Empty;
+    public NPath SystemPath { get; set; } = NPath.Empty;
 
-    public NVirtualPath Path { get; set; } = default;
+    public NVirtualPath AssetPath { get; set; } = default;
     public string Extension { get; set; } = string.Empty;
+
+    public ulong Icon;
 }
 
 public sealed class ContentFile : ContentItem
 {
     public string AssetType { get; init; } = "Unknown";
+    public GUID AssetGuid ;
 }
 
 public sealed class ContentDirectory : ContentItem

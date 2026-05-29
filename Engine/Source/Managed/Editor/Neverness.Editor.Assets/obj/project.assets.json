@@ -43,7 +43,8 @@
           "Neverness.Editor.ImGuiEx": "1.0.0",
           "Neverness.Editor.ProjectSystem": "1.0.0",
           "Neverness.Runtime.Application": "1.0.0",
-          "Neverness.Runtime.Serialization": "1.0.0"
+          "Neverness.Runtime.Serialization": "1.0.0",
+          "StbImageSharp": "2.30.15"
         },
         "compile": {
           "bin/placeholder/Neverness.Editor.Framework.dll": {}

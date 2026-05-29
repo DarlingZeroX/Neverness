@@ -1,6 +1,7 @@
-using System.Reflection;
+using Neverness.Editor.Scene.Private.Debug;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene.Internal;
+using System.Reflection;
 
 namespace Neverness.Editor.Scene.Private.Inspector;
 
@@ -87,6 +88,8 @@ public abstract class ComponentTypeInspector<T> : IComponentInspector
         var data = SceneNativeBridge.GetComponent<T>(sceneHandle, entity);
         if (data is null)
             return false;
+
+        SceneDebug.DumpEntityComponents(sceneHandle, entity.Value);
 
         var value = data.Value;
         bool modified = DrawFields(ref value);

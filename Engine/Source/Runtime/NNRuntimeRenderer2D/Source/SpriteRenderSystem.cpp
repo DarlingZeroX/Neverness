@@ -36,8 +36,7 @@ namespace NN::Runtime::Renderer2D
                 continue;
 
             // 懒解析：TextureAsset (NNGuid) → TextureRuntimeId (GL texture ID)
-            H_LOG_INFO("[Collect] Sprite: TextureGuid=%llx:%llx TextureRuntimeId=%u",
-                       sprite.TextureAsset.high, sprite.TextureAsset.low, sprite.TextureRuntimeId);
+            //H_LOG_INFO("[Collect] Sprite: TextureGuid=%llx:%llx TextureRuntimeId=%u",sprite.TextureAsset.high, sprite.TextureAsset.low, sprite.TextureRuntimeId);
             if (sprite.TextureRuntimeId == 0 && sprite.TextureAsset.low != 0)
             {
                 auto& renderMgr = NN::Runtime::Render::NNRenderAssetManager::Get();

@@ -206,6 +206,43 @@ public struct NNSpriteRendererComponentData
 	public uint Flags;                  // 4B offset 80 (NNSpriteFlags)
 }
 
+/// <summary>
+/// 音频源组件——blittable 結構體，與 Native <c>NNAudioSourceComponent</c> 內存佈局一致（48 字節）。
+/// TypeId = FNV-1a("AudioSource")，須與 Native BuiltinComponentRegistration.cpp 一致。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x917CF03FFE5623A4, Name = "AudioSource")]
+public struct NNAudioSourceComponentData
+{
+	public NNGuid AudioClipAsset;       // 16B offset 0
+	public uint RuntimePlayerId;        // 4B offset 16（瞬态，不序列化）
+	public float Volume;                // 4B offset 20
+	public float Pitch;                 // 4B offset 24
+	public float MinDistance;           // 4B offset 28
+	public float MaxDistance;           // 4B offset 32
+	public uint Flags;                  // 4B offset 36 (NNAudioSourceFlags)
+	public uint _reserved0;             // 4B offset 40
+	public uint _reserved1;             // 4B offset 44
+}
+
+/// <summary>
+/// 视频播放器组件——blittable 結構體，與 Native <c>NNVideoPlayerComponent</c> 內存佈局一致（56 字節）。
+/// TypeId = FNV-1a("VideoPlayer")，須與 Native BuiltinComponentRegistration.cpp 一致。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x6427180C8ECE43E1, Name = "VideoPlayer")]
+public struct NNVideoPlayerComponentData
+{
+	public NNGuid VideoClipAsset;       // 16B offset 0
+	public uint RuntimePlayerId;        // 4B offset 16（瞬态，不序列化）
+	public uint VideoTextureId;         // 4B offset 20（瞬态，不序列化）
+	public float Volume;                // 4B offset 24
+	public uint Flags;                  // 4B offset 28 (NNVideoPlayerFlags)
+	public NNGuid TargetSprite;         // 16B offset 32
+	public uint _reserved0;             // 4B offset 48
+	public uint _reserved1;             // 4B offset 52
+}
+
 
 /// <summary>
 /// 與 Native <c>NNSceneResult</c> 對齊（<c>SceneAPI.h</c>）：場景操作結果碼。

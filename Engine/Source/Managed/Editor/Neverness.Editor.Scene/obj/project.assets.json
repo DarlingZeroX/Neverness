@@ -2,6 +2,15 @@
   "version": 4,
   "targets": {
     "net10.0": {
+      "StbImageSharp/2.30.15": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/StbImageSharp.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/StbImageSharp.dll": {}
+        }
+      },
       "HexaGen.Runtime/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
@@ -34,7 +43,8 @@
           "Neverness.Editor.ImGuiEx": "1.0.0",
           "Neverness.Editor.ProjectSystem": "1.0.0",
           "Neverness.Runtime.Application": "1.0.0",
-          "Neverness.Runtime.Serialization": "1.0.0"
+          "Neverness.Runtime.Serialization": "1.0.0",
+          "StbImageSharp": "2.30.15"
         },
         "compile": {
           "bin/placeholder/Neverness.Editor.Framework.dll": {}
@@ -202,6 +212,19 @@
     }
   },
   "libraries": {
+    "StbImageSharp/2.30.15": {
+      "sha512": "7QqbupVhz2kcFUPTgMw4iHR9rYDHGundzzee19Mwmd1typ2Lnv8EVJcLJxlkeBM2+4ex0NwsMtdbGSJctp1XCQ==",
+      "type": "package",
+      "path": "stbimagesharp/2.30.15",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net471/StbImageSharp.dll",
+        "lib/netstandard2.0/StbImageSharp.dll",
+        "stbimagesharp.2.30.15.nupkg.sha512",
+        "stbimagesharp.nuspec"
+      ]
+    },
     "HexaGen.Runtime/1.0.0": {
       "type": "project",
       "path": "../ThirdParty/HexaGen.Runtime/HexaGen.Runtime.csproj",

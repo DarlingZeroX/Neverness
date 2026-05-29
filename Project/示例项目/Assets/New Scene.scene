@@ -171,6 +171,73 @@
                 }
             },
             "id": "0x100000002"
+        },
+        {
+            "components": {
+                "AudioSource": {
+                    "AudioClipAsset": "8,247,738,c52,60c,a46:b,801,987,c94,c36,69b",
+                    "Flags": 1,
+                    "MaxDistance": 100.0,
+                    "MinDistance": 1.0,
+                    "Pitch": 1.0,
+                    "RuntimePlayerId": 0,
+                    "Volume": 1.0
+                },
+                "Relationship": {
+                    "ChildCount": 0,
+                    "Depth": 0,
+                    "Parent": null
+                },
+                "Tag": {
+                    "Flags": 0,
+                    "Name": ""
+                },
+                "Transform": {
+                    "Position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "WorldMatrix": [
+                        [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            1.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            1.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    ]
+                }
+            },
+            "id": "0x100000003"
         }
     ],
     "format": "NNScene",

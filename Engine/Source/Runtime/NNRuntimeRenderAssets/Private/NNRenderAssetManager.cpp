@@ -494,4 +494,39 @@ NNTextureResource* NNRenderAssetManager::UploadTextureInternal(const NNTextureSo
     return m_EntryCache[key]->Resource.get();
 }
 
+bool NNRenderAssetManager::UpdateTexturePixels(uint64_t cacheKey, const uint8_t* pixels, size_t pixelSize)
+{
+    if (!m_Initialized || !pixels || pixelSize == 0 || cacheKey == 0)
+        return false;
+
+    std::lock_guard lock(m_Mutex);
+
+    auto it = m_EntryCache.find(cacheKey);
+    if (it == m_EntryCache.end())
+        return false;
+
+    auto* entry = it->second.get();
+    if (!entry || !entry->OwnedTexture || !entry->Resource)
+        return false;
+
+    // 通过 type-erased shared_ptr<void> 恢复 OpenGL::Texture2D 指针
+    auto* glTex = static_cast<OpenGL::Texture2D*>(entry->OwnedTexture.get());
+    if (!glTex)
+        return false;
+
+    auto glFmt = MapToGLFormat(entry->Resource->m_Desc.Format);
+
+    // 直接调用 glTexSubImage2D 更新已存在纹理的像素数据
+    glTex->Bind();
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0,
+        static_cast<GLsizei>(entry->Resource->m_Desc.Width),
+        static_cast<GLsizei>(entry->Resource->m_Desc.Height),
+        glFmt.Format, glFmt.Type, pixels);
+    glTex->Unbind();
+
+    entry->Resource->m_LastUsedFrame = m_CurrentFrame;
+    return true;
+}
+
 } // namespace NN::Runtime::Render

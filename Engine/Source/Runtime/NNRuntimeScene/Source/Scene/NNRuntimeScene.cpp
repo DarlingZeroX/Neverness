@@ -53,6 +53,8 @@ void NNRuntimeScene::RegisterBuiltinComponents()
 	BindComponentType<NNTagComponent>("Tag");
 	BindComponentType<NNCameraComponent>("Camera");
 	BindComponentType<NNSpriteRendererComponent>("SpriteRenderer");
+	BindComponentType<NNAudioSourceComponent>("AudioSource");
+	BindComponentType<NNVideoPlayerComponent>("VideoPlayer");
 }
 
 void NNRuntimeScene::RegisterDefaultSystems()

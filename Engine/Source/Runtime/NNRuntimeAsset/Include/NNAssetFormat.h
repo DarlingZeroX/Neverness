@@ -73,6 +73,8 @@ extern "C" {
 #define NN_TYPE_ID_ANIMATION    0x00000008ull
 /** @brief Lua 腳本 */
 #define NN_TYPE_ID_LUA_SCRIPT   0x00000009ull
+/** @brief 影片剪輯 */
+#define NN_TYPE_ID_VIDEO_CLIP   0x0000000Aull
 
 /* ======================== Blob 型別 ======================== */
 
@@ -96,6 +98,12 @@ extern "C" {
 #define NN_BLOB_TYPE_COMPONENT_DATA   8u
 /** @brief 型別特定元資料 */
 #define NN_BLOB_TYPE_TYPE_INFO   9u
+/** @brief 影片幀（RGBA 像素資料） */
+#define NN_BLOB_TYPE_VIDEO_FRAME 10u
+/** @brief 影片 seek table（關鍵幀索引） */
+#define NN_BLOB_TYPE_VIDEO_SEEK  11u
+/** @brief 字幕資料 */
+#define NN_BLOB_TYPE_SUBTITLE    12u
 
 /* ======================== 格式結構 ======================== */
 
@@ -177,9 +185,60 @@ typedef struct NNAudioTypeInfo
 	std::uint32_t sampleRate;
 	std::uint32_t channels;
 	std::uint64_t sampleCount;
-	std::uint32_t format;          /* PCM16 / Float32 / Opus */
-	std::uint32_t flags;
+	std::uint32_t format;          /* NNAudioCompressionFormat */
+	std::uint32_t flags;           /* NN_AUDIO_FLAG_* */
 } NNAudioTypeInfo;
+
+/**
+ * @brief 影片型別資訊（NN_TYPE_ID_VIDEO_CLIP）。
+ */
+typedef struct NNVideoTypeInfo
+{
+	std::uint32_t width;           /* 影片像素寬度 */
+	std::uint32_t height;          /* 影片像素高度 */
+	std::uint32_t fpsNum;          /* 幀率分子（如 30000） */
+	std::uint32_t fpsDen;          /* 幀率分母（如 1001） */
+	std::uint64_t frameCount;      /* 總幀數 */
+	double       duration;         /* 總時長（秒） */
+	std::uint32_t codecId;         /* NNVideoCodec */
+	std::uint32_t flags;           /* NN_VIDEO_FLAG_* */
+	std::uint32_t audioSampleRate; /* 音軌取樣率（0=無音軌） */
+	std::uint32_t audioChannels;   /* 音軌聲道數 */
+} NNVideoTypeInfo;
+
+/* ======================== 媒體枚舉 ======================== */
+
+/** @brief 音訊壓縮格式 */
+typedef enum NNAudioCompressionFormat
+{
+	NN_AUDIO_FORMAT_PCM16   = 0,
+	NN_AUDIO_FORMAT_FLOAT32 = 1,
+	NN_AUDIO_FORMAT_OPUS    = 2,
+	NN_AUDIO_FORMAT_VORBIS  = 3
+} NNAudioCompressionFormat;
+
+/** @brief 影片編碼格式 */
+typedef enum NNVideoCodec
+{
+	NN_VIDEO_CODEC_H264   = 0,
+	NN_VIDEO_CODEC_H265   = 1,
+	NN_VIDEO_CODEC_VP8    = 2,
+	NN_VIDEO_CODEC_VP9    = 3,
+	NN_VIDEO_CODEC_AV1    = 4,
+	NN_VIDEO_CODEC_PRORES = 5
+} NNVideoCodec;
+
+/** @brief 音訊標誌位 */
+#define NN_AUDIO_FLAG_STREAMING  (1u << 0)
+#define NN_AUDIO_FLAG_LOOP       (1u << 1)
+#define NN_AUDIO_FLAG_3D         (1u << 2)
+
+/** @brief 影片標誌位 */
+#define NN_VIDEO_FLAG_HAS_AUDIO     (1u << 0)
+#define NN_VIDEO_FLAG_STREAMING     (1u << 1)
+#define NN_VIDEO_FLAG_HAS_SUBTITLES (1u << 2)
+#define NN_VIDEO_FLAG_ALPHA_CHANNEL (1u << 3)
+#define NN_VIDEO_FLAG_LOOP          (1u << 4)
 
 #pragma pack(pop)
 

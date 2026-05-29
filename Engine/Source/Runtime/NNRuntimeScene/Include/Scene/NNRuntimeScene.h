@@ -10,11 +10,13 @@
  * 线程契约：Phase 2 假定单线程；由宿主在 game loop 同一线程调用。
  */
 
+#include "../Components/NNAudioSourceComponent.h"
 #include "../Components/NNCameraComponent.h"
 #include "../Components/NNRelationshipComponent.h"
 #include "../Components/NNSpriteRendererComponent.h"
 #include "../Components/NNTagComponent.h"
 #include "../Components/NNTransformComponent.h"
+#include "../Components/NNVideoPlayerComponent.h"
 #include "../Reflection/NNComponentRegistry.h"
 #include "../Runtime/NNDirtyTracker.h"
 #include "../Runtime/NNSceneEventBus.h"

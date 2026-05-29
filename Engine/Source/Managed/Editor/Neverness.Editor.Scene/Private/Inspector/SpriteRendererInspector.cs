@@ -2,6 +2,7 @@ using System.Numerics;
 using Hexa.NET.ImGui;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Assets;
+using Neverness.Editor.Framework.Public;
 
 namespace Neverness.Editor.Scene.Private.Inspector;
 
@@ -16,11 +17,15 @@ public sealed class SpriteRendererInspector
     /// <inheritdoc />
     public override int Order => 50;
 
+    // ── 纹理缓存：避免每帧重复加载 ──
+    private GUID _cachedTextureGuid;
+    private ulong _cachedImGuiTexHandle;
+
     /// <inheritdoc />
     protected override bool DrawFields(ref NNSpriteRendererComponentData data)
     {
         bool modified = false;
-        
+
         // ── Texture Asset（Drop Zone）──
         ImGui.Text("Texture");
         ImGui.SameLine(100f);
@@ -36,12 +41,21 @@ public sealed class SpriteRendererInspector
 
         if (!textureGuid.IsZero)
         {
-            var texHandle = AssetHandleExtensions.LoadSync(textureGuid, 1);
-            ulong cacheKey = 0;
-            if (!texHandle.IsZero)
-                cacheKey = TextureInterop.LoadTextureFromBlob(new NNAssetHandle(texHandle.Value), data.TextureAsset);
-            if (cacheKey != 0)
-                imTexHandle = TextureInterop.GetImGuiTextureHandle(cacheKey);
+            // 仅当 GUID 变化时才重新加载纹理，避免每帧刷日志
+            if (textureGuid != _cachedTextureGuid)
+            {
+                _cachedTextureGuid = textureGuid;
+                _cachedImGuiTexHandle = 0;
+
+                var texHandle = AssetHandleExtensions.LoadSync(textureGuid, 1);
+                ulong cacheKey = 0;
+                if (!texHandle.IsZero)
+                    cacheKey = TextureInterop.LoadTextureFromBlob(new NNAssetHandle(texHandle.Value), data.TextureAsset);
+                if (cacheKey != 0)
+                    _cachedImGuiTexHandle = TextureInterop.GetImGuiTextureHandle(cacheKey);
+            }
+            imTexHandle = _cachedImGuiTexHandle;
+
             if (imTexHandle != 0)
             {
                 float previewSize = Math.Min(dropWidth, dropHeight);
@@ -61,30 +75,29 @@ public sealed class SpriteRendererInspector
         }
         else
         {
+            // GUID 为零时清除缓存
+            if (!_cachedTextureGuid.IsZero)
+            {
+                _cachedTextureGuid = default;
+                _cachedImGuiTexHandle = 0;
+            }
             drawList.AddText(dropMin, ImGui.GetColorU32(ImGuiCol.TextDisabled),
                 "None (drop texture here)");
         }
 
         // ── Drop Target：接收纹理资产拖拽 ──
-        if (ImGui.BeginDragDropTarget())
+        using (var target = AssetDragDrop.BeginDragDropTarget())
         {
-            var payload = ImGui.AcceptDragDropPayload("TEXTURE_ASSET");
-            if (!payload.IsNull)
+            if (target.IsActive)
             {
-                unsafe
+                if (AssetDragDrop.TryAcceptDragDrop(AssetDragDrop.TypeIdTexture2D, out var droppedGuid, out _))
                 {
-                    ulong* ptr = (ulong*)payload.Data;
-                    var droppedGuid = new GUID(ptr[0], ptr[1]);
-                    if (!droppedGuid.IsZero)
-                    {
-                        // 存储完整 128-bit GUID（持久化标识），Renderer 在 Collect 时懒解析为 GL ID
-                        data.TextureAsset = droppedGuid.ToNative();
-                        modified = true;
-                        Console.WriteLine($"[Inspector] Drop: GUID=({droppedGuid.High},{droppedGuid.Low}) → TextureAsset");
-                    }
+                    // 存储完整 128-bit GUID（持久化标识），Renderer 在 Collect 时懒解析为 GL ID
+                    data.TextureAsset = droppedGuid.ToNative();
+                    modified = true;
+                    Console.WriteLine($"[Inspector] Drop: GUID=({droppedGuid.High},{droppedGuid.Low}) → TextureAsset");
                 }
             }
-            ImGui.EndDragDropTarget();
         }
 
         // ── 右键清除纹理 ──

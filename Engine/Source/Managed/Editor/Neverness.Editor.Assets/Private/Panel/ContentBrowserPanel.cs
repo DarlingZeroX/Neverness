@@ -110,8 +110,6 @@ public class ContentBrowserPanel : IEditorPanel
 
     private void DrawContentBrowser()
     {
-        ImGui.ShowDemoWindow();
-
         _contentBrowser.ClearRefreshedFlag();
         // 使用 using 语句替代 C++ 的 Scoped 作用域管理
         using (new ImGuiEx.StyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0)))
@@ -136,9 +134,9 @@ public class ContentBrowserPanel : IEditorPanel
                 ImGui.PushID(item.GetHashCode()); // 使用 HashCode 或唯一 ID 替代指针
 
                 if (item.Renaming)
-                    ImGui.InvisibleButton(item.AssetPath.ToString(), thumbnail.ImageSize);
+                    ImGui.InvisibleButton(item.SystemPath.ToString(), thumbnail.ImageSize);
                 else
-                    ImGui.InvisibleButton(item.AssetPath.ToString(), thumbnail.Size);
+                    ImGui.InvisibleButton(item.SystemPath.ToString(), thumbnail.Size);
 
                 Vector2 p0 = ImGui.GetItemRectMin();
                 Vector2 p1 = new Vector2(p0.X + thumbnail.Size.X, p0.Y + thumbnail.Size.Y);
@@ -178,28 +176,18 @@ public class ContentBrowserPanel : IEditorPanel
                 DrawItemFunction(ref tempItem, false, item.AssetType);
                 if (_contentBrowser.IsRefreshed()) break;
 
-                // ── 纹理资产拖拽源 ──
-                if (item is ContentFile file && file.AssetType == "TextureImporter")
+                // ── 通用资产拖拽源 ──
+                if (item is ContentFile file)
                 {
-                    if (EditorAssetDatabase.TryGetGuid(file.Path, out var guid) && !guid.IsZero)
+                    if (EditorAssetDatabase.TryGetGuid(file.AssetPath, out var guid) && !guid.IsZero)
                     {
-                        if (ImGui.BeginDragDropSource())
-                        {
-                            unsafe
-                            {
-                                ulong* payload = stackalloc ulong[2];
-                                payload[0] = guid.High;
-                                payload[1] = guid.Low;
-                                ImGui.SetDragDropPayload("TEXTURE_ASSET", payload, (nuint)(sizeof(ulong) * 2));
-                            }
-                            ImGui.Text(file.Name);
-                            ImGui.EndDragDropSource();
-                        }
+                        AssetDragDrop.SetDragDropPayload(guid, file.AssetType, file.Name);
                     }
                 }
 
                 ImGui.PushID(item.GetHashCode());
-                if (ItemFunction(ref tempItem, false)) { ImGui.PopID(); break; }
+
+                if (ItemFunction(ref tempItem, false, item.AssetGuid)) { ImGui.PopID(); break; }
                 ImGui.PopID();
 
                 ImGui.NextColumn();
@@ -209,12 +197,14 @@ public class ContentBrowserPanel : IEditorPanel
         }
     }
 
-    private bool ItemFunction(ref ContentItem item, bool isDir)
+    private bool ItemFunction(ref ContentItem item, bool isDir, GUID guid = new GUID())
     {
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.Text(item.AssetPath.ToString());
+            ImGui.Text(item.SystemPath.ToString());
+            if(isDir == false)
+                ImGui.Text(guid.ToString());
             ImGui.EndTooltip();
 
             // 单击
@@ -228,14 +218,14 @@ public class ContentBrowserPanel : IEditorPanel
             {
                 if (isDir)
                 {
-                    _contentBrowser.OpenDirectory(item.AssetPath.ToString());
+                    _contentBrowser.OpenDirectory(item.SystemPath.ToString());
                     return true;
                 }
                 else
                 {
                     if (_openService != null)
                     {
-                        NVirtualPath resourcePath = item.Path;
+                        NVirtualPath resourcePath = item.AssetPath;
                         _ = _openService.OpenAsync((NVirtualPath)resourcePath);
                     }
                        // _ = _openService.OpenAsync();
@@ -266,7 +256,7 @@ public class ContentBrowserPanel : IEditorPanel
 
     public void DrawDirectoryTree(ContentDirectory node)
     {
-        ImGui.PushID(node.AssetPath.ToString());
+        ImGui.PushID(node.SystemPath.ToString());
 
         string nodeName = $"{FontAwesome5Pro.Folder} {node.Name}";
 
@@ -290,7 +280,7 @@ public class ContentBrowserPanel : IEditorPanel
     {
         if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
-            _contentBrowser.OpenDirectory(node.AssetPath.ToString());
+            _contentBrowser.OpenDirectory(node.SystemPath.ToString());
         }
     }
 
