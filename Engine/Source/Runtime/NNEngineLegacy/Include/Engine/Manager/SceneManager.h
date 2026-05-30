@@ -11,7 +11,7 @@
 
 #pragma once
 #include "NNRuntimeCore/Interface/GameInterface.h"
-#include "../../Scene/Scene.h"
+#include "../../Scene/SceneLegacy.h"
 
 namespace NN::Runtime
 {
@@ -31,9 +31,9 @@ namespace NN::Runtime
         bool IsPlayMode() const;				// 检查当前是否处于播放模式
         bool ExitPlayMode();				        // 从运行时场景切换回编辑器场景
 
-        bool SaveScene(Scene* scene, const String& path);	// 保存当前场景到指定路径
+        bool SaveScene(SceneLegacy* scene, const String& path);	// 保存当前场景到指定路径
 		Ref<IScene> LoadScene(const String& path);		// 从指定路径加载场景
-		Ref<Scene> LoadNewScene();						// 加载新场景
+		Ref<SceneLegacy> LoadNewScene();						// 加载新场景
 		void LoadSceneOnUpdate(const String& path);
 		 
         IScene* GetCurrentEditorScene() const;			// 获取当前编辑器场景

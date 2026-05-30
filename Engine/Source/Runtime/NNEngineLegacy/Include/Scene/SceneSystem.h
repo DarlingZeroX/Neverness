@@ -11,7 +11,7 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
-#include "Scene.h"
+#include "SceneLegacy.h"
 
 namespace NN::Runtime
 {

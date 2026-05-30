@@ -11,7 +11,7 @@
 #pragma once
 #include "../EngineConfig.h"
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
-#include "Scene.h"
+#include "SceneLegacy.h"
 
 namespace NN::Runtime
 {
@@ -20,7 +20,7 @@ namespace NN::Runtime
 	public:
 		Ref<IScene> CreateScene() override
 		{
-			return MakeRef<Scene>();
+			return MakeRef<SceneLegacy>();
 		}
 	};
 }

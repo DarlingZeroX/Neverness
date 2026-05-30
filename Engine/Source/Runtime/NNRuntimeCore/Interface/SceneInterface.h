@@ -24,7 +24,7 @@ namespace NN::Runtime
 	struct IEntity : public NN::Core::HEntityInterface
 	{
 		using Entity = entt::entity;
-		friend class Scene;
+		friend class SceneLegacy;
 
 		IEntity() = default;
 		IEntity(const IEntity&) = default;

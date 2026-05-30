@@ -33,6 +33,9 @@ public sealed class RmlUIDocumentInspector
         modified |= ImGui.DragInt("##SortOrder", ref data.SortOrder, 1f, -1000, 1000);
         ImGui.PopItemWidth();
 
+        // ── ViewTarget ──
+        modified |= DrawViewTarget(ref data);
+
         // ── Flags ──
         modified |= DrawFlags(ref data);
 
@@ -111,15 +114,6 @@ public sealed class RmlUIDocumentInspector
             modified = true;
         }
 
-        ImGui.SameLine();
-        bool visible = flags.HasFlag(NNRmlUIDocumentFlags.Visible);
-        if (ImGui.Checkbox("Visible", ref visible))
-        {
-            flags = visible ? flags | NNRmlUIDocumentFlags.Visible
-                            : flags & ~NNRmlUIDocumentFlags.Visible;
-            modified = true;
-        }
-
         bool focusable = flags.HasFlag(NNRmlUIDocumentFlags.Focusable);
         if (ImGui.Checkbox("Focusable", ref focusable))
         {
@@ -139,6 +133,23 @@ public sealed class RmlUIDocumentInspector
 
         if (modified)
             data.Flags = flags;
+        return modified;
+    }
+
+    /// <summary>绘制视图目标下拉框。</summary>
+    private static bool DrawViewTarget(ref NNRmlUIDocumentComponentData data)
+    {
+        ImGui.Text("View Target");
+        ImGui.SameLine(120f);
+        ImGui.PushItemWidth(200f);
+
+        int current = (int)data.ViewTarget;
+        string[] items = ["Scene", "Game", "Both"];
+        bool modified = ImGui.Combo("##ViewTarget", ref current, items, items.Length);
+        if (modified)
+            data.ViewTarget = (NNRmlUIViewTarget)current;
+
+        ImGui.PopItemWidth();
         return modified;
     }
 }

@@ -100,7 +100,7 @@ namespace NN::Runtime
 		if (setting.MainScene.empty())
 		{
 			H_LOG_INFO("Editor default scene no exist!");
-			m_Scene = MakeRef<Scene>();
+			m_Scene = MakeRef<SceneLegacy>();
 			GetSceneManager()->SetCurrentScene(m_Scene);
 			return;
 		}
@@ -109,7 +109,7 @@ namespace NN::Runtime
 
 		if (m_Scene == nullptr)
 		{
-			m_Scene = MakeRef<Scene>();
+			m_Scene = MakeRef<SceneLegacy>();
 			GetSceneManager()->SetCurrentScene(m_Scene);
 		}
 	}

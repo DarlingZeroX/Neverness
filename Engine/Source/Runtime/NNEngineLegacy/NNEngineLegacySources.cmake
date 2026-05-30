@@ -48,7 +48,7 @@ set(NNEngineLegacy_SOURCES
     Include/Scene/ComponentSerializer.h
     Include/Scene/GameActor.h
     Include/Scene/GameActorFactory.h
-    Include/Scene/Scene.h
+    Include/Scene/SceneLegacy.h
     Include/Scene/SceneFactory.h
     Include/Scene/SceneSystem.h
     Interface/CoreLua.h

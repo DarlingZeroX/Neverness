@@ -44,6 +44,33 @@ typedef struct NNViewportRenderAPI
         std::uint32_t* outDrawCalls,
         std::uint32_t* outQuadCount);
 
+    /**
+     * @brief 设置 RmlUI 视口尺寸。
+     * @param width   视口宽度
+     * @param height  视口高度
+     */
+    void (NN_ENGINE_ABI_STDCALL *SetRmlUIViewportSize)(
+        std::uint32_t width,
+        std::uint32_t height);
+
+    /**
+     * @brief 处理 RmlUI 输入事件。
+     * @param type      事件类型（0=MouseMove, 1=MouseButtonDown, 2=MouseButtonUp, 3=MouseWheel, 4=KeyDown, 5=KeyUp）
+     * @param mouseX    鼠标 X
+     * @param mouseY    鼠标 Y
+     * @param wheelX    滚轮 X
+     * @param wheelY    滚轮 Y
+     * @param button    鼠标按钮
+     * @param keyCode   键盘按键码
+     * @param keyMod    键盘修饰符
+     */
+    void (NN_ENGINE_ABI_STDCALL *ProcessRmlUIInput)(
+        std::uint32_t type,
+        std::int32_t mouseX, std::int32_t mouseY,
+        std::int32_t wheelX, std::int32_t wheelY,
+        std::uint32_t button,
+        std::uint32_t keyCode, std::uint32_t keyMod);
+
 } NNViewportRenderAPI;
 
 #ifdef __cplusplus

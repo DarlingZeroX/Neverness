@@ -222,16 +222,17 @@ public static class EntityFactory
     /// </summary>
     /// <param name="world">目标场景世界。</param>
     /// <param name="displayName">显示名称（默认 "RmlUI Document"）。</param>
-    /// <param name="flags">标志位（默认 AutoLoad + Visible + ReceivesInput）。</param>
+    /// <param name="flags">标志位（默认 AutoLoad + ReceivesInput）。</param>
     /// <param name="sortOrder">渲染排序（默认 0）。</param>
+    /// <param name="viewTarget">视图目标（默认 Both）。</param>
     /// <returns>配置好的实体；创建失败时返回 null。</returns>
     public static SceneEntity? CreateRmlUIDocument(
         SceneWorld world,
         string displayName = "RmlUI Document",
         NNRmlUIDocumentFlags flags = NNRmlUIDocumentFlags.AutoLoad
-                                   | NNRmlUIDocumentFlags.Visible
                                    | NNRmlUIDocumentFlags.ReceivesInput,
-        int sortOrder = 0)
+        int sortOrder = 0,
+        NNRmlUIViewTarget viewTarget = NNRmlUIViewTarget.Both)
     {
         ArgumentNullException.ThrowIfNull(world);
 
@@ -256,6 +257,7 @@ public static class EntityFactory
         {
             Flags = flags,
             SortOrder = sortOrder,
+            ViewTarget = viewTarget,
         });
 
         return entity;

@@ -86,5 +86,6 @@ NN_REGISTER_COMPONENT(
 		"RmlUIDocument",
 		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, DocumentAsset, Guid),
 		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, Flags, UInt32),
-		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, SortOrder, UInt32));
+		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, SortOrder, UInt32),
+		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, ViewTarget, UInt32));
 } // namespace

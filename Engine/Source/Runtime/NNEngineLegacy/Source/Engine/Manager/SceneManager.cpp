@@ -39,7 +39,7 @@ namespace NN::Runtime
 		}
 
 		m_EditorScene = m_CurrentScene;
-		SaveScene(dynamic_cast<Scene*>(m_CurrentScene.get()),  RuntimeCore::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
+		SaveScene(dynamic_cast<SceneLegacy*>(m_CurrentScene.get()),  RuntimeCore::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
 		LoadScene(RuntimeCore::GetProjectIntermediatePathVFS() + "runtimeScene.vgasset");
 
 		return true;
@@ -72,7 +72,7 @@ namespace NN::Runtime
 		return true;
 	}
 
-	bool SceneManager::SaveScene(Scene* scene, const String& path)
+	bool SceneManager::SaveScene(SceneLegacy* scene, const String& path)
 	{
 		if (scene == nullptr)
 			return false;
@@ -166,9 +166,9 @@ namespace NN::Runtime
 		return sceneAsset->LoadedScene;
 	}
 
-	Ref<Scene> SceneManager::LoadNewScene()
+	Ref<SceneLegacy> SceneManager::LoadNewScene()
 	{
-		Ref<Scene> scene = MakeRef<Scene>();
+		Ref<SceneLegacy> scene = MakeRef<SceneLegacy>();
 		GetGameActorFactory()->CreateActor(scene.get(), "camera");
 
 		m_NewScene = scene;

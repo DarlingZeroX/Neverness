@@ -12,7 +12,7 @@
 #pragma once
 #include "../../Interface/IComponentDrawer.h"
 #include "../../Interface/ComponentDrawerRegistry.h"
-#include <NNEngineLegacy/Include/Scene/Scene.h>
+#include <NNEngineLegacy/Include/Scene/SceneLegacy.h>
 
 namespace NN::Editor {
 
@@ -39,7 +39,7 @@ namespace NN::Editor {
 	private:
 		//GameActor* m_pSelectedEntity;
 		Runtime::VGActorID m_SelectEntityID;
-		Runtime::Scene* m_pScene;
+		Runtime::SceneLegacy* m_pScene;
 		bool m_IsOpen = true;
 
 		//ComponentDrawerManager m_DrawerManager;

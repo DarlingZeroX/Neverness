@@ -20,15 +20,15 @@
 
 namespace NN::Runtime
 {
-	class VG_ENGINE_API Scene: public IScene
+	class VG_ENGINE_API SceneLegacy: public IScene
 	{
 	public:
-		Scene();
-		Scene(const Scene&) = default;
-		Scene& operator=(const Scene&) = default;
-		Scene(Scene&&) noexcept = default;
-		Scene& operator=(Scene&&) noexcept = default;
-		~Scene() override = default;
+		SceneLegacy();
+		SceneLegacy(const SceneLegacy&) = default;
+		SceneLegacy& operator=(const SceneLegacy&) = default;
+		SceneLegacy(SceneLegacy&&) noexcept = default;
+		SceneLegacy& operator=(SceneLegacy&&) noexcept = default;
+		~SceneLegacy() override = default;
 
 		//NN::Core::HEventDelegate<const NN::Core::HUISceneEvent&> OnSceneEvent;
 		IGameActor* CreateActor(IEntity* parent = nullptr) override;

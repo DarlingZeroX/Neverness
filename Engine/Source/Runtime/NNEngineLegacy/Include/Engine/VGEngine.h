@@ -12,7 +12,7 @@
 #pragma once
 #include "../Project/ProjectSettings.h"
 #include "../EngineConfig.h"
-#include "../Scene/Scene.h"
+#include "../Scene/SceneLegacy.h"
 #include "NNRuntimeCore/Interface/EngineInterface.h"
 #include <NNCore/Interface/HCore.h>
 

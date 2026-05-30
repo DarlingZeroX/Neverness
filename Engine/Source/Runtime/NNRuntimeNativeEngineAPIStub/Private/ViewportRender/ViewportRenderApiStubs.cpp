@@ -36,6 +36,33 @@ void NN_ENGINE_ABI_STDCALL stub_viewportRender_getRenderStats(
     if (outQuadCount) *outQuadCount = 0;
 }
 
+void NN_ENGINE_ABI_STDCALL stub_viewportRender_setRmlUIViewportSize(
+    std::uint32_t width,
+    std::uint32_t height)
+{
+    NN::StubRuntime::BumpInvokeCount();
+    (void)width;
+    (void)height;
+}
+
+void NN_ENGINE_ABI_STDCALL stub_viewportRender_processRmlUIInput(
+    std::uint32_t type,
+    std::int32_t mouseX, std::int32_t mouseY,
+    std::int32_t wheelX, std::int32_t wheelY,
+    std::uint32_t button,
+    std::uint32_t keyCode, std::uint32_t keyMod)
+{
+    NN::StubRuntime::BumpInvokeCount();
+    (void)type;
+    (void)mouseX;
+    (void)mouseY;
+    (void)wheelX;
+    (void)wheelY;
+    (void)button;
+    (void)keyCode;
+    (void)keyMod;
+}
+
 } // namespace
 
 extern "C" void NNBuildViewportRenderApiStubs(NNViewportRenderAPI* api)
@@ -47,4 +74,6 @@ extern "C" void NNBuildViewportRenderApiStubs(NNViewportRenderAPI* api)
     api->RenderSceneToTexture = &stub_viewportRender_renderSceneToTexture;
     api->GetLastRenderedTexture = &stub_viewportRender_getLastRenderedTexture;
     api->GetRenderStats = &stub_viewportRender_getRenderStats;
+    api->SetRmlUIViewportSize = &stub_viewportRender_setRmlUIViewportSize;
+    api->ProcessRmlUIInput = &stub_viewportRender_processRmlUIInput;
 }

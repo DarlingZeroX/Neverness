@@ -12,7 +12,7 @@
 #pragma once
 #include "../Config.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/MenuItem.h"
-#include <NNEngineLegacy/Include/Scene/Scene.h>
+#include <NNEngineLegacy/Include/Scene/SceneLegacy.h>
 
 namespace NN::Editor
 {
@@ -49,7 +49,7 @@ namespace NN::Editor
 		void CreateGameActor(const Runtime::String& type, Runtime::IEntity* parent = nullptr) const;
 	private:
 		Runtime::VGActorID m_SelectedEntityID = 0;
-		Runtime::Scene* m_rScene;
+		Runtime::SceneLegacy* m_rScene;
 
 		EditorUIMenu m_Menu;
 		bool m_IsAnyItemHovered = false;

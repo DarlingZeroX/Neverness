@@ -91,4 +91,7 @@ set(NNRuntimeRmlui_SOURCES
     Source/Sol/Vector2i.cpp
     Source/UIDocumentLegacy.cpp
     Source/UISystemLegacy.cpp
+    Source/System/NNRmlUIModule.cpp
+    Source/System/NNRmlUISystem.cpp
+    Source/Renderer/RmlUIRenderer.cpp
 )

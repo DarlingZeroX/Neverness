@@ -18,6 +18,7 @@
 #include "../Components/NNTransformComponent.h"
 #include "../Components/NNVideoPlayerComponent.h"
 #include "../Components/NNRmlUIDocumentComponent.h"
+#include "../Assets/IAssetResolver.h"
 #include "../Reflection/NNComponentRegistry.h"
 #include "../Runtime/NNDirtyTracker.h"
 #include "../Runtime/NNSceneEventBus.h"
@@ -31,6 +32,7 @@
 #include "../../NNRuntimeSceneExport.h"
 
 #include <atomic>
+#include <memory>
 #include <vector>
 
 namespace NN::Runtime::Scene
@@ -80,6 +82,14 @@ namespace NN::Runtime::Scene
 		void RegisterSystem(ISceneSystem* system) noexcept;
 
 		void TickSystems(float deltaTimeSeconds) noexcept;
+
+		// ── 资产解析器注入 ──
+
+		/** @brief 设置资产路径解析器（不拥有所有权，由外部管理生命周期）。 */
+		void SetAssetResolver(IAssetResolver* resolver) noexcept { m_AssetResolver = resolver; }
+
+		/** @brief 获取当前资产路径解析器（可能为 nullptr）。 */
+		[[nodiscard]] IAssetResolver* GetAssetResolver() const noexcept { return m_AssetResolver; }
 
 		[[nodiscard]] NNSceneEventBus& GetEventBus() noexcept { return m_EventBus; }
 		[[nodiscard]] const NNSceneEventBus& GetEventBus() const noexcept { return m_EventBus; }
@@ -307,6 +317,9 @@ namespace NN::Runtime::Scene
 		NNSceneUpdateSystem m_SceneUpdateSystem{};
 		NNCameraSystem m_CameraSystem{};
 
+		// ── 外部注入的依赖（不拥有所有权）──
+		IAssetResolver* m_AssetResolver = nullptr;
+
 		// ── Editor Snapshot 版本号 + 增量脏条目 ──
 		std::atomic<std::uint64_t> m_HierarchyVersion{0u};
 		std::atomic<std::uint64_t> m_TransformVersion{0u};
@@ -315,4 +328,4 @@ namespace NN::Runtime::Scene
 	};
 } // namespace NN::Runtime::Scene
 
-#include "Query/NNEntityQuery.h"
+#include "../Query/NNEntityQuery.h"

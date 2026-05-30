@@ -96,7 +96,7 @@ namespace NN::Editor
 			return SaveCurrentSceneAs();
 		}
 		
-		if (Runtime::GetSceneManager()->SaveScene(dynamic_cast<Runtime::Scene*>(scene), scene->GetResourcePath()))
+		if (Runtime::GetSceneManager()->SaveScene(dynamic_cast<Runtime::SceneLegacy*>(scene), scene->GetResourcePath()))
 		{
 			ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Save current scene successfully" });
 			//pfd::notify(
@@ -126,7 +126,7 @@ namespace NN::Editor
 		auto* scene = Runtime::GetSceneManager()->GetCurrentEditorScene();
 		auto scenePath = Runtime::RuntimeCore::GetResourcePathVFS(destination);
 
-		if (Runtime::GetSceneManager()->SaveScene(dynamic_cast<Runtime::Scene*>(scene), scenePath))
+		if (Runtime::GetSceneManager()->SaveScene(dynamic_cast<Runtime::SceneLegacy*>(scene), scenePath))
 		{
 			ImGuiEx::PushNotification({ ImGuiExToastType::Info, "Save scene successfully" });
 		}

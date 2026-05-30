@@ -98,7 +98,7 @@ namespace NN::Editor {
 				switch (evt.EventType)
 				{
 				case Runtime::EngineEventType::MainSceneChanged:
-					m_pScene = dynamic_cast<Runtime::Scene*>(evt.Scene);
+					m_pScene = dynamic_cast<Runtime::SceneLegacy*>(evt.Scene);
 					break;
 				}
 			});

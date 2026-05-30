@@ -12,7 +12,7 @@
 #include "SceneBrowser.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/Localization.h"
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
-#include <NNEngineLegacy/Include/Scene/Scene.h>
+#include <NNEngineLegacy/Include/Scene/SceneLegacy.h>
 #include <NNRuntimeCore/Include/Core/EventBus.h>
 #include <NNEngineLegacy/Include/Scene/Components.h>
 #include <NNEngineLegacy/Include/Scene/GameActorFactory.h>
@@ -43,7 +43,7 @@ namespace NN::Editor
 				switch (evt.EventType)
 				{
 				case Runtime::EngineEventType::MainSceneChanged:
-					m_rScene = static_cast<Runtime::Scene*>(evt.Scene);
+					m_rScene = static_cast<Runtime::SceneLegacy*>(evt.Scene);
 					break;
 				}
 			});

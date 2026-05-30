@@ -12,7 +12,7 @@
 #pragma once
 #include "Camera.h"
 #include "../EngineConfig.h"
-#include "../Scene/Scene.h"
+#include "../Scene/SceneLegacy.h"
 #include "../Scene/Components.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 

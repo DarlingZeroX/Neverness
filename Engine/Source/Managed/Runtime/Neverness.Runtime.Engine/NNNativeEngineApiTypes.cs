@@ -244,6 +244,16 @@ public struct NNVideoPlayerComponentData
 }
 
 /// <summary>
+/// RmlUI 文档视图目标——控制在哪个视图中显示（与 Native NNRmlUIViewTarget 对齐）。
+/// </summary>
+public enum NNRmlUIViewTarget : uint
+{
+	Scene = 0,  ///< 仅在 Scene View 中显示（编辑模式预览）
+	Game  = 1,  ///< 仅在 Game View 中显示（播放模式）
+	Both  = 2,  ///< 两个视图都显示
+}
+
+/// <summary>
 /// RmlUI 文档组件标志位（与 Native NNRmlUIDocumentFlags 对齐）。
 /// </summary>
 [Flags]
@@ -251,13 +261,12 @@ public enum NNRmlUIDocumentFlags : uint
 {
 	None          = 0,
 	AutoLoad      = 1u << 0,   ///< 场景启动时自动加载文档
-	Visible       = 1u << 1,   ///< 初始可见
-	Focusable     = 1u << 2,   ///< 可接收焦点
-	ReceivesInput = 1u << 3,   ///< 可接收输入事件
+	Focusable     = 1u << 1,   ///< 可接收焦点
+	ReceivesInput = 1u << 2,   ///< 可接收输入事件
 }
 
 /// <summary>
-/// RmlUI 文档组件——blittable 結構體，與 Native <c>NNRmlUIDocumentComponent</c> 內存佈局一致（24 字節）。
+/// RmlUI 文档组件——blittable 結構體，與 Native <c>NNRmlUIDocumentComponent</c> 內存佈局一致（28 字節）。
 /// TypeId = FNV-1a("RmlUIDocument")，須與 Native BuiltinComponentRegistration.cpp 一致。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -267,8 +276,9 @@ public struct NNRmlUIDocumentComponentData
 	public NNGuid DocumentAsset;                // 16B offset 0（HTML 文档资产 GUID）
 	public NNRmlUIDocumentFlags Flags;          // 4B offset 16
 	public int SortOrder;                       // 4B offset 20
+	public NNRmlUIViewTarget ViewTarget;        // 4B offset 24
 }
-// 共 24 字节，与 C++ 侧 NNRmlUIDocumentComponent 完全对齐
+// 共 28 字节，与 C++ 侧 NNRmlUIDocumentComponent 完全对齐
 
 
 /// <summary>

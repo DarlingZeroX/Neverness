@@ -61,6 +61,7 @@ target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-VFS
 	NevernessRuntime-RenderAssets
 	NevernessRuntime-Renderer2D
+	NevernessRuntime-RmlUI
 )
 
 add_library(NNEngineRuntimeServices ALIAS NevernessRuntime-EngineServices)
