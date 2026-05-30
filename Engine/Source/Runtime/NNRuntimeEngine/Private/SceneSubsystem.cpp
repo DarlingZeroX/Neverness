@@ -7,6 +7,7 @@
 
 #include <cstring>
 
+#include "NNCore/Interface/HLog.h"
 #include "NNRuntimeScene/Include/Reflection/NNComponentRegistry.h"
 #include "NNRuntimeScene/Include/Scene/NNRuntimeScene.h"
 #include "NNRuntimeScene/Include/Serialization/NNSceneSerializer.h"
@@ -360,13 +361,17 @@ NNSceneResult SceneSubsystem::SerializeScene(
 	const NNSceneHandle scene,
 	const char* vfsPath) noexcept
 {
+	H_LOG_INFO("Serializing scene: %s", vfsPath);
+
 	if (vfsPath == nullptr)
 	{
+		H_LOG_WARN("Invalid VFS path: %s", vfsPath);
 		return NN_SCENE_ERR_INVALID;
 	}
 
 	if (vfs_ == nullptr || vfs_->writeBufferToFile == nullptr)
 	{
+		H_LOG_WARN("Invalid VFS API or function not implemented");
 		return NN_SCENE_ERR_IO;
 	}
 
@@ -374,6 +379,7 @@ NNSceneResult SceneSubsystem::SerializeScene(
 	NNRuntimeScene* s = FindScene(scene);
 	if (s == nullptr)
 	{
+		H_LOG_WARN("Scene not found: %llu", static_cast<unsigned long long>(scene));
 		return NN_SCENE_ERR_NOT_FOUND;
 	}
 
@@ -386,9 +392,15 @@ NNSceneResult SceneSubsystem::SerializeScene(
 	//	blob.data(),
 	//	static_cast<std::uint64_t>(blob.size())) != 0 ? NN_SCENE_OK : NN_SCENE_ERR_IO;
 
+	if (vfs_->writeText == nullptr)
+	{
+		H_LOG_WARN("VFS writeText function not implemented");
+		return NN_SCENE_ERR_IO;
+	}
+
 	// Json
 	const std::string jsonStr = Scene::NNJsonSceneSerializer::Serialize(*s);
-	return vfs_->writeText != nullptr && vfs_->writeText(vfsPath, jsonStr.c_str()) != 0
+	return vfs_->writeText(vfsPath, jsonStr.c_str()) != 0
 		? NN_SCENE_OK : NN_SCENE_ERR_IO;
 }
 

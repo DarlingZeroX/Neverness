@@ -31,13 +31,14 @@ Level 1:  Neverness.Editor.Core              ← 运行时中枢 / 服务总线 
           Neverness.Editor.UndoRedo          ← 撤销重做
           Neverness.Editor.Serialization     ← 序列化桥接
 
-Level 0:  Neverness.Editor.Framework         ← 纯基础设施（Docking / Menu / Panel）
+Level 0:  Neverness.Editor.Framework         ← 纯基础设施（Docking / Menu / Panel / Command）
+          Neverness.Editor.Shell             ← 主窗口 / 菜单栏 / 工具栏（依赖 Framework）
           Neverness.Editor.ImGui             ← ThirdParty
           Neverness.Editor.ImGuiEx           ← ImGui 扩展
           Neverness.Editor.ProjectSystem     ← 项目路径 / VFS
 ```
 
-**依赖规则：** Framework ← Core ← Feature。Feature 之间可有选择性依赖（Scene → Assets），但禁止反向。
+**依赖规则：** Framework ← Shell ← Core ← Feature。Feature 之间可有选择性依赖（Scene → Assets），但禁止反向。
 
 ---
 
@@ -46,7 +47,8 @@ Level 0:  Neverness.Editor.Framework         ← 纯基础设施（Docking / Men
 ```
 Engine/Source/Managed/Editor/
 ├── NevernessEditor/                            ← Exe 入口
-├── Neverness.Editor.Framework/                 ← Level 0：纯基础设施
+├── Neverness.Editor.Framework/                 ← Level 0：纯基础设施（Docking / Menu / Panel / Command）
+├── Neverness.Editor.Shell/                     ← Level 0：主窗口 / 菜单栏 / 工具栏
 ├── Neverness.Editor.Core/                      ← Level 1：运行时中枢
 ├── Neverness.Editor.Assets/                    ← Level 2：ContentBrowser + 资产工厂
 ├── Neverness.Editor.Scene/                     ← Level 3：场景编辑
@@ -70,10 +72,11 @@ Engine/Source/Managed/Editor/
 
 ```csharp
 // EditorApplicationRunner.Run()
-EditorFrameworkModule.Install(window);   // 1. 基础设施（PanelManager / Menu / Command / Docking）
-EditorCoreModule.Install();              // 2. 运行时中枢（EditorContext / EventBus / LifecycleManager）
-AssetsModule.Install();                  // 3. 资产模块（ContentBrowser / 资产工厂 / 上下文菜单）
-SceneModule.Install();                   // 4. 场景模块（SceneBrowser / EditorViewport）
+EditorFrameworkModule.Install();         // 1. 基础设施（PanelManager / Menu / Command / Docking / Toolbar 按钮注册）
+ShellModule.Install(window);             // 2. 主窗口 / 菜单栏（EditorMainWindow / EditorMenuBar / AddChildPanel 回调注册）
+EditorCoreModule.Install();              // 3. 运行时中枢（EditorContext / EventBus / LifecycleManager）
+AssetsModule.Install(sceneManager);      // 4. 资产模块（ContentBrowser / 资产工厂 / 上下文菜单）
+SceneModule.Install(sceneManager);       // 5. 场景模块（SceneBrowser / EditorViewport）
 ```
 
 ---
@@ -83,6 +86,7 @@ SceneModule.Install();                   // 4. 场景模块（SceneBrowser / Edi
 | 模块 | 文档 |
 |------|------|
 | **Neverness.Editor.Framework** | [Framework/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](Neverness.Editor.Framework/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) |
+| **Neverness.Editor.Shell** | 主窗口 / 菜单栏模块（见 Framework 文档的迁移记录） |
 | **Neverness.Editor.Serialization** | [Serialization/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](Neverness.Editor.Serialization/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) |
 
 ---
@@ -104,3 +108,4 @@ SceneModule.Install();                   // 4. 场景模块（SceneBrowser / Edi
 |------|------|
 | **2026-05-19** | 初版：Neverness 品牌、Editor 分支总文档 |
 | **2026-05-23** | 架构重构完成：Core / Assets / Scene 模块化；Framework 纯化；更新层级图与启动流程 |
+| **2026-05-30** | MainWindow / MenuBar 独立为 Neverness.Editor.Shell 模块；PanelManager 改用回调委托解耦；启动流程新增 ShellModule.Install(window) |

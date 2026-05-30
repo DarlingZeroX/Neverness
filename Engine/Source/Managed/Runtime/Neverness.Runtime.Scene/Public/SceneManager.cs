@@ -1,4 +1,5 @@
 using Neverness.Runtime.Engine;
+using Neverness.Runtime.Scene.Internal;
 
 namespace Neverness.Runtime.Scene;
 
@@ -227,6 +228,48 @@ public sealed class SceneManager
 
         _worlds.Clear();
         _activeWorld = null;
+    }
+
+    /// <summary>
+    /// 从快照原子替换当前激活场景。
+    /// 不触发 SceneUnloaded / SceneLoaded 事件风暴，只触发一次 SceneActivated。
+    /// 内部：dispose old → deserialize new → 替换 _activeWorld 引用。
+    /// </summary>
+    public NNSceneResult ReplaceActiveSceneFromSnapshot(NNGuid sceneGuid, string snapshotPath)
+    {
+        if (_activeWorld == null)
+        {
+            return NNSceneResult.Invalid;
+        }
+
+        // 1. 反序列化快照
+        var result = SceneNativeBridge.DeserializeScene(out var newHandle, snapshotPath);
+        if (result != NNSceneResult.Ok || newHandle == 0)
+        {
+            return NNSceneResult.Invalid;
+        }
+
+        // 2. 保存旧 world 信息
+        var oldWorld = _activeWorld;
+        var oldName = oldWorld.Name;
+
+        // 3. 静默 Dispose 旧 world（释放 Native 资源 + Managed 映射，不触发事件）
+        oldWorld.DisposeQuiet();
+
+        // 4. 创建新 world 并替换
+        // 注意：DisposeQuiet 已销毁旧 Native 句柄，需要从 _worlds 移除
+        _worlds.Remove(oldName);
+
+        // 通过内部构造函数创建 world（避免 CreateScene 重复创建）
+        var newWorld = SceneWorld.RestoreFromSnapshotInternal(newHandle, oldName, sceneGuid);
+
+        _worlds[oldName] = newWorld;
+        _activeWorld = newWorld;
+
+        // 5. 触发一次 SceneActivated 事件（通知 Editor 面板刷新）
+        SceneActivated?.Invoke(newWorld);
+
+        return NNSceneResult.Ok;
     }
 
     // ── 热重载 ──

@@ -238,6 +238,69 @@
                 }
             },
             "id": "0x100000003"
+        },
+        {
+            "components": {
+                "Relationship": {
+                    "ChildCount": 0,
+                    "Depth": 0,
+                    "Parent": null
+                },
+                "RmlUIDocument": {
+                    "DocumentAsset": "b,6bb,835,154,222,14c:b,9cb,1d0,ddd,e42,05a",
+                    "Flags": 11,
+                    "SortOrder": 0
+                },
+                "Tag": {
+                    "Flags": 0,
+                    "Name": ""
+                },
+                "Transform": {
+                    "Position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "WorldMatrix": [
+                        [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            1.0,
+                            0.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            1.0,
+                            0.0
+                        ],
+                        [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    ]
+                }
+            },
+            "id": "0x100000004"
         }
     ],
     "format": "NNScene",

@@ -18,11 +18,11 @@
 
 namespace NN::Runtime
 {
-	class VG_UI_API RmlUIDocument : public VGEngineResource
+	class VG_UI_API RmlUIDocumentLegacy : public VGEngineResource
 	{
 	public:
-		RmlUIDocument();
-		~RmlUIDocument() override;
+		RmlUIDocumentLegacy();
+		~RmlUIDocumentLegacy() override;
 
 		void Close();
 		void AddUpdateCallback(const sol::function& callback);

@@ -17,7 +17,7 @@
 #include "../Engine/AudioPlayer.h"
 #include "../Engine/VideoPlayer.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
-#include "NNRuntimeRmlui/Interface/UIDocument.h"
+#include "NNRuntimeRmlui/Interface/UIDocumentLegacy.h"
 #include "NNRuntimeCore/Interface/SceneInterface.h"
 #include "NNRuntimeCore/Interface/GameInterface.h"
 #include <NNCore/Interface/HSerialization.h>
@@ -484,7 +484,7 @@ namespace NN::Runtime {
 			}
 		}
 	public:
-		Ref<RmlUIDocument> document = nullptr;
+		Ref<RmlUIDocumentLegacy> document = nullptr;
 	};
 
 	class VG_ENGINE_API AnimationScriptComponent : public IComponent

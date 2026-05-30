@@ -10,7 +10,7 @@
 */
 
 #include "Document.h"
-#include "UISystem.h"
+#include "UISystemLegacy.h"
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/ElementDocument.h>
 
@@ -30,25 +30,25 @@ namespace RmlSol {
 			"Hide", &Rml::ElementDocument::Hide,
 			"Close", [](Rml::ElementDocument& self) {
 				//self.Close();
-				NN::Runtime::UISystem::Get()->OnScriptCloseDocument(&self);
+				NN::Runtime::UISystemLegacy::Get()->OnScriptCloseDocument(&self);
 			},
 			"CreateElement", [](Rml::ElementDocument& self, const Rml::String& name) {
 				Rml::ElementPtr* ele = new Rml::ElementPtr(self.CreateElement(name));
 				return ele->get();
 			},
 			"AddUpdateCallback", [](Rml::ElementDocument& self, const sol::function& callback) {
-				auto uiDocument = NN::Runtime::UISystem::Get()->FindDocumentByElementDocument(&self);
+				auto uiDocument = NN::Runtime::UISystemLegacy::Get()->FindDocumentByElementDocument(&self);
 				if (uiDocument == nullptr)
 				{
-					uiDocument = NN::Runtime::UISystem::Get()->OnScriptOpenDocument(&self);
+					uiDocument = NN::Runtime::UISystemLegacy::Get()->OnScriptOpenDocument(&self);
 				}
 				uiDocument->AddUpdateCallback(callback);
 			},
 			"AddTimerCallback", [](Rml::ElementDocument& self, float interval, const sol::function& callback) {
-				auto uiDocument = NN::Runtime::UISystem::Get()->FindDocumentByElementDocument(&self);
+				auto uiDocument = NN::Runtime::UISystemLegacy::Get()->FindDocumentByElementDocument(&self);
 				if (uiDocument == nullptr)
 				{
-					uiDocument = NN::Runtime::UISystem::Get()->OnScriptOpenDocument(&self);
+					uiDocument = NN::Runtime::UISystemLegacy::Get()->OnScriptOpenDocument(&self);
 				}
 				uiDocument->AddTimerCallback(interval, callback);
 			}, 

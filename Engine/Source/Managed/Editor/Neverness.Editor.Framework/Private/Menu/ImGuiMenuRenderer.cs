@@ -7,7 +7,7 @@ namespace Neverness.Editor.Framework.Private.Menu;
 /// <summary>
 /// ImGui 菜单渲染器——递归遍历 MenuTree 绘制主菜单栏。
 /// </summary>
-internal static class ImGuiMenuRenderer
+public static class ImGuiMenuRenderer
 {
     /// <summary>渲染主菜单栏（完整生命周期：Begin → 菜单项 → End）。</summary>
     public static void RenderMainMenuBar(MenuTree tree)

@@ -1,4 +1,6 @@
+using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Scene;
+using EditorPlayMode = Neverness.Editor.Core.Public.PlayMode;
 
 namespace Neverness.Editor.Scene.Public;
 
@@ -19,4 +21,27 @@ public static class SceneModule
     {
         Private.SceneModuleImp.SetSceneHandle(sceneHandle);
     }
+
+    // ── PlayMode API ──
+
+    /// <summary>进入播放模式。快照保存失败时返回 false。</summary>
+    public static bool EnterPlayMode() => Private.SceneModuleImp.PlayModeController.EnterPlay();
+
+    /// <summary>退出播放模式，恢复快照。</summary>
+    public static bool ExitPlayMode() => Private.SceneModuleImp.PlayModeController.ExitPlay();
+
+    /// <summary>暂停——Always 系统继续 tick，Gameplay/Editor 暂停。</summary>
+    public static bool Pause() => Private.SceneModuleImp.PlayModeController.Pause();
+
+    /// <summary>恢复——从暂停恢复到播放。</summary>
+    public static bool Resume() => Private.SceneModuleImp.PlayModeController.Resume();
+
+    /// <summary>单步执行（Phase 2 预留）。</summary>
+    public static bool StepFrame() => Private.SceneModuleImp.PlayModeController.StepFrame();
+
+    /// <summary>当前播放模式。</summary>
+    public static EditorPlayMode CurrentPlayMode => Private.SceneModuleImp.PlayModeController.CurrentMode;
+
+    /// <summary>是否在播放。</summary>
+    public static bool IsPlaying => Private.SceneModuleImp.PlayModeController.IsPlaying;
 }

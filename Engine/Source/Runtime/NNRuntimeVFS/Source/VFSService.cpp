@@ -121,10 +121,12 @@ namespace NN::Runtime::VFS
 				file->Write(reinterpret_cast<uint8_t*>(data.data()), data.size());
 				file->Close();
 
+				H_LOG_INFO("Text written to file: %s", path.c_str());
 				return true;
 			}
 		}
 
+		H_LOG_WARN("Failed to write text to file: %s", path.c_str());
 		return false;
 	}
 

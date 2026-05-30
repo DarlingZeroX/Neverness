@@ -19,8 +19,8 @@ set(NNRuntimeRmlui_SOURCES
     Include/Sol/Sol.h
     Include/Sol/SolType.h
     Include/Sol/Utilities.h
-    Interface/UIDocument.h
-    Interface/UISystem.h
+    Interface/UIDocumentLegacy.h
+    Interface/UISystemLegacy.h
     Source/Lua/Colourb.cpp
     Source/Lua/Colourf.cpp
     Source/Lua/Context.cpp
@@ -89,6 +89,6 @@ set(NNRuntimeRmlui_SOURCES
     Source/Sol/Utilities.cpp
     Source/Sol/Vector2f.cpp
     Source/Sol/Vector2i.cpp
-    Source/UIDocument.cpp
-    Source/UISystem.cpp
+    Source/UIDocumentLegacy.cpp
+    Source/UISystemLegacy.cpp
 )

@@ -10,6 +10,7 @@
 
 namespace fs = std::filesystem;
 #undef CreateFile // windows.h define CreateFile macro which cause compile error
+#undef CopyFile // windows.h define CopyFile macro which cause compile error
 
 namespace NN::Runtime::VFS
 {
@@ -271,21 +272,27 @@ private:
     {
         IFilePtr file = FindFile(filePath, m_FileList);
         bool isExists = (file != nullptr);
+
+        // 文件不存在且文件系统可写 → 创建新文件
         if (!isExists && !IsReadOnlyST()) {
             file.reset(new MemoryFile(filePath));
         }
 
         if (file) {
-			// 修复重复打开一个文件指针的错误
-			file.reset(new MemoryFile(filePath));
+            // 写入模式：需要截断已有文件数据时，创建全新文件替换缓存
+            if (isExists && (mode & IFile::FileMode::Truncate) == IFile::FileMode::Truncate) {
+                file.reset(new MemoryFile(filePath));
+                isExists = false; // 标记为新文件，需要写入缓存
+            }
 
             file->Open(mode);
-            
+
+            // 新文件打开成功 → 写入缓存（保留数据供后续读取）
             if (!isExists && file->IsOpened()) {
                 m_FileList[filePath.AbsolutePath()] = file;
             }
         }
-        
+
         return file;
     }
 
@@ -296,7 +303,9 @@ private:
         }
 
         file->Close();
-        m_FileList.erase(file->GetFileInfo().AbsolutePath());
+        // 注意：不从 m_FileList 中移除文件。
+        // 文件数据需要保留在缓存中，供后续 Open(Read) 读取。
+        // 显式删除文件应使用 RemoveFileST。
     }
 
     inline bool CreateFileST(const FileInfo& filePath)

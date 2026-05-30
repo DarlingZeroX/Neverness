@@ -216,4 +216,48 @@ public static class EntityFactory
 
         return entity;
     }
+
+    /// <summary>
+    /// 创建 RmlUI 文档实体：自动挂载 <see cref="NNTransformData"/> + <see cref="NNRmlUIDocumentComponentData"/>。
+    /// </summary>
+    /// <param name="world">目标场景世界。</param>
+    /// <param name="displayName">显示名称（默认 "RmlUI Document"）。</param>
+    /// <param name="flags">标志位（默认 AutoLoad + Visible + ReceivesInput）。</param>
+    /// <param name="sortOrder">渲染排序（默认 0）。</param>
+    /// <returns>配置好的实体；创建失败时返回 null。</returns>
+    public static SceneEntity? CreateRmlUIDocument(
+        SceneWorld world,
+        string displayName = "RmlUI Document",
+        NNRmlUIDocumentFlags flags = NNRmlUIDocumentFlags.AutoLoad
+                                   | NNRmlUIDocumentFlags.Visible
+                                   | NNRmlUIDocumentFlags.ReceivesInput,
+        int sortOrder = 0)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+
+        var entity = world.Entities.Create(displayName);
+        if (entity == null)
+        {
+            return null;
+        }
+
+        // Transform — Identity 默认值（位置原点、无旋转、缩放 1）
+        entity.AddComponent<NNTransformData>();
+        entity.SetComponent(new NNTransformData
+        {
+            Position = default,
+            Rotation = new NNQuat { W = 1.0f },
+            Scale = new NNVec3 { X = 1, Y = 1, Z = 1 },
+        });
+
+        // RmlUIDocument — 默认参数
+        entity.AddComponent<NNRmlUIDocumentComponentData>();
+        entity.SetComponent(new NNRmlUIDocumentComponentData
+        {
+            Flags = flags,
+            SortOrder = sortOrder,
+        });
+
+        return entity;
+    }
 }

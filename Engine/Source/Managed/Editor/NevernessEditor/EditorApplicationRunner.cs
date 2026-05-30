@@ -1,4 +1,5 @@
 ﻿using Neverness.Editor.Framework.Public;
+using Neverness.Editor.Shell.Public;
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Bootstrap;
@@ -11,6 +12,7 @@ using Neverness.Editor.Assets.Public;
 using Neverness.Editor.Scene.Public;
 using Neverness.Editor.MediaImporter;
 using Neverness.Editor.Media;
+using Neverness.Editor.Rmlui.Public;
 using Neverness.Runtime.Audio;
 using Neverness.Runtime.Audio.Native;
 using Neverness.Runtime.Scene;
@@ -95,11 +97,13 @@ internal static class EditorApplicationRunner
 					s_isInstalled = true;
 					var sceneManager = new SceneManager();
 
-					EditorFrameworkModule.Install(window);
+					EditorFrameworkModule.Install();
+					ShellModule.Install(window);
 					EditorCoreModule.Install();
 					MediaImporterModule.Install();
 					MediaModule.Install();
 				CoreModuleImp.Context.RegisterService<IAudioService>(new NativeAudioService());
+					RmluiModule.Install();
 					AssetsModule.Install(sceneManager);
 					SceneModule.Install(sceneManager);
 

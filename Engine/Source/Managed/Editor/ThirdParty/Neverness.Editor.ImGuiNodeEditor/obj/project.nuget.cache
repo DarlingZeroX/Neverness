@@ -1,29 +1,75 @@
 {
   "version": 2,
-  "dgSpecHash": "9E+KwMqhQu0=",
-  "success": true,
-  "projectFilePath": "e:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\30749\\.nuget\\packages\\hexagen.runtime\\1.1.21\\hexagen.runtime.1.1.21.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.net.illink.analyzers\\7.0.100-1.23211.1\\microsoft.net.illink.analyzers.7.0.100-1.23211.1.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.net.illink.tasks\\7.0.100-1.23211.1\\microsoft.net.illink.tasks.7.0.100-1.23211.1.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.27\\microsoft.net.illink.tasks.8.0.27.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.16\\microsoft.net.illink.tasks.9.0.16.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\system.buffers\\4.6.0\\system.buffers.4.6.0.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\system.memory\\4.6.0\\system.memory.4.6.0.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\system.numerics.vectors\\4.6.0\\system.numerics.vectors.4.6.0.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.1.0\\system.runtime.compilerservices.unsafe.6.1.0.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.27\\microsoft.netcore.app.ref.8.0.27.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.27\\microsoft.windowsdesktop.app.ref.8.0.27.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.27\\microsoft.aspnetcore.app.ref.8.0.27.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.20\\microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.20\\microsoft.windowsdesktop.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.20\\microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.36\\microsoft.netcore.app.ref.6.0.36.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.36\\microsoft.windowsdesktop.app.ref.6.0.36.nupkg.sha512",
-    "C:\\Users\\30749\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.36\\microsoft.aspnetcore.app.ref.6.0.36.nupkg.sha512"
-  ],
-  "logs": []
+  "dgSpecHash": "gKdtTZR/lF4=",
+  "success": false,
+  "projectFilePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "项目 Neverness.Editor.ImGui 与 net9.0 (.NETCoreApp,Version=v9.0) 不兼容。 项目 Neverness.Editor.ImGui 支持: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "filePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "libraryId": "Neverness.Editor.ImGui",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "项目 Neverness.Editor.ImGui 与 net8.0 (.NETCoreApp,Version=v8.0) 不兼容。 项目 Neverness.Editor.ImGui 支持: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "filePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "libraryId": "Neverness.Editor.ImGui",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "项目 Neverness.Editor.ImGui 与 net7.0 (.NETCoreApp,Version=v7.0) 不兼容。 项目 Neverness.Editor.ImGui 支持: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "filePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "libraryId": "Neverness.Editor.ImGui",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "项目 Neverness.Editor.ImGui 与 net6.0 (.NETCoreApp,Version=v6.0) 不兼容。 项目 Neverness.Editor.ImGui 支持: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "filePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "libraryId": "Neverness.Editor.ImGui",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "项目 Neverness.Editor.ImGui 与 netstandard2.1 (.NETStandard,Version=v2.1) 不兼容。 项目 Neverness.Editor.ImGui 支持: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "filePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "libraryId": "Neverness.Editor.ImGui",
+      "targetGraphs": [
+        "netstandard2.1"
+      ]
+    },
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "项目 Neverness.Editor.ImGui 与 netstandard2.0 (.NETStandard,Version=v2.0) 不兼容。 项目 Neverness.Editor.ImGui 支持: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "filePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGuiNodeEditor\\Neverness.Editor.ImGuiNodeEditor.csproj",
+      "libraryId": "Neverness.Editor.ImGui",
+      "targetGraphs": [
+        "netstandard2.0"
+      ]
+    }
+  ]
 }

@@ -1,7 +1,8 @@
-﻿#ifndef IFILESYSTEM_H
+#ifndef IFILESYSTEM_H
 #define IFILESYSTEM_H
 
 #undef CreateFile // windows.h define CreateFile macro which cause compile error
+#undef CopyFile // windows.h define CopyFile macro which cause compile error
 
 #include <filesystem>
 #include <memory>

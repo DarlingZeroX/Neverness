@@ -38,5 +38,5 @@ public sealed class DynamicMenuBuilder
     }
 
     /// <summary>构建结果列表（内部使用）。</summary>
-    internal IReadOnlyList<EditorMenuItem> Build() => _items;
+    public IReadOnlyList<EditorMenuItem> Build() => _items;
 }

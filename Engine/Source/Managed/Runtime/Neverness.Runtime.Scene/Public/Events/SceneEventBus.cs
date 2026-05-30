@@ -99,6 +99,18 @@ public sealed class SceneEventBus
         }
     }
 
+    /// <summary>
+    /// 按标签处理延迟队列中的事件。
+    /// Phase 1 基础实现：忽略 mask，全量 Flush（向后兼容）。
+    /// Phase 2 扩展：内部按标签分层队列，仅 Flush 匹配的队列。
+    /// </summary>
+    public void FlushDeferred(SceneSystemTags mask)
+    {
+        // Phase 1: 忽略 mask，全量 Flush
+        // Phase 2: 按 mask 过滤，只 Flush 匹配队列
+        FlushDeferred();
+    }
+
     /// <summary>延迟队列中待处理的事件数量。</summary>
     public int DeferredCount => _deferredQueue.Count;
 

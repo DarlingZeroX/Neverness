@@ -13,7 +13,7 @@
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNEngineLegacy/Include/Engine/Manager.h"
 //#include "VGGalgame/Include/GalGameEngine.h"
-#include <NNRuntimeRmlui/Interface/UISystem.h>
+#include <NNRuntimeRmlui/Interface/UISystemLegacy.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Editor
@@ -69,7 +69,7 @@ namespace NN::Editor
 			auto currentWriteTime = std::filesystem::last_write_time(absPath);
 			if (fileState.LastWriteTime != currentWriteTime)
 			{
-				Runtime::UISystem::Get()->ReloadAllUIDocument();
+				Runtime::UISystemLegacy::Get()->ReloadAllUIDocument();
 
 				fileState.LastWriteTime = currentWriteTime;
 				break;

@@ -1,10 +1,15 @@
 using Hexa.NET.ImGui;
 using Neverness.Editor.Framework.Interface;
+using Neverness.Editor.Framework.Private;
 using Neverness.Editor.Framework.Public;
 using System.Numerics;
 
-namespace Neverness.Editor.Framework.Private.Panel.Main;
-public sealed class EditorMainWindow : IEditorPanel
+namespace Neverness.Editor.Shell.Private;
+
+/// <summary>
+/// 编辑器主窗口——全屏 ImGui 窗口，承载 DockSpace 和所有子面板。
+/// </summary>
+public sealed class EditorMainWindow : IEditorPanel, IMainWindowHost
 {
     // =========================================
     // Fields
@@ -181,26 +186,29 @@ public sealed class EditorMainWindow : IEditorPanel
         }
 
         // =====================================
-        // Play / Stop
+        // Play / Stop / Pause（通过命令系统解耦，不直接引用 Scene 模块）
         // =====================================
 
-        bool playMode = false;
+        var playCmd = EditorMenuRegistry.FindCommand("scene.play");
+        var isPlaying = playCmd?.IsChecked?.Invoke() ?? false;
 
-        // TODO:
-        // playMode = Runtime.SceneManager.IsPlayMode;
-
-        if (!playMode)
+        if (!isPlaying)
         {
             if (ImGui.Button(FontAwesome5Pro.Play + "##ScenePlay"))
             {
-                // Runtime.SceneManager.EnterPlayMode();
+                EditorMenuRegistry.ExecuteCommand("scene.play");
             }
         }
         else
         {
             if (ImGui.Button(FontAwesome5Pro.Stop + "##SceneStop"))
             {
-                // Runtime.SceneManager.ExitPlayMode();
+                EditorMenuRegistry.ExecuteCommand("scene.stop");
+            }
+            ImGui.SameLine();
+            if (ImGui.Button(FontAwesome5Pro.Pause + "##ScenePause"))
+            {
+                EditorMenuRegistry.ExecuteCommand("scene.pause");
             }
         }
 
@@ -258,18 +266,8 @@ public sealed class EditorMainWindow : IEditorPanel
     }
 
     // =========================================
-    // Panel Management
+    // IMainWindowHost
     // =========================================
-
-    public void AddPanel(IEditorPanel panel)
-    {
-        ArgumentNullException.ThrowIfNull(panel);
-
-        if (!m_Panels.Contains(panel))
-        {
-            m_Panels.Add(panel);
-        }
-    }
 
     public void AddPanelWithID(string id, IEditorPanel panel)
     {
@@ -286,6 +284,20 @@ public sealed class EditorMainWindow : IEditorPanel
         return m_IDPanels.TryGetValue(id, out var panel)
             ? panel
             : null;
+    }
+
+    // =========================================
+    // Panel Management（内部使用）
+    // =========================================
+
+    public void AddPanel(IEditorPanel panel)
+    {
+        ArgumentNullException.ThrowIfNull(panel);
+
+        if (!m_Panels.Contains(panel))
+        {
+            m_Panels.Add(panel);
+        }
     }
 
     public void TraversePanels(Action<IEditorPanel> callback)

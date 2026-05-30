@@ -243,6 +243,33 @@ public struct NNVideoPlayerComponentData
 	public uint _reserved1;             // 4B offset 52
 }
 
+/// <summary>
+/// RmlUI 文档组件标志位（与 Native NNRmlUIDocumentFlags 对齐）。
+/// </summary>
+[Flags]
+public enum NNRmlUIDocumentFlags : uint
+{
+	None          = 0,
+	AutoLoad      = 1u << 0,   ///< 场景启动时自动加载文档
+	Visible       = 1u << 1,   ///< 初始可见
+	Focusable     = 1u << 2,   ///< 可接收焦点
+	ReceivesInput = 1u << 3,   ///< 可接收输入事件
+}
+
+/// <summary>
+/// RmlUI 文档组件——blittable 結構體，與 Native <c>NNRmlUIDocumentComponent</c> 內存佈局一致（24 字節）。
+/// TypeId = FNV-1a("RmlUIDocument")，須與 Native BuiltinComponentRegistration.cpp 一致。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x1593AE057DEB826B, Name = "RmlUIDocument")]
+public struct NNRmlUIDocumentComponentData
+{
+	public NNGuid DocumentAsset;                // 16B offset 0（HTML 文档资产 GUID）
+	public NNRmlUIDocumentFlags Flags;          // 4B offset 16
+	public int SortOrder;                       // 4B offset 20
+}
+// 共 24 字节，与 C++ 侧 NNRmlUIDocumentComponent 完全对齐
+
 
 /// <summary>
 /// 與 Native <c>NNSceneResult</c> 對齊（<c>SceneAPI.h</c>）：場景操作結果碼。

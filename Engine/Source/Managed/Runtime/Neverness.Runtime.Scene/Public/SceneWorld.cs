@@ -128,6 +128,30 @@ public sealed class SceneWorld : IDisposable
     }
 
     /// <summary>
+    /// 按标签掩码 Tick——仅 tick 匹配标签的系统，Native 同步过滤。
+    /// 由 Editor 侧 PlayModeController 驱动。
+    /// <code>
+    /// Editing  → Editor | Render | Audio | Streaming
+    /// Playing  → Gameplay | Physics | Render | Audio | Streaming
+    /// Paused   → Render | Audio | Streaming
+    /// </code>
+    /// </summary>
+    public void TickByTagMask(float deltaTime, SceneSystemTags mask)
+    {
+        if (!IsValid)
+        {
+            return;
+        }
+
+        Systems.TickByTagMask(TickGroup.EarlyUpdate, mask, deltaTime);
+        Systems.TickByTagMask(TickGroup.Update, mask, deltaTime);
+        SceneNativeBridge.TickSystems(NativeHandle, deltaTime, mask);
+        Systems.TickByTagMask(TickGroup.LateUpdate, mask, deltaTime);
+        Systems.TickByTagMask(TickGroup.Render, mask, deltaTime);
+        Events.FlushDeferred(mask);
+    }
+
+    /// <summary>
     /// 固定步长 Tick——驱动 <see cref="ISystemFixedTick"/> 系统。
     /// 调用方负责以固定间隔调用此方法。
     /// </summary>
@@ -267,5 +291,44 @@ public sealed class SceneWorld : IDisposable
         {
             SceneNativeBridge.DestroyScene(NativeHandle);
         }
+    }
+
+    /// <summary>
+    /// 静默 Dispose——释放 Native 资源但不触发任何事件。
+    /// 用于快照恢复场景：旧 world 被静默销毁，新 world 替换其位置。
+    /// </summary>
+    internal void DisposeQuiet()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+
+        _nativeEventBridge?.Dispose();
+        _nativeEventBridge = null;
+
+        Systems.Dispose();
+        Events.Clear();
+        Queries.Clear();
+        Entities.Clear();
+
+        if (NativeHandle != 0)
+        {
+            SceneNativeBridge.DestroyScene(NativeHandle);
+        }
+    }
+
+    /// <summary>
+    /// 从已有 Native 句柄和元数据恢复世界（内部使用，快照恢复专用）。
+    /// 不调用 CreateScene，直接使用已反序列化的句柄。
+    /// </summary>
+    internal static SceneWorld RestoreFromSnapshotInternal(ulong nativeHandle, string name, NNGuid assetGuid)
+    {
+        var world = new SceneWorld(nativeHandle, name);
+        world.AssetGuid = assetGuid;
+        // 注意：不设置 AssetPath（快照路径不是正式资产路径）
+        return world;
     }
 }

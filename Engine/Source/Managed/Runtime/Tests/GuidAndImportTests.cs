@@ -1,4 +1,4 @@
-﻿using Neverness.Runtime.Assets;
+using Neverness.Runtime.Assets;
 
 namespace Neverness.Runtime.Foundation.Tests;
 
@@ -22,10 +22,10 @@ public sealed class GuidAndImportTests
 	{
 		AssetDatabase.ClearForTesting();
 		var path = "/assets/unit/test.vgtex";
-		var guid = ImportPipeline.Import(path);
+		var guid = ImportPipeline.Import(new NVirtualPath(path) );
 
 		Assert.False(guid.IsZero);
-		Assert.True(AssetDatabase.TryResolveGuid(path, out var resolved));
+		Assert.True(AssetDatabase.TryResolveGuid(new NVirtualPath(path), out var resolved));
 		Assert.Equal(guid, resolved);
 		Assert.Equal(GUID.FromDeterministicPath(path), guid);
 	}

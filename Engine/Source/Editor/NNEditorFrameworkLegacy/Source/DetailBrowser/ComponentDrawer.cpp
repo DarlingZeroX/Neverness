@@ -14,7 +14,7 @@
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNRuntimeImGui/Include/ImGuiEx/ImGuiVector.h>
 #include <NNRuntimeAssetLegacy/Interface/Package.h>
-#include <NNRuntimeRmlui/Interface/UISystem.h>
+#include <NNRuntimeRmlui/Interface/UISystemLegacy.h>
 #include <NNRuntimeCore/Interface/Loader.h>
 #include <NNEngineLegacy/Include/Lua/LuaScript.h>
 #include <NNEngineLegacy/Include/Engine/AudioPlayer.h>
@@ -394,7 +394,7 @@ namespace NN::Editor
 				if (ImGui::Button(ICON_FA_REDO "##ReloadUIDocument"))
 				{
 					H_ASSERT_NOT_NULL(com->document)
-						Runtime::UISystem::Get()->ReloadUIDocument(com->document);
+						Runtime::UISystemLegacy::Get()->ReloadUIDocument(com->document);
 				}}
 
 
@@ -423,8 +423,8 @@ namespace NN::Editor
 					return;
 				}
 
-				com->document = Runtime::UISystem::Get()->LoadUIDocument(path);
-				if (Runtime::UISystem::Get()->ShowUIDocument(com->document.get()))
+				com->document = Runtime::UISystemLegacy::Get()->LoadUIDocument(path);
+				if (Runtime::UISystemLegacy::Get()->ShowUIDocument(com->document.get()))
 				{
 					ImGuiEx::PushNotification({ ImGuiExToastType::Info, "设置UI文档成功!" });
 				}

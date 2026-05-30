@@ -9,23 +9,23 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "UIDocument.h"
+#include "UIDocumentLegacy.h"
 
 #include "NNRuntimeCore/Interface/EngineState.h"
 //#include "Engine/Manager/SceneManager.h"
 
 namespace NN::Runtime
 {
-	RmlUIDocument::RmlUIDocument()
+	RmlUIDocumentLegacy::RmlUIDocumentLegacy()
 	{
 	}
 
-	RmlUIDocument::~RmlUIDocument()
+	RmlUIDocumentLegacy::~RmlUIDocumentLegacy()
 	{
 		Close();
 	}
 
-	void RmlUIDocument::Close()
+	void RmlUIDocumentLegacy::Close()
 	{
 		m_LuaUpdateCallbacks.clear();
 
@@ -36,7 +36,7 @@ namespace NN::Runtime
 		}
 	}
 
-	void RmlUIDocument::AddUpdateCallback(const sol::function& callback)
+	void RmlUIDocumentLegacy::AddUpdateCallback(const sol::function& callback)
 	{
 		//if (SceneManager::Get()->IsPlayMode() == false)
 		//	return;
@@ -46,7 +46,7 @@ namespace NN::Runtime
 		m_LuaUpdateCallbacks.push_back(callback);
 	}
 
-	void RmlUIDocument::AddTimerCallback(float interval, const sol::function& callback)
+	void RmlUIDocumentLegacy::AddTimerCallback(float interval, const sol::function& callback)
 	{
 		//if (SceneManager::Get()->IsPlayMode() == false)
 		//	return;
@@ -71,7 +71,7 @@ namespace NN::Runtime
 // 3. 遍历结束后，用 remaining 替换 m_LuaTimerCallbacks，从而移除已完成的回调项
 // 这样可以安全地在遍历过程中删除已完成的定时器项并保持剩余项的顺序
 
-	void RmlUIDocument::Update()
+	void RmlUIDocumentLegacy::Update()
 	{
 		//if (SceneManager::Get()->IsPlayMode() == false)
 		//	return;

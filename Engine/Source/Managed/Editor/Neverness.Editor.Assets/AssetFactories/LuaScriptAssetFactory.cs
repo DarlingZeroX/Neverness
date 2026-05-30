@@ -4,7 +4,8 @@ using Neverness.Runtime.Assets;
 namespace Neverness.Editor.Assets.AssetFactories;
 
 /// <summary>
-/// Lua 脚本资产工厂——在指定目录创建空 Lua 脚本文件。
+/// Lua 脚本资产工厂——在指定目录创建 Lua 脚本文件。
+/// 使用 EditorResourceCache 中的模板内容。
 /// </summary>
 public sealed class LuaScriptAssetFactory : IAssetFactory
 {
@@ -26,20 +27,27 @@ public sealed class LuaScriptAssetFactory : IAssetFactory
 
             var scriptName = filePath.FileNameWithoutExtension;
 
-            var content = $$"""
-                --- {{scriptName}}
-                -- Auto-generated Lua script
+            // 从 EditorResourceCache 获取模板内容
+            var content = EditorResourceCache.Instance.GetLuaScriptTemplate(scriptName);
 
-                local M = {}
+            // 模板加载失败时使用硬编码兜底内容
+            if (string.IsNullOrEmpty(content))
+            {
+                content = $$"""
+                    --- {{scriptName}}
+                    -- Auto-generated Lua script
 
-                function M.onInit()
-                end
+                    local M = {}
 
-                function M.onUpdate(dt)
-                end
+                    function M.onInit()
+                    end
 
-                return M
-                """;
+                    function M.onUpdate(dt)
+                    end
+
+                    return M
+                    """;
+            }
 
             File.WriteAllText(filePath.FullPath, content);
             return filePath;

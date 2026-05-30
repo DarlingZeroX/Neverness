@@ -55,6 +55,7 @@ void NNRuntimeScene::RegisterBuiltinComponents()
 	BindComponentType<NNSpriteRendererComponent>("SpriteRenderer");
 	BindComponentType<NNAudioSourceComponent>("AudioSource");
 	BindComponentType<NNVideoPlayerComponent>("VideoPlayer");
+	BindComponentType<NNRmlUIDocumentComponent>("RmlUIDocument");
 }
 
 void NNRuntimeScene::RegisterDefaultSystems()

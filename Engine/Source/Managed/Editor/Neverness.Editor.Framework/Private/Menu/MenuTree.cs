@@ -5,7 +5,7 @@ namespace Neverness.Editor.Framework.Private.Menu;
 /// <summary>
 /// 菜单树节点——表示菜单树中的一个节点（子菜单或叶菜单项）。
 /// </summary>
-internal sealed class MenuTreeNode
+public sealed class MenuTreeNode
 {
     /// <summary>节点显示名（路径最后一段）。</summary>
     public string Name { get; set; } = "";
@@ -45,7 +45,7 @@ internal sealed class MenuTreeNode
 /// <summary>
 /// 菜单树——管理根节点集合。
 /// </summary>
-internal sealed class MenuTree
+public sealed class MenuTree
 {
     /// <summary>顶级菜单节点（File、Edit、Window、Help 等）。</summary>
     public List<MenuTreeNode> Roots { get; } = [];

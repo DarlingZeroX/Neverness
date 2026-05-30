@@ -6,7 +6,7 @@ namespace Neverness.Editor.Framework.Private.Menu;
 /// <summary>
 /// ImGui 工具栏渲染器——渲染工具栏按钮。
 /// </summary>
-internal static class ImGuiToolbarRenderer
+public static class ImGuiToolbarRenderer
 {
     private static readonly List<ToolbarCommand> s_commands = [];
 

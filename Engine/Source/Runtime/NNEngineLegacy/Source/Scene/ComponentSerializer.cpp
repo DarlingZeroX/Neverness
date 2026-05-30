@@ -12,7 +12,7 @@
 #include "Scene/ComponentSerializer.h"
 
 #include "Engine/Manager.h"
-#include "NNRuntimeRmlui/Interface/UISystem.h"
+#include "NNRuntimeRmlui/Interface/UISystemLegacy.h"
 #include "NNRuntimeCore/Interface/Loader.h"
 #include "Lua/LuaScript.h"
 #include "Render/Camera.h"
@@ -161,7 +161,7 @@ namespace NN::Runtime
 		com = deserializeComponent;
 		if (deserializeComponent.__DeserializeData.HasDocument)
 		{
-			com.document = MakeRef<RmlUIDocument>();
+			com.document = MakeRef<RmlUIDocumentLegacy>();
 			com.document->SetResourcePath(deserializeComponent.__DeserializeData.m_DocumentPath);
 			//UISystem::Get()->LoadUIDocument(deserializeComponent.__DeserializeData.m_DocumentPath);
 			//UISystem::Get()->ShowUIDocument(com.document);

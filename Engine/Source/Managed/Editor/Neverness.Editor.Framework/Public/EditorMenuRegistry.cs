@@ -30,6 +30,10 @@ public static class EditorMenuRegistry
     public static bool ExecuteCommand(string commandId) =>
         MenuRegistryImp.Instance.ExecuteCommand(commandId);
 
+    /// <summary>查找命令（按 Id）。</summary>
+    public static EditorCommand? FindCommand(string commandId) =>
+        MenuRegistryImp.Instance.FindCommand(commandId);
+
     /// <summary>注册菜单贡献者（插件入口）。</summary>
     public static void RegisterContributor(IMenuContributor contributor) =>
         MenuRegistryImp.Instance.RegisterContributor(contributor);

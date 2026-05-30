@@ -9,7 +9,7 @@
 * See the LICENSE file in the project root for details.
 */
 
-#include "UISystem.h"
+#include "UISystemLegacy.h"
 #include <RmlUi/Debugger.h>
 //#include "Engine/Manager.h"
 //#include "Galgame/Lua/GameLua.h"
@@ -23,24 +23,24 @@
 
 namespace NN::Runtime
 {
-	UISystem::UISystem()
+	UISystemLegacy::UISystemLegacy()
 	{
 	}
 
-	UISystem::~UISystem()
+	UISystemLegacy::~UISystemLegacy()
 	{
 		CloseAllDocuments();
 		Rml::Shutdown();
 		Shell::Shutdown();
 	}
 
-	UISystem* UISystem::Get()
+	UISystemLegacy* UISystemLegacy::Get()
 	{
-		static UISystem s_UISystem;
+		static UISystemLegacy s_UISystem;
 		return &s_UISystem;
 	}
 
-	int UISystem::Initialize(NN::Core::SDL3::OpenGLWindow* window)
+	int UISystemLegacy::Initialize(NN::Core::SDL3::OpenGLWindow* window)
 	{
 		m_Window = window;
 		m_Window->AddLayer(this);
@@ -58,7 +58,7 @@ namespace NN::Runtime
 		return  dynamic_cast<RenderInterface_GL3*>(interface);
 	}
 
-	int UISystem::Initialize(NN::Core::SDL3::OpenGLWindow* window, Viewport* viewport)
+	int UISystemLegacy::Initialize(NN::Core::SDL3::OpenGLWindow* window, Viewport* viewport)
 	{
 		Initialize(window);
 
@@ -79,7 +79,7 @@ namespace NN::Runtime
 		return 0;
 	}
 
-	Ref<RmlUIDocument> UISystem::LoadUIDocument(const String& path)
+	Ref<RmlUIDocumentLegacy> UISystemLegacy::LoadUIDocument(const String& path)
 	{
 		if (Rml::ElementDocument* document = m_pContext->LoadDocument(path) )
 		{
@@ -90,7 +90,7 @@ namespace NN::Runtime
 				return result;
 			}
 
-			auto uiDocument = MakeRef<RmlUIDocument>();
+			auto uiDocument = MakeRef<RmlUIDocumentLegacy>();
 			uiDocument->document = document;
 
 			uiDocument->SetResourcePath(path);
@@ -101,7 +101,7 @@ namespace NN::Runtime
 		return nullptr;
 	}
 
-	bool UISystem::ShowUIDocument(RmlUIDocument* doc)
+	bool UISystemLegacy::ShowUIDocument(RmlUIDocumentLegacy* doc)
 	{
 		if (doc != nullptr && doc->document != nullptr)
 		{
@@ -112,7 +112,7 @@ namespace NN::Runtime
 		return false;
 	}
 
-	void UISystem::ReloadUIDocument(Ref<RmlUIDocument>& doc)
+	void UISystemLegacy::ReloadUIDocument(Ref<RmlUIDocumentLegacy>& doc)
 	{
 		CloseAllDocuments();
 		if (doc != nullptr && doc->document != nullptr)
@@ -133,7 +133,7 @@ namespace NN::Runtime
 		return;
 	}
 
-	void UISystem::ReloadAllUIDocument()
+	void UISystemLegacy::ReloadAllUIDocument()
 	{
 		std::vector < std::string > paths;
 
@@ -157,7 +157,7 @@ namespace NN::Runtime
 		}
 	}
 
-	void UISystem::CloseAllDocuments()
+	void UISystemLegacy::CloseAllDocuments()
 	{
 		for (auto& doc: m_Documents)
 		{
@@ -170,7 +170,7 @@ namespace NN::Runtime
 		m_Documents.clear();
 	}
 
-	Ref<RmlUIDocument> UISystem::FindDocumentByElementDocument(Rml::ElementDocument* document)
+	Ref<RmlUIDocumentLegacy> UISystemLegacy::FindDocumentByElementDocument(Rml::ElementDocument* document)
 	{
 		for (auto& doc : m_Documents)
 		{
@@ -183,9 +183,9 @@ namespace NN::Runtime
 		return nullptr;
 	}
 
-	Ref<RmlUIDocument> UISystem::OnScriptOpenDocument(Rml::ElementDocument* document)
+	Ref<RmlUIDocumentLegacy> UISystemLegacy::OnScriptOpenDocument(Rml::ElementDocument* document)
 	{
-		auto uiDocument = MakeRef<RmlUIDocument>();
+		auto uiDocument = MakeRef<RmlUIDocumentLegacy>();
 		uiDocument->document = document;
 
 		m_Documents.push_back(uiDocument);
@@ -194,13 +194,13 @@ namespace NN::Runtime
 		//m_NativeDocument.push_back(document);
 	}
 
-	void UISystem::OnScriptCloseDocument(const Rml::ElementDocument* document)
+	void UISystemLegacy::OnScriptCloseDocument(const Rml::ElementDocument* document)
 	{
 		// 移除与 document 匹配的文档，同时调用 Close 以释放资源
 		m_CloseCallbacks.push_back([this, document]()
 		{
 			m_Documents.erase(std::remove_if(m_Documents.begin(), m_Documents.end(),
-				[document](const Ref<RmlUIDocument>& doc) -> bool
+				[document](const Ref<RmlUIDocumentLegacy>& doc) -> bool
 				{
 					// 移除空引用
 					if (!doc)
@@ -223,17 +223,17 @@ namespace NN::Runtime
 
 	}
 
-	Rml::SystemInterface* UISystem::GetSystemInterface() const
+	Rml::SystemInterface* UISystemLegacy::GetSystemInterface() const
 	{
 		return m_SystemInterface;
 	}
 
-	Rml::RenderInterface* UISystem::GetRenderInterface() const
+	Rml::RenderInterface* UISystemLegacy::GetRenderInterface() const
 	{
 		return m_RenderInterface;
 	}
 
-	void UISystem::Render()
+	void UISystemLegacy::Render()
 	{
 		BeginFrame();
 		RenderContext();
@@ -241,7 +241,7 @@ namespace NN::Runtime
 	}
 
 
-	void UISystem::BeginFrame()
+	void UISystemLegacy::BeginFrame()
 	{
 		SDL_GL_MakeCurrent(m_Window->GetSDLWindow(), m_Window->GetContext());
 
@@ -249,24 +249,24 @@ namespace NN::Runtime
 		GetRenderInterfaceGL(m_RenderInterface)->BeginFrame();
 	}
 
-	void UISystem::RenderContext()
+	void UISystemLegacy::RenderContext()
 	{
 		m_pContext->Render();
 	}
 
-	void UISystem::EndFrame()
+	void UISystemLegacy::EndFrame()
 	{
 		GetRenderInterfaceGL(m_RenderInterface)->EndFrame();
 	}
 
-	unsigned int UISystem::GetUIRenderResult()
+	unsigned int UISystemLegacy::GetUIRenderResult()
 	{
 		if (m_RenderInterface == nullptr)
 			return 0;
 		return GetRenderInterfaceGL(m_RenderInterface)->GetRenderResult().color_tex_buffer;
 	}
 
-	void UISystem::OnUpdate()
+	void UISystemLegacy::OnUpdate()
 	{
 		// 更新所有UI文档
 		for (auto& doc: m_Documents)
@@ -285,7 +285,7 @@ namespace NN::Runtime
 		m_CloseCallbacks.clear();
 	}
 
-	bool UISystem::InitializeUISystem(NN::Core::SDL3::OpenGLWindow* window)
+	bool UISystemLegacy::InitializeUISystem(NN::Core::SDL3::OpenGLWindow* window)
 	{
 
 		if (!RmlGL3::Initialize())
@@ -314,7 +314,7 @@ namespace NN::Runtime
 		m_SystemInterface = systemInterface;
 	}
 
-	bool UISystem::InitializeRuntimeEnvironment()
+	bool UISystemLegacy::InitializeRuntimeEnvironment()
 	{
 		// Initializes the shell which provides common functionality used by the included samples.
 		if (!Shell::Initialize())
@@ -347,7 +347,7 @@ namespace NN::Runtime
 		return true;
 	}
 
-	int UISystem::ProcessEvent(const SDL_Event& event)
+	int UISystemLegacy::ProcessEvent(const SDL_Event& event)
 	{
 		//m_Window->IsCurrentWindowEvent(event.window.windowID);
 		//if (!m_Window->IsCurrentWindowEvent(event.window.windowID))
@@ -372,7 +372,7 @@ namespace NN::Runtime
 		return m_ProcessContextEventFunction(m_pContext, event); 
 	}
 
-	bool UISystem::ProcessContextEvent(Rml::Context* context, const SDL_Event& event)
+	bool UISystemLegacy::ProcessContextEvent(Rml::Context* context, const SDL_Event& event)
 	{
 		auto key_down_callback = &Shell::ProcessKeyDownShortcuts;
 		SDL_Event& evt = const_cast<SDL_Event&>(event);
@@ -418,7 +418,7 @@ namespace NN::Runtime
 		//return NN::Core::SDL3::WINDOW_LAYER_RESULT_NO_PROPAGATE;
 	}
 
-	bool UISystem::ProcessContextEventViewport(Rml::Context* context, const SDL_Event& event)
+	bool UISystemLegacy::ProcessContextEventViewport(Rml::Context* context, const SDL_Event& event)
 	{
 		auto key_down_callback = &Shell::ProcessKeyDownShortcuts;
 		SDL_Event& evt = const_cast<SDL_Event&>(event);

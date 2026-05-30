@@ -32,6 +32,9 @@ namespace Neverness.Editor.Framework.Private
 
         private readonly uint m_TopLevelDockId;
 
+        /// <summary>主窗口宿主回调——Shell 模块 Install 时注册。</summary>
+        private Func<string, IEditorPanel, bool>? m_AddChildPanelCallback;
+
         // =========================
         // Constructor
         // =========================
@@ -277,14 +280,19 @@ namespace Neverness.Editor.Framework.Private
         // IPanelManager.AddChildPanel
         // =========================
 
-        /// <summary>向主窗口添加子面板。</summary>
+        /// <summary>注册主窗口宿主回调（Shell 模块 Install 时调用）。</summary>
+        public void RegisterMainWindowCallback(Func<string, IEditorPanel, bool> callback)
+        {
+            ArgumentNullException.ThrowIfNull(callback);
+            m_AddChildPanelCallback = callback;
+        }
+
+        /// <summary>向主窗口添加子面板（通过回调委托，不依赖具体类型）。</summary>
         public bool AddChildPanel(string id, IEditorPanel panel)
         {
-            var mainWindow = GetPanelWithID("EditorMainWindow");
-            if (mainWindow is Panel.Main.EditorMainWindow main)
+            if (m_AddChildPanelCallback != null)
             {
-                main.AddPanelWithID(id, panel);
-                return true;
+                return m_AddChildPanelCallback(id, panel);
             }
             return false;
         }

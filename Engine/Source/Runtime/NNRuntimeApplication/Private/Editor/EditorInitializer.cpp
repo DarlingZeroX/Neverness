@@ -19,6 +19,7 @@
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimePak/Include/VFSMount.h"
 #include "NNRuntimeVFS/Include/VFS/NativeFileSystem.h"
+#include "NNRuntimeVFS/Include/VFS/MemoryFileSystem.h"
 
 namespace NN::Runtime::Application
 {
@@ -87,6 +88,7 @@ namespace NN::Runtime::Application
 		auto packagesFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.packages);
 		auto projectSettingsFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectSettings);
 		auto projectIntermediateFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectIntermediate);
+		auto cacheFS = std::make_unique<NN::Runtime::VFS::MemoryFileSystem>();
 
 		assetsFS->Initialize();
 		libraryFS->Initialize();
@@ -94,6 +96,7 @@ namespace NN::Runtime::Application
 		packagesFS->Initialize();
 		projectSettingsFS->Initialize();
 		projectIntermediateFS->Initialize();
+		cacheFS->Initialize();
 
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetAssetsPathVFS(), std::move(assetsFS));
 		vfs->AddFileSystem("Library", std::move(libraryFS));
@@ -101,6 +104,7 @@ namespace NN::Runtime::Application
 		vfs->AddFileSystem("Packages", std::move(packagesFS));
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectSettingsPathVFS(), std::move(projectSettingsFS));
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectIntermediatePathVFS(), std::move(projectIntermediateFS));
+		vfs->AddFileSystem("Cache", std::move(cacheFS));
 
 		auto editorPath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Editor::EditorCore::GetEditorResourcePathVFS());
 		H_LOG_INFO("Editor resource path: %s", editorPath.c_str());

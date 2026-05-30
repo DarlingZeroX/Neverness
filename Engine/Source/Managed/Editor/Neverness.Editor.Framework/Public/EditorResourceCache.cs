@@ -47,6 +47,11 @@ public sealed class EditorResourceCache
     /// <summary>本地化是否已加载。</summary>
     private bool _localizationLoaded;
 
+    // ── 模板缓存 ──
+
+    /// <summary>模板内容缓存：VFS 路径 → 文件内容。</summary>
+    private readonly ConcurrentDictionary<string, string> _templateCache = new();
+
     // ── 常量 ──
 
     /// <summary>编辑器资源 VFS 前缀。</summary>
@@ -57,6 +62,9 @@ public sealed class EditorResourceCache
 
     /// <summary>本地化子目录。</summary>
     public const string LocalizationDir = "/editor/localization/";
+
+    /// <summary>资产模板子目录。</summary>
+    public const string TemplateDir = "/editor/template/asset/";
 
     private EditorResourceCache() { }
 
@@ -181,6 +189,90 @@ public sealed class EditorResourceCache
     public void PreloadLocalization(string? languageCode = null)
     {
         LoadLocalization(languageCode ?? _currentLanguage);
+    }
+
+    // ── 模板 API ──
+
+    /// <summary>预定义模板文件名常量。</summary>
+    public static class TemplateNames
+    {
+        /// <summary>RmlUI HTML 文档模板。</summary>
+        public const string RmlDocument = "document.html";
+
+        /// <summary>RmlUI CSS 样式模板。</summary>
+        public const string RmlStyle = "style.css";
+
+        /// <summary>Lua 脚本模板。</summary>
+        public const string LuaScript = "luaScript.lua";
+
+        /// <summary>Galgame 剧情脚本模板。</summary>
+        public const string GalgameStoryScript = "galgameStoryScript.lua";
+    }
+
+    /// <summary>
+    /// 获取资产模板内容。
+    /// 首次调用时从 VFS 加载并缓存，后续直接返回缓存。
+    /// </summary>
+    /// <param name="templateName">模板文件名（使用 <see cref="TemplateNames"/> 常量）。</param>
+    /// <returns>模板内容，加载失败返回 null。</returns>
+    public string? GetTemplate(string templateName)
+    {
+        if (string.IsNullOrEmpty(templateName))
+            return null;
+
+        string vfsPath = TemplateDir + templateName;
+
+        // 已缓存，直接返回
+        if (_templateCache.TryGetValue(vfsPath, out var cached))
+            return cached;
+
+        // 从 VFS 加载
+        try
+        {
+            var content = VFS.ReadText(vfsPath);
+            if (string.IsNullOrEmpty(content))
+            {
+                Console.WriteLine($"[EditorResourceCache] 模板加载失败: {vfsPath}");
+                return null;
+            }
+
+            _templateCache[vfsPath] = content;
+            Console.WriteLine($"[EditorResourceCache] 模板已加载: {vfsPath}");
+            return content;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[EditorResourceCache] 模板加载异常: {vfsPath} - {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// 获取 Lua 脚本模板内容（带脚本名称替换）。
+    /// </summary>
+    /// <param name="scriptName">脚本名称，替换模板中的占位符。</param>
+    /// <param name="templateName">模板文件名，默认使用标准 Lua 脚本模板。</param>
+    /// <returns>替换后的模板内容，加载失败返回 null。</returns>
+    public string? GetLuaScriptTemplate(string scriptName, string templateName = TemplateNames.LuaScript)
+    {
+        var template = GetTemplate(templateName);
+        if (template == null)
+            return null;
+
+        // 替换模板中的脚本名称占位符（如果有）
+        return template.Replace("{{ScriptName}}", scriptName);
+    }
+
+    /// <summary>
+    /// 预加载指定模板列表（启动时调用，避免首次使用时的加载延迟）。
+    /// </summary>
+    /// <param name="templateNames">模板文件名列表。</param>
+    public void PreloadTemplates(IEnumerable<string> templateNames)
+    {
+        foreach (var name in templateNames)
+        {
+            _ = GetTemplate(name);
+        }
     }
 
     // ── 内部实现 ──

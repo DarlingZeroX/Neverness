@@ -10,7 +10,7 @@
 */
 
 #include "ElementText.h"
-#include "UISystem.h"
+#include "UISystemLegacy.h"
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/ElementDocument.h>
 

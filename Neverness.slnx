@@ -14,8 +14,10 @@
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.MediaImporter/Neverness.Editor.MediaImporter.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.ProjectSystem/Neverness.Editor.ProjectSystem.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Reflection/Neverness.Editor.Reflection.csproj" />
+    <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Rmlui/Neverness.Editor.Rmlui.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Scene/Neverness.Editor.Scene.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Serialization/Neverness.Editor.Serialization.csproj" />
+    <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Shell/Neverness.Editor.Shell.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.UndoRedo/Neverness.Editor.UndoRedo.csproj" />
     <Project Path="Engine/Source/Managed/Editor/NevernessEditor/NevernessEditor.csproj" />
   </Folder>

@@ -22,7 +22,7 @@ public sealed class MenuRegistryImp : IMenuRegistry
     private MenuRegistryImp() { }
 
     /// <summary>获取或重建菜单树（内部使用，供渲染器调用）。</summary>
-    internal MenuTree GetTree()
+    public MenuTree GetTree()
     {
         if (_dirty || _cachedTree == null)
         {

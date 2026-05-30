@@ -54,6 +54,16 @@ namespace Neverness.Editor.Framework.Interface
         bool AddChildPanel(string id, IEditorPanel panel);
     }
 
+    /// <summary>主窗口宿主接口——Shell 模块实现，供 PanelManager 委托子面板注册。</summary>
+    public interface IMainWindowHost
+    {
+        /// <summary>向主窗口添加带 ID 的子面板。</summary>
+        void AddPanelWithID(string id, IEditorPanel panel);
+
+        /// <summary>按 ID 获取子面板。</summary>
+        IEditorPanel? GetPanelWithID(string id);
+    }
+
     /// <summary>命令注册表接口（Legacy IEditorCommand 体系）。</summary>
     public interface ICommandRegistry
     {

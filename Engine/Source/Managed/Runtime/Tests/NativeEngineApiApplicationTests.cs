@@ -43,17 +43,17 @@ public sealed class NativeEngineApiApplicationTests
 		}
 
 		var initialized = app.Initialize();
-		if (initialized)
+		if (initialized != 0)
 		{
 			if (app.Shutdown != null)
 			{
 				app.Shutdown();
 			}
-
+			
 			return;
 		}
 
-		Assert.False(initialized);
+		Assert.Equal(0, initialized);
 	}
 
 	/// <summary>
@@ -113,4 +113,14 @@ public sealed class NativeEngineApiApplicationTests
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 	private delegate nint GetDefaultTableDelegate();
+}
+
+public unsafe struct  NNApplicationApi
+{
+  public uint Size;
+  public delegate* unmanaged<bool> Initialize; // 改为 bool
+  public delegate* unmanaged<bool> PumpEvents;
+  public delegate* unmanaged<void> Shutdown;
+  public delegate* unmanaged<void> BeginFrame;
+  public delegate* unmanaged<void> EndFrame;
 }

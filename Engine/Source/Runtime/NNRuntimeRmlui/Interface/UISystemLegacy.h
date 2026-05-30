@@ -15,30 +15,30 @@
 #include "NNRuntimeApplication/Include/Core/Window.h"
 #include "NNRuntimeCore/Interface/EngineInterface.h"
 #include "NNRuntimeCore/Include/Core/Viewport.h"
-#include "UIDocument.h"
+#include "UIDocumentLegacy.h"
 #include <string>
 #include <RmlUi/Core.h>
 
 namespace NN::Runtime
 {
-	class VG_UI_API UISystem: public IUISystem,public NN::Core::SDL3::Layer
+	class VG_UI_API UISystemLegacy: public IUISystem,public NN::Core::SDL3::Layer
 	{
 	public:
-		UISystem();
-		~UISystem() override;
+		UISystemLegacy();
+		~UISystemLegacy() override;
 
-		static UISystem* Get();
+		static UISystemLegacy* Get();
 
 		int Initialize(NN::Core::SDL3::OpenGLWindow* window, Viewport* viewport);
 
-		Ref<RmlUIDocument> LoadUIDocument(const String& path);
-		bool ShowUIDocument(RmlUIDocument* doc);
-		void ReloadUIDocument(Ref<RmlUIDocument>& doc);
+		Ref<RmlUIDocumentLegacy> LoadUIDocument(const String& path);
+		bool ShowUIDocument(RmlUIDocumentLegacy* doc);
+		void ReloadUIDocument(Ref<RmlUIDocumentLegacy>& doc);
 		void ReloadAllUIDocument();
 		void CloseAllDocuments();
-		Ref<RmlUIDocument> FindDocumentByElementDocument(Rml::ElementDocument* document);
+		Ref<RmlUIDocumentLegacy> FindDocumentByElementDocument(Rml::ElementDocument* document);
 		 
-		Ref<RmlUIDocument> OnScriptOpenDocument(Rml::ElementDocument* document);
+		Ref<RmlUIDocumentLegacy> OnScriptOpenDocument(Rml::ElementDocument* document);
 		// Source/UI/Lua/Document.cpp 122行使用了这里
 		void OnScriptCloseDocument(const Rml::ElementDocument* document);
 
@@ -73,7 +73,7 @@ namespace NN::Runtime
 		Rml::RenderInterface* m_RenderInterface;
 
 		std::function<int(Rml::Context*, const SDL_Event&)> m_ProcessContextEventFunction;
-		std::vector<Ref<RmlUIDocument>> m_Documents;
+		std::vector<Ref<RmlUIDocumentLegacy>> m_Documents;
 		//std::vector<Rml::ElementDocument*> m_NativeDocument;
 
 		std::vector<std::function<void()>> m_CloseCallbacks;

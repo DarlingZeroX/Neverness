@@ -20,6 +20,7 @@ namespace NN::Runtime::Application
 		std::string library;
 		std::string build;
 		std::string packages;
+		std::string cache;
 
 		std::string editor;
 		std::string engine;

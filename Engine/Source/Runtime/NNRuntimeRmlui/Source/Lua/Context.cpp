@@ -34,7 +34,7 @@
 #include <RmlUi/Core/ElementDocument.h>
 #include <RmlUi/Core/Factory.h>
 
-#include "UISystem.h"
+#include "UISystemLegacy.h"
 
 namespace Rml {
 namespace Lua {
@@ -101,7 +101,7 @@ int ContextLoadDocument(lua_State* L, Context* obj)
 	Document* doc = obj->LoadDocument(path);
 	LuaType<Document>::push(L, doc, false);
 
-	NN::Runtime::UISystem::Get()->OnScriptOpenDocument(doc);
+	NN::Runtime::UISystemLegacy::Get()->OnScriptOpenDocument(doc);
 	return 1;
 }
 

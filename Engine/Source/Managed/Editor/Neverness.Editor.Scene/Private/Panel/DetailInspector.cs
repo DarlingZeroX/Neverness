@@ -198,6 +198,13 @@ public sealed class DetailInspector : IEditorPanel
         _selectedEntityName = $"Entity ({entityHandle})";
     }
 
+    /// <summary>清除选中状态（场景切换时由 SceneModuleImp 调用）。</summary>
+    internal void ClearSelection()
+    {
+        _selectedEntityHandle = 0;
+        _selectedEntityName = "";
+    }
+
     // ── UI 绘制 ──
 
     /// <summary>绘制未选中状态的空面板。</summary>

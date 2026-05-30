@@ -10,7 +10,7 @@
 */
 
 #include "Game/RenderEngine.h"
-#include "NNRuntimeRmlui/Interface/UISystem.h"
+#include "NNRuntimeRmlui/Interface/UISystemLegacy.h"
 #include "Engine/Manager.h"
 #include "Scene/Components.h"
 #include "Render/TransitionManager.h"
@@ -24,7 +24,7 @@ namespace NN::Runtime
 	void CoreRenderEngine::OnUpdate(float deltaTime)
 	{
 		m_RenderPipeline->OnUpdate();
-		UISystem::Get()->OnUpdate();
+		UISystemLegacy::Get()->OnUpdate();
 	}
 
 	void CoreRenderEngine::OnRender()
@@ -43,10 +43,10 @@ namespace NN::Runtime
 		m_RenderPipeline->OnRender();
 
 		// 把场景作为UI背景,然后把UI渲染在上面,才能获得正确的UI渲染结果
-		UISystem::Get()->BeginFrame();
+		UISystemLegacy::Get()->BeginFrame();
 		RenderUIBackground();
-		UISystem::Get()->RenderContext();
-		UISystem::Get()->EndFrame();
+		UISystemLegacy::Get()->RenderContext();
+		UISystemLegacy::Get()->EndFrame();
 		//UISystem::Get()->Render();
 
 		// 然后渲染到屏幕渲染目标
@@ -99,7 +99,7 @@ namespace NN::Runtime
 
 		VGFX::UseProgram(program);
 		VGFX::SetTexture(0, "renderTex", m_RenderPipeline->GetRenderResult());
-		VGFX::SetTexture2DNative(1, "uiTex", UISystem::Get()->GetUIRenderResult());
+		VGFX::SetTexture2DNative(1, "uiTex", UISystemLegacy::Get()->GetUIRenderResult());
 		VGFX::RenderMesh(mesh);
 
 		// 渲染屏幕前场景
@@ -190,7 +190,7 @@ namespace NN::Runtime
 			});
 
 		// 初始化UI系统
-		UISystem::Get()->Initialize(context->GetWindow(), m_Viewport);
+		UISystemLegacy::Get()->Initialize(context->GetWindow(), m_Viewport);
 
 		// 订阅屏幕转场事件
 		TransitionManager::GetInstance()->OnTransitionEvent.Subscribe([this](const TransitionEvent& event)

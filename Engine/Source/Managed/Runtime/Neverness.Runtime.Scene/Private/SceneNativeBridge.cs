@@ -3,6 +3,7 @@
 using System.Runtime.InteropServices;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Interop;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Runtime.Scene.Internal;
 
@@ -57,6 +58,23 @@ public static unsafe class SceneNativeBridge
 			return NNSceneResult.Invalid;
 		}
 
+		return api.TickSystems(sceneHandle, deltaTime);
+	}
+
+	/// <summary>
+	/// 驱动场景内 ECS System 调度器 Tick（按标签过滤）。
+	/// Native 侧根据 tagMask 过滤，仅 tick 匹配标签的 Native System。
+	/// Phase 1：C++ 侧可能尚未实现标签过滤，传入的 mask 会被忽略。
+	/// </summary>
+	public static NNSceneResult TickSystems(ulong sceneHandle, float deltaTime, SceneSystemTags tagMask)
+	{
+		if (sceneHandle == 0 || !TryGetSceneApi(out var api) || api.TickSystems == null)
+		{
+			return NNSceneResult.Invalid;
+		}
+
+		// TODO: C++ 侧需要同步实现标签过滤，当前回退到无过滤版本
+		// Phase 2: return api.TickSystems(sceneHandle, deltaTime, (ushort)tagMask);
 		return api.TickSystems(sceneHandle, deltaTime);
 	}
 

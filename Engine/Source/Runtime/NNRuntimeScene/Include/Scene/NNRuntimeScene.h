@@ -17,6 +17,7 @@
 #include "../Components/NNTagComponent.h"
 #include "../Components/NNTransformComponent.h"
 #include "../Components/NNVideoPlayerComponent.h"
+#include "../Components/NNRmlUIDocumentComponent.h"
 #include "../Reflection/NNComponentRegistry.h"
 #include "../Runtime/NNDirtyTracker.h"
 #include "../Runtime/NNSceneEventBus.h"

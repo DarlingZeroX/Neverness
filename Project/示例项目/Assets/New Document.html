@@ -1,0 +1,45 @@
+<rml>
+<head>
+	<link type="text/css" href="style.css"/>
+
+    <script>
+        -- 在这里可以添加Lua脚本
+		HTMLTemplate = HTMLTemplate or {}
+		
+		function HTMLTemplate.OnLoad(event,element,document)
+			print('OnLoad')
+		end
+		
+		function HTMLTemplate.OnClick(event,element,document)
+			print('OnClick')
+		end
+    </script>
+</head>
+<body onload="HTMLTemplate.OnLoad(event,element,document)">
+
+    <!-- 主容器 -->
+    <div class="main_container">
+        <!-- 标题 -->
+        <h1 class="title">UI 模版</h1>
+        <p class="subtitle">- 这是VGEngine的 UI 模版 -</p>
+        
+        <!-- 菜单 -->
+        <div class="menu">
+            <button class="menu-item" onclick="HTMLTemplate.OnClick(event,element,document)">
+                <span>开始游戏</span>
+            </button>
+            <button class="menu-item">
+                <span>游戏设置</span>
+            </button>
+            <button class="menu-item">
+                <span>关于游戏</span>
+            </button>
+            <button class="menu-item">
+                <span>结束游戏</span>
+            </button>
+        </div>
+    </div>
+		
+</body>
+
+</rml>

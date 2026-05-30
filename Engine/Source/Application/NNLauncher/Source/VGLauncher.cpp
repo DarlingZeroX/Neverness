@@ -17,7 +17,7 @@
 #include <NNRuntimeImGui/Include/ImGuiLayer/SDL3Decorator.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimePak/Include/VFSMount.h"
-#include <NNRuntimeRmlui/Interface/UISystem.h>
+#include <NNRuntimeRmlui/Interface/UISystemLegacy.h>
 #include <NNEditorFrameworkLegacy/Framework.h>
 
 namespace VisionGal::Editor

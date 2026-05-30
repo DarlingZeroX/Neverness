@@ -29,6 +29,9 @@ public sealed class SceneHierarchyCache
     /// <summary>当前缓存的 hierarchyVersion（与 Native 同步）。</summary>
     private ulong _cachedVersion = ulong.MaxValue;
 
+    /// <summary>当前缓存对应的场景句柄（用于检测场景切换，强制全量刷新）。</summary>
+    private ulong _cachedSceneHandle;
+
     // ── 解析后的数据 ──
 
     /// <summary>所有节点（DFS 顺序，与 Native 1:1 对应）。</summary>
@@ -93,6 +96,17 @@ public sealed class SceneHierarchyCache
     /// <returns>true = 缓存已更新；false = 版本未变，跳过</returns>
     public unsafe bool TryRefresh(ulong sceneHandle)
     {
+        // 0. 场景句柄变化 → 强制全量刷新 + 清除旧 UI 状态
+        if (sceneHandle != _cachedSceneHandle)
+        {
+            _cachedSceneHandle = sceneHandle;
+            _cachedVersion = ulong.MaxValue;
+            _selectedSet.Clear();
+            _expandedSet.Clear();
+            _searchText = "";
+            _visibleDirty = true;
+        }
+
         // 1. 版本轮询（最热路径，纯整数返回）
         ulong nativeVersion = EditorSceneNativeBridge.GetHierarchyVersion(sceneHandle);
         if (nativeVersion == _cachedVersion)
@@ -140,6 +154,10 @@ public sealed class SceneHierarchyCache
     /// <returns>true = 缓存需更新（_visibleDirty 已标记）；false = 无变化</returns>
     public unsafe bool TryIncrementalRefresh(ulong sceneHandle)
     {
+        // 0. 场景句柄变化 → 回退全量刷新
+        if (sceneHandle != _cachedSceneHandle)
+            return TryRefresh(sceneHandle);
+
         // 1. 版本轮询
         ulong nativeVersion = EditorSceneNativeBridge.GetHierarchyVersion(sceneHandle);
         if (nativeVersion == _cachedVersion)

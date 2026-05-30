@@ -89,7 +89,7 @@ public abstract class ComponentTypeInspector<T> : IComponentInspector
         if (data is null)
             return false;
 
-        SceneDebug.DumpEntityComponents(sceneHandle, entity.Value);
+        //SceneDebug.DumpEntityComponents(sceneHandle, entity.Value);
 
         var value = data.Value;
         bool modified = DrawFields(ref value);

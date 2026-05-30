@@ -23,6 +23,9 @@ public sealed class SceneSystemScheduler : IDisposable
     /// <summary>已初始化的 System 集合。</summary>
     private readonly HashSet<ISceneSystem> _initialized = [];
 
+    /// <summary>每个 System 的标签缓存（注册时填充）。</summary>
+    private readonly Dictionary<ISceneSystem, SceneSystemTags> _systemTags = new();
+
     public SceneSystemScheduler(SceneWorld world)
     {
         _world = world;
@@ -42,6 +45,7 @@ public sealed class SceneSystemScheduler : IDisposable
         }
 
         _allSystems.Add(system);
+        _systemTags[system] = GetSystemTags(system.GetType());
         _needsRebuild = true;
     }
 
@@ -76,6 +80,35 @@ public sealed class SceneSystemScheduler : IDisposable
 
         foreach (var system in systems)
         {
+            EnsureInitialized(system);
+            if (system is ISystemTick tick)
+            {
+                tick.Tick(_world, deltaTime);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 按 TickGroup 和标签掩码驱动 Tick 系统。
+    /// 仅 tick 标签与 mask 匹配的系统。
+    /// 由 Editor 侧 PlayModeController 驱动。
+    /// </summary>
+    public void TickByTagMask(TickGroup group, SceneSystemTags mask, float deltaTime)
+    {
+        EnsureBuilt();
+        if (!_groupedSystems!.TryGetValue((int)group, out var systems))
+        {
+            return;
+        }
+
+        foreach (var system in systems)
+        {
+            var tags = _systemTags.GetValueOrDefault(system, SceneSystemTagDefaults.Default);
+            if ((tags & mask) == 0)
+            {
+                continue;
+            }
+
             EnsureInitialized(system);
             if (system is ISystemTick tick)
             {
@@ -145,6 +178,7 @@ public sealed class SceneSystemScheduler : IDisposable
 
         _allSystems.Clear();
         _initialized.Clear();
+        _systemTags.Clear();
         _groupedSystems?.Clear();
         _needsRebuild = true;
     }
@@ -193,6 +227,13 @@ public sealed class SceneSystemScheduler : IDisposable
         }
 
         return grouped;
+    }
+
+    /// <summary>获取 System 的标签。未标记的系统返回默认值。</summary>
+    private static SceneSystemTags GetSystemTags(Type type)
+    {
+        var attr = type.GetCustomAttribute<SceneSystemTagAttribute>();
+        return attr?.Tags ?? SceneSystemTagDefaults.Default;
     }
 
     /// <summary>获取 System 的 TickGroup。</summary>

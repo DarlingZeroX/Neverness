@@ -10,6 +10,7 @@
 #include "Components/NNTagComponent.h"
 #include "Components/NNTransformComponent.h"
 #include "Components/NNVideoPlayerComponent.h"
+#include "Components/NNRmlUIDocumentComponent.h"
 #include "Reflection/NNComponentRegistry.h"
 
 namespace
@@ -79,4 +80,11 @@ NN_REGISTER_COMPONENT(
 		NN_FIELD(NN::Runtime::Scene::NNVideoPlayerComponent, Volume, Float),
 		NN_FIELD(NN::Runtime::Scene::NNVideoPlayerComponent, Flags, UInt32),
 		NN_FIELD(NN::Runtime::Scene::NNVideoPlayerComponent, TargetSprite, Guid));
+
+NN_REGISTER_COMPONENT(
+		NN::Runtime::Scene::NNRmlUIDocumentComponent,
+		"RmlUIDocument",
+		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, DocumentAsset, Guid),
+		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, Flags, UInt32),
+		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, SortOrder, UInt32));
 } // namespace

@@ -1,5 +1,6 @@
 using Neverness.Editor.Framework.Private;
 using Neverness.Editor.Framework.Public;
+using Neverness.Editor.Scene.Private.PlayMode;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Engine;
 using Neverness.Editor.Scene.Private.Panel;
@@ -17,12 +18,26 @@ internal static class SceneModuleImp
     private static SceneEditorBridge? s_bridge;
     private static EditorViewport? s_editorViewport;
 
+    /// <summary>播放模式控制器——驱动 PlayMode 状态机。</summary>
+    public static PlayModeController PlayModeController { get; private set; } = null!;
+
     /// <summary>获取 SceneBrowser 的层级缓存（Debug / 诊断用）。</summary>
     public static Cache.SceneHierarchyCache? HierarchyCache => s_sceneBrowser?.Cache;
 
     /// <summary>安装场景编辑模块（场景句柄后续设置）。</summary>
     public static void Install(SceneManager sceneManager)
     {
+        // 创建播放模式控制器
+        var context = Neverness.Editor.Core.Public.EditorCoreModule.Context;
+        PlayModeController = new PlayModeController(sceneManager, context.State, context.Events);
+
+        // 注入 TickOverride，让 PlayModeController 驱动 ECS tick（按标签过滤）
+        SceneSubsystem.TickOverride = deltaTime =>
+        {
+            PlayModeController.TickActiveScene(deltaTime);
+            return true;
+        };
+
         // 创建场景浏览器
         s_sceneBrowser = new SceneBrowser(sceneManager);
 
@@ -41,6 +56,9 @@ internal static class SceneModuleImp
 
         // 连接事件总线和缓存引用
         ConnectPanels();
+
+        // 注册 PlayMode 命令（Shell 通过命令系统调用，不直接引用 Scene 模块）
+        RegisterPlayModeCommands();
 
         // 注册 Save Scene 命令
         var saveCommand = new EditorCommand
@@ -74,15 +92,56 @@ internal static class SceneModuleImp
             SortOrder: 300));
     }
 
-    /// <summary>设置场景浏览器关联的场景句柄。</summary>
+    /// <summary>设置场景浏览器关联的场景句柄（场景切换时清除旧选中状态）。</summary>
     public static void SetSceneHandle(ulong sceneHandle)
     {
         if (s_sceneBrowser != null)
             s_sceneBrowser.SceneHandle = sceneHandle;
         if (s_detailInspector != null)
+        {
             s_detailInspector.SceneHandle = sceneHandle;
+            s_detailInspector.ClearSelection();
+        }
         if(s_editorViewport != null)
             s_editorViewport.SetScene(sceneHandle);
+    }
+
+    /// <summary>注册 PlayMode 相关命令（Shell 通过命令系统调用）。</summary>
+    private static void RegisterPlayModeCommands()
+    {
+        // scene.play — 进入播放模式 / 恢复播放
+        EditorMenuRegistry.RegisterCommand(new EditorCommand
+        {
+            Id = "scene.play",
+            DisplayName = "Play",
+            Execute = _ =>
+            {
+                if (PlayModeController.IsPaused)
+                    PlayModeController.Resume();
+                else
+                    PlayModeController.EnterPlay();
+            },
+            CanExecute = () => PlayModeController.CurrentMode != Editor.Core.Public.PlayMode.Playing,
+            IsChecked = () => PlayModeController.IsPlaying || PlayModeController.IsPaused,
+        });
+
+        // scene.stop — 退出播放模式
+        EditorMenuRegistry.RegisterCommand(new EditorCommand
+        {
+            Id = "scene.stop",
+            DisplayName = "Stop",
+            Execute = _ => PlayModeController.ExitPlay(),
+            CanExecute = () => PlayModeController.CurrentMode != Editor.Core.Public.PlayMode.Editing,
+        });
+
+        // scene.pause — 暂停
+        EditorMenuRegistry.RegisterCommand(new EditorCommand
+        {
+            Id = "scene.pause",
+            DisplayName = "Pause",
+            Execute = _ => PlayModeController.Pause(),
+            CanExecute = () => PlayModeController.CurrentMode == Editor.Core.Public.PlayMode.Playing,
+        });
     }
 
     /// <summary>连接面板之间的引用（事件总线、层级缓存）。</summary>

@@ -12,7 +12,7 @@
 #include "Game/GameEngine.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNRuntimeCore/Include/Core/Input.h"
-#include "NNRuntimeRmlui/Interface/UISystem.h"
+#include "NNRuntimeRmlui/Interface/UISystemLegacy.h"
 #include "Engine/Manager.h"
 #include "Scene/Components.h"
 //#include "Galgame/GalGameEngine.h"
@@ -153,7 +153,7 @@ namespace NN::Runtime
 			}
 		}
 
-		UISystem::Get()->CloseAllDocuments();
+		UISystemLegacy::Get()->CloseAllDocuments();
 
 		// UI	不管是否处在场景播放模式，都需要加载UI
 		{
@@ -162,9 +162,9 @@ namespace NN::Runtime
 				if (com.document)
 				{
 					// 先加载UI
-					com.document = UISystem::Get()->LoadUIDocument(com.document->GetResourcePath());
+					com.document = UISystemLegacy::Get()->LoadUIDocument(com.document->GetResourcePath());
 					// 再显示UI
-					UISystem::Get()->ShowUIDocument(com.document.get());
+					UISystemLegacy::Get()->ShowUIDocument(com.document.get());
 				}
 
 				});
@@ -277,7 +277,7 @@ namespace NN::Runtime
 		// 设置上下文
 		m_EngineContext.viewport = m_Viewport;
 		m_EngineContext.window = window;
-		m_EngineContext.uiSystem = UISystem::Get();
+		m_EngineContext.uiSystem = UISystemLegacy::Get();
 
 		// 初始化渲染引擎
 		//m_RenderEngine->Initialize(window, m_Viewport);

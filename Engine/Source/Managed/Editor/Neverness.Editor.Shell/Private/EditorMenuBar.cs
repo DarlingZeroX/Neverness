@@ -6,13 +6,15 @@ using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Public;
 
-namespace Neverness.Editor.Framework.Private.Panel.Main;
+namespace Neverness.Editor.Shell.Private;
 
+/// <summary>
+/// 编辑器菜单栏——渲染应用标题栏、菜单项和窗口控制按钮。
+/// </summary>
 public class EditorMenuBar : IEditorPanel
 {
     private bool m_Dragging;
     private bool m_EditorMaximized;
-    //private object? mEditorWindow; // placeholder (VGWindow in C++)
     private Window m_EditorWindow;
 
     private bool m_ShowImGuiDemo;
@@ -117,9 +119,6 @@ public class EditorMenuBar : IEditorPanel
         {
             if (ImGui.Button(FontAwesome5Pro.WindowRestore + "##RestoreEditor", size))
             {
-                //m_EditorWindow.Position = s_WindowSize;
-                //m_EditorWindow.Size = s_WindowSize;
-                //m_EditorWindow.SetResizable(true);
                 m_EditorWindow.Restore();
                 m_EditorMaximized = false;
             }

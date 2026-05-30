@@ -11,7 +11,7 @@
 
 #include "Context.h"
 #include <RmlUi/Core/Context.h>
-#include "UISystem.h"
+#include "UISystemLegacy.h"
 
 namespace RmlSol {
 
@@ -24,7 +24,7 @@ namespace RmlSol {
 			"LoadDocument", [](Rml::Context& self, const std::string& path)
 			{
 				Rml::ElementDocument* doc = self.LoadDocument(path);
-				NN::Runtime::UISystem::Get()->OnScriptOpenDocument(doc);
+				NN::Runtime::UISystemLegacy::Get()->OnScriptOpenDocument(doc);
 				return doc;
 			}
 		);
