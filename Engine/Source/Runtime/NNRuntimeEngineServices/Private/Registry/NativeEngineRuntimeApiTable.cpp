@@ -39,7 +39,6 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildAssetRegistryRuntimeApi(&outTable->assetRegistry);
 	NNBuildAssetManagerRuntimeApi(&outTable->assetManager);
 	NNBuildAssetCookerRuntimeApi(&outTable->assetCooker);
-	NNBuildEntityRuntimeApi(&outTable->entity);
 	NNBuildApplicationRuntimeApi(&outTable->application);
 	NNBuildWindowRuntimeApi(&outTable->window);
 	NNBuildVfsRuntimeApi(&outTable->vfs);

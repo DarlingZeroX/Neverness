@@ -15,8 +15,11 @@
 #include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"
+#include "NNRuntimeScene/Include/Assets/IAssetResolver.h"
+#include "NativeEngineRuntimeServices.h"
 
 #include <iostream>
+#include <exception>
 
 #include "NNCore/Interface/HLog.h"
 
@@ -24,17 +27,62 @@ namespace
 {
 using NN::Runtime::engine::NNEngineRuntime;
 
+/**
+ * @brief 原生 IAssetResolver 实现——桥接 NNAssetRegistry（NNRuntimeAsset 模块）。
+ *
+ * 通过 NNNativeEngineApi_GetRuntimeTable() 获取 API 函数指针。
+ *
+ * 生命周期：进程级全局单例，与 g_RmlUIRenderer 同生同灭。
+ */
+class AssetRegistryResolver final : public NN::Runtime::Scene::IAssetResolver
+{
+public:
+	bool Resolve(NNGuid guid, char* outPath, std::uint32_t outPathSize) noexcept override
+	{
+		const auto* api = NNNativeEngineApi_GetRuntimeTable();
+		if (!api || !api->assetRegistry.resolvePathByGuid)
+		{
+			std::cerr << "[AssetRegistryResolver] API table or resolvePathByGuid is null" << std::endl;
+			return false;
+		}
+
+		// 首次调用时打印注册表状态
+		static bool s_logged = false;
+		if (!s_logged)
+		{
+			auto countFn = api->assetRegistry.getAssetCount;
+			std::uint32_t assetCount = countFn ? countFn() : 0;
+			std::cout << "[AssetRegistryResolver] 注册表资产数: " << assetCount << std::endl;
+			s_logged = true;
+		}
+
+		// resolvePathByGuid 返回 > 0 表示成功（路径字节数），-1 表示失败
+		int result = api->assetRegistry.resolvePathByGuid(guid, outPath,
+			static_cast<std::size_t>(outPathSize));
+		if (result <= 0)
+		{
+			std::cerr << "[AssetRegistryResolver] GUID not found ("
+				<< guid.high << ":" << guid.low << ")" << std::endl;
+		}
+		return result > 0;
+	}
+};
+
 // 进程级渲染器单例
 NN::Runtime::Renderer2D::SceneRenderer* g_SceneRenderer = nullptr;
 NN::Runtime::Renderer::RmlUIRenderer* g_RmlUIRenderer = nullptr;
 NN::Runtime::RmlUI::NNRmlUISystem* g_RmlUISystem = nullptr;
+AssetRegistryResolver* g_AssetResolver = nullptr;
 bool g_Initialized = false;
+std::uint32_t g_LastRmluiTextureId = 0;  // RmlUI 渲染结果纹理 ID
 
 /// 确保渲染器已初始化（惰性初始化）
 bool EnsureSceneRenderer()
 {
     if (g_Initialized)
         return g_SceneRenderer != nullptr;
+
+    std::cout << "[ViewportRender] EnsureSceneRenderer: 开始初始化" << std::endl;
 
     g_SceneRenderer = new NN::Runtime::Renderer2D::SceneRenderer();
     if (!g_SceneRenderer->Initialize())
@@ -43,8 +91,13 @@ bool EnsureSceneRenderer()
         delete g_SceneRenderer;
         g_SceneRenderer = nullptr;
     }
+    else
+    {
+        std::cout << "[ViewportRender] SceneRenderer 初始化成功" << std::endl;
+    }
 
     // 初始化 RmlUI 渲染器
+    std::cout << "[ViewportRender] 初始化 RmlUIRenderer..." << std::endl;
     g_RmlUIRenderer = new NN::Runtime::Renderer::RmlUIRenderer();
     if (!g_RmlUIRenderer->Initialize(1280, 720))
     {
@@ -52,11 +105,25 @@ bool EnsureSceneRenderer()
         delete g_RmlUIRenderer;
         g_RmlUIRenderer = nullptr;
     }
+    else
+    {
+        std::cout << "[ViewportRender] RmlUIRenderer 初始化成功" << std::endl;
+    }
+
+    // 设置资产路径解析器（桥接 NNAssetRegistry → IAssetResolver）
+    g_AssetResolver = new AssetRegistryResolver();
+    if (g_RmlUIRenderer)
+    {
+        g_RmlUIRenderer->SetAssetResolver(g_AssetResolver);
+        std::cout << "[ViewportRender] AssetResolver 已设置" << std::endl;
+    }
 
     // 创建 RmlUI 系统（负责构建 DrawList）
     g_RmlUISystem = NN::Runtime::RmlUI::CreateRmlUISystem();
+    std::cout << "[ViewportRender] RmlUISystem 已创建" << std::endl;
 
     g_Initialized = true;
+    std::cout << "[ViewportRender] EnsureSceneRenderer: 初始化完成" << std::endl;
     return g_SceneRenderer != nullptr;
 }
 
@@ -65,39 +132,68 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_renderSceneToTexture(
     std::uint32_t width,
     std::uint32_t height)
 {
-    if (!EnsureSceneRenderer())
+    try
     {
-		H_LOG_WARN("Failed to ensure SceneRenderer initialization");
-		return 0;
-    }
+        if (!EnsureSceneRenderer())
+        {
+            H_LOG_WARN("Failed to ensure SceneRenderer initialization");
+            return 0;
+        }
 
-    // 从句柄获取 NNRuntimeScene
-    auto* scene = NNEngineRuntime::Instance().Scene().GetRuntimeScene(sceneHandle);
-    if (!scene)
+        // 从句柄获取 NNRuntimeScene
+        auto* scene = NNEngineRuntime::Instance().Scene().GetRuntimeScene(sceneHandle);
+        if (!scene)
+        {
+            H_LOG_WARN("Invalid scene handle: {}", sceneHandle);
+            return 0;
+        }
+
+        // 1. 渲染 Sprite 场景
+        std::uint32_t textureId = g_SceneRenderer->Render(*scene, width, height);
+
+        // 2. RmlUI: 构建 DrawList
+        if (g_RmlUISystem)
+        {
+            g_RmlUISystem->Tick(*scene, 0.0f);
+        }
+
+        // 3. RmlUI: 同步 + 渲染到独立 FBO
+        g_LastRmluiTextureId = 0;
+        if (g_RmlUIRenderer && g_RmlUISystem)
+        {
+            // 每帧更新 RmlUI 视口尺寸（匹配 EditorViewport 实际大小）
+            g_RmlUIRenderer->SetViewport(width, height);
+			H_LOG_INFO("Viewport size set to %d x %d", width, height);
+
+            const auto& drawList = g_RmlUISystem->GetDrawList();
+            g_RmlUIRenderer->Sync(drawList);
+
+            // 渲染到内部 FBO，存储纹理 ID（不 blit 到屏幕）
+            g_LastRmluiTextureId = g_RmlUIRenderer->RenderToTexture(
+                drawList, NN::Runtime::Scene::NNRmlUIViewTarget::Scene);
+
+            static int s_frameCount = 0;
+            if (s_frameCount < 3)
+            {
+                H_LOG_INFO("[ViewportRender] frame %d: rmluiTextureId=%d, drawListSize=%d",
+                    s_frameCount, g_LastRmluiTextureId, static_cast<int>(drawList.size()));
+                s_frameCount++;
+            }
+        }
+
+        // 始终返回 Sprite 纹理 ID，RmlUI 纹理通过 GetLastRmluiTexture() 获取
+        return textureId;
+    }
+    catch (const std::exception& e)
     {
-		H_LOG_WARN("Invalid scene handle: {}", sceneHandle);
-		return 0;
+        H_LOG_WARN("[ViewportRender] renderSceneToTexture 异常: {}", e.what());
+        return 0;
     }
-
-    // 1. 渲染 Sprite 场景
-    std::uint32_t textureId = g_SceneRenderer->Render(*scene, width, height);
-
-    // 2. RmlUI: 构建 DrawList
-    if (g_RmlUISystem)
+    catch (...)
     {
-        g_RmlUISystem->Tick(*scene, 0.0f);
+        H_LOG_WARN("[ViewportRender] renderSceneToTexture SEH 异常");
+        return 0;
     }
-
-    // 3. RmlUI: 同步 + 更新 + 渲染
-    if (g_RmlUIRenderer && g_RmlUISystem)
-    {
-        const auto& drawList = g_RmlUISystem->GetDrawList();
-        g_RmlUIRenderer->Sync(drawList);
-        g_RmlUIRenderer->Update();
-        g_RmlUIRenderer->Render(drawList, NN::Runtime::Scene::NNRmlUIViewTarget::Scene);
-    }
-
-    return textureId;
 }
 
 std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_getLastRenderedTexture(void)
@@ -105,6 +201,11 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_getLastRenderedTexture(voi
     if (!g_SceneRenderer)
         return 0;
     return g_SceneRenderer->GetOutputTextureId();
+}
+
+std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_getLastRmluiTexture(void)
+{
+    return g_LastRmluiTextureId;
 }
 
 void NN_ENGINE_ABI_STDCALL rt_viewportRender_getRenderStats(
@@ -150,11 +251,12 @@ extern "C" void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api)
         return;
     }
 
-    api->RenderSceneToTexture  = &rt_viewportRender_renderSceneToTexture;
+    api->RenderSceneToTexture   = &rt_viewportRender_renderSceneToTexture;
     api->GetLastRenderedTexture = &rt_viewportRender_getLastRenderedTexture;
-    api->GetRenderStats        = &rt_viewportRender_getRenderStats;
-    api->SetRmlUIViewportSize  = &rt_viewportRender_setRmlUIViewportSize;
-    api->ProcessRmlUIInput     = &rt_viewportRender_processRmlUIInput;
+    api->GetRenderStats         = &rt_viewportRender_getRenderStats;
+    api->SetRmlUIViewportSize   = &rt_viewportRender_setRmlUIViewportSize;
+    api->ProcessRmlUIInput      = &rt_viewportRender_processRmlUIInput;
+    api->GetLastRmluiTexture    = &rt_viewportRender_getLastRmluiTexture;
 
     std::cout << "ViewportRender Runtime API built." << std::endl;
 }

@@ -26,7 +26,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
-
+#include "../NNRuntimeAssetExport.h"
 #include "GuidHashMap.h"
 
 #include "NNAssetCache.h"
@@ -83,7 +83,7 @@ struct NNAssetEntry
 /**
  * @brief Runtime 資產管理器。
  */
-class NNAssetManager
+class NN_ASSET_API NNAssetManager
 {
 public:
 	static NNAssetManager& Instance() noexcept;

@@ -1,4 +1,5 @@
-# NNRuntimeAsset — Runtime 資產系統（AssetManager / Loader / Streaming / Cache / Format）。
+# NNRuntimeAsset — Runtime 资产系统（AssetManager / Registry / Loader / Streaming / Cache / Format）。
+# SHARED 库：解决跨 DLL 边界的单例复制问题（NNAssetRegistry::Instance() 全局唯一）。
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,10 +14,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 	add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-add_library(NevernessRuntime-Asset STATIC)
+add_library(NevernessRuntime-Asset SHARED)
 
 target_sources(NevernessRuntime-Asset
 	PRIVATE
+		# AssetManager / Loader / Streaming / Cache / Format
 		Private/NNAssetManager.cpp
 		Private/NNHandleTable.cpp
 		Private/NNAssetCache.cpp
@@ -25,11 +27,20 @@ target_sources(NevernessRuntime-Asset
 		Private/NNAssetManagerApi.cpp
 		Private/NNPackManager.cpp
 		Private/NNAssetMemoryPool.cpp
+		# AssetRegistry（原 NNAssetRegistry 模块，合并到此）
+		Private/NNAssetRegistry.cpp
+		Private/NNGuidTable.cpp
+		Private/NNDependencyTable.cpp
+		Private/NNAssetRegistryApi.cpp
 )
 
 target_include_directories(NevernessRuntime-Asset PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
 target_include_directories(NevernessRuntime-Asset PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 
+target_compile_definitions(NevernessRuntime-Asset PRIVATE NN_ASSET_DLL_EXPORT NN_ASSET_DYNAMIC)
+target_compile_definitions(NevernessRuntime-Asset PUBLIC NN_ASSET_DYNAMIC)
+
+target_link_libraries(NevernessRuntime-Asset PUBLIC NevernessCore-Core)
 target_link_libraries(NevernessRuntime-Asset PUBLIC NevernessRuntime-NativeEngineAPI)
 target_link_libraries(NevernessRuntime-Asset PUBLIC NevernessRuntime-VFS)

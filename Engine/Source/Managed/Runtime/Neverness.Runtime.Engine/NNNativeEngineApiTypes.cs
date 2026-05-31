@@ -42,6 +42,9 @@ public unsafe struct NNViewportRenderApi
 	public delegate* unmanaged<ulong, uint, uint, ulong> RenderSceneToTexture;
 	public delegate* unmanaged<ulong> GetLastRenderedTexture;
 	public delegate* unmanaged<uint*, uint*, void> GetRenderStats;
+	public delegate* unmanaged<uint, uint, void> SetRmlUIViewportSize;
+	public delegate* unmanaged<uint, int, int, int, int, uint, uint, uint, void> ProcessRmlUIInput;
+	public delegate* unmanaged<ulong> GetLastRmluiTexture;
 }
 
 /// <summary>
@@ -266,7 +269,7 @@ public enum NNRmlUIDocumentFlags : uint
 }
 
 /// <summary>
-/// RmlUI 文档组件——blittable 結構體，與 Native <c>NNRmlUIDocumentComponent</c> 內存佈局一致（28 字節）。
+/// RmlUI 文档组件——blittable 結構體，與 Native <c>NNRmlUIDocumentComponent</c> 內存佈局一致（32 字節）。
 /// TypeId = FNV-1a("RmlUIDocument")，須與 Native BuiltinComponentRegistration.cpp 一致。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -277,8 +280,9 @@ public struct NNRmlUIDocumentComponentData
 	public NNRmlUIDocumentFlags Flags;          // 4B offset 16
 	public int SortOrder;                       // 4B offset 20
 	public NNRmlUIViewTarget ViewTarget;        // 4B offset 24
+	public uint _padding0;                      // 4B offset 28（对齐填充，与 C++ sizeof==32 对齐）
 }
-// 共 28 字节，与 C++ 侧 NNRmlUIDocumentComponent 完全对齐
+// 共 32 字节，与 C++ 侧 NNRmlUIDocumentComponent 完全对齐
 
 
 /// <summary>
@@ -545,22 +549,6 @@ public unsafe struct NNAssetRegistryApi
 	public delegate* unmanaged<uint> GetEdgeCount;
 }
 
-/// <summary>
-/// 與 Native <c>NNEntityAPI</c> 對齊（<c>EntityAPI.h</c>）。**layout v5** 起含 <c>getRuntimeTick</c>（Runtime 覆寫後隨 Tick 遞增；Stub 恒為 **0**）。
-/// </summary>
-/// <remarks>
-/// 與 <see cref="NNSceneApi"/> 所操作之場景句柄（Native <c>NNEntityHandle</c>）語意分離。
-/// **GetRuntimeTick** 僅反映 **EntitySubsystem** 是否已被 **NNEngineRuntime::Tick** 驅動（與 **Stub** 表區分）。
-/// 欄位順序須與 C 端 <c>typedef struct NNEntityAPI</c>（<c>EntityAPI.h</c>）逐欄一致。
-/// </remarks>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNEntityApi
-{
-	/// <summary>對應 Native <c>NNEntityGetServiceAbiTokenFn</c>；Stub 返回 <see cref="NNNativeEngineApiConstants.EntityServiceAbiToken"/>（ASCII「NNEn」小端）。</summary>
-	public delegate* unmanaged<uint> GetServiceAbiToken;
-	/// <summary>對應 Native <c>NNEntityGetRuntimeTickFn</c>；Runtime 轉發至 <c>EntitySubsystem</c> 之單調幀計數。</summary>
-	public delegate* unmanaged<ulong> GetRuntimeTick;
-}
 
 /// <summary>
 /// 與 Native <c>NNWindowDesc</c> 對齊（<c>WindowAPI.h</c>）：創建窗口時的描述塊。
@@ -828,8 +816,6 @@ public unsafe struct NNNativeEngineApi
 	public NNAsyncWaitApi AsyncWait;
 	public NNObjectApi Object;
 	public NNAssetRegistryApi AssetRegistry;
-	/// <summary>對應 C 聚合體成員 <c>entity</c>（型別 <c>NNEntityAPI</c>）；語義見 <see cref="NNEntityApi"/> 之 remarks。</summary>
-	public NNEntityApi Entity;
 	/// <summary>對應 C 聚合體成員 <c>application</c>（型別 <c>NNApplicationAPI</c>）。</summary>
 	public NNApplicationApi Application;
 	/// <summary>對應 C 聚合體成員 <c>window</c>（型別 <c>NNWindowAPI</c>）。</summary>

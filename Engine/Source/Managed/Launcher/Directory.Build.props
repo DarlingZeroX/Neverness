@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <NevernessRepositoryRoot>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\..'))))</NevernessRepositoryRoot>
+    <SolutionDir Condition="'$(SolutionDir)' == ''">$(NevernessRepositoryRoot)</SolutionDir>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**;$(MSBuildProjectDirectory)\Build\**</DefaultItemExcludes>
+    <NevernessManagedRuntimeProjectDir>$([MSBuild]::EnsureTrailingSlash('$(MSBuildThisFileDirectory)'))</NevernessManagedRuntimeProjectDir>
+    <NevernessNativeRuntimeProjectDir>$(SolutionDir)Engine\Source\Runtime\</NevernessNativeRuntimeProjectDir>
+    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+</Project>

@@ -19,7 +19,6 @@
 #include "AssetCookerAPI.h"
 #include "AsyncWaitAPI.h"
 #include "EditorSceneAPI.h"
-#include "EntityAPI.h"
 #include "AudioAPI.h"
 #include "InputAPI.h"
 #include "ObjectAPI.h"
@@ -36,8 +35,8 @@
 extern "C" {
 #endif
 
-/** 當前發佈之 NNNativeEngineAPI 記憶體佈局版本（與託管 `NNNativeEngineApiConstants.LayoutVersion` 對齊）。v21：新增 NNViewportRenderAPI 子表（视口渲染）。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 21u
+/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v22：删除 NNEntityAPI 子表。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 22u
 
 typedef struct NNNativeEngineAPI
 {
@@ -55,8 +54,6 @@ typedef struct NNNativeEngineAPI
 	NNAsyncWaitAPI asyncWait;
 	NNObjectAPI object;
 	NNAssetRegistryAPI assetRegistry;
-	/** @brief Native ECS／實體服務子表（骨架）；與 `NNSceneAPI` 使用之 `NNEntityHandle` 語意分離，見 `EntityAPI.h`。 */
-	NNEntityAPI entity;
 	/** @brief Runtime Host 生命周期（SDL 子系统、事件泵、帧边界）；见 `ApplicationAPI.h`。 */
 	NNApplicationAPI application;
 	/** @brief 窗口子系统（多窗口、Native 句柄）；见 `WindowAPI.h`。 */

@@ -63,6 +63,12 @@ void NN_ENGINE_ABI_STDCALL stub_viewportRender_processRmlUIInput(
     (void)keyMod;
 }
 
+std::uint64_t NN_ENGINE_ABI_STDCALL stub_viewportRender_getLastRmluiTexture(void)
+{
+    NN::StubRuntime::BumpInvokeCount();
+    return 0;
+}
+
 } // namespace
 
 extern "C" void NNBuildViewportRenderApiStubs(NNViewportRenderAPI* api)
@@ -76,4 +82,5 @@ extern "C" void NNBuildViewportRenderApiStubs(NNViewportRenderAPI* api)
     api->GetRenderStats = &stub_viewportRender_getRenderStats;
     api->SetRmlUIViewportSize = &stub_viewportRender_setRmlUIViewportSize;
     api->ProcessRmlUIInput = &stub_viewportRender_processRmlUIInput;
+    api->GetLastRmluiTexture = &stub_viewportRender_getLastRmluiTexture;
 }

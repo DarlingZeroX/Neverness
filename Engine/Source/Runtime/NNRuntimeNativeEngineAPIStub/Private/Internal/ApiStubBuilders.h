@@ -13,7 +13,6 @@
 #include "AsyncWaitAPI.h"
 #include "AudioAPI.h"
 #include "EditorSceneAPI.h"
-#include "EntityAPI.h"
 #include "InputAPI.h"
 #include "ObjectAPI.h"
 #include "RenderAPI.h"
@@ -44,7 +43,6 @@ void NNBuildObjectApiStubs(NNObjectAPI* api);
 void NNBuildAssetRegistryApiStubs(NNAssetRegistryAPI* api);
 void NNBuildAssetManagerApiStubs(NNAssetManagerAPI* api);
 void NNBuildAssetCookerApiStubs(NNAssetCookerAPI* api);
-void NNBuildEntityApiStubs(NNEntityAPI* api);
 void NNBuildWindowApiStubs(NNWindowAPI* api);
 void NNBuildVfsApiStubs(NNVfsAPI* api);
 void NNBuildEventApiStubs(NNEventAPI* api);

@@ -991,6 +991,74 @@ void RenderInterface_GL3::EndFrame()
 	Gfx::CheckGLError("EndFrame");
 }
 
+void RenderInterface_GL3::EndFrameNoBlit()
+{
+	const Gfx::FramebufferData& fb_active = render_layers.GetTopLayer();
+	const Gfx::FramebufferData& fb_postprocess = render_layers.GetPostprocessPrimary();
+
+	// Resolve MSAA to postprocess framebuffer（同 EndFrame）。
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fb_active.framebuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fb_postprocess.framebuffer);
+	glBlitFramebuffer(0, 0, fb_active.width, fb_active.height, 0, 0, fb_postprocess.width, fb_postprocess.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	// ⚠️ 跳过 blit 到 framebuffer 0（不渲染全屏四边形到屏幕）。
+	// 渲染结果保留在 postprocess FBO 中，可通过 GetRenderResult().color_tex_buffer 获取纹理 ID。
+
+	render_layers.EndFrame();
+
+	// Restore GL state（同 EndFrame）。
+	if (glstate_backup.enable_cull_face)
+		glEnable(GL_CULL_FACE);
+	else
+		glDisable(GL_CULL_FACE);
+
+	if (glstate_backup.enable_blend)
+		glEnable(GL_BLEND);
+	else
+		glDisable(GL_BLEND);
+
+	if (glstate_backup.enable_stencil_test)
+		glEnable(GL_STENCIL_TEST);
+	else
+		glDisable(GL_STENCIL_TEST);
+
+	if (glstate_backup.enable_scissor_test)
+		glEnable(GL_SCISSOR_TEST);
+	else
+		glDisable(GL_SCISSOR_TEST);
+
+	if (glstate_backup.enable_depth_test)
+		glEnable(GL_DEPTH_TEST);
+	else
+		glDisable(GL_DEPTH_TEST);
+
+	glViewport(glstate_backup.viewport[0], glstate_backup.viewport[1], glstate_backup.viewport[2], glstate_backup.viewport[3]);
+	glScissor(glstate_backup.scissor[0], glstate_backup.scissor[1], glstate_backup.scissor[2], glstate_backup.scissor[3]);
+
+	glActiveTexture(glstate_backup.active_texture);
+
+	glClearStencil(glstate_backup.stencil_clear_value);
+	glClearColor(glstate_backup.color_clear_value[0], glstate_backup.color_clear_value[1], glstate_backup.color_clear_value[2],
+		glstate_backup.color_clear_value[3]);
+	glColorMask(glstate_backup.color_writemask[0], glstate_backup.color_writemask[1], glstate_backup.color_writemask[2],
+		glstate_backup.color_writemask[3]);
+
+	glBlendEquationSeparate(glstate_backup.blend_equation_rgb, glstate_backup.blend_equation_alpha);
+	glBlendFuncSeparate(glstate_backup.blend_src_rgb, glstate_backup.blend_dst_rgb, glstate_backup.blend_src_alpha, glstate_backup.blend_dst_alpha);
+
+	glStencilFuncSeparate(GL_FRONT, glstate_backup.stencil_front.func, glstate_backup.stencil_front.ref, glstate_backup.stencil_front.value_mask);
+	glStencilMaskSeparate(GL_FRONT, glstate_backup.stencil_front.writemask);
+	glStencilOpSeparate(GL_FRONT, glstate_backup.stencil_front.fail, glstate_backup.stencil_front.pass_depth_fail,
+		glstate_backup.stencil_front.pass_depth_pass);
+
+	glStencilFuncSeparate(GL_BACK, glstate_backup.stencil_back.func, glstate_backup.stencil_back.ref, glstate_backup.stencil_back.value_mask);
+	glStencilMaskSeparate(GL_BACK, glstate_backup.stencil_back.writemask);
+	glStencilOpSeparate(GL_BACK, glstate_backup.stencil_back.fail, glstate_backup.stencil_back.pass_depth_fail,
+		glstate_backup.stencil_back.pass_depth_pass);
+
+	Gfx::CheckGLError("EndFrameNoBlit");
+}
+
 void RenderInterface_GL3::Clear()
 {
 	glClearColor(0, 0, 0, 1);

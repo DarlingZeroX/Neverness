@@ -11,7 +11,6 @@
 #include "NNNativeEngineAPI/Include/AssetCookerAPI.h"
 #include "NNNativeEngineAPI/Include/AsyncWaitAPI.h"
 #include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
-#include "NNNativeEngineAPI/Include/EntityAPI.h"
 #include "NNNativeEngineAPI/Include/ObjectAPI.h"
 #include "NNNativeEngineAPI/Include/SceneAPI.h"
 #include "NNNativeEngineAPI/Include/TimingAPI.h"
@@ -31,7 +30,6 @@ void NNBuildObjectRuntimeApi(NNObjectAPI* api);
 void NNBuildAssetRegistryRuntimeApi(NNAssetRegistryAPI* api);
 void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api);
 void NNBuildAssetCookerRuntimeApi(NNAssetCookerAPI* api);
-void NNBuildEntityRuntimeApi(NNEntityAPI* api);
 void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api);
 void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api);
 

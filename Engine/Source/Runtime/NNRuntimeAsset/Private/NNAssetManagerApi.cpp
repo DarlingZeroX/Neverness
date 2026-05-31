@@ -143,7 +143,7 @@ int NN_ENGINE_ABI_STDCALL rt_am_initializeAssetManager(const char* projectRootUt
 
 } // namespace
 
-extern "C" void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api)
+extern "C" NN_ASSET_API void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api)
 {
 	if (api == nullptr)
 		return;

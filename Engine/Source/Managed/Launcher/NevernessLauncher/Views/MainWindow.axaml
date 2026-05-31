@@ -1,0 +1,192 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NevernessLauncher.ViewModels"
+        xmlns:vmHome="using:NevernessLauncher.ViewModels.Home"
+        xmlns:vmSettings="using:NevernessLauncher.ViewModels.Settings"
+        xmlns:viewsHome="using:NevernessLauncher.Views.Home"
+        xmlns:viewsSettings="using:NevernessLauncher.Views.Settings"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="NevernessLauncher.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}"
+        Width="1200" Height="800"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource AppBackground}"
+        CanResize="True"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="0"
+        ExtendClientAreaChromeHints="NoChrome">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.DataTemplates>
+        <DataTemplate DataType="vmHome:HomePageViewModel">
+            <viewsHome:HomePage/>
+        </DataTemplate>
+        <DataTemplate DataType="vmSettings:SettingsPageViewModel">
+            <viewsSettings:SettingsPage/>
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <Window.Styles>
+        <!-- 导航按钮样式 -->
+        <Style Selector="Button.nav">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Button.nav:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AppHover}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
+        </Style>
+
+        <!-- 窗口控制按钮样式 -->
+        <Style Selector="Button.winBtn">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
+            <Setter Property="CornerRadius" Value="0"/>
+            <Setter Property="MinWidth" Value="46"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Button.winBtn:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AppHover}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
+        </Style>
+
+        <Style Selector="Button.closeBtn:pointerover">
+            <Setter Property="Background" Value="#E81123"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Styles>
+
+    <!-- 主背景 -->
+    <Border Background="{DynamicResource AppBackground}">
+        <Grid RowDefinitions="Auto,*">
+            <!-- 自定义标题栏 -->
+            <Border Name="TitleBar" Grid.Row="0" Background="{DynamicResource AppTitleBar}">
+                <Grid ColumnDefinitions="220,*,Auto" Height="40">
+                    <!-- 左侧：Logo 和标题 -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
+                                Margin="16,0,0,0" VerticalAlignment="Center">
+                        <Border Background="#6C63FF" CornerRadius="6" Width="22" Height="22">
+                            <TextBlock Text="N" FontSize="13" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Neverness Launcher" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AppTextPrimary}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- 中间：导航按钮 -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button Name="NavHomeButton" Content="🏠  Home" Tag="Home"
+                                Classes="nav" Click="OnNavButtonClick"/>
+                        <Button Name="NavSettingsButton" Content="⚙️  Settings" Tag="Settings"
+                                Classes="nav" Click="OnNavButtonClick"/>
+                    </StackPanel>
+
+                    <!-- 右侧：窗口控制按钮 -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                VerticalAlignment="Stretch">
+                        <Button Name="MinimizeButton" Content="─" Classes="winBtn"
+                                Click="OnMinimize"/>
+                        <Button Name="MaximizeButton" Content="□" Classes="winBtn"
+                                Click="OnMaximize"/>
+                        <Button Name="CloseButton" Content="✕" Classes="winBtn closeBtn"
+                                Click="OnClose"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 主内容区 -->
+            <Grid Grid.Row="1" ColumnDefinitions="200,*">
+                <!-- 左侧导航栏 -->
+                <Border Grid.Column="0" Background="{DynamicResource AppNavBackground}"
+                        Padding="12,16">
+                    <Grid RowDefinitions="Auto,*,Auto">
+                        <!-- 搜索框 -->
+                        <Border Grid.Row="0" Background="{DynamicResource AppInputBackground}"
+                                CornerRadius="10" Padding="12,10" Margin="0,0,0,20">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="🔍" Opacity="0.5" FontSize="14"
+                                           VerticalAlignment="Center"/>
+                                <TextBox Name="SearchBox" Background="Transparent"
+                                         BorderThickness="0"
+                                         Foreground="{DynamicResource AppTextPrimary}"
+                                         Watermark="Search projects..." FontSize="13"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 页面列表 -->
+                        <ListBox Grid.Row="1" Name="NavListBox"
+                                 ItemsSource="{Binding Pages}"
+                                 SelectedItem="{Binding CurrentPage}"
+                                 Background="Transparent"
+                                 Padding="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:PageViewModelBase">
+                                    <Border Padding="14,12" CornerRadius="10" Margin="0,2"
+                                            Background="Transparent">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Background="#256C63FF" CornerRadius="8"
+                                                    Width="32" Height="32">
+                                                <TextBlock Text="{Binding IconKey}" FontSize="15"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Title}" FontSize="13"
+                                                       FontWeight="Medium"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource AppTextPrimary}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <!-- 底部状态栏 -->
+                        <Border Grid.Row="2" Background="{DynamicResource AppInputBackground}"
+                                CornerRadius="10" Padding="14,10" Margin="0,16,0,0">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Ellipse Width="8" Height="8" Fill="#2ED573"/>
+                                <TextBlock Text="Engine Ready" FontSize="11"
+                                           Foreground="{DynamicResource AppTextSecondary}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- 右侧内容区 -->
+                <Border Grid.Column="1" Background="{DynamicResource AppContentBackground}"
+                        Padding="24">
+                    <ContentControl Content="{Binding CurrentPage}"/>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -22,12 +22,16 @@ public static class AssetDatabase
 	{
 		if (path.IsEmpty || guid.IsZero)
 		{
+			Console.WriteLine($"[AssetDatabase] Register: path empty or guid zero");
 			return false;
 		}
+
+		Console.WriteLine($"[AssetDatabase] Register: path={path.FullPath}, guid={guid}");
 
 		if (TryRegisterNative(path, guid))
 		{
 			Cache(path, guid);
+			Console.WriteLine($"[AssetDatabase] Register: native success");
 			return true;
 		}
 
@@ -98,19 +102,27 @@ public static class AssetDatabase
 	{
 		if (!EngineNativeApiBootstrap.IsInstalled)
 		{
+			Console.WriteLine($"[AssetDatabase] TryRegisterNative: IsInstalled=false");
 			return false;
 		}
 
 		var fn = EngineNativeApiBootstrap.EngineApi.AssetRegistry.RegisterAsset;
 		if (fn == null)
 		{
+			Console.WriteLine($"[AssetDatabase] TryRegisterNative: RegisterAsset fn=null");
 			return false;
 		}
 
+		var native = guid.ToNative();
 		var bytes = Encoding.UTF8.GetBytes(path.FullPath);
 		fixed (byte* p = bytes)
 		{
-			return fn(p, guid.ToNative()) == 0;
+			var result = fn(p, native);
+			if (result != 0)
+			{
+				Console.WriteLine($"[AssetDatabase] TryRegisterNative FAILED: path={path.FullPath}, guid={guid}, result={result}");
+			}
+			return result == 0;
 		}
 	}
 

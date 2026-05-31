@@ -1,0 +1,152 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Dark Theme (默认) -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="#0F0F1A"/>
+    </Style>
+
+    <!-- Light Theme (通过 Application.RequestedThemeVariant 切换) -->
+
+    <!-- 毛玻璃效果 Border -->
+    <Style Selector="Border.glass">
+        <Setter Property="Background" Value="#1A1A2ECC"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="BorderBrush" Value="#33FFFFFF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <!-- 卡片样式 -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="#1E1E3AAA"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="BorderBrush" Value="#22FFFFFF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="Border.card:pointerover">
+        <Setter Property="Background" Value="#2A2A4ACC"/>
+        <Setter Property="BorderBrush" Value="#44FFFFFF"/>
+    </Style>
+
+    <!-- 按钮样式 -->
+    <Style Selector="Button">
+        <Setter Property="Background" Value="#2A2A4A"/>
+        <Setter Property="Foreground" Value="#E0E0FF"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="BorderBrush" Value="#33FFFFFF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="Button:pointerover">
+        <Setter Property="Background" Value="#3A3A6A"/>
+    </Style>
+
+    <Style Selector="Button:pressed">
+        <Setter Property="Background" Value="#4A4A8A"/>
+    </Style>
+
+    <!-- 主要按钮 -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="#6C63FF"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="#7B73FF"/>
+    </Style>
+
+    <!-- 危险按钮 -->
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="#FF4757"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <!-- 文本框样式 -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="#1A1A2E"/>
+        <Setter Property="Foreground" Value="#E0E0FF"/>
+        <Setter Property="BorderBrush" Value="#33FFFFFF"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="12,10"/>
+    </Style>
+
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="#6C63FF"/>
+    </Style>
+
+    <!-- ListBox 样式 -->
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="ListBoxItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Margin" Value="0,2"/>
+        <Setter Property="Padding" Value="12,10"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover">
+        <Setter Property="Background" Value="#1AFFFFFF"/>
+    </Style>
+
+    <Style Selector="ListBoxItem:selected">
+        <Setter Property="Background" Value="#2A6C63FF"/>
+    </Style>
+
+    <!-- Expander 样式 -->
+    <Style Selector="Expander">
+        <Setter Property="Background" Value="#1A1A2E"/>
+        <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <!-- ComboBox 样式 -->
+    <Style Selector="ComboBox">
+        <Setter Property="Background" Value="#2A2A4A"/>
+        <Setter Property="Foreground" Value="#E0E0FF"/>
+        <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <!-- CheckBox 样式 -->
+    <Style Selector="CheckBox">
+        <Setter Property="Foreground" Value="#E0E0FF"/>
+    </Style>
+
+    <!-- TextBlock 样式 -->
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="#E0E0FF"/>
+    </Style>
+
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="TextBlock.subtitle">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="#8888AA"/>
+    </Style>
+
+    <!-- ScrollViewer 样式 -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!-- 分隔线 -->
+    <Style Selector="Border.separator">
+        <Setter Property="Background" Value="#22FFFFFF"/>
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Margin" Value="0,8"/>
+    </Style>
+
+</Styles>

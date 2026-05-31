@@ -1,0 +1,56 @@
+/* RmlUI 基础样式 */
+body {
+    font-family: "LatoLatin", "NotoEmoji", "msyh", sans-serif;
+    color: white;
+}
+
+.main_container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 180);
+    padding: 20px;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #aaaaaa;
+    margin-bottom: 30px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-item {
+    display: block;
+    width: 200px;
+    padding: 12px 20px;
+    background-color: #3a7cde;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background-color: #5a9cfe;
+}
+
+.menu-item:active {
+    background-color: #2a5cb0;
+}

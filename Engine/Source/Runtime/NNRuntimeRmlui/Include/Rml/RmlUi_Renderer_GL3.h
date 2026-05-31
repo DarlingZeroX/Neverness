@@ -66,6 +66,11 @@ public:
 	// Draws the result to the backbuffer and restores OpenGL state.
 	void EndFrame();
 
+	// 同 EndFrame，但不渲染到 framebuffer 0（不 blit 到屏幕）。
+	// 适用于子渲染器场景（如 Editor ImGui 帧内调用）。
+	// 渲染结果保留在 postprocess FBO 中，可通过 GetRenderResult() 获取纹理 ID。
+	void EndFrameNoBlit();
+
 	// Optional, can be used to clear the active framebuffer.
 	void Clear();
 

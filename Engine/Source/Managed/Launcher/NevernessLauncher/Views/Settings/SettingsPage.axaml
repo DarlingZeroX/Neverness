@@ -1,0 +1,314 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NevernessLauncher.ViewModels.Settings"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="NevernessLauncher.Views.Settings.SettingsPage"
+             x:DataType="vm:SettingsPageViewModel">
+
+    <Design.DataContext>
+        <vm:SettingsPageViewModel/>
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <!-- 设置区块样式 -->
+        <Style Selector="Border.settingSection">
+            <Setter Property="Background" Value="{DynamicResource AppCard}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- 设置项样式 -->
+        <Style Selector="Border.settingItem">
+            <Setter Property="Background" Value="{DynamicResource AppInputBackground}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- 设置标签样式 -->
+        <Style Selector="TextBlock.settingLabel">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- 设置描述样式 -->
+        <Style Selector="TextBlock.settingDesc">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+        </Style>
+
+        <!-- 操作按钮样式 -->
+        <Style Selector="Button.settingBtn">
+            <Setter Property="Background" Value="{DynamicResource AppButtonBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppButtonText}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Button.settingBtn:pointerover">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+
+        <!-- 移除按钮样式 -->
+        <Style Selector="Button.removeBtn">
+            <Setter Property="Background" Value="#2A1A1A"/>
+            <Setter Property="Foreground" Value="#FF6B6B"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.removeBtn:pointerover">
+            <Setter Property="Background" Value="#3A2A2A"/>
+        </Style>
+
+        <!-- 保存按钮样式 -->
+        <Style Selector="Button.saveBtn">
+            <Setter Property="Background" Value="#6C63FF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.saveBtn:pointerover">
+            <Setter Property="Background" Value="#7B73FF"/>
+        </Style>
+
+        <!-- Theme 选择按钮样式 -->
+        <Style Selector="RadioButton.themeBtn">
+            <Setter Property="Background" Value="{DynamicResource AppButtonBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="RadioButton.themeBtn:checked">
+            <Setter Property="Background" Value="#6C63FF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#6C63FF"/>
+        </Style>
+
+        <Style Selector="RadioButton.themeBtn:pointerover">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer>
+        <StackPanel Spacing="24">
+            <!-- 页面标题 -->
+            <StackPanel>
+                <TextBlock Text="Settings" FontSize="28" FontWeight="Bold"
+                           Foreground="{DynamicResource AppTextPrimary}"/>
+                <TextBlock Text="Configure your launcher preferences" FontSize="14"
+                           Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- 分隔线 -->
+            <Border Height="1" Background="{DynamicResource AppBorder}"/>
+
+            <!-- 外观设置 -->
+            <Border Classes="settingSection">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="🎨" FontSize="16"/>
+                        <TextBlock Text="Appearance" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AppTextPrimary}"/>
+                    </StackPanel>
+
+                    <!-- 主题设置 -->
+                    <Border Classes="settingItem">
+                        <StackPanel Spacing="12">
+                            <StackPanel>
+                                <TextBlock Text="Theme" Classes="settingLabel"/>
+                                <TextBlock Text="Choose your preferred color scheme" Classes="settingDesc"/>
+                            </StackPanel>
+
+                            <!-- Theme 选择按钮组 -->
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Name="ThemeDark" Content="🌙 Dark"
+                                             Classes="themeBtn" IsChecked="True"
+                                             GroupName="Theme"/>
+                                <RadioButton Name="ThemeLight" Content="☀️ Light"
+                                             Classes="themeBtn"
+                                             GroupName="Theme"/>
+                                <RadioButton Name="ThemeSystem" Content="💻 System"
+                                             Classes="themeBtn"
+                                             GroupName="Theme"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 语言设置 -->
+                    <Border Classes="settingItem">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="Language" Classes="settingLabel"/>
+                                <TextBlock Text="Select your preferred language" Classes="settingDesc"/>
+                            </StackPanel>
+                            <ComboBox Grid.Column="1" SelectedItem="{Binding Language}" Width="150">
+                                <ComboBoxItem Content="zh-CN"/>
+                                <ComboBoxItem Content="en-US"/>
+                            </ComboBox>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- 通用设置 -->
+            <Border Classes="settingSection">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="⚙️" FontSize="16"/>
+                        <TextBlock Text="General" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AppTextPrimary}"/>
+                    </StackPanel>
+
+                    <!-- 自动扫描 -->
+                    <Border Classes="settingItem">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="Auto Scan" Classes="settingLabel"/>
+                                <TextBlock Text="Automatically scan for projects on startup" Classes="settingDesc"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="1" IsChecked="{Binding AutoScanOnStartup}"
+                                          OnContent="ON" OffContent="OFF"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- 最大最近项目数 -->
+                    <Border Classes="settingItem">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="Max Recent Projects" Classes="settingLabel"/>
+                                <TextBlock Text="Maximum number of recent projects to remember" Classes="settingDesc"/>
+                            </StackPanel>
+                            <NumericUpDown Grid.Column="1" Value="{Binding MaxRecentProjects}"
+                                           Minimum="5" Maximum="50" Width="120"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- 引擎设置 -->
+            <Border Classes="settingSection">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="🔧" FontSize="16"/>
+                        <TextBlock Text="Engine" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AppTextPrimary}"/>
+                    </StackPanel>
+
+                    <!-- 默认引擎版本 -->
+                    <Border Classes="settingItem">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="Default Engine" Classes="settingLabel"/>
+                                <TextBlock Text="Default engine version for new projects" Classes="settingDesc"/>
+                            </StackPanel>
+                            <TextBox Grid.Column="1" Text="{Binding DefaultEngineVersion}"
+                                     Width="150" Watermark="e.g. 5.0.0"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- 引擎路径列表 -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Engine Paths" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AppTextPrimary}"/>
+                        <TextBlock Text="Directories to scan for engine installations" Classes="settingDesc"/>
+
+                        <ItemsControl ItemsSource="{Binding EnginePaths}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Classes="settingItem">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Text="{Binding}" VerticalAlignment="Center"
+                                                       FontSize="13"
+                                                       Foreground="{DynamicResource AppTextPrimary}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <Button Grid.Column="1" Content="✕ Remove"
+                                                    Classes="removeBtn"
+                                                    Command="{Binding $parent[ItemsControl].((vm:SettingsPageViewModel)DataContext).RemoveEnginePathCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button Content="➕ Add Engine Path" Classes="settingBtn"
+                                HorizontalAlignment="Left"
+                                Command="{Binding AddEnginePathCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 项目设置 -->
+            <Border Classes="settingSection">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="📁" FontSize="16"/>
+                        <TextBlock Text="Projects" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AppTextPrimary}"/>
+                    </StackPanel>
+
+                    <!-- 项目目录列表 -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Project Directories" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AppTextPrimary}"/>
+                        <TextBlock Text="Directories to scan for Neverness projects" Classes="settingDesc"/>
+
+                        <ItemsControl ItemsSource="{Binding ProjectDirectories}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Classes="settingItem">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Text="{Binding}" VerticalAlignment="Center"
+                                                       FontSize="13"
+                                                       Foreground="{DynamicResource AppTextPrimary}"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <Button Grid.Column="1" Content="✕ Remove"
+                                                    Classes="removeBtn"
+                                                    Command="{Binding $parent[ItemsControl].((vm:SettingsPageViewModel)DataContext).RemoveProjectDirectoryCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button Content="➕ Add Project Directory" Classes="settingBtn"
+                                HorizontalAlignment="Left"
+                                Command="{Binding AddProjectDirectoryCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 操作按钮 -->
+            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
+                <Button Grid.Column="1" Content="↩️ Reset to Defaults" Classes="settingBtn"
+                        Margin="0,0,8,0" Command="{Binding ResetCommand}"/>
+                <Button Grid.Column="2" Content="💾 Save Settings" Classes="saveBtn"
+                        Command="{Binding SaveCommand}"/>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

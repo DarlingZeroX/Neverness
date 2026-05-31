@@ -87,20 +87,6 @@ public static unsafe class EngineNativeApiBootstrap
 			s_engineApi.AsyncWait.ReleaseWait(h);
 		}
 
-		if (s_engineApi.Entity.GetServiceAbiToken != null)
-		{
-			var token = s_engineApi.Entity.GetServiceAbiToken();
-			if (token != NNNativeEngineApiConstants.EntityServiceAbiToken)
-			{
-				return;
-			}
-		}
-
-		if (s_engineApi.Entity.GetRuntimeTick != null)
-		{
-			_ = s_engineApi.Entity.GetRuntimeTick();
-		}
-
 		if (s_engineApi.Application.Initialize != null)
 		{
 			_ = s_engineApi.Application.Initialize();

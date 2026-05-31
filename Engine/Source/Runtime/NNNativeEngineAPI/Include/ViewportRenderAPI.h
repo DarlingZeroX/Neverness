@@ -71,6 +71,12 @@ typedef struct NNViewportRenderAPI
         std::uint32_t button,
         std::uint32_t keyCode, std::uint32_t keyMod);
 
+    /**
+     * @brief 获取上次 RmlUI 渲染的纹理 ID（不重新渲染）。
+     * @return OpenGL Texture ID（0 = 未渲染过或无 RmlUI 内容）
+     */
+    std::uint64_t (NN_ENGINE_ABI_STDCALL *GetLastRmluiTexture)(void);
+
 } NNViewportRenderAPI;
 
 #ifdef __cplusplus

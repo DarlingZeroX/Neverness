@@ -23,6 +23,7 @@ target_sources(NevernessRuntime-Scene
 		Include/Scene/NNEntityHandle.h
 		Include/Scene/NNWorld.h
 		Include/Scene/NNRuntimeScene.h
+		Include/Scene/SceneSubsystem.h
 		Include/Components/NNTransformComponent.h
 		Include/Components/NNRelationshipComponent.h
 		Include/Components/NNTagComponent.h
@@ -52,6 +53,7 @@ target_sources(NevernessRuntime-Scene
 		Source/Scene/NNEntity.cpp
 		Source/Scene/NNEntityHandle.cpp
 		Source/Scene/NNRuntimeScene.cpp
+		Source/Scene/SceneSubsystem.cpp
 		Source/Reflection/NNComponentRegistry.cpp
 		Source/Reflection/BuiltinComponentRegistration.cpp
 		Source/Systems/NNSceneSystemScheduler.cpp
@@ -77,6 +79,7 @@ target_include_directories(NevernessRuntime-Scene PUBLIC
 target_include_directories(NevernessRuntime-Scene PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
 
 target_link_libraries(NevernessRuntime-Scene PUBLIC NevernessCore-Core)
+target_link_libraries(NevernessRuntime-Scene PRIVATE NevernessRuntime-VFS)
 target_include_directories(NevernessRuntime-Scene PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNNativeEngineAPI/Include)
 
 if (ENABLE_TESTS)

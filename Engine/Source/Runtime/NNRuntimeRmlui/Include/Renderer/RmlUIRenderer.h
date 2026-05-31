@@ -91,6 +91,12 @@ namespace NN::Runtime::Renderer
 		void Render(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
 		            NN::Runtime::Scene::NNRmlUIViewTarget viewTarget);
 
+		/// @brief 渲染到内部 FBO 并返回纹理 ID（不 blit 到屏幕）。
+		/// 适用于 Editor 子渲染器场景（ImGui 帧内调用）。
+		/// @return RmlUI 渲染结果的 OpenGL 纹理 ID（0 = 无内容或失败）。
+		std::uint32_t RenderToTexture(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
+		                              NN::Runtime::Scene::NNRmlUIViewTarget viewTarget);
+
 		/// @brief 处理输入事件。
 		void ProcessInput(std::uint32_t type,
 		                  std::int32_t mouseX, std::int32_t mouseY,

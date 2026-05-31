@@ -14,12 +14,12 @@ using NN::Runtime::engine::NNEngineRuntime;
 
 NNTextureHandle NN_ENGINE_ABI_STDCALL rt_asset_loadTexture(const char* virtualPathUtf8)
 {
-	return NNEngineRuntime::Instance().Asset().LoadTexture(virtualPathUtf8);
+	return 0;
 }
 
 NNAudioHandle NN_ENGINE_ABI_STDCALL rt_asset_loadAudio(const char* virtualPathUtf8)
 {
-	return NNEngineRuntime::Instance().Asset().LoadAudio(virtualPathUtf8);
+	return 0;
 }
 } // namespace
 

@@ -20,11 +20,7 @@ target_sources(NevernessRuntime-Engine
 		"Private/NNEngineRuntime.cpp"
 		Private/TimingSystem.cpp
 		Private/AsyncSystem.cpp
-		Private/SceneSubsystem.cpp
-		Private/AssetSubsystem.cpp
 		Private/ObjectSubsystem.cpp
-		Private/AssetRegistrySubsystem.cpp
-		Private/EntitySubsystem.cpp
 		Private/NNRuntimeSceneTickSubsystem.cpp
 		Private/RuntimeSubsystemCollection.cpp
 		Private/RuntimeScheduler.cpp

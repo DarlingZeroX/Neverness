@@ -66,16 +66,17 @@ namespace NN::Runtime::Scene
 	/**
 	 * @brief RmlUI 文档组件：纯数据描述，行为由 NNRmlUISystem + RmlUIRenderer 驱动。
 	 *
-	 * 内存布局（28 字节）：
+	 * 内存布局（32 字节，含 4B 尾部对齐填充）：
 	 * ┌──────────────────────────────────────────────────────┐
 	 * │ DocumentAsset   NNGuid              16B   文档资产   │
 	 * │ Flags           NNRmlUIDocumentFlags 4B   标志位     │
 	 * │ SortOrder       int32_t              4B   渲染排序   │
 	 * │ ViewTarget      NNRmlUIViewTarget    4B   视图目标   │
+	 * │ _padding        (implicit)           4B   对齐填充   │
 	 * └──────────────────────────────────────────────────────┘
-	 * 对齐：4 字节，共 28 字节（7 × 4B）
+	 * 对齐：4 字节，共 32 字节（8 × 4B）
 	 *
-	 * 序列化：DocumentAsset + Flags + SortOrder + Visibility
+	 * 序列化：DocumentAsset + Flags + SortOrder + ViewTarget
 	 * 运行时：文档实例由 RmlUIRenderer 内部管理，不存于组件。
 	 */
 	struct NN_RUNTIME_SCENE_API NNRmlUIDocumentComponent

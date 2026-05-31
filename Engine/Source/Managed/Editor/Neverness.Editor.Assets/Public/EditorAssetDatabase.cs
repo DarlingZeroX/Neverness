@@ -55,6 +55,9 @@ public static class EditorAssetDatabase
 
             /* 嘗試載入快取 */
             TryLoadCache();
+
+            /* 将快取中的所有资产同步到 Native NNAssetRegistry */
+            SyncCacheToNative();
         }
     }
 
@@ -98,6 +101,7 @@ public static class EditorAssetDatabase
             s_cacheDirty = true;
 
             /* 同步到 Runtime AssetDatabase */
+            Console.WriteLine($"[EditorAssetDatabase] 同步到 Runtime: path={virtualPath.FullPath}, guid={guid}");
             Neverness.Runtime.Assets.AssetDatabase.Register(virtualPath, guid);
 
             return true;
@@ -520,6 +524,20 @@ public static class EditorAssetDatabase
             s_guidToLabels.Clear();
             s_dirtyGuids.Clear();
         }
+    }
+
+    /* ======================== Native 同步 ======================== */
+
+    /// <summary>将快取中的所有资产注册到 Native NNAssetRegistry（启动时调用一次）。</summary>
+    private static void SyncCacheToNative()
+    {
+        var count = 0;
+        foreach (var kvp in s_pathToGuid)
+        {
+            if (Neverness.Runtime.Assets.AssetDatabase.Register(kvp.Key, kvp.Value))
+                count++;
+        }
+        Console.WriteLine($"[EditorAssetDatabase] SyncCacheToNative: 同步 {count}/{s_pathToGuid.Count} 个资产到 NNAssetRegistry");
     }
 
     /* ======================== 內部實作 ======================== */

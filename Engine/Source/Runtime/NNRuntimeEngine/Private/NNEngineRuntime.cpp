@@ -1,12 +1,16 @@
 /**
- * @file VGEngineRuntime.cpp
- * @brief **VGEngineRuntime** 单例：`Initialize` / `Tick` / `Shutdown` 与 **RuntimeScheduler** / **EntitySubsystem** 的驱动顺序见下。
+ * @file NNEngineRuntime.cpp
+ * @brief NNEngineRuntime 单例：Initialize / Tick / Shutdown。
  *
- * **`Tick` 顺序（P0-1+）**
- * - 先 **`timing_.Tick`**，再构造 **RuntimeFrameContext**，最后 **`scheduler_.Tick`**（其中 **EntitySubsystem** 位于 **RuntimeTickGroup::Update**），以便与现有 Phase 4 测试（帧序号、累计时间）保持一致；**`getRuntimeTick`** 表示 Entity 子系统已被推进，与 **Timing** 的 **frameIndex** 无强制数值相等关系。
+ * Tick 顺序：
+ * - 先 timing_.Tick，再构造 RuntimeFrameContext，最后 scheduler_.Tick
+ *   （其中 NNRuntimeSceneTickSubsystem 位于 RuntimeTickGroup::Update）。
  *
- * **`Shutdown`**
- * - 先 **`async_.Shutdown`**（join 后台等待），再 **`scheduler_.ShutdownRegistered()`**（**EntitySubsystem::Shutdown** 内 **`Reset`**）将 **`runtimeTick`** 清零，便于下次 **`Initialize`** 后从 0 重新观测；与 MANAGED **§2.7.1** 文档一句说明一致。
+ * Shutdown：
+ * - 先 async_.Shutdown（join 后台等待），再 scheduler_.ShutdownRegistered()。
+ *
+ * 已移除：
+ * - EntitySubsystem（ABI 骨架，已删除）
  */
 
 #include "NNEngineRuntime.h"
@@ -29,7 +33,6 @@ bool NNEngineRuntime::Initialize() noexcept
 	}
 
 	timing_.Reset();
-	scheduler_.RegisterSubsystem(&entity_);
 	sceneTick_.SetScene(&ecsScene_);
 	scheduler_.RegisterSubsystem(&sceneTick_);
 	scheduler_.InitializeRegistered();

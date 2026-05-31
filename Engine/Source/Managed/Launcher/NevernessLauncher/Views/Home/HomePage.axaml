@@ -1,0 +1,260 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NevernessLauncher.ViewModels.Home"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="NevernessLauncher.Views.Home.HomePage"
+             x:DataType="vm:HomePageViewModel">
+
+    <Design.DataContext>
+        <vm:HomePageViewModel/>
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <!-- 项目卡片样式 -->
+        <Style Selector="Border.projectCard">
+            <Setter Property="Background" Value="{DynamicResource AppCard}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Border.projectCard:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AppHover}"/>
+            <Setter Property="BorderBrush" Value="#446C63FF"/>
+        </Style>
+
+        <!-- 操作按钮样式 -->
+        <Style Selector="Button.action">
+            <Setter Property="Background" Value="{DynamicResource AppButtonBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppButtonText}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.action:pointerover">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+
+        <!-- 启动按钮样式 -->
+        <Style Selector="Button.launch">
+            <Setter Property="Background" Value="#6C63FF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.launch:pointerover">
+            <Setter Property="Background" Value="#7B73FF"/>
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer>
+        <StackPanel Spacing="24">
+            <!-- 页面标题 -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                    <TextBlock Text="Projects" FontSize="28" FontWeight="Bold"
+                               Foreground="{DynamicResource AppTextPrimary}"/>
+                    <TextBlock Text="Manage and launch your Neverness projects" FontSize="14"
+                               Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="1"
+                            VerticalAlignment="Bottom">
+                    <Button Content="🔄 Scan" Classes="action"
+                            Command="{Binding ScanProjectsCommand}"
+                            IsEnabled="{Binding !IsScanning}"/>
+                    <Button Content="📂 Open" Classes="action"
+                            Command="{Binding OpenProjectCommand}"/>
+                    <Button Content="➕ New" Classes="launch"
+                            Command="{Binding CreateProjectCommand}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 分隔线 -->
+            <Border Height="1" Background="{DynamicResource AppBorder}"/>
+
+            <!-- 加载指示器 -->
+            <Border IsVisible="{Binding IsScanning}" Padding="20">
+                <StackPanel HorizontalAlignment="Center" Spacing="12">
+                    <ProgressBar IsIndeterminate="True" Width="200" Height="4"/>
+                    <TextBlock Text="Scanning for projects..."
+                               Foreground="{DynamicResource AppTextSecondary}"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 置顶项目 -->
+            <StackPanel Spacing="16" IsVisible="{Binding PinnedProjects.Count}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="📌" FontSize="16"/>
+                    <TextBlock Text="Pinned" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AppTextPrimary}"/>
+                </StackPanel>
+
+                <ItemsControl ItemsSource="{Binding PinnedProjects}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProjectCardViewModel">
+                            <Border Classes="projectCard" Width="280" Margin="0,0,12,12">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                                    <!-- 项目头部 -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Background="#2A6C63FF" CornerRadius="8"
+                                                Width="40" Height="40">
+                                            <TextBlock Text="🎮" FontSize="20"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       FontWeight="SemiBold" FontSize="14"
+                                                       Foreground="{DynamicResource AppTextPrimary}"/>
+                                            <TextBlock Text="{Binding EngineVersion}"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource AppTextSecondary}"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="2" Content="⭐" Classes="action"
+                                                Command="{Binding TogglePinCommand}"
+                                                Padding="4,4" FontSize="14"/>
+                                    </Grid>
+
+                                    <!-- 项目路径 -->
+                                    <TextBlock Grid.Row="1" Text="{Binding ProjectPath}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource AppTextSecondary}"
+                                               Margin="0,12,0,0" TextTrimming="CharacterEllipsis"/>
+
+                                    <!-- 状态指示器 -->
+                                    <Border Grid.Row="2" Background="{DynamicResource AppInputBackground}"
+                                            CornerRadius="4" Padding="8,4" Margin="0,8,0,0"
+                                            HorizontalAlignment="Left">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Ellipse Width="6" Height="6"
+                                                     Fill="{Binding StatusColor}"/>
+                                            <TextBlock Text="{Binding Status}" FontSize="11"
+                                                       Foreground="{DynamicResource AppTextSecondary}"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 操作按钮 -->
+                                    <Grid Grid.Row="3" ColumnDefinitions="*,*" Margin="0,12,0,0">
+                                        <Button Grid.Column="0" Content="🚀 Editor"
+                                                Classes="launch" Margin="0,0,4,0"
+                                                Command="{Binding LaunchEditorCommand}"/>
+                                        <Button Grid.Column="1" Content="▶️ Play"
+                                                Classes="action" Margin="4,0,0,0"
+                                                Command="{Binding LaunchGameCommand}"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- 最近项目 -->
+            <StackPanel Spacing="16">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="🕐" FontSize="16"/>
+                    <TextBlock Text="Recent" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AppTextPrimary}"/>
+                </StackPanel>
+
+                <ItemsControl ItemsSource="{Binding RecentProjects}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProjectCardViewModel">
+                            <Border Classes="projectCard" Width="280" Margin="0,0,12,12">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                                    <!-- 项目头部 -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Background="#2A6C63FF" CornerRadius="8"
+                                                Width="40" Height="40">
+                                            <TextBlock Text="🎮" FontSize="20"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       FontWeight="SemiBold" FontSize="14"
+                                                       Foreground="{DynamicResource AppTextPrimary}"/>
+                                            <TextBlock Text="{Binding EngineVersion}"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource AppTextSecondary}"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="2" Content="⭐" Classes="action"
+                                                Command="{Binding TogglePinCommand}"
+                                                Padding="4,4" FontSize="14"/>
+                                    </Grid>
+
+                                    <!-- 项目路径 -->
+                                    <TextBlock Grid.Row="1" Text="{Binding ProjectPath}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource AppTextSecondary}"
+                                               Margin="0,12,0,0" TextTrimming="CharacterEllipsis"/>
+
+                                    <!-- 状态指示器 -->
+                                    <Border Grid.Row="2" Background="{DynamicResource AppInputBackground}"
+                                            CornerRadius="4" Padding="8,4" Margin="0,8,0,0"
+                                            HorizontalAlignment="Left">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Ellipse Width="6" Height="6"
+                                                     Fill="{Binding StatusColor}"/>
+                                            <TextBlock Text="{Binding Status}" FontSize="11"
+                                                       Foreground="{DynamicResource AppTextSecondary}"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 操作按钮 -->
+                                    <Grid Grid.Row="3" ColumnDefinitions="*,*" Margin="0,12,0,0">
+                                        <Button Grid.Column="0" Content="🚀 Editor"
+                                                Classes="launch" Margin="0,0,4,0"
+                                                Command="{Binding LaunchEditorCommand}"/>
+                                        <Button Grid.Column="1" Content="▶️ Play"
+                                                Classes="action" Margin="4,0,0,0"
+                                                Command="{Binding LaunchGameCommand}"/>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- 空状态 -->
+            <Border IsVisible="{Binding !Projects.Count}" Padding="40">
+                <StackPanel HorizontalAlignment="Center" Spacing="16">
+                    <TextBlock Text="📁" FontSize="48" HorizontalAlignment="Center"/>
+                    <TextBlock Text="No projects found" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AppTextPrimary}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Scan for projects or create a new one"
+                               Foreground="{DynamicResource AppTextSecondary}"
+                               HorizontalAlignment="Center"/>
+                    <Button Content="➕ Create New Project" Classes="launch"
+                            HorizontalAlignment="Center" Margin="0,8,0,0"
+                            Command="{Binding CreateProjectCommand}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -13,7 +13,7 @@ namespace NN::Runtime::engine
  * - **Tick**：每帧在对应 **RuntimeTickGroup** 阶段调用；**不得**在 **Tick** 内阻塞 join **AsyncSystem**（见 **VGEngineRuntime** 契约）。
  * - **Shutdown**：宿主 **Shutdown** 时逆序调用；指针须存活至 **UnregisterSubsystem** 或 **ShutdownRegistered** 完成。
  *
- * **注意**：首包仅 **EntitySubsystem** 实现本接口；其余子系统仍由 Facade 直接持有，后续切片迁入。
+ * **注意**：当前仅 **NNRuntimeSceneTickSubsystem** 实现本接口；其余子系统仍由 Facade 直接持有。
  */
 class IRuntimeSubsystem
 {

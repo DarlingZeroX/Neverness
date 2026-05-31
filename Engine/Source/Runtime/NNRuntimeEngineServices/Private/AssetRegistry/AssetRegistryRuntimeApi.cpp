@@ -1,66 +1,64 @@
 /**
  * @file AssetRegistryRuntimeApi.cpp
- * @brief **NNAssetRegistryAPI** Runtime 轉發。
+ * @brief NNAssetRegistryAPI Runtime 转发。
  *
- * 原有 8 個函數轉發至 NNEngineRuntime::AssetRegistry()（舊 AssetRegistrySubsystem）。
- * Phase 1 新增 8 個函數轉發至 NNAssetRegistry（新模組）。
+ * 所有 16 个函数统一转发至 NNAssetRegistry::Instance()（NNRuntimeAsset 模块）。
+ * 旧 AssetRegistrySubsystem 已删除，不再使用。
  */
 
 #include "Internal/RuntimeApiBuilders.h"
 
 #include "NNNativeEngineAPI/Include/EngineTypes.h"
 #include "NNNativeEngineAPI/Include/NativeInterop.h"
-#include "NNRuntimeEngine/Include/NNEngineRuntime.h"
-#include "NNAssetRegistry/Include/NNAssetRegistry.h"
+#include "NNAssetRegistry.h"
 
 namespace
 {
-using NN::Runtime::engine::NNEngineRuntime;
 using NN::Runtime::Asset::NNAssetRegistry;
 
-/* === 原有函數（轉發至舊 AssetRegistrySubsystem） === */
+/* === GUID ↔ Path === */
 
 int NN_ENGINE_ABI_STDCALL rt_reg_registerAsset(const char* virtualPathUtf8, NNGuid guid)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().RegisterAsset(virtualPathUtf8, guid);
+	return NNAssetRegistry::Instance().RegisterAsset(virtualPathUtf8, guid);
 }
 
 int NN_ENGINE_ABI_STDCALL rt_reg_unregisterByGuid(NNGuid guid)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().UnregisterByGuid(guid);
+	return NNAssetRegistry::Instance().UnregisterByGuid(guid);
 }
 
 int NN_ENGINE_ABI_STDCALL rt_reg_unregisterByPath(const char* virtualPathUtf8)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().UnregisterByPath(virtualPathUtf8);
+	return NNAssetRegistry::Instance().UnregisterByPath(virtualPathUtf8);
 }
 
 int NN_ENGINE_ABI_STDCALL rt_reg_resolvePathByGuid(NNGuid guid, char* outUtf8, std::size_t outCapacity)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().ResolvePathByGuid(guid, outUtf8, outCapacity);
+	return NNAssetRegistry::Instance().ResolvePathByGuid(guid, outUtf8, outCapacity);
 }
 
 int NN_ENGINE_ABI_STDCALL rt_reg_resolveGuidByPath(const char* virtualPathUtf8, NNGuid* outGuid)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().ResolveGuidByPath(virtualPathUtf8, outGuid);
+	return NNAssetRegistry::Instance().ResolveGuidByPath(virtualPathUtf8, outGuid);
 }
+
+/* === 依赖管理 === */
 
 std::uint32_t NN_ENGINE_ABI_STDCALL rt_reg_getDependencyCount(NNGuid guid)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().GetDependencyCount(guid);
+	return NNAssetRegistry::Instance().GetDependencyCount(guid);
 }
 
 int NN_ENGINE_ABI_STDCALL rt_reg_getDependencyAt(NNGuid guid, std::uint32_t index, NNGuid* outDependency)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().GetDependencyAt(guid, index, outDependency);
+	return NNAssetRegistry::Instance().GetDependencyAt(guid, index, outDependency);
 }
 
 NNGuid NN_ENGINE_ABI_STDCALL rt_reg_importAsset(const char* virtualPathUtf8)
 {
-	return NNEngineRuntime::Instance().AssetRegistry().ImportAsset(virtualPathUtf8);
+	return NNAssetRegistry::Instance().ImportAsset(virtualPathUtf8);
 }
-
-/* === Phase 1 新增函數（轉發至新 NNAssetRegistry） === */
 
 int NN_ENGINE_ABI_STDCALL rt_reg_setDependencies(NNGuid guid, const NNGuid* deps, std::uint32_t count)
 {
@@ -76,6 +74,8 @@ int NN_ENGINE_ABI_STDCALL rt_reg_removeDependency(NNGuid guid, NNGuid dependency
 {
 	return NNAssetRegistry::Instance().RemoveDependency(guid, dependency);
 }
+
+/* === 反向依赖 + 图查询 === */
 
 std::uint32_t NN_ENGINE_ABI_STDCALL rt_reg_getReverseDependencyCount(NNGuid guid)
 {
@@ -110,7 +110,6 @@ extern "C" void NNBuildAssetRegistryRuntimeApi(NNAssetRegistryAPI* api)
 	{
 		return;
 	}
-	/* 原有欄位 */
 	api->registerAsset = &rt_reg_registerAsset;
 	api->unregisterByGuid = &rt_reg_unregisterByGuid;
 	api->unregisterByPath = &rt_reg_unregisterByPath;
@@ -119,8 +118,6 @@ extern "C" void NNBuildAssetRegistryRuntimeApi(NNAssetRegistryAPI* api)
 	api->getDependencyCount = &rt_reg_getDependencyCount;
 	api->getDependencyAt = &rt_reg_getDependencyAt;
 	api->importAsset = &rt_reg_importAsset;
-
-	/* Phase 1 新增欄位 */
 	api->setDependencies = &rt_reg_setDependencies;
 	api->addDependency = &rt_reg_addDependency;
 	api->removeDependency = &rt_reg_removeDependency;

@@ -59,21 +59,43 @@ public class EditorViewport : IEditorPanel
                 ref readonly var api = ref EngineNativeApiBootstrap.EngineApi;
                 if (api.ViewportRender.RenderSceneToTexture != null)
                 {
-                    ulong textureId = api.ViewportRender.RenderSceneToTexture(
+                    // 1. 渲染场景（返回 Sprite 纹理 ID）
+                    ulong spriteTextureId = api.ViewportRender.RenderSceneToTexture(
                         m_SceneHandle,
                         (uint)viewportSize.X,
                         (uint)viewportSize.Y);
 
-                    // 用 ImGui.Image 显示
-                    if (textureId != 0)
+                    var cursorPos = ImGui.GetCursorScreenPos();
+
+                    // 2. 显示 Sprite 场景纹理
+                    if (spriteTextureId != 0)
                     {
-                        // FlipY：OpenGL 纹理坐标原点在左下角，ImGui Image 原点在左上角
                         ImGui.Image(
-                            new ImTextureRef(null, textureId),
-                            //(nint)textureId,
+                            new ImTextureRef(null, spriteTextureId),
                             viewportSize,
-                            new Vector2(0, 1),  // UV0: 左下
+                            new Vector2(0, 1),  // UV0: 左下（OpenGL 纹理坐标）
                             new Vector2(1, 0)); // UV1: 右上
+                    }
+
+                    // 3. 叠加 RmlUI 纹理（透明叠加层）
+                    if (api.ViewportRender.GetLastRmluiTexture != null)
+                    {
+                        ulong rmluiTextureId = api.ViewportRender.GetLastRmluiTexture();
+                        if (rmluiTextureId != 0)
+                        {
+                            // 在同一位置叠加 RmlUI 纹理
+                            var drawList = ImGui.GetWindowDrawList();
+                            drawList.AddImage(
+                                new ImTextureRef(null, rmluiTextureId),
+                                cursorPos,
+                                cursorPos + viewportSize,
+                                new Vector2(0, 1),  // UV0: 左下
+                                new Vector2(1, 0)); // UV1: 右上
+                        }
+                        else
+                        {
+                            Console.WriteLine("[EditorViewport] RmlUI textureId = 0");
+                        }
                     }
                 }
             }
