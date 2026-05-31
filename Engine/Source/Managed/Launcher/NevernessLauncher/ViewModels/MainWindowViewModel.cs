@@ -15,6 +15,7 @@ namespace NevernessLauncher.ViewModels
     {
         private readonly ILogService _logService;
         private readonly IConfigurationService _configService;
+        private readonly ILocalizationService _localizationService;
 
         /// <summary>当前活跃页面</summary>
         [ObservableProperty]
@@ -27,18 +28,38 @@ namespace NevernessLauncher.ViewModels
         [ObservableProperty]
         private string _title = "Neverness Launcher";
 
+        /// <summary>首页标题</summary>
+        [ObservableProperty]
+        private string _homeTitle = "Home";
+
+        /// <summary>设置标题</summary>
+        [ObservableProperty]
+        private string _settingsTitle = "Settings";
+
+        /// <summary>状态栏文本</summary>
+        [ObservableProperty]
+        private string _statusText = "Engine Ready";
+
         public MainWindowViewModel(
             ILogService logService,
             IConfigurationService configService,
+            ILocalizationService localizationService,
             HomePageViewModel homePage,
             SettingsPageViewModel settingsPage)
         {
             _logService = logService;
             _configService = configService;
+            _localizationService = localizationService;
+
+            // 注册语言变更事件
+            _localizationService.LanguageChanged += OnLanguageChanged;
 
             // 注册页面
             Pages.Add(homePage);
             Pages.Add(settingsPage);
+
+            // 初始化本地化文本
+            UpdateLocalizedTexts();
         }
 
         /// <summary>初始化所有页面</summary>
@@ -93,6 +114,19 @@ namespace NevernessLauncher.ViewModels
                 settings.LastActivePage = CurrentPage.Title;
             }
             await _configService.SaveUserSettings(settings);
+        }
+
+        private void OnLanguageChanged(object? sender, string language)
+        {
+            UpdateLocalizedTexts();
+        }
+
+        private void UpdateLocalizedTexts()
+        {
+            Title = _localizationService.GetString("App.Title");
+            HomeTitle = _localizationService.GetString("Nav.Home");
+            SettingsTitle = _localizationService.GetString("Nav.Settings");
+            StatusText = _localizationService.GetString("Status.Ready");
         }
     }
 }

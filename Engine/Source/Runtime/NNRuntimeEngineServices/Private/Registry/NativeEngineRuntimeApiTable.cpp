@@ -85,6 +85,7 @@ extern "C" void NNEngineRuntimeHost_Tick(float deltaTimeSeconds)
 extern "C" void NNEngineRuntimeHost_Shutdown(void)
 {
 	NNEngineRuntimeHost_ClearManagedTickCallback();
+	ShutdownViewportRender();
 	NN::Runtime::Render::NNRenderAssetManager::Get().Shutdown();
 	NN::Runtime::engine::NNEngineRuntime::Instance().Shutdown();
 }

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 /**
  * @file RuntimeApiBuilders.h
@@ -36,3 +36,6 @@ void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
+
+// C++ shutdown functions（引擎退出时调用）
+void ShutdownViewportRender();

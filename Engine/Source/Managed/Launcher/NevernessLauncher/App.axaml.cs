@@ -30,6 +30,11 @@ namespace NevernessLauncher
                         var settings = configService.LoadUserSettings();
                         ApplyTheme(settings.Theme);
                     }
+                    else
+                    {
+                        // 默认使用 Dark 主题
+                        ApplyTheme("Dark");
+                    }
 
                     var mainWindowViewModel = serviceProvider.GetRequiredService<MainWindowViewModel>();
                     desktop.MainWindow = new MainWindow

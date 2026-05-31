@@ -17,6 +17,7 @@ namespace NevernessLauncher.ViewModels.Home
         private readonly IProjectService _projectService;
         private readonly ILaunchService _launchService;
         private readonly IRecentProjectService _recentProjectService;
+        private readonly ILocalizationService _localizationService;
 
         /// <summary>项目列表</summary>
         public ObservableCollection<ProjectCardViewModel> Projects { get; } = new();
@@ -39,19 +40,41 @@ namespace NevernessLauncher.ViewModels.Home
         [ObservableProperty]
         private string _searchText = string.Empty;
 
+        // 本地化文本属性
+        [ObservableProperty] private string _pageTitle = "Projects";
+        [ObservableProperty] private string _pageSubtitle = "Manage and launch your Neverness projects";
+        [ObservableProperty] private string _scanText = "Scan";
+        [ObservableProperty] private string _openText = "Open";
+        [ObservableProperty] private string _newText = "New";
+        [ObservableProperty] private string _pinnedText = "Pinned";
+        [ObservableProperty] private string _recentText = "Recent";
+        [ObservableProperty] private string _noProjectsText = "No projects found";
+        [ObservableProperty] private string _noProjectsDesc = "Scan for projects or create a new one";
+        [ObservableProperty] private string _createNewText = "Create New Project";
+        [ObservableProperty] private string _scanningText = "Scanning for projects...";
+        [ObservableProperty] private string _searchPlaceholder = "Search projects...";
+
         public HomePageViewModel(
             ILogService logService,
             IProjectService projectService,
             ILaunchService launchService,
-            IRecentProjectService recentProjectService)
+            IRecentProjectService recentProjectService,
+            ILocalizationService localizationService)
         {
             _logService = logService;
             _projectService = projectService;
             _launchService = launchService;
             _recentProjectService = recentProjectService;
+            _localizationService = localizationService;
 
-            Title = "Projects";
-            IconKey = "project";
+            Title = "Home";
+            IconKey = "🏠";
+
+            // 注册语言变更事件
+            _localizationService.LanguageChanged += OnLanguageChanged;
+
+            // 初始化本地化文本
+            UpdateLocalizedTexts();
         }
 
         /// <summary>页面进入时调用</summary>
@@ -80,7 +103,7 @@ namespace NevernessLauncher.ViewModels.Home
 
                 foreach (var project in projects)
                 {
-                    var card = new ProjectCardViewModel(project, _launchService, _recentProjectService);
+                    var card = new ProjectCardViewModel(project, _launchService, _recentProjectService, _localizationService);
                     Projects.Add(card);
 
                     if (project.LastOpenedTime.HasValue)
@@ -164,6 +187,27 @@ namespace NevernessLauncher.ViewModels.Home
             {
                 _logService.LogError("Failed to launch Game", ex);
             }
+        }
+
+        private void OnLanguageChanged(object? sender, string language)
+        {
+            UpdateLocalizedTexts();
+        }
+
+        private void UpdateLocalizedTexts()
+        {
+            PageTitle = _localizationService.GetString("Home.Title");
+            PageSubtitle = _localizationService.GetString("Home.Subtitle");
+            ScanText = _localizationService.GetString("Home.Scan");
+            OpenText = _localizationService.GetString("Home.Open");
+            NewText = _localizationService.GetString("Home.New");
+            PinnedText = _localizationService.GetString("Home.Pinned");
+            RecentText = _localizationService.GetString("Home.Recent");
+            NoProjectsText = _localizationService.GetString("Home.NoProjects");
+            NoProjectsDesc = _localizationService.GetString("Home.NoProjectsDesc");
+            CreateNewText = _localizationService.GetString("Home.CreateNew");
+            ScanningText = _localizationService.GetString("Home.Scanning");
+            SearchPlaceholder = _localizationService.GetString("Home.SearchPlaceholder");
         }
     }
 }

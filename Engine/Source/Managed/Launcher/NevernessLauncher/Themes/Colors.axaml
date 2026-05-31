@@ -1,63 +1,95 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- ============ Dark Theme Colors ============ -->
-    <Color x:Key="DarkBackgroundColor">#0F0F1A</Color>
-    <Color x:Key="DarkSurfaceColor">#1A1A2E</Color>
-    <Color x:Key="DarkCardColor">#1E1E3A</Color>
-    <Color x:Key="DarkTextPrimaryColor">#E0E0FF</Color>
-    <Color x:Key="DarkTextSecondaryColor">#8888AA</Color>
-    <Color x:Key="DarkBorderColor">#33FFFFFF</Color>
-    <Color x:Key="DarkHoverColor">#2A2A4A</Color>
-
-    <!-- ============ Light Theme Colors ============ -->
-    <Color x:Key="LightBackgroundColor">#F5F5FA</Color>
-    <Color x:Key="LightSurfaceColor">#FFFFFF</Color>
-    <Color x:Key="LightCardColor">#FFFFFF</Color>
-    <Color x:Key="LightTextPrimaryColor">#1A1A2E</Color>
-    <Color x:Key="LightTextSecondaryColor">#666688</Color>
-    <Color x:Key="LightBorderColor">#22000000</Color>
-    <Color x:Key="LightHoverColor">#F0F0F5</Color>
-
-    <!-- ============ Common Colors ============ -->
-    <Color x:Key="PrimaryColor">#6C63FF</Color>
-    <Color x:Key="PrimaryLightColor">#8B83FF</Color>
-    <Color x:Key="SuccessColor">#2ED573</Color>
-    <Color x:Key="WarningColor">#FFA502</Color>
-    <Color x:Key="ErrorColor">#FF4757</Color>
+    <!-- ============ Common Colors (UE 风格) ============ -->
+    <Color x:Key="PrimaryColor">#4A9EFF</Color>
+    <Color x:Key="PrimaryLightColor">#6BB3FF</Color>
+    <Color x:Key="SuccessColor">#4CAF50</Color>
+    <Color x:Key="WarningColor">#FF9800</Color>
+    <Color x:Key="ErrorColor">#F44336</Color>
 
     <!-- ============ Dynamic Theme Brushes ============ -->
-    <!-- 使用 ThemeDictionaries 实现主题切换 -->
     <ResourceDictionary.ThemeDictionaries>
+        <!-- Dark Theme - UE 引擎风格 -->
         <ResourceDictionary x:Key="Dark">
-            <SolidColorBrush x:Key="AppBackground" Color="#0F0F1A"/>
-            <SolidColorBrush x:Key="AppSurface" Color="#1A1A2E"/>
-            <SolidColorBrush x:Key="AppCard" Color="#1E1E3A"/>
-            <SolidColorBrush x:Key="AppTextPrimary" Color="#E0E0FF"/>
-            <SolidColorBrush x:Key="AppTextSecondary" Color="#8888AA"/>
-            <SolidColorBrush x:Key="AppBorder" Color="#33FFFFFF"/>
-            <SolidColorBrush x:Key="AppHover" Color="#2A2A4A"/>
-            <SolidColorBrush x:Key="AppInputBackground" Color="#15FFFFFF"/>
-            <SolidColorBrush x:Key="AppButtonBackground" Color="#2A2A4A"/>
-            <SolidColorBrush x:Key="AppButtonText" Color="#E0E0FF"/>
-            <SolidColorBrush x:Key="AppNavBackground" Color="#12FFFFFF"/>
-            <SolidColorBrush x:Key="AppTitleBar" Color="#1A1A2E"/>
-            <SolidColorBrush x:Key="AppContentBackground" Color="#08FFFFFF"/>
+            <!-- 背景色系 -->
+            <SolidColorBrush x:Key="AppBackground" Color="#1A1A1A"/>
+            <SolidColorBrush x:Key="AppSurface" Color="#2A2A2A"/>
+            <SolidColorBrush x:Key="AppCard" Color="#333333"/>
+            <SolidColorBrush x:Key="AppContentBackground" Color="#222222"/>
+
+            <!-- 文本色系 -->
+            <SolidColorBrush x:Key="AppTextPrimary" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="AppTextSecondary" Color="#999999"/>
+            <SolidColorBrush x:Key="AppTextDisabled" Color="#666666"/>
+
+            <!-- 边框和分隔线 -->
+            <SolidColorBrush x:Key="AppBorder" Color="#444444"/>
+            <SolidColorBrush x:Key="AppSeparator" Color="#3A3A3A"/>
+
+            <!-- 交互色系 -->
+            <SolidColorBrush x:Key="AppHover" Color="#3A3A3A"/>
+            <SolidColorBrush x:Key="AppPressed" Color="#444444"/>
+            <SolidColorBrush x:Key="AppSelected" Color="#4A9EFF33"/>
+
+            <!-- 输入控件 -->
+            <SolidColorBrush x:Key="AppInputBackground" Color="#2A2A2A"/>
+            <SolidColorBrush x:Key="AppInputBorder" Color="#555555"/>
+
+            <!-- 按钮 -->
+            <SolidColorBrush x:Key="AppButtonBackground" Color="#3A3A3A"/>
+            <SolidColorBrush x:Key="AppButtonHover" Color="#444444"/>
+            <SolidColorBrush x:Key="AppButtonText" Color="#E0E0E0"/>
+
+            <!-- 导航栏 -->
+            <SolidColorBrush x:Key="AppNavBackground" Color="#252525"/>
+
+            <!-- 标题栏 -->
+            <SolidColorBrush x:Key="AppTitleBar" Color="#1E1E1E"/>
+
+            <!-- 窗口控制按钮 -->
+            <SolidColorBrush x:Key="AppCloseHover" Color="#E81123"/>
         </ResourceDictionary>
+
+        <!-- Light Theme -->
         <ResourceDictionary x:Key="Light">
-            <SolidColorBrush x:Key="AppBackground" Color="#F5F5FA"/>
+            <!-- 背景色系 -->
+            <SolidColorBrush x:Key="AppBackground" Color="#F5F5F5"/>
             <SolidColorBrush x:Key="AppSurface" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="AppCard" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="AppTextPrimary" Color="#1A1A2E"/>
-            <SolidColorBrush x:Key="AppTextSecondary" Color="#666688"/>
-            <SolidColorBrush x:Key="AppBorder" Color="#22000000"/>
-            <SolidColorBrush x:Key="AppHover" Color="#F0F0F5"/>
-            <SolidColorBrush x:Key="AppInputBackground" Color="#F5F5FA"/>
-            <SolidColorBrush x:Key="AppButtonBackground" Color="#E8E8F0"/>
-            <SolidColorBrush x:Key="AppButtonText" Color="#1A1A2E"/>
-            <SolidColorBrush x:Key="AppNavBackground" Color="#EEEEF5"/>
+            <SolidColorBrush x:Key="AppContentBackground" Color="#FAFAFA"/>
+
+            <!-- 文本色系 -->
+            <SolidColorBrush x:Key="AppTextPrimary" Color="#1A1A1A"/>
+            <SolidColorBrush x:Key="AppTextSecondary" Color="#666666"/>
+            <SolidColorBrush x:Key="AppTextDisabled" Color="#999999"/>
+
+            <!-- 边框和分隔线 -->
+            <SolidColorBrush x:Key="AppBorder" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="AppSeparator" Color="#EEEEEE"/>
+
+            <!-- 交互色系 -->
+            <SolidColorBrush x:Key="AppHover" Color="#F0F0F0"/>
+            <SolidColorBrush x:Key="AppPressed" Color="#E5E5E5"/>
+            <SolidColorBrush x:Key="AppSelected" Color="#4A9EFF22"/>
+
+            <!-- 输入控件 -->
+            <SolidColorBrush x:Key="AppInputBackground" Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="AppInputBorder" Color="#CCCCCC"/>
+
+            <!-- 按钮 -->
+            <SolidColorBrush x:Key="AppButtonBackground" Color="#E8E8E8"/>
+            <SolidColorBrush x:Key="AppButtonHover" Color="#DDDDDD"/>
+            <SolidColorBrush x:Key="AppButtonText" Color="#1A1A1A"/>
+
+            <!-- 导航栏 -->
+            <SolidColorBrush x:Key="AppNavBackground" Color="#EEEEEE"/>
+
+            <!-- 标题栏 -->
             <SolidColorBrush x:Key="AppTitleBar" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="AppContentBackground" Color="#FAFAFF"/>
+
+            <!-- 窗口控制按钮 -->
+            <SolidColorBrush x:Key="AppCloseHover" Color="#E81123"/>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 

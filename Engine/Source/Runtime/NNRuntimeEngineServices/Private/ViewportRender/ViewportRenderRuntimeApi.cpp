@@ -243,6 +243,32 @@ void NN_ENGINE_ABI_STDCALL rt_viewportRender_processRmlUIInput(
 
 } // namespace
 
+/// 关闭 ViewportRender 资源（引擎退出时调用）
+void ShutdownViewportRender()
+{
+    if (g_RmlUIRenderer)
+    {
+        g_RmlUIRenderer->Shutdown();
+        delete g_RmlUIRenderer;
+        g_RmlUIRenderer = nullptr;
+    }
+    if (g_RmlUISystem)
+    {
+        NN::Runtime::RmlUI::DestroyRmlUISystem(g_RmlUISystem);
+        g_RmlUISystem = nullptr;
+    }
+    if (g_SceneRenderer)
+    {
+        g_SceneRenderer->Shutdown();
+        delete g_SceneRenderer;
+        g_SceneRenderer = nullptr;
+    }
+    delete g_AssetResolver;
+    g_AssetResolver = nullptr;
+    g_Initialized = false;
+    g_LastRmluiTextureId = 0;
+}
+
 extern "C" void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api)
 {
     std::cout << "Building ViewportRender Runtime API..." << std::endl;

@@ -30,20 +30,6 @@
             <Setter Property="Margin" Value="0,0,0,8"/>
         </Style>
 
-        <!-- 设置标签样式 -->
-        <Style Selector="TextBlock.settingLabel">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-
-        <!-- 设置描述样式 -->
-        <Style Selector="TextBlock.settingDesc">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
-            <Setter Property="Margin" Value="0,4,0,0"/>
-        </Style>
-
         <!-- 操作按钮样式 -->
         <Style Selector="Button.settingBtn">
             <Setter Property="Background" Value="{DynamicResource AppButtonBackground}"/>
@@ -75,7 +61,7 @@
 
         <!-- 保存按钮样式 -->
         <Style Selector="Button.saveBtn">
-            <Setter Property="Background" Value="#6C63FF"/>
+            <Setter Property="Background" Value="#4A9EFF"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="24,10"/>
@@ -85,7 +71,7 @@
         </Style>
 
         <Style Selector="Button.saveBtn:pointerover">
-            <Setter Property="Background" Value="#7B73FF"/>
+            <Setter Property="Background" Value="#6BB3FF"/>
         </Style>
 
         <!-- Theme 选择按钮样式 -->
@@ -102,9 +88,9 @@
         </Style>
 
         <Style Selector="RadioButton.themeBtn:checked">
-            <Setter Property="Background" Value="#6C63FF"/>
+            <Setter Property="Background" Value="#4A9EFF"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#6C63FF"/>
+            <Setter Property="BorderBrush" Value="#4A9EFF"/>
         </Style>
 
         <Style Selector="RadioButton.themeBtn:pointerover">
@@ -116,9 +102,9 @@
         <StackPanel Spacing="24">
             <!-- 页面标题 -->
             <StackPanel>
-                <TextBlock Text="Settings" FontSize="28" FontWeight="Bold"
+                <TextBlock Text="{Binding PageTitle}" FontSize="28" FontWeight="Bold"
                            Foreground="{DynamicResource AppTextPrimary}"/>
-                <TextBlock Text="Configure your launcher preferences" FontSize="14"
+                <TextBlock Text="{Binding PageSubtitle}" FontSize="14"
                            Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
             </StackPanel>
 
@@ -130,7 +116,7 @@
                 <StackPanel Spacing="16">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="🎨" FontSize="16"/>
-                        <TextBlock Text="Appearance" FontSize="18" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding AppearanceText}" FontSize="18" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AppTextPrimary}"/>
                     </StackPanel>
 
@@ -138,21 +124,35 @@
                     <Border Classes="settingItem">
                         <StackPanel Spacing="12">
                             <StackPanel>
-                                <TextBlock Text="Theme" Classes="settingLabel"/>
-                                <TextBlock Text="Choose your preferred color scheme" Classes="settingDesc"/>
+                                <TextBlock Text="{Binding ThemeText}" FontSize="13"
+                                           Foreground="{DynamicResource AppTextPrimary}"/>
+                                <TextBlock Text="{Binding ThemeDesc}" FontSize="11"
+                                           Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
                             </StackPanel>
 
                             <!-- Theme 选择按钮组 -->
                             <StackPanel Orientation="Horizontal">
-                                <RadioButton Name="ThemeDark" Content="🌙 Dark"
-                                             Classes="themeBtn" IsChecked="True"
-                                             GroupName="Theme"/>
-                                <RadioButton Name="ThemeLight" Content="☀️ Light"
-                                             Classes="themeBtn"
-                                             GroupName="Theme"/>
-                                <RadioButton Name="ThemeSystem" Content="💻 System"
-                                             Classes="themeBtn"
-                                             GroupName="Theme"/>
+                                <RadioButton Name="ThemeDark" Classes="themeBtn" IsChecked="True"
+                                             GroupName="Theme">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="🌙"/>
+                                        <TextBlock Text="{Binding ThemeDarkText}"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton Name="ThemeLight" Classes="themeBtn"
+                                             GroupName="Theme">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="☀️"/>
+                                        <TextBlock Text="{Binding ThemeLightText}"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton Name="ThemeSystem" Classes="themeBtn"
+                                             GroupName="Theme">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="💻"/>
+                                        <TextBlock Text="{Binding ThemeSystemText}"/>
+                                    </StackPanel>
+                                </RadioButton>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -161,13 +161,14 @@
                     <Border Classes="settingItem">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel>
-                                <TextBlock Text="Language" Classes="settingLabel"/>
-                                <TextBlock Text="Select your preferred language" Classes="settingDesc"/>
+                                <TextBlock Text="{Binding LanguageText}" FontSize="13"
+                                           Foreground="{DynamicResource AppTextPrimary}"/>
+                                <TextBlock Text="{Binding LanguageDesc}" FontSize="11"
+                                           Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
                             </StackPanel>
-                            <ComboBox Grid.Column="1" SelectedItem="{Binding Language}" Width="150">
-                                <ComboBoxItem Content="zh-CN"/>
-                                <ComboBoxItem Content="en-US"/>
-                            </ComboBox>
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding LanguageOptions}"
+                                      SelectedItem="{Binding SelectedLanguage}" Width="150"
+                                      DisplayMemberBinding="{Binding NativeName}"/>
                         </Grid>
                     </Border>
                 </StackPanel>
@@ -178,7 +179,7 @@
                 <StackPanel Spacing="16">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="⚙️" FontSize="16"/>
-                        <TextBlock Text="General" FontSize="18" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding GeneralText}" FontSize="18" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AppTextPrimary}"/>
                     </StackPanel>
 
@@ -186,8 +187,10 @@
                     <Border Classes="settingItem">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel>
-                                <TextBlock Text="Auto Scan" Classes="settingLabel"/>
-                                <TextBlock Text="Automatically scan for projects on startup" Classes="settingDesc"/>
+                                <TextBlock Text="{Binding AutoScanText}" FontSize="13"
+                                           Foreground="{DynamicResource AppTextPrimary}"/>
+                                <TextBlock Text="{Binding AutoScanDesc}" FontSize="11"
+                                           Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
                             </StackPanel>
                             <ToggleSwitch Grid.Column="1" IsChecked="{Binding AutoScanOnStartup}"
                                           OnContent="ON" OffContent="OFF"/>
@@ -198,8 +201,10 @@
                     <Border Classes="settingItem">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel>
-                                <TextBlock Text="Max Recent Projects" Classes="settingLabel"/>
-                                <TextBlock Text="Maximum number of recent projects to remember" Classes="settingDesc"/>
+                                <TextBlock Text="{Binding MaxRecentText}" FontSize="13"
+                                           Foreground="{DynamicResource AppTextPrimary}"/>
+                                <TextBlock Text="{Binding MaxRecentDesc}" FontSize="11"
+                                           Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
                             </StackPanel>
                             <NumericUpDown Grid.Column="1" Value="{Binding MaxRecentProjects}"
                                            Minimum="5" Maximum="50" Width="120"/>
@@ -213,7 +218,7 @@
                 <StackPanel Spacing="16">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="🔧" FontSize="16"/>
-                        <TextBlock Text="Engine" FontSize="18" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding EngineText}" FontSize="18" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AppTextPrimary}"/>
                     </StackPanel>
 
@@ -221,8 +226,10 @@
                     <Border Classes="settingItem">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel>
-                                <TextBlock Text="Default Engine" Classes="settingLabel"/>
-                                <TextBlock Text="Default engine version for new projects" Classes="settingDesc"/>
+                                <TextBlock Text="{Binding DefaultEngineText}" FontSize="13"
+                                           Foreground="{DynamicResource AppTextPrimary}"/>
+                                <TextBlock Text="{Binding DefaultEngineDesc}" FontSize="11"
+                                           Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
                             </StackPanel>
                             <TextBox Grid.Column="1" Text="{Binding DefaultEngineVersion}"
                                      Width="150" Watermark="e.g. 5.0.0"/>
@@ -231,32 +238,42 @@
 
                     <!-- 引擎路径列表 -->
                     <StackPanel Spacing="8">
-                        <TextBlock Text="Engine Paths" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding EnginePathsText}" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AppTextPrimary}"/>
-                        <TextBlock Text="Directories to scan for engine installations" Classes="settingDesc"/>
+                        <TextBlock Text="{Binding EnginePathsDesc}" FontSize="11"
+                                   Foreground="{DynamicResource AppTextSecondary}"/>
 
                         <ItemsControl ItemsSource="{Binding EnginePaths}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Classes="settingItem">
+                                    <Border Background="{DynamicResource AppInputBackground}"
+                                            CornerRadius="8" Padding="16,12" Margin="0,0,0,8">
                                         <Grid ColumnDefinitions="*,Auto">
                                             <TextBlock Text="{Binding}" VerticalAlignment="Center"
                                                        FontSize="13"
                                                        Foreground="{DynamicResource AppTextPrimary}"
                                                        TextTrimming="CharacterEllipsis"/>
-                                            <Button Grid.Column="1" Content="✕ Remove"
-                                                    Classes="removeBtn"
+                                            <Button Grid.Column="1" Classes="removeBtn"
                                                     Command="{Binding $parent[ItemsControl].((vm:SettingsPageViewModel)DataContext).RemoveEnginePathCommand}"
-                                                    CommandParameter="{Binding}"/>
+                                                    CommandParameter="{Binding}">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="✕"/>
+                                                    <TextBlock Text="{Binding $parent[ItemsControl].((vm:SettingsPageViewModel)DataContext).RemoveText}"/>
+                                                </StackPanel>
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <Button Content="➕ Add Engine Path" Classes="settingBtn"
-                                HorizontalAlignment="Left"
-                                Command="{Binding AddEnginePathCommand}"/>
+                        <Button Classes="settingBtn" HorizontalAlignment="Left"
+                                Command="{Binding AddEnginePathCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="➕"/>
+                                <TextBlock Text="{Binding AddEnginePathText}"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -266,48 +283,68 @@
                 <StackPanel Spacing="16">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="📁" FontSize="16"/>
-                        <TextBlock Text="Projects" FontSize="18" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding ProjectsText}" FontSize="18" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AppTextPrimary}"/>
                     </StackPanel>
 
                     <!-- 项目目录列表 -->
                     <StackPanel Spacing="8">
-                        <TextBlock Text="Project Directories" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding ProjectDirectoriesText}" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AppTextPrimary}"/>
-                        <TextBlock Text="Directories to scan for Neverness projects" Classes="settingDesc"/>
+                        <TextBlock Text="{Binding ProjectDirectoriesDesc}" FontSize="11"
+                                   Foreground="{DynamicResource AppTextSecondary}"/>
 
                         <ItemsControl ItemsSource="{Binding ProjectDirectories}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Classes="settingItem">
+                                    <Border Background="{DynamicResource AppInputBackground}"
+                                            CornerRadius="8" Padding="16,12" Margin="0,0,0,8">
                                         <Grid ColumnDefinitions="*,Auto">
                                             <TextBlock Text="{Binding}" VerticalAlignment="Center"
                                                        FontSize="13"
                                                        Foreground="{DynamicResource AppTextPrimary}"
                                                        TextTrimming="CharacterEllipsis"/>
-                                            <Button Grid.Column="1" Content="✕ Remove"
-                                                    Classes="removeBtn"
+                                            <Button Grid.Column="1" Classes="removeBtn"
                                                     Command="{Binding $parent[ItemsControl].((vm:SettingsPageViewModel)DataContext).RemoveProjectDirectoryCommand}"
-                                                    CommandParameter="{Binding}"/>
+                                                    CommandParameter="{Binding}">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="✕"/>
+                                                    <TextBlock Text="{Binding $parent[ItemsControl].((vm:SettingsPageViewModel)DataContext).RemoveText}"/>
+                                                </StackPanel>
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <Button Content="➕ Add Project Directory" Classes="settingBtn"
-                                HorizontalAlignment="Left"
-                                Command="{Binding AddProjectDirectoryCommand}"/>
+                        <Button Classes="settingBtn" HorizontalAlignment="Left"
+                                Command="{Binding AddProjectDirectoryCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="➕"/>
+                                <TextBlock Text="{Binding AddProjectDirectoryText}"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- 操作按钮 -->
             <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                <Button Grid.Column="1" Content="↩️ Reset to Defaults" Classes="settingBtn"
-                        Margin="0,0,8,0" Command="{Binding ResetCommand}"/>
-                <Button Grid.Column="2" Content="💾 Save Settings" Classes="saveBtn"
-                        Command="{Binding SaveCommand}"/>
+                <Button Grid.Column="1" Classes="settingBtn"
+                        Margin="0,0,8,0" Command="{Binding ResetCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="↩️"/>
+                        <TextBlock Text="{Binding ResetDefaultsText}"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="2" Classes="saveBtn"
+                        Command="{Binding SaveCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="💾"/>
+                        <TextBlock Text="{Binding SaveSettingsText}"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </StackPanel>
     </ScrollViewer>

@@ -9,7 +9,7 @@ namespace NevernessLauncher.Core.Models
     public class UserSettings
     {
         /// <summary>主题: Light/Dark/System</summary>
-        public string Theme { get; set; } = "System";
+        public string Theme { get; set; } = "Dark";
 
         /// <summary>界面语言</summary>
         public string Language { get; set; } = "zh-CN";

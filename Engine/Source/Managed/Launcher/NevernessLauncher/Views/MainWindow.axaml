@@ -76,7 +76,7 @@
         </Style>
 
         <Style Selector="Button.closeBtn:pointerover">
-            <Setter Property="Background" Value="#E81123"/>
+            <Setter Property="Background" Value="{DynamicResource AppCloseHover}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
     </Window.Styles>
@@ -90,12 +90,12 @@
                     <!-- 左侧：Logo 和标题 -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
                                 Margin="16,0,0,0" VerticalAlignment="Center">
-                        <Border Background="#6C63FF" CornerRadius="6" Width="22" Height="22">
+                        <Border Background="#4A9EFF" CornerRadius="6" Width="22" Height="22">
                             <TextBlock Text="N" FontSize="13" FontWeight="Bold"
                                        Foreground="White" HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Neverness Launcher" FontSize="13" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AppTextPrimary}"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
@@ -103,10 +103,20 @@
                     <!-- 中间：导航按钮 -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                 HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Button Name="NavHomeButton" Content="🏠  Home" Tag="Home"
-                                Classes="nav" Click="OnNavButtonClick"/>
-                        <Button Name="NavSettingsButton" Content="⚙️  Settings" Tag="Settings"
-                                Classes="nav" Click="OnNavButtonClick"/>
+                        <Button Name="NavHomeButton" Tag="Home"
+                                Classes="nav" Click="OnNavButtonClick">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="🏠"/>
+                                <TextBlock Text="{Binding HomeTitle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Name="NavSettingsButton" Tag="Settings"
+                                Classes="nav" Click="OnNavButtonClick">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="⚙️"/>
+                                <TextBlock Text="{Binding SettingsTitle}"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
 
                     <!-- 右侧：窗口控制按钮 -->
@@ -137,7 +147,7 @@
                                 <TextBox Name="SearchBox" Background="Transparent"
                                          BorderThickness="0"
                                          Foreground="{DynamicResource AppTextPrimary}"
-                                         Watermark="Search projects..." FontSize="13"/>
+                                         Watermark="{Binding HomeTitle}" FontSize="13"/>
                             </StackPanel>
                         </Border>
 
@@ -152,7 +162,7 @@
                                     <Border Padding="14,12" CornerRadius="10" Margin="0,2"
                                             Background="Transparent">
                                         <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Background="#256C63FF" CornerRadius="8"
+                                            <Border Background="#2A4A9EFF" CornerRadius="8"
                                                     Width="32" Height="32">
                                                 <TextBlock Text="{Binding IconKey}" FontSize="15"
                                                            HorizontalAlignment="Center"
@@ -172,8 +182,8 @@
                         <Border Grid.Row="2" Background="{DynamicResource AppInputBackground}"
                                 CornerRadius="10" Padding="14,10" Margin="0,16,0,0">
                             <StackPanel Orientation="Horizontal" Spacing="10">
-                                <Ellipse Width="8" Height="8" Fill="#2ED573"/>
-                                <TextBlock Text="Engine Ready" FontSize="11"
+                                <Ellipse Width="8" Height="8" Fill="#4CAF50"/>
+                                <TextBlock Text="{Binding StatusText}" FontSize="11"
                                            Foreground="{DynamicResource AppTextSecondary}"
                                            VerticalAlignment="Center"/>
                             </StackPanel>

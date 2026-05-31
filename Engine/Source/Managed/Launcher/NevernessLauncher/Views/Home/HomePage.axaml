@@ -24,7 +24,7 @@
 
         <Style Selector="Border.projectCard:pointerover">
             <Setter Property="Background" Value="{DynamicResource AppHover}"/>
-            <Setter Property="BorderBrush" Value="#446C63FF"/>
+            <Setter Property="BorderBrush" Value="#444A9EFF"/>
         </Style>
 
         <!-- 操作按钮样式 -->
@@ -43,7 +43,7 @@
 
         <!-- 启动按钮样式 -->
         <Style Selector="Button.launch">
-            <Setter Property="Background" Value="#6C63FF"/>
+            <Setter Property="Background" Value="#4A9EFF"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="16,8"/>
@@ -53,7 +53,7 @@
         </Style>
 
         <Style Selector="Button.launch:pointerover">
-            <Setter Property="Background" Value="#7B73FF"/>
+            <Setter Property="Background" Value="#6BB3FF"/>
         </Style>
     </UserControl.Styles>
 
@@ -62,20 +62,32 @@
             <!-- 页面标题 -->
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel>
-                    <TextBlock Text="Projects" FontSize="28" FontWeight="Bold"
+                    <TextBlock Text="{Binding PageTitle}" FontSize="28" FontWeight="Bold"
                                Foreground="{DynamicResource AppTextPrimary}"/>
-                    <TextBlock Text="Manage and launch your Neverness projects" FontSize="14"
+                    <TextBlock Text="{Binding PageSubtitle}" FontSize="14"
                                Foreground="{DynamicResource AppTextSecondary}" Margin="0,4,0,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="1"
                             VerticalAlignment="Bottom">
-                    <Button Content="🔄 Scan" Classes="action"
-                            Command="{Binding ScanProjectsCommand}"
-                            IsEnabled="{Binding !IsScanning}"/>
-                    <Button Content="📂 Open" Classes="action"
-                            Command="{Binding OpenProjectCommand}"/>
-                    <Button Content="➕ New" Classes="launch"
-                            Command="{Binding CreateProjectCommand}"/>
+                    <Button Classes="action" Command="{Binding ScanProjectsCommand}"
+                            IsEnabled="{Binding !IsScanning}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="🔄"/>
+                            <TextBlock Text="{Binding ScanText}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="action" Command="{Binding OpenProjectCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="📂"/>
+                            <TextBlock Text="{Binding OpenText}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="launch" Command="{Binding CreateProjectCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="➕"/>
+                            <TextBlock Text="{Binding NewText}"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
 
@@ -86,7 +98,7 @@
             <Border IsVisible="{Binding IsScanning}" Padding="20">
                 <StackPanel HorizontalAlignment="Center" Spacing="12">
                     <ProgressBar IsIndeterminate="True" Width="200" Height="4"/>
-                    <TextBlock Text="Scanning for projects..."
+                    <TextBlock Text="{Binding ScanningText}"
                                Foreground="{DynamicResource AppTextSecondary}"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
@@ -96,7 +108,7 @@
             <StackPanel Spacing="16" IsVisible="{Binding PinnedProjects.Count}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="📌" FontSize="16"/>
-                    <TextBlock Text="Pinned" FontSize="18" FontWeight="SemiBold"
+                    <TextBlock Text="{Binding PinnedText}" FontSize="18" FontWeight="SemiBold"
                                Foreground="{DynamicResource AppTextPrimary}"/>
                 </StackPanel>
 
@@ -112,7 +124,7 @@
                                 <Grid RowDefinitions="Auto,Auto,Auto,Auto">
                                     <!-- 项目头部 -->
                                     <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <Border Background="#2A6C63FF" CornerRadius="8"
+                                        <Border Background="#2A4A9EFF" CornerRadius="8"
                                                 Width="40" Height="40">
                                             <TextBlock Text="🎮" FontSize="20"
                                                        HorizontalAlignment="Center"
@@ -145,19 +157,27 @@
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <Ellipse Width="6" Height="6"
                                                      Fill="{Binding StatusColor}"/>
-                                            <TextBlock Text="{Binding Status}" FontSize="11"
+                                            <TextBlock Text="{Binding StatusText}" FontSize="11"
                                                        Foreground="{DynamicResource AppTextSecondary}"/>
                                         </StackPanel>
                                     </Border>
 
                                     <!-- 操作按钮 -->
                                     <Grid Grid.Row="3" ColumnDefinitions="*,*" Margin="0,12,0,0">
-                                        <Button Grid.Column="0" Content="🚀 Editor"
-                                                Classes="launch" Margin="0,0,4,0"
-                                                Command="{Binding LaunchEditorCommand}"/>
-                                        <Button Grid.Column="1" Content="▶️ Play"
-                                                Classes="action" Margin="4,0,0,0"
-                                                Command="{Binding LaunchGameCommand}"/>
+                                        <Button Grid.Column="0" Classes="launch" Margin="0,0,4,0"
+                                                Command="{Binding LaunchEditorCommand}">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="🚀"/>
+                                                <TextBlock Text="{Binding EditorText}"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Grid.Column="1" Classes="action" Margin="4,0,0,0"
+                                                Command="{Binding LaunchGameCommand}">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="▶️"/>
+                                                <TextBlock Text="{Binding PlayText}"/>
+                                            </StackPanel>
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </Border>
@@ -170,7 +190,7 @@
             <StackPanel Spacing="16">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="🕐" FontSize="16"/>
-                    <TextBlock Text="Recent" FontSize="18" FontWeight="SemiBold"
+                    <TextBlock Text="{Binding RecentText}" FontSize="18" FontWeight="SemiBold"
                                Foreground="{DynamicResource AppTextPrimary}"/>
                 </StackPanel>
 
@@ -186,7 +206,7 @@
                                 <Grid RowDefinitions="Auto,Auto,Auto,Auto">
                                     <!-- 项目头部 -->
                                     <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <Border Background="#2A6C63FF" CornerRadius="8"
+                                        <Border Background="#2A4A9EFF" CornerRadius="8"
                                                 Width="40" Height="40">
                                             <TextBlock Text="🎮" FontSize="20"
                                                        HorizontalAlignment="Center"
@@ -219,19 +239,27 @@
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <Ellipse Width="6" Height="6"
                                                      Fill="{Binding StatusColor}"/>
-                                            <TextBlock Text="{Binding Status}" FontSize="11"
+                                            <TextBlock Text="{Binding StatusText}" FontSize="11"
                                                        Foreground="{DynamicResource AppTextSecondary}"/>
                                         </StackPanel>
                                     </Border>
 
                                     <!-- 操作按钮 -->
                                     <Grid Grid.Row="3" ColumnDefinitions="*,*" Margin="0,12,0,0">
-                                        <Button Grid.Column="0" Content="🚀 Editor"
-                                                Classes="launch" Margin="0,0,4,0"
-                                                Command="{Binding LaunchEditorCommand}"/>
-                                        <Button Grid.Column="1" Content="▶️ Play"
-                                                Classes="action" Margin="4,0,0,0"
-                                                Command="{Binding LaunchGameCommand}"/>
+                                        <Button Grid.Column="0" Classes="launch" Margin="0,0,4,0"
+                                                Command="{Binding LaunchEditorCommand}">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="🚀"/>
+                                                <TextBlock Text="{Binding EditorText}"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Grid.Column="1" Classes="action" Margin="4,0,0,0"
+                                                Command="{Binding LaunchGameCommand}">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="▶️"/>
+                                                <TextBlock Text="{Binding PlayText}"/>
+                                            </StackPanel>
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </Border>
@@ -244,15 +272,19 @@
             <Border IsVisible="{Binding !Projects.Count}" Padding="40">
                 <StackPanel HorizontalAlignment="Center" Spacing="16">
                     <TextBlock Text="📁" FontSize="48" HorizontalAlignment="Center"/>
-                    <TextBlock Text="No projects found" FontSize="18" FontWeight="SemiBold"
+                    <TextBlock Text="{Binding NoProjectsText}" FontSize="18" FontWeight="SemiBold"
                                Foreground="{DynamicResource AppTextPrimary}"
                                HorizontalAlignment="Center"/>
-                    <TextBlock Text="Scan for projects or create a new one"
+                    <TextBlock Text="{Binding NoProjectsDesc}"
                                Foreground="{DynamicResource AppTextSecondary}"
                                HorizontalAlignment="Center"/>
-                    <Button Content="➕ Create New Project" Classes="launch"
-                            HorizontalAlignment="Center" Margin="0,8,0,0"
-                            Command="{Binding CreateProjectCommand}"/>
+                    <Button Classes="launch" HorizontalAlignment="Center" Margin="0,8,0,0"
+                            Command="{Binding CreateProjectCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="➕"/>
+                            <TextBlock Text="{Binding CreateNewText}"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Border>
         </StackPanel>

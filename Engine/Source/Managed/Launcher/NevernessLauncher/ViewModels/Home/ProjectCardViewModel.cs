@@ -15,6 +15,7 @@ namespace NevernessLauncher.ViewModels.Home
     {
         private readonly ILaunchService _launchService;
         private readonly IRecentProjectService _recentProjectService;
+        private readonly ILocalizationService _localizationService;
 
         /// <summary>项目领域模型</summary>
         public ProjectInfo ProjectInfo { get; }
@@ -47,17 +48,32 @@ namespace NevernessLauncher.ViewModels.Home
         [ObservableProperty]
         private string _statusColor = "Green";
 
+        /// <summary>状态文本</summary>
+        [ObservableProperty]
+        private string _statusText = "Valid";
+
+        /// <summary>编辑器按钮文本</summary>
+        [ObservableProperty]
+        private string _editorText = "Editor";
+
+        /// <summary>运行按钮文本</summary>
+        [ObservableProperty]
+        private string _playText = "Play";
+
         public ProjectCardViewModel(
             ProjectInfo projectInfo,
             ILaunchService launchService,
-            IRecentProjectService recentProjectService)
+            IRecentProjectService recentProjectService,
+            ILocalizationService localizationService)
         {
             ProjectInfo = projectInfo;
             _launchService = launchService;
             _recentProjectService = recentProjectService;
+            _localizationService = localizationService;
 
             Status = projectInfo.Status;
             UpdateStatusColor();
+            UpdateLocalizedTexts();
         }
 
         /// <summary>启动 Editor</summary>
@@ -142,13 +158,30 @@ namespace NevernessLauncher.ViewModels.Home
         {
             StatusColor = Status switch
             {
-                ProjectStatus.Valid => "Green",
-                ProjectStatus.EngineMissing => "Orange",
-                ProjectStatus.InvalidPath => "Red",
-                ProjectStatus.Corrupted => "Red",
-                ProjectStatus.VersionMismatch => "Orange",
-                _ => "Gray"
+                ProjectStatus.Valid => "#4CAF50",
+                ProjectStatus.EngineMissing => "#FF9800",
+                ProjectStatus.InvalidPath => "#F44336",
+                ProjectStatus.Corrupted => "#F44336",
+                ProjectStatus.VersionMismatch => "#FF9800",
+                _ => "#999999"
             };
+
+            StatusText = Status switch
+            {
+                ProjectStatus.Valid => _localizationService.GetString("ProjectStatus.Valid"),
+                ProjectStatus.EngineMissing => _localizationService.GetString("ProjectStatus.EngineMissing"),
+                ProjectStatus.InvalidPath => _localizationService.GetString("ProjectStatus.InvalidPath"),
+                ProjectStatus.Corrupted => _localizationService.GetString("ProjectStatus.Corrupted"),
+                ProjectStatus.VersionMismatch => _localizationService.GetString("ProjectStatus.VersionMismatch"),
+                _ => Status.ToString()
+            };
+        }
+
+        private void UpdateLocalizedTexts()
+        {
+            EditorText = _localizationService.GetString("Home.Editor");
+            PlayText = _localizationService.GetString("Home.Play");
+            UpdateStatusColor();
         }
     }
 }

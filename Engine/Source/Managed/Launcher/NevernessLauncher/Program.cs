@@ -5,6 +5,7 @@ using NevernessLauncher.Contracts;
 using NevernessLauncher.Infrastructure;
 using NevernessLauncher.Infrastructure.Process;
 using NevernessLauncher.Services;
+using NevernessLauncher.Services.Localization;
 using NevernessLauncher.ViewModels;
 using NevernessLauncher.ViewModels.Home;
 using NevernessLauncher.ViewModels.Settings;
@@ -53,6 +54,9 @@ namespace NevernessLauncher
                     services.AddSingleton<IRecentProjectService, RecentProjectService>();
                     services.AddSingleton<IProjectService, ProjectService>();
                     services.AddSingleton<ILaunchService, LaunchService>();
+
+                    // 注册本地化服务
+                    services.AddSingleton<ILocalizationService, LocalizationService>();
 
                     // 注册 ViewModels
                     services.AddSingleton<MainWindowViewModel>();
