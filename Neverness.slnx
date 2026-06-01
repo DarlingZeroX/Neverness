@@ -16,6 +16,7 @@
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Reflection/Neverness.Editor.Reflection.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Rmlui/Neverness.Editor.Rmlui.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Scene/Neverness.Editor.Scene.csproj" />
+    <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Script/Neverness.Editor.Script.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Serialization/Neverness.Editor.Serialization.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Shell/Neverness.Editor.Shell.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.UndoRedo/Neverness.Editor.UndoRedo.csproj" />
@@ -28,6 +29,10 @@
     <Project Path="Engine/Source/Managed/Editor/ThirdParty/Neverness.Editor.ImGui/Neverness.Editor.ImGui.csproj" />
     <Project Path="Engine/Source/Managed/Editor/ThirdParty/Neverness.Editor.ImGuiNodeEditor/Neverness.Editor.ImGuiNodeEditor.csproj" />
     <Project Path="Engine/Source/Managed/Editor/ThirdParty/Neverness.Editor.ImGuizmo/Neverness.Editor.ImGuizmo.csproj" />
+  </Folder>
+  <Folder Name="/Gameplay/">
+    <Project Path="Engine/Source/Managed/Gameplay/Neverness.Gameplay/Neverness.Gameplay.csproj" />
+    <Project Path="Engine/Source/Managed/Gameplay/Neverness.SourceGenerators/Neverness.SourceGenerators.csproj" />
   </Folder>
   <Folder Name="/Launcher/">
     <Project Path="Engine/Source/Managed/Launcher/NevernessLauncher/NevernessLauncher.csproj" />

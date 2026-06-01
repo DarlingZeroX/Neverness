@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "WMPKoz8JKDQ=",
+  "success": true,
+  "projectFilePath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Script\\Neverness.Editor.Script.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\30749\\.nuget\\packages\\stbimagesharp\\2.30.15\\stbimagesharp.2.30.15.nupkg.sha512"
+  ],
+  "logs": []
+}
