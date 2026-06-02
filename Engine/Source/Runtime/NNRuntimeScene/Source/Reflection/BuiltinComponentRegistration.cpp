@@ -11,6 +11,7 @@
 #include "Components/NNTransformComponent.h"
 #include "Components/NNVideoPlayerComponent.h"
 #include "Components/NNRmlUIDocumentComponent.h"
+#include "Components/NNScriptComponent.h"
 #include "Reflection/NNComponentRegistry.h"
 
 namespace
@@ -88,4 +89,11 @@ NN_REGISTER_COMPONENT(
 		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, Flags, UInt32),
 		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, SortOrder, UInt32),
 		NN_FIELD(NN::Runtime::Scene::NNRmlUIDocumentComponent, ViewTarget, UInt32));
+
+NN_REGISTER_COMPONENT(
+		NN::Runtime::Scene::NNScriptComponent,
+		"Script",
+		NN_FIELD(NN::Runtime::Scene::NNScriptComponent, ScriptTypeId, UInt64),
+		NN_FIELD(NN::Runtime::Scene::NNScriptComponent, Enabled, Bool));
+		// Reserved 是 ABI padding，不注册反射
 } // namespace

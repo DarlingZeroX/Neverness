@@ -38,7 +38,7 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
     // ========================================================================
 
     /// <summary>全局实例（用于 Entity 访问）。</summary>
-    internal static ScriptBehaviourScheduler? Instance { get; private set; }
+    public static ScriptBehaviourScheduler? Instance { get; private set; }
 
     // ========================================================================
     // 内部状态

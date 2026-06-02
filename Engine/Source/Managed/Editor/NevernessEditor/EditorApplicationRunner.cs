@@ -13,6 +13,7 @@ using Neverness.Editor.Scene.Public;
 using Neverness.Editor.MediaImporter;
 using Neverness.Editor.Media;
 using Neverness.Editor.Rmlui.Public;
+using Neverness.Editor.Script.Public;
 using Neverness.Runtime.Audio;
 using Neverness.Runtime.Audio.Native;
 using Neverness.Runtime.Scene;
@@ -106,6 +107,7 @@ internal static class EditorApplicationRunner
 					RmluiModule.Install();
 					AssetsModule.Install(sceneManager);
 					SceneModule.Install(sceneManager);
+					ScriptEditorModule.Install(CoreModuleImp.Context);
 
 					/* 注册场景子系统到 RuntimeLoop，驱动 ECS Tick */
 					RuntimeInitializer.RegisterSubsystem(new SceneSubsystem(sceneManager));

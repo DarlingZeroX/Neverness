@@ -156,6 +156,13 @@ std::vector<std::uint8_t> SerializeComponentBlob(
 				WriteU64(blob, guid.low);
 				break;
 			}
+		case NNComponentFieldType::Bool:
+		{
+			std::uint8_t value = 0u;
+			std::memcpy(&value, fieldPtr, sizeof(std::uint8_t));
+			WriteBytes(blob, &value, sizeof(std::uint8_t));
+			break;
+		}
 		default:
 			break;
 		}
@@ -276,6 +283,16 @@ bool DeserializeComponentBlob(
 				std::memcpy(fieldPtr, &guid, sizeof(NNGuid));
 				break;
 			}
+		case NNComponentFieldType::Bool:
+		{
+			std::uint8_t value = 0u;
+			if (!ReadBytes(blob, blobOffset, &value, sizeof(std::uint8_t)))
+			{
+				return false;
+			}
+			std::memcpy(fieldPtr, &value, sizeof(std::uint8_t));
+			break;
+		}
 		default:
 			break;
 		}

@@ -6,6 +6,7 @@
 // ============================================================================
 
 using System.Text;
+using Neverness.Editor.Assets;
 using Neverness.Runtime.Assets;
 
 namespace Neverness.Editor.Script.Public;
@@ -53,7 +54,7 @@ public class ScriptAssetImporter : ISettingsAwareImporter
             }
 
             // 3. 创建导入结果
-            var result = ImportResult.Ok(context.AssetGuid, AssetTypeId.Script);
+            var result = ImportResult.Ok(context.AssetGuid, AssetTypeId.CSharpScript);
 
             // 4. 存储源文本
             result.Blobs.Add(new ImportedBlob

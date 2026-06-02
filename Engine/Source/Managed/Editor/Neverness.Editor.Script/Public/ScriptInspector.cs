@@ -180,8 +180,15 @@ public sealed class ScriptInspector
             return null;
         }
 
-        behaviour.Entity = entity;
-        ScriptBehaviourScheduler.Instance?.Register(entity, behaviour);
+        // 使用 Entity.AddBehaviour 注册
+        var addMethod = typeof(Entity).GetMethod("AddBehaviour");
+        if (addMethod is null)
+        {
+            return null;
+        }
+
+        var genericMethod = addMethod.MakeGenericMethod(scriptType);
+        behaviour = genericMethod.Invoke(entity, null) as EntityBehaviour;
 
         return behaviour;
     }
@@ -197,6 +204,7 @@ public sealed class ScriptInspector
         ArgumentNullException.ThrowIfNull(entity);
         ArgumentNullException.ThrowIfNull(behaviour);
 
+        // 使用 ScriptBehaviourScheduler 标记销毁
         ScriptBehaviourScheduler.Instance?.MarkForDestroy(behaviour);
         return true;
     }

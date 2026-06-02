@@ -21,7 +21,7 @@ public static class EntityExtensions
     /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
     /// <param name="entity">Entity 实例。</param>
     /// <returns>组件值。</returns>
-    public static T GetOrAddComponent<T>(this Entity entity) where T : struct, new()
+    public static T GetOrAddComponent<T>(this Entity entity) where T : struct
     {
         var result = entity.GetComponent<T>();
         if (result.HasValue)

@@ -152,6 +152,7 @@ public static class MetaFileManager
             ".prefab" => "PrefabImporter",
             ".lua" => "LuaScriptImporter",
             ".anim" => "AnimationImporter",
+            ".cs" => "ScriptAssetImporter",
             _ => "DefaultImporter"
         };
     }
@@ -379,6 +380,7 @@ public sealed class AssetMeta
             ".prefab" => 7,    // Prefab
             ".anim" => 8,      // Animation
             ".lua" => 9,       // LuaScript
+            ".cs" => 11,       // CSharpScript
             _ => 0
         };
     }

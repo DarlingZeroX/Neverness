@@ -60,6 +60,7 @@ public static class SceneDebug
         "Entity",      // 7
         "CharArray",   // 8
         "Guid",        // 9
+        "Bool",        // 10
     ];
 
     // ── API 可用性 ──
@@ -611,6 +612,11 @@ public static class SceneDebug
                         ulong low = BitConverter.ToUInt64(data, (int)offset + 8);
                         return $"{high:X16}:{low:X16}";
                     }
+                    break;
+
+                case 10: // Bool
+                    if (size >= 1)
+                        return data[offset] != 0 ? "true" : "false";
                     break;
             }
         }

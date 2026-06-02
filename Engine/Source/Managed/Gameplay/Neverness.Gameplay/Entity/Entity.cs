@@ -5,6 +5,7 @@
 // Entity 不拥有 Behaviour 实例，Behaviour 由 ScriptBehaviourScheduler 持有。
 // ============================================================================
 
+using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene;
 
 namespace Neverness.Gameplay;
@@ -69,7 +70,7 @@ public sealed class Entity
     /// ⚠️ 返回的是 ECS 组件的 proxy view，修改会直接反映到 Native ECS。
     /// 组件的生命周期由 ECS 管理，Entity 销毁时组件自动移除。
     /// </remarks>
-    public T AddComponent<T>() where T : struct, new()
+    public T AddComponent<T>() where T : struct
     {
         var data = new T();
         SceneEntity.AddComponent<T>();
@@ -127,7 +128,7 @@ public sealed class Entity
     /// <returns>是否成功移除。</returns>
     public bool RemoveComponent<T>() where T : struct
     {
-        return SceneEntity.RemoveComponent<T>().Success;
+        return SceneEntity.RemoveComponent<T>() == NNSceneResult.Ok;
     }
 
     /// <summary>
@@ -221,7 +222,7 @@ public sealed class Entity
         ScriptBehaviourScheduler.Instance?.DestroyAllBehaviours(this);
 
         // 销毁 Native Entity
-        SceneWorld.DestroyEntity(Id);
+        SceneWorld.DestroyEntity(SceneEntity);
     }
 
     // ========================================================================

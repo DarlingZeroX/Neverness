@@ -39,6 +39,9 @@ public static class AssetDragDrop
     /// <summary>通用资产拖拽 payload（接受任意类型，Inspector 需自行验证 TypeId）。</summary>
     public const string Any = "NN_ASSET";
 
+    /// <summary>C# 脚本资产拖拽 payload。</summary>
+    public const string Script = "NN_SCRIPT";
+
     // ── 预定义 TypeId 常量（与 AssetTypeId / NNAssetTypes.h 对齐） ──
     // Framework 层不能引用 Assets 层，故在此重复定义。
 
@@ -57,6 +60,9 @@ public static class AssetDragDrop
     /// <summary>材质资产 TypeId（= AssetTypeId.Material）。</summary>
     public const ulong TypeIdMaterial = 4;
 
+    /// <summary>C# 脚本资产 TypeId（= AssetTypeId.CSharpScript）。</summary>
+    public const ulong TypeIdCSharpScript = 11;
+
     /// <summary>
     /// 根据资产类型 ID 获取对应的 payload 名称。
     /// </summary>
@@ -69,6 +75,7 @@ public static class AssetDragDrop
             TypeIdVideoClip => Video,
             TypeIdMesh => Mesh,
             TypeIdMaterial => Material,
+            TypeIdCSharpScript => Script,
             _ => Any,
         };
     }
@@ -86,6 +93,7 @@ public static class AssetDragDrop
             "VideoImporter" => Video,
             "MeshImporter" => Mesh,
             "MaterialImporter" => Material,
+            "ScriptAssetImporter" => Script,
             _ => Any,
         };
     }
@@ -203,7 +211,7 @@ public static class AssetDragDrop
         typeId = 0;
 
         // 尝试接受所有已知类型的 payload
-        string[] payloadNames = [Texture, Audio, Video, Mesh, Material, Any];
+        string[] payloadNames = [Texture, Audio, Video, Mesh, Material, Script, Any];
 
         foreach (var name in payloadNames)
         {

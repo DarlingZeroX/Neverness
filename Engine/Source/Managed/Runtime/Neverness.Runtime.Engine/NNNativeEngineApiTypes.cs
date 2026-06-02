@@ -284,6 +284,23 @@ public struct NNRmlUIDocumentComponentData
 }
 // 共 32 字节，与 C++ 侧 NNRmlUIDocumentComponent 完全对齐
 
+/// <summary>
+/// 脚本组件——blittable 結構體，與 Native <c>NNScriptComponent</c> 內存佈局一致（16 字節）。
+///
+/// ⚠️ ComponentTypeId 與 ScriptTypeId 是完全不同的概念：
+/// - ComponentTypeId = FNV1a64("Script") = 0x9565553D163FC92A（組件類型標識）
+/// - ScriptTypeId = FNV1a64(Type.FullName)（腳本類標識，如 "Neverness.Gameplay.PlayerController"）
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x9565553D163FC92A, Name = "Script")]
+public unsafe struct NNScriptComponentData
+{
+	public ulong ScriptTypeId;          // 8B offset 0 — 脚本类型 ID（FNV1a64(Type.FullName)）
+	public byte  Enabled;               // 1B offset 8 — 启用状态（byte 对齐 C++ uint8_t）
+	public fixed byte _reserved[7];     // 7B offset 9 — 对齐填充
+}
+// 共 16 字节，与 C++ 侧 NNScriptComponent 完全对齐
+
 
 /// <summary>
 /// 與 Native <c>NNSceneResult</c> 對齊（<c>SceneAPI.h</c>）：場景操作結果碼。

@@ -1,6 +1,8 @@
+using Neverness.Editor.Assets.AssetFactories;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Public;
+using Neverness.Editor.Script.Private;
 using Neverness.Editor.Script.Public;
 
 namespace Neverness.Editor.Script.Private;
@@ -26,6 +28,12 @@ internal sealed class ScriptEditorFeature : IEditorFeature
 
         // 注册脚本服务到编辑器上下文
         context.RegisterService<IScriptEditorService>(_service);
+
+        // 注册 C# 脚本资产工厂（ContentBrowser 右键菜单）
+        AssetFactoryRegistry.Instance.Register(new CSharpScriptAssetFactory());
+
+        // 初始化脚本资产索引（Phase A: GUID → FullName）
+        ScriptAssetIndex.Instance.RebuildAll();
 
         // 注册脚本控制台面板
         context.Panels.AddChildPanel("Script Console", new Panel.ScriptConsolePanel());

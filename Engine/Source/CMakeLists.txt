@@ -32,3 +32,9 @@ foreach(child ${PLUGINS_DIRS})
 endforeach()
 
 add_subdirectory ("Host")
+
+############ Experiments（实验模块，默认开启）
+option(NEVERNESS_BUILD_EXPERIMENTS "Build Experiments modules" OFF)
+if(NEVERNESS_BUILD_EXPERIMENTS)
+	add_subdirectory("Experiments")
+endif()

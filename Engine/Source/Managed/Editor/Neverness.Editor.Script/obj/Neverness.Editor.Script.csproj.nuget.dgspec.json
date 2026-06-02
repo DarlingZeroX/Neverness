@@ -2139,6 +2139,9 @@
               },
               "E:\\Neverness\\Engine\\Source\\Managed\\Gameplay\\Neverness.Gameplay\\Neverness.Gameplay.csproj": {
                 "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Gameplay\\Neverness.Gameplay\\Neverness.Gameplay.csproj"
+              },
+              "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.VFS\\Neverness.Runtime.VFS.csproj": {
+                "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.VFS\\Neverness.Runtime.VFS.csproj"
               }
             }
           }

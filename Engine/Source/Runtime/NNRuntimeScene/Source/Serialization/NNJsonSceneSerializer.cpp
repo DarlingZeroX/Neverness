@@ -134,6 +134,12 @@ json FieldToJson(
 		oss << std::hex << std::setfill('0') << std::setw(16) << guid.high << ":" << std::setw(16) << guid.low;
 		return oss.str();
 	}
+	case NNComponentFieldType::Bool:
+	{
+		std::uint8_t value = 0u;
+		std::memcpy(&value, fieldPtr, sizeof(std::uint8_t));
+		return value != 0u;
+	}
 	default:
 		return nullptr;
 	}
@@ -276,6 +282,12 @@ void JsonToField(
 				std::memcpy(fieldPtr, &guid, sizeof(NNGuid));
 			}
 		}
+		break;
+	}
+	case NNComponentFieldType::Bool:
+	{
+		std::uint8_t v = value.is_boolean() ? (value.get<bool>() ? 1u : 0u) : 0u;
+		std::memcpy(fieldPtr, &v, sizeof(std::uint8_t));
 		break;
 	}
 	default:

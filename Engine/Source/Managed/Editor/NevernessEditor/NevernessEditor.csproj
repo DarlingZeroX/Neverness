@@ -46,6 +46,7 @@
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Audio.Native\Neverness.Runtime.Audio.Native.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Rmlui\Neverness.Editor.Rmlui.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
 		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
 	</ItemGroup>
 

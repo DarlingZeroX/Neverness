@@ -388,7 +388,8 @@
       "Neverness.Editor.Assets >= 1.0.0",
       "Neverness.Editor.Core >= 1.0.0",
       "Neverness.Editor.Framework >= 1.0.0",
-      "Neverness.Gameplay >= 1.0.0"
+      "Neverness.Gameplay >= 1.0.0",
+      "Neverness.Runtime.VFS >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -430,6 +431,9 @@
             },
             "E:\\Neverness\\Engine\\Source\\Managed\\Gameplay\\Neverness.Gameplay\\Neverness.Gameplay.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Gameplay\\Neverness.Gameplay\\Neverness.Gameplay.csproj"
+            },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.VFS\\Neverness.Runtime.VFS.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.VFS\\Neverness.Runtime.VFS.csproj"
             }
           }
         }

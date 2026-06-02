@@ -1,8 +1,17 @@
 // ============================================================================
-// ScriptComponent.cs - 脚本组件（ECS 侧）
+// ScriptComponent.cs - 脚本组件（Gameplay 层）
 // ============================================================================
-// 存储脚本类型 ID 和 Behaviour 索引，不存储 Behaviour 实例。
-// Behaviour 实例由 ScriptBehaviourScheduler 独立持有。
+// 关联 Entity 与 C# 脚本类型，只保存可序列化状态。
+// 运行时实例映射由 ScriptBehaviourScheduler + BehaviourRegistry 管理。
+//
+// ⚠️ ComponentTypeId 与 ScriptTypeId 是完全不同的概念：
+// - ComponentTypeId = FNV1a64("Script")（组件类型标识，用于 ECS 注册/ABI 调用）
+// - ScriptTypeId = FNV1a64(Type.FullName)（脚本类标识，用于实例化/序列化持久化）
+//
+// 内存布局与 Native NNScriptComponent 对齐（16 字节）：
+//   ScriptTypeId  uint64  8B
+//   Enabled       byte    1B（Gameplay 层用 bool，ABI 转换在边界层）
+//   _reserved     byte[7] 7B
 // ============================================================================
 
 using System.Runtime.InteropServices;
@@ -10,14 +19,13 @@ using System.Runtime.InteropServices;
 namespace Neverness.Gameplay;
 
 /// <summary>
-/// 脚本组件（ECS 侧）：存储脚本类型 ID，不存储实例。
+/// 脚本组件（Gameplay 层）：关联 Entity 与 C# 脚本类型。
 /// </summary>
 /// <remarks>
-/// ⚠️ 这是 Native ECS 的 struct 组件，与 C++ 层内存布局对齐（blittable）。
+/// ⚠️ 这是 Gameplay 包装层，不直接参与 ABI。
+/// ABI 层使用 NNScriptComponentData（Neverness.Runtime.Engine）。
 ///
-/// 字段说明：
-/// - ScriptTypeId: 脚本类型 ID（FNV-1a hash），用于 ScriptRegistry 查找
-/// - BehaviourIndex: Behaviour 实例在 Scheduler 中的索引（-1 表示未创建）
+/// 当前版本限制：一个 Entity 最多挂载一个 ScriptComponent。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public struct ScriptComponent
@@ -26,49 +34,52 @@ public struct ScriptComponent
     // 数据字段
     // ========================================================================
 
-    /// <summary>脚本类型 ID（FNV-1a hash）。</summary>
+    /// <summary>脚本类型 ID（FNV1a64(Type.FullName)）。</summary>
     public ulong ScriptTypeId;
 
-    /// <summary>Behaviour 实例在 Scheduler 中的索引（-1 表示未创建）。</summary>
-    public int BehaviourIndex;
-
     /// <summary>脚本是否启用。</summary>
-    public byte Enabled;  // 使用 byte 代替 bool，与 C++ bool 对齐
+    /// <remarks>
+    /// Gameplay 层使用 bool 提供友好的用户 API。
+    /// 写入 Native ECS 时转换为 byte（Enabled ? (byte)1 : (byte)0）。
+    /// </remarks>
+    public bool Enabled;
 
     // ========================================================================
-    // 常量
+    // 对齐填充（与 Native 16 字节布局对齐）
     // ========================================================================
 
-    /// <summary>无效的 Behaviour 索引。</summary>
-    public const int InvalidBehaviourIndex = -1;
+    /// <summary>对齐填充，使总大小为 16 字节。</summary>
+    private readonly byte _reserved0;
+    private readonly byte _reserved1;
+    private readonly byte _reserved2;
+    private readonly byte _reserved3;
+    private readonly byte _reserved4;
+    private readonly byte _reserved5;
+    private readonly byte _reserved6;
 
     // ========================================================================
     // 构造函数
     // ========================================================================
 
     /// <summary>创建新的 ScriptComponent。</summary>
-    /// <param name="scriptTypeId">脚本类型 ID。</param>
+    /// <param name="scriptTypeId">脚本类型 ID（FNV1a64(Type.FullName)）。</param>
     public ScriptComponent(ulong scriptTypeId)
     {
         ScriptTypeId = scriptTypeId;
-        BehaviourIndex = InvalidBehaviourIndex;
-        Enabled = 1;  // 默认启用
+        Enabled = true;  // 默认启用
     }
 
     // ========================================================================
     // 辅助方法
     // ========================================================================
 
-    /// <summary>是否已创建 Behaviour 实例。</summary>
-    public readonly bool HasBehaviour => BehaviourIndex != InvalidBehaviourIndex;
-
-    /// <summary>是否启用。</summary>
-    public readonly bool IsEnabled => Enabled != 0;
+    /// <summary>是否已设置脚本类型。</summary>
+    public readonly bool HasScript => ScriptTypeId != 0;
 
     /// <summary>设置启用状态。</summary>
     /// <param name="enabled">是否启用。</param>
     public void SetEnabled(bool enabled)
     {
-        Enabled = enabled ? (byte)1 : (byte)0;
+        Enabled = enabled;
     }
 }

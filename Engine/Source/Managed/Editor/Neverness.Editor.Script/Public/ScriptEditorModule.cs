@@ -1,3 +1,6 @@
+using Neverness.Editor.Assets.AssetFactories;
+using Neverness.Editor.Script.Private;
+
 namespace Neverness.Editor.Script.Public;
 
 /// <summary>
@@ -12,6 +15,12 @@ public static class ScriptEditorModule
     {
         _service = new Private.ScriptEditorServiceImpl();
         context.RegisterService<IScriptEditorService>(_service);
+
+        // 注册 C# 脚本资产工厂（ContentBrowser 右键菜单）
+        AssetFactoryRegistry.Instance.Register(new CSharpScriptAssetFactory());
+
+        // 初始化脚本资产索引（Phase A: GUID → FullName）
+        ScriptAssetIndex.Instance.RebuildAll();
     }
 
     /// <summary>获取脚本编辑器服务。</summary>

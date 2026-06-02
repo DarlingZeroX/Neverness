@@ -146,7 +146,7 @@ public abstract class EntityBehaviour
     /// </summary>
     /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
     /// <returns>新添加的组件值。</returns>
-    protected T AddComponent<T>() where T : struct, new()
+    protected T AddComponent<T>() where T : struct
     {
         return Entity.AddComponent<T>();
     }

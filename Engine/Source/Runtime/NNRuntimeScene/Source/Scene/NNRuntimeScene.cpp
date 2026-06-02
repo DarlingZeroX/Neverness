@@ -5,6 +5,7 @@
 
 #include "Scene/NNRuntimeScene.h"
 
+#include "Components/NNScriptComponent.h"
 #include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "Runtime/NNSceneEventBus.h"
 
@@ -56,6 +57,7 @@ void NNRuntimeScene::RegisterBuiltinComponents()
 	BindComponentType<NNAudioSourceComponent>("AudioSource");
 	BindComponentType<NNVideoPlayerComponent>("VideoPlayer");
 	BindComponentType<NNRmlUIDocumentComponent>("RmlUIDocument");
+	BindComponentType<NNScriptComponent>("Script");
 }
 
 void NNRuntimeScene::RegisterDefaultSystems()
