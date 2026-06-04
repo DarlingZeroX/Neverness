@@ -1,0 +1,10 @@
+E:\Neverness\Project\示例项目\Library\Scripts\Assembly-CSharp.deps.json
+E:\Neverness\Project\示例项目\Library\Scripts\Assembly-CSharp.dll
+E:\Neverness\Project\示例项目\Library\Scripts\Assembly-CSharp.pdb
+E:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.csproj.AssemblyReference.cache
+E:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.GeneratedMSBuildEditorConfig.editorconfig
+E:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
+E:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.dll
+E:\Neverness\Project\示例项目\obj\Debug\refint\Assembly-CSharp.dll
+E:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.pdb
+E:\Neverness\Project\示例项目\obj\Debug\ref\Assembly-CSharp.dll

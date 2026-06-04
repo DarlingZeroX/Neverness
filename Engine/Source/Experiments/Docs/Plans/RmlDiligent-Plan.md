@@ -1079,9 +1079,11 @@ Engine/Source/Experiments/RmlDiligent/
     ├── TestTransforms.cpp                  # Phase 2 测试
     ├── TestScissor.cpp                     # Phase 3 测试
     ├── TestClipMask.cpp                    # Phase 4 测试
-    ├── TestCustomShader.cpp                # Phase 5 测试
-    ├── TestFilters.cpp                     # Phase 6 测试
-    └── TestPerformance.cpp                 # Phase 7 测试
+    ├── TestLayerStack.cpp                  # Phase 5a 测试
+    ├── TestFilters.cpp                     # Phase 5b 测试
+    ├── TestCustomShader.cpp                # Phase 3 测试
+    ├── TestFilters.cpp                     # Phase 5b 测试
+    └── TestPerformance.cpp                 # Phase 6 测试
 ```
 
 ---
@@ -1136,8 +1138,8 @@ Engine/Source/Experiments/RmlDiligent/
 - [x] 纹理变量名与 DX12 Backend 一致 ✅
 - [x] PSO 创建成功（Color PSO，使用 RenderPass） ✅
 - [x] Smoke Test: 彩色三角形正确显示 ✅（Phase 1）
-- [ ] Smoke Test: 纹理四边形正确显示（Phase 1.5）
-- [ ] CB 数据（transform/translate）正确传递（Phase 1.5）
+- [x] Smoke Test: 纹理四边形正确显示（Phase 1.5，层合成 + Texture PSO）✅
+- [x] CB 数据（transform/translate）正确传递（Phase 1.5）✅
 
 #### 实施中发现的关键问题
 
@@ -1214,8 +1216,10 @@ Engine/Source/Experiments/RmlDiligent/
 
 #### 验证方式
 
-- [ ] CSS Transform 属性生效
-- [ ] 嵌套变换正确叠加
+- [x] CSS Transform 属性生效 ✅ 2026-06-03
+- [x] 嵌套变换正确叠加 ✅ 2026-06-03
+
+**验收**: `RmlDiligentPhase2Test` + `phase2_transforms.rml`（rotate/scale/translate/nested）；`drawCount=11 textureDraws=5` @ D3D12
 
 #### 风险点
 
@@ -1236,19 +1240,21 @@ Engine/Source/Experiments/RmlDiligent/
 
 | 任务 | 说明 | 产出 |
 |------|------|------|
-| 3.1 | 实现 `CompileShader` | 解析 Gradient/Creation 参数 |
-| 3.2 | 实现 `RenderShader` | 使用 Gradient/Creation PSO 渲染 |
-| 3.3 | 实现 `ReleaseShader` | 资源释放 |
-| 3.4 | 创建 Gradient PSO | VS_Main + PS_Gradient |
-| 3.5 | 创建 Creation PSO | VS_Main + PS_Creation |
-| 3.6 | Gradient CB 管理 | 色停数据上传（最大 16 色停） |
+| 3.1 | 实现 `CompileShader` | 解析 Gradient/Creation 参数 ✅ 2026-06-03 |
+| 3.2 | 实现 `RenderShader` | 使用 Gradient/Creation PSO 渲染 ✅ 2026-06-03 |
+| 3.3 | 实现 `ReleaseShader` | 资源释放 ✅ 2026-06-03 |
+| 3.4 | 创建 Gradient PSO | VS_Main + PS_Gradient ✅ 2026-06-03 |
+| 3.5 | 创建 Creation PSO | VS_Main + PS_Creation ✅ 2026-06-03 |
+| 3.6 | Gradient CB 管理 | 色停数据上传（最大 16 色停） ✅ 2026-06-03 |
 
 #### 验证方式
 
-- [ ] 线性渐变正确渲染
-- [ ] 径向渐变正确渲染
-- [ ] 锥形渐变正确渲染
-- [ ] Creation 效果正确渲染
+- [x] 线性渐变正确渲染 ✅ 2026-06-03
+- [x] 径向渐变正确渲染 ✅ 2026-06-03
+- [x] 锥形渐变正确渲染 ✅ 2026-06-03
+- [x] Creation 效果正确渲染 ✅ 2026-06-03
+
+**验收**: `RmlDiligentPhase3Test` + `phase3_gradients.rml`（linear/radial/conic/creation）；`shaderDraws=4 drawCount=12` @ D3D12；默认 ESC 退出，`--frames 5` CI 自动 PASS
 
 #### 风险点
 
@@ -1266,18 +1272,20 @@ Engine/Source/Experiments/RmlDiligent/
 
 | 任务 | 说明 | 产出 |
 |------|------|------|
-| 4.1 | 实现 `EnableClipMask` | Stencil 状态切换 + m_StencilDepth 管理 |
-| 4.2 | 实现 `RenderToClipMask` | Stencil 写入（Set/Inverse/Intersect） |
-| 4.3 | 创建 Stencil PSO 变体（6 种） | Color/Texture × Stencil 状态组合 |
-| 4.4 | Stencil Clear 逻辑 | ClearStencil 调用 |
-| 4.5 | 颜色写入禁用（遮罩渲染时） | Color Mask = 0 |
-| 4.6 | 嵌套 Clip 支持 | m_StencilDepth 递增/递减 |
+| 4.1 | 实现 `EnableClipMask` | Stencil 状态切换 + m_StencilTestValue 管理 ✅ 2026-06-03 |
+| 4.2 | 实现 `RenderToClipMask` | Stencil 写入（Set/Inverse/Intersect） ✅ 2026-06-03 |
+| 4.3 | 创建 Stencil PSO 变体（6 种） | Color/Texture/Gradient/Creation × Equal/Set/Intersect ✅ 2026-06-03 |
+| 4.4 | Stencil Clear 逻辑 | EndRenderPass + ClearStencil（D3D12 兼容） ✅ 2026-06-03 |
+| 4.5 | 颜色写入禁用（遮罩渲染时） | Color Mask = 0 ✅ 2026-06-03 |
+| 4.6 | 嵌套 Clip 支持 | Intersect + 多 clip 元素（对齐 GL3） ✅ 2026-06-03 |
 
 #### 验证方式
 
-- [ ] RmlUi Demo 中的遮罩效果正确
-- [ ] Set/Inverse/Intersect 操作正确
-- [ ] 嵌套遮罩正确（A → B → C，StencilDepth 递增）
+- [x] overflow:hidden / border-radius 裁剪正确渲染 ✅ 2026-06-03
+- [x] Set/Inverse/Intersect 操作正确 ✅ 2026-06-03
+- [x] 嵌套 overflow 裁剪正确 ✅ 2026-06-03
+
+**验收**: `RmlDiligentPhase4Test` + `phase4_clip_mask.rml`；`clipMaskDraws=4 drawCount=10` @ D3D12；默认 ESC 退出，`--frames 5` CI 自动 PASS
 
 #### 风险点
 
@@ -1290,28 +1298,43 @@ Engine/Source/Experiments/RmlDiligent/
 
 ### Phase 5: Filters
 
-**预计时间**: 3-4 天
+**预计时间**: 3-4 天（**5a** LayerStack + RT Pool ✅ 2026-06-03；**5b** Filter 渲染 ✅ 2026-06-03）
 
 #### 实现内容
 
 | 任务 | 说明 | 产出 |
 |------|------|------|
-| 5.1 | 实现 RenderTargetPool | RT 复用池（PooledRT + custom deleter） |
-| 5.2 | 实现 `CompileFilter` / `ReleaseFilter` | 解析 Filter 参数 |
-| 5.3 | 实现 `PushLayer` / `PopLayer` | Layer Stack（使用 RT Pool + 引用计数） |
-| 5.4 | 实现 `CompositeLayers` | 层合成（不调用 Flush） |
-| 5.5 | 实现 `SaveLayerAsTexture` / `SaveLayerAsMaskImage` | 层保存（共享所有权） |
-| 5.6 | 创建 Filter PSO | Passthrough/Blur/DropShadow/ColorMatrix/BlendMask |
-| 5.7 | 实现 Blur 多 Pass 逻辑 | 可分离高斯模糊（Primary ↔ Secondary 交替） |
-| 5.8 | 实现 DropShadow 逻辑 | 偏移 + Alpha + Blur |
+| 5.1 | 实现 RenderTargetPool | RT 复用池（PooledRT + custom deleter） ✅ 2026-06-03（Phase 5a） |
+| 5.2 | 实现 `CompileFilter` / `ReleaseFilter` | 解析 Filter 参数 ✅ 2026-06-03（Phase 5b） |
+| 5.3 | 实现 `PushLayer` / `PopLayer` | Layer Stack（使用 RT Pool + 引用计数） ✅ 2026-06-03（Phase 5a） |
+| 5.4 | 实现 `CompositeLayers` | 层合成 + `RenderFilters` 链 ✅ 2026-06-03（Phase 5b 接入 filter 路径） |
+| 5.5 | 实现 `SaveLayerAsTexture` / `SaveLayerAsMaskImage` | 层保存（PooledRT + CopyTexture） ✅ 2026-06-03（Phase 5b） |
+| 5.6 | 创建 Filter PSO | Passthrough/Blur/DropShadow/ColorMatrix/BlendMask/Opacity ✅ 2026-06-03（Phase 5b） |
+| 5.7 | 实现 Blur 多 Pass 逻辑 | 可分离高斯模糊（Primary ↔ Secondary 交替） ✅ 2026-06-03（Phase 5b） |
+| 5.8 | 实现 DropShadow 逻辑 | 偏移 + Alpha + Blur ✅ 2026-06-03（Phase 5b） |
+
+**Phase 5a 产出**（`Renderer/RmlDiligentRenderTargetPool`、`Renderer/RmlDiligentLayerStack`）：
+
+- `BeginFrame` / `EndFrame` 对齐 GL3：整帧渲染到 Layer RT，EndFrame Passthrough 到 Swapchain
+- 共享 D24S8 Stencil DSV（Clip/绘制路径使用 LayerStack DSV）
+- `RmlDiligentPhase5aTest` + `phase5a_layers.rml`（`filter: opacity` / `box-shadow` 触发 PushLayer/Composite 调用路径）
+
+**Phase 5b 产出**（`CompileFilter` / `RenderFilters` / Filter PSO + CB）：
+
+- `CompileFilter`：opacity、blur、drop-shadow、brightness/contrast/invert/grayscale/sepia/hue-rotate/saturate
+- Filter PSO：Blur、DropShadow、ColorMatrix、BlendMask、PassthroughOpacity/Replace；PostTertiary + BlendMask RT
+- `CompositeLayers`：Blit → `RenderFilters` → Passthrough 到目标层
+- `SaveLayerAsTexture`（PooledRT + `CopyTexture` 子区域）、`SaveLayerAsMaskImage`
+- `RmlDiligentPhase5bTest` + `phase5_filters.rml`（opacity / blur / drop-shadow / brightness / contrast / 多 filter 叠加）
 
 #### 验证方式
 
-- [ ] opacity 滤镜正确
-- [ ] blur 滤镜正确（不同 sigma 值）
-- [ ] drop-shadow 滤镜正确
-- [ ] brightness/contrast/invert 等 ColorMatrix 滤镜正确
-- [ ] 多个 Filter 叠加正确
+- [x] LayerStack + RT Pool：`pushLayers > 0`、`composites > 0`（`RmlDiligentPhase5aTest --frames 5`）✅ 2026-06-03
+- [x] Phase 1.5–4 回归通过（BeginFrame 改动画 layer 后）✅ 2026-06-03
+- [x] Filter 链路：`filterRenders > 0`、无 “Could not compile filter”（`RmlDiligentPhase5bTest --frames 5`）✅ 2026-06-03
+- [x] opacity / blur / drop-shadow / brightness 面板 layout 正确（`phase5_filters.rml`）✅ 2026-06-03
+- [x] 视觉效果人工验收（opacity 混合、blur 边缘虚化、drop-shadow 偏移羽化、brightness 调色）✅ 2026-06-03
+- [x] contrast 单滤镜 + `#stack-panel` 多 filter 叠加（`brightness` + `contrast`）layout 与链路（`--case contrast|stack`）✅ 2026-06-03
 
 #### 风险点
 
@@ -1331,16 +1354,26 @@ Engine/Source/Experiments/RmlDiligent/
 
 | 任务 | 说明 | 产出 |
 |------|------|------|
-| 6.1 | SRB 缓存 | PSO+Texture → SRB 缓存 Map |
-| 6.2 | 性能基准测试 | 与 DX12 Backend 对比 |
-| 6.3 | 内存使用分析 | 资源占用统计 |
-| 6.4 | Draw Call 分析 | 确认 Draw Call 数量合理 |
+| 6.1 | SRB 缓存 | PSO+Texture → SRB 缓存 Map | ✅ |
+| 6.2 | 性能基准测试 | TestPerformance A/B（替代 DX12 对比） | ✅ |
+| 6.3 | 内存使用分析 | MemoryStats + RT Pool 只读 API | ✅ |
+| 6.4 | Draw Call 分析 | drawCount / filterRenders / SRB 命中统计 | ✅ |
 
 #### 验证方式
 
-- [ ] 与 DX12 Backend 性能差距 < 30%（实验阶段目标）
-- [ ] 内存使用合理（无明显泄漏）
-- [ ] RmlUi Demo 流畅运行（60fps）
+- [x] SRB 缓存 A/B：开启后 FPS ≥ 关闭 × 1.15（`TestPerformance --compare-ab`）✅ 2026-06-03
+- [x] SRB 命中率 > 80%（warmup 后，`phase5_filters.rml`）✅ 2026-06-03
+- [x] `MemoryStats` + RT Pool 只读统计（`GetFreeListSize` / `GetActiveAcquireCount`）✅ 2026-06-03
+- [x] `TestPerformance.cpp` + `RmlDiligentPhase6Test`；`--no-srb-cache` A/B 开关 ✅ 2026-06-03
+- [ ] 与 DX12 Backend 性能差距 < 30%（**后续项**：仓库无独立 DX12 Backend 可执行对比，改为自研 SRB A/B）
+
+#### 产出文件
+
+| 文件 | 说明 |
+|------|------|
+| `Renderer/RmlDiligentProgramId.h` | ProgramId 枚举（Color/Texture/Blur/…） |
+| `Renderer/RmlDiligentSrbCache.h/.cpp` | PSO×SRV×CB 二级 SRB 缓存 + hits/misses |
+| `Tests/TestPerformance.cpp` | 帧率/p50/p95、DrawCall、SRB 命中、MemoryStats |
 
 #### 风险点
 
@@ -1348,6 +1381,71 @@ Engine/Source/Experiments/RmlDiligent/
 |------|------|------|
 | SRB 缓存命中率 | 中 | 监控缓存命中率，调整策略 |
 | Diligent 抽象层开销 | 低 | 通过 Profiler 定位 |
+
+---
+
+### Phase 7: 官方 RmlUi Samples（SDL3 + RmlDiligent）
+
+**预计时间**: 2-4 天
+
+#### 依赖
+
+| 项 | 说明 |
+|----|------|
+| RmlUi submodule | `Engine/Source/ThirdParty/RmlUi`，**tag `6.1`**（与 vcpkg `rmlui` 对齐） |
+| 初始化 | `git submodule update --init --recursive` |
+| Neverness 阶段测试 RML | `Engine/Source/Experiments/RmlDiligent/TestAssets/`（Phase 1.5–6 仍用 `RML_DILIGENT_TEST_ASSETS_DIR`） |
+| vcpkg | `RmlUi::Core`、FreeType 字体引擎、`SDL3`、`RmlUi::Debugger`（可选） |
+
+#### 实现内容
+
+| 任务 | 说明 | 产出 |
+|------|------|------|
+| 7.1 | `rmlui_backend_diligent` | `Backend::` + `RmlDiligentRenderInterface` + `RmlDiligent_AppCommon` |
+| 7.2 | `rmlui_shell_diligent` | 上游 `Samples/shell` + Win32 `FindSamplesRoot` |
+| 7.3 | SDL3 平台 | `RmlDiligent_SystemSDLUnity.cpp`（`RMLUI_SDL_VERSION_MAJOR=3` + 上游 `RmlUi_Platform_SDL.cpp`） |
+| 7.4 | CMake `basic/` 示例 | `RML_DILIGENT_BUILD_OFFICIAL_SAMPLES`（默认 ON） |
+| 7.5 | 冒烟测试 | `RmlDiligentSamplesSmokeTest`：`assets/demo.rml`，`drawCount > 0` |
+
+#### 可执行文件（`Samples/basic/`）
+
+| 目标 | 说明 |
+|------|------|
+| `RmlDiligent_sample_bitmap_font` | 无 FreeType 也可运行（优先 smoke） |
+| `RmlDiligent_sample_load_document` | 加载 `assets/demo.rml` |
+| `RmlDiligent_sample_demo` | 完整 Demo + F8 Debugger |
+| `RmlDiligent_sample_effects` | 滤镜回归（Phase 5b 目视） |
+| `RmlDiligent_sample_animation` … `tree_view` | 其余 basic 示例子目录 |
+| `RmlDiligentSamplesSmokeTest` | CI：`--frames N`，控制台 `main` |
+
+**未纳入**: `invaders/`、`tutorial/`、`lua_invaders/`；`harfbuzz`（需 vcpkg harfbuzz）；`ime`（Win32 字体辅助源，SDL3 路径暂跳过）。
+
+#### 构建与运行
+
+```powershell
+cmake -S Engine/Source/Experiments/RmlDiligent -B Build/RmlDiligent `
+  -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+cmake --build Build/RmlDiligent --config Debug --target RmlDiligentSamplesSmokeTest
+cd Build/RmlDiligent/Debug
+.\RmlDiligentSamplesSmokeTest.exe --frames 3
+```
+
+POST_BUILD 将 submodule 的 `Samples/` 树复制到**可执行文件目录**（使 `assets/rml.rcss` 与 exe 同级，满足 `Shell::FindSamplesRoot`）。同时复制 SDL3 / RmlUi DLL。
+
+关闭全部官方示例：`cmake -DRML_DILIGENT_BUILD_OFFICIAL_SAMPLES=OFF`。
+
+#### 验证方式
+
+- [x] `rmlui_backend_diligent` / `rmlui_shell_diligent` 编译通过
+- [x] `RmlDiligentSamplesSmokeTest --frames 3`：`drawCount > 0`、无崩溃
+- [ ] 目视：`RmlDiligent_sample_demo`、`RmlDiligent_sample_effects`
+- [x] Phase 1.5–6 测试仍指向 `TestAssets/`
+
+#### 已知限制
+
+- 无官方 DX12 Backend 并行性能对比
+- submodule 须与 vcpkg **同为 6.1**；升级 vcpkg 时同步 bump submodule tag
+- `ime` / plugin 类 sample（`lottie`/`svg`）未在本阶段注册
 
 ---
 
@@ -1433,12 +1531,57 @@ target_link_libraries(RmlDiligentTest PRIVATE RmlDiligent)
   - SDL3 窗口创建成功
   - Diligent D3D12 设备初始化成功
   - 彩色三角形渲染成功
-- [ ] **Phase 1.5**: RmlUi 官方 Demo 跑通（文字 + 按钮 + 图片 + 基本样式）
-- [ ] **Phase 2**: CSS Transform 属性正确生效
-- [ ] **Phase 3**: Stencil 遮罩正确（Set/Inverse/Intersect，嵌套 Clip）
-- [ ] **Phase 4**: 渐变和程序化效果正确渲染
-- [ ] **Phase 5**: Blur/Shadow/ColorMatrix 滤镜正确
-- [ ] **Phase 6**: 性能达标（与 DX12 Backend 差距 < 30%）
+- [x] **Phase 1.5**: RmlUi 基础集成验证 ✅ 2026-06-02
+  - [x] SDL3 窗口 + Diligent D3D12 设备 ✅
+  - [x] RmlUi 初始化 + SetRenderInterface ✅
+  - [x] FileInterface 实现 ✅
+  - [x] Color PSO 创建成功（RenderPass + SV_VertexID） ✅
+  - [x] Texture PSO 创建成功（VS 输出 float4 Color 匹配 PS 期望）✅
+  - [x] Rml::CreateContext 成功 ✅
+  - [x] RML 文档加载成功 ✅
+  - [x] 字体加载成功（FileInterface 路径）✅
+  - [x] LogMessage 回调修复（try-catch 保护空引用）✅
+  - [x] 渲染循环运行正常 ✅
+  - [x] RmlUi 内容实际渲染（CB/SRB、矩阵 row_major、层合成、inline RML 冒烟）✅ 2026-06-03
+  - [x] 预乘 Alpha 混合（ONE / ONE_MINUS_SRC_ALPHA，对齐 GL3）✅ 2026-06-03
+  - [x] 自动化验收：`textureDraws > 0`（字体 glyph 路径）✅ 2026-06-03
+- [x] **Phase 2**: CSS Transform 属性正确生效 ✅ 2026-06-03
+  - [x] `SetTransform`：`m_Projection * (*transform)`（对齐 GL3）✅
+  - [x] `BeginFrame` 调用 `SetTransform(nullptr)` 重置基线 ✅
+  - [x] `TestTransforms.cpp` + `phase2_transforms.rml` 验收通过 ✅
+  - [x] 默认 ESC 退出，`--frames N` 用于 CI 自动退出 ✅
+- [x] **Phase 3**: Stencil 遮罩正确（Set/Inverse/Intersect，嵌套 Clip） ✅ 2026-06-03（对应 §9 Phase 4）
+  - [x] D24S8 depth/stencil + RenderPass 双附件 ✅
+  - [x] `EnableClipMask` / `RenderToClipMask`（对齐 GL3） ✅
+  - [x] Stencil Equal/Set/Intersect PSO 变体 ✅
+  - [x] `TestClipMask.cpp` + `phase4_clip_mask.rml` 验收通过 ✅
+- [x] **Phase 4**: 渐变和程序化效果正确渲染 ✅ 2026-06-03（对应 §9 Phase 3）
+  - [x] `CompileShader` / `RenderShader` / `ReleaseShader` ✅
+  - [x] Gradient PSO + Creation PSO + CB 上传 ✅
+  - [x] `TestCustomShader.cpp` + `phase3_gradients.rml` 验收通过 ✅
+- [x] **Phase 5a**: LayerStack + RenderTargetPool + 无 filter 的 CompositeLayers（§9 Phase 5 的 5.1 / 5.3 / 5.4）✅ 2026-06-03
+  - [x] `RenderTargetPool`（PooledRT + PoolDeleter）+ `RenderLayerStack`（多层 color RT、共享 DSV、PostPrimary/Secondary）✅
+  - [x] `BeginFrame` / `EndFrame` 对齐 GL3（layer 渲染 → EndFrame Passthrough 到 Swapchain）✅
+  - [x] `m_PSO_Passthrough` + `DrawFullscreenPassthrough` / `BlitLayerToPostprocessPrimary` ✅
+  - [x] `TestLayerStack.cpp` + `phase5a_layers.rml`；`pushLayers=10 composites=5` @ `--frames 5` ✅
+- [x] **Phase 5b**: Filters 全链路（§9 Phase 5 的 5.2 / 5.5–5.8）✅ 2026-06-03
+  - [x] `CompileFilter` / `ReleaseFilter` / `SaveLayerAsMaskImage` / `SaveLayerAsTexture` ✅
+  - [x] Filter PSO + CB（Blur/DropShadow/ColorMatrix/BlendMask/Opacity）✅
+  - [x] `RenderFilters` + `RenderBlur`；`CompositeLayers` 接入 filter 链 ✅
+  - [x] LayerStack 扩展 PostTertiary + BlendMask ✅
+  - [x] `TestFilters.cpp` + `phase5_filters.rml`；`filterRenders=15` @ `--frames 5` ✅
+  - [x] Phase 1.5–5a 回归通过 ✅
+- [x] **Phase 6**: SRB 缓存 + 性能验收 + 中文注释 ✅ 2026-06-03
+  - [x] `TextureHandle.srbCache` + `SrbCache`（PSO×SRV）消除 10 处临时 CreateSRB ✅
+  - [x] `MemoryStats` / `ResetPerfStats` / `SetSrbCacheEnabled` ✅
+  - [x] `TestPerformance.cpp`：`--frames` / `--warmup` / `--no-srb-cache` / `--compare-ab` ✅
+  - [x] 核心模块中文注释（RenderInterface 分节、LayerStack、RT Pool、Shaders 文件头）✅
+  - [ ] 与 DX12 Backend 差距 < 30%（后续独立对比项；当前以 SRB A/B 代替）
+- [x] **Phase 7**: 官方 Samples（SDL3 + RmlDiligent Backend）✅ 2026-06-04
+  - [x] RmlUi submodule **6.1** + `TestAssets/` 迁移 ✅
+  - [x] `rmlui_backend_diligent` / `rmlui_shell_diligent` + `basic/` 全部目标（除 `ime`/`harfbuzz`）✅
+  - [x] `RmlDiligentSamplesSmokeTest` 自动化冒烟 ✅
+  - [ ] 目视 `demo` / `effects`（开发机手动）
 
 ---
 

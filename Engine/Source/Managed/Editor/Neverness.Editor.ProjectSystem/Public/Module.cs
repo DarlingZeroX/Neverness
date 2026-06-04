@@ -5,7 +5,9 @@ namespace Neverness.Editor.ProjectSystem.Public;
 
 public static class ProjectPaths
 {
+    public static NVirtualPath Project { get; } = new("/project/");
     public static NVirtualPath Assets { get; } = new("/assets/");
+    public static NVirtualPath Library { get; } = new("/Library/");
 
     public static NVirtualPath Intermediate { get; } = new("/projectIntermediate/");
 

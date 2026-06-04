@@ -1,0 +1,51 @@
+<rml>
+<head>
+<title>Phase 5a Layer Stack</title>
+<style type="text/rcss">
+body {
+	display: block;
+	margin: 0;
+	width: 1024dp;
+	height: 768dp;
+	background: #1a1a2e;
+}
+.panel {
+	display: block;
+	position: absolute;
+	width: 220dp;
+	height: 140dp;
+	padding: 12dp;
+	background: #3366cc;
+	color: #ffffff;
+	font-size: 16dp;
+	font-family: LatoLatin;
+}
+#opacity-panel {
+	left: 40dp;
+	top: 40dp;
+	filter: opacity(0.55);
+}
+#shadow-panel {
+	left: 300dp;
+	top: 40dp;
+	background: #cc6633;
+	box-shadow: 0dp 8dp 16dp #00000088;
+}
+#ref {
+	left: 40dp;
+	top: 240dp;
+	width: 180dp;
+	height: 80dp;
+	background: #444444;
+	color: #cccccc;
+	font-size: 14dp;
+	font-family: LatoLatin;
+}
+</style>
+</head>
+<body>
+<div id="opacity-panel" class="panel">opacity filter (layer path)</div>
+<div id="shadow-panel" class="panel">box-shadow (layers)</div>
+<p id="ref">Reference panel (no filter)</p>
+</body>
+</rml>

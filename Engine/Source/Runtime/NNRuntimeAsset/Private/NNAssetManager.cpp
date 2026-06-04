@@ -686,7 +686,7 @@ std::string NNAssetManager::ResolveAssetPath(const NNGuid& guid) const
 	const std::string prefix(hexBuf, 2);
 	const std::string fileName(hexBuf);
 
-	return "Library/Imported/" + prefix + "/" + fileName + ".nnasset";
+	return "/Library/Imported/" + prefix + "/" + fileName + ".nnasset";
 }
 
 } // namespace NN::Runtime::Asset

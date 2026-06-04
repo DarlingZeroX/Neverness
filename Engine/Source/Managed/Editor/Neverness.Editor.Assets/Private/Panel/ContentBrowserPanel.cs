@@ -308,7 +308,7 @@ public class ContentBrowserPanel : IEditorPanel
             Vector2 thumbnailSize = new Vector2(25.0f, 24.0f);
 
             string currentDir = _contentBrowser.GetCurrentBrowserDirectory();
-            string projectDir = _contentBrowser.GetProjectDirectory();
+            string projectDir = _contentBrowser.GetAssetDirectory();
             string relative = Path.GetRelativePath(projectDir, currentDir);
 
             // 如果不是根目录，显示返回按钮
@@ -338,7 +338,7 @@ public class ContentBrowserPanel : IEditorPanel
 
     public void DrawPath(string path)
     {
-        string projectDir = _contentBrowser.GetProjectDirectory();
+        string projectDir = _contentBrowser.GetAssetDirectory();
         string relativePath = Path.GetRelativePath(projectDir, path);
 
         ImGui.Separator();

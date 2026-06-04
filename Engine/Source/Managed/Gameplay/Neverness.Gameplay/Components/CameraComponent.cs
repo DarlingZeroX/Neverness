@@ -5,6 +5,7 @@
 // ============================================================================
 
 using System.Runtime.InteropServices;
+using Neverness.Runtime.Engine;
 
 namespace Neverness.Gameplay;
 
@@ -12,6 +13,7 @@ namespace Neverness.Gameplay;
 /// 相机组件。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x54D1B2A64667E32E, Name = "Camera")]
 public struct CameraComponent
 {
     /// <summary>视场角（度）。</summary>

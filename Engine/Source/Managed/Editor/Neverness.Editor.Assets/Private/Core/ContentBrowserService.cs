@@ -14,7 +14,7 @@ internal sealed class ContentBrowserService : IContentBrowserService
 
     public string CurrentDirectory => Browser.GetCurrentBrowserDirectory();
 
-    public string ProjectDirectory => Browser.GetProjectDirectory();
+    public string ProjectDirectory => Browser.GetAssetDirectory();
 
     public void Refresh() => Browser.RefreshDirectory();
 

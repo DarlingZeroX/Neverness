@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <OutputType>Library</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <OutputPath>E:/Neverness/Project/示例项目/Library/Scripts</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <EnableSourceLink>false</EnableSourceLink>
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Neverness.Gameplay">
+      <HintPath>..\..\Build\bin\Debug\Neverness.Gameplay.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Neverness.Runtime.Scene">
+      <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Scene.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Neverness.Runtime.Engine">
+      <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Engine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Neverness.Runtime.Assets">
+      <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Assets.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Neverness.Runtime.Interop">
+      <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Interop.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\**\*.cs" />
+  </ItemGroup>
+</Project>

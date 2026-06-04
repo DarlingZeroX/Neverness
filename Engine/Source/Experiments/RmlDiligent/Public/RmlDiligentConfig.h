@@ -17,7 +17,6 @@
 #include "PipelineState.h"
 #include "Shader.h"
 #include "ShaderResourceBinding.h"
-#include "MapHelper.h"
 
 // RmlDiligent 命名空间
 namespace RmlDiligent {
@@ -113,18 +112,16 @@ struct ColorMatrixCB {
 };
 static_assert(sizeof(ColorMatrixCB) == 64, "ColorMatrixCB size must be 64 bytes");
 
-// Gradient CB: PS_Gradient
+// Gradient CB: PS_Gradient（与 HLSL SharedConstantBuffer 布局一致）
 struct GradientCB {
-    float transform[16];           // 64 bytes
-    float translate[2];            // 8 bytes
-    float padding1[2];             // 8 bytes (对齐)
-    int func;                      // 4 bytes
-    int numStops;                  // 4 bytes
-    float p[2];                    // 8 bytes
-    float v[2];                    // 8 bytes
-    float padding2[2];             // 8 bytes (对齐)
-    float stopColors[16][4];       // 256 bytes
-    float stopPositions[4][4];     // 64 bytes
+    float transform[16];       // offset 0
+    float translate[2];        // 64
+    int func;                  // 72
+    int numStops;              // 76
+    float p[2];                // 80
+    float v[2];                // 88
+    float stopColors[16][4];   // 96
+    float stopPositions[4][4]; // 352
 };
 static_assert(sizeof(GradientCB) == 416, "GradientCB size must be 416 bytes");
 

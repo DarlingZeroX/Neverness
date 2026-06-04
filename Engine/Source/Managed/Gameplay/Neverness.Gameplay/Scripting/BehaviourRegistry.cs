@@ -93,6 +93,21 @@ public sealed class BehaviourRegistry
     }
 
     /// <summary>
+    /// 尝试获取 Entity 的第一个 Behaviour（一 Entity 一 Script 优化）。
+    /// </summary>
+    /// <param name="entity">Entity 实例。</param>
+    /// <param name="behaviour">输出的 Behaviour。</param>
+    /// <returns>是否找到。</returns>
+    public bool TryGet(Entity entity, out EntityBehaviour? behaviour)
+    {
+        behaviour = null;
+        if (!_entityToBehaviours.TryGetValue(entity.Id, out var list) || list.Count == 0)
+            return false;
+        behaviour = list[0];
+        return true;
+    }
+
+    /// <summary>
     /// 获取 Entity 的所有 Behaviour。
     /// </summary>
     /// <param name="entityHandle">Entity 句柄。</param>

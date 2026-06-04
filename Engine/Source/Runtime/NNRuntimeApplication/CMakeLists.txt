@@ -33,6 +33,8 @@ target_sources(NevernessRuntime-Application
 		Include/RuntimeApplicationInstance.h
 		Private/Core/Window.cpp
 		Private/Core/WindowRegistry.cpp
+		Private/Editor/EditorCore.cpp
+		Private/Editor/EditorInitializer.cpp
 		Private/Engine/ImGuiLayer.cpp
 		Private/RuntimeApplication.cpp
 		Private/RuntimeApplicationInstance.cpp

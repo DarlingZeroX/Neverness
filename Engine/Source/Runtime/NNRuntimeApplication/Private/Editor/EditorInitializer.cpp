@@ -82,6 +82,7 @@ namespace NN::Runtime::Application
 			path.engine
 		);
 
+		auto projectFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.project);
 		auto assetsFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.assets);
 		auto libraryFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.library);
 		auto buildFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.build);
@@ -90,6 +91,7 @@ namespace NN::Runtime::Application
 		auto projectIntermediateFS = std::make_unique<NN::Runtime::VFS::NativeFileSystem>(path.projectIntermediate);
 		auto cacheFS = std::make_unique<NN::Runtime::VFS::MemoryFileSystem>();
 
+		projectFS->Initialize();
 		assetsFS->Initialize();
 		libraryFS->Initialize();
 		buildFS->Initialize();
@@ -98,13 +100,17 @@ namespace NN::Runtime::Application
 		projectIntermediateFS->Initialize();
 		cacheFS->Initialize();
 
+		vfs->AddFileSystem("/project/", std::move(projectFS));
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetAssetsPathVFS(), std::move(assetsFS));
-		vfs->AddFileSystem("Library", std::move(libraryFS));
-		vfs->AddFileSystem("Build", std::move(buildFS));
-		vfs->AddFileSystem("Packages", std::move(packagesFS));
+		vfs->AddFileSystem("/Library/", std::move(libraryFS));
+		vfs->AddFileSystem("/Build/", std::move(buildFS));
+		vfs->AddFileSystem("/Packages/", std::move(packagesFS));
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectSettingsPathVFS(), std::move(projectSettingsFS));
 		vfs->AddFileSystem(NN::Runtime::RuntimeCore::GetProjectIntermediatePathVFS(), std::move(projectIntermediateFS));
-		vfs->AddFileSystem("Cache", std::move(cacheFS));
+		vfs->AddFileSystem("/Cache/", std::move(cacheFS));
+
+		auto projectPath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath("/project/");
+		H_LOG_INFO("Project path: %s", projectPath.c_str());
 
 		auto editorPath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Editor::EditorCore::GetEditorResourcePathVFS());
 		H_LOG_INFO("Editor resource path: %s", editorPath.c_str());
@@ -120,5 +126,8 @@ namespace NN::Runtime::Application
 
 		auto projectIntermediatePath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath(NN::Runtime::RuntimeCore::GetProjectIntermediatePathVFS());
 		H_LOG_INFO("Project intermediate path: %s", projectIntermediatePath.c_str());
+
+		auto libraryPath = NN::Runtime::VFS::VFSService::GetInstance()->AbsolutePath("/Library/");
+		H_LOG_INFO("Library path: %s", libraryPath.c_str());
 	}
 }

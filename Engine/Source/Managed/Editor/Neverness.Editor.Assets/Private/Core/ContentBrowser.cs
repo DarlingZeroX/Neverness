@@ -34,9 +34,9 @@ public sealed class ContentBrowser
 
     public ContentBrowser(string path)
     {
-        _projectDirectory = path;
+        _assetDirectory = path;
 
-        OpenDirectory(_projectDirectory);
+        OpenDirectory(_assetDirectory);
 
         RefreshDirectoryTreeRoot();
     }
@@ -47,7 +47,7 @@ public sealed class ContentBrowser
 
     private readonly object _refreshLock = new();
 
-    private readonly string _projectDirectory;
+    private readonly string _assetDirectory;
 
     private string _prevDirectory = string.Empty;
 
@@ -347,13 +347,13 @@ public sealed class ContentBrowser
         _directoryTreeRootNode = new ContentDirectory
         {
             Name = "Content",
-            SystemPath = new NPath(_projectDirectory),
+            SystemPath = new NPath(_assetDirectory),
             UIFlags = 0,
         };
 
         RefreshDirectoryTree(
             _directoryTreeRootNode,
-            _projectDirectory);
+            _assetDirectory);
     }
 
     public void RefreshDirectoryTree(
@@ -413,9 +413,9 @@ public sealed class ContentBrowser
     /// Getter
     ////////////////////////////////////////////////////////////////
 
-    public string GetProjectDirectory()
+    public string GetAssetDirectory()
     {
-        return _projectDirectory;
+        return _assetDirectory;
     }
 
     public string GetPrevDirectory()

@@ -213,6 +213,7 @@ namespace NN::Runtime::Application
 			LogInfo("Initialize: 项目目录有效");
 
 			EditorVFSPath paths;
+			paths.project = projectRootDir;
 			paths.assets = projectRootDir + "/Assets/";
 			paths.library = projectRootDir + "/Library/";
 			paths.build = projectRootDir + "/Build/";

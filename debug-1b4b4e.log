@@ -1,0 +1,48 @@
+{"sessionId":"1b4b4e","timestamp":1780590201958,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":1,"type":1,"name":"opacity"}}
+{"sessionId":"1b4b4e","timestamp":1780590201959,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":2,"type":4,"name":"sepia"}}
+{"sessionId":"1b4b4e","timestamp":1780590201960,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":3,"type":4,"name":"grayscale"}}
+{"sessionId":"1b4b4e","timestamp":1780590201961,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":4,"type":4,"name":"saturate"}}
+{"sessionId":"1b4b4e","timestamp":1780590201962,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":5,"type":4,"name":"brightness"}}
+{"sessionId":"1b4b4e","timestamp":1780590201963,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":6,"type":4,"name":"contrast"}}
+{"sessionId":"1b4b4e","timestamp":1780590201964,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":7,"type":4,"name":"hue-rotate"}}
+{"sessionId":"1b4b4e","timestamp":1780590201965,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":8,"type":4,"name":"invert"}}
+{"sessionId":"1b4b4e","timestamp":1780590201965,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":9,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590201973,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":10,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590201980,"location":"RmlDiligentRenderInterface.cpp:UnbindRenderTargets","message":"unbind all RTs","hypothesisId":"A","data":{"count":1,"swapchainPassActive":0}}
+{"sessionId":"1b4b4e","timestamp":1780590201982,"location":"RmlDiligentRenderInterface.cpp:UnbindRenderTargets","message":"unbind all RTs","hypothesisId":"A","data":{"count":2,"swapchainPassActive":0}}
+{"sessionId":"1b4b4e","timestamp":1780590201984,"location":"RmlDiligentRenderInterface.cpp:ReleaseFilter","message":"release filter","hypothesisId":"C","data":{"liveFilters":9,"type":2}}
+{"sessionId":"1b4b4e","timestamp":1780590201984,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":10,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590201991,"location":"RmlDiligentRenderInterface.cpp:UnbindRenderTargets","message":"unbind all RTs","hypothesisId":"A","data":{"count":3,"swapchainPassActive":0}}
+{"sessionId":"1b4b4e","timestamp":1780590201991,"location":"RmlDiligentRenderInterface.cpp:UnbindRenderTargets","message":"unbind all RTs","hypothesisId":"A","data":{"count":4,"swapchainPassActive":0}}
+{"sessionId":"1b4b4e","timestamp":1780590201993,"location":"RmlDiligentRenderInterface.cpp:ReleaseFilter","message":"release filter","hypothesisId":"C","data":{"liveFilters":9,"type":2}}
+{"sessionId":"1b4b4e","timestamp":1780590201993,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":10,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590201999,"location":"RmlDiligentRenderInterface.cpp:UnbindRenderTargets","message":"unbind all RTs","hypothesisId":"A","data":{"count":5,"swapchainPassActive":0}}
+{"sessionId":"1b4b4e","timestamp":1780590202000,"location":"RmlDiligentRenderInterface.cpp:ReleaseFilter","message":"release filter","hypothesisId":"C","data":{"liveFilters":9,"type":2}}
+{"sessionId":"1b4b4e","timestamp":1780590202001,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":10,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590202007,"location":"RmlDiligentRenderInterface.cpp:ReleaseFilter","message":"release filter","hypothesisId":"C","data":{"liveFilters":9,"type":2}}
+{"sessionId":"1b4b4e","timestamp":1780590202009,"location":"RmlDiligentRenderInterface.cpp:SaveLayerAsTexture","message":"box-shadow texture saved","hypothesisId":"D","data":{"liveTextures":1,"w":508,"h":328}}
+{"sessionId":"1b4b4e","timestamp":1780590202024,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":10,"type":1,"name":"opacity"}}
+{"sessionId":"1b4b4e","timestamp":1780590202031,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":11,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590202039,"location":"RmlDiligentRenderInterface.cpp:ReleaseFilter","message":"release filter","hypothesisId":"C","data":{"liveFilters":10,"type":2}}
+{"sessionId":"1b4b4e","timestamp":1780590202056,"location":"RmlDiligentRenderInterface.cpp:SaveLayerAsTexture","message":"box-shadow texture saved","hypothesisId":"D","data":{"liveTextures":2,"w":370,"h":160}}
+{"sessionId":"1b4b4e","timestamp":1780590202071,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":11,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590202078,"location":"RmlDiligentRenderInterface.cpp:ReleaseFilter","message":"release filter","hypothesisId":"C","data":{"liveFilters":10,"type":2}}
+{"sessionId":"1b4b4e","timestamp":1780590202080,"location":"RmlDiligentRenderInterface.cpp:SaveLayerAsTexture","message":"box-shadow texture saved","hypothesisId":"D","data":{"liveTextures":3,"w":280,"h":70}}
+{"sessionId":"1b4b4e","timestamp":1780590202131,"location":"RmlDiligentRenderInterface.cpp:SaveLayerAsMaskImage","message":"mask filter allocated","hypothesisId":"C","data":{"liveFilters":11}}
+{"sessionId":"1b4b4e","timestamp":1780590202132,"location":"RmlDiligentRenderInterface.cpp:ReleaseFilter","message":"release filter","hypothesisId":"C","data":{"liveFilters":10,"type":5}}
+{"sessionId":"1b4b4e","timestamp":1780590202133,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":11,"type":4,"name":"hue-rotate"}}
+{"sessionId":"1b4b4e","timestamp":1780590202142,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":12,"type":3,"name":"drop-shadow"}}
+{"sessionId":"1b4b4e","timestamp":1780590202143,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":13,"type":1,"name":"opacity"}}
+{"sessionId":"1b4b4e","timestamp":1780590202144,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":14,"type":4,"name":"sepia"}}
+{"sessionId":"1b4b4e","timestamp":1780590202155,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":15,"type":4,"name":"saturate"}}
+{"sessionId":"1b4b4e","timestamp":1780590202165,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":16,"type":4,"name":"invert"}}
+{"sessionId":"1b4b4e","timestamp":1780590202174,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":17,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590202184,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":18,"type":4,"name":"brightness"}}
+{"sessionId":"1b4b4e","timestamp":1780590202192,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":19,"type":4,"name":"contrast"}}
+{"sessionId":"1b4b4e","timestamp":1780590202201,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":20,"type":3,"name":"drop-shadow"}}
+{"sessionId":"1b4b4e","timestamp":1780590202210,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":21,"type":4,"name":"grayscale"}}
+{"sessionId":"1b4b4e","timestamp":1780590202218,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":22,"type":1,"name":"opacity"}}
+{"sessionId":"1b4b4e","timestamp":1780590202227,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":23,"type":4,"name":"sepia"}}
+{"sessionId":"1b4b4e","timestamp":1780590202236,"location":"RmlDiligentRenderInterface.cpp:CompileFilter","message":"compile filter","hypothesisId":"C","data":{"liveFilters":24,"type":2,"name":"blur"}}
+{"sessionId":"1b4b4e","timestamp":1780590202292,"location":"RmlDiligentRenderInterface.cpp:EndFrame","message":"begin EndFrame","hypothesisId":"B","data":{"frame":1,"layerCount":1,"swapchainPassActive":0}}
+{"sessionId":"1b4b4e","timestamp":1780590202293,"location":"RmlDiligentRenderInterface.cpp:EndFrame","message":"end EndFrame","hypothesisId":"A","data":{"frame":1,"layerCountAfter":0,"postPrimarySRV":1}}

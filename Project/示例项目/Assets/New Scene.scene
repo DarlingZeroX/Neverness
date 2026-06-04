@@ -101,6 +101,10 @@
                     "Depth": 0,
                     "Parent": null
                 },
+                "Script": {
+                    "Enabled": true,
+                    "ScriptTypeId": 10034828209485886522
+                },
                 "SpriteRenderer": {
                     "Blend": 1,
                     "Color": [
@@ -249,7 +253,8 @@
                 "RmlUIDocument": {
                     "DocumentAsset": "b,6bb,835,154,222,14c:b,9cb,1d0,ddd,e42,05a",
                     "Flags": 11,
-                    "SortOrder": 0
+                    "SortOrder": 0,
+                    "ViewTarget": 0
                 },
                 "Tag": {
                     "Flags": 0,

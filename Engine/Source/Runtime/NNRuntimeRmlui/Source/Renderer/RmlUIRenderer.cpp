@@ -147,8 +147,8 @@ namespace NN::Runtime::Renderer
 			return;
 		}
 
-		std::cout << "[RmlUIRenderer] Sync: drawList size = " << drawList.size()
-			<< ", m_Documents size = " << m_Documents.size() << std::endl;
+		//std::cout << "[RmlUIRenderer] Sync: drawList size = " << drawList.size()
+		//	<< ", m_Documents size = " << m_Documents.size() << std::endl;
 
 		// 收集 active entity 集合
 		std::unordered_set<NNEntity> activeEntities;
@@ -200,7 +200,7 @@ namespace NN::Runtime::Renderer
 			}
 		}
 
-		std::cout << "[RmlUIRenderer] Sync: done" << std::endl;
+		//std::cout << "[RmlUIRenderer] Sync: done" << std::endl;
 	}
 
 	void RmlUIRenderer::Update()

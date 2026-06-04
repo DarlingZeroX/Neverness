@@ -1,3 +1,5 @@
+using Neverness.Runtime.Scene;
+
 // ============================================================================
 // ScriptBehaviourScheduler.cs - 脚本行为调度器
 // ============================================================================
@@ -31,6 +33,7 @@ namespace Neverness.Gameplay;
 /// - O(n) 遍历（n 为活跃 Behaviour 数量）
 /// - 使用 IReadOnlyList 避免 GC 分配
 /// </remarks>
+[SceneSystemTag(SceneSystemTags.Gameplay)]
 public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, ISystemTick, ISystemFixedTick, ISystemLateTick, ISystemShutdown
 {
     // ========================================================================
@@ -46,6 +49,9 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
 
     /// <summary>Behaviour 注册表。</summary>
     private readonly BehaviourRegistry _registry = new();
+
+    /// <summary>Behaviour 注册表（供 Bridge 直接查询，不经过 Scheduler）。</summary>
+    public BehaviourRegistry Registry => _registry;
 
     /// <summary>待创建队列（本帧 OnCreate）。</summary>
     private readonly Queue<EntityBehaviour> _pendingCreate = new();
@@ -216,6 +222,23 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
     {
         ArgumentNullException.ThrowIfNull(entity);
         _registry.DestroyAllBehaviours(entity);
+    }
+
+    /// <summary>
+    /// 立即销毁所有 Behaviour（同步执行 OnDestroy）。
+    /// 用于热重载：在旧 ALC 中执行完所有 OnDestroy 后再卸载。
+    /// ⚠️ 不要在此帧的 Tick 中调用，会破坏生命周期顺序。
+    /// </summary>
+    public void DestroyAllImmediate()
+    {
+        // 标记所有 Behaviour 待销毁
+        foreach (var behaviour in _registry.AllBehaviours.ToList())
+        {
+            _registry.MarkForDestroy(behaviour);
+        }
+
+        // 立即执行 OnDestroy + 清理映射
+        _registry.ProcessPendingDestroy();
     }
 
     /// <summary>

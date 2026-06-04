@@ -17,3 +17,9 @@
 #include "RenderTarget/INNRenderTarget.h"
 
 #include "Handle/NNRenderHandle.h"
+
+#include "RenderGraph/NNResourceNode.h"
+#include "RenderGraph/NNPassNode.h"
+#include "RenderGraph/NNRenderGraphBuilder.h"
+#include "RenderGraph/NNRenderGraph.h"
+#include "RenderGraph/NNRenderGraphCompiler.h"

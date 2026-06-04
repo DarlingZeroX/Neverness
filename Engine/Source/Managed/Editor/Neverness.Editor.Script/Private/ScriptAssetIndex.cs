@@ -88,7 +88,7 @@ public sealed class ScriptAssetIndex
     {
         _guidToFullName[assetGuid] = fullName;
 
-        // 尝试从 ScriptRegistry 查询 TypeId
+        // 尝试从 ScriptRegistry 查询 TypeId（可能尚未就绪）
         var registry = GameplayContext.Current?.ScriptRegistry;
         if (registry != null)
         {
@@ -99,6 +99,7 @@ public sealed class ScriptAssetIndex
                 _guidToTypeId[assetGuid] = typeInfo.TypeId;
             }
         }
+        // ScriptRegistry 未就绪时，FullName 已存储，TypeId 由 RefreshAllTypeIds 补全
     }
 
     /// <summary>移除一个脚本资产映射。</summary>
@@ -133,8 +134,13 @@ public sealed class ScriptAssetIndex
         _guidToTypeId.Clear();
         _fullNameToTypeId.Clear();
 
+        var allAssets = EditorAssetDatabase.AllAssets;
+        Console.WriteLine($"[ScriptAssetIndex] RebuildAll: EditorAssetDatabase.AllAssets count = {allAssets.Count}");
+
+        int csCount = 0, vfsOk = 0, osOk = 0, parseOk = 0;
+
         // 遍历 EditorAssetDatabase 中所有 C# 脚本资产
-        foreach (var guid in EditorAssetDatabase.AllAssets)
+        foreach (var guid in allAssets)
         {
             if (guid.IsZero)
                 continue;
@@ -143,15 +149,26 @@ public sealed class ScriptAssetIndex
             var typeId = EditorAssetDatabase.GetTypeId(guid);
             if (typeId != AssetTypeId.CSharpScript)
                 continue;
+            csCount++;
 
-            // 获取 VFS 路径 → OS 文件路径
+            // 获取 VFS 路径
             if (!EditorAssetDatabase.TryGetPath(guid, out var virtualPath))
                 continue;
+            vfsOk++;
 
             // VFS 路径 → OS 绝对路径
             var osPath = VFS.GetAbsolutePath(virtualPath.FullPath);
-            if (string.IsNullOrEmpty(osPath) || !File.Exists(osPath))
+            if (string.IsNullOrEmpty(osPath))
+            {
+                Console.WriteLine($"[ScriptAssetIndex] VFS returned null for: {virtualPath.FullPath}");
                 continue;
+            }
+            if (!File.Exists(osPath))
+            {
+                Console.WriteLine($"[ScriptAssetIndex] File not found: {osPath}");
+                continue;
+            }
+            osOk++;
 
             // 读取源文件并解析 FullName
             try
@@ -161,16 +178,24 @@ public sealed class ScriptAssetIndex
                 if (!string.IsNullOrEmpty(fullName))
                 {
                     _guidToFullName[guid] = fullName;
+                    // 直接计算 TypeId（与 ScriptRegistry 使用相同 FNV1a 算法）
+                    var typeId2 = Fnv1a64(fullName);
+                    _fullNameToTypeId[fullName] = typeId2;
+                    _guidToTypeId[guid] = typeId2;
+                    parseOk++;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // 文件读取失败，跳过
+                Console.WriteLine($"[ScriptAssetIndex] Parse failed: {osPath}: {ex.Message}");
             }
         }
 
-        // 尝试补全 TypeId
+        Console.WriteLine($"[ScriptAssetIndex] RebuildAll: cs={csCount}, vfsOk={vfsOk}, osOk={osOk}, parseOk={parseOk}");
+
+        // 尝试补全 TypeId（ScriptRegistry 可能尚未就绪，TypeId 由后续 RefreshAllTypeIds 补全）
         RefreshAllTypeIds();
+        Console.WriteLine($"[ScriptAssetIndex] RebuildAll: {_guidToFullName.Count} scripts indexed, {_guidToTypeId.Count} TypeIds resolved");
     }
 
     /// <summary>
@@ -181,7 +206,10 @@ public sealed class ScriptAssetIndex
     {
         var registry = GameplayContext.Current?.ScriptRegistry;
         if (registry == null)
+        {
+            Console.WriteLine("[ScriptAssetIndex] RefreshAllTypeIds: ScriptRegistry not ready, skipping");
             return;
+        }
 
         _fullNameToTypeId.Clear();
         _guidToTypeId.Clear();
@@ -200,6 +228,18 @@ public sealed class ScriptAssetIndex
     // ========================================================================
     // 内部方法
     // ========================================================================
+
+    /// <summary>FNV-1a 64-bit hash（与 ScriptRegistry.CalculateTypeId 使用相同算法）。</summary>
+    private static ulong Fnv1a64(string name)
+    {
+        ulong hash = 14695981039346656037UL;
+        foreach (var c in name)
+        {
+            hash ^= (byte)c;
+            hash *= 1099511628211UL;
+        }
+        return hash;
+    }
 
     /// <summary>
     /// 从 .cs 源文件解析脚本类的 FullName。

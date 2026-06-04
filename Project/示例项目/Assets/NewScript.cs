@@ -52,7 +52,17 @@ namespace Game.Scripts
         public override void OnUpdate(float deltaTime)
         {
             base.OnUpdate(deltaTime);
-
+            Debug.Log("NewScript: OnUpdate1");
+            TransformComponent? transform = GetComponent<TransformComponent>();
+            Debug.Log("Has TransformComponent:" + HasComponent<TransformComponent>());
+            Debug.Log("HasValue TransformComponent:" + transform.HasValue);
+            if (transform.HasValue)
+            {
+                Debug.Log("Current Position: " + transform.Value.Position);
+                TransformComponent com = transform.Value;
+                com.Position.X = 10;
+                SetComponent(com);
+            }
             // TODO: 在此添加游戏逻辑
         }
 
@@ -63,7 +73,7 @@ namespace Game.Scripts
         public override void OnFixedUpdate(float fixedDeltaTime)
         {
             base.OnFixedUpdate(fixedDeltaTime);
-
+            Debug.Log("NewScript: OnFixedUpdate");
             // TODO: 在此添加物理相关逻辑
         }
 

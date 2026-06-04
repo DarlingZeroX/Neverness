@@ -33,10 +33,16 @@
 		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Scripting\Neverness.Runtime.Scripting.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<ProjectReference Include="..\..\Gameplay\Neverness.Gameplay\Neverness.Gameplay.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
 	</ItemGroup>
 </Project>

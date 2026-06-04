@@ -33,9 +33,9 @@ struct PS_OUTPUT
     float2 uv : TEXCOORD;
 };
 
-cbuffer ConstantBuffer : register(b0)
+cbuffer ConstantBuffer
 {
-    float4x4 m_transform;
+    row_major float4x4 m_transform;
     float2 m_translate;
 };
 
@@ -44,7 +44,7 @@ PS_OUTPUT main(const VS_INPUT IN)
     PS_OUTPUT OUT;
 
     float2 translatedPos = IN.position + m_translate;
-    float4 resPos = mul(m_transform, float4(translatedPos.x, translatedPos.y, 0.0, 1.0));
+    float4 resPos = mul(float4(translatedPos.x, translatedPos.y, 0.0, 1.0), m_transform);
 
     OUT.position = resPos;
     OUT.color = IN.color;
@@ -55,7 +55,8 @@ PS_OUTPUT main(const VS_INPUT IN)
 )";
 
 // =============================================================================
-// VS_PassThrough — 直通 Vertex Shader（全屏四边形，翻转 UV.y）
+// VS_PassThrough — 直通 Vertex Shader（全屏四边形，NDC 坐标 + 直通 UV）
+// 与 GL3 passthrough 一致：Layer/Postprocess RT 已是 RmlUi 坐标，不在此处翻转 UV。
 // CB: 无
 // =============================================================================
 static constexpr const char VS_PassThrough[] = R"(
@@ -78,7 +79,7 @@ PS_OUTPUT main(const VS_INPUT IN)
     PS_OUTPUT OUT;
     OUT.position = float4(IN.position.x, IN.position.y, 0.0f, 1.0f);
     OUT.color = IN.color;
-    OUT.uv = float2(IN.uv.x, 1.0f - IN.uv.y);
+    OUT.uv = IN.uv;
     return OUT;
 }
 )";
@@ -121,7 +122,7 @@ PS_INPUT main(const VS_INPUT IN)
     for (int i = 0; i < BLUR_SIZE; i++) {
         result.uv[i] = IN.uv - float(i - BLUR_NUM_WEIGHTS + 1) * m_texelOffset;
     }
-    result.position = float4(IN.position.xy, 1.0, 1.0);
+    result.position = float4(IN.position.xy, 0.0, 1.0);
 
     return result;
 };
@@ -157,8 +158,8 @@ struct VS_INPUT
     float2 uv : TEXCOORD;
 };
 
-Texture2D g_InputTexture : register(t0);
-SamplerState g_SamplerLinear : register(s0);
+Texture2D g_InputTexture;
+SamplerState g_SamplerLinear;
 
 float4 main(const VS_INPUT IN) : SV_TARGET
 {
@@ -220,7 +221,7 @@ float4 main(const PS_INPUT IN) : SV_TARGET
     for(int i = 0; i < BLUR_SIZE; i++)
     {
         float2 in_region = step(m_texCoordMin, IN.uv[i]) * step(IN.uv[i], m_texCoordMax);
-        color += g_InputTexture.Sample(g_SamplerLinear, float2(IN.uv[i].x, 1.0f - IN.uv[i].y)) * in_region.x * in_region.y * m_weights[abs(i - BLUR_NUM_WEIGHTS + 1)];
+        color += g_InputTexture.Sample(g_SamplerLinear, IN.uv[i]) * in_region.x * in_region.y * m_weights[abs(i - BLUR_NUM_WEIGHTS + 1)];
     }
     return color;
 };
@@ -265,7 +266,7 @@ SamplerState g_SamplerLinear : register(s0);
 
 cbuffer ConstantBuffer : register(b0)
 {
-    float4x4 m_color_matrix;
+    row_major float4x4 m_color_matrix;
 };
 
 struct PS_Input
@@ -322,9 +323,9 @@ static constexpr const char PS_Gradient[] = R"(
 #define REPEATING_CONIC 5
 #define PI 3.14159265
 
-cbuffer SharedConstantBuffer : register(b0)
+cbuffer SharedConstantBuffer
 {
-    float4x4 m_transform;
+    row_major float4x4 m_transform;
     float2 m_translate;
     int m_func;
     int m_num_stops;
@@ -393,9 +394,9 @@ struct PS_Input
     float2 uv : TEXCOORD;
 };
 
-cbuffer SharedConstantBuffer : register(b0)
+cbuffer SharedConstantBuffer
 {
-    float4x4 m_transform;
+    row_major float4x4 m_transform;
     float2 m_translate;
     float2 m_dimensions;
     float m_value;

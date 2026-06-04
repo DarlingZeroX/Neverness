@@ -44,4 +44,7 @@ public static class SceneModule
 
     /// <summary>是否在播放。</summary>
     public static bool IsPlaying => Private.SceneModuleImp.PlayModeController.IsPlaying;
+
+    /// <summary>获取当前活动的 SceneWorld（可能为 null）。</summary>
+    public static SceneWorld? GetActiveWorld() => Private.SceneModuleImp.PlayModeController.GetActiveWorld();
 }

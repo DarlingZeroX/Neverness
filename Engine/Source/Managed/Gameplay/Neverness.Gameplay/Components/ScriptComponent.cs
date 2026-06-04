@@ -15,6 +15,7 @@
 // ============================================================================
 
 using System.Runtime.InteropServices;
+using Neverness.Runtime.Engine;
 
 namespace Neverness.Gameplay;
 
@@ -24,10 +25,12 @@ namespace Neverness.Gameplay;
 /// <remarks>
 /// ⚠️ 这是 Gameplay 包装层，不直接参与 ABI。
 /// ABI 层使用 NNScriptComponentData（Neverness.Runtime.Engine）。
+/// ComponentTypeId = FNV1a64("Script")，须与 Native BuiltinComponentRegistration.cpp 一致。
 ///
 /// 当前版本限制：一个 Entity 最多挂载一个 ScriptComponent。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
+[ComponentId(0x9565553D163FC92A, Name = "Script")]
 public struct ScriptComponent
 {
     // ========================================================================

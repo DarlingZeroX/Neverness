@@ -1,73 +1,128 @@
-﻿#if VISIONGAL_ENABLE_ROSLYN
+// ============================================================================
+// RoslynScriptCompiler.cs - Roslyn C# 脚本编译器
+// ============================================================================
+// 使用 Microsoft.CodeAnalysis.CSharp 进行 in-process 编译。
+// 不调用 dotnet build / MSBuild / Process.Start。
+//
+// 流程：Parse → CSharpCompilation.Create → Emit(byte[])
+// ============================================================================
+
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-#endif
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace Neverness.Runtime.Scripting;
 
 /// <summary>
-/// Roslyn C# 腳本編譯器；定義 <c>VISIONGAL_ENABLE_ROSLYN</c> 時使用 Microsoft.CodeAnalysis.CSharp。
-/// 未定義時提供基於 <see cref="System.Reflection"/> 的占位實作（僅驗證語法非空）。
+/// Roslyn C# 脚本编译器——in-process 编译，无进程启动开销。
 /// </summary>
-public static class RoslynScriptCompiler
+public sealed class RoslynScriptCompiler : IScriptCompiler
 {
-	/// <summary>編譯結果。</summary>
-	public sealed class CompileResult
-	{
-		/// <summary>是否成功。</summary>
-		public bool Success { get; init; }
+    /// <inheritdoc />
+    public ScriptCompilerMode Mode => ScriptCompilerMode.Roslyn;
 
-		/// <summary>錯誤訊息。</summary>
-		public IReadOnlyList<string> Errors { get; init; } = [];
+    /// <inheritdoc />
+    public ScriptCompilationResult Compile(ScriptCompilationContext context)
+    {
+        var stopwatch = Stopwatch.StartNew();
 
-#if VISIONGAL_ENABLE_ROSLYN
-		/// <summary>編譯產物（成功時非 null）。</summary>
-		public byte[]? AssemblyBytes { get; init; }
-#endif
-	}
+        try
+        {
+            // 1. Parse 源文件 → SyntaxTree
+            var syntaxTrees = new List<SyntaxTree>();
+            foreach (var sourceFile in context.SourceFiles)
+            {
+                if (!File.Exists(sourceFile))
+                    continue;
 
-	/// <summary>將 C# 原始碼編譯為程序集位元組或驗證占位。</summary>
-	public static CompileResult Compile(string source, string assemblyName = "Neverness.DynamicScript")
-	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(source);
-		ArgumentException.ThrowIfNullOrWhiteSpace(assemblyName);
+                var sourceText = SourceText.From(File.ReadAllText(sourceFile, Encoding.UTF8), Encoding.UTF8);
+                var tree = CSharpSyntaxTree.ParseText(
+                    sourceText,
+                    path: sourceFile);
+                syntaxTrees.Add(tree);
+            }
 
-#if VISIONGAL_ENABLE_ROSLYN
-		var syntaxTree = CSharpSyntaxTree.ParseText(source);
-		var compilation = CSharpCompilation.Create(
-			assemblyName,
-			[syntaxTree],
-			[MetadataReference.CreateFromFile(typeof(object).Assembly.Location)],
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            if (syntaxTrees.Count == 0)
+            {
+                stopwatch.Stop();
+                return new ScriptCompilationResult
+                {
+                    Success = false,
+                    Diagnostics = ImmutableArray.Create(
+                        Diagnostic.Create(
+                            new DiagnosticDescriptor("NN0001", "NoSourceFiles", "No source files found.", "Compilation", DiagnosticSeverity.Error, true),
+                            Location.None)),
+                    Duration = stopwatch.Elapsed
+                };
+            }
 
-		using var ms = new MemoryStream();
-		var emit = compilation.Emit(ms);
-		if (!emit.Success)
-		{
-			return new CompileResult
-			{
-				Success = false,
-				Errors = emit.Diagnostics
-					.Where(d => d.Severity == DiagnosticSeverity.Error)
-					.Select(d => d.ToString())
-					.ToList()
-			};
-		}
+            // 2. 创建 Compilation
+            var compilationOptions = new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                optimizationLevel: context.Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
+                generalDiagnosticOption: ReportDiagnostic.Default,
+                nullableContextOptions: NullableContextOptions.Enable);
 
-		return new CompileResult
-		{
-			Success = true,
-			AssemblyBytes = ms.ToArray()
-		};
-#else
-		_ = assemblyName;
-		return new CompileResult
-		{
-			Success = source.Contains("class", StringComparison.Ordinal),
-			Errors = source.Contains("class", StringComparison.Ordinal)
-				? []
-				: ["Roslyn 未啟用：原始碼需包含 class 關鍵字（占位驗證）。"]
-		};
-#endif
-	}
+            var parseOptions = new CSharpParseOptions(
+                LanguageVersion.Latest,
+                DocumentationMode.None,
+                SourceCodeKind.Regular);
+
+            var compilation = CSharpCompilation.Create(
+                context.AssemblyName,
+                syntaxTrees,
+                context.References,
+                compilationOptions);
+
+            // 3. Emit → byte[]
+            using var dllStream = new MemoryStream();
+            using var pdbStream = context.GeneratePdb ? new MemoryStream() : null;
+
+            var emitOptions = new EmitOptions(
+                debugInformationFormat: DebugInformationFormat.PortablePdb);
+
+            var emitResult = compilation.Emit(
+                dllStream,
+                pdbStream,
+                options: emitOptions);
+
+            stopwatch.Stop();
+
+            if (!emitResult.Success)
+            {
+                return new ScriptCompilationResult
+                {
+                    Success = false,
+                    Diagnostics = emitResult.Diagnostics.ToImmutableArray(),
+                    Duration = stopwatch.Elapsed
+                };
+            }
+
+            return new ScriptCompilationResult
+            {
+                Success = true,
+                AssemblyBytes = dllStream.ToArray(),
+                PdbBytes = pdbStream?.ToArray(),
+                Diagnostics = emitResult.Diagnostics.ToImmutableArray(),
+                Duration = stopwatch.Elapsed
+            };
+        }
+        catch (Exception ex)
+        {
+            stopwatch.Stop();
+            return new ScriptCompilationResult
+            {
+                Success = false,
+                Diagnostics = ImmutableArray.Create(
+                    Diagnostic.Create(
+                        new DiagnosticDescriptor("NN0002", "CompilationException", ex.Message, "Compilation", DiagnosticSeverity.Error, true),
+                        Location.None)),
+                Duration = stopwatch.Elapsed
+            };
+        }
+    }
 }

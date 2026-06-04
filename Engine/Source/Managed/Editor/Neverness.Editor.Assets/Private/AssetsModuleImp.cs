@@ -40,7 +40,7 @@ internal static class AssetsModuleImp
         }
 
         // 1.2 初始化 EditorAssetDatabase（路径索引、类型查询基础）
-        var libraryPath = VFS.GetAbsolutePath("Library/");
+        var libraryPath = VFS.GetAbsolutePath(ProjectPaths.Library.FullPath);
         if (path != null && libraryPath != null)
         {
             EditorAssetDatabase.Initialize(new NPath(path), new NPath(libraryPath));

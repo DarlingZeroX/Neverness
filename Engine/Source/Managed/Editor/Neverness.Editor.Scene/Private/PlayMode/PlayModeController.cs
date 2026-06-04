@@ -168,6 +168,9 @@ internal sealed class PlayModeController
         throw new NotImplementedException("Frame Step 将在 Phase 2 实现");
     }
 
+    /// <summary>获取当前活动的 SceneWorld。</summary>
+    public SceneWorld? GetActiveWorld() => _sceneManager.ActiveWorld;
+
     // ── Tick 驱动（由 SceneSubsystem 委托调用）──
 
     /// <summary>
@@ -197,7 +200,7 @@ internal sealed class PlayModeController
         var world = _sceneManager.ActiveWorld!;
 
         // 用 Guid.NewGuid() 而非 sceneGuid，避免多次 Play/Stop 或多实例冲突
-        var snapshotPath = $"Cache/PlayModeSnapshots/{Guid.NewGuid():N}.vgsc";
+        var snapshotPath = $"/Cache/PlayModeSnapshots/{Guid.NewGuid():N}.vgsc";
 
         world.Save(snapshotPath);
 

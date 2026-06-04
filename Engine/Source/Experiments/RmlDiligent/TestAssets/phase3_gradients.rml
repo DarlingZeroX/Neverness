@@ -1,0 +1,48 @@
+<rml>
+<head>
+<title>Phase 3 Gradients</title>
+<style>
+body {
+    font-family: LatoLatin;
+}
+#linear {
+    position: absolute;
+    left: 40dp;
+    top: 40dp;
+    width: 200dp;
+    height: 120dp;
+    decorator: linear-gradient(90deg, #ff0000, #0000ff);
+}
+#radial {
+    position: absolute;
+    left: 280dp;
+    top: 40dp;
+    width: 200dp;
+    height: 120dp;
+    decorator: radial-gradient(circle, #ffff00, #8800cc);
+}
+#conic {
+    position: absolute;
+    left: 520dp;
+    top: 40dp;
+    width: 200dp;
+    height: 120dp;
+    decorator: conic-gradient(from 0deg, red, lime, blue);
+}
+#creation {
+    position: absolute;
+    left: 40dp;
+    top: 280dp;
+    width: 240dp;
+    height: 160dp;
+    decorator: shader("creation");
+}
+</style>
+</head>
+<body>
+<div id="linear"></div>
+<div id="radial"></div>
+<div id="conic"></div>
+<div id="creation"></div>
+</body>
+</rml>

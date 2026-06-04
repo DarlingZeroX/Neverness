@@ -163,7 +163,7 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_renderSceneToTexture(
         {
             // 每帧更新 RmlUI 视口尺寸（匹配 EditorViewport 实际大小）
             g_RmlUIRenderer->SetViewport(width, height);
-			H_LOG_INFO("Viewport size set to %d x %d", width, height);
+			//H_LOG_INFO("Viewport size set to %d x %d", width, height);
 
             const auto& drawList = g_RmlUISystem->GetDrawList();
             g_RmlUIRenderer->Sync(drawList);

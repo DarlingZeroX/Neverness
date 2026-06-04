@@ -1,0 +1,10 @@
+<rml>
+<head>
+<title>Phase 1.5</title>
+</head>
+<body>
+<div id="panel" style="display: block; width: 400dp; height: 200dp; background-color: #ff0000; padding: 16dp; color: #ffffff; font-size: 24dp; font-family: LatoLatin;">
+<p style="display: block; color: #ffffff; font-size: 24dp; font-family: LatoLatin;">Hello RmlDiligent</p>
+</div>
+</body>
+</rml>

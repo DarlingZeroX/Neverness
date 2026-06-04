@@ -44,6 +44,7 @@ add_subdirectory(NNRuntimeCore)
 add_subdirectory(NNRuntimeRender)
 add_subdirectory(NNRuntimeRenderBootstrap)
 add_subdirectory(NNRuntimeDiligent)
+add_subdirectory(NNRuntimeNativeEngineAPI)
 
 # === RmlDiligent 实验模块 ===
 add_subdirectory(RmlDiligent)
@@ -63,7 +64,10 @@ target_link_libraries(NNPhase1Test PRIVATE
     NNRuntimeCore
 )
 
-# 链接 SDL3
+# NevernessCore-Core lib path (built in main build dir)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../Build/lib")
+    link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../../Build/lib/${CMAKE_BUILD_TYPE}")
+endif()
 find_package(SDL3 CONFIG REQUIRED)
 target_link_libraries(NNPhase1Test PRIVATE SDL3::SDL3)
 
@@ -129,4 +133,83 @@ if(VULKAN_SUPPORTED)
 endif()
 if(GL_SUPPORTED)
     target_compile_definitions(NNPhase3Test PRIVATE GL_SUPPORTED=1)
+endif()
+
+# === Phase 4 test executable ===
+add_executable(NNPhase4Test NNRuntimeNativeEngineAPI/Tests/TestNativeAPI.cpp)
+
+target_include_directories(NNPhase4Test PRIVATE
+    ${DILIGENT_ENGINE_DIR}/DiligentCore
+    ${CMAKE_CURRENT_SOURCE_DIR}/NNRuntimeRenderBootstrap/Include
+)
+
+target_link_libraries(NNPhase4Test PRIVATE
+    NNRuntimeNativeEngineAPI
+    NNRuntimeDiligent
+    NNRuntimeRenderBootstrap
+    NNRuntimeRender
+    NNRuntimeCore
+)
+
+target_link_libraries(NNPhase4Test PRIVATE SDL3::SDL3)
+target_link_libraries(NNPhase4Test PRIVATE NevernessCore-Core)
+
+target_compile_definitions(NNPhase4Test PRIVATE PLATFORM_WIN32=1)
+if(VULKAN_SUPPORTED)
+    target_compile_definitions(NNPhase4Test PRIVATE VULKAN_SUPPORTED=1)
+endif()
+if(GL_SUPPORTED)
+    target_compile_definitions(NNPhase4Test PRIVATE GL_SUPPORTED=1)
+endif()
+
+# === Phase 5 test executable (RenderGraph) ===
+add_executable(NNPhase5Test NNRuntimeDiligent/Tests/TestRenderGraph.cpp)
+
+target_include_directories(NNPhase5Test PRIVATE
+    ${DILIGENT_ENGINE_DIR}/DiligentCore
+    ${CMAKE_CURRENT_SOURCE_DIR}/NNRuntimeRenderBootstrap/Include
+)
+
+target_link_libraries(NNPhase5Test PRIVATE
+    NNRuntimeRender
+    NNRuntimeDiligent
+    NNRuntimeRenderBootstrap
+    NNRuntimeCore
+    SDL3::SDL3
+    NevernessCore-Core
+)
+
+target_compile_definitions(NNPhase5Test PRIVATE PLATFORM_WIN32=1)
+if(VULKAN_SUPPORTED)
+    target_compile_definitions(NNPhase5Test PRIVATE VULKAN_SUPPORTED=1)
+endif()
+if(GL_SUPPORTED)
+    target_compile_definitions(NNPhase5Test PRIVATE GL_SUPPORTED=1)
+endif()
+
+# === Phase 4.3 test executable (ImGui Demo) ===
+add_executable(NNImGuiTest NNRuntimeDiligent/Tests/TestImGuiDemo.cpp)
+
+target_include_directories(NNImGuiTest PRIVATE
+    ${DILIGENT_ENGINE_DIR}/DiligentCore
+    ${DILIGENT_ENGINE_DIR}/DiligentTools/Imgui/interface
+    ${CMAKE_CURRENT_SOURCE_DIR}/NNRuntimeRenderBootstrap/Include
+)
+
+target_link_libraries(NNImGuiTest PRIVATE
+    NNRuntimeDiligent
+    NNRuntimeRenderBootstrap
+    NNRuntimeRender
+    NNRuntimeCore
+)
+
+target_link_libraries(NNImGuiTest PRIVATE SDL3::SDL3)
+target_link_libraries(NNImGuiTest PRIVATE NevernessCore-Core)
+
+target_compile_definitions(NNImGuiTest PRIVATE PLATFORM_WIN32=1)
+if(VULKAN_SUPPORTED)
+    target_compile_definitions(NNImGuiTest PRIVATE VULKAN_SUPPORTED=1)
+endif()
+if(GL_SUPPORTED)
+    target_compile_definitions(NNImGuiTest PRIVATE GL_SUPPORTED=1)
 endif()
