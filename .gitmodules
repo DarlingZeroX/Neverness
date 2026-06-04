@@ -1,3 +1,7 @@
 [submodule "Engine/Source/ThirdParty/DiligentEngine"]
 	path = Engine/Source/ThirdParty/DiligentEngine
 	url = https://github.com/DiligentGraphics/DiligentEngine.git
+[submodule "Engine/Source/ThirdParty/RmlUi"]
+	path = Engine/Source/ThirdParty/RmlUi
+	url = https://github.com/mikke89/RmlUi.git
+	branch = master
