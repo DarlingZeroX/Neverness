@@ -236,6 +236,7 @@ private:
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_BlendMask;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_Composite;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_CompositeReplace;
+    Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_Composite_StencilEqual;  // MSAA + StencilEqual
 
     Diligent::RefCntAutoPtr<Diligent::IShader> m_VS_Blur;
     Diligent::RefCntAutoPtr<Diligent::IShader> m_PS_Blur;

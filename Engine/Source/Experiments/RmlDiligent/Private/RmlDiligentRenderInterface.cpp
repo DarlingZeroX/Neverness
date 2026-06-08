@@ -435,12 +435,14 @@ bool RmlDiligentRenderInterface::Initialize(
     std::cout << "[OK] Stencil PSOs created" << std::endl;
 
     if (!m_PSO_Passthrough || !m_PSO_Passthrough_StencilEqual || !m_PSO_PassthroughPresent || !m_PSO_PassthroughOpacity
-        || !m_PSO_PassthroughReplace || !m_PSO_Blur || !m_PSO_DropShadow || !m_PSO_ColorMatrix || !m_PSO_BlendMask) {
-        std::cerr << "[FAIL] Passthrough/Filter PSO creation failed!" << std::endl;
+        || !m_PSO_PassthroughReplace || !m_PSO_Blur || !m_PSO_DropShadow || !m_PSO_ColorMatrix || !m_PSO_BlendMask
+        || !m_PSO_Composite || !m_PSO_CompositeReplace || !m_PSO_Composite_StencilEqual) {
+        std::cerr << "[FAIL] Passthrough/Filter/Composite PSO creation failed!" << std::endl;
         return false;
     }
     std::cout << "[OK] Passthrough PSO created" << std::endl;
     std::cout << "[OK] Filter PSOs created" << std::endl;
+    std::cout << "[OK] Composite PSOs created (MSAA " << m_MsaaSamples << "x)" << std::endl;
 
     CreateConstantBuffer();
     CreateShaderConstantBuffers();
@@ -910,6 +912,21 @@ void RmlDiligentRenderInterface::CreatePSOs()
             psoCI.pVS = m_VS_PassThrough;
             psoCI.pPS = m_PS_Passthrough;
             m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_CompositeReplace);
+        }
+        // MSAA + StencilEqual：backdrop-filter 圆角裁剪、box-shadow stencil 保护
+        {
+            Diligent::GraphicsPipelineStateCreateInfo psoCI;
+            psoCI.PSODesc.Name = "RmlDiligent_Composite_StencilEqual_PSO";
+            psoCI.PSODesc.ResourceLayout.Variables = compositeVars;
+            psoCI.PSODesc.ResourceLayout.NumVariables = _countof(compositeVars);
+            setupCommonPipeline(psoCI, StencilMode::Equal, true, m_MsaaSamples);
+            psoCI.GraphicsPipeline.pRenderPass = nullptr;
+            psoCI.GraphicsPipeline.NumRenderTargets = 1;
+            psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
+            psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_D24_UNORM_S8_UINT;
+            psoCI.pVS = m_VS_PassThrough;
+            psoCI.pPS = m_PS_Passthrough;
+            m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Composite_StencilEqual);
         }
     }
 
@@ -2251,33 +2268,23 @@ void RmlDiligentRenderInterface::CompositeLayers(
         SetSwapchainViewport();
     }
 
-    // Composite should cover the destination layer exactly; any blur/shadow content is already
-    // padded and clipped inside the postprocess source, so the final layer blend must not
-    // introduce an extra scissor intersection that would chop the outer halo.
-    Diligent::Rect fullScissor{};
-    fullScissor.left = 0;
-    fullScissor.top = 0;
-    fullScissor.right = static_cast<long>(m_CachedWidth > 0 ? m_CachedWidth : m_SwapChain->GetDesc().Width);
-    fullScissor.bottom = static_cast<long>(m_CachedHeight > 0 ? m_CachedHeight : m_SwapChain->GetDesc().Height);
-    m_Context->SetScissorRects(1, &fullScissor,
-        static_cast<Diligent::Uint32>(fullScissor.right), static_cast<Diligent::Uint32>(fullScissor.bottom));
-
-    Diligent::IPipelineState* composite_pso = nullptr;
-    if (m_MsaaSamples > 1) {
-        // MSAA composite：postprocess（单采样）→ MSAA layer RT
-        composite_pso = (blend_mode == Rml::BlendMode::Replace) ? m_PSO_CompositeReplace : m_PSO_Composite;
-    } else {
-        if (blend_mode == Rml::BlendMode::Replace) {
-            composite_pso = m_PSO_PassthroughReplace;
-        }
+    // 与 GL3 一致：使用 RmlUi 设置的当前 scissor（由 ApplyClippingRegion 管理），不覆盖全屏 scissor。
+    // backdrop-filter 需要 border-box scissor 裁剪 blur 溢出，全屏 scissor 会导致 blur 溢出形成矩形框。
+    if (m_ScissorRegionRml.Valid()) {
+        SetScissorRml(m_ScissorRegionRml, false);
     }
-    // box-shadow 外层阴影合成：blur composite 必须尊重 clip mask（与 GL3/DX12 一致）。
-    // GeometryBoxShadow::Generate 中，SetClipMask(SetInverse) 写入 stencil 裁剪 border box 外部，
-    // 随后 PushLayer → blur → CompositeLayers 合成时，必须用 StencilEqual PSO 限制只在外部绘制。
-    // 不使用 StencilEqual 的话，模糊阴影会穿透到元素内部（box-shadow 残影 bug）。
-    if (m_ClipMaskEnabled && m_UseStencilEqual && !composite_pso) {
-        composite_pso = m_PSO_Passthrough_StencilEqual;
+
+    // Stencil 裁剪优先：backdrop-filter 圆角裁剪、box-shadow 残影防护都需要 stencil test。
+    // 必须在 MSAA 之前检查，否则 MSAA PSO 会覆盖 stencil 选择。
+    Diligent::IPipelineState* composite_pso = nullptr;
+    if (m_ClipMaskEnabled && m_UseStencilEqual) {
+        // MSAA + StencilEqual 或 非 MSAA + StencilEqual
+        composite_pso = (m_MsaaSamples > 1) ? m_PSO_Composite_StencilEqual : m_PSO_Passthrough_StencilEqual;
         m_Context->SetStencilRef(m_StencilTestValue);
+    } else if (m_MsaaSamples > 1) {
+        composite_pso = (blend_mode == Rml::BlendMode::Replace) ? m_PSO_CompositeReplace : m_PSO_Composite;
+    } else if (blend_mode == Rml::BlendMode::Replace) {
+        composite_pso = m_PSO_PassthroughReplace;
     }
     DrawFullscreenPassthrough(postPrimary.SRV.RawPtr(), destLayer.RTV.RawPtr(), blend_mode, true, composite_pso);
     UnbindRenderTargets();
