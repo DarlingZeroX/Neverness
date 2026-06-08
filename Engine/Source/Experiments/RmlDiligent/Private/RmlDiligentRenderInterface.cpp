@@ -229,21 +229,25 @@ static void UploadTransformToCB(MainCB* cb, const Rml::Matrix4f& transform, cons
 
 namespace {
 
+// 诊断日志：默认禁用（文件 I/O 有 fopen/fprintf/fclose 开销）
+// 取消注释 #define RML_DIAG_LOG 以启用
+// #define RML_DIAG_LOG
 void BoxShadowDiagLog(const char* fmt, ...)
 {
+#ifdef RML_DIAG_LOG
     FILE* file = std::fopen("boxshadow-diag.log", "a");
     if (!file) {
         return;
     }
-
     va_list args;
     va_start(args, fmt);
     std::vfprintf(file, fmt, args);
-	//std::printf(fmt, args);
     va_end(args);
-	//std::cout <<std::endl;
     std::fputc('\n', file);
     std::fclose(file);
+#else
+    (void)fmt;
+#endif
 }
 
 } // namespace
@@ -454,6 +458,18 @@ bool RmlDiligentRenderInterface::Initialize(
                 cbVar->Set(m_ConstantBuffer);
             }
             if (auto* projVar = m_SRB_Color->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
+                projVar->Set(m_ProjectionCB);
+            }
+        }
+    }
+    // StencilEqual 变体需要独立 SRB（implicit signature 不同）
+    if (m_PSO_Color_StencilEqual && m_ConstantBuffer) {
+        m_PSO_Color_StencilEqual->CreateShaderResourceBinding(&m_SRB_Color_StencilEqual, true);
+        if (m_SRB_Color_StencilEqual) {
+            if (auto* cbVar = m_SRB_Color_StencilEqual->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
+                cbVar->Set(m_ConstantBuffer);
+            }
+            if (auto* projVar = m_SRB_Color_StencilEqual->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
                 projVar->Set(m_ProjectionCB);
             }
         }
@@ -1126,8 +1142,10 @@ void RmlDiligentRenderInterface::DrawColorGeometry(
         UploadTransformToCB(cb, m_Transform, translation);
     }
 
-    if (m_SRB_Color) {
-        m_Context->CommitShaderResources(m_SRB_Color, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+    // SRB 必须匹配 PSO 的 implicit signature
+    Diligent::IShaderResourceBinding* srb = (pso == m_PSO_Color_StencilEqual) ? m_SRB_Color_StencilEqual : m_SRB_Color;
+    if (srb) {
+        m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
     }
 
     DrawIndexedGeometry(geom);
@@ -1542,20 +1560,19 @@ void RmlDiligentRenderInterface::RenderGeometry(
         UploadTransformToCB(cb, m_Transform, translation);
     }
 
-    Diligent::Uint64 offset = 0;
-    Diligent::IBuffer* pVB = geom->vertexBuffer;
-    m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
-    m_Context->SetIndexBuffer(geom->indexBuffer, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
-
+    // VB/IB 绑定统一在 DrawIndexedGeometry 中执行，此处不重复绑定
     Diligent::IShaderResourceBinding* srb = nullptr;
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srbTexture;
 
     if (useTexture) {
         auto* tex = reinterpret_cast<TextureHandle*>(texture);
-        srbTexture = GetOrCreateTextureSRBRef(tex, ProgramId::Texture, pso);
+        // StencilEqual PSO 的 implicit signature 不同，需要独立的 SRB 缓存桶
+        const ProgramId texProgId = (pso == m_PSO_Texture_StencilEqual) ? ProgramId::TextureStencilEqual : ProgramId::Texture;
+        srbTexture = GetOrCreateTextureSRBRef(tex, texProgId, pso);
         srb = srbTexture;
     } else {
-        srb = m_SRB_Color;
+        // SRB 必须匹配 PSO 的 implicit signature
+        srb = (pso == m_PSO_Color_StencilEqual) ? m_SRB_Color_StencilEqual : m_SRB_Color;
         if (!srb && !m_CBWarnPrinted) {
             std::cerr << "[WARN] ConstantBuffer not bound (color SRB missing)" << std::endl;
             m_CBWarnPrinted = true;

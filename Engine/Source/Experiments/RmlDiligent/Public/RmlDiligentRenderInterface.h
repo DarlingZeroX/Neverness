@@ -220,6 +220,7 @@ private:
     Diligent::RefCntAutoPtr<Diligent::IBuffer> m_CreationCB;
 
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> m_SRB_Color;
+    Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> m_SRB_Color_StencilEqual;  // 为 m_PSO_Color_StencilEqual 创建
 
     Diligent::RefCntAutoPtr<Diligent::ISampler> m_Sampler;
 

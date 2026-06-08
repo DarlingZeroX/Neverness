@@ -13,6 +13,7 @@ enum class ProgramId : uint8_t {
     Invalid = 0,
     Color,
     Texture,
+    TextureStencilEqual,  // m_PSO_Texture_StencilEqual 专用（implicit signature 不同）
     Gradient,
     Creation,
     Passthrough,
