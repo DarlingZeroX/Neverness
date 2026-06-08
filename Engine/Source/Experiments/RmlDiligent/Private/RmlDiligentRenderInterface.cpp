@@ -352,8 +352,9 @@ bool RmlDiligentRenderInterface::Initialize(
     m_Device = device;
     m_Context = context;
     m_SwapChain = swapChain;
+    m_MsaaSamples = 2;
 
-    CreateRenderPass();
+    CreateRenderPass(m_MsaaSamples);
     if (!m_RenderPass) {
         std::cerr << "[FAIL] RenderPass creation failed!" << std::endl;
         return false;
@@ -362,6 +363,7 @@ bool RmlDiligentRenderInterface::Initialize(
 
     m_RTPool.Initialize(device);
     m_LayerStack.Initialize(&m_RTPool);
+    m_LayerStack.SetMsaaSamples(m_MsaaSamples);
     std::cout << "[OK] RenderTargetPool + LayerStack initialized" << std::endl;
 
     m_VS_Color = CompileDiligentShader(device, Shaders::VS_Main, Diligent::SHADER_TYPE_VERTEX, "VS_Main");
@@ -390,9 +392,9 @@ bool RmlDiligentRenderInterface::Initialize(
         samplerDesc.MinFilter = Diligent::FILTER_TYPE_LINEAR;
         samplerDesc.MagFilter = Diligent::FILTER_TYPE_LINEAR;
         samplerDesc.MipFilter = Diligent::FILTER_TYPE_LINEAR;
-        samplerDesc.AddressU = Diligent::TEXTURE_ADDRESS_CLAMP;
-        samplerDesc.AddressV = Diligent::TEXTURE_ADDRESS_CLAMP;
-        samplerDesc.AddressW = Diligent::TEXTURE_ADDRESS_CLAMP;
+        samplerDesc.AddressU = Diligent::TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressV = Diligent::TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressW = Diligent::TEXTURE_ADDRESS_WRAP;
         m_Device->CreateSampler(samplerDesc, &m_Sampler);
         if (!m_Sampler) {
             std::cerr << "[FAIL] Sampler creation failed!" << std::endl;
@@ -468,17 +470,19 @@ bool RmlDiligentRenderInterface::Initialize(
 // 创建 RenderPass
 // =============================================================================
 
-void RmlDiligentRenderInterface::CreateRenderPass()
+void RmlDiligentRenderInterface::CreateRenderPass(int msaa_samples)
 {
     Diligent::RenderPassAttachmentDesc attachments[2]{};
 
     attachments[0].Format = m_SwapChain->GetDesc().ColorBufferFormat;
+    attachments[0].SampleCount = static_cast<Diligent::Uint32>(msaa_samples);
     attachments[0].LoadOp = Diligent::ATTACHMENT_LOAD_OP_CLEAR;
     attachments[0].StoreOp = Diligent::ATTACHMENT_STORE_OP_STORE;
     attachments[0].InitialState = Diligent::RESOURCE_STATE_RENDER_TARGET;
     attachments[0].FinalState = Diligent::RESOURCE_STATE_RENDER_TARGET;
 
     attachments[1].Format = Diligent::TEX_FORMAT_D24_UNORM_S8_UINT;
+    attachments[1].SampleCount = static_cast<Diligent::Uint32>(msaa_samples);
     attachments[1].LoadOp = Diligent::ATTACHMENT_LOAD_OP_CLEAR;
     attachments[1].StoreOp = Diligent::ATTACHMENT_STORE_OP_STORE;
     attachments[1].StencilLoadOp = Diligent::ATTACHMENT_LOAD_OP_CLEAR;
@@ -535,7 +539,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
     };
 
     auto setupCommonPipeline = [&](Diligent::GraphicsPipelineStateCreateInfo& psoCI, StencilMode stencilMode,
-                                   bool colorWriteEnabled = true) {
+                                   bool colorWriteEnabled = true, int samples = 1) {
         psoCI.PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
         psoCI.GraphicsPipeline.NumRenderTargets = 0;
         psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_UNKNOWN;
@@ -548,6 +552,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.GraphicsPipeline.RasterizerDesc.CullMode = Diligent::CULL_MODE_NONE;
         psoCI.GraphicsPipeline.RasterizerDesc.ScissorEnable = Diligent::True;
         psoCI.GraphicsPipeline.RasterizerDesc.DepthClipEnable = Diligent::True;
+        psoCI.GraphicsPipeline.SmplDesc.Count = static_cast<Diligent::Uint32>(samples);
         ConfigureDepthStencil(psoCI.GraphicsPipeline.DepthStencilDesc, stencilMode);
         SetupBlendState(psoCI, colorWriteEnabled);
     };
@@ -567,7 +572,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Color_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
-        setupCommonPipeline(psoCI, StencilMode::Off);
+        setupCommonPipeline(psoCI, StencilMode::Off, true, m_MsaaSamples);
         applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
@@ -579,7 +584,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Texture_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = textureVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(textureVars);
-        setupCommonPipeline(psoCI, StencilMode::Off);
+        setupCommonPipeline(psoCI, StencilMode::Off, true, m_MsaaSamples);
         applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Texture;
@@ -596,7 +601,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Gradient_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = shaderCBVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVars);
-        setupCommonPipeline(psoCI, StencilMode::Off);
+        setupCommonPipeline(psoCI, StencilMode::Off, true, m_MsaaSamples);
         psoCI.GraphicsPipeline.pRenderPass = nullptr;
         psoCI.GraphicsPipeline.NumRenderTargets = 1;
         psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
@@ -615,7 +620,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Creation_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = shaderCBVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVars);
-        setupCommonPipeline(psoCI, StencilMode::Off);
+        setupCommonPipeline(psoCI, StencilMode::Off, true, m_MsaaSamples);
         psoCI.GraphicsPipeline.pRenderPass = nullptr;
         psoCI.GraphicsPipeline.NumRenderTargets = 1;
         psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
@@ -630,7 +635,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Color_StencilEqual_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
-        setupCommonPipeline(psoCI, StencilMode::Equal);
+        setupCommonPipeline(psoCI, StencilMode::Equal, true, m_MsaaSamples);
         applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
@@ -642,7 +647,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Texture_StencilEqual_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = textureVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(textureVars);
-        setupCommonPipeline(psoCI, StencilMode::Equal);
+        setupCommonPipeline(psoCI, StencilMode::Equal, true, m_MsaaSamples);
         applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Texture;
@@ -659,7 +664,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Gradient_StencilEqual_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = shaderCBVarsSE;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVarsSE);
-        setupCommonPipeline(psoCI, StencilMode::Equal);
+        setupCommonPipeline(psoCI, StencilMode::Equal, true, m_MsaaSamples);
         psoCI.GraphicsPipeline.pRenderPass = nullptr;
         psoCI.GraphicsPipeline.NumRenderTargets = 1;
         psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
@@ -679,7 +684,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Creation_StencilEqual_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = shaderCBVarsSE2;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVarsSE2);
-        setupCommonPipeline(psoCI, StencilMode::Equal);
+        setupCommonPipeline(psoCI, StencilMode::Equal, true, m_MsaaSamples);
         psoCI.GraphicsPipeline.pRenderPass = nullptr;
         psoCI.GraphicsPipeline.NumRenderTargets = 1;
         psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
@@ -694,7 +699,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Color_StencilSet_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
-        setupCommonPipeline(psoCI, StencilMode::MaskReplace, false);
+        setupCommonPipeline(psoCI, StencilMode::MaskReplace, false, m_MsaaSamples);
         applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
@@ -706,7 +711,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.Name = "RmlDiligent_Color_StencilIntersect_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
-        setupCommonPipeline(psoCI, StencilMode::MaskIncr, false);
+        setupCommonPipeline(psoCI, StencilMode::MaskIncr, false, m_MsaaSamples);
         applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
@@ -869,6 +874,43 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.pVS = m_VS_PassThrough;
         psoCI.pPS = m_PS_BlendMask;
         m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_BlendMask);
+    }
+
+    {
+        // MSAA composite PSO：从 MSAA layer RT resolve 到 postprocess RT 时使用
+        Diligent::ShaderResourceVariableDesc compositeVars[] = {
+            {Diligent::SHADER_TYPE_PIXEL, "g_InputTexture", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+            {Diligent::SHADER_TYPE_PIXEL, "g_SamplerLinear", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+        };
+        {
+            Diligent::GraphicsPipelineStateCreateInfo psoCI;
+            psoCI.PSODesc.Name = "RmlDiligent_Composite_PSO";
+            psoCI.PSODesc.ResourceLayout.Variables = compositeVars;
+            psoCI.PSODesc.ResourceLayout.NumVariables = _countof(compositeVars);
+            setupCommonPipeline(psoCI, StencilMode::Off);
+            psoCI.GraphicsPipeline.pRenderPass = nullptr;
+            psoCI.GraphicsPipeline.NumRenderTargets = 1;
+            psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
+            psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_UNKNOWN;
+            psoCI.pVS = m_VS_PassThrough;
+            psoCI.pPS = m_PS_Passthrough;
+            m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Composite);
+        }
+        {
+            Diligent::GraphicsPipelineStateCreateInfo psoCI;
+            psoCI.PSODesc.Name = "RmlDiligent_CompositeReplace_PSO";
+            psoCI.PSODesc.ResourceLayout.Variables = compositeVars;
+            psoCI.PSODesc.ResourceLayout.NumVariables = _countof(compositeVars);
+            setupCommonPipeline(psoCI, StencilMode::Off);
+            SetupNoBlendState(psoCI);
+            psoCI.GraphicsPipeline.pRenderPass = nullptr;
+            psoCI.GraphicsPipeline.NumRenderTargets = 1;
+            psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
+            psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_UNKNOWN;
+            psoCI.pVS = m_VS_PassThrough;
+            psoCI.pPS = m_PS_Passthrough;
+            m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_CompositeReplace);
+        }
     }
 
     {
@@ -2036,12 +2078,20 @@ void RmlDiligentRenderInterface::BlitLayerToPostprocessPrimary(Rml::LayerHandle 
 
     UnbindRenderTargets();
 
-    Diligent::CopyTextureAttribs copyAttribs;
-    copyAttribs.pSrcTexture = source.texture;
-    copyAttribs.pDstTexture = destination.texture;
-    copyAttribs.SrcTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-    copyAttribs.DstTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-    m_Context->CopyTexture(copyAttribs);
+    if (source.samples > 1) {
+        // MSAA：使用 ResolveTextureSubresource 将多采样 RT 解析到单采样 postprocess RT
+        Diligent::ResolveTextureSubresourceAttribs resolveAttribs;
+        resolveAttribs.SrcTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+        resolveAttribs.DstTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+        m_Context->ResolveTextureSubresource(source.texture, destination.texture, resolveAttribs);
+    } else {
+        Diligent::CopyTextureAttribs copyAttribs;
+        copyAttribs.pSrcTexture = source.texture;
+        copyAttribs.pDstTexture = destination.texture;
+        copyAttribs.SrcTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+        copyAttribs.DstTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+        m_Context->CopyTexture(copyAttribs);
+    }
 
     m_ScissorEnabled = previous_scissor_enabled;
     if (previous_scissor_enabled && m_ScissorRegionRml.Valid()) {
@@ -2213,8 +2263,13 @@ void RmlDiligentRenderInterface::CompositeLayers(
         static_cast<Diligent::Uint32>(fullScissor.right), static_cast<Diligent::Uint32>(fullScissor.bottom));
 
     Diligent::IPipelineState* composite_pso = nullptr;
-    if (blend_mode == Rml::BlendMode::Replace) {
-        composite_pso = m_PSO_PassthroughReplace;
+    if (m_MsaaSamples > 1) {
+        // MSAA composite：postprocess（单采样）→ MSAA layer RT
+        composite_pso = (blend_mode == Rml::BlendMode::Replace) ? m_PSO_CompositeReplace : m_PSO_Composite;
+    } else {
+        if (blend_mode == Rml::BlendMode::Replace) {
+            composite_pso = m_PSO_PassthroughReplace;
+        }
     }
     // box-shadow 外层阴影合成：blur composite 必须尊重 clip mask（与 GL3/DX12 一致）。
     // GeometryBoxShadow::Generate 中，SetClipMask(SetInverse) 写入 stencil 裁剪 border box 外部，

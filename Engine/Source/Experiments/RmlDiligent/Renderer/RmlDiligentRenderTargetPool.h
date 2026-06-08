@@ -22,6 +22,7 @@ struct PooledRenderTarget {
     Diligent::RefCntAutoPtr<Diligent::ITextureView> DSV;
     int width = 0;
     int height = 0;
+    int samples = 1;
     Diligent::BIND_FLAGS bindFlags = Diligent::BIND_NONE;
     Diligent::TEXTURE_FORMAT format = Diligent::TEX_FORMAT_UNKNOWN;
 };
@@ -38,11 +39,13 @@ public:
     void Initialize(Diligent::IRenderDevice* device);
     void OnResize(int width, int height);
 
-    PooledRTHandle Acquire(int width, int height, Diligent::BIND_FLAGS bindFlags, Diligent::TEXTURE_FORMAT format);
+    PooledRTHandle Acquire(int width, int height, Diligent::BIND_FLAGS bindFlags, Diligent::TEXTURE_FORMAT format, int samples = 1);
     void Return(PooledRenderTarget* rt);
 
     static PooledRTHandle AcquireColor(RenderTargetPool& pool, int width, int height);
+    static PooledRTHandle AcquireColorMSAA(RenderTargetPool& pool, int width, int height, int samples);
     static PooledRTHandle AcquireDepthStencil(RenderTargetPool& pool, int width, int height);
+    static PooledRTHandle AcquireDepthStencilMSAA(RenderTargetPool& pool, int width, int height, int samples);
     static PooledRTHandle AcquirePostprocess(RenderTargetPool& pool, int width, int height);
 
     /// 当前空闲池中可复用 RT 数量（Phase 6 内存统计）
@@ -51,7 +54,7 @@ public:
     size_t GetActiveAcquireCount() const { return m_ActiveAcquireCount; }
 
 private:
-    PooledRenderTarget* CreateNew(int width, int height, Diligent::BIND_FLAGS bindFlags, Diligent::TEXTURE_FORMAT format);
+    PooledRenderTarget* CreateNew(int width, int height, Diligent::BIND_FLAGS bindFlags, Diligent::TEXTURE_FORMAT format, int samples = 1);
 
     Diligent::IRenderDevice* m_Device = nullptr;
     int m_Width = 0;

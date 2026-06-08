@@ -38,7 +38,8 @@ PooledRenderTarget* RenderTargetPool::CreateNew(
     int width,
     int height,
     Diligent::BIND_FLAGS bindFlags,
-    Diligent::TEXTURE_FORMAT format)
+    Diligent::TEXTURE_FORMAT format,
+    int samples)
 {
     if (!m_Device || width <= 0 || height <= 0) {
         return nullptr;
@@ -48,6 +49,7 @@ PooledRenderTarget* RenderTargetPool::CreateNew(
     entry->pool = this;
     entry->width = width;
     entry->height = height;
+    entry->samples = samples;
     entry->bindFlags = bindFlags;
     entry->format = format;
 
@@ -59,6 +61,7 @@ PooledRenderTarget* RenderTargetPool::CreateNew(
     texDesc.MipLevels = 1;
     texDesc.Format = format;
     texDesc.BindFlags = bindFlags;
+    texDesc.SampleCount = static_cast<Diligent::Uint32>(samples);
 
     m_Device->CreateTexture(texDesc, nullptr, &entry->texture);
     if (!entry->texture) {
@@ -83,12 +86,13 @@ RenderTargetPool::PooledRTHandle RenderTargetPool::Acquire(
     int width,
     int height,
     Diligent::BIND_FLAGS bindFlags,
-    Diligent::TEXTURE_FORMAT format)
+    Diligent::TEXTURE_FORMAT format,
+    int samples)
 {
     for (auto it = m_FreeList.begin(); it != m_FreeList.end(); ++it) {
         auto& candidate = *it;
         if (candidate && candidate->width == width && candidate->height == height && candidate->bindFlags == bindFlags
-            && candidate->format == format) {
+            && candidate->format == format && candidate->samples == samples) {
             PooledRenderTarget* raw = candidate.release();
             m_FreeList.erase(it);
             ++m_ActiveAcquireCount;
@@ -96,7 +100,7 @@ RenderTargetPool::PooledRTHandle RenderTargetPool::Acquire(
         }
     }
 
-    PooledRenderTarget* created = CreateNew(width, height, bindFlags, format);
+    PooledRenderTarget* created = CreateNew(width, height, bindFlags, format, samples);
     if (created) {
         ++m_ActiveAcquireCount;
     }
@@ -121,9 +125,20 @@ RenderTargetPool::PooledRTHandle RenderTargetPool::AcquireColor(RenderTargetPool
         width, height, Diligent::BIND_RENDER_TARGET | Diligent::BIND_SHADER_RESOURCE, Diligent::TEX_FORMAT_RGBA8_UNORM);
 }
 
+RenderTargetPool::PooledRTHandle RenderTargetPool::AcquireColorMSAA(RenderTargetPool& pool, int width, int height, int samples)
+{
+    return pool.Acquire(
+        width, height, Diligent::BIND_RENDER_TARGET, Diligent::TEX_FORMAT_RGBA8_UNORM, samples);
+}
+
 RenderTargetPool::PooledRTHandle RenderTargetPool::AcquireDepthStencil(RenderTargetPool& pool, int width, int height)
 {
     return pool.Acquire(width, height, Diligent::BIND_DEPTH_STENCIL, Diligent::TEX_FORMAT_D24_UNORM_S8_UINT);
+}
+
+RenderTargetPool::PooledRTHandle RenderTargetPool::AcquireDepthStencilMSAA(RenderTargetPool& pool, int width, int height, int samples)
+{
+    return pool.Acquire(width, height, Diligent::BIND_DEPTH_STENCIL, Diligent::TEX_FORMAT_D24_UNORM_S8_UINT, samples);
 }
 
 RenderTargetPool::PooledRTHandle RenderTargetPool::AcquirePostprocess(RenderTargetPool& pool, int width, int height)

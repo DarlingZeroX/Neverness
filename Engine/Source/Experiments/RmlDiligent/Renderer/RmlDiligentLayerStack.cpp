@@ -60,11 +60,19 @@ Rml::LayerHandle RenderLayerStack::PushLayer()
     }
 
     if (m_LayerCount == static_cast<int>(m_LayerColors.size())) {
-        m_LayerColors.push_back(RenderTargetPool::AcquireColor(*m_Pool, m_Width, m_Height));
+        if (m_MsaaSamples > 1) {
+            m_LayerColors.push_back(RenderTargetPool::AcquireColorMSAA(*m_Pool, m_Width, m_Height, m_MsaaSamples));
+        } else {
+            m_LayerColors.push_back(RenderTargetPool::AcquireColor(*m_Pool, m_Width, m_Height));
+        }
     }
 
     if (!m_SharedDepth) {
-        m_SharedDepth = RenderTargetPool::AcquireDepthStencil(*m_Pool, m_Width, m_Height);
+        if (m_MsaaSamples > 1) {
+            m_SharedDepth = RenderTargetPool::AcquireDepthStencilMSAA(*m_Pool, m_Width, m_Height, m_MsaaSamples);
+        } else {
+            m_SharedDepth = RenderTargetPool::AcquireDepthStencil(*m_Pool, m_Width, m_Height);
+        }
     }
 
     ++m_LayerCount;

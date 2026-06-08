@@ -19,6 +19,9 @@ public:
     void BeginFrame(int width, int height);
     void EndFrame();
 
+    void SetMsaaSamples(int samples) { m_MsaaSamples = samples; }
+    int GetMsaaSamples() const { return m_MsaaSamples; }
+
     Rml::LayerHandle PushLayer();
     void PopLayer();
 
@@ -45,6 +48,7 @@ private:
     int m_Width = 0;
     int m_Height = 0;
     int m_LayerCount = 0;
+    int m_MsaaSamples = 1;
 
     std::vector<RenderTargetPool::PooledRTHandle> m_LayerColors;
     RenderTargetPool::PooledRTHandle m_SharedDepth;

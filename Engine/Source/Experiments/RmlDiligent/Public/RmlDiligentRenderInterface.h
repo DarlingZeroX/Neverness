@@ -167,7 +167,7 @@ private:
                          int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1);
     void DrawBlurPass(Diligent::ITextureView* sourceSRV, Diligent::ITextureView* destRTV,
                       const Rml::Rectanglei& scissor_rect, int fb_width, int fb_height);
-    void CreateRenderPass();
+    void CreateRenderPass(int msaa_samples = 1);
     void CreatePSOs();
     void CreateConstantBuffer();
     void CreateShaderConstantBuffers();
@@ -234,6 +234,8 @@ private:
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_DropShadow;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_ColorMatrix;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_BlendMask;
+    Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_Composite;
+    Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_CompositeReplace;
 
     Diligent::RefCntAutoPtr<Diligent::IShader> m_VS_Blur;
     Diligent::RefCntAutoPtr<Diligent::IShader> m_PS_Blur;
@@ -278,6 +280,7 @@ private:
     size_t m_TextureSrbEntryCount = 0;
     int m_CachedWidth = 0;
     int m_CachedHeight = 0;
+    int m_MsaaSamples = 1;
 };
 
 } // namespace RmlDiligent
