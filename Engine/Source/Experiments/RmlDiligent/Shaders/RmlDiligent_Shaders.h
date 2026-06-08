@@ -35,16 +35,25 @@ struct PS_OUTPUT
 
 cbuffer ConstantBuffer
 {
-    row_major float4x4 m_transform;
+    float4x4 m_transform;
     float2 m_translate;
+};
+
+cbuffer ProjectionBuffer
+{
+    float4x4 m_projection;
 };
 
 PS_OUTPUT main(const VS_INPUT IN)
 {
     PS_OUTPUT OUT;
 
+    // 与 GL3 一致：Projection * (Transform * (pos + translate))
+    // GL3: vec2 translatedPos = inPosition + _translate;
+    //      gl_Position = _transform * vec4(translatedPos, 0.0, 1.0);
+    // translate 在元素本地空间（CSS transform 之前）
     float2 translatedPos = IN.position + m_translate;
-    float4 resPos = mul(float4(translatedPos.x, translatedPos.y, 0.0, 1.0), m_transform);
+    float4 resPos = mul(m_projection, mul(m_transform, float4(translatedPos.x, translatedPos.y, 0.0, 1.0)));
 
     OUT.position = resPos;
     OUT.color = IN.color;
@@ -266,7 +275,7 @@ SamplerState g_SamplerLinear : register(s0);
 
 cbuffer ConstantBuffer : register(b0)
 {
-    row_major float4x4 m_color_matrix;
+    float4x4 m_color_matrix;
 };
 
 struct PS_Input
@@ -325,7 +334,7 @@ static constexpr const char PS_Gradient[] = R"(
 
 cbuffer SharedConstantBuffer
 {
-    row_major float4x4 m_transform;
+    float4x4 m_transform;
     float2 m_translate;
     int m_func;
     int m_num_stops;
@@ -396,7 +405,7 @@ struct PS_Input
 
 cbuffer SharedConstantBuffer
 {
-    row_major float4x4 m_transform;
+    float4x4 m_transform;
     float2 m_translate;
     float2 m_dimensions;
     float m_value;

@@ -21,12 +21,11 @@
 #include <RmlUi/Core/Matrix4.h>
 #include <RmlUi/Core/SystemInterface.h>
 #include <RmlUi/Core/Vertex.h>
-#include <chrono>
 #include <cstring>
-#include <fstream>
+#include <cstdio>
+#include <cstdarg>
 #include <iostream>
 #include <memory>
-#include <string>
 #include <type_traits>
 
 // Diligent 头文件
@@ -38,26 +37,6 @@
 #include "Graphics/GraphicsTools/interface/MapHelper.hpp"
 
 namespace RmlDiligent {
-
-// #region agent log
-static void AgentDebugLog(const char* location, const char* message, const char* hypothesisId, const char* jsonData)
-{
-    std::ofstream log("e:/Neverness/debug-1b4b4e.log", std::ios::app);
-    if (!log) {
-        return;
-    }
-    const auto ts = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
-    log << "{\"sessionId\":\"1b4b4e\",\"timestamp\":" << ts << ",\"location\":\"" << location << "\",\"message\":\""
-        << message << "\",\"hypothesisId\":\"" << hypothesisId << "\",\"data\":" << jsonData << "}\n";
-}
-
-static int g_AgentLiveFilters = 0;
-static int g_AgentLiveTextures = 0;
-static int g_AgentLiveGeometries = 0;
-static int g_AgentUnbindRTCount = 0;
-static int g_AgentEndFrameCount = 0;
-// #endregion
 
 constexpr int kMaxNumStops = 16;
 
@@ -241,7 +220,6 @@ struct TGAHeader {
 
 static void UploadTransformToCB(MainCB* cb, const Rml::Matrix4f& transform, const Rml::Vector2f& translation)
 {
-    // 与 RmlUi GL3 一致：行主序矩阵 + mul(v, M)（shader 侧 row_major）
     memcpy(cb->transform, transform.data(), sizeof(float) * 16);
     cb->translate[0] = translation.x;
     cb->translate[1] = translation.y;
@@ -249,22 +227,34 @@ static void UploadTransformToCB(MainCB* cb, const Rml::Matrix4f& transform, cons
     cb->_padding[1] = 0.0f;
 }
 
+namespace {
+
+void BoxShadowDiagLog(const char* fmt, ...)
+{
+    FILE* file = std::fopen("boxshadow-diag.log", "a");
+    if (!file) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, fmt);
+    std::vfprintf(file, fmt, args);
+	//std::printf(fmt, args);
+    va_end(args);
+	//std::cout <<std::endl;
+    std::fputc('\n', file);
+    std::fclose(file);
+}
+
+} // namespace
+
 // =============================================================================
 // 构造/析构
 // =============================================================================
 
 RmlDiligentRenderInterface::RmlDiligentRenderInterface() = default;
 
-RmlDiligentRenderInterface::~RmlDiligentRenderInterface()
-{
-    // #region agent log
-    AgentDebugLog("RmlDiligentRenderInterface.cpp:~dtor", "render interface destroyed", "E",
-        ("{\"liveFilters\":" + std::to_string(g_AgentLiveFilters) + ",\"liveTextures\":" +
-            std::to_string(g_AgentLiveTextures) + ",\"liveGeometries\":" + std::to_string(g_AgentLiveGeometries) +
-            ",\"unbindRTTotal\":" + std::to_string(g_AgentUnbindRTCount) + "}")
-            .c_str());
-    // #endregion
-}
+RmlDiligentRenderInterface::~RmlDiligentRenderInterface() = default;
 
 // =============================================================================
 // 辅助函数：编译 Shader
@@ -329,6 +319,7 @@ static void ConfigureDepthStencil(Diligent::DepthStencilStateDesc& dss, StencilM
             dss.StencilWriteMask = 0xFF;
             ff.StencilFunc = Diligent::COMPARISON_FUNC_EQUAL;
             ff.StencilPassOp = Diligent::STENCIL_OP_KEEP;
+            dss.BackFace = ff;
             break;
         case StencilMode::MaskReplace:
             dss.StencilEnable = Diligent::True;
@@ -336,6 +327,7 @@ static void ConfigureDepthStencil(Diligent::DepthStencilStateDesc& dss, StencilM
             dss.StencilWriteMask = 0xFF;
             ff.StencilFunc = Diligent::COMPARISON_FUNC_ALWAYS;
             ff.StencilPassOp = Diligent::STENCIL_OP_REPLACE;
+            dss.BackFace = ff;
             break;
         case StencilMode::MaskIncr:
             dss.StencilEnable = Diligent::True;
@@ -343,6 +335,7 @@ static void ConfigureDepthStencil(Diligent::DepthStencilStateDesc& dss, StencilM
             dss.StencilWriteMask = 0xFF;
             ff.StencilFunc = Diligent::COMPARISON_FUNC_ALWAYS;
             ff.StencilPassOp = Diligent::STENCIL_OP_INCR_SAT;
+            dss.BackFace = ff;
             break;
     }
 }
@@ -439,8 +432,8 @@ bool RmlDiligentRenderInterface::Initialize(
     }
     std::cout << "[OK] Stencil PSOs created" << std::endl;
 
-    if (!m_PSO_Passthrough || !m_PSO_PassthroughPresent || !m_PSO_PassthroughOpacity || !m_PSO_PassthroughReplace
-        || !m_PSO_Blur || !m_PSO_DropShadow || !m_PSO_ColorMatrix || !m_PSO_BlendMask) {
+    if (!m_PSO_Passthrough || !m_PSO_Passthrough_StencilEqual || !m_PSO_PassthroughPresent || !m_PSO_PassthroughOpacity
+        || !m_PSO_PassthroughReplace || !m_PSO_Blur || !m_PSO_DropShadow || !m_PSO_ColorMatrix || !m_PSO_BlendMask) {
         std::cerr << "[FAIL] Passthrough/Filter PSO creation failed!" << std::endl;
         return false;
     }
@@ -455,14 +448,18 @@ bool RmlDiligentRenderInterface::Initialize(
         if (m_SRB_Color) {
             if (auto* cbVar = m_SRB_Color->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
                 cbVar->Set(m_ConstantBuffer);
-            } else {
-                std::cerr << "[WARN] ConstantBuffer not found on Color PSO SRB at init" << std::endl;
+            }
+            if (auto* projVar = m_SRB_Color->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
+                projVar->Set(m_ProjectionCB);
             }
         }
     }
 
     auto desc = swapChain->GetDesc();
     SetProjectionMatrix(desc.Width, desc.Height);
+
+    std::remove("boxshadow-diag.log");
+    BoxShadowDiagLog("=== box-shadow diagnostics (SaveLayer / CallbackDraw / bounds) ===");
 
     return true;
 }
@@ -527,10 +524,12 @@ void RmlDiligentRenderInterface::CreatePSOs()
 
     Diligent::ShaderResourceVariableDesc colorVars[] = {
         {Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+        {Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
     };
 
     Diligent::ShaderResourceVariableDesc textureVars[] = {
         {Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+        {Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
         {Diligent::SHADER_TYPE_PIXEL, "g_InputTexture", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
         {Diligent::SHADER_TYPE_PIXEL, "g_SamplerLinear", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
     };
@@ -553,12 +552,23 @@ void RmlDiligentRenderInterface::CreatePSOs()
         SetupBlendState(psoCI, colorWriteEnabled);
     };
 
+    // Layer draws bind RGBA8 color + D24S8 (shared layer depth/stencil). PSO formats must match — unlike
+    // m_RenderPass-based defaults (NumRenderTargets=0 / DSVFormat=UNKNOWN) which break stencil writes on D3D12.
+    auto applyLayerOutputFormats = [](Diligent::GraphicsPipelineStateCreateInfo& psoCI,
+                                      Diligent::TEXTURE_FORMAT dsvFormat = Diligent::TEX_FORMAT_D24_UNORM_S8_UINT) {
+        psoCI.GraphicsPipeline.pRenderPass = nullptr;
+        psoCI.GraphicsPipeline.NumRenderTargets = 1;
+        psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
+        psoCI.GraphicsPipeline.DSVFormat = dsvFormat;
+    };
+
     {
         Diligent::GraphicsPipelineStateCreateInfo psoCI;
         psoCI.PSODesc.Name = "RmlDiligent_Color_PSO";
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
         setupCommonPipeline(psoCI, StencilMode::Off);
+        applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
         m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Color);
@@ -570,6 +580,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.ResourceLayout.Variables = textureVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(textureVars);
         setupCommonPipeline(psoCI, StencilMode::Off);
+        applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Texture;
         m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Texture);
@@ -578,6 +589,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
     {
         Diligent::ShaderResourceVariableDesc shaderCBVars[] = {
             {Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+            {Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
             {Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
         };
         Diligent::GraphicsPipelineStateCreateInfo psoCI;
@@ -619,6 +631,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
         setupCommonPipeline(psoCI, StencilMode::Equal);
+        applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
         m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Color_StencilEqual);
@@ -630,20 +643,22 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.ResourceLayout.Variables = textureVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(textureVars);
         setupCommonPipeline(psoCI, StencilMode::Equal);
+        applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Texture;
         m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Texture_StencilEqual);
     }
 
     {
-        Diligent::ShaderResourceVariableDesc shaderCBVars[] = {
+        Diligent::ShaderResourceVariableDesc shaderCBVarsSE[] = {
             {Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+            {Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
             {Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
         };
         Diligent::GraphicsPipelineStateCreateInfo psoCI;
         psoCI.PSODesc.Name = "RmlDiligent_Gradient_StencilEqual_PSO";
-        psoCI.PSODesc.ResourceLayout.Variables = shaderCBVars;
-        psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVars);
+        psoCI.PSODesc.ResourceLayout.Variables = shaderCBVarsSE;
+        psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVarsSE);
         setupCommonPipeline(psoCI, StencilMode::Equal);
         psoCI.GraphicsPipeline.pRenderPass = nullptr;
         psoCI.GraphicsPipeline.NumRenderTargets = 1;
@@ -655,14 +670,15 @@ void RmlDiligentRenderInterface::CreatePSOs()
     }
 
     {
-        Diligent::ShaderResourceVariableDesc shaderCBVars[] = {
+        Diligent::ShaderResourceVariableDesc shaderCBVarsSE2[] = {
             {Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+            {Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
             {Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
         };
         Diligent::GraphicsPipelineStateCreateInfo psoCI;
         psoCI.PSODesc.Name = "RmlDiligent_Creation_StencilEqual_PSO";
-        psoCI.PSODesc.ResourceLayout.Variables = shaderCBVars;
-        psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVars);
+        psoCI.PSODesc.ResourceLayout.Variables = shaderCBVarsSE2;
+        psoCI.PSODesc.ResourceLayout.NumVariables = _countof(shaderCBVarsSE2);
         setupCommonPipeline(psoCI, StencilMode::Equal);
         psoCI.GraphicsPipeline.pRenderPass = nullptr;
         psoCI.GraphicsPipeline.NumRenderTargets = 1;
@@ -679,6 +695,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
         setupCommonPipeline(psoCI, StencilMode::MaskReplace, false);
+        applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
         m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Color_StencilSet);
@@ -690,6 +707,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
         psoCI.PSODesc.ResourceLayout.Variables = colorVars;
         psoCI.PSODesc.ResourceLayout.NumVariables = _countof(colorVars);
         setupCommonPipeline(psoCI, StencilMode::MaskIncr, false);
+        applyLayerOutputFormats(psoCI);
         psoCI.pVS = m_VS_Color;
         psoCI.pPS = m_PS_Color;
         m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Color_StencilIntersect);
@@ -719,6 +737,21 @@ void RmlDiligentRenderInterface::CreatePSOs()
         setupPassthroughPipeline(&m_PSO_Passthrough, "RmlDiligent_Passthrough_PSO", Diligent::TEX_FORMAT_D24_UNORM_S8_UINT);
         setupPassthroughPipeline(&m_PSO_PassthroughPresent, "RmlDiligent_PassthroughPresent_PSO",
                                  Diligent::TEX_FORMAT_UNKNOWN);
+
+        {
+            Diligent::GraphicsPipelineStateCreateInfo psoCI;
+            psoCI.PSODesc.Name = "RmlDiligent_Passthrough_StencilEqual_PSO";
+            psoCI.PSODesc.ResourceLayout.Variables = layerVars;
+            psoCI.PSODesc.ResourceLayout.NumVariables = _countof(layerVars);
+            setupCommonPipeline(psoCI, StencilMode::Equal);
+            psoCI.GraphicsPipeline.pRenderPass = nullptr;
+            psoCI.GraphicsPipeline.NumRenderTargets = 1;
+            psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
+            psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_D24_UNORM_S8_UINT;
+            psoCI.pVS = m_VS_PassThrough;
+            psoCI.pPS = m_PS_Passthrough;
+            m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Passthrough_StencilEqual);
+        }
 
         {
             Diligent::GraphicsPipelineStateCreateInfo psoCI;
@@ -892,6 +925,15 @@ void RmlDiligentRenderInterface::CreateShaderConstantBuffers()
 {
     {
         Diligent::BufferDesc cbDesc;
+        cbDesc.Name = "RmlDiligent Projection CB";
+        cbDesc.Size = (sizeof(float) * 16 + 255) & ~255u; // 64 bytes, 256-aligned
+        cbDesc.BindFlags = Diligent::BIND_UNIFORM_BUFFER;
+        cbDesc.Usage = Diligent::USAGE_DYNAMIC;
+        cbDesc.CPUAccessFlags = Diligent::CPU_ACCESS_WRITE;
+        m_Device->CreateBuffer(cbDesc, nullptr, &m_ProjectionCB);
+    }
+    {
+        Diligent::BufferDesc cbDesc;
         cbDesc.Name = "RmlDiligent Gradient CB";
         cbDesc.Size = (sizeof(GradientCB) + 255) & ~255u;
         cbDesc.BindFlags = Diligent::BIND_UNIFORM_BUFFER;
@@ -948,7 +990,21 @@ void RmlDiligentRenderInterface::DrawIndexedGeometry(GeometryHandle* geom)
     m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
     m_Context->SetIndexBuffer(geom->indexBuffer, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
 
-    if (m_ScissorEnabled && m_ScissorRegionRml.Valid()) {
+    const Rml::Matrix4f& identity = Rml::Matrix4f::Identity();
+    const bool hasTransform = std::memcmp(m_Transform.data(), identity.data(), sizeof(float) * 16) != 0;
+    const bool useTransformedDraw = hasTransform && m_ScissorEnabled;
+    if (useTransformedDraw) {
+        if (m_Context && m_SwapChain) {
+            const int w = static_cast<int>(m_SwapChain->GetDesc().Width);
+            const int h = static_cast<int>(m_SwapChain->GetDesc().Height);
+            Diligent::Rect fullScissor{};
+            fullScissor.left = 0;
+            fullScissor.top = 0;
+            fullScissor.right = w;
+            fullScissor.bottom = h;
+            m_Context->SetScissorRects(1, &fullScissor, static_cast<Diligent::Uint32>(w), static_cast<Diligent::Uint32>(h));
+        }
+    } else if (m_ScissorEnabled && m_ScissorRegionRml.Valid()) {
         SetScissorRml(m_ScissorRegionRml, false);
     } else if (m_Context && m_SwapChain) {
         const int w = static_cast<int>(m_SwapChain->GetDesc().Width);
@@ -961,8 +1017,28 @@ void RmlDiligentRenderInterface::DrawIndexedGeometry(GeometryHandle* geom)
         m_Context->SetScissorRects(1, &fullScissor, static_cast<Diligent::Uint32>(w), static_cast<Diligent::Uint32>(h));
     }
 
+    // 诊断：绘制 transform 元素时的状态
+    static uint32_t s_drawDiag = 0;
+    if (hasTransform && s_drawDiag < 30) {
+        ++s_drawDiag;
+        const int sw = m_SwapChain ? static_cast<int>(m_SwapChain->GetDesc().Width) : 0;
+        const int sh = m_SwapChain ? static_cast<int>(m_SwapChain->GetDesc().Height) : 0;
+        BoxShadowDiagLog(
+            "[GPU] hasT=%d useT=%d scissorOn=%d clip=%d stencil=%d | "
+            "scissorRml=%d,%d,%d,%d | swapchain=%dx%d | idx=%u",
+            (int)hasTransform, (int)useTransformedDraw, (int)m_ScissorEnabled,
+            (int)m_ClipMaskEnabled, (int)m_StencilTestValue,
+            m_ScissorRegionRml.Left(), m_ScissorRegionRml.Top(),
+            m_ScissorRegionRml.Right(), m_ScissorRegionRml.Bottom(),
+            sw, sh, geom->indexCount);
+    }
+
     Diligent::DrawIndexedAttribs drawAttrs(geom->indexCount, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
     m_Context->DrawIndexed(drawAttrs);
+
+    if (useTransformedDraw && m_ScissorEnabled && m_ScissorRegionRml.Valid()) {
+        SetScissorRml(m_ScissorRegionRml, false);
+    }
 }
 
 void RmlDiligentRenderInterface::EnsureFramebufferBound()
@@ -1005,10 +1081,23 @@ void RmlDiligentRenderInterface::DrawColorGeometry(
 void RmlDiligentRenderInterface::SetProjectionMatrix(int width, int height)
 {
     ClearSrbCachesOnResize(width, height);
-    // 与 RmlUi_Renderer_GL3 相同：左上原点，Y 向下
-    m_Projection = Rml::Matrix4f::ProjectOrtho(
-        0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -10000.0f, 10000.0f);
-    m_Transform = m_Projection;
+    // Diligent (D3D12) 使用 Z ∈ [0, 1]，而 RmlUi 的 ProjectOrtho 输出 Z ∈ [-1,1]（OpenGL 约定）。
+    // 3D 旋转后 Z 变负 → GPU 裁剪 → 只显示半边。
+    // 手动构建 D3D12 约定的正交投影矩阵：Z 映射到 [0, 1]。
+    const float l = 0.f, r = static_cast<float>(width);
+    const float b = static_cast<float>(height), t = 0.f;
+    const float n = -10000.f, f = 10000.f;
+    Rml::Matrix4f proj = Rml::Matrix4f::Identity();
+    float* d = proj.data();
+    d[0]  = 2.f / (r - l);           // [0][0]
+    d[5]  = 2.f / (t - b);           // [1][1]
+    d[10] = 1.f / (f - n);           // [2][2] — D3D12: 1/(f-n)，不是 2/(f-n)
+    d[12] = -(r + l) / (r - l);      // [3][0]
+    d[13] = -(t + b) / (t - b);      // [3][1]
+    d[14] = -n / (f - n);            // [3][2] — D3D12: -n/(f-n)，不是 -(f+n)/(f-n)
+    d[15] = 1.f;                     // [3][3]
+    m_Projection = proj;
+    m_Transform = Rml::Matrix4f::Identity();
     m_LayerStack.OnResize(width, height);
 }
 
@@ -1065,9 +1154,9 @@ Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> RmlDiligentRenderInter
 
     if (auto* cbVar = srb->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
         cbVar->Set(m_ConstantBuffer);
-    } else if (!m_CBWarnPrinted) {
-        std::cerr << "[WARN] ConstantBuffer not bound (texture path)" << std::endl;
-        m_CBWarnPrinted = true;
+    }
+    if (auto* projVar = srb->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
+        projVar->Set(m_ProjectionCB);
     }
     if (auto* texVar = srb->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "g_InputTexture")) {
         texVar->Set(tex->SRV);
@@ -1125,16 +1214,7 @@ void RmlDiligentRenderInterface::BindTopLayer()
 
 void RmlDiligentRenderInterface::UnbindRenderTargets()
 {
-    // #region agent log
-    ++g_AgentUnbindRTCount;
-    if (g_AgentUnbindRTCount <= 5 || (g_AgentUnbindRTCount % 50) == 0) {
-        AgentDebugLog("RmlDiligentRenderInterface.cpp:UnbindRenderTargets", "unbind all RTs", "A",
-            ("{\"count\":" + std::to_string(g_AgentUnbindRTCount) + ",\"swapchainPassActive\":" +
-                std::to_string(m_SwapchainPassActive ? 1 : 0) + "}")
-                .c_str());
-    }
-    // #endregion
-    m_Context->SetRenderTargets(0, nullptr, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+    m_Context->SetRenderTargets(0, nullptr, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 }
 
 // =============================================================================
@@ -1143,13 +1223,27 @@ void RmlDiligentRenderInterface::UnbindRenderTargets()
 
 void RmlDiligentRenderInterface::BeginFrame()
 {
+    // 每帧重置所有性能计数器
+    ResetPerfStats();
+    m_SaveLayerAsTextureCount = 0;
+    m_CallbackTextureDrawCount = 0;
+
     const auto w = static_cast<int>(m_SwapChain->GetDesc().Width);
     const auto h = static_cast<int>(m_SwapChain->GetDesc().Height);
 
     m_SwapchainPassActive = false;
+    m_ClipMaskEnabled = false;
     m_UseStencilEqual = false;
     m_StencilTestValue = 0;
     EnableClipMask(false);
+
+    // 每帧上传投影矩阵（动态缓冲区必须每帧映射）
+    if (m_ProjectionCB && m_Context) {
+        Diligent::MapHelper<float> cb(m_Context, m_ProjectionCB, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
+        if (cb) {
+            memcpy(cb, m_Projection.data(), sizeof(float) * 16);
+        }
+    }
 
     m_LayerStack.BeginFrame(w, h);
     BindTopLayer();
@@ -1168,6 +1262,26 @@ void RmlDiligentRenderInterface::BeginFrame()
             Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     }
 
+    // 清空 postprocess buffers，防止 pool 复用纹理时残留上一帧/上一用途的内容。
+    // GL3 每帧重建 FBO（内容天然清空），Diligent 复用 pool 纹理需要显式清空。
+    {
+        auto& pp0 = m_LayerStack.GetPostprocessPrimary();
+        auto& pp1 = m_LayerStack.GetPostprocessSecondary();
+        Diligent::OptimizedClearValue zero{};
+        zero.Color[0] = zero.Color[1] = zero.Color[2] = zero.Color[3] = 0.0f;
+        if (auto* rtv0 = pp0.RTV.RawPtr()) {
+            m_Context->SetRenderTargets(1, &rtv0, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            m_Context->ClearRenderTarget(rtv0, &zero, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        }
+        if (auto* rtv1 = pp1.RTV.RawPtr()) {
+            m_Context->SetRenderTargets(1, &rtv1, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            m_Context->ClearRenderTarget(rtv1, &zero, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        }
+    }
+
+    // 清空 postprocess buffers 后重新绑定根 layer 为渲染目标
+    BindTopLayer();
+
     Diligent::Viewport viewport;
     viewport.Width = static_cast<float>(w);
     viewport.Height = static_cast<float>(h);
@@ -1180,15 +1294,6 @@ void RmlDiligentRenderInterface::BeginFrame()
 
 void RmlDiligentRenderInterface::EndFrame()
 {
-    // #region agent log
-    ++g_AgentEndFrameCount;
-    const int layerCountBefore = m_LayerStack.GetLayerCount();
-    AgentDebugLog("RmlDiligentRenderInterface.cpp:EndFrame", "begin EndFrame", "B",
-        ("{\"frame\":" + std::to_string(g_AgentEndFrameCount) + ",\"layerCount\":" + std::to_string(layerCountBefore) +
-            ",\"swapchainPassActive\":" + std::to_string(m_SwapchainPassActive ? 1 : 0) + "}")
-            .c_str());
-    // #endregion
-
     if (m_SwapchainPassActive) {
         m_Context->EndRenderPass();
         m_SwapchainPassActive = false;
@@ -1212,15 +1317,27 @@ void RmlDiligentRenderInterface::EndFrame()
     SetScissorRml(Rml::Rectanglei::FromCorners(Rml::Vector2i(0, 0), Rml::Vector2i(w, h)));
     DrawFullscreenPassthrough(postPrimary.SRV.RawPtr(), pRTV, Rml::BlendMode::Blend, false);
 
+    // Match RmlUi_Renderer_DX12::EndFrame: restore postprocess RT state after sampling, keep swapchain bound for Present.
+    if (auto* pPostRTV = postPrimary.RTV.RawPtr()) {
+        m_Context->SetRenderTargets(1, &pPostRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    }
+    m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
     m_LayerStack.EndFrame();
 
-    // #region agent log
-    AgentDebugLog("RmlDiligentRenderInterface.cpp:EndFrame", "end EndFrame", "A",
-        ("{\"frame\":" + std::to_string(g_AgentEndFrameCount) + ",\"layerCountAfter\":" +
-            std::to_string(m_LayerStack.GetLayerCount()) + ",\"postPrimarySRV\":" +
-            std::to_string(postPrimary.SRV ? 1 : 0) + "}")
-            .c_str());
-    // #endregion
+    static uint32_t s_DiagFrame = 0;
+    ++s_DiagFrame;
+    if (m_SaveLayerAsTextureCount > 0 || m_CallbackTextureDrawCount > 0 || s_DiagFrame <= 5 || s_DiagFrame % 120 == 0) {
+        BoxShadowDiagLog(
+            "[boxshadow-diag] frame=%u SaveLayer=%u CallbackDraw=%u textureDraws=%u push=%u composite=%u filter=%u",
+            s_DiagFrame,
+            m_SaveLayerAsTextureCount,
+            m_CallbackTextureDrawCount,
+            m_TextureDrawCount,
+            m_PushLayerCount,
+            m_CompositeCount,
+            m_FilterRenderCount);
+    }
 }
 
 void RmlDiligentRenderInterface::DrawDebugQuad()
@@ -1286,9 +1403,6 @@ Rml::CompiledGeometryHandle RmlDiligentRenderInterface::CompileGeometry(
     handle->vertexCount = static_cast<uint32_t>(vertices.size());
     handle->indexCount = static_cast<uint32_t>(indices.size());
 
-    // #region agent log
-    ++g_AgentLiveGeometries;
-    // #endregion
     return reinterpret_cast<Rml::CompiledGeometryHandle>(handle);
 }
 
@@ -1313,8 +1427,13 @@ void RmlDiligentRenderInterface::RenderGeometry(
     EnsureFramebufferBound();
 
     const bool useTexture = (texture != 0 && m_PSO_Texture);
+    // SaveLayerAsTexture / box-shadow callbacks: baked texture already includes bg + shadows.
+    // StencilEqual here would clip outer shadows to the border-radius mask (RmlUi draws the
+    // quad after SetClippingRegion, but the texture content must not be stencil-clipped).
+    const bool callbackTexture =
+        useTexture && reinterpret_cast<TextureHandle*>(texture)->fromPool;
     Diligent::IPipelineState* pso = nullptr;
-    if (m_UseStencilEqual) {
+    if (m_ClipMaskEnabled && m_UseStencilEqual && !callbackTexture) {
         pso = useTexture ? m_PSO_Texture_StencilEqual : m_PSO_Color_StencilEqual;
     } else {
         pso = useTexture ? m_PSO_Texture : m_PSO_Color;
@@ -1323,8 +1442,38 @@ void RmlDiligentRenderInterface::RenderGeometry(
         return;
     }
 
-    if (m_UseStencilEqual) {
+    if (m_ClipMaskEnabled && m_UseStencilEqual && !callbackTexture) {
         m_Context->SetStencilRef(m_StencilTestValue);
+    }
+
+    const Rml::Matrix4f& identity = Rml::Matrix4f::Identity();
+    const bool isTransformed = memcmp(m_Transform.data(), identity.data(), sizeof(float) * 16) != 0;
+
+    // 诊断：RenderGeometry 中 transform 元素的状态
+    static uint32_t s_diagDraw = 0;
+    if (isTransformed && s_diagDraw < 20) {
+        ++s_diagDraw;
+        const float* t = m_Transform.data();
+        BoxShadowDiagLog(
+            "[RG3D] isT=%d cb=%d scissor=%d clip=%d stencil=%d T[0]=%.4f T[5]=%.4f",
+            (int)isTransformed, (int)callbackTexture, (int)m_ScissorEnabled,
+            (int)m_ClipMaskEnabled, (int)m_StencilTestValue, t[0], t[5]);
+    }
+    const bool restoreScissor = callbackTexture && m_ScissorEnabled;
+    const bool restoreGeometryScissor = isTransformed && m_ScissorEnabled && !callbackTexture;
+    // 3D 变换时，临时把 m_ScissorRegionRml 设为全屏。
+    // DrawIndexedGeometry 内部会在绘制后恢复 m_ScissorRegionRml 到 GPU scissor，
+    // 如果不改 m_ScissorRegionRml，恢复的 scissor 会裁剪 3D 变换后的顶点。
+    Rml::Rectanglei savedScissorRegion;
+    if (restoreGeometryScissor) {
+        savedScissorRegion = m_ScissorRegionRml;
+        const int sw = m_CachedWidth > 0 ? m_CachedWidth : static_cast<int>(m_SwapChain->GetDesc().Width);
+        const int sh = m_CachedHeight > 0 ? m_CachedHeight : static_cast<int>(m_SwapChain->GetDesc().Height);
+        m_ScissorRegionRml = Rml::Rectanglei::FromCorners(Rml::Vector2i(0, 0), Rml::Vector2i(sw, sh));
+        EnableScissorRegion(false);
+    }
+    if (restoreScissor) {
+        EnableScissorRegion(false);
     }
 
     m_Context->SetPipelineState(pso);
@@ -1360,9 +1509,21 @@ void RmlDiligentRenderInterface::RenderGeometry(
 
     DrawIndexedGeometry(geom);
 
+    if (restoreGeometryScissor) {
+        // 恢复 m_ScissorRegionRml 到原始值（RmlUi 设置的元素 2D 边界）
+        m_ScissorRegionRml = savedScissorRegion;
+        EnableScissorRegion(true);
+    }
+    if (restoreScissor) {
+        EnableScissorRegion(true);
+    }
+
     ++m_DrawCount;
     if (useTexture) {
         ++m_TextureDrawCount;
+        if (callbackTexture) {
+            ++m_CallbackTextureDrawCount;
+        }
     }
 }
 
@@ -1373,9 +1534,6 @@ void RmlDiligentRenderInterface::RenderGeometry(
 void RmlDiligentRenderInterface::ReleaseGeometry(Rml::CompiledGeometryHandle geometry)
 {
     if (geometry != 0) {
-        // #region agent log
-        --g_AgentLiveGeometries;
-        // #endregion
         delete reinterpret_cast<GeometryHandle*>(geometry);
     }
 }
@@ -1516,13 +1674,6 @@ void RmlDiligentRenderInterface::ReleaseTexture(Rml::TextureHandle texture)
     if (handle->fromPool) {
         handle->pooled.reset();
     }
-    // #region agent log
-    --g_AgentLiveTextures;
-    AgentDebugLog("RmlDiligentRenderInterface.cpp:ReleaseTexture", "release texture", "D",
-        ("{\"liveTextures\":" + std::to_string(g_AgentLiveTextures) + ",\"fromPool\":" +
-            std::to_string(handle->fromPool ? 1 : 0) + "}")
-            .c_str());
-    // #endregion
     delete handle;
 }
 
@@ -1567,14 +1718,17 @@ void RmlDiligentRenderInterface::SetScissorRegion(Rml::Rectanglei region)
 
 void RmlDiligentRenderInterface::SetTransform(const Rml::Matrix4f* transform)
 {
-    m_Transform = transform ? m_Projection * (*transform) : m_Projection;
+    // CSS transform（不含投影），shader 中：Projection * (Transform * pos + translate)
+    m_Transform = transform ? *transform : Rml::Matrix4f::Identity();
+    // 上传投影矩阵到全局 ProjectionBuffer（一次 per-frame，在 SetProjectionMatrix 中设置）
 }
 
 void RmlDiligentRenderInterface::EnableClipMask(bool enable)
 {
-    if (!enable) {
-        m_UseStencilEqual = false;
-        m_StencilTestValue = 0;
+    // Match RmlUi_Renderer_DX12::EnableClipMask — only toggle clip-mask testing; keep m_UseStencilEqual intact.
+    m_ClipMaskEnabled = enable;
+    if (m_Context) {
+        m_Context->SetStencilRef(enable ? m_StencilTestValue : 0);
     }
 }
 
@@ -1615,9 +1769,10 @@ void RmlDiligentRenderInterface::RenderToClipMask(
             write_ref = 1;
             break;
         case Rml::ClipMaskOperation::SetInverse:
+            // Match GL3/DX12: mask pass always writes ref 1; only the subsequent equal-test ref differs.
             maskPSO = m_PSO_Color_StencilSet;
             stencil_test_value = 0;
-            write_ref = 0;
+            write_ref = 1;
             break;
         case Rml::ClipMaskOperation::Intersect:
             maskPSO = m_PSO_Color_StencilIntersect;
@@ -1635,6 +1790,13 @@ void RmlDiligentRenderInterface::RenderToClipMask(
     m_UseStencilEqual = true;
     m_Context->SetStencilRef(m_StencilTestValue);
     ++m_ClipMaskDrawCount;
+
+    static uint32_t s_clipDiag = 0;
+    if (s_clipDiag < 20) {
+        ++s_clipDiag;
+        BoxShadowDiagLog("[CLIP] op=%d stencilTestVal=%d writeRef=%d",
+            (int)operation, (int)stencil_test_value, (int)write_ref);
+    }
 }
 
 Rml::CompiledShaderHandle RmlDiligentRenderInterface::CompileShader(
@@ -1723,12 +1885,12 @@ void RmlDiligentRenderInterface::RenderShader(
     switch (shader->type) {
         case CompiledShaderType::Gradient: {
             Diligent::IPipelineState* pso =
-                m_UseStencilEqual ? m_PSO_Gradient_StencilEqual : m_PSO_Gradient;
+                (m_ClipMaskEnabled && m_UseStencilEqual) ? m_PSO_Gradient_StencilEqual : m_PSO_Gradient;
             if (!pso || !m_GradientCB) {
                 return;
             }
 
-            if (m_UseStencilEqual) {
+            if (m_ClipMaskEnabled && m_UseStencilEqual) {
                 m_Context->SetStencilRef(m_StencilTestValue);
             }
             m_Context->SetPipelineState(pso);
@@ -1758,6 +1920,9 @@ void RmlDiligentRenderInterface::RenderShader(
                     if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
                         cbVar->Set(m_GradientCB);
                     }
+                    if (auto* projVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
+                        projVar->Set(m_ProjectionCB);
+                    }
                     if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer")) {
                         cbVar->Set(m_GradientCB);
                     }
@@ -1770,12 +1935,12 @@ void RmlDiligentRenderInterface::RenderShader(
 
         case CompiledShaderType::Creation: {
             Diligent::IPipelineState* pso =
-                m_UseStencilEqual ? m_PSO_Creation_StencilEqual : m_PSO_Creation;
+                (m_ClipMaskEnabled && m_UseStencilEqual) ? m_PSO_Creation_StencilEqual : m_PSO_Creation;
             if (!pso || !m_CreationCB) {
                 return;
             }
 
-            if (m_UseStencilEqual) {
+            if (m_ClipMaskEnabled && m_UseStencilEqual) {
                 m_Context->SetStencilRef(m_StencilTestValue);
             }
             m_Context->SetPipelineState(pso);
@@ -1795,6 +1960,9 @@ void RmlDiligentRenderInterface::RenderShader(
                 pso, nullptr, m_CreationCB, [&](Diligent::IShaderResourceBinding* binding) {
                     if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
                         cbVar->Set(m_CreationCB);
+                    }
+                    if (auto* projVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
+                        projVar->Set(m_ProjectionCB);
                     }
                     if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer")) {
                         cbVar->Set(m_CreationCB);
@@ -1852,6 +2020,20 @@ void RmlDiligentRenderInterface::BlitLayerToPostprocessPrimary(Rml::LayerHandle 
         return;
     }
 
+    // Match GL3 note: active scissor must not restrict the layer → postprocess copy.
+    const bool previous_scissor_enabled = m_ScissorEnabled;
+    m_ScissorEnabled = false;
+    if (m_Context && m_SwapChain) {
+        const int w = static_cast<int>(m_SwapChain->GetDesc().Width);
+        const int h = static_cast<int>(m_SwapChain->GetDesc().Height);
+        Diligent::Rect fullScissor{};
+        fullScissor.left = 0;
+        fullScissor.top = 0;
+        fullScissor.right = w;
+        fullScissor.bottom = h;
+        m_Context->SetScissorRects(1, &fullScissor, static_cast<Diligent::Uint32>(w), static_cast<Diligent::Uint32>(h));
+    }
+
     UnbindRenderTargets();
 
     Diligent::CopyTextureAttribs copyAttribs;
@@ -1860,6 +2042,11 @@ void RmlDiligentRenderInterface::BlitLayerToPostprocessPrimary(Rml::LayerHandle 
     copyAttribs.SrcTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
     copyAttribs.DstTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
     m_Context->CopyTexture(copyAttribs);
+
+    m_ScissorEnabled = previous_scissor_enabled;
+    if (previous_scissor_enabled && m_ScissorRegionRml.Valid()) {
+        SetScissorRml(m_ScissorRegionRml, false);
+    }
 }
 
 // =============================================================================
@@ -1916,6 +2103,7 @@ void RmlDiligentRenderInterface::DrawFullscreenPassthrough(
     // Scissor/viewport are set by the caller (filter bounds, blur downscale, layer composite, etc.).
     Diligent::DrawIndexedAttribs drawAttrs(6, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
     m_Context->DrawIndexed(drawAttrs);
+    UnbindRenderTargets();
     ++m_DrawCount;
 }
 
@@ -1971,6 +2159,7 @@ Rml::LayerHandle RmlDiligentRenderInterface::PushLayer()
     clearVal.Color[2] = 0.0f;
     clearVal.Color[3] = 0.0f;
     m_Context->ClearRenderTarget(pRTV, &clearVal, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // Match GL3/DX12 PushLayer: clear color only; shared stencil persists across the layer stack.
 
     ++m_PushLayerCount;
     return handle;
@@ -1983,6 +2172,20 @@ void RmlDiligentRenderInterface::CompositeLayers(
     Rml::Span<const Rml::CompiledFilterHandle> filters)
 {
     BlitLayerToPostprocessPrimary(source);
+
+    // 清空 secondary RT，防止上一个 CompositeLayers 的 filter 链残留内容。
+    // GL3 最终合成用元素 scissor（残留不可见），Diligent 用全屏 scissor（残留会被写出）。
+    // 每个 filter 写 secondary 时只在 scissor 区域内覆盖，scissor 外必须是透明（0）。
+    {
+        auto& secondary = m_LayerStack.GetPostprocessSecondary();
+        if (auto* pRTV = secondary.RTV.RawPtr()) {
+            Diligent::OptimizedClearValue zero{};
+            zero.Color[0] = zero.Color[1] = zero.Color[2] = zero.Color[3] = 0.0f;
+            m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            m_Context->ClearRenderTarget(pRTV, &zero, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        }
+    }
+
     RenderFilters(filters);
     EnsureFramebufferBound();
 
@@ -1998,12 +2201,34 @@ void RmlDiligentRenderInterface::CompositeLayers(
         SetSwapchainViewport();
     }
 
-    // Match DX12/GL3: keep ink-overflow scissor from SetScissorRegion (do not expand to full RT).
+    // Composite should cover the destination layer exactly; any blur/shadow content is already
+    // padded and clipped inside the postprocess source, so the final layer blend must not
+    // introduce an extra scissor intersection that would chop the outer halo.
+    Diligent::Rect fullScissor{};
+    fullScissor.left = 0;
+    fullScissor.top = 0;
+    fullScissor.right = static_cast<long>(m_CachedWidth > 0 ? m_CachedWidth : m_SwapChain->GetDesc().Width);
+    fullScissor.bottom = static_cast<long>(m_CachedHeight > 0 ? m_CachedHeight : m_SwapChain->GetDesc().Height);
+    m_Context->SetScissorRects(1, &fullScissor,
+        static_cast<Diligent::Uint32>(fullScissor.right), static_cast<Diligent::Uint32>(fullScissor.bottom));
+
+    Diligent::IPipelineState* composite_pso = nullptr;
+    if (blend_mode == Rml::BlendMode::Replace) {
+        composite_pso = m_PSO_PassthroughReplace;
+    }
+    // box-shadow 外层阴影合成：blur composite 必须尊重 clip mask（与 GL3/DX12 一致）。
+    // GeometryBoxShadow::Generate 中，SetClipMask(SetInverse) 写入 stencil 裁剪 border box 外部，
+    // 随后 PushLayer → blur → CompositeLayers 合成时，必须用 StencilEqual PSO 限制只在外部绘制。
+    // 不使用 StencilEqual 的话，模糊阴影会穿透到元素内部（box-shadow 残影 bug）。
+    if (m_ClipMaskEnabled && m_UseStencilEqual && !composite_pso) {
+        composite_pso = m_PSO_Passthrough_StencilEqual;
+        m_Context->SetStencilRef(m_StencilTestValue);
+    }
+    DrawFullscreenPassthrough(postPrimary.SRV.RawPtr(), destLayer.RTV.RawPtr(), blend_mode, true, composite_pso);
+    UnbindRenderTargets();
     if (m_ScissorRegionRml.Valid()) {
         SetScissorRml(m_ScissorRegionRml, false);
     }
-
-    DrawFullscreenPassthrough(postPrimary.SRV.RawPtr(), destLayer.RTV.RawPtr(), blend_mode, false);
     if (destination != m_LayerStack.GetTopLayerHandle()) {
         BindTopLayer();
     }
@@ -2012,6 +2237,7 @@ void RmlDiligentRenderInterface::CompositeLayers(
 
 void RmlDiligentRenderInterface::PopLayer()
 {
+    // Match RmlUi_Renderer_DX12::PopLayer — only pop stack and rebind top layer; never clear stencil.
     m_LayerStack.PopLayer();
     if (m_LayerStack.GetLayerCount() > 0) {
         BindTopLayer();
@@ -2179,10 +2405,11 @@ void RmlDiligentRenderInterface::BlitFramebuffer(
     const float uv_y_min = static_cast<float>(srcY1) / static_cast<float>(fb_height);
 
     const float pos_x_min = (static_cast<float>(dstX0) / static_cast<float>(fb_width)) * 2.0f - 1.0f;
-    const float pos_y_min =
-        ((static_cast<float>(fb_height) - static_cast<float>(dstY0) - static_cast<float>(dest_height)) / static_cast<float>(fb_height)) * 2.0f - 1.0f;
     const float pos_x_max = ((static_cast<float>(dstX0) + static_cast<float>(dest_width)) / static_cast<float>(fb_width)) * 2.0f - 1.0f;
-    const float pos_y_max = ((static_cast<float>(fb_height) - static_cast<float>(dstY0)) / static_cast<float>(fb_height)) * 2.0f - 1.0f;
+    // Diligent/D3D screen space here follows the same top-left convention as the rest of the RmlUi
+    // renderer. For a sub-rectangle blit, convert the top-left pixel bounds directly to NDC.
+    const float pos_y_max = 1.0f - (2.0f * static_cast<float>(dstY0) / static_cast<float>(fb_height));
+    const float pos_y_min = 1.0f - (2.0f * static_cast<float>(dstY0 + dest_height) / static_cast<float>(fb_height));
 
     const Rml::ColourbPremultiplied white(255, 255, 255, 255);
     const Rml::Vertex vertices[4] = {
@@ -2205,6 +2432,13 @@ void RmlDiligentRenderInterface::BlitFramebuffer(
     vp.MinDepth = 0.f;
     vp.MaxDepth = 1.f;
     m_Context->SetViewports(1, &vp, static_cast<Diligent::Uint32>(fb_width), static_cast<Diligent::Uint32>(fb_height));
+
+    //Diligent::Rect scissor{};
+    //scissor.left = 0;
+    //scissor.top = 0;
+    //scissor.right = fb_width;
+    //scissor.bottom = fb_height;
+    //m_Context->SetScissorRects(1, &scissor, static_cast<Diligent::Uint32>(fb_width), static_cast<Diligent::Uint32>(fb_height));
 
     m_Context->SetRenderTargets(1, &destRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     m_Context->SetPipelineState(m_PSO_PassthroughReplace);
@@ -2241,7 +2475,7 @@ void RmlDiligentRenderInterface::DrawBlurPass(
     }
 
     SetFramebufferViewport(fb_width, fb_height);
-    SetScissorRml(scissor_rect, true);
+    SetScissorRml(scissor_rect, false);
     m_Context->SetPipelineState(m_PSO_Blur);
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
         m_PSO_Blur, sourceSRV, m_BlurCB, [&](Diligent::IShaderResourceBinding* binding) {
@@ -2271,17 +2505,14 @@ void RmlDiligentRenderInterface::DrawBlurPass(
     ++m_DrawCount;
 }
 
-// =============================================================================
-// RenderBlur — 对齐 RmlUi_Renderer_DX12::RenderBlur（Diligent/D3D12 路径）
-// =============================================================================
-
+// RenderBlur — Diligent/D3D top-left coordinates (GL3 reference; not GL window_flipped space).
 void RmlDiligentRenderInterface::RenderBlur(
     float sigma,
     PooledRenderTarget& source_destination,
     PooledRenderTarget& temp,
-    const Rml::Rectanglei& window_flipped)
+    const Rml::Rectanglei& blur_region)
 {
-    if (!source_destination.texture || !temp.texture || !m_PSO_Blur || !window_flipped.Valid()) {
+    if (!source_destination.texture || !temp.texture || !m_PSO_Blur || !blur_region.Valid()) {
         return;
     }
 
@@ -2295,82 +2526,69 @@ void RmlDiligentRenderInterface::RenderBlur(
     const Rml::Rectanglei original_scissor = m_ScissorRegionRml;
     const int fb_w = source_destination.width;
     const int fb_h = source_destination.height;
+    const Rml::Rectanglei output_region = blur_region;
 
-    Rml::Rectanglei scissor = window_flipped;
-    SetScissorRml(scissor, true);
+    // === 与 GL3 完全一致的 blur 算法 ===
+    // GL3: pass_level 次 downscale（halving）→ 在小分辨率上做 2-pass blur → 结果留在小 RT 中
+    // Diligent: 用小 RT 实现同样的流程
+    int small_w = fb_w, small_h = fb_h;
+    for (int i = 0; i < pass_level; ++i) {
+        small_w = Rml::Math::Max(1, (small_w + 1) / 2);
+        small_h = Rml::Math::Max(1, (small_h + 1) / 2);
+    }
+
+    auto rtSmallDst = RenderTargetPool::AcquireColor(m_RTPool, small_w, small_h);
+    auto rtSmallTmp = RenderTargetPool::AcquireColor(m_RTPool, small_w, small_h);
+    if (!rtSmallDst || !rtSmallDst->texture || !rtSmallTmp || !rtSmallTmp->texture) {
+        return;
+    }
 
     UnbindRenderTargets();
 
-    Diligent::Viewport vp{};
-    vp.TopLeftX = 0.f;
-    vp.TopLeftY = static_cast<float>(fb_h / 2);
-    vp.Width = static_cast<float>(fb_w / 2);
-    vp.Height = static_cast<float>(fb_h / 2);
-    vp.MinDepth = 0.f;
-    vp.MaxDepth = 1.f;
-    m_Context->SetViewports(1, &vp, static_cast<Diligent::Uint32>(fb_w), static_cast<Diligent::Uint32>(fb_h));
+    // 1. Downscale: 全分辨率 → 小分辨率（双线性插值）
+    SetFramebufferViewport(small_w, small_h);
+    const Rml::Rectanglei small_region = Rml::Rectanglei::FromCorners({0, 0}, {small_w, small_h});
+    SetScissorRml(small_region, false);
+    DrawFullscreenPassthrough(source_destination.SRV.RawPtr(), rtSmallDst->RTV.RawPtr(),
+        Rml::BlendMode::Replace, false, m_PSO_PassthroughReplace);
 
-    const Rml::Vector2f uv_scaling = {
-        (fb_w % 2 == 1) ? (1.f - 1.f / static_cast<float>(fb_w)) : 1.f,
-        (fb_h % 2 == 1) ? (1.f - 1.f / static_cast<float>(fb_h)) : 1.f};
+    // 2. Two-pass Gaussian blur at reduced resolution（与 GL3 完全一致的 sigma/texel）
+    const int blur_pad = Rml::Math::Max(1, static_cast<int>(std::ceil(blur_sigma * 3.f)) + 2);
+    Rml::Rectanglei blur_bounds = small_region.Extend(blur_pad);
+    blur_bounds.p0.x = Rml::Math::Clamp(blur_bounds.p0.x, 0, small_w);
+    blur_bounds.p0.y = Rml::Math::Clamp(blur_bounds.p0.y, 0, small_h);
+    blur_bounds.p1.x = Rml::Math::Clamp(blur_bounds.p1.x, 0, small_w);
+    blur_bounds.p1.y = Rml::Math::Clamp(blur_bounds.p1.y, 0, small_h);
 
-    for (int i = 0; i < pass_level; ++i) {
-        scissor.p0 = (scissor.p0 + Rml::Vector2i(1)) / 2;
-        scissor.p1 = Rml::Math::Max(scissor.p1 / 2, scissor.p0);
-        const bool from_source = (i % 2 == 0);
+    SetFramebufferViewport(small_w, small_h);
+    SetScissorRml(small_region, false);
 
-        if (from_source) {
-            DrawFullscreenPassthroughUV(source_destination.SRV.RawPtr(), temp.RTV.RawPtr(), {}, uv_scaling, m_PSO_PassthroughReplace);
-        } else {
-            DrawFullscreenPassthroughUV(temp.SRV.RawPtr(), source_destination.RTV.RawPtr(), {}, uv_scaling, m_PSO_PassthroughReplace);
-        }
-        SetScissorRml(scissor, true);
-    }
+    // Vertical blur: dst → tmp
+    UploadBlurCB(blur_sigma, {0.f, 1.f / static_cast<float>(small_h)}, blur_bounds, {small_w, small_h});
+    DrawBlurPass(rtSmallDst->SRV.RawPtr(), rtSmallTmp->RTV.RawPtr(), blur_bounds, small_w, small_h);
 
-    SetFramebufferViewport(fb_w, fb_h);
-
-    const bool transfer_to_temp_buffer = (pass_level % 2 == 0);
-    if (transfer_to_temp_buffer) {
-        DrawFullscreenPassthrough(source_destination.SRV.RawPtr(), temp.RTV.RawPtr(), Rml::BlendMode::Replace, false,
-            m_PSO_PassthroughReplace);
-    }
-
-    UploadBlurCB(blur_sigma, {0.f, 1.f / static_cast<float>(temp.height)}, scissor, {fb_w, fb_h});
-    DrawBlurPass(temp.SRV.RawPtr(), source_destination.RTV.RawPtr(), scissor, fb_w, fb_h);
-
+    // Clear dst for horizontal pass
     {
-        SetScissorRml(scissor.Extend(1), true);
-
-        Rml::Rectanglei scissor_ext = scissor.Extend(1);
-        scissor_ext = VerticallyFlipped(scissor_ext, fb_h);
-        scissor_ext.p0.x = Rml::Math::Max(scissor_ext.p0.x, 0);
-        scissor_ext.p0.y = Rml::Math::Max(scissor_ext.p0.y, 0);
-        scissor_ext.p1.x = Rml::Math::Min(scissor_ext.p1.x, fb_w);
-        scissor_ext.p1.y = Rml::Math::Min(scissor_ext.p1.y, fb_h);
-
-        Diligent::OptimizedClearValue clearVal{};
-        clearVal.Color[0] = clearVal.Color[1] = clearVal.Color[2] = clearVal.Color[3] = 0.f;
-        Diligent::ITextureView* pRTV = temp.RTV.RawPtr();
+        Diligent::OptimizedClearValue clr{};
+        clr.Color[0] = clr.Color[1] = clr.Color[2] = clr.Color[3] = 0.f;
+        Diligent::ITextureView* pRTV = rtSmallDst->RTV.RawPtr();
         m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        SetScissorRml(scissor_ext, false);
-        m_Context->ClearRenderTarget(pRTV, &clearVal, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        SetScissorRml(scissor, true);
+        SetScissorRml(blur_bounds, false);
+        m_Context->ClearRenderTarget(pRTV, &clr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        SetScissorRml(small_region, false);
     }
 
-    UploadBlurCB(blur_sigma, {1.f / static_cast<float>(fb_w), 0.f}, scissor, {fb_w, fb_h});
-    DrawBlurPass(source_destination.SRV.RawPtr(), temp.RTV.RawPtr(), scissor, fb_w, fb_h);
+    // Horizontal blur: tmp → dst
+    UploadBlurCB(blur_sigma, {1.f / static_cast<float>(small_w), 0.f}, blur_bounds, {small_w, small_h});
+    DrawBlurPass(rtSmallTmp->SRV.RawPtr(), rtSmallDst->RTV.RawPtr(), blur_bounds, small_w, small_h);
 
-    const Rml::Rectanglei window_flipped_twice = VerticallyFlipped(window_flipped, fb_h);
-    SetScissorRml(window_flipped_twice, false);
+    // 3. Upscale: 小分辨率 blurred result → 全分辨率 source_destination
+    SetFramebufferViewport(fb_w, fb_h);
+    SetScissorRml(output_region, false);
+    DrawFullscreenPassthrough(rtSmallDst->SRV.RawPtr(), source_destination.RTV.RawPtr(),
+        Rml::BlendMode::Replace, false, m_PSO_PassthroughReplace);
 
-    const Rml::Vector2i src_min = scissor.p0;
-    const Rml::Vector2i src_max = scissor.p1;
-    const Rml::Vector2i dst_min = window_flipped_twice.p0;
-    const Rml::Vector2i dst_max = window_flipped_twice.p1;
-
-    BlitFramebuffer(temp.SRV.RawPtr(), source_destination.RTV.RawPtr(), fb_w, fb_h, src_min.x, src_min.y, src_max.x, src_max.y,
-        dst_min.x, dst_max.y, dst_max.x, dst_min.y);
-
+    // Cleanup
     SetFramebufferViewport(m_CachedWidth > 0 ? m_CachedWidth : fb_w, m_CachedHeight > 0 ? m_CachedHeight : fb_h);
     m_ScissorRegionRml = original_scissor;
     if (original_scissor.Valid()) {
@@ -2416,7 +2634,7 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
             SetScissorRml(scissor);
             const float blend_factors[4] = {filter.blend_factor, filter.blend_factor, filter.blend_factor, filter.blend_factor};
             m_Context->SetBlendFactors(blend_factors);
-            DrawFullscreenPassthrough(source.SRV.RawPtr(), destination.RTV.RawPtr(), Rml::BlendMode::Blend, false,
+            DrawFullscreenPassthrough(source.SRV.RawPtr(), destination.RTV.RawPtr(), Rml::BlendMode::Replace, false,
                 m_PSO_PassthroughOpacity);
             m_LayerStack.SwapPostprocessPrimarySecondary();
             ++m_FilterRenderCount;
@@ -2425,7 +2643,7 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
         case FilterType::Blur: {
             auto& primary = m_LayerStack.GetPostprocessPrimary();
             auto& secondary = m_LayerStack.GetPostprocessSecondary();
-            RenderBlur(filter.sigma, primary, secondary, VerticallyFlipped(scissor, h));
+            RenderBlur(filter.sigma, primary, secondary, scissor);
         } break;
 
         case FilterType::DropShadow: {
@@ -2436,10 +2654,21 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
             }
 
             UploadDropShadowCB(ConvertToColorf(filter.color), scissor, {primary.width, primary.height});
-            const Rml::Vector2f uv_offset = filter.offset / Rml::Vector2f(-static_cast<float>(w), static_cast<float>(h));
+            // GL3 的 tex coord 空间经过 VerticallyFlipped：UV.y=0 → 屏幕顶部，UV.y↑ → 屏幕下移。
+            // Diligent 的 tex coord 空间不翻转：UV.y=0 → 屏幕底部，UV.y↑ → 屏幕上移。
+            // 因此 Y 分量需要取反（-H）才能匹配 GL3 的偏移方向。
+            const Rml::Vector2f uv_offset = filter.offset / Rml::Vector2f(-static_cast<float>(w), -static_cast<float>(h));
             SetSwapchainViewport();
             SetScissorRml(scissor);
             {
+                // 清空 secondary RT，防止残留上一个元素 filter 链的内容。
+                // GL3 最终合成用元素 scissor（残留不可见），Diligent 用全屏 scissor（残留会被写出）。
+                Diligent::OptimizedClearValue zeroClear{};
+                zeroClear.Color[0] = zeroClear.Color[1] = zeroClear.Color[2] = zeroClear.Color[3] = 0.0f;
+                Diligent::ITextureView* pClearRTV = secondary.RTV.RawPtr();
+                m_Context->SetRenderTargets(1, &pClearRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                m_Context->ClearRenderTarget(pClearRTV, &zeroClear, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
                 m_Context->SetPipelineState(m_PSO_DropShadow);
                 Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
                     m_PSO_DropShadow, primary.SRV.RawPtr(), m_DropShadowCB, [&](Diligent::IShaderResourceBinding* binding) {
@@ -2479,12 +2708,14 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
 
             if (filter.sigma >= 0.5f) {
                 auto& tertiary = m_LayerStack.GetPostprocessTertiary();
-                RenderBlur(filter.sigma, secondary, tertiary, VerticallyFlipped(scissor, h));
+                RenderBlur(filter.sigma, secondary, tertiary, scissor);
             }
 
-            SetSwapchainViewport();
-            SetScissorRml(scissor);
+            // 与 GL3 一致：blur 之后，将原始内容（primary）用 alpha blend 叠加到阴影（secondary）上。
+            // 这样最终 secondary = 阴影 + 原始内容（文字、背景、图片），swap 后 primary 持有完整结果。
+            // 如果缺少这步，只有阴影可见，原始内容丢失。
             DrawFullscreenPassthrough(primary.SRV.RawPtr(), secondary.RTV.RawPtr(), Rml::BlendMode::Blend, false);
+
             m_LayerStack.SwapPostprocessPrimarySecondary();
             ++m_FilterRenderCount;
         } break;
@@ -2499,6 +2730,11 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
             UploadColorMatrixCB(filter.color_matrix);
             SetSwapchainViewport();
             SetScissorRml(scissor);
+            Diligent::OptimizedClearValue clearVal{};
+            clearVal.Color[0] = clearVal.Color[1] = clearVal.Color[2] = clearVal.Color[3] = 0.0f;
+            Diligent::ITextureView* pRTV = destination.RTV.RawPtr();
+            m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            m_Context->ClearRenderTarget(pRTV, &clearVal, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             m_Context->SetPipelineState(m_PSO_ColorMatrix);
             Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
                 m_PSO_ColorMatrix, source.SRV.RawPtr(), m_ColorMatrixCB, [&](Diligent::IShaderResourceBinding* binding) {
@@ -2513,8 +2749,8 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
                     }
                 });
 
-            Diligent::ITextureView* pRTV = destination.RTV.RawPtr();
-            m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            Diligent::ITextureView* pRTV1 = destination.RTV.RawPtr();
+            m_Context->SetRenderTargets(1, &pRTV1, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             Diligent::Uint64 offset = 0;
             Diligent::IBuffer* pVB = m_FullscreenVB;
             m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
@@ -2537,6 +2773,11 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
 
             SetSwapchainViewport();
             SetScissorRml(scissor);
+            Diligent::OptimizedClearValue clearVal{};
+            clearVal.Color[0] = clearVal.Color[1] = clearVal.Color[2] = clearVal.Color[3] = 0.0f;
+            Diligent::ITextureView* pRTV = destination.RTV.RawPtr();
+            m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            m_Context->ClearRenderTarget(pRTV, &clearVal, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             m_Context->SetPipelineState(m_PSO_BlendMask);
             Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
                 m_PSO_BlendMask, source.SRV.RawPtr(), nullptr, [&](Diligent::IShaderResourceBinding* binding) {
@@ -2552,8 +2793,8 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
                 },
                 blend_mask.SRV.RawPtr());
 
-            Diligent::ITextureView* pRTV = destination.RTV.RawPtr();
-            m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            Diligent::ITextureView* pRTV1 = destination.RTV.RawPtr();
+            m_Context->SetRenderTargets(1, &pRTV1, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             Diligent::Uint64 offset = 0;
             Diligent::IBuffer* pVB = m_FullscreenVB;
             m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
@@ -2648,13 +2889,6 @@ Rml::CompiledFilterHandle RmlDiligentRenderInterface::CompileFilter(const Rml::S
     }
 
     if (filter.type != FilterType::Invalid) {
-        // #region agent log
-        ++g_AgentLiveFilters;
-        AgentDebugLog("RmlDiligentRenderInterface.cpp:CompileFilter", "compile filter", "C",
-            ("{\"liveFilters\":" + std::to_string(g_AgentLiveFilters) + ",\"type\":" +
-                std::to_string(static_cast<int>(filter.type)) + ",\"name\":\"" + name + "\"}")
-                .c_str());
-        // #endregion
         return reinterpret_cast<Rml::CompiledFilterHandle>(new CompiledFilter(filter));
     }
 
@@ -2664,18 +2898,9 @@ Rml::CompiledFilterHandle RmlDiligentRenderInterface::CompileFilter(const Rml::S
 
 void RmlDiligentRenderInterface::ReleaseFilter(Rml::CompiledFilterHandle filter)
 {
-    if (!filter) {
-        return;
+    if (filter) {
+        delete reinterpret_cast<CompiledFilter*>(filter);
     }
-    const auto* compiled = reinterpret_cast<const CompiledFilter*>(filter);
-    const int filterType = static_cast<int>(compiled->type);
-    delete reinterpret_cast<CompiledFilter*>(filter);
-    // #region agent log
-    --g_AgentLiveFilters;
-    AgentDebugLog("RmlDiligentRenderInterface.cpp:ReleaseFilter", "release filter", "C",
-        ("{\"liveFilters\":" + std::to_string(g_AgentLiveFilters) + ",\"type\":" + std::to_string(filterType) + "}")
-            .c_str());
-    // #endregion
 }
 
 Rml::CompiledFilterHandle RmlDiligentRenderInterface::SaveLayerAsMaskImage()
@@ -2688,19 +2913,34 @@ Rml::CompiledFilterHandle RmlDiligentRenderInterface::SaveLayerAsMaskImage()
         return {};
     }
 
+    //Diligent::OptimizedClearValue clearVal{};
+    //clearVal.Color[0] = clearVal.Color[1] = clearVal.Color[2] = clearVal.Color[3] = 0.f;
+    //if (auto* pRTV = destination.RTV.RawPtr()) {
+    //    m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //    const bool previous_scissor_enabled = m_ScissorEnabled;
+    //    m_ScissorEnabled = false;
+    //    if (m_CachedWidth > 0 && m_CachedHeight > 0) {
+    //        Diligent::Rect fullScissor{};
+    //        fullScissor.left = 0;
+    //        fullScissor.top = 0;
+    //        fullScissor.right = m_CachedWidth;
+    //        fullScissor.bottom = m_CachedHeight;
+    //        m_Context->SetScissorRects(1, &fullScissor, static_cast<Diligent::Uint32>(m_CachedWidth),
+    //            static_cast<Diligent::Uint32>(m_CachedHeight));
+    //    }
+    //    m_Context->ClearRenderTarget(pRTV, &clearVal, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //    m_ScissorEnabled = previous_scissor_enabled;
+    //}
+
     if (m_ScissorRegionRml.Valid()) {
         SetScissorRml(m_ScissorRegionRml);
     }
-    DrawFullscreenPassthrough(source.SRV.RawPtr(), destination.RTV.RawPtr(), Rml::BlendMode::Replace, false);
+    DrawFullscreenPassthrough(source.SRV.RawPtr(), destination.RTV.RawPtr(), Rml::BlendMode::Replace, false,
+        m_PSO_PassthroughReplace);
     BindTopLayer();
 
     auto* filter = new CompiledFilter{};
     filter->type = FilterType::MaskImage;
-    // #region agent log
-    ++g_AgentLiveFilters;
-    AgentDebugLog("RmlDiligentRenderInterface.cpp:SaveLayerAsMaskImage", "mask filter allocated", "C",
-        ("{\"liveFilters\":" + std::to_string(g_AgentLiveFilters) + "}").c_str());
-    // #endregion
     return reinterpret_cast<Rml::CompiledFilterHandle>(filter);
 }
 
@@ -2721,30 +2961,13 @@ Rml::TextureHandle RmlDiligentRenderInterface::SaveLayerAsTexture()
     BlitLayerToPostprocessPrimary(m_LayerStack.GetTopLayerHandle());
 
     auto& source = m_LayerStack.GetPostprocessPrimary();
-    auto& destination = m_LayerStack.GetPostprocessSecondary();
-    if (!source.SRV || !destination.RTV || !destination.texture) {
+    if (!source.SRV) {
         return {};
     }
 
-    const int fb_w = source.width > 0 ? source.width : static_cast<int>(m_SwapChain->GetDesc().Width);
-    const int fb_h = source.height > 0 ? source.height : static_cast<int>(m_SwapChain->GetDesc().Height);
-
-    // Match GL3/DX12: extract scissor subregion with vertical flip into postprocess secondary.
     const bool previous_scissor_enabled = m_ScissorEnabled;
-    m_ScissorEnabled = false;
-    if (m_Context) {
-        Diligent::Rect fullScissor{};
-        fullScissor.left = 0;
-        fullScissor.top = 0;
-        fullScissor.right = fb_w;
-        fullScissor.bottom = fb_h;
-        m_Context->SetScissorRects(1, &fullScissor, static_cast<Diligent::Uint32>(fb_w), static_cast<Diligent::Uint32>(fb_h));
-    }
-
-    BlitFramebuffer(source.SRV.RawPtr(), destination.RTV.RawPtr(), fb_w, fb_h, bounds.Left(), fb_h - bounds.Bottom(),
-        bounds.Right(), fb_h - bounds.Top(), 0, height, width, 0);
-
-    auto pooled = RenderTargetPool::AcquireColor(m_RTPool, width, height);
+    constexpr int kLayerTextureGuardBand = 1;
+    auto pooled = RenderTargetPool::AcquireColor(m_RTPool, width + 2 * kLayerTextureGuardBand, height + 2 * kLayerTextureGuardBand);
     if (!pooled || !pooled->texture) {
         m_ScissorEnabled = previous_scissor_enabled;
         if (previous_scissor_enabled && bounds.Valid()) {
@@ -2754,17 +2977,47 @@ Rml::TextureHandle RmlDiligentRenderInterface::SaveLayerAsTexture()
     }
 
     UnbindRenderTargets();
+    Diligent::OptimizedClearValue pooledClear{};
+    pooledClear.Color[0] = pooledClear.Color[1] = pooledClear.Color[2] = pooledClear.Color[3] = 0.f;
+    if (auto* pPooledRTV = pooled->RTV.RawPtr()) {
+        m_Context->SetRenderTargets(1, &pPooledRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        m_Context->ClearRenderTarget(pPooledRTV, &pooledClear, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    }
+
+    Diligent::Box srcBox1{0, static_cast<Diligent::Uint32>(width), 0, static_cast<Diligent::Uint32>(height)};
     Diligent::CopyTextureAttribs copyAttribs;
-    copyAttribs.pSrcTexture = destination.texture;
+    copyAttribs.pSrcTexture = source.texture;
+    copyAttribs.pSrcBox = &srcBox1;
     copyAttribs.pDstTexture = pooled->texture;
+    copyAttribs.DstX = static_cast<Diligent::Uint32>(kLayerTextureGuardBand);
+    copyAttribs.DstY = static_cast<Diligent::Uint32>(kLayerTextureGuardBand);
     copyAttribs.SrcTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
     copyAttribs.DstTextureTransitionMode = Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
     m_Context->CopyTexture(copyAttribs);
+    UnbindRenderTargets();
 
+    // Match DX12: restore scissor to extracted bounds and rebind the top layer (with shared DSV).
     m_ScissorEnabled = previous_scissor_enabled;
     if (previous_scissor_enabled && bounds.Valid()) {
-        SetScissorRml(bounds, false);
+        SetScissorRegion(bounds);
+    } else if (m_Context && m_SwapChain) {
+        Diligent::Rect fullScissor{};
+        fullScissor.left = 0;
+        fullScissor.top = 0;
+        fullScissor.right = static_cast<long>(m_SwapChain->GetDesc().Width);
+        fullScissor.bottom = static_cast<long>(m_SwapChain->GetDesc().Height);
+        m_Context->SetScissorRects(1, &fullScissor, static_cast<Diligent::Uint32>(m_SwapChain->GetDesc().Width),
+            static_cast<Diligent::Uint32>(m_SwapChain->GetDesc().Height));
     }
+    Diligent::Viewport fullVp{};
+    fullVp.TopLeftX = 0.f;
+    fullVp.TopLeftY = 0.f;
+    fullVp.Width = static_cast<float>(m_SwapChain->GetDesc().Width);
+    fullVp.Height = static_cast<float>(m_SwapChain->GetDesc().Height);
+    fullVp.MinDepth = 0.f;
+    fullVp.MaxDepth = 1.f;
+    m_Context->SetViewports(1, &fullVp, static_cast<Diligent::Uint32>(m_SwapChain->GetDesc().Width),
+        static_cast<Diligent::Uint32>(m_SwapChain->GetDesc().Height));
     BindTopLayer();
 
     auto* handle = new TextureHandle();
@@ -2772,13 +3025,7 @@ Rml::TextureHandle RmlDiligentRenderInterface::SaveLayerAsTexture()
     handle->SRV = pooled->SRV;
     handle->pooled = std::move(pooled);
     handle->fromPool = true;
-    // #region agent log
-    ++g_AgentLiveTextures;
-    AgentDebugLog("RmlDiligentRenderInterface.cpp:SaveLayerAsTexture", "box-shadow texture saved", "D",
-        ("{\"liveTextures\":" + std::to_string(g_AgentLiveTextures) + ",\"w\":" + std::to_string(width) +
-            ",\"h\":" + std::to_string(height) + "}")
-            .c_str());
-    // #endregion
+    ++m_SaveLayerAsTextureCount;
     return reinterpret_cast<Rml::TextureHandle>(handle);
 }
 

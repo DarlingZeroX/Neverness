@@ -1,5 +1,4 @@
 ﻿using Neverness.Editor.Framework.Public;
-using Neverness.Editor.Shell.Public;
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Bootstrap;
@@ -7,7 +6,8 @@ using Neverness.Runtime.Engine;
 using Neverness.Runtime.Engine.Runtime;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.Private;
-using Neverness.Editor.Core.Private.Features;
+using Neverness.Editor.ImGuiFrontend.Features;
+using Neverness.Editor.ImGuiFrontend.Public;
 using Neverness.Editor.Assets.Public;
 using Neverness.Editor.Scene.Public;
 using Neverness.Editor.MediaImporter;
@@ -99,8 +99,9 @@ internal static class EditorApplicationRunner
 					var sceneManager = new SceneManager();
 
 					EditorFrameworkModule.Install();
-					ShellModule.Install(window);
+					ImGuiFrontendModule.InstallShell(window);  // 安装主窗口和菜单栏
 					EditorCoreModule.Install();
+					ImGuiFrontendModule.Install();  // 注册 ViewFactory、Inspector、ViewerService
 					MediaImporterModule.Install();
 					MediaModule.Install();
 				CoreModuleImp.Context.RegisterService<IAudioService>(new NativeAudioService());
@@ -116,6 +117,12 @@ internal static class EditorApplicationRunner
 					s_editorEventPump = new EditorEventPump(
 						nativePump,
 						CoreModuleImp.Context.Events);
+
+					/* 编辑器组装层：创建 ViewModel、Controller、View，注册到 PanelManager */
+					EditorCompositionRoot.Build();
+
+					/* 注册上下文菜单贡献者（需要 Controller 实例） */
+					ImGuiFrontendModule.RegisterContextMenuContributors();
 				}
 
 				var deltaTime = EngineTime.DeltaTime;
@@ -141,6 +148,9 @@ internal static class EditorApplicationRunner
 		{
 			s_editorEventPump?.Dispose();
 			s_editorEventPump = null;
+
+			/* 清理 CompositionRoot */
+			EditorCompositionRoot.Shutdown();
 
 			ApplicationHost.Shutdown();
 			RuntimeBootstrap.Shutdown();

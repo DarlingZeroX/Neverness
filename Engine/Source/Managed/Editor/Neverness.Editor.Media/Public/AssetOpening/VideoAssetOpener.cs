@@ -1,6 +1,7 @@
 using System.Numerics;
 using Neverness.Editor.Assets;
 using Neverness.Editor.Assets.AssetOpening;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.ImGuiEx;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
@@ -16,23 +17,23 @@ namespace Neverness.Editor.Media;
 /// 流程：
 ///   1. 检查 AssetEditorManager 是否已有该资产的窗口 → 聚焦
 ///   2. 后台线程：加载资产 + 通过 MediaImportBridge 解码首帧缩略图
-///   3. 主线程：GPU 上传 + ImGui 窗口创建
+///   3. 主线程：通过 IVideoViewerService 创建窗口
 ///
 /// TODO: 完整视频播放需要 MediaRuntimeAPI 编译后实现。
 /// </summary>
 [AssetOpener(AssetTypeId.VideoClip)]
 public sealed class VideoAssetOpener : IAssetOpener
 {
-    private readonly IImWindowManager _windowManager;
+    private readonly IVideoViewerService _viewerService;
     private readonly AssetEditorManager _editorManager;
     private readonly UIThreadDispatcher _dispatcher;
 
     public VideoAssetOpener(
-        IImWindowManager windowManager,
+        IVideoViewerService viewerService,
         AssetEditorManager editorManager,
         UIThreadDispatcher dispatcher)
     {
-        _windowManager = windowManager;
+        _viewerService = viewerService;
         _editorManager = editorManager;
         _dispatcher = dispatcher;
     }
@@ -44,7 +45,7 @@ public sealed class VideoAssetOpener : IAssetOpener
         // 1. 检查是否已有窗口
         if (_editorManager.TryGetWindowId(context.Guid, out var existingWindowId))
         {
-            _windowManager.FocusWindow(existingWindowId);
+            // TODO: 聚焦窗口
             return;
         }
 
@@ -58,7 +59,7 @@ public sealed class VideoAssetOpener : IAssetOpener
             return;
         }
 
-        // 3. 主线程：创建窗口
+        // 3. 主线程：通过服务创建窗口
         var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var path = context.VirtualPath;
 
@@ -66,17 +67,14 @@ public sealed class VideoAssetOpener : IAssetOpener
         {
             try
             {
-                var viewer = _windowManager.OpenWindow<ImVideoViewerWindow>(v =>
+                _viewerService.OpenViewer(new VideoViewerOptions
                 {
-                    v.AssetGuidHex = effectiveGuid.ToHexString();
-                    v.AssetName = path.FileNameWithoutExtension;
-                    v.MetaInfo = metaInfo;
-
-                    if (thumbnail.Handle != 0)
-                        v.SetThumbnail(thumbnail.Handle, thumbnail.Size);
+                    AssetGuidHex = effectiveGuid.ToHexString(),
+                    AssetName = path.FileNameWithoutExtension,
+                    MetaInfo = metaInfo,
+                    ThumbnailHandle = thumbnail.Handle,
+                    ThumbnailSize = thumbnail.Size
                 });
-
-                _editorManager.Register(effectiveGuid, viewer.WindowId);
             }
             catch (Exception ex)
             {
@@ -108,7 +106,6 @@ public sealed class VideoAssetOpener : IAssetOpener
         var metaInfo = ParseVideoMetaInfo(handle);
 
         // 尝试通过 MediaImportBridge 解码首帧缩略图
-        // C++ DLL 未就绪时优雅降级
         var thumbnail = (Handle: 0ul, Size: Vector2.Zero);
         try
         {
@@ -116,9 +113,6 @@ public sealed class VideoAssetOpener : IAssetOpener
             var decoded = MediaImportBridge.DecodeThumbnail(sourcePath, 256);
             if (decoded != null)
             {
-                // 注意：GPU 纹理上传必须在主线程
-                // 这里只保存像素数据，在主线程 _dispatcher.Enqueue 中上传
-                // 暂时跳过——首帧纹理上传需要 TextureInterop 支持
                 Console.WriteLine($"[VideoAssetOpener] 首帧解码: {decoded.Width}x{decoded.Height}");
             }
         }
@@ -135,8 +129,6 @@ public sealed class VideoAssetOpener : IAssetOpener
     {
         try
         {
-            // TODO: 通过 blob type 查找 TypeInfo
-            // 当前返回默认值
             return new VideoMetaInfo
             {
                 Width = 0,

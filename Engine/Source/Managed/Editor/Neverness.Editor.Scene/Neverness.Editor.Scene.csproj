@@ -38,7 +38,6 @@
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
-		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Private\Debug\" />

@@ -1,5 +1,5 @@
 using Neverness.Editor.Framework.Public;
-using Neverness.Editor.Scene.Private.Inspector;
+using Neverness.Editor.Core.Public.Inspector;
 
 namespace Neverness.Editor.Media;
 

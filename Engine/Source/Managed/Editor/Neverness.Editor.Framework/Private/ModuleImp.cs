@@ -13,10 +13,12 @@ public static class EditorFrameworkModuleImp
     /// </summary>
     public static void Install()
     {
-        // 注册 Toolbar 按钮
-        ImGuiToolbarRenderer.Register(new ToolbarCommand("save", FontAwesome5Pro.Save, "Save Scene", "file.save", 100));
-        ImGuiToolbarRenderer.Register(new ToolbarCommand("play", FontAwesome5Pro.Play, "Play", "game.play", 200));
-        ImGuiToolbarRenderer.Register(new ToolbarCommand("stop", FontAwesome5Pro.Stop, "Stop", "game.stop", 300));
+        // 注册 Toolbar 按钮到 ToolbarRegistry（UI 无关）
+        // 实际渲染由 ImGuiFrontend 的 IToolbarRenderer 负责
+        var toolbar = ToolbarRegistry.Instance;
+        toolbar.Register(new ToolbarCommand("save", FontAwesome5Pro.Save, "Save Scene", "file.save", 100));
+        toolbar.Register(new ToolbarCommand("play", FontAwesome5Pro.Play, "Play", "game.play", 200));
+        toolbar.Register(new ToolbarCommand("stop", FontAwesome5Pro.Stop, "Stop", "game.stop", 300));
     }
 
     public static void TickEditorUI()

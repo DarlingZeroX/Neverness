@@ -10,6 +10,7 @@ add_library(NNRuntimeNativeEngineAPI STATIC
     Source/NNEngineContext.cpp
     Source/NNRenderAPI.cpp
     Source/NNResourceAPI.cpp
+    Source/NNMaterialAPI.cpp
 )
 
 target_include_directories(NNRuntimeNativeEngineAPI PUBLIC
@@ -19,6 +20,8 @@ target_include_directories(NNRuntimeNativeEngineAPI PUBLIC
 target_link_libraries(NNRuntimeNativeEngineAPI PUBLIC
     NNRuntimeCore
     NNRuntimeRender
+    NNRuntimeRenderAssets
+    NNRuntimeSRP
 )
 
 target_link_libraries(NNRuntimeNativeEngineAPI PRIVATE

@@ -1,28 +1,38 @@
 using Neverness.Editor.Framework.Private;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Scene.Private.PlayMode;
+using Neverness.Editor.Scene.Private.Panel;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Engine;
-using Neverness.Editor.Scene.Private.Panel;
+using Neverness.Editor.Scene.Private.Service;
+using Neverness.Editor.Core.Public;
 
 namespace Neverness.Editor.Scene.Private;
 
 /// <summary>
 /// 场景编辑模块内部安装实现。
-/// 负责：场景浏览器面板、DetailInspector 面板、编辑器视口面板。
+/// 负责：Service 注册、PlayMode 控制器、场景事件桥接。
+///
+/// 注意：面板注册已移至 EditorCompositionRoot，此处不再注册 UI 面板。
 /// </summary>
 internal static class SceneModuleImp
 {
-    private static SceneBrowser? s_sceneBrowser;
-    private static DetailInspector? s_detailInspector;
     private static SceneEditorBridge? s_bridge;
-    private static EditorViewport? s_editorViewport;
 
     /// <summary>播放模式控制器——驱动 PlayMode 状态机。</summary>
     public static PlayModeController PlayModeController { get; private set; } = null!;
 
-    /// <summary>获取 SceneBrowser 的层级缓存（Debug / 诊断用）。</summary>
-    public static Cache.SceneHierarchyCache? HierarchyCache => s_sceneBrowser?.Cache;
+    /// <summary>场景查询服务实例。</summary>
+    public static SceneQueryServiceImpl? SceneQueryService { get; private set; }
+
+    /// <summary>Inspector 服务实例。</summary>
+    public static InspectorServiceImpl? InspectorService { get; private set; }
+
+    /// <summary>视口服务实例。</summary>
+    public static ViewportServiceImpl? ViewportService { get; private set; }
+
+    /// <summary>获取层级缓存（Debug / 诊断用，通过 Service 访问）。</summary>
+    public static Cache.SceneHierarchyCache? HierarchyCache => SceneQueryService?.Cache;
 
     /// <summary>安装场景编辑模块（场景句柄后续设置）。</summary>
     public static void Install(SceneManager sceneManager)
@@ -38,24 +48,20 @@ internal static class SceneModuleImp
             return true;
         };
 
-        // 创建场景浏览器
-        s_sceneBrowser = new SceneBrowser(sceneManager);
+        // 创建并注册 Service 实现（Controller 通过服务定位器消费）
+        SceneQueryService = new SceneQueryServiceImpl();
+        InspectorService = new InspectorServiceImpl();
+        ViewportService = new ViewportServiceImpl();
 
+        context.RegisterService<ISceneQueryService>(SceneQueryService);
+        context.RegisterService<IInspectorService>(InspectorService);
+        context.RegisterService<IViewportService>(ViewportService);
+
+        // 注册上下文菜单贡献者
         EditorMenuRegistry.RegisterContextMenuContributor(new SceneBrowserContextMenuContributor());
-        PanelManager.Instance.AddChildPanel("SceneBrowser", s_sceneBrowser);
-
-        // 创建 Detail Inspector
-        s_detailInspector = new DetailInspector(sceneManager);
-        PanelManager.Instance.AddChildPanel("DetailInspector", s_detailInspector);
-
-        s_editorViewport = new EditorViewport();
-        PanelManager.Instance.AddChildPanel("EditorViewport", s_editorViewport);
 
         // 创建场景编辑器桥接（事件驱动）
         s_bridge = new SceneEditorBridge(sceneManager);
-
-        // 连接事件总线和缓存引用
-        ConnectPanels();
 
         // 注册 PlayMode 命令（Shell 通过命令系统调用，不直接引用 Scene 模块）
         RegisterPlayModeCommands();
@@ -92,18 +98,34 @@ internal static class SceneModuleImp
             SortOrder: 300));
     }
 
-    /// <summary>设置场景浏览器关联的场景句柄（场景切换时清除旧选中状态）。</summary>
+    /// <summary>设置场景句柄（场景切换时调用）。</summary>
     public static void SetSceneHandle(ulong sceneHandle)
     {
-        if (s_sceneBrowser != null)
-            s_sceneBrowser.SceneHandle = sceneHandle;
-        if (s_detailInspector != null)
+        // 同步场景句柄到 Service 层
+        SceneQueryService?.SetActiveScene(sceneHandle);
+        ViewportService?.SetScene(sceneHandle);
+
+        // 同步到 ViewModel 和 Controller（通过 EditorCompositionRoot）
+        var sceneBrowserVM = EditorCompositionRoot.SceneBrowserVM;
+        var sceneBrowserCtrl = EditorCompositionRoot.SceneBrowserController;
+        var viewportVM = EditorCompositionRoot.ViewportVM;
+        var viewportCtrl = EditorCompositionRoot.ViewportController;
+
+        if (sceneBrowserVM != null)
         {
-            s_detailInspector.SceneHandle = sceneHandle;
-            s_detailInspector.ClearSelection();
+            sceneBrowserVM.HasScene = sceneHandle != 0;
         }
-        if(s_editorViewport != null)
-            s_editorViewport.SetScene(sceneHandle);
+
+        if (viewportVM != null)
+        {
+            viewportVM.SceneHandle = sceneHandle;
+        }
+
+        // 刷新场景浏览器
+        if (sceneHandle != 0)
+        {
+            sceneBrowserCtrl?.RefreshTree();
+        }
     }
 
     /// <summary>注册 PlayMode 相关命令（Shell 通过命令系统调用）。</summary>
@@ -142,25 +164,5 @@ internal static class SceneModuleImp
             Execute = _ => PlayModeController.Pause(),
             CanExecute = () => PlayModeController.CurrentMode == Editor.Core.Public.PlayMode.Playing,
         });
-    }
-
-    /// <summary>连接面板之间的引用（事件总线、层级缓存）。</summary>
-    private static void ConnectPanels()
-    {
-        if (s_sceneBrowser == null || s_detailInspector == null)
-            return;
-
-        try
-        {
-            var eventBus = Neverness.Editor.Core.Public.EditorCoreModule.Context.Events;
-            s_sceneBrowser.EventBus = eventBus;
-        }
-        catch (InvalidOperationException)
-        {
-            // EditorCoreModule 尚未安装，DetailInspector 会在 OnUpdate 中自行重试
-        }
-
-        // 将 SceneBrowser 的缓存引用传递给 DetailInspector
-        s_detailInspector.HierarchyCache = s_sceneBrowser.Cache;
     }
 }

@@ -1,6 +1,7 @@
 using System.Numerics;
 using Neverness.Editor.Assets;
 using Neverness.Editor.Assets.AssetOpening;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.ImGuiEx;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Audio;
@@ -17,23 +18,23 @@ namespace Neverness.Editor.Media;
 /// 流程：
 ///   1. 检查 AssetEditorManager 是否已有该资产的窗口 → 聚焦
 ///   2. 后台线程：同步加载已导入的资产 + 解析元信息
-///   3. 主线程：创建 IAudioPlayer + 打开 ImAudioViewerWindow
+///   3. 主线程：创建 IAudioPlayer + 通过 IAudioViewerService 打开窗口
 /// </summary>
 [AssetOpener(AssetTypeId.AudioClip)]
 public sealed class AudioAssetOpener : IAssetOpener
 {
-    private readonly IImWindowManager _windowManager;
+    private readonly IAudioViewerService _viewerService;
     private readonly AssetEditorManager _editorManager;
     private readonly UIThreadDispatcher _dispatcher;
     private readonly IAudioService _audioService;
 
     public AudioAssetOpener(
-        IImWindowManager windowManager,
+        IAudioViewerService viewerService,
         AssetEditorManager editorManager,
         UIThreadDispatcher dispatcher,
         IAudioService audioService)
     {
-        _windowManager = windowManager;
+        _viewerService = viewerService;
         _editorManager = editorManager;
         _dispatcher = dispatcher;
         _audioService = audioService;
@@ -46,7 +47,7 @@ public sealed class AudioAssetOpener : IAssetOpener
         // 1. 检查是否已有窗口
         if (_editorManager.TryGetWindowId(context.Guid, out var existingWindowId))
         {
-            _windowManager.FocusWindow(existingWindowId);
+            // TODO: 聚焦窗口
             return;
         }
 
@@ -60,7 +61,7 @@ public sealed class AudioAssetOpener : IAssetOpener
             return;
         }
 
-        // 3. 主线程：创建播放器 + 窗口
+        // 3. 主线程：创建播放器 + 通过服务打开窗口
         var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var path = context.VirtualPath;
 
@@ -68,23 +69,20 @@ public sealed class AudioAssetOpener : IAssetOpener
         {
             try
             {
-                // 创建 Runtime Audio 播放器（使用 VFS 虚拟路径）
+                // 创建 Runtime Audio 播放器
                 var player = _audioService.CreatePlayer();
                 bool loaded = player.Load(vfsPath);
                 if (!loaded)
                     Console.WriteLine($"[AudioAssetOpener] 播放器加载失败: {vfsPath}");
 
-                // 创建查看器窗口
-                var viewer = _windowManager.OpenWindow<ImAudioViewerWindow>(v =>
+                // 通过服务创建查看器窗口
+                _viewerService.OpenViewer(new AudioViewerOptions
                 {
-                    v.AssetGuidHex = effectiveGuid.ToHexString();
-                    v.AssetName = path.FileNameWithoutExtension;
-                    v.MetaInfo = metaInfo;
-                    if (loaded)
-                        v.SetPlayer(player);
+                    AssetGuidHex = effectiveGuid.ToHexString(),
+                    AssetName = path.FileNameWithoutExtension,
+                    MetaInfo = metaInfo,
+                    Player = loaded ? player : null
                 });
-
-                _editorManager.Register(effectiveGuid, viewer.WindowId);
             }
             catch (Exception ex)
             {
@@ -112,10 +110,8 @@ public sealed class AudioAssetOpener : IAssetOpener
             handle = importResult.Handle;
         }
 
-        // VFS 虚拟路径（传给 Native 播放器）
         string vfsPath = context.VirtualPath.FullPath;
 
-        // 绝对路径（仅用于解析元信息头）
         string absPath = "";
         try
         {
@@ -124,7 +120,6 @@ public sealed class AudioAssetOpener : IAssetOpener
         }
         catch { }
 
-        // 从源文件解析元信息
         var metaInfo = absPath.Length > 0
             ? ParseAudioMetaInfo(handle, absPath)
             : default;
@@ -162,7 +157,6 @@ public sealed class AudioAssetOpener : IAssetOpener
                 return ParseMp3Meta(fileData, pcmBlobSize);
             }
 
-            // 兜底
             ulong sampleCount = pcmBlobSize / 4;
             return new AudioMetaInfo
             {

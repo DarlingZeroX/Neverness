@@ -78,8 +78,11 @@ public:
         m_TextureDrawCount = 0;
         m_ShaderDrawCount = 0;
         m_ClipMaskDrawCount = 0;
+        m_CallbackTextureDrawCount = 0;
     }
     uint32_t GetTextureDrawCount() const { return m_TextureDrawCount; }
+    uint32_t GetCallbackTextureDrawCount() const { return m_CallbackTextureDrawCount; }
+    uint32_t GetSaveLayerAsTextureCount() const { return m_SaveLayerAsTextureCount; }
     uint32_t GetShaderDrawCount() const { return m_ShaderDrawCount; }
     uint32_t GetCompileShaderCount() const { return m_CompileShaderCount; }
     uint32_t GetClipMaskDrawCount() const { return m_ClipMaskDrawCount; }
@@ -152,7 +155,7 @@ private:
                                      Diligent::IPipelineState* pso_override = nullptr);
     void RenderFilters(Rml::Span<const Rml::CompiledFilterHandle> filters);
     void RenderBlur(float sigma, PooledRenderTarget& source_destination, PooledRenderTarget& temp,
-                    const Rml::Rectanglei& window_flipped);
+                    const Rml::Rectanglei& blur_region);
     void UploadBlurCB(float sigma, const Rml::Vector2f& texel_offset, const Rml::Rectanglei& scissor,
                       const Rml::Vector2i& framebuffer_size);
     void UploadDropShadowCB(const Rml::Colourf& color, const Rml::Rectanglei& scissor, const Rml::Vector2i& framebuffer_size);
@@ -212,6 +215,7 @@ private:
     Diligent::RefCntAutoPtr<Diligent::IShader> m_PS_Creation;
 
     Diligent::RefCntAutoPtr<Diligent::IBuffer> m_ConstantBuffer;
+    Diligent::RefCntAutoPtr<Diligent::IBuffer> m_ProjectionCB; // 全局投影矩阵 CB
     Diligent::RefCntAutoPtr<Diligent::IBuffer> m_GradientCB;
     Diligent::RefCntAutoPtr<Diligent::IBuffer> m_CreationCB;
 
@@ -222,6 +226,7 @@ private:
     Diligent::RefCntAutoPtr<Diligent::IShader> m_VS_PassThrough;
     Diligent::RefCntAutoPtr<Diligent::IShader> m_PS_Passthrough;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_Passthrough;
+    Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_Passthrough_StencilEqual;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_PassthroughPresent;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_PassthroughOpacity;
     Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_PSO_PassthroughReplace;
@@ -248,7 +253,7 @@ private:
     Rml::Rectanglei m_ScissorRegionRml;
 
     Rml::Matrix4f m_Projection;
-    Rml::Matrix4f m_Transform;
+    Rml::Matrix4f m_Transform; // CSS transform（不含投影）
 
     bool m_SwapchainPassActive = false;
 
@@ -257,8 +262,11 @@ private:
     uint32_t m_ShaderDrawCount = 0;
     uint32_t m_CompileShaderCount = 0;
     uint32_t m_ClipMaskDrawCount = 0;
+    uint32_t m_CallbackTextureDrawCount = 0;
+    uint32_t m_SaveLayerAsTextureCount = 0;
     uint32_t m_PushLayerCount = 0;
 
+    bool m_ClipMaskEnabled = false;
     bool m_UseStencilEqual = false;
     uint8_t m_StencilTestValue = 0;
     uint32_t m_CompositeCount = 0;

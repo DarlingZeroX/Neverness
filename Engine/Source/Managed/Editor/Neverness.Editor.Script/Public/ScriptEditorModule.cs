@@ -14,9 +14,8 @@ using Neverness.Editor.Assets.AssetFactories;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.ProjectSystem.Public;
-using Neverness.Editor.Scene.Private.Inspector;
+using Neverness.Editor.Core.Public.Inspector;
 using Neverness.Editor.Script.Private;
-using Neverness.Editor.Script.Private.Inspector;
 using Neverness.Editor.Scene.Private.PlayMode;
 using Neverness.Editor.Scene.Public;
 using Neverness.Gameplay;
@@ -147,7 +146,7 @@ public static class ScriptEditorModule
         ScriptAssetIndex.Instance.RebuildAll();
 
         // ── ECS 脚本组件 Inspector ──
-        ComponentInspectorRegistry.Register(new EcsScriptInspector());
+        // 已移至 ImGuiFrontend 模块，由 ImGuiFrontendModule 自动扫描注册
 
         // ── 菜单命令 ──
         RegisterMenuCommands(context);

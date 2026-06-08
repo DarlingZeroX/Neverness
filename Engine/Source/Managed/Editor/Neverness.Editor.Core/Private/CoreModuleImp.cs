@@ -1,4 +1,3 @@
-using Neverness.Editor.Core.Private.Panel;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Private;
 using Neverness.Editor.Framework.Private.Menu;
@@ -8,6 +7,8 @@ namespace Neverness.Editor.Core.Private;
 
 /// <summary>
 /// Editor.Core 模块实现——创建编辑器上下文、初始化生命周期管理器。
+///
+/// 注意：ConsolePanel 注册已移至 EditorCompositionRoot，此处不再注册 UI 面板。
 /// </summary>
 public static class CoreModuleImp
 {
@@ -26,9 +27,6 @@ public static class CoreModuleImp
     {
         // 注册内置菜单贡献者（File / Edit / Window / Help）
         EditorMenuRegistry.RegisterContributor(new BuiltinMenuContributor());
-
-        // 添加 Console 面板到主窗口
-        PanelManager.Instance.AddChildPanel("Console", new ConsolePanel());
 
         // 创建编辑器上下文
         _context = new EditorContext();

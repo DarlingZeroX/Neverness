@@ -9,8 +9,7 @@
 #include <RmlUi/Core/Log.h>
 
 #include <SDL3/SDL.h>
-#include <chrono>
-#include <fstream>
+#include <string>
 
 namespace {
 
@@ -73,24 +72,13 @@ bool Backend::Initialize(const char* window_name, int width, int height, bool al
     SDL_GetWindowSizeInPixels(window, &pixel_w, &pixel_h);
     g_Data->render_interface.SetProjectionMatrix(pixel_w, pixel_h);
 
+    std::cout << "[RmlDiligent] Backend initialized (Diligent render interface active)" << std::endl;
+
     return true;
 }
 
 void Backend::Shutdown()
 {
-    // #region agent log
-    {
-        std::ofstream log("e:/Neverness/debug-1b4b4e.log", std::ios::app);
-        if (log) {
-            const auto ts = std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count();
-            log << "{\"sessionId\":\"1b4b4e\",\"timestamp\":" << ts
-                << ",\"location\":\"RmlDiligent_Backend.cpp:Shutdown\",\"message\":\"Backend shutdown begin\","
-                << "\"hypothesisId\":\"E\",\"data\":{\"hasData\":" << (g_Data ? 1 : 0) << "}}\n";
-        }
-    }
-    // #endregion
-
     if (!g_Data) {
         return;
     }

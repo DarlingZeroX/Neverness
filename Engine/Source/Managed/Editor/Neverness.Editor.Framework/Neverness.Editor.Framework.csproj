@@ -41,9 +41,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Serialization\Neverness.Runtime.Serialization.csproj" />
-		<ProjectReference Include="..\Neverness.Editor.ImGuiEx\Neverness.Editor.ImGuiEx.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
-		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="StbImageSharp" Version="2.30.15" />

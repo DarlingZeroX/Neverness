@@ -170,7 +170,8 @@
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "Neverness.Editor.Framework": "1.0.0",
-          "Neverness.Editor.UndoRedo": "1.0.0"
+          "Neverness.Editor.UndoRedo": "1.0.0",
+          "Neverness.Runtime.Assets": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Neverness.Editor.Core.dll": {}
@@ -183,8 +184,6 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "Neverness.Editor.ImGui": "1.0.0",
-          "Neverness.Editor.ImGuiEx": "1.0.0",
           "Neverness.Editor.ProjectSystem": "1.0.0",
           "Neverness.Runtime.Application": "1.0.0",
           "Neverness.Runtime.Serialization": "1.0.0",
@@ -221,6 +220,27 @@
         },
         "runtime": {
           "bin/placeholder/Neverness.Editor.ImGuiEx.dll": {}
+        }
+      },
+      "Neverness.Editor.ImGuiFrontend/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Neverness.Editor.Assets": "1.0.0",
+          "Neverness.Editor.Core": "1.0.0",
+          "Neverness.Editor.Framework": "1.0.0",
+          "Neverness.Editor.ImGui": "1.0.0",
+          "Neverness.Editor.ImGuiEx": "1.0.0",
+          "Neverness.Editor.Media": "1.0.0",
+          "Neverness.Editor.Script": "1.0.0",
+          "Neverness.Gameplay": "1.0.0",
+          "Neverness.Runtime.Audio": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Neverness.Editor.ImGuiFrontend.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Neverness.Editor.ImGuiFrontend.dll": {}
         }
       },
       "Neverness.Editor.Media/1.0.0": {
@@ -304,7 +324,6 @@
         "dependencies": {
           "Neverness.Editor.Core": "1.0.0",
           "Neverness.Editor.Framework": "1.0.0",
-          "Neverness.Editor.ImGui": "1.0.0",
           "Neverness.Runtime.Engine": "1.0.0",
           "Neverness.Runtime.Interop": "1.0.0"
         },
@@ -319,6 +338,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp": "4.14.0",
           "Neverness.Editor.Assets": "1.0.0",
           "Neverness.Editor.Core": "1.0.0",
           "Neverness.Editor.Framework": "1.0.0",
@@ -348,21 +368,6 @@
         },
         "runtime": {
           "bin/placeholder/Neverness.Editor.Serialization.dll": {}
-        }
-      },
-      "Neverness.Editor.Shell/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "Neverness.Editor.Framework": "1.0.0",
-          "Neverness.Editor.ImGui": "1.0.0",
-          "Neverness.Runtime.Application": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Neverness.Editor.Shell.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Neverness.Editor.Shell.dll": {}
         }
       },
       "Neverness.Editor.UndoRedo/1.0.0": {
@@ -1416,6 +1421,11 @@
       "path": "../Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj",
       "msbuildProject": "../Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj"
     },
+    "Neverness.Editor.ImGuiFrontend/1.0.0": {
+      "type": "project",
+      "path": "../Neverness.Editor.ImGuiFrontend/Neverness.Editor.ImGuiFrontend.csproj",
+      "msbuildProject": "../Neverness.Editor.ImGuiFrontend/Neverness.Editor.ImGuiFrontend.csproj"
+    },
     "Neverness.Editor.Media/1.0.0": {
       "type": "project",
       "path": "../Neverness.Editor.Media/Neverness.Editor.Media.csproj",
@@ -1455,11 +1465,6 @@
       "type": "project",
       "path": "../Neverness.Editor.Serialization/Neverness.Editor.Serialization.csproj",
       "msbuildProject": "../Neverness.Editor.Serialization/Neverness.Editor.Serialization.csproj"
-    },
-    "Neverness.Editor.Shell/1.0.0": {
-      "type": "project",
-      "path": "../Neverness.Editor.Shell/Neverness.Editor.Shell.csproj",
-      "msbuildProject": "../Neverness.Editor.Shell/Neverness.Editor.Shell.csproj"
     },
     "Neverness.Editor.UndoRedo/1.0.0": {
       "type": "project",
@@ -1537,13 +1542,12 @@
       "Neverness.Editor.Assets >= 1.0.0",
       "Neverness.Editor.Core >= 1.0.0",
       "Neverness.Editor.Framework >= 1.0.0",
-      "Neverness.Editor.ImGui >= 1.0.0",
+      "Neverness.Editor.ImGuiFrontend >= 1.0.0",
       "Neverness.Editor.Media >= 1.0.0",
       "Neverness.Editor.MediaImporter >= 1.0.0",
       "Neverness.Editor.Rmlui >= 1.0.0",
       "Neverness.Editor.Scene >= 1.0.0",
       "Neverness.Editor.Script >= 1.0.0",
-      "Neverness.Editor.Shell >= 1.0.0",
       "Neverness.Runtime.Application >= 1.0.0",
       "Neverness.Runtime.Audio >= 1.0.0",
       "Neverness.Runtime.Audio.Native >= 1.0.0",
@@ -1588,6 +1592,9 @@
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
             },
+            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiFrontend\\Neverness.Editor.ImGuiFrontend.csproj": {
+              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiFrontend\\Neverness.Editor.ImGuiFrontend.csproj"
+            },
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.MediaImporter\\Neverness.Editor.MediaImporter.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.MediaImporter\\Neverness.Editor.MediaImporter.csproj"
             },
@@ -1602,12 +1609,6 @@
             },
             "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Script\\Neverness.Editor.Script.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Script\\Neverness.Editor.Script.csproj"
-            },
-            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Shell\\Neverness.Editor.Shell.csproj": {
-              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Shell\\Neverness.Editor.Shell.csproj"
-            },
-            "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-              "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
             },
             "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj": {
               "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj"

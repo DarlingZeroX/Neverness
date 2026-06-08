@@ -1,4 +1,3 @@
-using Hexa.NET.ImGui;
 using System;
 using System.Collections.Generic;
 using Neverness.Editor.Framework.Interface;
@@ -6,7 +5,15 @@ using Neverness.Editor.Framework.Interface;
 namespace Neverness.Editor.Framework.Private
 {
     /// <summary>
-    /// 全局 Panel 管理器
+    /// 全局 Panel 管理器（UI 无关）。
+    ///
+    /// 职责：
+    /// - 管理面板注册/移除/查询
+    /// - 每帧分发 OnGUI/OnUpdate/OnFixedUpdate
+    /// - 委托子面板注册给 Shell 模块的主窗口宿主
+    ///
+    /// 注意：停靠管理（ImGuiWindowClass, DockId）已移至 ImGuiFrontend。
+    /// PanelManager 不再依赖任何 ImGui 类型。
     /// </summary>
     public sealed class PanelManager : IPanel, IPanelManager
     {
@@ -28,10 +35,6 @@ namespace Neverness.Editor.Framework.Private
         private readonly Dictionary<string, IEditorPanel> m_IdPanels =
             new(StringComparer.Ordinal);
 
-        private ImGuiWindowClass m_TopLevelClass;
-
-        private readonly uint m_TopLevelDockId;
-
         /// <summary>主窗口宿主回调——Shell 模块 Install 时注册。</summary>
         private Func<string, IEditorPanel, bool>? m_AddChildPanelCallback;
 
@@ -41,15 +44,8 @@ namespace Neverness.Editor.Framework.Private
 
         private PanelManager()
         {
-            m_TopLevelDockId = ImGui.GetID("TopLevelDockSpace");
-
-            m_TopLevelClass = new ImGuiWindowClass
-            {
-                ClassId = m_TopLevelDockId,
-
-                // 允许普通窗口停靠
-                DockingAllowUnclassed = 1
-            };
+            // 不再调用 ImGui.GetID() 或创建 ImGuiWindowClass
+            // 停靠管理已移至 ImGuiFrontend/Infrastructure/ImGuiDockSpaceProvider
         }
 
         // =========================
@@ -180,16 +176,6 @@ namespace Neverness.Editor.Framework.Private
 
         public void OnGUI()
         {
-            // 如果启用了 Docking：
-            //
-            // unsafe
-            // {
-            //     ImGui.DockSpaceOverViewport(
-            //         ImGui.GetMainViewport(),
-            //         ImGuiDockNodeFlags.None,
-            //         &m_TopLevelClass);
-            // }
-
             DrawPanels(isAsync: false);
         }
 
@@ -260,20 +246,6 @@ namespace Neverness.Editor.Framework.Private
                     $"[PanelManager] Panel GUI Exception: {panel.GetType().Name}\n{ex}");
 #endif
             }
-        }
-
-        // =========================
-        // ImGui
-        // =========================
-
-        public ref ImGuiWindowClass GetImGuiWindowClass()
-        {
-            return ref m_TopLevelClass;
-        }
-
-        public uint GetWindowDockID()
-        {
-            return m_TopLevelDockId;
         }
 
         // =========================

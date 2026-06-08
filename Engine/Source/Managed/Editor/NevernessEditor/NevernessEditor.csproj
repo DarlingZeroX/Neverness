@@ -37,7 +37,6 @@
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Bootstrap\Neverness.Runtime.Bootstrap.csproj" />
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
-		<ProjectReference Include="..\Neverness.Editor.Shell\Neverness.Editor.Shell.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.MediaImporter\Neverness.Editor.MediaImporter.csproj" />
@@ -47,7 +46,7 @@
 		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Rmlui\Neverness.Editor.Rmlui.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
-		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.ImGuiFrontend\Neverness.Editor.ImGuiFrontend.csproj" />
 	</ItemGroup>
 
 	<!-- Native 运行时 DLL：CMake 产物目录（与 Engine/CMakeLists NN_OUTPUT_ROOT 对齐） -->

@@ -1,9 +1,7 @@
 using Neverness.Editor.Assets.AssetActions;
 using Neverness.Editor.Assets.AssetOpening;
 using Neverness.Editor.Assets.AssetFactories;
-using Neverness.Editor.Assets.Private.Context;
 using Neverness.Editor.Assets.Private.Core;
-using Neverness.Editor.Assets.Private.Panel;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Private;
 using Neverness.Editor.Framework.Public;
@@ -16,7 +14,9 @@ namespace Neverness.Editor.Assets.Private;
 
 /// <summary>
 /// 资产工厂模块内部安装实现。
-/// 负责：ContentBrowser 引擎、内容浏览器面板、上下文菜单贡献者、资产工厂系统、热重载。
+/// 负责：ContentBrowser 引擎、上下文菜单贡献者、资产工厂系统、热重载。
+///
+/// 注意：ContentBrowser 面板注册已移至 EditorCompositionRoot，此处不再注册 UI 面板。
 /// </summary>
 internal static class AssetsModuleImp
 {
@@ -55,14 +55,12 @@ internal static class AssetsModuleImp
         var openService = new AssetOpenService(openerRegistry);
         EditorCoreModule.Context.RegisterService(openService);
 
-        // 3. 添加 ContentBrowser 面板到主窗口（此时 AssetOpenService 已可用）
-        PanelManager.Instance.AddChildPanel("ContentBrowser", new ContentBrowserPanel());
+        // 2.1 注册 IAssetOpenService 到编辑器上下文（供 Controller 消费）
+        EditorCoreModule.Context.RegisterService<IAssetOpenService>(
+            new AssetOpenServiceImpl(openService));
 
-        // 3.1 Asset Debug 面板（开发阶段调试用）
-        PanelManager.Instance.AddChildPanel("AssetDebug", new AssetDebugPanel());
-
-        // 4. 注册 ContentBrowser 上下文菜单贡献者
-        EditorMenuRegistry.RegisterContextMenuContributor(new ContentBrowserContextMenuContributor());
+        // 3. 注册 ContentBrowser 上下文菜单贡献者
+        // 已移至 ImGuiFrontend 模块的 ContentBrowserImGuiContextMenuContributor
 
         // 4. 触发工厂自动发现（扫描所有 Neverness.Editor.* 程序集）
         var factories = AssetFactoryRegistry.Instance.Factories;

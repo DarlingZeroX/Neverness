@@ -1,0 +1,141 @@
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\NevernessEditor\NevernessEditor.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.ImGuiEx\Neverness.Editor.ImGuiEx.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Core\Neverness.Editor.Core.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Shell\Neverness.Editor.Shell.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.MediaImporter\Neverness.Editor.MediaImporter.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Media\Neverness.Editor.Media.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Rmlui\Neverness.Editor.Rmlui.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.ImGuiFrontend\Neverness.Editor.ImGuiFrontend.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\Neverness.Editor.Script\Neverness.Editor.Script.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Runtime\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Gameplay\Neverness.Gameplay\Neverness.Gameplay.csproj]
+C:\Program Files\dotnet\sdk\10.0.300\Microsoft.Common.CurrentVersion.targets(887,5): warning MSB3539: 属性 “BaseIntermediateOutputPath” 的值已在 MSBuild 使用它后进行了修改，这可能会导致意外的生成结果。NuGet 等工具会改为将输出写入由 “MSBuildProjectExtensionsPath” 指定的路径。要设置此属性，必须在导入 Microsoft.Common.props 之前执行此操作，例如使用 Directory.Build.props。有关详细信息，请访问 https://go.microsoft.com/fwlink/?linkid=869650" [E:\Neverness\Engine\Source\Managed\Editor\ThirdParty\HexaGen.Runtime\HexaGen.Runtime.csproj::TargetFramework=net10.0]
+---------------------------------------
+Building NNNative Engine Api Table...
+Building RenderAsset Runtime API...
+RenderAsset Runtime API built.
+Building ViewportRender Runtime API...
+ViewportRender Runtime API built.
+NNNative Engine Api Table built.
+---------------------------------------
+[EngineNativeApiBootstrap] 安装成功
+Neverness.Managed.Bootstrap RuntimeInitializer OK
+[ApplicationHost] 正在调用 api.Initialize()...
+[NNRuntimeApp] Initialize: 开始 SDL_Init
+App name: SDL Application
+App version: <unspecified>
+App ID: <unspecified>
+SDL revision: vcpkg
+OleInitialize() failed: 0x80010106, using fallback drag-n-drop functionality
+[NNRuntimeApp] Initialize: SDL_Init 成功
+[NNRuntimeApp] Initialize: SDL 音频子系统成功
+[NNRuntimeApp] Initialize: EDITOR_PROJECT_ROOT_DIR = E:/Neverness
+[NNRuntimeApp] Initialize: 设置 locale
+[NNRuntimeApp] Initialize: locale 设置成功
+[NNRuntimeApp] Initialize: 查找项目目录
+[NNRuntimeApp] Initialize: Project path = E:/Neverness\Project\示例项目
+[NNRuntimeApp] Initialize: 检查项目目录有效性
+[NNRuntimeApp] Initialize: 项目目录有效
+[Info] Project path: E:/Neverness/Project/示例项目/
+[Info] Editor resource path: E:/Neverness/Resource/Editor/
+[Info] Engine resource path: E:/Neverness/Resource/Engine/
+[Info] Assets resource: E:/Neverness/Project/示例项目/Assets/
+[Info] Project settings resource path: E:/Neverness/Project/示例项目/ProjectSettings/
+[Info] Project intermediate path: E:/Neverness/Project/示例项目/Intermediate/
+[Info] Library path: E:/Neverness/Project/示例项目/Library/
+[NNRuntimeApp] Initialize: VFS 初始化完成
+[ApplicationHost] api.Initialize() 返回: 1
+[Info] Initializing ImGui fonts
+[MediaModule] 已注册 Inspector + ContextMenu
+[RmluiModule] 已注册 Inspector + ContextMenu
+[Info] [UploadTextureInternal] 开始 256x256 format=4 mips=1
+[Info] [UploadTextureInternal] baseMip pixels=262144
+[Info] [UploadTextureInternal] GL: internalFormat=0x8058 format=0x1908 type=0x1401 dataSize=262144
+[Info] [UploadTextureInternal] 调用 CreateFromMemory...
+[Info] [Texture2D] CreateFromMemoryImp: glGenTextures → m_RendererID=1 (0x1) this=000001FA30799DB0
+[Info] [UploadTextureInternal] CreateFromMemory 成功
+[Info] [UploadTextureInternal] 调用 GetShaderResourceView...
+[Info] [Texture2D] GetShaderResourceView: m_RendererID=1 (0x1) → SRV=0000000000000001 this=000001FA30799DB0
+[EditorResourceCache] 纹理已加载: /editor/icons/file.png (256x256)
+[Info] [UploadTextureInternal] 开始 1080x1080 format=4 mips=1
+[Info] [UploadTextureInternal] baseMip pixels=4665600
+[Info] [UploadTextureInternal] GL: internalFormat=0x8058 format=0x1908 type=0x1401 dataSize=4665600
+[Info] [UploadTextureInternal] 调用 CreateFromMemory...
+[Info] [Texture2D] CreateFromMemoryImp: glGenTextures → m_RendererID=2 (0x2) this=000001FA30799090
+[Info] [UploadTextureInternal] CreateFromMemory 成功
+[Info] [UploadTextureInternal] 调用 GetShaderResourceView...
+[Info] [Texture2D] GetShaderResourceView: m_RendererID=2 (0x2) → SRV=0000000000000002 this=000001FA30799090
+[EditorResourceCache] 纹理已加载: /editor/icons/folder.png (1080x1080)
+[AssetDatabase] Register: path=/assets/屏幕截图1.png, guid=c6e81ad72b9030409da690c014160e5a
+[NNAssetRegistry] RegisterAsset: path=/assets/屏幕截图1.png guid=(14332735325557764160:11359926264733765210)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/New Scene.scene, guid=b43eafd5eae04fe48ac81edcccd64206
+[NNAssetRegistry] RegisterAsset: path=/assets/New Scene.scene guid=(12988011708686553060:10000276906254418438)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/New Scene 1.scene, guid=eaee52d75d074c04b4f74ce76579db95
+[NNAssetRegistry] RegisterAsset: path=/assets/New Scene 1.scene guid=(16928559134264478724:13039975802798201749)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/屏幕截图 2026-05-19 193654.png, guid=b9ea1d97c680447882af02af6d03914e
+[NNAssetRegistry] RegisterAsset: path=/assets/屏幕截图 2026-05-19 193654.png guid=(13396552579274523768:9416748298326479182)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/BGM1.mp3, guid=8247738c5260ca46b801987c94c3669b
+[NNAssetRegistry] RegisterAsset: path=/assets/BGM1.mp3 guid=(9387598994791778886:13259046438794651291)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/New Script.lua, guid=14da9f74f01b3745ac9a2701ea94db6d
+[NNAssetRegistry] RegisterAsset: path=/assets/New Script.lua guid=(1502688750274819909:12437296210121120621)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/New Document.html, guid=b6bb83515422214cb9cb1d0ddde4205a
+[NNAssetRegistry] RegisterAsset: path=/assets/New Document.html guid=(13167262320874889548:13387826262683426906)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/NewScript.cs, guid=78d3b04d62a73d4c858b9c55da0e8004
+[NNAssetRegistry] RegisterAsset: path=/assets/NewScript.cs guid=(8706496351051398476:9622956921351733252)
+[AssetDatabase] Register: native success
+[AssetDatabase] Register: path=/assets/NewScript1.cs, guid=42f435ab78614f4e865af9732878f96d
+[NNAssetRegistry] RegisterAsset: path=/assets/NewScript1.cs guid=(4824540111395966798:9681324621981874541)
+[AssetDatabase] Register: native success
+[EditorAssetDatabase] SyncCacheToNative: 同步 9/9 个资产到 NNAssetRegistry
+[AssetOpenerRegistry] 无法实例化 opener: Neverness.Editor.Assets.AssetOpening.TextureAssetOpener（缺少依赖）
+[AssetOpenerRegistry] 无法实例化 opener: Neverness.Editor.Media.AudioAssetOpener（缺少依赖）
+[AssetOpenerRegistry] 无法实例化 opener: Neverness.Editor.Media.VideoAssetOpener（缺少依赖）
+[AssetOpenerRegistry] 发现 4 个 opener
+[NativeApiProvider] AssetManager API 已接線
+[NativeApiProvider] AssetManager 初始化成功: E:\Neverness\Project\示例项目\Library
+[ImporterRegistry] 发现 9 个 importer，覆盖 25 种扩展名
+[AssetWatcher] 開始監視: E:/Neverness/Project/示例项目/Assets/
+[HotReloadCoordinator] 热重载已启动
+[ScriptProjectGenerator] Generated: Assembly-CSharp.csproj
+[ScriptProjectGenerator] Generated: Game.sln
+[ScriptCompileService] Building context: 1 files, 207 references
+[ScriptAssetIndex] RebuildAll: EditorAssetDatabase.AllAssets count = 9
+[ScriptAssetIndex] File not found: E:/Neverness/Project/示例项目/Assets/NewScript1.cs
+[ScriptAssetIndex] RebuildAll: cs=2, vfsOk=2, osOk=1, parseOk=1
+[ScriptAssetIndex] RefreshAllTypeIds: ScriptRegistry not ready, skipping
+[ScriptAssetIndex] RebuildAll: 1 scripts indexed, 1 TypeIds resolved
+[ScriptEditorModule] Initialized. Project root: E:/Neverness/Project/示例项目/
+[EditorCompositionRoot] 开始组装编辑器对象图...
+[EditorCompositionRoot] 1. 创建 ViewModel...
+[EditorCompositionRoot] 2. 创建 Controller...
+[EditorCompositionRoot] 3. 初始化 Controller...
+[EditorCompositionRoot] 4. 创建 View 并注册到 PanelManager...
+[EditorCompositionRoot] ViewFactory 已注册，开始创建 View...
+[EditorCompositionRoot] 创建 ConsoleView...
+[EditorCompositionRoot] 创建 SceneBrowserView...
+[EditorCompositionRoot] 创建 InspectorView...
+[EditorCompositionRoot] 创建 ViewportView...
+[EditorCompositionRoot] 创建 ContentBrowserView...
+[EditorCompositionRoot] 注册面板到 PanelManager...
+[EditorCompositionRoot] Console 面板注册结果: True
+[EditorCompositionRoot] SceneBrowser 面板注册结果: True
+[EditorCompositionRoot] DetailInspector 面板注册结果: True
+[EditorCompositionRoot] EditorViewport 面板注册结果: True
+[EditorCompositionRoot] ContentBrowser 面板注册结果: True
+[EditorCompositionRoot] 5. 注册 Service...
+[EditorCompositionRoot] 编辑器对象图组装完成
+[ScriptCompileService] Compilation succeeded (1829ms, 4096 bytes)
+[ScriptAssetIndex] RefreshAllTypeIds: ScriptRegistry not ready, skipping
+[ScriptEditorModule] ScriptAssetIndex refreshed after compilation

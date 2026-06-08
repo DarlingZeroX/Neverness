@@ -405,6 +405,9 @@
               },
               "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.UndoRedo\\Neverness.Editor.UndoRedo.csproj": {
                 "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.UndoRedo\\Neverness.Editor.UndoRedo.csproj"
+              },
+              "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj": {
+                "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Assets\\Neverness.Runtime.Assets.csproj"
               }
             }
           }
@@ -744,14 +747,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiEx\\Neverness.Editor.ImGuiEx.csproj": {
-                "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ImGuiEx\\Neverness.Editor.ImGuiEx.csproj"
-              },
               "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ProjectSystem\\Neverness.Editor.ProjectSystem.csproj": {
                 "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.ProjectSystem\\Neverness.Editor.ProjectSystem.csproj"
-              },
-              "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-                "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
               },
               "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj": {
                 "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Application\\Neverness.Runtime.Application.csproj"
@@ -2483,9 +2480,6 @@
               },
               "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj": {
                 "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\Neverness.Editor.Framework\\Neverness.Editor.Framework.csproj"
-              },
-              "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj": {
-                "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Editor\\ThirdParty\\Neverness.Editor.ImGui\\Neverness.Editor.ImGui.csproj"
               },
               "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj": {
                 "projectPath": "E:\\Neverness\\Engine\\Source\\Managed\\Runtime\\Neverness.Runtime.Engine\\Neverness.Runtime.Engine.csproj"

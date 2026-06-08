@@ -42,6 +42,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_SAVED}")
 # === 子模块 ===
 add_subdirectory(NNRuntimeCore)
 add_subdirectory(NNRuntimeRender)
+add_subdirectory(NNRuntimeRenderAssets)
+add_subdirectory(NNRuntimeSRP)
 add_subdirectory(NNRuntimeRenderBootstrap)
 add_subdirectory(NNRuntimeDiligent)
 add_subdirectory(NNRuntimeNativeEngineAPI)
@@ -212,4 +214,86 @@ if(VULKAN_SUPPORTED)
 endif()
 if(GL_SUPPORTED)
     target_compile_definitions(NNImGuiTest PRIVATE GL_SUPPORTED=1)
+endif()
+
+# === Phase 6 test executable (Material System) ===
+add_executable(NNPhase6Test NNRuntimeRenderAssets/Tests/TestMaterial.cpp)
+
+target_include_directories(NNPhase6Test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/NNRuntimeRenderBootstrap/Include
+)
+
+target_link_libraries(NNPhase6Test PRIVATE
+    NNRuntimeRenderAssets
+    NNRuntimeRender
+    NNRuntimeCore
+)
+
+target_link_libraries(NNPhase6Test PRIVATE NevernessCore-Core)
+
+target_compile_definitions(NNPhase6Test PRIVATE PLATFORM_WIN32=1)
+
+# === Phase 7 test executable (SRP) ===
+add_executable(NNPhase7Test NNRuntimeSRP/Tests/TestPipeline.cpp)
+
+target_include_directories(NNPhase7Test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/NNRuntimeRenderBootstrap/Include
+)
+
+target_link_libraries(NNPhase7Test PRIVATE
+    NNRuntimeSRP
+    NNRuntimeRenderAssets
+    NNRuntimeRender
+    NNRuntimeCore
+)
+
+target_link_libraries(NNPhase7Test PRIVATE NevernessCore-Core)
+
+target_compile_definitions(NNPhase7Test PRIVATE PLATFORM_WIN32=1)
+
+# === Phase 8 test executable (C# Interop) ===
+add_executable(NNPhase8Test NNRuntimeNativeEngineAPI/Tests/TestMaterialAPI.cpp)
+
+target_include_directories(NNPhase8Test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/NNRuntimeRenderBootstrap/Include
+)
+
+target_link_libraries(NNPhase8Test PRIVATE
+    NNRuntimeNativeEngineAPI
+    NNRuntimeSRP
+    NNRuntimeRenderAssets
+    NNRuntimeRender
+    NNRuntimeCore
+)
+
+target_link_libraries(NNPhase8Test PRIVATE
+    NNRuntimeDiligent
+    NNRuntimeRenderBootstrap
+    SDL3::SDL3
+    NevernessCore-Core
+)
+
+target_compile_definitions(NNPhase8Test PRIVATE PLATFORM_WIN32=1)
+if(VULKAN_SUPPORTED)
+    target_compile_definitions(NNPhase8Test PRIVATE VULKAN_SUPPORTED=1)
+endif()
+
+# === Scene Render (3D cube + screenshot) ===
+add_executable(NNSceneRender NNRuntimeDiligent/Tests/TestSceneRender.cpp)
+
+target_include_directories(NNSceneRender PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/NNRuntimeRenderBootstrap/Include
+)
+
+target_link_libraries(NNSceneRender PRIVATE
+    NNRuntimeDiligent
+    NNRuntimeRender
+    NNRuntimeCore
+    SDL3::SDL3
+    NevernessCore-Core
+)
+
+target_compile_definitions(NNSceneRender PRIVATE PLATFORM_WIN32=1)
+if(VULKAN_SUPPORTED)
+    target_compile_definitions(NNSceneRender PRIVATE VULKAN_SUPPORTED=1)
 endif()

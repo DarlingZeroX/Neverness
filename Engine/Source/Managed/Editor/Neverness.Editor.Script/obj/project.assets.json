@@ -170,7 +170,8 @@
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
           "Neverness.Editor.Framework": "1.0.0",
-          "Neverness.Editor.UndoRedo": "1.0.0"
+          "Neverness.Editor.UndoRedo": "1.0.0",
+          "Neverness.Runtime.Assets": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Neverness.Editor.Core.dll": {}
@@ -183,8 +184,6 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
         "dependencies": {
-          "Neverness.Editor.ImGui": "1.0.0",
-          "Neverness.Editor.ImGuiEx": "1.0.0",
           "Neverness.Editor.ProjectSystem": "1.0.0",
           "Neverness.Runtime.Application": "1.0.0",
           "Neverness.Runtime.Serialization": "1.0.0",
@@ -254,7 +253,6 @@
         "dependencies": {
           "Neverness.Editor.Core": "1.0.0",
           "Neverness.Editor.Framework": "1.0.0",
-          "Neverness.Editor.ImGui": "1.0.0",
           "Neverness.Runtime.Engine": "1.0.0",
           "Neverness.Runtime.Interop": "1.0.0"
         },
@@ -1372,6 +1370,7 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "Microsoft.CodeAnalysis.CSharp >= 4.14.0",
       "Neverness.Editor.Assets >= 1.0.0",
       "Neverness.Editor.Core >= 1.0.0",
       "Neverness.Editor.Framework >= 1.0.0",
@@ -1453,6 +1452,12 @@
       "net10.0": {
         "framework": "net10.0",
         "targetAlias": "net10.0",
+        "dependencies": {
+          "Microsoft.CodeAnalysis.CSharp": {
+            "target": "Package",
+            "version": "[4.14.0, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",

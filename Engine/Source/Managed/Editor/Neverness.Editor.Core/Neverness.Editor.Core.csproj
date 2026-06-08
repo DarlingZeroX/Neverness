@@ -35,5 +35,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.UndoRedo\Neverness.Editor.UndoRedo.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Assets\Neverness.Runtime.Assets.csproj" />
 	</ItemGroup>
 </Project>

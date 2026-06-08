@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>Neverness.Editor.ImGuiFrontend</AssemblyName>
+		<TargetFramework>net10.0</TargetFramework>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Nullable>enable</Nullable>
+
+		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
+		<DebugType>portable</DebugType>
+		<RootNamespace>Neverness.Editor.ImGuiFrontend</RootNamespace>
+
+		<!-- ========================= -->
+		<!--  关闭 pack（开发阶段） -->
+		<!-- ========================= -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+		<!-- ========================= -->
+		<!--  输出优化 -->
+		<!-- ========================= -->
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
+
+		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+
+		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+		<!-- 允许并行（反而更快） -->
+		<BuildInParallel>true</BuildInParallel>
+	</PropertyGroup>
+	<ItemGroup>
+		<!-- Framework（UI 无关基础设施） -->
+		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
+		<!-- ImGuiEx（ImGui 高层抽象） -->
+		<ProjectReference Include="..\Neverness.Editor.ImGuiEx\Neverness.Editor.ImGuiEx.csproj" />
+		<!-- ImGui（Hexa.NET.ImGui 绑定） -->
+		<ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />
+		<!-- Core（ViewModel + Controller） -->
+		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
+		<!-- Assets（EditorAssetDatabase、AssetDragDrop） -->
+		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
+		<!-- Media（VideoMetaInfo、AudioMetaInfo） -->
+		<ProjectReference Include="..\Neverness.Editor.Media\Neverness.Editor.Media.csproj" />
+		<!-- Script（ScriptAssetIndex） -->
+		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
+		<!-- Gameplay（ScriptRegistry） -->
+		<ProjectReference Include="..\..\Gameplay\Neverness.Gameplay\Neverness.Gameplay.csproj" />
+		<!-- Runtime.Audio（IAudioPlayer） -->
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Audio\Neverness.Runtime.Audio.csproj" />
+	</ItemGroup>
+</Project>
