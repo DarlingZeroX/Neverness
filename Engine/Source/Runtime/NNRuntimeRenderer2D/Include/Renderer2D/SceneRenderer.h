@@ -4,7 +4,7 @@
  * @file SceneRenderer.h
  * @brief 场景渲染器：顶层入口，串联 ECS → SpriteRenderSystem → Renderer2D → Framebuffer。
  *
- * 对外只暴露一个接口：Render(scene, width, height) → TextureId
+ * 对外只暴露一个接口：Render(scene, width, height) → TextureHandle (uint64_t)
  * C# EditorViewport 通过 NNNativeEngineAPI 调用此接口。
  */
 
@@ -21,6 +21,11 @@ namespace NN::Runtime::Scene
     class NNRuntimeScene;
 }
 
+namespace NN::Runtime::Render
+{
+    class INNRenderDevice;
+}
+
 namespace NN::Runtime::Renderer2D
 {
     /// 场景渲染器
@@ -33,15 +38,18 @@ namespace NN::Runtime::Renderer2D
         SceneRenderer(const SceneRenderer&) = delete;
         SceneRenderer& operator=(const SceneRenderer&) = delete;
 
-        bool Initialize();
+        /// 初始化
+        /// @param device Diligent 渲染设备（由 NNRenderBootstrap 创建）
+        bool Initialize(Render::INNRenderDevice* device);
         void Shutdown();
 
-        /// 渲染场景到 Framebuffer，返回 Color Texture 的 OpenGL ID
-        std::uint32_t Render(Scene::NNRuntimeScene& scene,
+        /// 渲染场景到 Framebuffer，返回 Color Texture 的句柄
+        /// 返回 reinterpret_cast<uint64_t>(ITextureView*)
+        std::uint64_t Render(Scene::NNRuntimeScene& scene,
                              std::uint32_t width, std::uint32_t height);
 
-        /// 获取上次渲染的 Texture ID
-        std::uint32_t GetOutputTextureId() const;
+        /// 获取上次渲染的纹理句柄
+        std::uint64_t GetOutputTextureHandle() const;
 
         /// 视口尺寸变更
         void OnViewportResize(std::uint32_t width, std::uint32_t height);

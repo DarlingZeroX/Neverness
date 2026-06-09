@@ -50,7 +50,8 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NN::Runtime::engine::NNEngineRuntime::Instance().Scene().SetVfsApi(&outTable->vfs);
 
 	/* 初始化 RenderAssetManager（GPU 纹理缓存） */
-	NN::Runtime::Render::NNRenderAssetManager::Get().Initialize();
+	// Phase 1: factory 暂时为 nullptr，Phase 6 ViewportRender 迁移时传入 Diligent 工厂
+	NN::Runtime::Render::NNRenderAssetManager::Get().Initialize(nullptr);
 
 	std::cout << "NNNative Engine Api Table built." << std::endl;
 	std::cout << "---------------------------------------" << std::endl;

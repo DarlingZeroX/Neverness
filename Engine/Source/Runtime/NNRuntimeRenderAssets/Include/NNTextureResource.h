@@ -58,8 +58,8 @@ public:
     void* GetRHITextureInternal() const { return m_RHITexture; }
 
     /// 获取 ImGui 兼容的 Texture Handle
-    /// OpenGL: GLuint cast to uint64
-    /// Diligent: ITextureView* reinterpret to uint64
+    /// 由 IRenderResourceFactory 在创建时填充 m_RHIShaderResourceView
+    /// 后端无关：reinterpret_cast<uint64_t>(m_RHIShaderResourceView)
     uint64_t GetImGuiHandle() const;
 
     bool IsResident() const { return m_Residency == NNTextureResidency::Resident; }
@@ -71,8 +71,8 @@ private:
     friend class NNRenderAssetManager;
 
     NNTextureDesc m_Desc;
-    void* m_RHITexture = nullptr;              // VGFX::ITexture*
-    void* m_RHIShaderResourceView = nullptr;   // SRV（Diligent 后端用）
+    void* m_RHITexture = nullptr;              // GPU 纹理对象（后端相关）
+    void* m_RHIShaderResourceView = nullptr;   // SRV / 纹理句柄（用于 ImGui 渲染）
     uint64_t m_LastUsedFrame = 0;
     NNTextureResidency m_Residency = NNTextureResidency::NotLoaded;
 };

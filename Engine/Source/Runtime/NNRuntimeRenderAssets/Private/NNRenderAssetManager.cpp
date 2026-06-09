@@ -6,38 +6,14 @@
  */
 
 #include "NNRenderAssetManager.h"
-#include "NNRuntimeRHI/Include/OpenGL/Texture2D.h"
-#include "NNRuntimeRHI/Interface/Texture.h"
 #include "NNRuntimeAsset/Include/NNAssetManager.h"
 #include "NNCore/Interface/HLog.h"
-
-//#include <glad/glad.h>
-//#include <NNRuntimeRHI/Include/OpenGL/IncludeGladGL3.h>
 
 namespace NN::Runtime::Render
 {
 
-// ===== OpenGL 格式映射 =====
-// 将引擎级 NNTextureFormat 映射为 OpenGL GLenum
-
-struct GLFormatMapping
-{
-    GLenum InternalFormat;
-    GLenum Format;
-    GLenum Type;
-};
-
-static GLFormatMapping MapToGLFormat(NNTextureFormat fmt)
-{
-    switch (fmt)
-    {
-    case NNTextureFormat::R8_UNorm:    return { GL_R8,    GL_RED,  GL_UNSIGNED_BYTE };
-    case NNTextureFormat::RG8_UNorm:   return { GL_RG8,   GL_RG,   GL_UNSIGNED_BYTE };
-    case NNTextureFormat::RGB8_UNorm:  return { GL_RGB8,  GL_RGB,  GL_UNSIGNED_BYTE };
-    case NNTextureFormat::RGBA8_UNorm: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE };
-    default:                           return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE };
-    }
-}
+// ===== 格式映射已移至 IRenderResourceFactory 实现 =====
+// AssetManager 不再直接感知后端格式，由工厂负责转换
 
 // ===== NNRenderAssetManager 实现 =====
 
@@ -47,12 +23,19 @@ NNRenderAssetManager& NNRenderAssetManager::Get()
     return instance;
 }
 
-bool NNRenderAssetManager::Initialize()
+bool NNRenderAssetManager::Initialize(IRenderResourceFactory* factory)
 {
     std::lock_guard lock(m_Mutex);
     if (m_Initialized)
         return true;
 
+    if (!factory)
+    {
+        H_LOG_ERROR("[RenderAssetManager] Initialize: factory 为空");
+        return false;
+    }
+
+    m_Factory = factory;
     m_EntryCache.clear();
     m_NextKey = 1;
     m_CurrentFrame = 0;
@@ -66,6 +49,7 @@ void NNRenderAssetManager::Shutdown()
     // shared_ptr 自动释放所有 GPU 纹理
     m_EntryCache.clear();
     m_Initialized = false;
+    m_Factory = nullptr;
     m_NextKey = 1;
 }
 
@@ -329,8 +313,6 @@ void NNRenderAssetManager::ReloadTexture(uint64_t key, const NNTextureSourceAsse
         return;
 
     // 更新缓存条目（旧 shared_ptr 自动释放旧 GPU 资源）
-    // 注意：这里需要获取新条目的 key
-    // 简化方案：直接替换条目内容
     uint64_t newKey = m_NextKey - 1; // UploadTextureInternal 刚分配的 key
     auto newIt = m_EntryCache.find(newKey);
     if (newIt != m_EntryCache.end())
@@ -433,47 +415,36 @@ size_t NNRenderAssetManager::GetEstimatedGPUMemory() const
 
 NNTextureResource* NNRenderAssetManager::UploadTextureInternal(const NNTextureSourceAsset& source)
 {
+    if (!m_Factory)
+    {
+        H_LOG_ERROR("[UploadTextureInternal] m_Factory 为空");
+        return nullptr;
+    }
+
     H_LOG_INFO("[UploadTextureInternal] 开始 %ux%u format=%u mips=%u",
         source.GetWidth(), source.GetHeight(), (unsigned)source.GetFormat(), source.GetMipCount());
 
     const auto& baseMip = source.GetMip(0);
     H_LOG_INFO("[UploadTextureInternal] baseMip pixels=%zu", baseMip.Pixels.size());
 
-    // 构造 RHI TextureDesc
-    Runtime::VGFX::TextureDesc desc;
-    desc.Width = static_cast<int>(source.GetWidth());
-    desc.Height = static_cast<int>(source.GetHeight());
+    // 通过工厂创建 GPU 纹理
+    H_LOG_INFO("[UploadTextureInternal] 调用工厂 CreateTexture...");
+    auto resource = m_Factory->CreateTexture(
+        source.GetWidth(), source.GetHeight(),
+        source.GetFormat(),
+        baseMip.Pixels.data(), baseMip.Pixels.size());
 
-    auto glFmt = MapToGLFormat(source.GetFormat());
-    desc.InternalFormat = static_cast<int>(glFmt.InternalFormat);
-    desc.Format = glFmt.Format;
-    desc.Type = glFmt.Type;
-    desc.Data = const_cast<uint8_t*>(baseMip.Pixels.data());
-    desc.DataSize = static_cast<unsigned int>(baseMip.Pixels.size());
-
-    H_LOG_INFO("[UploadTextureInternal] GL: internalFormat=0x%x format=0x%x type=0x%x dataSize=%u",
-        desc.InternalFormat, desc.Format, desc.Type, desc.DataSize);
-
-    // 通过 RHI 创建 GPU Texture
-    H_LOG_INFO("[UploadTextureInternal] 调用 CreateFromMemory...");
-    auto glTexture = OpenGL::Texture2D::CreateFromMemory(desc);
-    if (!glTexture)
+    if (!resource)
     {
-        H_LOG_ERROR("[UploadTextureInternal] CreateFromMemory 返回 null");
+        H_LOG_ERROR("[UploadTextureInternal] 工厂 CreateTexture 返回 null");
         return nullptr;
     }
-    H_LOG_INFO("[UploadTextureInternal] CreateFromMemory 成功");
+    H_LOG_INFO("[UploadTextureInternal] 工厂 CreateTexture 成功");
 
-    // 创建 TextureResource（观察指针）
-    auto resource = std::make_unique<NNTextureResource>();
-    resource->m_Desc.Width = source.GetWidth();
-    resource->m_Desc.Height = source.GetHeight();
+    // 补充元数据
     resource->m_Desc.MipCount = source.GetMipCount();
     resource->m_Desc.Format = source.GetFormat();
     resource->m_Desc.IsSRGB = source.IsSRGB();
-    resource->m_RHITexture = glTexture.get();
-    H_LOG_INFO("[UploadTextureInternal] 调用 GetShaderResourceView...");
-    resource->m_RHIShaderResourceView = glTexture->GetShaderResourceView();
     resource->m_Residency = NNTextureResidency::Resident;
     resource->m_LastUsedFrame = m_CurrentFrame;
 
@@ -485,7 +456,10 @@ NNTextureResource* NNRenderAssetManager::UploadTextureInternal(const NNTextureSo
 
     // 存入缓存（shared_ptr 持有所有权）
     auto entry = std::make_unique<RenderAssetCacheEntry>();
-    entry->OwnedTexture = std::move(glTexture);   // shared_ptr 保持纹理存活
+    entry->OwnedTexture = std::shared_ptr<void>(
+        resource.get(),
+        [](void* ptr) { /* 工厂创建的资源由 NNTextureResource 的析构函数释放 */ }
+    );
     entry->Resource = std::move(resource);
     entry->GPUMemory = gpuMem;
 
@@ -499,6 +473,9 @@ bool NNRenderAssetManager::UpdateTexturePixels(uint64_t cacheKey, const uint8_t*
     if (!m_Initialized || !pixels || pixelSize == 0 || cacheKey == 0)
         return false;
 
+    if (!m_Factory)
+        return false;
+
     std::lock_guard lock(m_Mutex);
 
     auto it = m_EntryCache.find(cacheKey);
@@ -506,27 +483,16 @@ bool NNRenderAssetManager::UpdateTexturePixels(uint64_t cacheKey, const uint8_t*
         return false;
 
     auto* entry = it->second.get();
-    if (!entry || !entry->OwnedTexture || !entry->Resource)
+    if (!entry || !entry->Resource)
         return false;
 
-    // 通过 type-erased shared_ptr<void> 恢复 OpenGL::Texture2D 指针
-    auto* glTex = static_cast<OpenGL::Texture2D*>(entry->OwnedTexture.get());
-    if (!glTex)
-        return false;
+    // 通过工厂更新纹理像素
+    bool result = m_Factory->UpdateTexturePixels(entry->Resource.get(), pixels, pixelSize);
 
-    auto glFmt = MapToGLFormat(entry->Resource->m_Desc.Format);
+    if (result)
+        entry->Resource->m_LastUsedFrame = m_CurrentFrame;
 
-    // 直接调用 glTexSubImage2D 更新已存在纹理的像素数据
-    glTex->Bind();
-    glTexSubImage2D(
-        GL_TEXTURE_2D, 0, 0, 0,
-        static_cast<GLsizei>(entry->Resource->m_Desc.Width),
-        static_cast<GLsizei>(entry->Resource->m_Desc.Height),
-        glFmt.Format, glFmt.Type, pixels);
-    glTex->Unbind();
-
-    entry->Resource->m_LastUsedFrame = m_CurrentFrame;
-    return true;
+    return result;
 }
 
 } // namespace NN::Runtime::Render

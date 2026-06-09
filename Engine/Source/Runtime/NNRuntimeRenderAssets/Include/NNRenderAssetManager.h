@@ -17,14 +17,44 @@
 
 #include "../../NNRuntimeRenderAssets/NNRuntimeRenderAssetsExport.h"
 
-namespace NN::Runtime:: Render
+namespace NN::Runtime::Render
 {
 
+/// 渲染资源工厂接口
+/// 负责 GPU 资源的创建和更新，AssetManager 通过此接口与渲染后端解耦
+/// 实现由 ViewportRenderRuntimeApi 传入（持有 INNRenderDevice*）
+class NN_RUNTIME_RENDER_ASSETS_API IRenderResourceFactory
+{
+public:
+    virtual ~IRenderResourceFactory() = default;
+
+    /// 创建 GPU 纹理
+    /// @param width 纹理宽度
+    /// @param height 纹理高度
+    /// @param format 纹理格式
+    /// @param pixels 像素数据
+    /// @param pixelSize 像素数据大小
+    /// @return 纹理资源（m_RHITexture + m_RHIShaderResourceView 已填充），失败返回 nullptr
+    virtual std::unique_ptr<NNTextureResource> CreateTexture(
+        uint32_t width, uint32_t height,
+        NNTextureFormat format,
+        const uint8_t* pixels, size_t pixelSize) = 0;
+
+    /// 更新已存在纹理的像素数据
+    /// @param resource 目标纹理资源
+    /// @param pixels 新的像素数据
+    /// @param pixelSize 像素数据大小
+    /// @return 是否成功
+    virtual bool UpdateTexturePixels(
+        NNTextureResource* resource,
+        const uint8_t* pixels, size_t pixelSize) = 0;
+};
+
 /// 缓存条目：通过 shared_ptr<void> 持有 GPU 纹理所有权
-/// shared_ptr<void> 保留原始 shared_ptr<Texture2D> 的 deleter，无需完整类型定义
+/// shared_ptr<void> 保留原始纹理对象的 deleter，无需完整类型定义
 struct NN_RUNTIME_RENDER_ASSETS_API RenderAssetCacheEntry
 {
-    std::shared_ptr<void> OwnedTexture;   // 实际是 shared_ptr<OpenGL::Texture2D>，deleter 已捕获
+    std::shared_ptr<void> OwnedTexture;   // GPU 纹理所有权（deleter 已捕获）
     std::unique_ptr<NNTextureResource> Resource;
     size_t GPUMemory = 0;
 };
@@ -36,8 +66,8 @@ class NN_RUNTIME_RENDER_ASSETS_API NNRenderAssetManager
 public:
     static NNRenderAssetManager& Get();
 
-    /// 初始化（需要 RHI 已就绪）
-    bool Initialize();
+    /// 初始化（需要传入渲染资源工厂）
+    bool Initialize(IRenderResourceFactory* factory);
     void Shutdown();
 
     /// 从 Source Asset 直接创建 GPU Texture（Editor / 直接创建场景）
@@ -92,7 +122,9 @@ public:
     /// 通过 GUID.Low 查询已缓存的 cache key（O(1)），0 = 未找到
     uint64_t GetCacheKeyByGuidLow(uint64_t guidLow) const;
 
-    /// 通过 cache key 获取 GL texture ID（GLuint 零扩展为 uint64_t），0 = 未找到
+    /// 通过 cache key 获取纹理 Handle（uint64_t），0 = 未找到
+    /// OpenGL 后端: GLuint 零扩展
+    /// Diligent 后端: ITextureView* reinterpret_cast
     uint64_t GetGLTextureId(uint64_t cacheKey) const;
 
     /// 热更新已存在纹理的像素数据（用于视频帧逐帧更新）
@@ -113,6 +145,7 @@ private:
     mutable std::mutex m_Mutex;
     std::unordered_map<uint64_t, std::unique_ptr<RenderAssetCacheEntry>> m_EntryCache;
     std::unordered_map<uint64_t, uint64_t> m_GuidToCacheKeyMap;  // GUID.Low → cache key
+    IRenderResourceFactory* m_Factory = nullptr;  // 渲染资源工厂（不持有所有权）
     uint64_t m_CurrentFrame = 0;
     uint64_t m_NextKey = 1;  // 自增 key 分配器
     bool m_Initialized = false;

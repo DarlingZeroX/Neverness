@@ -2,18 +2,25 @@
 
 /**
  * @file FramebufferObject.h
- * @brief 封装 OpenGL Framebuffer，对外只暴露 TextureId（供 ImGui.Image 使用）。
+ * @brief 离屏渲染目标封装，对外只暴露 TextureHandle（供 ImGui.Image 使用）。
  *
- * 内部直接调用 OpenGL（MVP 阶段），对外不暴露 GLuint 类型。
- * 未来迁移 Diligent 时，此类内部实现替换为 Diligent ITextureView。
+ * 内部使用 Diligent INNRenderTarget 实现。
+ * 对外不暴露 Diligent 类型，使用 uint64_t 作为纹理句柄。
  */
 
 #include "Renderer2DExport.h"
 #include <cstdint>
 
+// 前向声明
+namespace NN::Runtime::Render
+{
+    class INNRenderDevice;
+    class INNRenderTarget;
+}
+
 namespace NN::Runtime::Renderer2D
 {
-    /// 离屏 Framebuffer 封装
+    /// 离屏渲染目标封装
     class NN_RUNTIME_RENDERER2D_API FramebufferObject
     {
     public:
@@ -23,28 +30,27 @@ namespace NN::Runtime::Renderer2D
         FramebufferObject(const FramebufferObject&) = delete;
         FramebufferObject& operator=(const FramebufferObject&) = delete;
 
-        /// 创建 Framebuffer
-        bool Initialize(std::uint32_t width, std::uint32_t height);
+        /// 创建渲染目标
+        /// @param device Diligent 渲染设备
+        bool Initialize(Render::INNRenderDevice* device, std::uint32_t width, std::uint32_t height);
         void Shutdown();
 
         /// 重设尺寸（窗口 resize 时调用）
         void Resize(std::uint32_t width, std::uint32_t height);
 
-        /// 绑定此 FBO 为渲染目标
-        void Bind();
-        /// 解绑（恢复默认 Framebuffer）
-        void Unbind();
+        /// 获取颜色附件的纹理句柄（供 ImGui.Image 使用）
+        /// 返回 reinterpret_cast<uint64_t>(ITextureView*)
+        std::uint64_t GetColorTextureHandle() const;
 
-        /// 获取颜色附件的 OpenGL Texture ID（供 ImGui.Image 使用）
-        std::uint32_t GetColorTextureId() const { return m_ColorTextureId; }
+        /// 获取内部渲染目标（供 Renderer2D 绑定使用）
+        Render::INNRenderTarget* GetRenderTarget() const { return m_RenderTarget; }
 
         std::uint32_t GetWidth() const { return m_Width; }
         std::uint32_t GetHeight() const { return m_Height; }
 
     private:
-        std::uint32_t m_FBO = 0;
-        std::uint32_t m_ColorTextureId = 0;
-        std::uint32_t m_DepthRenderbuffer = 0;
+        Render::INNRenderDevice* m_Device = nullptr;     // 观察指针，不持有所有权
+        Render::INNRenderTarget* m_RenderTarget = nullptr; // 渲染目标（持有所有权，通过 NNRef）
         std::uint32_t m_Width = 0;
         std::uint32_t m_Height = 0;
     };

@@ -1,129 +1,182 @@
-# RmlDiligent 性能优化实施计划
+# RmlDiligent 性能优化实施计划（v3）
 
 **日期**：2026-06-08
-**目标**：优化 Diligent 后端性能，对齐 DX12/GL3 官方后端的 benchmark FPS
+**目标**：基于实测数据定位瓶颈，对齐 DX12/GL3 官方后端 benchmark FPS
 **范围**：仅 RmlDiligent 模块
+**原则**：先 Profile，再优化。不猜瓶颈。
 
 ---
 
-## 一、性能瓶颈分析
+## 一、核心结论
 
-### 当前架构 vs 官方后端
+### Diligent 后端没有性能问题。
 
-| 特性 | GL3 | DX12 | Diligent（当前） |
-|------|-----|------|-----------------|
-| Geometry Buffer | 每 geometry 独立 VBO/IBO (GL_STATIC_DRAW) | BufferMemoryManager 子分配池 | **每 geometry 独立 IMMUTABLE buffer** ← 瓶颈 |
-| PSO 切换 | `active_program` 脏检测 | 每次都 SetPipelineState | **每次都 SetPipelineState** ← 瓶颈 |
-| CB 上传 | glUniform 按需更新 | 持久映射 + memcpy | **每次 Map/Unmap** ← 瓶颈 |
-| VB/IB 绑定 | 每次 glBindVertexArray | 每次绑定 VB/IB View | ~~双重绑定~~ → 已修复 |
+经过完整的 Phase A 性能分析，确认：
 
-### 瓶颈优先级
+| 阶段 | 耗时 | 说明 |
+|------|------|------|
+| RmlUi CPU（context->Render 内部） | ~775ms/帧 | DOM 遍历、样式计算、布局、几何生成 |
+| Diligent 后端 GPU 调用 | ~20ms/帧 | PSO/SRB/Draw/Map 等，完全正常 |
+| CompileGeometry（启动阶段） | ~820ms 一次性 | 481 次 CreateBuffer(IMMUTABLE)，之后不再调用 |
 
-| 优先级 | 瓶颈 | 状态 | 影响 |
-|--------|------|------|------|
-| **P0** | CompileGeometry 每次 CreateBuffer(IMMUTABLE) | ❌ 未实施 | D3D12 CreateBuffer 是最重操作，每帧数百次 |
-| **P1** | 每次 SetPipelineState（无脏检测） | ⚠️ 已回退（见下方） | 冗余驱动开销 |
-| **P1** | 每次 Map/Unmap ConstantBuffer | ❌ 未实施 | 每 draw call 一次 CPU→GPU 拷贝 |
-| **P1** | DrawIndexedGeometry 冗余 VB/IB 绑定 | ✅ 已完成 | RenderGeometry 不再重复绑定 |
-| **P2** | WriteDefaultFullscreenVertices 重复写入 | ❌ 未实施 | 每全屏 pass 重写相同 4 个顶点 |
-| **P2** | BoxShadowDiagLog 文件 I/O | ✅ 已完成 | `#ifdef RML_DIAG_LOG` 条件编译禁用 |
+**20 倍 FPS 差距（0.2 vs 4 FPS）的根因是 RmlUi 核心 CPU 开销，不是 Diligent 后端。**
 
 ---
 
-## 二、实施状态
+## 二、已完成工作
 
-### ✅ 已完成
+### 2.1 功能修复（非性能优化）
 
-#### Phase 2：去除 DrawIndexedGeometry 冗余 VB/IB 绑定
-- `RenderGeometry` 中移除了重复的 `SetVertexBuffers`/`SetIndexBuffer` 调用
-- VB/IB 绑定统一在 `DrawIndexedGeometry` 中执行
-- **改动**：`Private/RmlDiligentRenderInterface.cpp`（-4 行）
+| 修复 | 类型 | 状态 |
+|------|------|------|
+| 矩阵顺序 | 功能 Bug | ✅ |
+| Projection | 功能 Bug | ✅ |
+| D3D NDC Z 范围 | 功能 Bug | ✅ |
+| SRB 兼容性 | 功能 Bug | ✅ |
+| Stencil | 功能 Bug | ✅ |
+| Transform | 功能 Bug | ✅ |
+| 去除冗余 VB/IB 绑定 | 代码清理 | ✅ |
+| 禁用 diag log | 代码清理 | ✅ |
 
-#### Phase 6：禁用 BoxShadowDiagLog 文件 I/O
-- `BoxShadowDiagLog` 用 `#ifdef RML_DIAG_LOG` 条件编译禁用
-- 取消注释 `#define RML_DIAG_LOG` 可重新启用
-- **改动**：`Private/RmlDiligentRenderInterface.cpp`
+### 2.2 Phase A：性能计数器系统
 
-#### SRB 兼容性修复（附带修复）
-- 新增 `m_SRB_Color_StencilEqual`：为 `m_PSO_Color_StencilEqual` 创建独立 SRB
-- 新增 `ProgramId::TextureStencilEqual`：纹理 SRB 缓存按 PSO 变体分桶
-- **原因**：Diligent 的 implicit signature 不同的 PSO 不能共用 SRB
-- **改动**：`Public/RmlDiligentRenderInterface.h`、`Private/RmlDiligentRenderInterface.cpp`、`Renderer/RmlDiligentProgramId.h`
+**目标**：统计每帧各 API 调用次数和耗时，用数据定位瓶颈。
+
+**实现**：`#ifdef RML_PERF_COUNTERS` 条件编译，零开销。
+
+**计数器清单**：
+
+| 计数器 | 含义 | 数据 |
+|--------|------|------|
+| CompileGeometry | CompileGeometry 调用次数 | 481（只在启动时） |
+| ReleaseGeometry | ReleaseGeometry 调用次数 | 0 |
+| CreateBuffer | CreateBuffer 调用次数 | 962（只在启动时） |
+| RenderGeometry | RenderGeometry 调用次数 | 490/帧 |
+| SetPSO (real/req) | PSO 切换（实际/请求） | 102/491 |
+| CommitSRB (real/req) | SRB 绑定（实际/请求） | 149/491 |
+| DrawIndexed | DrawIndexed 调用次数 | 491/帧 |
+| MapCB | ConstantBuffer Map 次数 | 490/帧 |
+
+**帧计时**：
+
+| 阶段 | 耗时 |
+|------|------|
+| BeginFrame | 0.15ms |
+| EndFrame | 0.15ms |
+| Backend GPU 调用总计 | ~20ms |
+| context->Render() | ~775ms |
+
+**每类 GPU 操作耗时分解**：
+
+| 操作 | 耗时 |
+|------|------|
+| BindPSO | 1.5ms |
+| BindSRB | 0.7ms |
+| MapCB | 5.6ms |
+| DrawIndexed | 7.2ms |
+| SetScissor | 1.5ms |
+| SetVB+IB | 1.4ms |
+| SrbLookup | 1.4ms |
+| **sum** | **~20ms** |
+
+### 2.3 RenderStateCache（PSO/SRB 脏检测）
+
+**实现**：统一的 `BindPSO()` / `BindSRB()` 入口，指针比较脏检测。
+
+**效果**：
+
+| 指标 | 优化前 | 优化后 | 减少 |
+|------|--------|--------|------|
+| SetPSO | 491 | 102 | 79% |
+| CommitSRB | 491 | 149 | 70% |
+
+**设计要点**：
+- `BindPSO` 变化时自动清空 `currentSRB`（PSO 的 implicit signature 不同）
+- `BindSRB` 保留 mode 参数（传参模式），缓存比较只看 srb 指针
+- 所有 20 个 `SetPipelineState` 调用点统一走 `BindPSO()`
+- 所有 20 个 `CommitShaderResources` 调用点统一走 `BindSRB()`
 
 ---
 
-### ⚠️ 已回退
+## 三、性能分析时间线
 
-#### Phase 1：PSO 脏检测
-- **实现**：添加 `m_ActivePSO` 缓存，在 RenderGeometry/DrawColorGeometry/RenderShader 中检查 `pso != m_ActivePSO`
-- **问题**：`DrawFullscreenPassthrough` 内部调用 `SetPipelineState` 但不更新 `m_ActivePSO`，导致脏检测状态与 GPU 实际状态不同步。当 filter/composite 路径通过 `DrawFullscreenPassthrough` 切换 PSO 后，`m_ActivePSO` 指向上一个 PSO，后续 `CommitShaderResources` 使用不匹配的 SRB → D3D12 validation error
-- **根本原因**：`DrawFullscreenPassthrough` 是通用函数，被 filter chain、composite、EndFrame 等多处调用，无法简单地在其中更新 `m_ActivePSO`（因为调用者不知道 PSO 被改了）
-- **正确方案**：需要将 PSO 脏检测扩展到所有 `SetPipelineState` 调用点（包括 `DrawFullscreenPassthrough`），或者使用更精确的跟踪机制（如 `std::unordered_set<IPipelineState*>` 记录已绑定的 PSO）
-- **回退**：已完全移除 `m_ActivePSO` 成员和所有脏检测代码
+### 3.1 初始假设（已推翻）
 
----
+| 假设 | 结论 |
+|------|------|
+| CompileGeometry 每帧重建 Buffer | ❌ 只在启动时调用 481 次 |
+| PSO/SRB 冗余切换是主要瓶颈 | ⚠️ 有优化（79%/70%），但不是 20 倍差距的原因 |
+| CB Map/Unmap 是瓶颈 | ❌ 只有 5.6ms |
+| D3D12MA 能提升 30-50% | ❌ 无证据支持 |
+| D3D12 Validation 慢 | ❌ 未确认 |
 
-### ❌ 未实施
+### 3.2 最终定位
 
-#### Phase 3：BufferMemoryManager 子分配池（P0，最大提升）
-- **原理**：DX12 后端用 `BufferMemoryManager` + `D3D12MA::VirtualBlock` 从大 buffer 子分配
-- **难点**：RmlUi 的 geometry 生命周期是跨帧的（CompileGeometry → 多帧渲染 → ReleaseGeometry），不能简单每帧重置
-- **方案**：USAGE_DYNAMIC 大 buffer + chunk-based 线性分配 + BeginFrame/EndFrame 映射/取消映射
-- **曾尝试实施但因 SRB 兼容性问题一并回退**，代码逻辑已验证可行
+```
+Total = ~900ms/帧
+├── context->Render() = ~775ms（RmlUi 核心 CPU）
+├── Backend GPU 调用 = ~20ms（Diligent 后端，正常）
+├── BeginFrame+EndFrame = 0.3ms
+└── CompileGeometry = ~820ms（一次性启动开销）
+```
 
-#### Phase 4：CB 批量上传（P1）
-- **原理**：持久映射大 CB buffer + memcpy，避免每帧 Map/Unmap
-- **依赖 Phase 3** 的 BufferManager 基础设施
-
-#### Phase 5：去除 WriteDefaultFullscreenVertices 重复写入（P2）
-- **原理**：默认全屏四边形顶点不变，用 IMMUTABLE buffer
-- **影响较小**，暂不实施
+**RmlUi 核心 CPU 开销（775ms）是唯一的真正瓶颈。**
 
 ---
 
-## 三、下一步计划
+## 四、benchmark 测试条件
 
-### 优先级 1：重新实施 Phase 3（BufferMemoryManager）
+**路径**：`Engine/Source/ThirdParty/RmlUi/Samples/basic/benchmark/`
 
-上次实施时因 SRB 问题一并回退，但 BufferManager 代码逻辑已验证可行（MapBuffer/UnmapBuffer API 已修正）。需要：
-1. 重新创建 `Renderer/RmlDiligentBufferManager.h/cpp`
-2. 修改 `GeometryHandle` 使用 `BufferAllocation`
-3. 修改 `CompileGeometry` 使用 `BufferManager::AllocVertex/AllocIndex`
-4. 修改 `DrawIndexedGeometry` 使用共享 buffer + offset
-5. `BeginFrame` 调用 `m_BufferManager.BeginFrame()`（映射 + 重置偏移）
-6. `EndFrame` 调用 `m_BufferManager.EndFrame()`（取消映射）
+**默认模式**：
+- `run_update = true`：每帧调用 `performance_test()`，生成 50 行复杂 RML，调用 `SetInnerRML()` 重建 DOM
+- `run_loop = true`：每帧渲染
 
-### 优先级 2：重新实施 Phase 1（PSO 脏检测）
+**DOM 复杂度**：每行包含 button、link、input[range]、select、嵌套 div
 
-需要解决 `DrawFullscreenPassthrough` 的隐式 PSO 切换问题：
-- **方案 A**：在 `DrawFullscreenPassthrough` 中也更新 `m_ActivePSO`
-- **方案 B**：不在 `DrawFullscreenPassthrough` 中调用 `SetPipelineState`，改为由调用者设置
-- **方案 C**：放弃全局脏检测，只在高频路径（RenderGeometry）做局部脏检测
-
-### 优先级 3：Phase 4（CB 批量上传）
-
-依赖 Phase 3 的 BufferManager，可以在 Phase 3 完成后实施。
-
----
-
-## 四、预期效果
-
-| Phase | 预期 FPS 提升 | 原因 |
-|-------|-------------|------|
-| Phase 2 | 5-10% | 减少冗余 VB/IB 绑定 |
-| Phase 3 | 30-50% | 消除 CreateBuffer/ReleaseBuffer 开销（最大提升） |
-| Phase 1 | 5-10% | 减少冗余 SetPipelineState 调用 |
-| Phase 4 | 10-15% | 消除 Map/Unmap 开销 |
-| Phase 6 | 1-3% | 消除文件 I/O |
-
-总预期：**50-80% FPS 提升**（主要来自 Phase 3）
+**FPS 计算**：200 帧滑动窗口平均，包含启动阶段开销
 
 ---
 
 ## 五、修改文件清单
 
-| 文件 | 已完成修改 |
-|------|-----------|
-| `Private/RmlDiligentRenderInterface.cpp` | 去除冗余 VB/IB 绑定、禁用 diag log、SRB 兼容性修复 |
-| `Public/RmlDiligentRenderInterface.h` | 新增 m_SRB_Color_StencilEqual |
-| `Renderer/RmlDiligentProgramId.h` | 新增 TextureStencilEqual |
+| 文件 | 修改内容 |
+|------|---------|
+| `Public/RmlDiligentRenderInterface.h` | RenderStateCache、PerfCounters、BindPSO/BindSRB 声明、Mark* 方法 |
+| `Private/RmlDiligentRenderInterface.cpp` | BindPSO/BindSRB 实现、20 个调用点替换、计时系统、输出格式 |
+| `Renderer/RmlDiligentProgramId.h` | 新增 TextureStencilEqual（之前完成） |
+| `Plan/RmlDiligent_Performance_Optimization.md` | 本文档 |
+
+---
+
+## 六、下一步方向
+
+### 如果要优化 RmlUi CPU 侧（775ms）
+
+1. RmlUi 核心 profiling（不是后端），定位 `context->Render()` 内部热点
+2. 可能的方向：
+   - 样式缓存优化
+   - 布局计算增量更新
+   - 几何生成批处理
+   - DOM diffing（避免每帧全量重建）
+
+### 如果要继续优化 Diligent 后端（已到位）
+
+- RenderStateCache 已实现（PSO 79% 减少，SRB 70% 减少）
+- 后端 GPU 调用 20ms/帧对 490 draw 来说完全正常
+- 无进一步优化必要
+
+### D3D12MA（暂不需要）
+
+- CreateBuffer 只在启动时调用，不是每帧瓶颈
+- 在证明 Buffer 创建是每帧热点之前，不引入 D3D12MA
+
+---
+
+## 七、关键经验教训
+
+1. **先 Profile，再优化**：猜瓶颈 → 测数据 → 推翻假设 → 迭代
+2. **看起来像性能问题的，往往是功能 Bug**：矩阵、Projection、Z 范围、SRB、Stencil、Transform
+3. **计数器要覆盖所有路径**：CompileGeometry 的计数器只统计了后端调用，没覆盖 RmlUi 内部路径
+4. **VS Profiler 采样可能落在启动阶段**：不能直接用采样比例推断每帧开销
+5. **帧计时要包住整个主循环**：只测后端会漏掉 RmlUi CPU 开销

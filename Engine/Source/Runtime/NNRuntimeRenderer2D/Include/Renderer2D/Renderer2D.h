@@ -2,18 +2,18 @@
 
 /**
  * @file Renderer2D.h
- * @brief 最小 2D 渲染器：接收 SpriteDrawCommand[]，通过 RHI（OpenGL）批量绘制 Quad。
+ * @brief 最小 2D 渲染器：接收 SpriteDrawCommand[]，通过 Diligent 后端批量绘制 Quad。
  *
  * 职责：
- *   - 编译/管理 Builtin Sprite Shader
- *   - 管理 Unit Quad 几何体（VAO/VBO/EBO）
+ *   - 编译/管理 Builtin Sprite Shader（GLSL，由 Diligent 编译为 SPIRV）
+ *   - 管理 Unit Quad 几何体（VB/IB）
  *   - 管理 1x1 白色默认纹理
- *   - 批量提交 SpriteDrawCommand → glDrawElements
+ *   - 批量提交 SpriteDrawCommand → DrawIndexed
  *
  * 设计约束：
- *   - 不暴露 GLuint 到外部
- *   - 内部直接使用 OpenGL（MVP 阶段可接受）
- *   - 未来迁移到 Diligent 时仅需修改此类内部实现
+ *   - 通过 INNRenderDevice 创建 GPU 资源
+ *   - 通过 Diligent IDeviceContext 录制渲染命令
+ *   - 保留 GLSL 着色器，不转换 HLSL
  */
 
 #include "SpriteDrawCommand.h"
@@ -21,6 +21,9 @@
 #include "Renderer2DExport.h"
 #include <vector>
 #include <cstdint>
+
+// 前向声明：避免暴露 Experiments 头文件到外部
+namespace NN::Runtime::Render { class INNRenderDevice; }
 
 namespace NN::Runtime::Renderer2D
 {
@@ -34,8 +37,9 @@ namespace NN::Runtime::Renderer2D
         Renderer2D(const Renderer2D&) = delete;
         Renderer2D& operator=(const Renderer2D&) = delete;
 
-        /// 初始化：编译 Builtin Shader、创建 Quad VAO/VBO/EBO、创建白色默认纹理
-        bool Initialize();
+        /// 初始化：编译 Builtin Shader、创建 Quad VB/IB、创建白色默认纹理
+        /// @param device Diligent 渲染设备（由 NNRenderBootstrap 创建）
+        bool Initialize(Render::INNRenderDevice* device);
         void Shutdown();
 
         /// 开始一帧渲染
@@ -44,7 +48,7 @@ namespace NN::Runtime::Renderer2D
         /// 提交绘制命令数组
         void Submit(const std::vector<SpriteDrawCommand>& commands);
 
-        /// 结束一帧渲染（Flush 剩余 Batch）
+        /// 结束一帧渲染
         void EndScene();
 
         /// 获取本帧 DrawCall 数量

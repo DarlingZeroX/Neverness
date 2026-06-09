@@ -28,6 +28,15 @@
 #include <memory>
 #include <type_traits>
 
+#ifdef RML_PERF_COUNTERS
+#include <Windows.h>  // OutputDebugStringA
+// 计时宏：记录 code 执行耗时，累加到 counterVar（微秒 tick）
+#define RML_PERF_TIMED(counterVar, code) \
+    { LARGE_INTEGER _pt0, _pt1; QueryPerformanceCounter(&_pt0); \
+      code; QueryPerformanceCounter(&_pt1); \
+      (counterVar) += _pt1.QuadPart - _pt0.QuadPart; }
+#endif
+
 // Diligent 头文件
 #include "Graphics/GraphicsEngine/interface/DeviceContext.h"
 #include "Graphics/GraphicsEngine/interface/Buffer.h"
@@ -1056,18 +1065,32 @@ void RmlDiligentRenderInterface::CreateShaderConstantBuffers()
 
 void RmlDiligentRenderInterface::DrawIndexedGeometry(GeometryHandle* geom)
 {
-    if (!geom || !geom->vertexBuffer || !geom->indexBuffer || geom->indexCount == 0) {
+    if (!geom || !geom->vbAlloc.buffer || !geom->ibAlloc.buffer || geom->indexCount == 0) {
         return;
     }
 
-    Diligent::Uint64 offset = 0;
-    Diligent::IBuffer* pVB = geom->vertexBuffer;
-    m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
-    m_Context->SetIndexBuffer(geom->indexBuffer, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+#ifdef RML_PERF_COUNTERS
+    LARGE_INTEGER vbibT0, vbibT1;
+    QueryPerformanceCounter(&vbibT0);
+#endif
+    // 使用 BufferManager 子分配的共享 buffer + offset
+    Diligent::Uint64 vbOffset = geom->vbAlloc.offset;
+    Diligent::IBuffer* pVB = geom->vbAlloc.buffer;
+    m_Context->SetVertexBuffers(0, 1, &pVB, &vbOffset, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
+    m_Context->SetIndexBuffer(geom->ibAlloc.buffer, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+#ifdef RML_PERF_COUNTERS
+    QueryPerformanceCounter(&vbibT1);
+    m_PerfCounters.setVBIBUs += vbibT1.QuadPart - vbibT0.QuadPart;
+#endif
 
     const Rml::Matrix4f& identity = Rml::Matrix4f::Identity();
     const bool hasTransform = std::memcmp(m_Transform.data(), identity.data(), sizeof(float) * 16) != 0;
     const bool useTransformedDraw = hasTransform && m_ScissorEnabled;
+
+#ifdef RML_PERF_COUNTERS
+    LARGE_INTEGER scT0, scT1;
+    QueryPerformanceCounter(&scT0);
+#endif
     if (useTransformedDraw) {
         if (m_Context && m_SwapChain) {
             const int w = static_cast<int>(m_SwapChain->GetDesc().Width);
@@ -1091,6 +1114,10 @@ void RmlDiligentRenderInterface::DrawIndexedGeometry(GeometryHandle* geom)
         fullScissor.bottom = h;
         m_Context->SetScissorRects(1, &fullScissor, static_cast<Diligent::Uint32>(w), static_cast<Diligent::Uint32>(h));
     }
+#ifdef RML_PERF_COUNTERS
+    QueryPerformanceCounter(&scT1);
+    m_PerfCounters.setScissorUs += scT1.QuadPart - scT0.QuadPart;
+#endif
 
     // 诊断：绘制 transform 元素时的状态
     static uint32_t s_drawDiag = 0;
@@ -1109,10 +1136,27 @@ void RmlDiligentRenderInterface::DrawIndexedGeometry(GeometryHandle* geom)
     }
 
     Diligent::DrawIndexedAttribs drawAttrs(geom->indexCount, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
+#ifdef RML_PERF_COUNTERS
+    LARGE_INTEGER drawT0, drawT1;
+    QueryPerformanceCounter(&drawT0);
+#endif
     m_Context->DrawIndexed(drawAttrs);
+#ifdef RML_PERF_COUNTERS
+    QueryPerformanceCounter(&drawT1);
+    ++m_PerfCounters.drawIndexed;
+    m_PerfCounters.drawIndexedUs += drawT1.QuadPart - drawT0.QuadPart;
+#endif
 
     if (useTransformedDraw && m_ScissorEnabled && m_ScissorRegionRml.Valid()) {
+#ifdef RML_PERF_COUNTERS
+        LARGE_INTEGER scT2, scT3;
+        QueryPerformanceCounter(&scT2);
+#endif
         SetScissorRml(m_ScissorRegionRml, false);
+#ifdef RML_PERF_COUNTERS
+        QueryPerformanceCounter(&scT3);
+        m_PerfCounters.setScissorUs += scT3.QuadPart - scT2.QuadPart;
+#endif
     }
 }
 
@@ -1126,6 +1170,51 @@ void RmlDiligentRenderInterface::EnsureFramebufferBound()
     }
 }
 
+// =============================================================================
+// RenderStateCache：BindPSO / BindSRB（脏检测，过滤冗余驱动调用）
+// =============================================================================
+
+void RmlDiligentRenderInterface::BindPSO(Diligent::IPipelineState* pso)
+{
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.setPSOReq;
+    LARGE_INTEGER t0, t1;
+    QueryPerformanceCounter(&t0);
+#endif
+    if (m_StateCache.currentPSO == pso) {
+        return;
+    }
+    m_Context->SetPipelineState(pso);
+    m_StateCache.currentPSO = pso;
+    m_StateCache.currentSRB = nullptr;  // PSO 变了 → SRB 失效（implicit signature 不同）
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.setPSOReal;
+    QueryPerformanceCounter(&t1);
+    m_PerfCounters.bindPSOUs += t1.QuadPart - t0.QuadPart;
+#endif
+}
+
+void RmlDiligentRenderInterface::BindSRB(
+    Diligent::IShaderResourceBinding* srb,
+    Diligent::RESOURCE_STATE_TRANSITION_MODE mode)
+{
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.commitSRBReq;
+    LARGE_INTEGER t0, t1;
+    QueryPerformanceCounter(&t0);
+#endif
+    if (m_StateCache.currentSRB == srb) {
+        return;
+    }
+    m_Context->CommitShaderResources(srb, mode);
+    m_StateCache.currentSRB = srb;
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.commitSRBReal;
+    QueryPerformanceCounter(&t1);
+    m_PerfCounters.bindSRBUs += t1.QuadPart - t0.QuadPart;
+#endif
+}
+
 void RmlDiligentRenderInterface::DrawColorGeometry(
     GeometryHandle* geom,
     Rml::Vector2f translation,
@@ -1135,17 +1224,26 @@ void RmlDiligentRenderInterface::DrawColorGeometry(
         return;
     }
 
-    m_Context->SetPipelineState(pso);
+    BindPSO(pso);
 
     {
+#ifdef RML_PERF_COUNTERS
+        LARGE_INTEGER mapT0, mapT1;
+        QueryPerformanceCounter(&mapT0);
+#endif
         Diligent::MapHelper<MainCB> cb(m_Context, m_ConstantBuffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
         UploadTransformToCB(cb, m_Transform, translation);
+#ifdef RML_PERF_COUNTERS
+        QueryPerformanceCounter(&mapT1);
+        ++m_PerfCounters.mapCB;
+        m_PerfCounters.mapCBUs += mapT1.QuadPart - mapT0.QuadPart;
+#endif
     }
 
     // SRB 必须匹配 PSO 的 implicit signature
     Diligent::IShaderResourceBinding* srb = (pso == m_PSO_Color_StencilEqual) ? m_SRB_Color_StencilEqual : m_SRB_Color;
     if (srb) {
-        m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+        BindSRB(srb);
     }
 
     DrawIndexedGeometry(geom);
@@ -1300,10 +1398,20 @@ void RmlDiligentRenderInterface::UnbindRenderTargets()
 
 void RmlDiligentRenderInterface::BeginFrame()
 {
+#ifdef RML_PERF_COUNTERS
+    LARGE_INTEGER tick0;
+    QueryPerformanceCounter(&tick0);
+#endif
+
     // 每帧重置所有性能计数器
     ResetPerfStats();
     m_SaveLayerAsTextureCount = 0;
     m_CallbackTextureDrawCount = 0;
+    m_StateCache.Reset();
+#ifdef RML_PERF_COUNTERS
+    m_PerfCounters = {};
+    m_PerfCounters.frameStartTick = tick0.QuadPart;
+#endif
 
     const auto w = static_cast<int>(m_SwapChain->GetDesc().Width);
     const auto h = static_cast<int>(m_SwapChain->GetDesc().Height);
@@ -1367,10 +1475,23 @@ void RmlDiligentRenderInterface::BeginFrame()
 
     m_ScissorEnabled = false;
     SetTransform(nullptr);
+
+#ifdef RML_PERF_COUNTERS
+    LARGE_INTEGER tick1;
+    QueryPerformanceCounter(&tick1);
+    m_PerfCounters.beginFrameEndTick = tick1.QuadPart;
+    m_PerfCounters.beginFrameUs = tick1.QuadPart - tick0.QuadPart;
+#endif
 }
 
 void RmlDiligentRenderInterface::EndFrame()
 {
+#ifdef RML_PERF_COUNTERS
+    LARGE_INTEGER endFrameTick0;
+    QueryPerformanceCounter(&endFrameTick0);
+    m_PerfCounters.endFrameStartTick = endFrameTick0.QuadPart;
+#endif
+
     if (m_SwapchainPassActive) {
         m_Context->EndRenderPass();
         m_SwapchainPassActive = false;
@@ -1415,7 +1536,166 @@ void RmlDiligentRenderInterface::EndFrame()
             m_CompositeCount,
             m_FilterRenderCount);
     }
+
+#ifdef RML_PERF_COUNTERS
+    // EndFrame 出口计时
+    LARGE_INTEGER endFrameTick1;
+    QueryPerformanceCounter(&endFrameTick1);
+    m_PerfCounters.endFrameUs = endFrameTick1.QuadPart - m_PerfCounters.endFrameStartTick;
+
+    // Present 耗时（由 MarkPresentStart/End 记录）
+    if (m_PerfCounters.presentStartTick > 0 && m_PerfCounters.presentEndTick > 0) {
+        m_PerfCounters.presentUs = m_PerfCounters.presentEndTick - m_PerfCounters.presentStartTick;
+    }
+
+    // 整帧耗时：BeginFrame 入口 → Present 出口（或 EndFrame 出口）
+    const int64_t frameEndTick = (m_PerfCounters.presentEndTick > 0)
+        ? m_PerfCounters.presentEndTick : endFrameTick1.QuadPart;
+    m_PerfCounters.frameTotalUs = frameEndTick - m_PerfCounters.frameStartTick;
+
+    // RmlUi CPU 侧耗时
+    if (m_PerfCounters.updateStartTick > 0 && m_PerfCounters.updateEndTick > 0) {
+        m_PerfCounters.rmlUpdateUs = m_PerfCounters.updateEndTick - m_PerfCounters.updateStartTick;
+    }
+    if (m_PerfCounters.renderStartTick > 0 && m_PerfCounters.renderEndTick > 0) {
+        m_PerfCounters.rmlRenderUs = m_PerfCounters.renderEndTick - m_PerfCounters.renderStartTick;
+    }
+    // GPU 同步耗时
+    if (m_PerfCounters.flushStartTick > 0 && m_PerfCounters.flushEndTick > 0) {
+        m_PerfCounters.flushUs = m_PerfCounters.flushEndTick - m_PerfCounters.flushStartTick;
+    }
+    if (m_PerfCounters.idleGPUStartTick > 0 && m_PerfCounters.idleGPUEndTick > 0) {
+        m_PerfCounters.idleGPUUs = m_PerfCounters.idleGPUEndTick - m_PerfCounters.idleGPUStartTick;
+    }
+
+    // 转换为毫秒（使用 QPC 频率）
+    LARGE_INTEGER freq;
+    QueryPerformanceFrequency(&freq);
+    auto toMs = [&](int64_t ticks) -> double {
+        return 1000.0 * static_cast<double>(ticks) / static_cast<double>(freq.QuadPart);
+    };
+
+    // 每 120 帧输出一次性能计数器统计（DebugView / OutputDebugString）
+    if (s_DiagFrame % 30 == 0) {
+        // CompileGeometry 每帧增量（而非累计值）
+        const uint32_t dCompile = m_PerfCounters.compileGeometry - m_PerfCounters.prevCompileGeometry;
+        const int64_t dCompileUs = m_PerfCounters.compileGeometryUs - m_PerfCounters.prevCompileGeometryUs;
+        const double msCompileDelta = toMs(dCompileUs);
+        const double msCompileTotal = toMs(m_PerfCounters.compileGeometryUs);
+        m_PerfCounters.prevCompileGeometry = m_PerfCounters.compileGeometry;
+        m_PerfCounters.prevCompileGeometryUs = m_PerfCounters.compileGeometryUs;
+
+        const double msRelease = toMs(m_PerfCounters.releaseGeometryUs);
+        const double msPSO = toMs(m_PerfCounters.bindPSOUs);
+        const double msSRB = toMs(m_PerfCounters.bindSRBUs);
+        const double msMap = toMs(m_PerfCounters.mapCBUs);
+        const double msDraw = toMs(m_PerfCounters.drawIndexedUs);
+        const double msScissor = toMs(m_PerfCounters.setScissorUs);
+        const double msVBIB = toMs(m_PerfCounters.setVBIBUs);
+        const double msStencil = toMs(m_PerfCounters.setStencilRefUs);
+        const double msSrbLookup = toMs(m_PerfCounters.srbLookupUs);
+        const double msSum = msPSO + msSRB + msMap + msDraw + msScissor + msVBIB + msStencil + msSrbLookup;
+        const double msUpdate = toMs(m_PerfCounters.rmlUpdateUs);
+        const double msRender = toMs(m_PerfCounters.rmlRenderUs);
+        const double msFlush = toMs(m_PerfCounters.flushUs);
+        const double msIdleGPU = toMs(m_PerfCounters.idleGPUUs);
+        const double msTotal = toMs(m_PerfCounters.frameTotalUs);
+        const double msBackend = msSum;
+        const double msOther = msTotal - msUpdate - msRender - msBackend - msFlush - msIdleGPU
+            - toMs(m_PerfCounters.beginFrameUs) - toMs(m_PerfCounters.endFrameUs);
+
+        char buf[1536];
+        snprintf(buf, sizeof(buf),
+            "[RmlDiligent-Perf] frame=%u "
+            "CompileGeom=%u(+%u,%.1fms) Total=%.1fms | "
+            "ReleaseGeom=%u CreateBuf=%u RenderGeom=%u "
+            "SetPSO=%u/%u CommitSRB=%u/%u DrawIdx=%u MapCB=%u\n"
+            "[RmlDiligent-Time] Update=%.2fms Render=%.2fms Backend=%.2fms "
+            "Flush=%.2fms IdleGPU=%.2fms "
+            "Begin=%.2fms End=%.2fms Other=%.2fms Total=%.2fms\n"
+            "[RmlDiligent-Draw] PSO=%.2fms SRB=%.2fms Map=%.2fms Draw=%.2fms "
+            "Scissor=%.2fms VBIB=%.2fms Stencil=%.2fms SrbLookup=%.2fms (sum=%.2fms)\n",
+            s_DiagFrame,
+            m_PerfCounters.compileGeometry, dCompile, msCompileDelta, msCompileTotal,
+            m_PerfCounters.releaseGeometry,
+            m_PerfCounters.createBuffer,
+            m_PerfCounters.renderGeometry,
+            m_PerfCounters.setPSOReal, m_PerfCounters.setPSOReq,
+            m_PerfCounters.commitSRBReal, m_PerfCounters.commitSRBReq,
+            m_PerfCounters.drawIndexed,
+            m_PerfCounters.mapCB,
+            msUpdate, msRender, msBackend,
+            msFlush, msIdleGPU,
+            toMs(m_PerfCounters.beginFrameUs),
+            toMs(m_PerfCounters.endFrameUs),
+            msOther, msTotal,
+            msPSO, msSRB, msMap, msDraw,
+            msScissor, msVBIB, msStencil, msSrbLookup, msSum);
+        OutputDebugStringA(buf);
+    }
+#endif
 }
+
+// =============================================================================
+// 帧计时辅助函数（应用层在 Present 前后调用）
+// =============================================================================
+
+#ifdef RML_PERF_COUNTERS
+void RmlDiligentRenderInterface::MarkPresentStart()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.presentStartTick));
+}
+
+void RmlDiligentRenderInterface::MarkPresentEnd()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.presentEndTick));
+}
+
+void RmlDiligentRenderInterface::MarkEndFrameStart()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.endFrameStartTick));
+}
+
+void RmlDiligentRenderInterface::MarkUpdateStart()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.updateStartTick));
+}
+
+void RmlDiligentRenderInterface::MarkUpdateEnd()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.updateEndTick));
+}
+
+void RmlDiligentRenderInterface::MarkRenderStart()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.renderStartTick));
+}
+
+void RmlDiligentRenderInterface::MarkRenderEnd()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.renderEndTick));
+}
+
+void RmlDiligentRenderInterface::MarkFlushStart()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.flushStartTick));
+}
+
+void RmlDiligentRenderInterface::MarkFlushEnd()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.flushEndTick));
+}
+
+void RmlDiligentRenderInterface::MarkIdleGPUStart()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.idleGPUStartTick));
+}
+
+void RmlDiligentRenderInterface::MarkIdleGPUEnd()
+{
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&m_PerfCounters.idleGPUEndTick));
+}
+#endif
 
 void RmlDiligentRenderInterface::DrawDebugQuad()
 {
@@ -1449,6 +1729,12 @@ Rml::CompiledGeometryHandle RmlDiligentRenderInterface::CompileGeometry(
     Rml::Span<const Rml::Vertex> vertices,
     Rml::Span<const int> indices)
 {
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.compileGeometry;
+    LARGE_INTEGER compT0, compT1;
+    QueryPerformanceCounter(&compT0);
+#endif
+
     auto* handle = new GeometryHandle();
 
     Diligent::BufferDesc vbDesc;
@@ -1458,8 +1744,11 @@ Rml::CompiledGeometryHandle RmlDiligentRenderInterface::CompileGeometry(
     vbDesc.Usage = Diligent::USAGE_IMMUTABLE;
 
     Diligent::BufferData vbData(vertices.data(), vbDesc.Size);
-    m_Device->CreateBuffer(vbDesc, &vbData, &handle->vertexBuffer);
-    if (!handle->vertexBuffer) {
+    m_Device->CreateBuffer(vbDesc, &vbData, &handle->vbAlloc.buffer);
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.createBuffer;
+#endif
+    if (!handle->vbAlloc.buffer) {
         delete handle;
         return 0;
     }
@@ -1471,14 +1760,22 @@ Rml::CompiledGeometryHandle RmlDiligentRenderInterface::CompileGeometry(
     ibDesc.Usage = Diligent::USAGE_IMMUTABLE;
 
     Diligent::BufferData ibData(indices.data(), ibDesc.Size);
-    m_Device->CreateBuffer(ibDesc, &ibData, &handle->indexBuffer);
-    if (!handle->indexBuffer) {
+    m_Device->CreateBuffer(ibDesc, &ibData, &handle->ibAlloc.buffer);
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.createBuffer;
+#endif
+    if (!handle->ibAlloc.buffer) {
         delete handle;
         return 0;
     }
 
     handle->vertexCount = static_cast<uint32_t>(vertices.size());
     handle->indexCount = static_cast<uint32_t>(indices.size());
+
+#ifdef RML_PERF_COUNTERS
+    QueryPerformanceCounter(&compT1);
+    m_PerfCounters.compileGeometryUs += compT1.QuadPart - compT0.QuadPart;
+#endif
 
     return reinterpret_cast<Rml::CompiledGeometryHandle>(handle);
 }
@@ -1497,9 +1794,13 @@ void RmlDiligentRenderInterface::RenderGeometry(
     Rml::TextureHandle texture)
 {
     auto* geom = reinterpret_cast<GeometryHandle*>(geometry);
-    if (!geom || !geom->vertexBuffer || !geom->indexBuffer || geom->indexCount == 0) {
+    if (!geom || !geom->vbAlloc.buffer || !geom->ibAlloc.buffer || geom->indexCount == 0) {
         return;
     }
+
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.renderGeometry;
+#endif
 
     EnsureFramebufferBound();
 
@@ -1520,7 +1821,7 @@ void RmlDiligentRenderInterface::RenderGeometry(
     }
 
     if (m_ClipMaskEnabled && m_UseStencilEqual && !callbackTexture) {
-        m_Context->SetStencilRef(m_StencilTestValue);
+        { RML_PERF_TIMED(m_PerfCounters.setStencilRefUs, m_Context->SetStencilRef(m_StencilTestValue)); }
     }
 
     const Rml::Matrix4f& identity = Rml::Matrix4f::Identity();
@@ -1553,11 +1854,20 @@ void RmlDiligentRenderInterface::RenderGeometry(
         EnableScissorRegion(false);
     }
 
-    m_Context->SetPipelineState(pso);
+    BindPSO(pso);
 
     {
+#ifdef RML_PERF_COUNTERS
+        LARGE_INTEGER mapT0, mapT1;
+        QueryPerformanceCounter(&mapT0);
+#endif
         Diligent::MapHelper<MainCB> cb(m_Context, m_ConstantBuffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
         UploadTransformToCB(cb, m_Transform, translation);
+#ifdef RML_PERF_COUNTERS
+        QueryPerformanceCounter(&mapT1);
+        ++m_PerfCounters.mapCB;
+        m_PerfCounters.mapCBUs += mapT1.QuadPart - mapT0.QuadPart;
+#endif
     }
 
     // VB/IB 绑定统一在 DrawIndexedGeometry 中执行，此处不重复绑定
@@ -1568,7 +1878,11 @@ void RmlDiligentRenderInterface::RenderGeometry(
         auto* tex = reinterpret_cast<TextureHandle*>(texture);
         // StencilEqual PSO 的 implicit signature 不同，需要独立的 SRB 缓存桶
         const ProgramId texProgId = (pso == m_PSO_Texture_StencilEqual) ? ProgramId::TextureStencilEqual : ProgramId::Texture;
+#ifdef RML_PERF_COUNTERS
+        { RML_PERF_TIMED(m_PerfCounters.srbLookupUs, srbTexture = GetOrCreateTextureSRBRef(tex, texProgId, pso)); }
+#else
         srbTexture = GetOrCreateTextureSRBRef(tex, texProgId, pso);
+#endif
         srb = srbTexture;
     } else {
         // SRB 必须匹配 PSO 的 implicit signature
@@ -1580,7 +1894,7 @@ void RmlDiligentRenderInterface::RenderGeometry(
     }
 
     if (srb) {
-        m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+        BindSRB(srb);
     }
 
     DrawIndexedGeometry(geom);
@@ -1610,7 +1924,16 @@ void RmlDiligentRenderInterface::RenderGeometry(
 void RmlDiligentRenderInterface::ReleaseGeometry(Rml::CompiledGeometryHandle geometry)
 {
     if (geometry != 0) {
+#ifdef RML_PERF_COUNTERS
+        ++m_PerfCounters.releaseGeometry;
+        LARGE_INTEGER relT0, relT1;
+        QueryPerformanceCounter(&relT0);
+#endif
         delete reinterpret_cast<GeometryHandle*>(geometry);
+#ifdef RML_PERF_COUNTERS
+        QueryPerformanceCounter(&relT1);
+        m_PerfCounters.releaseGeometryUs += relT1.QuadPart - relT0.QuadPart;
+#endif
     }
 }
 
@@ -1804,7 +2127,7 @@ void RmlDiligentRenderInterface::EnableClipMask(bool enable)
     // Match RmlUi_Renderer_DX12::EnableClipMask — only toggle clip-mask testing; keep m_UseStencilEqual intact.
     m_ClipMaskEnabled = enable;
     if (m_Context) {
-        m_Context->SetStencilRef(enable ? m_StencilTestValue : 0);
+        { RML_PERF_TIMED(m_PerfCounters.setStencilRefUs, m_Context->SetStencilRef(enable ? m_StencilTestValue : 0)); }
     }
 }
 
@@ -1859,7 +2182,7 @@ void RmlDiligentRenderInterface::RenderToClipMask(
             return;
     }
 
-    m_Context->SetStencilRef(write_ref);
+    { RML_PERF_TIMED(m_PerfCounters.setStencilRefUs, m_Context->SetStencilRef(write_ref)); }
     DrawColorGeometry(geom, translation, maskPSO);
 
     m_StencilTestValue = stencil_test_value;
@@ -1952,9 +2275,13 @@ void RmlDiligentRenderInterface::RenderShader(
 
     auto* shader = reinterpret_cast<CompiledShader*>(shader_handle);
     auto* geom = reinterpret_cast<GeometryHandle*>(geometry_handle);
-    if (!geom || !geom->vertexBuffer || !geom->indexBuffer || geom->indexCount == 0) {
+    if (!geom || !geom->vbAlloc.buffer || !geom->ibAlloc.buffer || geom->indexCount == 0) {
         return;
     }
+
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.renderShader;
+#endif
 
     EnsureFramebufferBound();
 
@@ -1967,9 +2294,9 @@ void RmlDiligentRenderInterface::RenderShader(
             }
 
             if (m_ClipMaskEnabled && m_UseStencilEqual) {
-                m_Context->SetStencilRef(m_StencilTestValue);
+                { RML_PERF_TIMED(m_PerfCounters.setStencilRefUs, m_Context->SetStencilRef(m_StencilTestValue)); }
             }
-            m_Context->SetPipelineState(pso);
+            BindPSO(pso);
 
             {
                 Diligent::MapHelper<GradientCB> cb(m_Context, m_GradientCB, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
@@ -1989,21 +2316,26 @@ void RmlDiligentRenderInterface::RenderShader(
                     cb->stopColors[i][3] = shader->stopColors[i][3];
                     cb->stopPositions[i >> 2][i & 3] = shader->stopPositions[i];
                 }
+#ifdef RML_PERF_COUNTERS
+                ++m_PerfCounters.mapCB;
+#endif
             }
 
-            Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
-                pso, nullptr, m_GradientCB, [&](Diligent::IShaderResourceBinding* binding) {
-                    if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
-                        cbVar->Set(m_GradientCB);
-                    }
-                    if (auto* projVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
-                        projVar->Set(m_ProjectionCB);
-                    }
-                    if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer")) {
-                        cbVar->Set(m_GradientCB);
-                    }
-                });
-            m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+            {
+                Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
+                    pso, nullptr, m_GradientCB, [&](Diligent::IShaderResourceBinding* binding) {
+                        if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
+                            cbVar->Set(m_GradientCB);
+                        }
+                        if (auto* projVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
+                            projVar->Set(m_ProjectionCB);
+                        }
+                        if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer")) {
+                            cbVar->Set(m_GradientCB);
+                        }
+                    });
+                BindSRB(srb.RawPtr());
+            }
             DrawIndexedGeometry(geom);
             ++m_DrawCount;
             ++m_ShaderDrawCount;
@@ -2017,9 +2349,9 @@ void RmlDiligentRenderInterface::RenderShader(
             }
 
             if (m_ClipMaskEnabled && m_UseStencilEqual) {
-                m_Context->SetStencilRef(m_StencilTestValue);
+                { RML_PERF_TIMED(m_PerfCounters.setStencilRefUs, m_Context->SetStencilRef(m_StencilTestValue)); }
             }
-            m_Context->SetPipelineState(pso);
+            BindPSO(pso);
 
             {
                 Diligent::MapHelper<CreationCB> cb(m_Context, m_CreationCB, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
@@ -2030,21 +2362,26 @@ void RmlDiligentRenderInterface::RenderShader(
                 cb->padding[0] = 0.0f;
                 cb->padding[1] = 0.0f;
                 cb->padding[2] = 0.0f;
+#ifdef RML_PERF_COUNTERS
+                ++m_PerfCounters.mapCB;
+#endif
             }
 
-            Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
-                pso, nullptr, m_CreationCB, [&](Diligent::IShaderResourceBinding* binding) {
-                    if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
-                        cbVar->Set(m_CreationCB);
-                    }
-                    if (auto* projVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
-                        projVar->Set(m_ProjectionCB);
-                    }
-                    if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer")) {
-                        cbVar->Set(m_CreationCB);
-                    }
-                });
-            m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+            {
+                Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
+                    pso, nullptr, m_CreationCB, [&](Diligent::IShaderResourceBinding* binding) {
+                        if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ConstantBuffer")) {
+                            cbVar->Set(m_CreationCB);
+                        }
+                        if (auto* projVar = binding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "ProjectionBuffer")) {
+                            projVar->Set(m_ProjectionCB);
+                        }
+                        if (auto* cbVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "SharedConstantBuffer")) {
+                            cbVar->Set(m_CreationCB);
+                        }
+                    });
+                BindSRB(srb.RawPtr());
+            }
             DrawIndexedGeometry(geom);
             ++m_DrawCount;
             ++m_ShaderDrawCount;
@@ -2160,13 +2497,17 @@ void RmlDiligentRenderInterface::DrawFullscreenPassthrough(
         return;
     }
 
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.drawFullscreen;
+#endif
+
     if (reset_default_uv) {
         WriteDefaultFullscreenVertices(m_Context, m_FullscreenVB);
     }
 
     Diligent::ITextureView* pDSV = use_layer_depth_stencil ? GetActiveDepthStencilDSV() : nullptr;
     m_Context->SetRenderTargets(1, &destRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    m_Context->SetPipelineState(pso);
+    BindPSO(pso);
 
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
         pso, sourceSRV, nullptr, [&](Diligent::IShaderResourceBinding* binding) {
@@ -2182,11 +2523,14 @@ void RmlDiligentRenderInterface::DrawFullscreenPassthrough(
     Diligent::IBuffer* pVB = m_FullscreenVB;
     m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
     m_Context->SetIndexBuffer(m_FullscreenIB, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    BindSRB(srb.RawPtr(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
     // Scissor/viewport are set by the caller (filter bounds, blur downscale, layer composite, etc.).
     Diligent::DrawIndexedAttribs drawAttrs(6, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
     m_Context->DrawIndexed(drawAttrs);
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.drawIndexed;
+#endif
     UnbindRenderTargets();
     ++m_DrawCount;
 }
@@ -2297,7 +2641,7 @@ void RmlDiligentRenderInterface::CompositeLayers(
     if (m_ClipMaskEnabled && m_UseStencilEqual) {
         // MSAA + StencilEqual 或 非 MSAA + StencilEqual
         composite_pso = (m_MsaaSamples > 1) ? m_PSO_Composite_StencilEqual : m_PSO_Passthrough_StencilEqual;
-        m_Context->SetStencilRef(m_StencilTestValue);
+        { RML_PERF_TIMED(m_PerfCounters.setStencilRefUs, m_Context->SetStencilRef(m_StencilTestValue)); }
     } else if (m_MsaaSamples > 1) {
         composite_pso = (blend_mode == Rml::BlendMode::Replace) ? m_PSO_CompositeReplace : m_PSO_Composite;
     } else if (blend_mode == Rml::BlendMode::Replace) {
@@ -2520,7 +2864,7 @@ void RmlDiligentRenderInterface::BlitFramebuffer(
     //m_Context->SetScissorRects(1, &scissor, static_cast<Diligent::Uint32>(fb_width), static_cast<Diligent::Uint32>(fb_height));
 
     m_Context->SetRenderTargets(1, &destRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    m_Context->SetPipelineState(m_PSO_PassthroughReplace);
+    BindPSO(m_PSO_PassthroughReplace);
 
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
         m_PSO_PassthroughReplace, sourceSRV, nullptr, [&](Diligent::IShaderResourceBinding* binding) {
@@ -2536,9 +2880,12 @@ void RmlDiligentRenderInterface::BlitFramebuffer(
     Diligent::IBuffer* pVB = m_FullscreenVB;
     m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
     m_Context->SetIndexBuffer(m_FullscreenIB, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    BindSRB(srb.RawPtr(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     Diligent::DrawIndexedAttribs drawAttrs(6, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
     m_Context->DrawIndexed(drawAttrs);
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.drawIndexed;
+#endif
     ++m_DrawCount;
 }
 
@@ -2555,7 +2902,7 @@ void RmlDiligentRenderInterface::DrawBlurPass(
 
     SetFramebufferViewport(fb_width, fb_height);
     SetScissorRml(scissor_rect, false);
-    m_Context->SetPipelineState(m_PSO_Blur);
+    BindPSO(m_PSO_Blur);
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
         m_PSO_Blur, sourceSRV, m_BlurCB, [&](Diligent::IShaderResourceBinding* binding) {
             if (auto* texVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "g_InputTexture")) {
@@ -2578,9 +2925,12 @@ void RmlDiligentRenderInterface::DrawBlurPass(
     Diligent::IBuffer* pVB = m_FullscreenVB;
     m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
     m_Context->SetIndexBuffer(m_FullscreenIB, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    BindSRB(srb.RawPtr(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     Diligent::DrawIndexedAttribs drawAttrs(6, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
     m_Context->DrawIndexed(drawAttrs);
+#ifdef RML_PERF_COUNTERS
+    ++m_PerfCounters.drawIndexed;
+#endif
     ++m_DrawCount;
 }
 
@@ -2748,7 +3098,7 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
                 m_Context->SetRenderTargets(1, &pClearRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                 m_Context->ClearRenderTarget(pClearRTV, &zeroClear, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
-                m_Context->SetPipelineState(m_PSO_DropShadow);
+                BindPSO(m_PSO_DropShadow);
                 Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
                     m_PSO_DropShadow, primary.SRV.RawPtr(), m_DropShadowCB, [&](Diligent::IShaderResourceBinding* binding) {
                         if (auto* texVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "g_InputTexture")) {
@@ -2778,9 +3128,12 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
                 Diligent::IBuffer* pVB = m_FullscreenVB;
                 m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
                 m_Context->SetIndexBuffer(m_FullscreenIB, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                BindSRB(srb.RawPtr(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                 Diligent::DrawIndexedAttribs drawAttrs(6, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
                 m_Context->DrawIndexed(drawAttrs);
+#ifdef RML_PERF_COUNTERS
+                ++m_PerfCounters.drawIndexed;
+#endif
                 ++m_DrawCount;
             }
             WriteDefaultFullscreenVertices(m_Context, m_FullscreenVB);
@@ -2814,7 +3167,7 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
             Diligent::ITextureView* pRTV = destination.RTV.RawPtr();
             m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             m_Context->ClearRenderTarget(pRTV, &clearVal, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-            m_Context->SetPipelineState(m_PSO_ColorMatrix);
+            BindPSO(m_PSO_ColorMatrix);
             Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
                 m_PSO_ColorMatrix, source.SRV.RawPtr(), m_ColorMatrixCB, [&](Diligent::IShaderResourceBinding* binding) {
                     if (auto* texVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "g_InputTexture")) {
@@ -2834,9 +3187,12 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
             Diligent::IBuffer* pVB = m_FullscreenVB;
             m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
             m_Context->SetIndexBuffer(m_FullscreenIB, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-            m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            BindSRB(srb.RawPtr(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             Diligent::DrawIndexedAttribs drawAttrs(6, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
             m_Context->DrawIndexed(drawAttrs);
+#ifdef RML_PERF_COUNTERS
+            ++m_PerfCounters.drawIndexed;
+#endif
             ++m_DrawCount;
             m_LayerStack.SwapPostprocessPrimarySecondary();
             ++m_FilterRenderCount;
@@ -2857,7 +3213,7 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
             Diligent::ITextureView* pRTV = destination.RTV.RawPtr();
             m_Context->SetRenderTargets(1, &pRTV, nullptr, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             m_Context->ClearRenderTarget(pRTV, &clearVal, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-            m_Context->SetPipelineState(m_PSO_BlendMask);
+            BindPSO(m_PSO_BlendMask);
             Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb = GetOrCreateCachedSRB(
                 m_PSO_BlendMask, source.SRV.RawPtr(), nullptr, [&](Diligent::IShaderResourceBinding* binding) {
                     if (auto* texVar = binding->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, "g_InputTexture")) {
@@ -2878,9 +3234,12 @@ void RmlDiligentRenderInterface::RenderFilters(Rml::Span<const Rml::CompiledFilt
             Diligent::IBuffer* pVB = m_FullscreenVB;
             m_Context->SetVertexBuffers(0, 1, &pVB, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
             m_Context->SetIndexBuffer(m_FullscreenIB, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-            m_Context->CommitShaderResources(srb, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            BindSRB(srb.RawPtr(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             Diligent::DrawIndexedAttribs drawAttrs(6, Diligent::VT_UINT32, Diligent::DRAW_FLAG_NONE);
             m_Context->DrawIndexed(drawAttrs);
+#ifdef RML_PERF_COUNTERS
+            ++m_PerfCounters.drawIndexed;
+#endif
             ++m_DrawCount;
             m_LayerStack.SwapPostprocessPrimarySecondary();
             ++m_FilterRenderCount;

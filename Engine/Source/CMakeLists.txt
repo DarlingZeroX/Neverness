@@ -7,6 +7,7 @@ endif()
 
 ############ 模块
 add_subdirectory ("Core")
+add_subdirectory ("Experiments")  # 必须先于 Runtime（提供 NNRuntimeRender/NNRuntimeDiligent 静态库）
 add_subdirectory ("Runtime")
 add_subdirectory ("Bridge")
 
@@ -33,8 +34,7 @@ endforeach()
 
 add_subdirectory ("Host")
 
-############ Experiments（实验模块，默认开启）
-option(NEVERNESS_BUILD_EXPERIMENTS "Build Experiments modules" OFF)
-if(NEVERNESS_BUILD_EXPERIMENTS)
-	add_subdirectory("Experiments")
-endif()
+############ Experiments（实验模块，已移至 Runtime 之前无条件编译）
+# Experiments 提供 NNRuntimeRender/NNRuntimeDiligent/RmlDiligent 等静态库
+# Runtime 模块需要链接这些库，因此必须先于 Runtime 构建
+# 原 option(NEVERNESS_BUILD_EXPERIMENTS) 已移除，改为无条件编译

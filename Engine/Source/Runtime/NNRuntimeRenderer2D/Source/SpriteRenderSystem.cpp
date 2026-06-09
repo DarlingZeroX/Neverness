@@ -35,8 +35,7 @@ namespace NN::Runtime::Renderer2D
             if (!Scene::HasFlag(sprite.Flags, Scene::NNSpriteFlags::Visible))
                 continue;
 
-            // 懒解析：TextureAsset (NNGuid) → TextureRuntimeId (GL texture ID)
-            //H_LOG_INFO("[Collect] Sprite: TextureGuid=%llx:%llx TextureRuntimeId=%u",sprite.TextureAsset.high, sprite.TextureAsset.low, sprite.TextureRuntimeId);
+            // 懒解析：TextureAsset (NNGuid) → 纹理缓存 key
             if (sprite.TextureRuntimeId == 0 && sprite.TextureAsset.low != 0)
             {
                 auto& renderMgr = NN::Runtime::Render::NNRenderAssetManager::Get();
@@ -45,8 +44,6 @@ namespace NN::Runtime::Renderer2D
                 if (cacheKey == 0)
                 {
                     // 首次访问：加载资产 → 上传 GPU → 注册 GUID 映射
-                    // 使用 LoadTextureFromBlob 代替 LoadTextureFromAsset，
-                    // 从本模块 NNAssetManager 单例直接获取 blob 数据，避免跨模块单例问题
                     auto& assetMgr = NN::Runtime::Asset::NNAssetManager::Instance();
                     auto handle = assetMgr.LoadAssetSync(sprite.TextureAsset, 1);
                     H_LOG_INFO("[Collect] LoadAssetSync(%llx:%llx) → handle=%llu", sprite.TextureAsset.high, sprite.TextureAsset.low, handle ? handle.Value() : 0);
@@ -72,12 +69,12 @@ namespace NN::Runtime::Renderer2D
                     }
                     H_LOG_INFO("[Collect] LoadTextureFromBlob → cacheKey=%llu", cacheKey);
                 }
+                // 存储缓存 key（uint32_t 截断，用于后续查找）
                 if (cacheKey != 0)
                 {
-                    auto glId = renderMgr.GetGLTextureId(cacheKey);
-                    sprite.TextureRuntimeId = static_cast<std::uint32_t>(glId);
-                    H_LOG_INFO("[Collect] GetGLTextureId(%llu) → glId=%llu → TextureRuntimeId=%u",
-                               cacheKey, glId, sprite.TextureRuntimeId);
+                    sprite.TextureRuntimeId = static_cast<std::uint32_t>(cacheKey);
+                    H_LOG_INFO("[Collect] cacheKey=%llu → TextureRuntimeId=%u",
+                               cacheKey, sprite.TextureRuntimeId);
                 }
             }
 
@@ -86,8 +83,17 @@ namespace NN::Runtime::Renderer2D
             // 拷贝 WorldMatrix（4x4 列主序）
             std::memcpy(cmd.Transform, &transform.WorldMatrix, sizeof(float) * 16);
 
-            // 纹理：直接使用已解析的 GL texture ID（0 = 使用白色默认纹理）
-            cmd.TextureHandle = sprite.TextureRuntimeId;
+            // 纹理：通过缓存 key 获取纹理句柄（uint64_t）
+            // 后端无关：OpenGL 返回 GLuint，Diligent 返回 ITextureView*
+            if (sprite.TextureRuntimeId != 0)
+            {
+                auto& renderMgr = NN::Runtime::Render::NNRenderAssetManager::Get();
+                cmd.TextureHandle = renderMgr.GetImGuiTextureHandle(sprite.TextureRuntimeId);
+            }
+            else
+            {
+                cmd.TextureHandle = 0; // 使用白色默认纹理
+            }
 
             // 颜色
             cmd.Color[0] = sprite.Color[0];

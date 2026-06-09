@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(NNExperiments LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # UTF-8 编码支持
@@ -21,6 +21,9 @@ set(DILIGENT_ENGINE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/DiligentEngin
 # 保存原始 flags
 set(CMAKE_CXX_FLAGS_SAVED "${CMAKE_CXX_FLAGS}")
 
+# 禁止 FetchContent 下载（所有依赖必须本地存在，避免清缓存后重新下载）
+set(FETCHCONTENT_FULLY_DISCONNECTED ON CACHE BOOL "" FORCE)
+
 # DiligentCore 配置
 set(DILIGENT_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_FX OFF CACHE BOOL "" FORCE)
@@ -34,7 +37,16 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
 endif()
 
-add_subdirectory(${DILIGENT_ENGINE_DIR} DiligentEngine)
+# NVAPI stub — 位于 ThirdParty/nvapi_stub，Diligent D3D12 的基础依赖
+set(DILIGENT_NVAPI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/nvapi_stub" CACHE PATH "" FORCE)
+
+# NVAPI stub 必须先于 Diligent 编译（配置阶段就需要 lib 文件存在）
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/nvapi_stub" "${CMAKE_BINARY_DIR}/ThirdParty/nvapi_stub")
+
+# Diligent Engine — 二进制目录放在主构建树外面
+# 这样 Delete Cache and Reconfigure 不会触发 Diligent 重新编译
+set(DILIGENT_BIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Build/ThirdParty/DiligentBin")
+add_subdirectory(${DILIGENT_ENGINE_DIR} ${DILIGENT_BIN_DIR})
 
 # 恢复原始 flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_SAVED}")

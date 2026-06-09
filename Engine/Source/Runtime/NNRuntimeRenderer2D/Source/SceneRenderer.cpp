@@ -1,6 +1,11 @@
 /**
  * @file SceneRenderer.cpp
- * @brief 场景渲染器实现：串联 ECS → SpriteRenderSystem → Renderer2D → Framebuffer。
+ * @brief 场景渲染器实现：串联 ECS → SpriteRenderSystem → Renderer2D → Diligent RenderPass。
+ *
+ * 职责：
+ *   - 创建 Diligent Framebuffer（从渲染目标的 RTV + DSV）
+ *   - 管理 RenderPass（Begin/End）
+ *   - 调用 Renderer2D 进行实际渲染
  */
 
 #include "Renderer2D/SceneRenderer.h"
@@ -8,13 +13,23 @@
 #include <Scene/NNWorld.h>
 #include <Components/NNTransformComponent.h>
 #include <Components/NNCameraComponent.h>
-#include <NNRuntimeRHI/Include/OpenGL/OpenGL.h>
-#include <NNRuntimeRHI/Include/OpenGL/IncludeGladGL3.h>
+
+// NNRuntimeRender 接口
+#include <Device/INNRenderDevice.h>
+#include <RenderTarget/INNRenderTarget.h>
+
+// NNDiligent 内部（用于 Framebuffer + RenderPass 管理）
+#include "NNDiligentConfig.h"
+#include "Device/NNDiligentDevice.h"
+#include "Resources/NNDiligentRenderTarget.h"
 
 // GLM 矩阵运算：inverse + 矩阵乘法
 #include <NNCore/Include/Math/GLM/gtc/matrix_inverse.hpp>
-
+#include <NNCore/Interface/HLog.h>
+#include <NNCore/Interface/HVector.h>
 #include <cstring>
+
+using namespace Diligent;
 
 namespace NN::Runtime::Renderer2D
 {
@@ -24,16 +39,20 @@ namespace NN::Runtime::Renderer2D
         Shutdown();
     }
 
-    bool SceneRenderer::Initialize()
+    bool SceneRenderer::Initialize(Render::INNRenderDevice* device)
     {
         if (m_Initialized)
             return true;
 
-        if (!m_Renderer.Initialize())
+        if (!device)
             return false;
 
-        // 初始 Framebuffer 尺寸（会在 Render 时按需 Resize）
-        if (!m_Framebuffer.Initialize(1280, 720))
+        // 初始化 Renderer2D
+        if (!m_Renderer.Initialize(device))
+            return false;
+
+        // 初始化 Framebuffer（初始尺寸，Render 时按需 Resize）
+        if (!m_Framebuffer.Initialize(device, 1280, 720))
         {
             m_Renderer.Shutdown();
             return false;
@@ -53,19 +72,19 @@ namespace NN::Runtime::Renderer2D
         m_Initialized = false;
     }
 
-    std::uint32_t SceneRenderer::Render(
+    std::uint64_t SceneRenderer::Render(
         Scene::NNRuntimeScene& scene,
         std::uint32_t width,
         std::uint32_t height)
     {
         if (!m_Initialized)
         {
-			H_LOG_WARN("SceneRenderer not initialized");
-			return 0;
+            H_LOG_WARN("SceneRenderer not initialized");
+            return 0;
         }
 
         if (width == 0 || height == 0)
-            return m_Framebuffer.GetColorTextureId();
+            return m_Framebuffer.GetColorTextureHandle();
 
         // 1. 确保 Framebuffer 尺寸正确
         if (m_Framebuffer.GetWidth() != width || m_Framebuffer.GetHeight() != height)
@@ -79,30 +98,17 @@ namespace NN::Runtime::Renderer2D
         // 3. 收集绘制命令
         m_SpriteSystem.Collect(scene, m_Commands);
 
-        // 4. 绑定 FBO
-        m_Framebuffer.Bind();
-
-        // 5. 清屏
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//H_LOG_INFO("Command count: %d", (int)m_Commands.size());
-
-        // 6. 渲染
+        // 4. 渲染
         m_Renderer.BeginScene(camera, width, height);
         m_Renderer.Submit(m_Commands);
         m_Renderer.EndScene();
 
-        // 7. 解绑 FBO
-        m_Framebuffer.Unbind();
-
-		//H_LOG_INFO("Rendered scene");
-        return m_Framebuffer.GetColorTextureId();
+        return m_Framebuffer.GetColorTextureHandle();
     }
 
-    std::uint32_t SceneRenderer::GetOutputTextureId() const
+    std::uint64_t SceneRenderer::GetOutputTextureHandle() const
     {
-        return m_Framebuffer.GetColorTextureId();
+        return m_Framebuffer.GetColorTextureHandle();
     }
 
     void SceneRenderer::OnViewportResize(std::uint32_t width, std::uint32_t height)
@@ -125,7 +131,7 @@ namespace NN::Runtime::Renderer2D
         CameraData data{};
 
         // 默认正交相机（单位矩阵）
-        Core::matrix defaultVP{1.0f};
+        NN::Core::matrix defaultVP{1.0f};
         std::memcpy(data.ViewMatrix, &defaultVP, sizeof(float) * 16);
         std::memcpy(data.ProjectionMatrix, &defaultVP, sizeof(float) * 16);
         std::memcpy(data.ViewProjectionMatrix, &defaultVP, sizeof(float) * 16);
@@ -149,17 +155,17 @@ namespace NN::Runtime::Renderer2D
             // 位于近平面 z_view=-0.3 之后，NDC z = -1.0006 超出 [-1,1] 被裁剪。
             // 修复：将相机 Z 移到 +(near+far)/2 ≈ +500.15，
             // 使 z=0 的 Sprite 的 z_view = 0 - 500.15 = -500.15，落在 near/far 中间。
-            Core::matrix worldMat = transform.WorldMatrix;
+			NN::Core::matrix worldMat = transform.WorldMatrix;
             float nearZ = cameraComp.NearPlane;
             float farZ  = cameraComp.FarPlane;
             float cameraZ = (nearZ + farZ) * 0.5f;  // +(0.3+1000)/2 ≈ +500.15
             worldMat[3][2] = cameraZ;
 
-            Core::matrix viewMat = glm::inverse(worldMat);
+			NN::Core::matrix viewMat = glm::inverse(worldMat);
             std::memcpy(data.ViewMatrix, &viewMat, sizeof(float) * 16);
 
             // ViewProjection = Projection * View
-            Core::matrix vpMat = cameraComp.ProjectionMatrix * viewMat;
+			NN::Core::matrix vpMat = cameraComp.ProjectionMatrix * viewMat;
             std::memcpy(data.ViewProjectionMatrix, &vpMat, sizeof(float) * 16);
 
             data.OrthoWidth  = cameraComp.OrthoWidth;

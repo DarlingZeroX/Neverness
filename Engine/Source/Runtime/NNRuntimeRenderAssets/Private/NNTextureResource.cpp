@@ -8,12 +8,6 @@
 #include "NNTextureResource.h"
 
 #include "NNCore/Interface/HLog.h"
-#include "NNRuntimeRHI/Interface/Texture.h"
-
-namespace NN::Runtime::VGFX
-{
-	struct ITexture;
-}
 
 namespace NN::Runtime::Render
 {
@@ -60,13 +54,10 @@ uint64_t NNTextureResource::GetImGuiHandle() const
     if (!m_RHIShaderResourceView)
         return 0;
 
-    // 直接使用创建时缓存的 SRV 值，避免跨 DLL 边界虚函数调度问题。
-    // OpenGL 后端: m_RHIShaderResourceView = GLuint cast to void*
-    // ImGui 的 OpenGL backend 的 ImTextureID 就是 GLuint
-    // 未来 Diligent 后端: m_RHIShaderResourceView = ITextureView* → ImTextureID
+    // 直接使用创建时缓存的 SRV 值
+    // 由 IRenderResourceFactory 在创建纹理时填充
+    // 后端无关：reinterpret_cast<uint64_t>(void* srv)
     uint64_t handle = reinterpret_cast<uint64_t>(m_RHIShaderResourceView);
-    //H_LOG_INFO("[TextureResource] GetImGuiHandle: SRV=%p handle=0x%llx (%llu) %ux%u",
-    //           m_RHIShaderResourceView, handle, handle, m_Desc.Width, m_Desc.Height);
     return handle;
 }
 

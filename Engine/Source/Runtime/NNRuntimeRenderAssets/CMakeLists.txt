@@ -33,13 +33,20 @@ if (MSVC)
     target_compile_options(${MODULE_NAME} PRIVATE /utf-8)
 endif()
 
+# Experiments 静态库 include 路径（NNRuntimeRender 接口层）
+target_include_directories(${MODULE_NAME}
+    PRIVATE
+        "${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender"
+        "${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore"
+)
+
 target_link_libraries(${MODULE_NAME}
     PUBLIC
-        NevernessRuntime-RHI          # VGFX::ITexture, OpenGL::Texture2D
         NevernessRuntime-Asset         # NNAssetHandleT, NNAssetManager
         NevernessRuntime-NativeEngineAPI  # EngineTypes.h (NNAssetManager 依赖)
     PRIVATE
         NevernessCore-Core             # NN::Ref (shared_ptr)
+        NNRuntimeRender                # INNRenderDevice, INNTexture 等接口
 )
 
 set_target_properties(${MODULE_NAME} PROPERTIES

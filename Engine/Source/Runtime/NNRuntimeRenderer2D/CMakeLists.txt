@@ -1,7 +1,7 @@
 # NNRuntimeRenderer2D — 最小 2D 渲染管线 MVP
 # 职责：Sprite Batch / Quad Renderer / Builtin Shader / Camera MVP / Scene Rendering / Render Target
-# 依赖：NNRuntimeScene（ECS Query）、NNRuntimeRHI（OpenGL）、NevernessCore-Core
-# 严禁：Scene/ECS 直接调用 OpenGL API（必须经过 Renderer2D → RHI 分层）
+# 依赖：NNRuntimeScene（ECS Query）、NNRuntimeRender/NNRuntimeDiligent（Diligent 后端）
+# 着色器：保留 GLSL，由 Diligent 内部编译为 SPIRV
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -46,6 +46,11 @@ target_include_directories(NevernessRuntime-Renderer2D
         ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime
         ${PROJECT_SOURCE_DIR}/Engine/Source/Core
         ${CMAKE_CURRENT_SOURCE_DIR}/Include/Renderer2D
+        # Experiments 静态库 include 路径
+        ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender
+        ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore
+        ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent
+        ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent/Include
 )
 
 # 依赖 Scene（ECS Query）
@@ -55,17 +60,8 @@ target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-Scene
 target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-RenderAssets)
 target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-Asset)
 
-# 依赖 RHI（OpenGL 后端、GLAD）
-target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-RHI)
+# 依赖 Diligent 后端（替代 NevernessRuntime-RHI + opengl32）
+target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NNRuntimeRender NNRuntimeDiligent)
 
 # 依赖 Core（基础数学类型）
 target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessCore-Core)
-
-# OpenGL 链接
-if (WIN32)
-    target_link_libraries(NevernessRuntime-Renderer2D PRIVATE opengl32)
-elseif (APPLE)
-    target_link_libraries(NevernessRuntime-Renderer2D PRIVATE "-framework OpenGL")
-elseif (UNIX)
-    target_link_libraries(NevernessRuntime-Renderer2D PRIVATE GL)
-endif()

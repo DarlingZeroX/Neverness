@@ -4,11 +4,14 @@
 // =============================================================================
 
 #pragma once
-
+#ifndef RML_PERF_COUNTERS
+#define RML_PERF_COUNTERS
+#endif
 #include <RmlUi/Core/Matrix4.h>
 #include <RmlUi/Core/RenderInterface.h>
 #include <RmlUi/Core/Types.h>
 
+#include "RmlDiligentBufferManager.h"  // BufferAllocation 结构体（GeometryHandle 使用）
 #include "RmlDiligentLayerStack.h"
 #include "RmlDiligentProgramId.h"
 #include "RmlDiligentRenderTargetPool.h"
@@ -40,8 +43,8 @@ struct MemoryStats {
 };
 
 struct GeometryHandle {
-    Diligent::RefCntAutoPtr<Diligent::IBuffer> vertexBuffer;
-    Diligent::RefCntAutoPtr<Diligent::IBuffer> indexBuffer;
+    BufferAllocation vbAlloc;  // BufferManager 子分配（共享大 buffer + offset）
+    BufferAllocation ibAlloc;
     uint32_t vertexCount;
     uint32_t indexCount;
 };
@@ -283,6 +286,99 @@ private:
     int m_CachedWidth = 0;
     int m_CachedHeight = 0;
     int m_MsaaSamples = 1;
+
+    // RenderStateCache：PSO/SRB 脏检测，过滤冗余驱动调用
+    struct RenderStateCache {
+        Diligent::IPipelineState* currentPSO = nullptr;
+        Diligent::IShaderResourceBinding* currentSRB = nullptr;
+        void Reset() { currentPSO = nullptr; currentSRB = nullptr; }
+    } m_StateCache;
+
+    // 绑定 PSO（脏检测：指针比较）。PSO 变化时自动清空 SRB 缓存。
+    void BindPSO(Diligent::IPipelineState* pso);
+    // 绑定 SRB（脏检测：指针比较）。mode 保留原有值，缓存比较只看 srb 指针。
+    void BindSRB(Diligent::IShaderResourceBinding* srb,
+                 Diligent::RESOURCE_STATE_TRANSITION_MODE mode = Diligent::RESOURCE_STATE_TRANSITION_MODE_NONE);
+
+#ifdef RML_PERF_COUNTERS
+    // 性能计数器：累计值 + 上一次快照（用于计算 delta）
+    struct PerfCounters {
+        // 累计值
+        uint32_t compileGeometry = 0;     // CompileGeometry 调用次数
+        uint32_t releaseGeometry = 0;     // ReleaseGeometry 调用次数
+        uint32_t createBuffer = 0;        // CreateBuffer 调用次数
+        uint32_t renderGeometry = 0;      // RenderGeometry 调用次数
+        uint32_t renderShader = 0;        // RenderShader 调用次数
+        uint32_t setPSOReq = 0;           // BindPSO 请求次数
+        uint32_t setPSOReal = 0;          // 实际 SetPipelineState 次数
+        uint32_t commitSRBReq = 0;        // BindSRB 请求次数
+        uint32_t commitSRBReal = 0;       // 实际 CommitShaderResources 次数
+        uint32_t drawIndexed = 0;         // DrawIndexed 调用次数
+        uint32_t drawFullscreen = 0;      // DrawFullscreenPassthrough 调用次数
+        uint32_t mapCB = 0;              // ConstantBuffer Map/Unmap 次数
+
+        // 上一次快照（用于计算每帧增量）
+        uint32_t prevCompileGeometry = 0;
+        uint32_t prevReleaseGeometry = 0;
+        uint32_t prevCreateBuffer = 0;
+        uint32_t prevRenderGeometry = 0;
+        int64_t prevCompileGeometryUs = 0;  // 用于计算每帧 CompileGeometry 耗时增量
+
+        // 帧计时（微秒）
+        int64_t beginFrameUs = 0;         // BeginFrame 耗时
+        int64_t endFrameUs = 0;           // EndFrame 耗时（不含 Present）
+        int64_t presentUs = 0;            // Present 耗时
+        int64_t frameTotalUs = 0;         // 整帧耗时（BeginFrame + 所有 draw + EndFrame + Present）
+
+        // 每类操作的累计耗时（微秒），用于定位热点
+        int64_t compileGeometryUs = 0;    // CompileGeometry 总耗时（含 CreateBuffer）
+        int64_t releaseGeometryUs = 0;    // ReleaseGeometry 总耗时
+        int64_t bindPSOUs = 0;            // BindPSO 总耗时（含 SetPipelineState）
+        int64_t bindSRBUs = 0;            // BindSRB 总耗时（含 CommitShaderResources）
+        int64_t mapCBUs = 0;              // Map/Unmap CB 总耗时
+        int64_t drawIndexedUs = 0;        // DrawIndexed 总耗时
+        int64_t setScissorUs = 0;         // SetScissorRects 总耗时
+        int64_t setVBIBUs = 0;            // SetVertexBuffers + SetIndexBuffer 总耗时
+        int64_t setStencilRefUs = 0;      // SetStencilRef 总耗时
+        int64_t srbLookupUs = 0;          // GetOrCreateTextureSRB 总耗时
+
+        // 帧计时用的时间戳
+        int64_t frameStartTick = 0;       // BeginFrame 入口
+        int64_t beginFrameEndTick = 0;    // BeginFrame 出口
+        int64_t endFrameStartTick = 0;    // EndFrame 入口
+        int64_t presentStartTick = 0;     // Present 前
+        int64_t presentEndTick = 0;       // Present 后
+        int64_t updateStartTick = 0;      // context->Update() 前
+        int64_t updateEndTick = 0;        // context->Update() 后
+        int64_t renderStartTick = 0;      // context->Render() 前
+        int64_t renderEndTick = 0;        // context->Render() 后
+        int64_t flushStartTick = 0;       // Flush 前
+        int64_t flushEndTick = 0;         // Flush 后
+        int64_t idleGPUStartTick = 0;     // IdleGPU 前
+        int64_t idleGPUEndTick = 0;       // IdleGPU 后
+
+        // RmlUi CPU 侧耗时
+        int64_t rmlUpdateUs = 0;
+        int64_t rmlRenderUs = 0;
+
+        // GPU 同步耗时
+        int64_t flushUs = 0;
+        int64_t idleGPUUs = 0;
+    } m_PerfCounters;
+
+    // 应用层在各阶段前后调用，用于定位 CPU 瓶颈
+    void MarkPresentStart();
+    void MarkPresentEnd();
+    void MarkEndFrameStart();
+    void MarkUpdateStart();       // context->Update() 前
+    void MarkUpdateEnd();         // context->Update() 后
+    void MarkRenderStart();       // context->Render() 前
+    void MarkRenderEnd();         // context->Render() 后
+    void MarkFlushStart();        // m_Context->Flush() 前
+    void MarkFlushEnd();          // m_Context->Flush() 后
+    void MarkIdleGPUStart();      // m_Device->IdleGPU() 前
+    void MarkIdleGPUEnd();        // m_Device->IdleGPU() 后
+#endif
 };
 
 } // namespace RmlDiligent

@@ -2,59 +2,80 @@
 
 /**
  * @file BuiltinShaders.h
- * @brief 硬编码 GLSL Sprite Shader（MVP 阶段不做 Shader Asset 系统）。
+ * @brief 硬编码 HLSL Sprite Shader（从原 GLSL 转换，逻辑完全一致）。
  *
  * 支持：Position + UV、MVP 变换、UV Rect 映射、Flip、Color Tint。
- * 未来迁移 Diligent 时替换此文件即可。
+ * 注：NNRuntimeRender 的 CreateShader 实现目前只支持 HLSL，GLSL 需要转换。
  */
 
 namespace NN::Runtime::Renderer2D::BuiltinShaders
 {
-    /// Sprite Vertex Shader（GLSL 330 core）
+    /// Sprite Vertex Shader（HLSL）
     inline constexpr const char* SpriteVS = R"(
-#version 330 core
-
-layout(location = 0) in vec3 a_Position;
-layout(location = 1) in vec2 a_TexCoord;
-
-uniform mat4 u_ViewProjection;
-uniform mat4 u_Transform;
-uniform vec4 u_UvRect;   // [u0, v0, u1, v1]
-uniform int  u_FlipX;
-uniform int  u_FlipY;
-
-out vec2 v_TexCoord;
-
-void main()
+cbuffer SpriteConstants : register(b0)
 {
-    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+    float4x4 u_ViewProjection;
+    float4x4 u_Transform;
+    float4   u_UvRect;   // [u0, v0, u1, v1]
+    float4   u_Color;    // Tint color（VS 不用，但 CB 整体绑定）
+    int      u_FlipX;
+    int      u_FlipY;
+};
+
+struct VSInput
+{
+    float3 Position : ATTRIB0;
+    float2 TexCoord : ATTRIB1;
+};
+
+struct PSInput
+{
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
+};
+
+PSInput main(VSInput input)
+{
+    PSInput output;
+    output.Position = mul(mul(u_ViewProjection, u_Transform), float4(input.Position, 1.0));
 
     // UV 从 Rect 映射
-    vec2 uv = mix(u_UvRect.xy, u_UvRect.zw, a_TexCoord);
+    float2 uv = lerp(u_UvRect.xy, u_UvRect.zw, input.TexCoord);
 
     // Flip 支持
     if (u_FlipX == 1) uv.x = 1.0 - uv.x;
     if (u_FlipY == 1) uv.y = 1.0 - uv.y;
 
-    v_TexCoord = uv;
+    output.TexCoord = uv;
+    return output;
 }
 )";
 
-    /// Sprite Fragment Shader（GLSL 330 core）
+    /// Sprite Fragment Shader（HLSL）
     inline constexpr const char* SpriteFS = R"(
-#version 330 core
-
-in vec2 v_TexCoord;
-
-uniform sampler2D u_Texture;
-uniform vec4      u_Color;  // Tint color
-
-out vec4 FragColor;
-
-void main()
+cbuffer SpriteConstants : register(b0)
 {
-    vec4 texColor = texture(u_Texture, v_TexCoord);
-    FragColor = texColor * u_Color;
+    float4x4 u_ViewProjection;
+    float4x4 u_Transform;
+    float4   u_UvRect;
+    float4   u_Color;    // Tint color
+    int      u_FlipX;
+    int      u_FlipY;
+};
+
+Texture2D    u_Texture : register(t0);
+SamplerState u_Sampler : register(s0);
+
+struct PSInput
+{
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
+};
+
+float4 main(PSInput input) : SV_Target
+{
+    float4 texColor = u_Texture.Sample(u_Sampler, input.TexCoord);
+    return texColor * u_Color;
 }
 )";
 }

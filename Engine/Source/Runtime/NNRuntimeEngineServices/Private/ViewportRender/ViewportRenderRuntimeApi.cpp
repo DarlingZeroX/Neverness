@@ -85,7 +85,9 @@ bool EnsureSceneRenderer()
     std::cout << "[ViewportRender] EnsureSceneRenderer: 开始初始化" << std::endl;
 
     g_SceneRenderer = new NN::Runtime::Renderer2D::SceneRenderer();
-    if (!g_SceneRenderer->Initialize())
+    // Phase 2: SceneRenderer 现在需要 INNRenderDevice* 参数
+    // Phase 6 迁移时传入真正的 Diligent 设备，当前传 nullptr（渲染器不会初始化）
+    if (!g_SceneRenderer->Initialize(nullptr))
     {
         std::cerr << "[ViewportRender] SceneRenderer 初始化失败" << std::endl;
         delete g_SceneRenderer;
@@ -200,7 +202,7 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_getLastRenderedTexture(voi
 {
     if (!g_SceneRenderer)
         return 0;
-    return g_SceneRenderer->GetOutputTextureId();
+    return g_SceneRenderer->GetOutputTextureHandle();
 }
 
 std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_getLastRmluiTexture(void)

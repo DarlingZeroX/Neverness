@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(NNRuntimeDiligent LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Diligent Engine 路径
@@ -112,13 +112,13 @@ if(METAL_SUPPORTED)
     target_compile_definitions(NNRuntimeDiligent PRIVATE METAL_SUPPORTED=1)
 endif()
 
-# 平台定义
+# 平台定义（PUBLIC — 传播给所有链接 NNRuntimeDiligent 的 target）
 if(WIN32)
-    target_compile_definitions(NNRuntimeDiligent PRIVATE PLATFORM_WIN32=1)
+    target_compile_definitions(NNRuntimeDiligent PUBLIC PLATFORM_WIN32=1)
 elseif(APPLE)
-    target_compile_definitions(NNRuntimeDiligent PRIVATE PLATFORM_MACOS=1)
+    target_compile_definitions(NNRuntimeDiligent PUBLIC PLATFORM_MACOS=1)
 elseif(UNIX)
-    target_compile_definitions(NNRuntimeDiligent PRIVATE PLATFORM_LINUX=1)
+    target_compile_definitions(NNRuntimeDiligent PUBLIC PLATFORM_LINUX=1)
 endif()
 
 target_compile_definitions(NNRuntimeDiligent PUBLIC NN_WITH_DILIGENT)
