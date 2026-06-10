@@ -377,6 +377,7 @@ void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 		m_ImGuiDiligentLayer = std::make_unique<NN::Runtime::ImguiDiligentLayer>(window, window->GetDevice());
 
 		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = "imgui.ini";
 		
 		{
 			NN::Runtime::VFS::VFSService::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const NN::Runtime::VFS::VFSService::DataRef& data) {

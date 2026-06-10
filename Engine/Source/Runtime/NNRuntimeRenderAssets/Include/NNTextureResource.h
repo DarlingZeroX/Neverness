@@ -14,8 +14,9 @@
 namespace NN::Runtime::Render
 {
 
-/// GPU Texture 描述
-struct NN_RUNTIME_RENDER_ASSETS_API NNTextureDesc
+/// GPU Texture 缓存描述（简化版，用于 RenderAssetManager 内部）
+/// 注意：不要与 NNRuntimeRender 的 NNTextureDesc（完整版）混淆
+struct NN_RUNTIME_RENDER_ASSETS_API NNTextureCacheDesc
 {
     uint32_t Width = 0;
     uint32_t Height = 0;
@@ -50,7 +51,7 @@ public:
     NNTextureResource(NNTextureResource&& other) noexcept;
     NNTextureResource& operator=(NNTextureResource&& other) noexcept;
 
-    const NNTextureDesc& GetDesc() const { return m_Desc; }
+    const NNTextureCacheDesc& GetDesc() const { return m_Desc; }
     NNTextureResidency GetResidency() const { return m_Residency; }
     uint64_t GetLastUsedFrame() const { return m_LastUsedFrame; }
 
@@ -69,8 +70,9 @@ public:
 
 private:
     friend class NNRenderAssetManager;
+    friend class DiligentRenderResourceFactory;
 
-    NNTextureDesc m_Desc;
+    NNTextureCacheDesc m_Desc;
     void* m_RHITexture = nullptr;              // GPU 纹理对象（后端相关）
     void* m_RHIShaderResourceView = nullptr;   // SRV / 纹理句柄（用于 ImGui 渲染）
     uint64_t m_LastUsedFrame = 0;

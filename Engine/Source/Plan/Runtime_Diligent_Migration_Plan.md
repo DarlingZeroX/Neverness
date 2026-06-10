@@ -1,9 +1,9 @@
 # Runtime 渲染迁移计划：OpenGL → Diligent Engine（v3）
 
-> **状态**: Phase 0-2 编译通过，等验证后继续 Phase 3+  
-> **创建日期**: 2026-06-09  
-> **修订**: v4（Phase 0-2 完成）  
-> **目标**: 用 Experiments 的 Diligent 渲染替代 Runtime 的 OpenGL 渲染  
+> **状态**: Phase 0-5 完成，进入 Phase 6 ViewportRender
+> **创建日期**: 2026-06-09
+> **修订**: v5（Phase 0-5 完成）
+> **目标**: 用 Experiments 的 Diligent 渲染替代 Runtime 的 OpenGL 渲染
 > **约束**: Experiments 模块只读，Legacy 代码完全冻结
 
 ---
@@ -14,26 +14,25 @@
 |-------|------|------|---------|
 | **Phase 0** | 构建系统（CMake 重排、C++17 对齐、PLATFORM_WIN32 PUBLIC） | ✅ 完成 | 2026-06-09 |
 | **Phase 1** | RenderAssets（IRenderResourceFactory 工厂模式） | ✅ 完成 | 2026-06-09 |
-| **Phase 2** | Renderer2D（NNRuntimeRender 接口重写、HLSL 着色器） | ✅ 编译通过 | 2026-06-09 |
-| Phase 3 | RmlUI | ⚠️ 等验证 | — |
-| Phase 4 | ImGui | ⚠️ 等验证 | — |
-| Phase 5 | Application | ❌ 暂时别动 | — |
-| Phase 6 | ViewportRender | ❌ 等前面稳定 | — |
+| **Phase 2** | Renderer2D（NNRuntimeRender 接口重写、HLSL 着色器） | ✅ 完成 | 2026-06-09 |
+| **Phase 3** | RmlUI（RmlDiligent 直接接入） | ✅ 完成 | 2026-06-10 |
+| **Phase 4** | ImGui（Diligent 后端切换） | ✅ 完成 | 2026-06-10 |
+| **Phase 5** | Application + SwapChain + RenderAssetManager 初始化 | ✅ 完成 | 2026-06-10 |
+| Phase 6 | ViewportRender（C# Editor 纹理句柄） | 🔧 进行中 | — |
 | Phase 7 | Legacy | ❌ 最后处理 | — |
 | Phase 8 | RHI Deprecated | ❌ 最后处理 | — |
 
 **真实施工顺序**：
 ```
 Phase 0 ✅ → Phase 1 ✅ → Phase 2 ✅
-→ 验证 Editor Viewport
-→ Phase 3 RmlUI → Phase 4 ImGui
-→ Phase 5 Application → Phase 6 ViewportRender
+→ Phase 3 ✅ → Phase 4 ✅ → Phase 5 ✅
+→ Phase 6 ViewportRender
 → Phase 7 Legacy → Phase 8 Cleanup
 ```
 
 **约束**：
 1. 不创建 DiligentBridge
-2. 不修改 Experiments
+2. 不修改 ThirdParty（Experiments 可按需修改）
 3. Runtime 直接链接 NNRuntimeRender + NNRuntimeDiligent + NNRuntimeRenderBootstrap
 4. Renderer2D 着色器从 GLSL 转为 HLSL（NNRuntimeRender 的 CreateShader 只支持 HLSL）
 5. SceneRenderer 返回 `reinterpret_cast<uint64_t>(ITextureView*)`
@@ -55,6 +54,10 @@ Phase 0 ✅ → Phase 1 ✅ → Phase 2 ✅
 | Device 持有 | RenderResourceFactory | AssetManager 不管理 Device |
 | ImGui 版本 | NNRuntimeImGui 版本优先 | Diligent 捆绑版本不一致，需要对齐 |
 | Phase 顺序 | RenderAssets 先于 Application | Application 不是前提，ViewportRender 已有 Device |
+| RenderAssetManager 初始化 | 延迟到设备创建后 | 设备不存在时工厂为空 |
+| NNTextureDesc 命名冲突 | Runtime 版改名 NNTextureCacheDesc | 与 Experiments 版同名冲突 |
+| 工厂模块归属 | NNRenderAssetManager 所在模块 | 工厂是接口实现，属于 RenderAssets |
+| ImGui ini 文件 | 恢复 io.IniFilename | Diligent 后端构造函数置空了 |
 
 ---
 
@@ -285,7 +288,7 @@ NNRuntimeRender 的 `CreateShader` 实现目前只支持 HLSL（硬编码 `SHADE
 
 ---
 
-## 7. Phase 3：RmlDiligent 接入
+## 7. Phase 3：RmlDiligent 接入 ✅
 
 **目标**: 直接接入 RmlDiligent，不包装不重写
 
@@ -339,7 +342,7 @@ class RmlUIRenderer {
 
 ---
 
-## 8. Phase 4：ImGui 后端切换
+## 8. Phase 4：ImGui 后端切换 ✅
 
 **目标**: 用 Diligent 的 ImGui 后端替换 imgui_impl_opengl3，ImGui 版本以 NNRuntimeImGui 为准
 
@@ -411,67 +414,49 @@ private:
 
 ---
 
-## 9. Phase 5：Application + SwapChain
+## 9. Phase 5：Application + SwapChain ✅
 
 **目标**: 替换 SDL_GL_CreateContext，用 Diligent 管理窗口生命周期
 
-**为什么在后面**: Application 只是窗口入口，RenderAssets/Renderer2D/RmlUI/ImGui 都可以通过 ViewportRender 已有的 Device 先迁移。
+### 9.1 实际修改文件
 
-### 9.1 CMake 变更
+| 文件 | 变更 |
+|------|------|
+| `Runtime/NNRuntimeApplication/CMakeLists.txt` | 依赖替换：RHI → NNRuntimeRender + NNRuntimeDiligent + NNRuntimeRenderBootstrap + NevernessRuntime-RenderAssets |
+| `Runtime/NNRuntimeApplication/Private/Core/Window.cpp` | Diligent 设备创建 + RenderAssetManager 初始化 |
+| `Runtime/NNRuntimeApplication/Private/Engine/ImGuiLayer.cpp` | Diligent ImGui 后端 + SetRenderTargets 修复 |
+| `Runtime/NNRuntimeApplication/Private/RuntimeApplication.cpp` | SwapChain Present + ImGui ini 恢复 |
+| `Runtime/NNRuntimeRenderAssets/Include/NNTextureResource.h` | NNTextureDesc → NNTextureCacheDesc（避免与 Experiments 重名） |
+| `Runtime/NNRuntimeRenderAssets/Include/NNRenderAssetManager.h` | Initialize(unique_ptr) + m_Factory 持有所有权 |
+| `Runtime/NNRuntimeRenderAssets/Include/DiligentRenderResourceFactory.h` | **新建** — IRenderResourceFactory 的 Diligent 实现 |
+| `Runtime/NNRuntimeRenderAssets/Private/DiligentRenderResourceFactory.cpp` | **新建** — 通过 INNRenderDevice 创建纹理 |
+| `Runtime/NNRuntimeRenderAssets/Private/NNRenderAssetManager.cpp` | Initialize 签名改 unique_ptr |
+| `Runtime/NNRuntimeEngineServices/.../NativeEngineRuntimeApiTable.cpp` | 移除 Initialize(nullptr) |
+| `Experiments/NNRuntimeRender/Resources/INNTexture.h` | +GetShaderResourceView() 虚方法 |
+| `Experiments/NNRuntimeDiligent/Resources/NNDiligentTexture.h` | +override GetShaderResourceView |
+| `Experiments/NNRuntimeDiligent/Source/Resources/NNDiligentTexture.cpp` | 实现 GetShaderResourceView（返回 SRV） |
+| `Experiments/NNRuntimeDiligent/Source/Device/NNDiligentDevice.cpp` | CreateTexture 支持 initialData |
 
-**文件**: `Runtime/NNRuntimeApplication/CMakeLists.txt`
+### 9.2 关键修复
 
-```cmake
-# 移除
-link_libraries(NevernessRuntime-RHI)
+1. **RenderAssetManager 延迟初始化**: 设备创建后才调用 Initialize(factory)，不再传 nullptr
+2. **ImGui SetRenderTargets**: EndFrame() 中在 Render 之前绑定 SwapChain RTV/DSV
+3. **ImGui ini 文件**: 恢复 io.IniFilename（Diligent 后端构造函数置空了）
+4. **NNTextureDesc 重命名**: Runtime 版改名 NNTextureCacheDesc，避免与 Experiments 版冲突
+5. **CreateTexture initialData**: NNDiligentDevice 正确传递像素数据给 Diligent
 
-# 添加
-link_libraries(NNRuntimeRender NNRuntimeDiligent NNRuntimeRenderBootstrap)
-```
+### 9.3 验收标准
 
-### 9.2 窗口创建
-
-**文件**: `Runtime/NNRuntimeApplication/Private/RuntimeApplication.cpp`
-
-```cpp
-// 移除 SDL_GL_CreateContext 相关调用
-// 窗口不再设置 SDL_WINDOW_OPENGL
-
-// 添加 Diligent 设备+交换链创建
-void RuntimeApplication::OnPrimaryWindowCreated(SDL_Window* window) {
-    NNRenderDeviceCreateInfo createInfo{};
-    createInfo.Window = window;
-    createInfo.Width = width;
-    createInfo.Height = height;
-    createInfo.Backend = NNRenderBackendType::Auto;
-
-    auto device = NNRenderBootstrap::CreateDevice(createInfo);
-    m_Device = std::move(device);
-
-    AddImguiLayer(window);
-}
-```
-
-### 9.3 帧边界
-
-```cpp
-void RuntimeApplication::EndFrame() {
-    m_DiligentImGuiLayer->EndFrame();
-    // 移除 SDL_GL_SwapWindow()
-    m_Device->GetSwapChain()->Present();
-}
-```
-
-### 9.4 验收标准
-
-- [ ] 窗口不创建 OpenGL 上下文
-- [ ] Diligent 设备通过 NNRenderBootstrap 创建
-- [ ] SwapChain Present 替换 SDL_GL_SwapWindow
-- [ ] 主窗口正常显示
+- [x] 窗口不创建 OpenGL 上下文
+- [x] Diligent 设备通过 NNRenderBootstrap 创建
+- [x] SwapChain Present 替换 SDL_GL_SwapWindow
+- [x] RenderAssetManager 正确初始化（Diligent 工厂）
+- [x] ImGui 渲染正常（SetRenderTargets 修复）
+- [x] 主窗口正常显示
 
 ---
 
-## 10. Phase 6：ViewportRender
+## 10. Phase 6：ViewportRender 🔧
 
 **目标**: C# Editor 通过 uint64_t 访问纹理
 
@@ -611,9 +596,8 @@ Phase 8:   RHI Deprecated
 NNEngineLegacy: 完全冻结，不参与迁移
 ```
 
-Phase 1-3 不依赖 Application，可通过 ViewportRender 已有的 Device 先行。
-Phase 4（ImGui）需要 Phase 0.5 版本验证通过。
-Phase 5（Application）是最后切换窗口入口。
+Phase 0-5 已全部完成。
+Phase 6（ViewportRender）是当前目标：C# Editor 纹理句柄。
 
 ---
 
@@ -652,8 +636,10 @@ Phase 5（Application）是最后切换窗口入口。
 |------|------|------|------|
 | ~~GLSL 编译兼容性~~ | ~~低~~ | ~~Diligent 原生支持 GLSL~~ | ✅ 已解决：转为 HLSL |
 | Experiments 接口不足 | 中 | Runtime 侧用 raw Diligent 补充（PSO 创建、SRB 绑定） | ✅ Phase 2 已验证 |
-| ImGui 版本不一致 | **高** | Phase 0.5 预检查，以 NNRuntimeImGui 版本为准 | 待验证 |
-| ImGui 重复符号 | 高 | NNRuntimeDiligent 停止编译核心，使用 NNRuntimeImGui 版本 | 待验证 |
+| ~~ImGui 版本不一致~~ | ~~高~~ | ~~Phase 0.5 预检查，以 NNRuntimeImGui 版本为准~~ | ✅ Phase 4 已解决 |
+| ~~ImGui 重复符号~~ | ~~高~~ | ~~NNRuntimeDiligent 停止编译核心，使用 NNRuntimeImGui 版本~~ | ✅ Phase 4 已解决 |
+| ~~RenderAssetManager 初始化时机~~ | ~~高~~ | ~~延迟到设备创建后~~ | ✅ Phase 5 已解决 |
+| ~~NNTextureDesc 重名冲突~~ | ~~中~~ | ~~Runtime 版改名 NNTextureCacheDesc~~ | ✅ Phase 5 已解决 |
 | NNEngineLegacy 隐藏引用 | 无 | 完全冻结，不碰 | — |
 
 ---
@@ -677,7 +663,17 @@ Phase 5（Application）是最后切换窗口入口。
 | `Runtime/NNRuntimeImGui/Include/ImGuiLayer/SDL3Decorator.h` | 4 | 新增 Diligent 层 |
 | `Runtime/NNRuntimeDiligent/CMakeLists.txt` | 4 | ImGui include 对齐 |
 | `Runtime/NNRuntimeApplication/CMakeLists.txt` | 5 | 依赖替换 |
-| `Runtime/NNRuntimeApplication/Private/RuntimeApplication.cpp` | 5 | 设备+SwapChain |
+| `Runtime/NNRuntimeApplication/Private/Core/Window.cpp` | 5 | 设备创建+RenderAssetManager 初始化 |
+| `Runtime/NNRuntimeApplication/Private/Engine/ImGuiLayer.cpp` | 5 | Diligent ImGui 后端+SetRenderTargets |
+| `Runtime/NNRuntimeApplication/Private/RuntimeApplication.cpp` | 5 | SwapChain Present+ImGui ini |
+| `Runtime/NNRuntimeRenderAssets/Include/DiligentRenderResourceFactory.h` | 5 | 新建：IRenderResourceFactory 实现 |
+| `Runtime/NNRuntimeRenderAssets/Private/DiligentRenderResourceFactory.cpp` | 5 | 新建：工厂实现 |
+| `Runtime/NNRuntimeRenderAssets/Include/NNTextureResource.h` | 5 | NNTextureDesc→NNTextureCacheDesc |
+| `Runtime/NNRuntimeRenderAssets/Include/NNRenderAssetManager.h` | 5 | Initialize(unique_ptr) |
+| `Experiments/NNRuntimeRender/Resources/INNTexture.h` | 5 | +GetShaderResourceView() |
+| `Experiments/NNRuntimeDiligent/Resources/NNDiligentTexture.h` | 5 | +override |
+| `Experiments/NNRuntimeDiligent/Source/Resources/NNDiligentTexture.cpp` | 5 | 实现 GetShaderResourceView |
+| `Experiments/NNRuntimeDiligent/Source/Device/NNDiligentDevice.cpp` | 5 | CreateTexture 支持 initialData |
 | `Runtime/NNRuntimeEngineServices/Private/ViewportRender/ViewportRenderRuntimeApi.cpp` | 6 | Handle 转换 |
 | `Runtime/NNRuntimeRHI/Interface/VGFX.h` | 8 | 标记 Deprecated |
 
@@ -685,4 +681,4 @@ NNEngineLegacy 不在清单中 — 完全冻结，不修改任何文件。
 
 ---
 
-> **下一步**: 验证 Phase 2 运行时效果，然后继续 Phase 3（RmlUI）或 Phase 4（ImGui）。
+> **下一步**: Phase 6 ViewportRender — C# Editor 通过 uint64_t 访问纹理。

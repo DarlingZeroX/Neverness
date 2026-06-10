@@ -82,5 +82,7 @@ target_link_libraries(NevernessRuntime-Application
 		NNRuntimeRender
 		NNRuntimeDiligent
 		NNRuntimeRenderBootstrap
+		# RenderAssets（IRenderResourceFactory + NNRenderAssetManager）
+		NevernessRuntime-RenderAssets
 )
 

@@ -20,6 +20,7 @@ namespace NNDiligent
         const NNTextureDesc& GetDesc() const override;
         uint32_t GetWidth() const override;
         uint32_t GetHeight() const override;
+        void* GetShaderResourceView() const override;
 
         // INNObject
         uint32_t AddRef() override;

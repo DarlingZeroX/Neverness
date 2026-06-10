@@ -66,8 +66,12 @@ namespace NN::Runtime::Render
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
 
-        // 涓嶆毚闇插簳灞傜被鍨嬶紙GetNativeHandle 绛夛級
-        // 鍚庣闅旂鍘熷垯锛欳++ 鍐呴儴閫氳繃鎺ュ彛鎿嶄綔锛孋# 閫氳繃 Handle
+        /// 获取 Shader Resource View 指针（用于 ImGui 渲染）
+        /// 后端实现返回原生 SRV 指针，默认返回 nullptr
+        virtual void* GetShaderResourceView() const { return nullptr; }
+
+        // 不暴露底层类型（GetNativeHandle 等）
+        // 后端隔离原则：C++ 内部通过接口操作，C# 通过 Handle
     };
 
 } // namespace NN::Runtime::Render

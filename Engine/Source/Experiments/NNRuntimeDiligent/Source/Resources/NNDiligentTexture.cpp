@@ -35,6 +35,12 @@ namespace NNDiligent
         return m_Desc.Height;
     }
 
+    void* NNDiligentTexture::GetShaderResourceView() const
+    {
+        if (!m_Texture) return nullptr;
+        return m_Texture->GetDefaultView(::Diligent::TEXTURE_VIEW_SHADER_RESOURCE);
+    }
+
     ::Diligent::ITextureView* NNDiligentTexture::GetDefaultView(::Diligent::TEXTURE_VIEW_TYPE viewType)
     {
         if (!m_Texture) return nullptr;

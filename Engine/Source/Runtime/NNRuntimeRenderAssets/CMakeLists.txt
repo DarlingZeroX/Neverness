@@ -2,17 +2,21 @@ cmake_minimum_required(VERSION 3.20)
 
 set(MODULE_NAME "NevernessRuntime-RenderAssets")
 
-file(GLOB_RECURSE MODULE_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h"
-)
+add_library(${MODULE_NAME} SHARED)
 
-file(GLOB_RECURSE MODULE_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/*.cpp"
-)
-
-add_library(${MODULE_NAME} SHARED
-    ${MODULE_HEADERS}
-    ${MODULE_SOURCES}
+target_sources(${MODULE_NAME}
+    PRIVATE
+        Include/NNRenderAssetManager.h
+        Include/NNTextureResource.h
+        Include/NNTextureFormat.h
+        Include/NNTextureCache.h
+        Include/NNTextureSourceAsset.h
+        Include/DiligentRenderResourceFactory.h
+        Private/NNRenderAssetManager.cpp
+        Private/NNTextureResource.cpp
+        Private/NNTextureSourceAsset.cpp
+        Private/NNTextureCache.cpp
+        Private/DiligentRenderResourceFactory.cpp
 )
 
 target_compile_definitions(${MODULE_NAME} PRIVATE NN_RUNTIME_RENDER_ASSETS_EXPORT NN_RUNTIME_RENDER_ASSETS_DYNAMIC)

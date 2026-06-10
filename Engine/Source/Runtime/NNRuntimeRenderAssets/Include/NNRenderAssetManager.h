@@ -66,8 +66,8 @@ class NN_RUNTIME_RENDER_ASSETS_API NNRenderAssetManager
 public:
     static NNRenderAssetManager& Get();
 
-    /// 初始化（需要传入渲染资源工厂）
-    bool Initialize(IRenderResourceFactory* factory);
+    /// 初始化（需要传入渲染资源工厂，所有权转移给 Manager）
+    bool Initialize(std::unique_ptr<IRenderResourceFactory> factory);
     void Shutdown();
 
     /// 从 Source Asset 直接创建 GPU Texture（Editor / 直接创建场景）
@@ -145,7 +145,7 @@ private:
     mutable std::mutex m_Mutex;
     std::unordered_map<uint64_t, std::unique_ptr<RenderAssetCacheEntry>> m_EntryCache;
     std::unordered_map<uint64_t, uint64_t> m_GuidToCacheKeyMap;  // GUID.Low → cache key
-    IRenderResourceFactory* m_Factory = nullptr;  // 渲染资源工厂（不持有所有权）
+    std::unique_ptr<IRenderResourceFactory> m_Factory;  // 渲染资源工厂（持有所有权）
     uint64_t m_CurrentFrame = 0;
     uint64_t m_NextKey = 1;  // 自增 key 分配器
     bool m_Initialized = false;

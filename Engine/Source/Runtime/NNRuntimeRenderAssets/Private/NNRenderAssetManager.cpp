@@ -23,7 +23,7 @@ NNRenderAssetManager& NNRenderAssetManager::Get()
     return instance;
 }
 
-bool NNRenderAssetManager::Initialize(IRenderResourceFactory* factory)
+bool NNRenderAssetManager::Initialize(std::unique_ptr<IRenderResourceFactory> factory)
 {
     std::lock_guard lock(m_Mutex);
     if (m_Initialized)
@@ -35,7 +35,7 @@ bool NNRenderAssetManager::Initialize(IRenderResourceFactory* factory)
         return false;
     }
 
-    m_Factory = factory;
+    m_Factory = std::move(factory);
     m_EntryCache.clear();
     m_NextKey = 1;
     m_CurrentFrame = 0;

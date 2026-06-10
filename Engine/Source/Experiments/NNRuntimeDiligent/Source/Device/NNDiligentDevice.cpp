@@ -12,6 +12,8 @@
 #include <vector>
 #include <SDL3/SDL.h>
 
+#include "GraphicsAccessories.hpp"
+
 namespace NNDiligent
 {
     NNDiligentDevice::NNDiligentDevice() {}
@@ -290,14 +292,16 @@ namespace NNDiligent
 
         if (initialData)
         {
-            // Create with initial data via texture data struct
+            // 计算像素行 stride（字节）
+            auto bpp = ::Diligent::GetTextureFormatAttribs(texDesc.Format).GetElementSize();
+            ::Diligent::TextureSubResData mip0;
+            mip0.pData  = initialData;
+            mip0.Stride = static_cast<::Diligent::Uint64>(desc.Width) * bpp;
+
             ::Diligent::TextureData texData;
-            texData.pSubResources = nullptr; // Will be set below if needed
-            texData.NumSubresources = 0;
-            // Note: For simplicity, textures with initial data should be handled
-            // via UpdateTexture after creation. For now, create empty and let
-            // the caller update.
-            m_Device->CreateTexture(texDesc, nullptr, &texture);
+            texData.pSubResources   = &mip0;
+            texData.NumSubresources = 1;
+            m_Device->CreateTexture(texDesc, &texData, &texture);
         }
         else
         {
