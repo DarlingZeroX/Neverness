@@ -1,6 +1,9 @@
 /**
  * @file RmlUIRenderer.cpp
- * @brief RmlUI 渲染器实现——持有 Context，管理文档实例，从 DrawList 渲染。
+ * @brief RmlUI 渲染器实现——RmlDiligent 后端（Diligent Engine）。
+ *
+ * 替换原 GL3 后端，使用 RmlDiligentRenderInterface。
+ * 保留 Runtime 的 SystemInterface_SDL 和 UIFileInterfaceVFS（VFS 支持）。
  */
 
 #include "Renderer/RmlUIRenderer.h"
@@ -13,9 +16,10 @@
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Debugger.h>
 
-// 渲染后端
-#include "Rml/RmlUi_Renderer_GL3.h"
-#include "Rml/RenderInterfaceGL3SDL.h"
+// RmlDiligent 渲染后端
+#include "RmlDiligentRenderInterface.h"
+
+// Runtime 平台后端（保留 VFS 支持）
 #include "Rml/RmlUi_Platform_SDL.h"
 #include "Rml/Shell.h"
 #include "Rml/ShellFileInterface.h"
@@ -23,11 +27,19 @@
 // 资产解析
 #include "NNRuntimeScene/Include/Assets/IAssetResolver.h"
 
-// GL 状态保存/恢复（RenderToTexture 需要保护 ImGui 的 GL 状态）
-#include <NNRuntimeRHI/Include/OpenGL/OpenGL.h>
+// NNRuntimeRender 接口
+#include <Device/INNRenderDevice.h>
+#include <RenderTarget/INNRenderTarget.h>
+
+// NNDiligent 内部（用于获取 Diligent 原始对象）
+#include "NNDiligentConfig.h"
+#include "Device/NNDiligentDevice.h"
+#include "Resources/NNDiligentRenderTarget.h"
 
 #include <unordered_set>
 #include <iostream>
+
+using namespace Diligent;
 
 namespace NN::Runtime::Renderer
 {
@@ -38,15 +50,25 @@ namespace NN::Runtime::Renderer
 		Shutdown();
 	}
 
-	bool RmlUIRenderer::Initialize(std::uint32_t viewportWidth, std::uint32_t viewportHeight)
+	bool RmlUIRenderer::Initialize(
+		Render::INNRenderDevice* device,
+		std::uint32_t viewportWidth, std::uint32_t viewportHeight)
 	{
 		if (m_Initialized)
 			return true;
 
-		std::cout << "[RmlUIRenderer] Initialize: 开始 (" << viewportWidth << "x" << viewportHeight << ")" << std::endl;
+		if (!device)
+		{
+			std::cerr << "[RmlUIRenderer] Initialize: device is null" << std::endl;
+			return false;
+		}
 
+		m_Device = device;
 		m_ViewportWidth = viewportWidth;
 		m_ViewportHeight = viewportHeight;
+
+		std::cout << "[RmlUIRenderer] Initialize: 开始 ("
+		          << viewportWidth << "x" << viewportHeight << ")" << std::endl;
 
 		// 1. 初始化 Shell（VFS 文件接口）
 		std::cout << "[RmlUIRenderer] Initialize: Shell::Initialize..." << std::endl;
@@ -56,22 +78,38 @@ namespace NN::Runtime::Renderer
 			return false;
 		}
 
-		// 2. 创建渲染后端
-		std::cout << "[RmlUIRenderer] Initialize: 创建渲染后端..." << std::endl;
-		m_RenderInterface = new RenderInterface_GL3_SDL();
-		m_SystemInterface = new SystemInterface_SDL();
-		m_RenderInterface->SetViewport((int)viewportWidth, (int)viewportHeight);
+		// 2. 获取 Diligent 原始对象
+		auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(device);
+		auto* diliDevice  = dilDev->GetDiligentDevice();
+		auto* diliContext = dilDev->GetDiligentContext();
+		auto* diliSwapChain = dilDev->GetDiligentSwapChain();
 
-		// 3. 设置 RmlUI 全局接口
+		if (!diliDevice || !diliContext)
+		{
+			std::cerr << "[RmlUIRenderer] Diligent device/context is null" << std::endl;
+			Shell::Shutdown();
+			return false;
+		}
+
+		// 3. 创建 RmlDiligent 渲染后端
+		std::cout << "[RmlUIRenderer] Initialize: 创建 RmlDiligent 渲染后端..." << std::endl;
+		m_RenderInterface = new RmlDiligent::RmlDiligentRenderInterface();
+		m_RenderInterface->Initialize(diliDevice, diliContext, diliSwapChain);
+		m_RenderInterface->SetProjectionMatrix((int)viewportWidth, (int)viewportHeight);
+
+		// 4. 创建平台后端（Runtime 版本，支持 VFS）
+		m_SystemInterface = new SystemInterface_SDL();
+
+		// 5. 设置 RmlUI 全局接口
 		std::cout << "[RmlUIRenderer] Initialize: 设置全局接口..." << std::endl;
 		Rml::SetSystemInterface(m_SystemInterface);
 		Rml::SetRenderInterface(m_RenderInterface);
 
-		// 4. 初始化 RmlUI 核心
+		// 6. 初始化 RmlUI 核心
 		std::cout << "[RmlUIRenderer] Initialize: Rml::Initialise..." << std::endl;
 		Rml::Initialise();
 
-		// 5. 创建 Context
+		// 7. 创建 Context
 		std::cout << "[RmlUIRenderer] Initialize: CreateContext..." << std::endl;
 		m_Context = Rml::CreateContext("scene_ui",
 			Rml::Vector2i((int)viewportWidth, (int)viewportHeight));
@@ -83,9 +121,19 @@ namespace NN::Runtime::Renderer
 			return false;
 		}
 
-		// 6. 加载默认字体
+		// 8. 加载默认字体
 		std::cout << "[RmlUIRenderer] Initialize: LoadFonts..." << std::endl;
 		Shell::LoadFonts();
+
+		// 9. 创建离屏渲染目标
+		Render::NNRenderTargetDesc rtDesc{};
+		rtDesc.Width = viewportWidth;
+		rtDesc.Height = viewportHeight;
+		rtDesc.ColorFormat = Render::NNPixelFormat::RGBA8_UNORM;
+		rtDesc.DepthFormat = Render::NNPixelFormat::D24_UNORM_S8_UINT;
+		auto rt = device->CreateRenderTarget(rtDesc);
+		if (rt)
+			m_OffscreenRT = rt.Detach();
 
 		m_Initialized = true;
 		std::cout << "[RmlUIRenderer] Initialize: 完成" << std::endl;
@@ -118,12 +166,20 @@ namespace NN::Runtime::Renderer
 		// 关闭 Shell
 		Shell::Shutdown();
 
+		// 销毁离屏渲染目标
+		if (m_OffscreenRT)
+		{
+			m_OffscreenRT->Release();
+			m_OffscreenRT = nullptr;
+		}
+
 		// 销毁后端
 		delete m_RenderInterface;
 		m_RenderInterface = nullptr;
 		delete m_SystemInterface;
 		m_SystemInterface = nullptr;
 
+		m_Device = nullptr;
 		m_Initialized = false;
 	}
 
@@ -133,10 +189,28 @@ namespace NN::Runtime::Renderer
 		m_ViewportHeight = height;
 
 		if (m_RenderInterface)
-			m_RenderInterface->SetViewport((int)width, (int)height);
+			m_RenderInterface->SetProjectionMatrix((int)width, (int)height);
 
 		if (m_Context)
 			m_Context->SetDimensions(Rml::Vector2i((int)width, (int)height));
+
+		// 重建离屏渲染目标
+		if (m_OffscreenRT)
+		{
+			m_OffscreenRT->Release();
+			m_OffscreenRT = nullptr;
+		}
+		if (m_Device && width > 0 && height > 0)
+		{
+			Render::NNRenderTargetDesc rtDesc{};
+			rtDesc.Width = width;
+			rtDesc.Height = height;
+			rtDesc.ColorFormat = Render::NNPixelFormat::RGBA8_UNORM;
+			rtDesc.DepthFormat = Render::NNPixelFormat::D24_UNORM_S8_UINT;
+			auto rt = m_Device->CreateRenderTarget(rtDesc);
+			if (rt)
+				m_OffscreenRT = rt.Detach();
+		}
 	}
 
 	void RmlUIRenderer::Sync(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList)
@@ -146,9 +220,6 @@ namespace NN::Runtime::Renderer
 			std::cerr << "[RmlUIRenderer] Sync: not initialized" << std::endl;
 			return;
 		}
-
-		//std::cout << "[RmlUIRenderer] Sync: drawList size = " << drawList.size()
-		//	<< ", m_Documents size = " << m_Documents.size() << std::endl;
 
 		// 收集 active entity 集合
 		std::unordered_set<NNEntity> activeEntities;
@@ -199,8 +270,6 @@ namespace NN::Runtime::Renderer
 				m_Documents[item.entity] = runtime;
 			}
 		}
-
-		//std::cout << "[RmlUIRenderer] Sync: done" << std::endl;
 	}
 
 	void RmlUIRenderer::Update()
@@ -230,17 +299,20 @@ namespace NN::Runtime::Renderer
 				it->second.doc->Hide();
 		}
 
-		// 渲染所有可见文档（Context::Render 渲染所有 Show 状态的文档）
+		// 渲染
 		m_RenderInterface->BeginFrame();
 		m_Context->Render();
 		m_RenderInterface->EndFrame();
 	}
 
-	std::uint32_t RmlUIRenderer::RenderToTexture(
+	std::uint64_t RmlUIRenderer::RenderToTexture(
 		const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
 		Scene::NNRmlUIViewTarget viewTarget)
 	{
 		if (!m_Initialized || !m_Context || !m_RenderInterface)
+			return 0;
+
+		if (!m_OffscreenRT)
 			return 0;
 
 		// 按 ViewTarget 控制文档可见性
@@ -259,35 +331,7 @@ namespace NN::Runtime::Renderer
 				it->second.doc->Hide();
 		}
 
-		// ── 保存 ImGui 依赖的 GL 状态（RmlUI 会修改这些状态）──
-		GLint prevProgram = 0, prevVAO = 0, prevVBO = 0, prevFBO = 0;
-		GLint prevTexture = 0, prevActiveTex = 0;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
-		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
-		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prevVBO);
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &prevTexture);
-		glGetIntegerv(GL_ACTIVE_TEXTURE, &prevActiveTex);
-
-		// ── RmlUI 渲染到内部 FBO ──
-		// 检查文档状态（仅首帧打印）
-		static bool s_loggedDocState = false;
-		if (!s_loggedDocState)
-		{
-			for (const auto& [entity, runtime] : m_Documents)
-			{
-				if (runtime.doc)
-				{
-					std::cout << "[RmlUIRenderer] doc visible=" << runtime.doc->IsVisible()
-						<< " state=" << static_cast<int>(runtime.state)
-						<< " url=" << runtime.doc->GetSourceURL() << std::endl;
-				}
-			}
-			std::cout << "[RmlUIRenderer] context docs: " << m_Context->GetNumDocuments() << std::endl;
-			s_loggedDocState = true;
-		}
-
-		// 每帧更新所有文档尺寸（匹配当前 viewport 大小）
+		// 每帧更新所有文档尺寸
 		for (auto& [entity, runtime] : m_Documents)
 		{
 			if (runtime.doc && runtime.state == RmlDocState::Ready)
@@ -299,22 +343,28 @@ namespace NN::Runtime::Renderer
 			}
 		}
 
+		// 设置离屏渲染目标
+		auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(m_Device);
+		auto* diliContext = dilDev->GetDiligentContext();
+		auto* dilRT = static_cast<NNDiligent::NNDiligentRenderTarget*>(m_OffscreenRT);
+
+		ITextureView* rtvs[] = { dilRT->GetColorView() };
+		auto* dsv = dilRT->GetDepthView();
+		diliContext->SetRenderTargets(1, rtvs, dsv, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+		// 清除
+		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		diliContext->ClearRenderTarget(rtvs[0], clearColor, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+		diliContext->ClearDepthStencil(dsv, CLEAR_DEPTH_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+		// 渲染
 		m_Context->Update();
 		m_RenderInterface->BeginFrame();
 		m_Context->Render();
-		m_RenderInterface->EndFrameNoBlit();
+		m_RenderInterface->EndFrame();
 
-		// ── 恢复 ImGui 依赖的 GL 状态 ──
-		glUseProgram(prevProgram);
-		glBindVertexArray(prevVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, prevVBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
-		glActiveTexture(prevActiveTex);
-		glBindTexture(GL_TEXTURE_2D, prevTexture);
-
-		// 获取渲染结果纹理 ID
-		const auto& fb = m_RenderInterface->GetRenderResult();
-		return static_cast<std::uint32_t>(fb.color_tex_buffer);
+		// 返回纹理句柄
+		return reinterpret_cast<std::uint64_t>(dilRT->GetColorView());
 	}
 
 	void RmlUIRenderer::ProcessInput(
@@ -377,7 +427,6 @@ namespace NN::Runtime::Renderer
 			return nullptr;
 		}
 
-		// 检查路径是否为空
 		if (path[0] == '\0')
 		{
 			std::cerr << "[RmlUIRenderer] AssetResolver returned empty path for GUID ("
@@ -387,7 +436,6 @@ namespace NN::Runtime::Renderer
 
 		std::cout << "[RmlUIRenderer] LoadDocument: resolved path = " << path << std::endl;
 
-		// 加载文档
 		auto* doc = m_Context->LoadDocument(path);
 		if (!doc)
 		{

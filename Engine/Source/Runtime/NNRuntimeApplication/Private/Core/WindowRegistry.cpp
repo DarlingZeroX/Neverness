@@ -53,6 +53,7 @@ NNWindowHandle GPrimaryHandle = NN_INVALID_WINDOW_HANDLE;
 NNWindowHandle WindowRegistry::Create(const NNWindowDesc* desc)
 {
 	auto window = std::make_unique<VGWindow>();
+
 	// Editor 路径默认无边框 + HitTest；后续可由 NNWindowDesc 扩展标志位。
 	window->SetInitializeBorderless(true);
 	if (!window->CreateFromDesc(desc))
@@ -73,6 +74,7 @@ NNWindowHandle WindowRegistry::Create(const NNWindowDesc* desc)
 	}
 
 	AdoptPrimaryIfUnset(handle);
+
 	return handle;
 }
 

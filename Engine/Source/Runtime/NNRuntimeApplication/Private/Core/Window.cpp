@@ -1,19 +1,19 @@
 /*
-* This source file is part of VisionGal, the Visual Novel Engine
-*
-* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
-* GitHub page: https://github.com/DarlingZeroX/VisionGal
-*
-* Copyright (c) 2025-present 梦旅缘心
-*
-* See the LICENSE file in the project root for details.
-*/
+ * This source file is part of Neverness Engine
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ * See the LICENSE file in the project root for details.
+ */
 
 #include "Core/Window.h"
 #include <SDL3_image/SDL_image.h>
 #include <NNCore/Interface/HLog.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
-#include <NNRuntimeRHI/Include/OpenGL/OpenGL.h>
+
+// Diligent 设备+交换链
+#include <Device/INNRenderDevice.h>
+#include <Device/INNSwapChain.h>
+#include <NNRuntimeRenderBootstrap/Include/NNRenderBootstrap.h>
 
 namespace NN::Runtime
 {
@@ -126,23 +126,13 @@ namespace NN::Runtime
 
 		SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-		SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-
+		// 创建 SDL 窗口（不设置 OpenGL 属性）
 		SDL_PropertiesID props = SDL_CreateProperties();
 		SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, window_name);
 		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED);
 		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED);
 		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, int(width));
 		SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, int(height));
-		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, allow_resize);
 		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
 
@@ -174,20 +164,22 @@ namespace NN::Runtime
 			return false;
 		}
 
-		m_GLContext = SDL_GL_CreateContext(GetSDLWindow());
-		m_OpenGLVersion = "#version 330";
+		// 创建 Diligent 设备+交换链（替代 SDL_GL_CreateContext + gladLoaderLoadGL）
+		Render::NNRenderDeviceCreateInfo createInfo{};
+		createInfo.Window = window;
+		createInfo.Width = width;
+		createInfo.Height = height;
+		createInfo.Backend = Render::NNRenderBackendType::Backend_Vulkan;
+		createInfo.EnableValidation = true;
+		createInfo.VSync = true;
 
-		if (!m_GLContext) {
-			SDL_Log("OpenGL context creation failed: %s", SDL_GetError());
-			return false;
-		}
-
-		const int gl_version = gladLoaderLoadGL();
-		if (gl_version == 0)
+		auto device = Render::NNRenderBootstrap::CreateDevice(createInfo);
+		if (!device)
 		{
-			H_LOG_ERROR("Failed to initialize OpenGL context.");
+			H_LOG_ERROR("Failed to create Diligent device");
 			return false;
 		}
+		m_Device = device.Detach(); // 转移所有权
 
 		if (m_Borderless)
 		{

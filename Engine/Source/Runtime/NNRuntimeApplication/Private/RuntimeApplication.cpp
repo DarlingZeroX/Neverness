@@ -25,9 +25,14 @@
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeImGui/Include/imgui/imgui.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
-#include "NNRuntimeImGui/Include/ImGuiLayer/SDL3Decorator.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include <SDL3\SDL_oldnames.h>
+
+// Diligent 设备访问
+#include <Device/INNRenderDevice.h>
+#include <Device/INNSwapChain.h>
+#include "Device/NNDiligentDevice.h"
+#include "ImGuiLayer/SDL3Decorator.h"
 
 namespace NN::Runtime::Application
 {
@@ -134,6 +139,19 @@ namespace NN::Runtime::Application
 	{
 		try
 		{
+			LogInfo("Initialize: 设置 locale");
+			try
+			{
+				std::locale::global(std::locale(".utf8"));
+				LogInfo("Initialize: locale 设置成功");
+			}
+			catch (const std::exception& ex)
+			{
+				std::string msg = std::string("locale 设置失败: ") + ex.what();
+				LogError(msg.c_str());
+				return -5;
+			}
+
 			if (m_sdlInitialized)
 			{
 				LogInfo("Initialize: 已初始化，直接返回 1");
@@ -169,19 +187,6 @@ namespace NN::Runtime::Application
 			LogInfo(std::string("Initialize: EDITOR_PROJECT_ROOT_DIR = " + std::string(EDITOR_PROJECT_ROOT_DIR)).c_str());
 			editorProjectRootDir = EDITOR_PROJECT_ROOT_DIR;
 #endif
-
-			LogInfo("Initialize: 设置 locale");
-			try
-			{
-				std::locale::global(std::locale(".utf8"));
-				LogInfo("Initialize: locale 设置成功");
-			}
-			catch (const std::exception& ex)
-			{
-				std::string msg = std::string("locale 设置失败: ") + ex.what();
-				LogError(msg.c_str());
-				return -5;
-			}
 
 			LogInfo("Initialize: 查找项目目录");
 			std::string projectRootDir = FindDefaultProjectRoot(editorProjectRootDir);
@@ -314,7 +319,7 @@ void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 		m_eventTranslator.reset();
 		m_eventQueue.Clear();
 
-		m_ImguiOpengl3Layer.reset();
+		m_ImGuiDiligentLayer.reset();
 		m_imguiAttached = false;
 		m_primaryWindowHandle = NN_INVALID_WINDOW_HANDLE;
 
@@ -331,22 +336,32 @@ void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 
 	void RuntimeApplication::BeginFrame()
 	{
-		if (m_ImguiOpengl3Layer)
+		if (m_ImGuiDiligentLayer)
 		{
-			m_ImguiOpengl3Layer->BeginFrame();
+			//H_LOG_INFO("-----------------------------------Beginning ImGui frame");
+			m_ImGuiDiligentLayer->BeginFrame();
+			//H_LOG_INFO("-----------------------------------Beginning ImGui frame Finish");
 		}
 	}
 
 	void RuntimeApplication::EndFrame()
 	{
-		if (m_ImguiOpengl3Layer)
+		if (m_ImGuiDiligentLayer)
 		{
-			m_ImguiOpengl3Layer->EndFrame();
+			m_ImGuiDiligentLayer->EndFrame();
 		}
 
+		// Diligent SwapChain Present（替代 SDL_GL_SwapWindow）
 		if (VGWindow* primary = WindowRegistry::Resolve(m_primaryWindowHandle))
 		{
-			SDL_GL_SwapWindow(primary->GetSDLWindow());
+			if (auto* device = primary->GetDevice())
+			{
+				auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(device);
+				if (auto* sc = dilDev->GetDiligentSwapChain())
+				{
+					sc->Present();
+				}
+			}
 		}
 	}
 
@@ -357,39 +372,44 @@ void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 			return;
 		}
 
+		// 使用 Diligent ImGui 层（替代 OpenGL3 层）
 		window->AddLayer(std::make_unique<ImGuiEx::Opengl3ImGuiWindowLayer>(window));
-		m_ImguiOpengl3Layer = std::make_unique<NN::Runtime::ImguiOpengl3Layer>(window, window->GetContext());
+		m_ImGuiDiligentLayer = std::make_unique<NN::Runtime::ImguiDiligentLayer>(window, window->GetDevice());
 
 		ImGuiIO& io = ImGui::GetIO();
-
+		
 		{
 			NN::Runtime::VFS::VFSService::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/msyh.ttc", [&](const NN::Runtime::VFS::VFSService::DataRef& data) {
 				ImFontConfig icons_config;
 				icons_config.FontDataOwnedByAtlas = false;
-
+		
 				io.Fonts->AddFontFromMemoryTTF(data->data(), data->size(), 17, &icons_config, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
-
+		
 				return 0;
 				});
 		}
-
+		
 		{
 			NN::Runtime::VFS::VFSService::SafeReadFileFromVFS(NN::Runtime::RuntimeCore::GetEngineResourcePathVFS() + "fonts/fa-regular-400.ttf", [&](const NN::Runtime::VFS::VFSService::DataRef& data) {
 				static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-
+		
 				ImFontConfig icons_config;
 				icons_config.MergeMode = true;
 				icons_config.PixelSnapH = true;
 				icons_config.GlyphOffset = ImVec2(0, 2);
 				icons_config.FontDataOwnedByAtlas = false;
-
+		
 				io.Fonts->AddFontFromMemoryTTF(data->data(), data->size(), 17, &icons_config, icons_ranges);
 				return 0;
 				});
 		}
-
+		
 		io.Fonts->Build();
+		//
+		//// 重置 ImGui 帧状态：Fonts->Build() 可能触发隐式帧循环，
+		//// 需要确保 FrameCountEnded == FrameCount，否则下一次 BeginFrame 会断言失败
+		//ImGui::EndFrame();
 
-		H_LOG_INFO("Initializing ImGui fonts");
+		H_LOG_INFO("----------------Initializing ImGui fonts");
 	}
 } // namespace NN::Runtime::Application

@@ -11,10 +11,7 @@
  * - 根据 ViewTarget 过滤并渲染文档（Render 阶段）
  * - 处理输入事件
  *
- * 生命周期分离（v4 架构审查修正）：
- * - Sync()  — Update 阶段调用，加载/卸载文档（含磁盘 IO）
- * - Update() — 更新 Context（Layout + 动画）
- * - Render() — 纯渲染，不加载/卸载任何资源
+ * 渲染后端：RmlDiligent（Diligent Engine）
  */
 
 #include "../../VGUIConfig.h"
@@ -31,10 +28,17 @@
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/ElementDocument.h>
 
-// 前向声明渲染后端
-class RenderInterface_GL3;
+// 前向声明渲染后端（Diligent）
+namespace RmlDiligent { class RmlDiligentRenderInterface; }
 class SystemInterface_SDL;
 class UIFileInterfaceVFS;
+
+// 前向声明 Diligent 渲染目标
+namespace NN::Runtime::Render
+{
+    class INNRenderDevice;
+    class INNRenderTarget;
+}
 
 // 前向声明 IAssetResolver
 namespace NN::Runtime::Scene { class IAssetResolver; }
@@ -76,7 +80,12 @@ namespace NN::Runtime::Renderer
 		RmlUIRenderer(const RmlUIRenderer&) = delete;
 		RmlUIRenderer& operator=(const RmlUIRenderer&) = delete;
 
-		bool Initialize(std::uint32_t viewportWidth, std::uint32_t viewportHeight);
+		/// @brief 初始化渲染器。
+		/// @param device Diligent 渲染设备
+		/// @param viewportWidth 视口宽度
+		/// @param viewportHeight 视口高度
+		bool Initialize(Render::INNRenderDevice* device,
+		                std::uint32_t viewportWidth, std::uint32_t viewportHeight);
 		void Shutdown();
 
 		void SetViewport(std::uint32_t width, std::uint32_t height);
@@ -91,10 +100,10 @@ namespace NN::Runtime::Renderer
 		void Render(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
 		            NN::Runtime::Scene::NNRmlUIViewTarget viewTarget);
 
-		/// @brief 渲染到内部 FBO 并返回纹理 ID（不 blit 到屏幕）。
+		/// @brief 渲染到内部 RenderTarget 并返回纹理句柄。
 		/// 适用于 Editor 子渲染器场景（ImGui 帧内调用）。
-		/// @return RmlUI 渲染结果的 OpenGL 纹理 ID（0 = 无内容或失败）。
-		std::uint32_t RenderToTexture(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
+		/// @return RmlUI 渲染结果的纹理句柄（uint64_t，0 = 无内容或失败）。
+		std::uint64_t RenderToTexture(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
 		                              NN::Runtime::Scene::NNRmlUIViewTarget viewTarget);
 
 		/// @brief 处理输入事件。
@@ -111,10 +120,16 @@ namespace NN::Runtime::Renderer
 		Rml::ElementDocument* LoadDocument(NNGuid assetGuid);
 		void UnloadDocument(NN::Runtime::Scene::NNEntity entity);
 
-		Rml::Context* m_Context = nullptr;
-		RenderInterface_GL3* m_RenderInterface = nullptr;
+		// Diligent 后端
+		Render::INNRenderDevice* m_Device = nullptr;  // 观察指针
+		RmlDiligent::RmlDiligentRenderInterface* m_RenderInterface = nullptr;
+		Render::INNRenderTarget* m_OffscreenRT = nullptr;  // 离屏渲染目标
+
+		// 平台后端（保留 Runtime 版本，支持 VFS）
 		SystemInterface_SDL* m_SystemInterface = nullptr;
 		UIFileInterfaceVFS* m_FileInterface = nullptr;
+
+		Rml::Context* m_Context = nullptr;
 		Scene::IAssetResolver* m_AssetResolver = nullptr;
 
 		// NNEntity（带 generation）→ 文档运行时实例

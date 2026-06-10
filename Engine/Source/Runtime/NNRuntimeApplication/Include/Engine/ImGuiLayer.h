@@ -1,34 +1,42 @@
 /*
-* This source file is part of VisionGal, the Visual Novel Engine
-*
-* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
-* GitHub page: https://github.com/DarlingZeroX/VisionGal
-*
-* Copyright (c) 2025-present 梦旅缘心
-*
-* See the LICENSE file in the project root for details.
-*/
+ * This source file is part of Neverness Engine
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ * See the LICENSE file in the project root for details.
+ */
 
 #pragma once
 
 #include "../../ApplicationExport.h"
 #include "../Core/Window.h"
+#include <memory>
+
+// 前向声明
+namespace NN::Runtime::Render { class INNRenderDevice; }
 
 namespace NN::Runtime
 {
-	struct NN_RUNTIME_APPLICATION_API ImguiOpengl3Layer
+	/**
+	 * @brief Diligent ImGui 层。
+	 * 使用 Diligent 的 ImGuiImplSDL3 后端（继承 ImGuiImplDiligent）。
+	 * NNRuntimeImGui 编译 ImGui 核心（1.92.3），NNRuntimeDiligent 提供 Diligent 后端。
+	 */
+	struct NN_RUNTIME_APPLICATION_API ImguiDiligentLayer
 	{
-		ImguiOpengl3Layer(NN::Core::SDL3::Window* window, SDL_GLContext context);
-		ImguiOpengl3Layer(const ImguiOpengl3Layer&) = delete;
-		ImguiOpengl3Layer& operator=(const ImguiOpengl3Layer&) = delete;
-		virtual ~ImguiOpengl3Layer();
+		ImguiDiligentLayer(NN::Core::SDL3::Window* window, Render::INNRenderDevice* device);
+		ImguiDiligentLayer(const ImguiDiligentLayer&) = delete;
+		ImguiDiligentLayer& operator=(const ImguiDiligentLayer&) = delete;
+		virtual ~ImguiDiligentLayer();
 
 		void BeginFrame();
 		void EndFrame();
 	private:
-		void ImGuiBeginFrame();
+		void ImGuiInit();
 		void ImGuiShutdown();
 		void ImGuiRender();
+
+		struct Impl;
+		std::unique_ptr<Impl> m_Impl;
 	};
 
 }

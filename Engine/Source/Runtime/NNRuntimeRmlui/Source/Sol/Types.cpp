@@ -12,7 +12,7 @@
 #include "Types.h"
 #include <RmlUi/Core/Event.h>
 #include <RmlUi/Core/ElementDocument.h>
-#include "UISystemLegacy.h"
+//#include "UISystemLegacy.h"
 #include "Sol/Utilities.h"
 
 #include "RmlUi.h"

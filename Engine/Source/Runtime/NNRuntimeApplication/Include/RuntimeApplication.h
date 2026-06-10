@@ -38,7 +38,7 @@ private:
 	bool m_imguiAttached = false;
 
 	NNWindowHandle m_primaryWindowHandle = NN_INVALID_WINDOW_HANDLE;
-	Scope<ImguiOpengl3Layer> m_ImguiOpengl3Layer;
+	Scope<ImguiDiligentLayer> m_ImGuiDiligentLayer;
 
 	/* ── 事件系统 ── */
 	NN::Runtime::EventQueue m_eventQueue;

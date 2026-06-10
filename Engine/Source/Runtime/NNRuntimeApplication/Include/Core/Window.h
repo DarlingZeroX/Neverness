@@ -1,13 +1,9 @@
 /*
-* This source file is part of VisionGal, the Visual Novel Engine
-*
-* For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
-* GitHub page: https://github.com/DarlingZeroX/VisionGal
-*
-* Copyright (c) 2025-present 梦旅缘心
-*
-* See the LICENSE file in the project root for details.
-*/
+ * This source file is part of Neverness Engine
+ *
+ * Copyright (c) 2025-present 梦旅缘心
+ * See the LICENSE file in the project root for details.
+ */
 
 #pragma once
 
@@ -20,13 +16,16 @@
 
 #include "NNNativeEngineAPI/Include/WindowAPI.h"
 
+// 前向声明 Diligent 设备
+namespace NN::Runtime::Render { class INNRenderDevice; }
+
 namespace NN::Runtime
 {
     /**
-     * @brief Runtime 宿主窗口：SDL3 + OpenGL，供 Editor 与 Window API 共用。
+     * @brief Runtime 宿主窗口：SDL3 + Diligent，供 Editor 与 Window API 共用。
      * SDL 子系统须由 **RuntimeApplication::Initialize** 先行初始化。
      */
-    class NN_RUNTIME_APPLICATION_API VGWindow: public NN::Core::SDL3::OpenGLWindow
+    class NN_RUNTIME_APPLICATION_API VGWindow: public NN::Core::SDL3::Window
     {
     public:
         VGWindow();
@@ -38,7 +37,7 @@ namespace NN::Runtime
 		void SetInitializeBorderless(bool borderless);
 
         /**
-         * @brief 按 ABI 描述创建窗口与 OpenGL 上下文。
+         * @brief 按 ABI 描述创建窗口与 Diligent 设备+交换链。
          * @return 成功返回 true；失败时窗口未注册。
          */
         bool CreateFromDesc(const NNWindowDesc* desc);
@@ -46,7 +45,8 @@ namespace NN::Runtime
         /** @brief 兼容旧路径；内部转调 `CreateFromDesc`。 */
         bool Initialize(const char* window_name, int width, int height, bool allow_resize);
 
-        SDL_GLContext GetContext() override { return m_GLContext; }
+        /** @brief 获取 Diligent 渲染设备 */
+        Render::INNRenderDevice* GetDevice() const { return m_Device; }
 
         void SetWindowTitle(const char* title);
         void SetWindowPixelSize(int width, int height);
@@ -61,7 +61,7 @@ namespace NN::Runtime
         void Hide();
 
     private:
-        SDL_GLContext m_GLContext = nullptr;
+        Render::INNRenderDevice* m_Device = nullptr;  // Diligent 设备+交换链
 
 		bool m_OnResizeWindowMode = false;
 		bool m_Borderless = false;

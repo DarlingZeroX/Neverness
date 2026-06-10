@@ -12,12 +12,13 @@ set(DILIGENT_ENGINE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../ThirdParty/DiligentEn
 # Diligent Core 路径
 set(DILIGENT_CORE_DIR "${DILIGENT_ENGINE_DIR}/DiligentCore")
 
-# ImGui core sources — use Diligent's bundled ImGui (clean, no dllimport)
+# ImGui 核心：不再编译 Diligent 捆绑的 ImGui，改用 NNRuntimeImGui 的版本（1.92.3）
+# Diligent ImGui 后端源码保留，但 include 路径指向 NNRuntimeImGui
 set(DILIGENT_IMGUI_ROOT "${DILIGENT_ENGINE_DIR}/DiligentTools/ThirdParty/imgui")
-set(IMGUI_CORE_DIR "${DILIGENT_IMGUI_ROOT}")
-
-# Diligent ImGui backend sources (from ThirdParty/DiligentEngine)
 set(DILIGENT_IMGUI_DIR "${DILIGENT_ENGINE_DIR}/DiligentTools/Imgui")
+
+# NNRuntimeImGui 路径（权威 ImGui 版本 1.92.3）
+set(RUNTIME_IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Runtime/NNRuntimeImGui")
 
 add_library(NNRuntimeDiligent STATIC
     # NNRuntimeDiligent core
@@ -32,19 +33,11 @@ add_library(NNRuntimeDiligent STATIC
     Source/Command/NNDiligentRenderQueue.cpp
     # ImGui adapter
     Source/ImGui/NNDiligentImGuiRenderer.cpp
-    # ImGui core sources (Diligent bundled ImGui)
-    ${IMGUI_CORE_DIR}/imgui.cpp
-    ${IMGUI_CORE_DIR}/imgui_draw.cpp
-    ${IMGUI_CORE_DIR}/imgui_tables.cpp
-    ${IMGUI_CORE_DIR}/imgui_widgets.cpp
-    ${IMGUI_CORE_DIR}/imgui_demo.cpp
-    ${IMGUI_CORE_DIR}/misc/freetype/imgui_freetype.cpp
-    # Diligent ImGui backend sources
+    # ImGui 核心源码由 NNRuntimeImGui 编译，此处不再重复编译
+    # Diligent ImGui 后端源码（使用 NNRuntimeImGui 的 ImGui 头文件）
     ${DILIGENT_IMGUI_DIR}/src/ImGuiImplDiligent.cpp
     ${DILIGENT_IMGUI_DIR}/src/ImGuiImplSDL3.cpp
     ${DILIGENT_IMGUI_DIR}/src/ImGuiDiligentRenderer.cpp
-    # ImGui SDL3 platform backend (official)
-    ${DILIGENT_IMGUI_ROOT}/backends/imgui_impl_sdl3.cpp
 )
 
 # 外部使用 #include <NNRuntimeDiligent/Device/NNDiligentDevice.h>
@@ -69,17 +62,25 @@ target_include_directories(NNRuntimeDiligent PUBLIC
     ${DILIGENT_CORE_DIR}
 )
 
-# ImGui 头文件 (Diligent bundled ImGui)
+# ImGui 头文件 — 使用 NNRuntimeImGui 的版本（1.92.3），而非 Diligent 捆绑的 1.92.1
+# 关键：NNRuntimeImGui 的 imgui.h 路径必须在 DILIGENT_IMGUI_ROOT 之前
+#       这样 #include "imgui.h" 优先找到 1.92.3 版本
 target_include_directories(NNRuntimeDiligent PUBLIC
-    ${IMGUI_CORE_DIR}              # imgui.h from Diligent's ThirdParty/imgui
-    ${IMGUI_CORE_DIR}/backends      # imgui_impl_sdl3.h
-    ${DILIGENT_IMGUI_DIR}/interface # ImGuiImplDiligent.hpp, ImGuiImplSDL3.hpp
-    ${DILIGENT_ENGINE_DIR}          # for DiligentTools/Imgui relative includes
+    ${RUNTIME_IMGUI_DIR}/Include/Imgui   # imgui.h (v1.92.3，权威版本)
+    ${RUNTIME_IMGUI_DIR}/Include         # imconfig.h
+    ${DILIGENT_IMGUI_DIR}/interface      # ImGuiImplDiligent.hpp, ImGuiImplSDL3.hpp
+    ${DILIGENT_ENGINE_DIR}               # for DiligentTools/Imgui relative includes
+)
+# PRIVATE：DILIGENT_IMGUI_ROOT 仅供 ImGuiImplSDL3.cpp 的 #include "backends/imgui_impl_sdl3.h" 使用
+# 放在 PUBLIC 路径之后，确保 imgui.h 优先从 NNRuntimeImGui 找到
+target_include_directories(NNRuntimeDiligent PRIVATE
+    ${DILIGENT_IMGUI_ROOT}               # backends/imgui_impl_sdl3.h
 )
 
-# ImGui: enable FreeType
+# ImGui: enable FreeType + 配置宏（与 NNRuntimeImGui 的 imconfig.h 对齐）
 target_compile_definitions(NNRuntimeDiligent PRIVATE
     IMGUI_ENABLE_FREETYPE
+    IMGUI_API=           # Diligent 后端不需要 dllexport，由 NNRuntimeImGui 的 imconfig.h 控制
 )
 
 # Diligent 内部模块头文件 (ImGuiDiligentRenderer/ImGuiImplSDL3 依赖)

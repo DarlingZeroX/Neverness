@@ -32,7 +32,7 @@
 #include <RmlUi/Core/ElementDocument.h>
 #include <Lua/Utilities.h>
 
-#include "UISystemLegacy.h"
+//#include "UISystemLegacy.h"
 
 namespace Rml {
 namespace Lua {
@@ -119,7 +119,7 @@ int DocumentHide(lua_State* /*L*/, Document* obj)
 int DocumentClose(lua_State* /*L*/, Document* obj)
 {
 	obj->Close();
-	NN::Runtime::UISystemLegacy::Get()->OnScriptCloseDocument(obj);
+	//NN::Runtime::UISystemLegacy::Get()->OnScriptCloseDocument(obj);
 	return 0;
 }
 

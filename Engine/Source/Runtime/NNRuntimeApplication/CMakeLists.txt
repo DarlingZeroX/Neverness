@@ -1,4 +1,5 @@
-# NevernessRuntime-Application — SDL3 窗口、OpenGL 宿主与 ImGui 层。
+# NevernessRuntime-Application — SDL3 窗口、Diligent 宿主与 ImGui 层。
+# Phase 5: 移除 OpenGL 依赖，改用 Diligent 设备+交换链
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -41,7 +42,11 @@ target_sources(NevernessRuntime-Application
 		Private/BuildApplicationApi.cpp
 		Private/BuildWindowApi.cpp
 		Private/BuildEventApi.cpp
- "Include/Editor/EditorInitializer.h" "Private/Editor/EditorInitializer.cpp" "Include/Editor/EditorCore.h" "Private/Editor/EditorCore.cpp")
+		"Include/Editor/EditorInitializer.h"
+		"Private/Editor/EditorInitializer.cpp"
+		"Include/Editor/EditorCore.h"
+		"Private/Editor/EditorCore.cpp"
+)
 
 target_compile_definitions(NevernessRuntime-Application PRIVATE EDITOR_PROJECT_ROOT_DIR="${PROJECT_SOURCE_DIR}")
 
@@ -51,6 +56,13 @@ target_include_directories(NevernessRuntime-Application
 	PRIVATE
 		"${CMAKE_CURRENT_SOURCE_DIR}/Include"
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Core"
+		# Experiments include（Diligent 设备/交换链）
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent/Include"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRenderBootstrap/Include"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/ThirdParty/DiligentEngine/DiligentCore"
 )
 
 target_link_libraries(NevernessRuntime-Application
@@ -64,8 +76,11 @@ target_link_libraries(NevernessRuntime-Application
 		NevernessCore-FileSystem
 		NevernessRuntime-Core
 		NevernessRuntime-VFS
-		NevernessRuntime-RHI
 		NevernessRuntime-ImGui
 		NevernessRuntime-Pak
+		# Diligent 后端（替代 NevernessRuntime-RHI + opengl32）
+		NNRuntimeRender
+		NNRuntimeDiligent
+		NNRuntimeRenderBootstrap
 )
 

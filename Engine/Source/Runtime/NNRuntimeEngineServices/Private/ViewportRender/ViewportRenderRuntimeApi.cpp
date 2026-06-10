@@ -74,7 +74,7 @@ NN::Runtime::Renderer::RmlUIRenderer* g_RmlUIRenderer = nullptr;
 NN::Runtime::RmlUI::NNRmlUISystem* g_RmlUISystem = nullptr;
 AssetRegistryResolver* g_AssetResolver = nullptr;
 bool g_Initialized = false;
-std::uint32_t g_LastRmluiTextureId = 0;  // RmlUI 渲染结果纹理 ID
+std::uint64_t g_LastRmluiTextureId = 0;  // RmlUI 渲染结果纹理句柄（Diligent ITextureView*）
 
 /// 确保渲染器已初始化（惰性初始化）
 bool EnsureSceneRenderer()
@@ -101,7 +101,9 @@ bool EnsureSceneRenderer()
     // 初始化 RmlUI 渲染器
     std::cout << "[ViewportRender] 初始化 RmlUIRenderer..." << std::endl;
     g_RmlUIRenderer = new NN::Runtime::Renderer::RmlUIRenderer();
-    if (!g_RmlUIRenderer->Initialize(1280, 720))
+    // Phase 3: RmlUIRenderer 现在需要 INNRenderDevice* 参数
+    // Phase 6 迁移时传入真正的 Diligent 设备，当前传 nullptr
+    if (!g_RmlUIRenderer->Initialize(nullptr, 1280, 720))
     {
         std::cerr << "[ViewportRender] RmlUIRenderer 初始化失败" << std::endl;
         delete g_RmlUIRenderer;
