@@ -75,8 +75,8 @@ public class EditorViewportImGuiView : PanelViewBase
                 ImGui.Image(
                     new ImTextureRef(null, _viewModel.SceneTextureId),
                     viewportSize,
-                    new Vector2(0, 1),
-                    new Vector2(1, 0));
+                    new Vector2(0, 0),
+                    new Vector2(1, 1));
 
                 // 叠加 RmlUI 纹理
                 if (_viewModel.RmluiTextureId != 0)

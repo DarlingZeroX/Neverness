@@ -127,6 +127,11 @@ namespace NN::Runtime::Renderer2D
         return m_Renderer.GetQuadCount();
     }
 
+    FramebufferObject* SceneRenderer::GetFramebufferObject()
+    {
+        return &m_Framebuffer;
+    }
+
     CameraData SceneRenderer::FindMainCamera(Scene::NNRuntimeScene& scene)
     {
         CameraData data{};

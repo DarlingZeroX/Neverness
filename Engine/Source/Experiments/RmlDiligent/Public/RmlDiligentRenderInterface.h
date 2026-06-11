@@ -69,7 +69,20 @@ public:
 
     void SetProjectionMatrix(int width, int height);
 
+    /// 获取当前顶层 layer 的纹理（用于离屏渲染：Render 后复制到自定义 RT）
+    Diligent::ITexture* GetTopLayerTexture() const;
+
     void BeginFrame();
+
+    /// 离屏渲染：直接渲染到自定义 RT，不使用 LayerStack，不接触 swapchain
+    /// 调用顺序：SetProjectionMatrix(w,h) → BeginOffscreenFrame(RTV,DSV,w,h) → Render → EndOffscreenFrame
+    void BeginOffscreenFrame(Diligent::ITextureView* RTV, Diligent::ITextureView* DSV, int width, int height);
+    void EndOffscreenFrame();
+
+    /// 在已有 RT 上叠加渲染 RmlUI（alpha 混合，不清除目标 RT）
+    /// 用于 Scene RT 上叠加半透明 RmlUI UI
+    /// 调用顺序：SetProjectionMatrix(w,h) → CompositeOnTop(RTV,DSV,w,h) → Render → EndOffscreenFrame
+    void CompositeOnTop(Diligent::ITextureView* RTV, Diligent::ITextureView* DSV, int width, int height);
     void EndFrame();
 
     void DrawDebugQuad();
@@ -263,6 +276,10 @@ private:
     Rml::Matrix4f m_Transform; // CSS transform（不含投影）
 
     bool m_SwapchainPassActive = false;
+
+    // 离屏渲染：存储当前 offscreen RT 指针（EnsureFramebufferBound 中重新绑定）
+    Diligent::ITextureView* m_OffscreenRTV = nullptr;
+    Diligent::ITextureView* m_OffscreenDSV = nullptr;
 
     uint32_t m_DrawCount = 0;
     uint32_t m_TextureDrawCount = 0;

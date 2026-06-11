@@ -171,45 +171,40 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_renderSceneToTexture(
 		std::uint64_t textureId = g_SceneRenderer->Render(*scene, width, height);
 		//H_LOG_INFO("Rendering scene to texture 2");
 		//return textureId;
-        static int s_renderLogCount = 0;
-        if (s_renderLogCount < 5)
-        {
-            H_LOG_INFO("[ViewportRender] Render: sceneHandle=%llu w=%u h=%u textureId=%llu",
-                sceneHandle, width, height, textureId);
-            s_renderLogCount++;
-        }
-
-        // 2. RmlUI: 构建 DrawList
-        if (g_RmlUISystem)
-        {
-            g_RmlUISystem->Tick(*scene, 0.0f);
-        }
-
-        // 3. RmlUI: 同步 + 渲染到独立 FBO
-        g_LastRmluiTextureId = 0;
+	    static int s_renderLogCount = 0;
+	    if (s_renderLogCount < 5)
+	    {
+	        H_LOG_INFO("[ViewportRender] Render: sceneHandle=%llu w=%u h=%u textureId=%llu",
+	            sceneHandle, width, height, textureId);
+	        s_renderLogCount++;
+	    }
+	 
+	    // 2. RmlUI: 构建 DrawList
+	    if (g_RmlUISystem)
+	    {
+	        g_RmlUISystem->Tick(*scene, 0.0f);
+	    }
+	 
+	    // 3. RmlUI: 在 Scene RT 上叠加渲染（alpha 混合，不创建中间纹理）
+	    g_LastRmluiTextureId = 0;
         if (g_RmlUIRenderer && g_RmlUISystem)
         {
-            // 每帧更新 RmlUI 视口尺寸（匹配 EditorViewport 实际大小）
             g_RmlUIRenderer->SetViewport(width, height);
-			//H_LOG_INFO("Viewport size set to %d x %d", width, height);
 
             const auto& drawList = g_RmlUISystem->GetDrawList();
             g_RmlUIRenderer->Sync(drawList);
 
-            // 渲染到内部 FBO，存储纹理 ID（不 blit 到屏幕）
-            g_LastRmluiTextureId = g_RmlUIRenderer->RenderToTexture(
-                drawList, NN::Runtime::Scene::NNRmlUIViewTarget::Scene);
-
-            static int s_frameCount = 0;
-            if (s_frameCount < 3)
+            // 获取 Scene RT，在上面叠加 RmlUI（alpha 混合）
+            auto* sceneRT = g_SceneRenderer->GetFramebufferObject();
+            if (sceneRT && sceneRT->GetColorRTV())
             {
-                H_LOG_INFO("[ViewportRender] frame %d: rmluiTextureId=%d, drawListSize=%d",
-                    s_frameCount, g_LastRmluiTextureId, static_cast<int>(drawList.size()));
-                s_frameCount++;
+                g_RmlUIRenderer->RenderOverlayOnScene(
+                    drawList, NN::Runtime::Scene::NNRmlUIViewTarget::Scene,
+                    sceneRT->GetColorRTV(), sceneRT->GetDepthDSV(), width, height);
             }
         }
 
-        // 始终返回 Sprite 纹理 ID，RmlUI 纹理通过 GetLastRmluiTexture() 获取
+        // 返回合成后的 Scene 纹理（Scene + RmlUI 叠加）
         return textureId;
     //}
     //catch (const std::exception& e)

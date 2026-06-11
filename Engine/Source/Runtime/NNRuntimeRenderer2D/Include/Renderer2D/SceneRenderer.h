@@ -59,6 +59,9 @@ namespace NN::Runtime::Renderer2D
         /// 获取本帧绘制的 Quad 数量
         std::uint32_t GetQuadCount() const;
 
+        /// 获取 FramebufferObject（供 RmlUI 叠加渲染使用）
+        FramebufferObject* GetFramebufferObject();
+
     private:
         /// 从场景中找到主相机，计算 CameraData
         CameraData FindMainCamera(Scene::NNRuntimeScene& scene);

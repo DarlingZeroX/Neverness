@@ -315,15 +315,15 @@ namespace NN::Runtime::Renderer2D
         m_Impl->diliVB = static_cast<NNDiligent::NNDiligentBuffer*>(m_Impl->VB.Get())->GetDiligentBuffer();
         m_Impl->diliIB = static_cast<NNDiligent::NNDiligentBuffer*>(m_Impl->IB.Get())->GetDiligentBuffer();
 
-        // VB/IB 一次性状态转换（创建后停留在 COPY_DEST → 转为 VERTEX_BUFFER/INDEX_BUFFER）
+        // VB/IB 状态转换（首次从 COPY_DEST → VERTEX_BUFFER/INDEX_BUFFER，后续自动检测）
         {
             StateTransitionDesc transitions[2];
             transitions[0].pResource    = m_Impl->diliVB;
-            transitions[0].OldState     = RESOURCE_STATE_COPY_DEST;
+            transitions[0].OldState     = RESOURCE_STATE_UNKNOWN;
             transitions[0].NewState     = RESOURCE_STATE_VERTEX_BUFFER;
             transitions[0].Flags        = STATE_TRANSITION_FLAG_UPDATE_STATE;
             transitions[1].pResource    = m_Impl->diliIB;
-            transitions[1].OldState     = RESOURCE_STATE_COPY_DEST;
+            transitions[1].OldState     = RESOURCE_STATE_UNKNOWN;
             transitions[1].NewState     = RESOURCE_STATE_INDEX_BUFFER;
             transitions[1].Flags        = STATE_TRANSITION_FLAG_UPDATE_STATE;
             m_Impl->diliContext->TransitionResourceStates(2, transitions);

@@ -76,10 +76,13 @@ namespace NNDiligent
             if (F) {
                 ::Diligent::EngineD3D12CreateInfo ci;
                 ci.SetValidationLevel(info.EnableValidation ? ::Diligent::VALIDATION_LEVEL_2 : ::Diligent::VALIDATION_LEVEL_DISABLED);
-                // 增大 sampler 描述符堆（SRB 缓存 + RmlDiligent PSO 需要更多 sampler 描述符）
-                // D3D12 上限：GPUDescriptorHeapSize[1] + GPUDescriptorHeapDynamicSize[1] <= 2048
-                ci.GPUDescriptorHeapSize[1]        = 2048;  // sampler 静态堆（默认 1024）
-                ci.GPUDescriptorHeapDynamicSize[1]  = 0;    // sampler 动态堆（未使用动态 sampler 变量）
+                // 增大 GPU 描述符堆（RmlDiligent 20+ PSO × SRB + Renderer2D SRB 缓存）
+                ci.GPUDescriptorHeapSize[0]        = 32768;  // CBV/SRV/UAV 静态堆（默认 16384）
+                ci.GPUDescriptorHeapDynamicSize[0] = 16384;  // CBV/SRV/UAV 动态堆（默认 8192）
+                // sampler 堆：默认 1024+1024=2048（D3D12 上限）
+                // RmlDiligent SRB 缓存 + Renderer2D SRB 缓存 需要更多空间
+                ci.GPUDescriptorHeapSize[1]        = 1536;   // sampler 静态堆（默认 1024）
+                ci.GPUDescriptorHeapDynamicSize[1] = 512;    // sampler 动态堆（默认 1024）
                 F->CreateDeviceAndContextsD3D12(ci, &m_Device, &m_Context);
                 if (m_Device && m_Context) { F->CreateSwapChainD3D12(m_Device, m_Context, scDesc, ::Diligent::FullScreenModeDesc{}, nw, &m_SwapChain); ok = true; }
             }

@@ -185,6 +185,10 @@ namespace NN::Runtime::Renderer
 
 	void RmlUIRenderer::SetViewport(std::uint32_t width, std::uint32_t height)
 	{
+		// 尺寸未变化时跳过（避免每帧重建离屏 RT 导致内存泄漏 + 描述符堆耗尽）
+		if (width == m_ViewportWidth && height == m_ViewportHeight)
+			return;
+
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
@@ -194,7 +198,7 @@ namespace NN::Runtime::Renderer
 		if (m_Context)
 			m_Context->SetDimensions(Rml::Vector2i((int)width, (int)height));
 
-		// 重建离屏渲染目标
+		// 重建离屏渲染目标（仅在尺寸变化时）
 		if (m_OffscreenRT)
 		{
 			m_OffscreenRT->Release();
@@ -343,28 +347,65 @@ namespace NN::Runtime::Renderer
 			}
 		}
 
-		// 设置离屏渲染目标
-		auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(m_Device);
-		auto* diliContext = dilDev->GetDiligentContext();
+		// 离屏渲染：直接渲染到 offscreen RT，不经过 LayerStack / swapchain
 		auto* dilRT = static_cast<NNDiligent::NNDiligentRenderTarget*>(m_OffscreenRT);
-
-		ITextureView* rtvs[] = { dilRT->GetColorView() };
+		auto* rtv = dilRT->GetColorView();
 		auto* dsv = dilRT->GetDepthView();
-		diliContext->SetRenderTargets(1, rtvs, dsv, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
-		// 清除
-		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		diliContext->ClearRenderTarget(rtvs[0], clearColor, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-		diliContext->ClearDepthStencil(dsv, CLEAR_DEPTH_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-
-		// 渲染
 		m_Context->Update();
-		m_RenderInterface->BeginFrame();
+		m_RenderInterface->BeginOffscreenFrame(rtv, dsv, static_cast<int>(m_ViewportWidth), static_cast<int>(m_ViewportHeight));
 		m_Context->Render();
-		m_RenderInterface->EndFrame();
+		m_RenderInterface->EndOffscreenFrame();
 
 		// 返回 SRV 纹理句柄（ImGui 需要 SRV 采样，不能用 RTV）
 		return reinterpret_cast<std::uint64_t>(dilRT->GetColorSRV());
+	}
+
+	void RmlUIRenderer::RenderOverlayOnScene(
+		const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
+		Scene::NNRmlUIViewTarget viewTarget,
+		void* sceneRTV, void* sceneDSV,
+		std::uint32_t width, std::uint32_t height)
+	{
+		if (!m_Initialized || !m_Context || !m_RenderInterface || !sceneRTV)
+			return;
+
+		// 按 ViewTarget 控制文档可见性
+		for (const auto& item : drawList)
+		{
+			auto it = m_Documents.find(item.entity);
+			if (it == m_Documents.end() || it->second.state != RmlDocState::Ready)
+				continue;
+
+			bool shouldShow = (item.viewTarget == Scene::NNRmlUIViewTarget::Both ||
+			                   item.viewTarget == viewTarget);
+
+			if (shouldShow && !it->second.doc->IsVisible())
+				it->second.doc->Show();
+			else if (!shouldShow && it->second.doc->IsVisible())
+				it->second.doc->Hide();
+		}
+
+		// 每帧更新所有文档尺寸
+		for (auto& [entity, runtime] : m_Documents)
+		{
+			if (runtime.doc && runtime.state == RmlDocState::Ready)
+			{
+				runtime.doc->SetProperty(Rml::PropertyId::Width,
+					Rml::Property((float)m_ViewportWidth, Rml::Unit::PX));
+				runtime.doc->SetProperty(Rml::PropertyId::Height,
+					Rml::Property((float)m_ViewportHeight, Rml::Unit::PX));
+			}
+		}
+
+		// 在 Scene RT 上叠加渲染 RmlUI（alpha 混合，不清除 Scene 内容）
+		auto* rtv = static_cast<Diligent::ITextureView*>(sceneRTV);
+		auto* dsv = static_cast<Diligent::ITextureView*>(sceneDSV);
+
+		m_Context->Update();
+		m_RenderInterface->CompositeOnTop(rtv, dsv, static_cast<int>(width), static_cast<int>(height));
+		m_Context->Render();
+		m_RenderInterface->EndOffscreenFrame();
 	}
 
 	void RmlUIRenderer::ProcessInput(

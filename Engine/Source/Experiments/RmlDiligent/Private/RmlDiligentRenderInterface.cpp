@@ -494,6 +494,126 @@ bool RmlDiligentRenderInterface::Initialize(
 }
 
 // =============================================================================
+// 获取顶层 layer 纹理（离屏渲染用）
+// =============================================================================
+
+Diligent::ITexture* RmlDiligentRenderInterface::GetTopLayerTexture() const
+{
+    const auto& layer = m_LayerStack.GetTopLayer();
+    return layer.texture.RawPtr();
+}
+
+// =============================================================================
+// 离屏渲染：直接渲染到自定义 RT，绕过 LayerStack + swapchain
+// =============================================================================
+
+void RmlDiligentRenderInterface::BeginOffscreenFrame(
+    Diligent::ITextureView* RTV, Diligent::ITextureView* DSV, int width, int height)
+{
+    // ResetPerfStats + 状态重置
+    ResetPerfStats();
+    m_SaveLayerAsTextureCount = 0;
+    m_CallbackTextureDrawCount = 0;
+    m_StateCache.Reset();
+    m_SwapchainPassActive = false;
+    m_ClipMaskEnabled = false;
+    m_UseStencilEqual = false;
+    m_StencilTestValue = 0;
+    EnableClipMask(false);
+
+    // 上传投影矩阵（m_Projection 已由 SetProjectionMatrix 设置）
+    if (m_ProjectionCB && m_Context) {
+        Diligent::MapHelper<float> cb(m_Context, m_ProjectionCB, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
+        if (cb) {
+            memcpy(cb, m_Projection.data(), sizeof(float) * 16);
+        }
+    }
+
+    // 绑定自定义 RT（不使用 LayerStack）
+    m_OffscreenRTV = RTV;
+    m_OffscreenDSV = DSV;
+    m_Context->SetRenderTargets(1, &RTV, DSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+    // 清除
+    const float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    m_Context->ClearRenderTarget(RTV, clearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    if (DSV) {
+        m_Context->ClearDepthStencil(DSV, Diligent::CLEAR_DEPTH_FLAG | Diligent::CLEAR_STENCIL_FLAG,
+            1.0f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    }
+
+    // 视口
+    Diligent::Viewport viewport;
+    viewport.Width = static_cast<float>(width);
+    viewport.Height = static_cast<float>(height);
+    viewport.MaxDepth = 1.0f;
+    m_Context->SetViewports(1, &viewport, 0, 0);
+
+    m_ScissorEnabled = false;
+    SetTransform(nullptr);
+}
+
+void RmlDiligentRenderInterface::EndOffscreenFrame()
+{
+    m_OffscreenRTV = nullptr;
+    m_OffscreenDSV = nullptr;
+    UnbindRenderTargets();
+    m_StateCache.Reset();
+}
+
+// =============================================================================
+// 在已有 RT 上叠加渲染 RmlUI（alpha 混合，不清除目标 RT）
+// =============================================================================
+
+void RmlDiligentRenderInterface::CompositeOnTop(
+    Diligent::ITextureView* RTV, Diligent::ITextureView* DSV, int width, int height)
+{
+    // 状态重置（与 BeginOffscreenFrame 相同，但不清除 RT）
+    ResetPerfStats();
+    m_SaveLayerAsTextureCount = 0;
+    m_CallbackTextureDrawCount = 0;
+    m_StateCache.Reset();
+    m_SwapchainPassActive = false;
+    m_ClipMaskEnabled = false;
+    m_UseStencilEqual = false;
+    m_StencilTestValue = 0;
+    EnableClipMask(false);
+
+    // 上传投影矩阵（m_Projection 已由 SetProjectionMatrix 设置）
+    if (m_ProjectionCB && m_Context) {
+        Diligent::MapHelper<float> cb(m_Context, m_ProjectionCB, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
+        if (cb) {
+            memcpy(cb, m_Projection.data(), sizeof(float) * 16);
+        }
+    }
+
+    // 绑定 Scene RT（不清除，保留场景内容）
+    m_OffscreenRTV = RTV;
+    m_OffscreenDSV = DSV;
+    m_Context->SetRenderTargets(1, &RTV, DSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+    // 视口
+    Diligent::Viewport viewport;
+    viewport.Width = static_cast<float>(width);
+    viewport.Height = static_cast<float>(height);
+    viewport.MaxDepth = 1.0f;
+    m_Context->SetViewports(1, &viewport, 0, 0);
+
+    m_ScissorEnabled = false;
+    SetTransform(nullptr);
+
+    // IB 状态转换（首次从 COPY_DEST → INDEX_BUFFER，后续自动检测当前状态）
+    if (m_FullscreenIB) {
+        Diligent::StateTransitionDesc transitions[1];
+        transitions[0].pResource = m_FullscreenIB;
+        transitions[0].OldState = Diligent::RESOURCE_STATE_UNKNOWN;
+        transitions[0].NewState = Diligent::RESOURCE_STATE_INDEX_BUFFER;
+        transitions[0].Flags = Diligent::STATE_TRANSITION_FLAG_UPDATE_STATE;
+        m_Context->TransitionResourceStates(1, transitions);
+    }
+}
+
+// =============================================================================
 // 创建 RenderPass
 // =============================================================================
 
@@ -568,10 +688,11 @@ void RmlDiligentRenderInterface::CreatePSOs()
     auto setupCommonPipeline = [&](Diligent::GraphicsPipelineStateCreateInfo& psoCI, StencilMode stencilMode,
                                    bool colorWriteEnabled = true, int samples = 1) {
         psoCI.PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
-        psoCI.GraphicsPipeline.NumRenderTargets = 0;
-        psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_UNKNOWN;
-        psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_UNKNOWN;
-        psoCI.GraphicsPipeline.pRenderPass = m_RenderPass;
+        // 默认显式格式（兼容 offscreen RT 和 swapchain，消除 validation warning）
+        psoCI.GraphicsPipeline.NumRenderTargets = 1;
+        psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
+        psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_D24_UNORM_S8_UINT;
+        psoCI.GraphicsPipeline.pRenderPass = nullptr;
         psoCI.GraphicsPipeline.SubpassIndex = 0;
         psoCI.GraphicsPipeline.PrimitiveTopology = Diligent::PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         psoCI.GraphicsPipeline.InputLayout.LayoutElements = layoutElems;
@@ -751,7 +872,8 @@ void RmlDiligentRenderInterface::CreatePSOs()
             {Diligent::SHADER_TYPE_PIXEL, "g_SamplerLinear", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
         };
         auto setupPassthroughPipeline = [&](Diligent::IPipelineState** ppPSO, const char* name,
-                                            Diligent::TEXTURE_FORMAT dsvFormat) {
+                                            Diligent::TEXTURE_FORMAT dsvFormat,
+                                            Diligent::TEXTURE_FORMAT rtvFormat = Diligent::TEX_FORMAT_RGBA8_UNORM) {
             Diligent::GraphicsPipelineStateCreateInfo psoCI;
             psoCI.PSODesc.Name = name;
             psoCI.PSODesc.ResourceLayout.Variables = layerVars;
@@ -759,7 +881,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
             setupCommonPipeline(psoCI, StencilMode::Off);
             psoCI.GraphicsPipeline.pRenderPass = nullptr;
             psoCI.GraphicsPipeline.NumRenderTargets = 1;
-            psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
+            psoCI.GraphicsPipeline.RTVFormats[0] = rtvFormat;
             psoCI.GraphicsPipeline.DSVFormat = dsvFormat;
             psoCI.pVS = m_VS_PassThrough;
             psoCI.pPS = m_PS_Passthrough;
@@ -768,7 +890,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
 
         setupPassthroughPipeline(&m_PSO_Passthrough, "RmlDiligent_Passthrough_PSO", Diligent::TEX_FORMAT_D24_UNORM_S8_UINT);
         setupPassthroughPipeline(&m_PSO_PassthroughPresent, "RmlDiligent_PassthroughPresent_PSO",
-                                 Diligent::TEX_FORMAT_UNKNOWN);
+                                 Diligent::TEX_FORMAT_UNKNOWN, m_SwapChain->GetDesc().ColorBufferFormat);
 
         {
             Diligent::GraphicsPipelineStateCreateInfo psoCI;
@@ -918,7 +1040,7 @@ void RmlDiligentRenderInterface::CreatePSOs()
             psoCI.GraphicsPipeline.pRenderPass = nullptr;
             psoCI.GraphicsPipeline.NumRenderTargets = 1;
             psoCI.GraphicsPipeline.RTVFormats[0] = Diligent::TEX_FORMAT_RGBA8_UNORM;
-            psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_UNKNOWN;
+            psoCI.GraphicsPipeline.DSVFormat = Diligent::TEX_FORMAT_D24_UNORM_S8_UINT;
             psoCI.pVS = m_VS_PassThrough;
             psoCI.pPS = m_PS_Passthrough;
             m_Device->CreateGraphicsPipelineState(psoCI, &m_PSO_Composite);
@@ -1167,6 +1289,10 @@ void RmlDiligentRenderInterface::EnsureFramebufferBound()
     }
     if (m_LayerStack.GetLayerCount() > 0) {
         BindTopLayer();
+    } else if (m_OffscreenRTV) {
+        // 离屏模式：重新绑定 offscreen RT（防止 Render 过程中状态被重置）
+        Diligent::ITextureView* RTVs[] = { m_OffscreenRTV };
+        m_Context->SetRenderTargets(1, RTVs, m_OffscreenDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_VERIFY);
     }
 }
 

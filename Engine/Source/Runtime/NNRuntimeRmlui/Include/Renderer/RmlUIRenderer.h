@@ -106,6 +106,19 @@ namespace NN::Runtime::Renderer
 		std::uint64_t RenderToTexture(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
 		                              NN::Runtime::Scene::NNRmlUIViewTarget viewTarget);
 
+		/// @brief 在已有 Scene RT 上叠加渲染 RmlUI（alpha 混合）。
+		/// 不创建中间纹理，直接在 Scene 渲染结果上叠加半透明 UI。
+		/// @param drawList RmlUI 绘制列表
+		/// @param viewTarget 视图目标过滤
+		/// @param sceneRTV Scene 渲染目标的颜色视图
+		/// @param sceneDSV Scene 渲染目标的深度模板视图
+		/// @param width 视口宽度
+		/// @param height 视口高度
+		void RenderOverlayOnScene(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
+		                          NN::Runtime::Scene::NNRmlUIViewTarget viewTarget,
+		                          void* sceneRTV, void* sceneDSV,
+		                          std::uint32_t width, std::uint32_t height);
+
 		/// @brief 处理输入事件。
 		void ProcessInput(std::uint32_t type,
 		                  std::int32_t mouseX, std::int32_t mouseY,
