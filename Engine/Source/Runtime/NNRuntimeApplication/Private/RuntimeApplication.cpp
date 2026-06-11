@@ -20,6 +20,7 @@
 #endif
 
 #include "Core/WindowRegistry.h"
+#include "Device/NNDiligentDevice.h"
 #include "Editor/EditorInitializer.h"
 #include "NNFileSystem/Interface/HFileSystem.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
@@ -302,6 +303,21 @@ void RuntimeApplication::OnPrimaryWindowCreated(NNWindowHandle handle)
 					// 目前是Window自己判断是否处理窗口事件，因为有ImGui的窗口事件分发机制，如果在RuntimeApplication这里过滤窗口事件，可能会导致ImGui的窗口事件无法正确分发到对应窗口。
 					{
 						primary->ProcessEvent(event);
+					}
+
+					// 窗口 resize 时更新 Diligent SwapChain 尺寸
+					if (event.type == SDL_EVENT_WINDOW_RESIZED)
+					{
+						int w = event.window.data1;
+						int h = event.window.data2;
+						if (w > 0 && h > 0 && primary->GetDevice())
+						{
+							auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(primary->GetDevice());
+							if (auto* sc = dilDev->GetDiligentSwapChain())
+							{
+								sc->Resize(static_cast<uint32_t>(w), static_cast<uint32_t>(h));
+							}
+						}
 					}
 				}
 				else
