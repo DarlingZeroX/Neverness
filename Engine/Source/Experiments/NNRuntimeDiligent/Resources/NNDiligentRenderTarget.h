@@ -32,6 +32,7 @@ namespace NNDiligent
 
         // Internal accessors
         ::Diligent::ITextureView* GetColorView(uint32_t index = 0) const;
+        ::Diligent::ITextureView* GetColorSRV(uint32_t index = 0) const;  // SRV（用于 ImGui 采样）
         ::Diligent::ITextureView* GetDepthView() const;
         uint32_t GetColorAttachmentCount() const { return static_cast<uint32_t>(m_ColorViews.size()); }
 
@@ -43,7 +44,8 @@ namespace NNDiligent
         ::Diligent::ITexture*                   m_DepthTexture = nullptr;
 
         // Views (non-owning, released with texture)
-        std::vector<::Diligent::ITextureView*>  m_ColorViews;
+        std::vector<::Diligent::ITextureView*>  m_ColorViews;   // RTV
+        std::vector<::Diligent::ITextureView*>  m_ColorSRVs;    // SRV
         ::Diligent::ITextureView*               m_DepthView = nullptr;
 
         std::atomic<uint32_t> m_RefCount{0};

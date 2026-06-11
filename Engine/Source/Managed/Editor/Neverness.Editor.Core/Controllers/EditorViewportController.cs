@@ -60,6 +60,11 @@ public class EditorViewportController : IController
 
         // 获取 RmlUI 纹理
         _viewModel.RmluiTextureId = _viewportService.GetLastRmluiTextureId();
+
+        if (textureId == 0)
+        {
+            Console.WriteLine($"[ViewportController] RenderScene: textureId=0 (w={width}, h={height}, sceneHandle={_viewModel.SceneHandle})");
+        }
     }
 
     /// <summary>聚焦到指定实体。</summary>

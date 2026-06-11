@@ -10,12 +10,6 @@
     <!-- Source Generator 必须设置 -->
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <IsRoslynComponent>true</IsRoslynComponent>
-
-    <!-- 输出优化 -->
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

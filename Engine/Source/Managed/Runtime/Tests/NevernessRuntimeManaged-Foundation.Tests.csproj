@@ -7,12 +7,6 @@
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>Neverness.Managed.Foundation.Tests</RootNamespace>
-
-    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\NevernessRuntimeManaged-Foundation.Tests\$(Configuration)\</IntermediateOutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />

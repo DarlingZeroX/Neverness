@@ -14,6 +14,7 @@
 // NNDiligent 内部（用于获取 Diligent 对象）
 #include "NNDiligentConfig.h"
 #include "Device/NNDiligentDevice.h"
+#include "NNCore/Interface/HLog.h"
 #include "Resources/NNDiligentRenderTarget.h"
 
 using namespace Diligent;
@@ -63,24 +64,49 @@ namespace NN::Runtime::Renderer2D
             return;
         if (width == 0 || height == 0)
             return;
+        // 保存 device 指针，Shutdown 会清空它
+        auto* device = m_Device;
         Shutdown();
-        Initialize(m_Device, width, height);
+        Initialize(device, width, height);
     }
 
     std::uint64_t FramebufferObject::GetColorTextureHandle() const
     {
         if (!m_RenderTarget)
+        {
+            static bool s_logged1 = false;
+            if (!s_logged1) { H_LOG_WARN("[FBO] GetColorTextureHandle: m_RenderTarget is null"); s_logged1 = true; }
             return 0;
+        }
 
-        // 获取 Diligent 渲染目标的颜色纹理 SRV
+        // 直接获取 SRV（在 NNDiligentRenderTarget 初始化时创建）
         auto* dilRT = static_cast<NNDiligent::NNDiligentRenderTarget*>(
             const_cast<Render::INNRenderTarget*>(m_RenderTarget));
-        auto* colorView = dilRT->GetColorView();
-        if (!colorView)
+        auto* srv = dilRT->GetColorSRV();
+        if (!srv)
+        {
+            H_LOG_WARN("[FBO] GetColorTextureHandle: srv is null");
             return 0;
+        }
 
-        // 返回 ITextureView* 作为 uint64_t
-        return reinterpret_cast<std::uint64_t>(colorView);
+        // 返回 SRV 指针作为 uint64_t
+        return reinterpret_cast<std::uint64_t>(srv);
+    }
+
+    void* FramebufferObject::GetColorRTV() const
+    {
+        if (!m_RenderTarget) return nullptr;
+        auto* dilRT = static_cast<NNDiligent::NNDiligentRenderTarget*>(
+            const_cast<Render::INNRenderTarget*>(m_RenderTarget));
+        return dilRT->GetColorView();
+    }
+
+    void* FramebufferObject::GetDepthDSV() const
+    {
+        if (!m_RenderTarget) return nullptr;
+        auto* dilRT = static_cast<NNDiligent::NNDiligentRenderTarget*>(
+            const_cast<Render::INNRenderTarget*>(m_RenderTarget));
+        return dilRT->GetDepthView();
     }
 
     FramebufferObject::~FramebufferObject()

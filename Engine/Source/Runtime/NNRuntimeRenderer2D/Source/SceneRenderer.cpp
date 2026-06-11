@@ -98,7 +98,8 @@ namespace NN::Runtime::Renderer2D
         // 3. 收集绘制命令
         m_SpriteSystem.Collect(scene, m_Commands);
 
-        // 4. 渲染
+        // 4. 设置渲染目标并渲染
+        m_Renderer.SetRenderTarget(m_Framebuffer.GetColorRTV(), m_Framebuffer.GetDepthDSV());
         m_Renderer.BeginScene(camera, width, height);
         m_Renderer.Submit(m_Commands);
         m_Renderer.EndScene();

@@ -51,6 +51,8 @@ target_include_directories(NevernessRuntime-Renderer2D
         ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore
         ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent
         ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent/Include
+        # Diligent Core（Texture.h 等）
+        ${PROJECT_SOURCE_DIR}/Engine/Source/ThirdParty/DiligentEngine/DiligentCore
 )
 
 # 依赖 Scene（ECS Query）

@@ -7,11 +7,6 @@
 		<IsPackable>false</IsPackable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<RootNamespace>Neverness.Editor.Scene.Tests</RootNamespace>
-
-		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-		<OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Editor.Scene.Tests\$(Configuration)\</IntermediateOutputPath>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />

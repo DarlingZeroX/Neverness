@@ -5,14 +5,5 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Neverness.Managed.RuntimeLoop</RootNamespace>
-
-	  <!-- 通用 -->
-	  <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-	  <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-
-	  <BaseIntermediateOutputPath>$(SolutionDir)Build\VS\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-
-	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	  <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 </Project>

@@ -1,10 +1,10 @@
 # Runtime 渲染迁移计划：OpenGL → Diligent Engine（v3）
 
-> **状态**: Phase 0-5 完成，进入 Phase 6 ViewportRender
+> **状态**: Phase 0-5 完成，Phase 6 实施中（待验证崩溃修复）
 > **创建日期**: 2026-06-09
-> **修订**: v5（Phase 0-5 完成）
+> **修订**: v6（Phase 6 实施进展）
 > **目标**: 用 Experiments 的 Diligent 渲染替代 Runtime 的 OpenGL 渲染
-> **约束**: Experiments 模块只读，Legacy 代码完全冻结
+> **约束**: ThirdParty 不修改，Experiments 可按需修改
 
 ---
 
@@ -58,6 +58,9 @@ Phase 0 ✅ → Phase 1 ✅ → Phase 2 ✅
 | NNTextureDesc 命名冲突 | Runtime 版改名 NNTextureCacheDesc | 与 Experiments 版同名冲突 |
 | 工厂模块归属 | NNRenderAssetManager 所在模块 | 工厂是接口实现，属于 RenderAssets |
 | ImGui ini 文件 | 恢复 io.IniFilename | Diligent 后端构造函数置空了 |
+| RenderPass 必须 Begin/End | PSO 关联 RenderPass 时必须 BeginRenderPass | 否则 GPU 挂死 |
+| SRV vs RTV | ImGui 需要 SRV 采样 | RTV 不能用于着色器采样 |
+| diliPSO/diliRenderPass 持有方式 | RefCntAutoPtr | 裸指针会导致悬空，堆损坏 |
 
 ---
 
@@ -460,36 +463,39 @@ private:
 
 **目标**: C# Editor 通过 uint64_t 访问纹理
 
-### 10.1 纹理句柄
+### 10.1 实际修改文件
 
-**设计方案**: Editor/Runtime 同进程，直接将 ITextureView* 转 uint64_t 传给 C#。
+| 文件 | 变更 |
+|------|------|
+| `Runtime/NNRuntimeEngineServices/Private/ViewportRender/ViewportRenderRuntimeApi.cpp` | 从主窗口获取设备；修复 textureId 类型截断 |
+| `Runtime/NNRuntimeEngineServices/CMakeLists.txt` | 添加 Experiments include 路径 |
+| `Runtime/NNRuntimeRenderer2D/Include/Renderer2D/Renderer2D.h` | +SetRenderTarget() 方法 |
+| `Runtime/NNRuntimeRenderer2D/Source/Renderer2D.cpp` | BeginRenderPass/EndRenderPass；diliPSO/diliRenderPass 改 RefCntAutoPtr |
+| `Runtime/NNRuntimeRenderer2D/Include/Renderer2D/FramebufferObject.h` | +GetColorRTV()/GetDepthDSV() |
+| `Runtime/NNRuntimeRenderer2D/Source/FramebufferObject.cpp` | GetColorTextureHandle 改用 SRV；修复 Resize m_Device 清空 bug |
+| `Runtime/NNRuntimeRenderer2D/Source/SceneRenderer.cpp` | 渲染前调用 SetRenderTarget |
+| `Runtime/NNRuntimeRenderer2D/CMakeLists.txt` | 添加 DiligentCore include 路径 |
+| `Experiments/NNRuntimeDiligent/Resources/NNDiligentRenderTarget.h` | +m_ColorSRVs +GetColorSRV() |
+| `Experiments/NNRuntimeDiligent/Source/Resources/NNDiligentRenderTarget.cpp` | 初始化时创建 SRV |
 
-```cpp
-// ViewportRenderRuntimeApi.cpp
-uint64_t rt_viewportRender_renderSceneToTexture(...) {
-    auto* texView = g_SceneRenderer->Render(*scene, w, h);
-    // 同进程，直接转 uint64_t
-    return reinterpret_cast<uint64_t>(texView);
-}
-```
+### 10.2 关键修复
 
-不需要注册表，不需要引用计数。纹理生命周期由 Renderer/FBO 管理，C# 侧只在当前帧使用 Handle。
-
-### 10.2 C# 侧
-
-```csharp
-// C# 不需要改变 — uint64_t Handle 直接传给 ImGui.Image()
-// ImGui 后端（Diligent）通过 Handle 查找 ITextureView*
-// Editor 永远不知道 Diligent
-```
+1. **ViewportRender 设备传递**: 从 WindowRegistry 获取主窗口设备，传给 SceneRenderer/RmlUIRenderer
+2. **textureId 类型截断**: `uint32_t` → `uint64_t`
+3. **RenderPass 缺失**: PSO 关联了 RenderPass，必须 BeginRenderPass/EndRenderPass
+4. **Framebuffer 创建**: SetRenderTarget 从 RTV/DSV 创建 Diligent Framebuffer
+5. **SRV vs RTV**: ImGui 需要 SRV 采样，GetColorTextureHandle 改用 GetColorSRV
+6. **FBO Resize bug**: Shutdown 清空 m_Device，Resize 后 Initialize 收到 null
+7. **悬空指针**: diliPSO/diliRenderPass 从裸指针改为 RefCntAutoPtr
 
 ### 10.3 验收标准
 
-- [ ] ViewportRender 返回 uint64_t（ITextureView* 直接转）
+- [ ] ViewportRender 返回 uint64_t（SRV 指针）
 - [ ] C# Editor 正确显示 Scene Viewport
 - [ ] C# Editor 正确显示 RmlUI Viewport
 - [ ] Editor 不包含任何 Diligent 头文件
-- [ ] 无内存泄漏（无注册表，无额外分配）
+- [ ] 无堆损坏崩溃
+- [ ] 无内存泄漏
 
 ---
 
@@ -640,6 +646,10 @@ Phase 6（ViewportRender）是当前目标：C# Editor 纹理句柄。
 | ~~ImGui 重复符号~~ | ~~高~~ | ~~NNRuntimeDiligent 停止编译核心，使用 NNRuntimeImGui 版本~~ | ✅ Phase 4 已解决 |
 | ~~RenderAssetManager 初始化时机~~ | ~~高~~ | ~~延迟到设备创建后~~ | ✅ Phase 5 已解决 |
 | ~~NNTextureDesc 重名冲突~~ | ~~中~~ | ~~Runtime 版改名 NNTextureCacheDesc~~ | ✅ Phase 5 已解决 |
+| ~~RenderPass 悬空指针~~ | ~~高~~ | ~~diliPSO/diliRenderPass 改 RefCntAutoPtr~~ | ✅ Phase 6 已解决 |
+| ~~SRV vs RTV 混淆~~ | ~~高~~ | ~~GetColorTextureHandle 改用 GetColorSRV~~ | ✅ Phase 6 已解决 |
+| ~~FBO Resize m_Device 清空~~ | ~~中~~ | ~~Resize 先保存 device 再 Shutdown~~ | ✅ Phase 6 已解决 |
+| 静态库 ABI 不匹配 | 高 | NNDiligentRenderTarget 类布局变化需全部重新编译 | ⚠️ 待验证 |
 | NNEngineLegacy 隐藏引用 | 无 | 完全冻结，不碰 | — |
 
 ---
@@ -674,7 +684,14 @@ Phase 6（ViewportRender）是当前目标：C# Editor 纹理句柄。
 | `Experiments/NNRuntimeDiligent/Resources/NNDiligentTexture.h` | 5 | +override |
 | `Experiments/NNRuntimeDiligent/Source/Resources/NNDiligentTexture.cpp` | 5 | 实现 GetShaderResourceView |
 | `Experiments/NNRuntimeDiligent/Source/Device/NNDiligentDevice.cpp` | 5 | CreateTexture 支持 initialData |
-| `Runtime/NNRuntimeEngineServices/Private/ViewportRender/ViewportRenderRuntimeApi.cpp` | 6 | Handle 转换 |
+| `Runtime/NNRuntimeEngineServices/Private/ViewportRender/ViewportRenderRuntimeApi.cpp` | 6 | 设备传递+textureId 类型修复 |
+| `Runtime/NNRuntimeEngineServices/CMakeLists.txt` | 6 | Experiments include 路径 |
+| `Runtime/NNRuntimeRenderer2D/Include/Renderer2D/Renderer2D.h` | 6 | +SetRenderTarget() |
+| `Runtime/NNRuntimeRenderer2D/Source/Renderer2D.cpp` | 6 | BeginRenderPass/EndRenderPass + RefCntAutoPtr |
+| `Runtime/NNRuntimeRenderer2D/Source/FramebufferObject.cpp` | 6 | SRV 获取 + Resize 修复 |
+| `Runtime/NNRuntimeRenderer2D/Source/SceneRenderer.cpp` | 6 | SetRenderTarget 调用 |
+| `Experiments/NNRuntimeDiligent/Resources/NNDiligentRenderTarget.h` | 6 | +m_ColorSRVs +GetColorSRV() |
+| `Experiments/NNRuntimeDiligent/Source/Resources/NNDiligentRenderTarget.cpp` | 6 | SRV 创建 |
 | `Runtime/NNRuntimeRHI/Interface/VGFX.h` | 8 | 标记 Deprecated |
 
 NNEngineLegacy 不在清单中 — 完全冻结，不修改任何文件。

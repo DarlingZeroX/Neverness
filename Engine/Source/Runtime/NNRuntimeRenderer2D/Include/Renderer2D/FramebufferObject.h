@@ -39,8 +39,14 @@ namespace NN::Runtime::Renderer2D
         void Resize(std::uint32_t width, std::uint32_t height);
 
         /// 获取颜色附件的纹理句柄（供 ImGui.Image 使用）
-        /// 返回 reinterpret_cast<uint64_t>(ITextureView*)
+        /// 返回 reinterpret_cast<uint64_t>(ITextureView* SRV)
         std::uint64_t GetColorTextureHandle() const;
+
+        /// 获取颜色附件 RTV 指针（供 Renderer2D BeginRenderPass 使用）
+        void* GetColorRTV() const;
+
+        /// 获取深度模板附件 DSV 指针（供 Renderer2D BeginRenderPass 使用）
+        void* GetDepthDSV() const;
 
         /// 获取内部渲染目标（供 Renderer2D 绑定使用）
         Render::INNRenderTarget* GetRenderTarget() const { return m_RenderTarget; }

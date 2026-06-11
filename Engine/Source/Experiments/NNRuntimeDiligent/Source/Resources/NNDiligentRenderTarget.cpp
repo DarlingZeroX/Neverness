@@ -32,6 +32,7 @@ namespace NNDiligent
     {
         // Release views first (they are non-owning, but clear the vector)
         m_ColorViews.clear();
+        m_ColorSRVs.clear();
         m_DepthView = nullptr;
 
         // Release owned textures
@@ -79,6 +80,7 @@ namespace NNDiligent
 
             m_ColorTextures.push_back(tex);
             m_ColorViews.push_back(tex->GetDefaultView(::Diligent::TEXTURE_VIEW_RENDER_TARGET));
+            m_ColorSRVs.push_back(tex->GetDefaultView(::Diligent::TEXTURE_VIEW_SHADER_RESOURCE));
         }
 
         // Create depth attachment (if depth format is specified)
@@ -123,6 +125,12 @@ namespace NNDiligent
     {
         if (index >= m_ColorViews.size()) return nullptr;
         return m_ColorViews[index];
+    }
+
+    ::Diligent::ITextureView* NNDiligentRenderTarget::GetColorSRV(uint32_t index) const
+    {
+        if (index >= m_ColorSRVs.size()) return nullptr;
+        return m_ColorSRVs[index];
     }
 
     ::Diligent::ITextureView* NNDiligentRenderTarget::GetDepthView() const

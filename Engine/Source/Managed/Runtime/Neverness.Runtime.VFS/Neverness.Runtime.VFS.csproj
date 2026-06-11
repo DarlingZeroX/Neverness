@@ -7,18 +7,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
-
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-
-    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <BuildInParallel>true</BuildInParallel>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />

@@ -32,10 +32,17 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
         ref readonly var api = ref EngineNativeApiBootstrap.EngineApi;
         if (api.ViewportRender.RenderSceneToTexture == null) return 0;
 
-        return api.ViewportRender.RenderSceneToTexture(
+        var result = api.ViewportRender.RenderSceneToTexture(
             _sceneHandle,
             (uint)width,
             (uint)height);
+
+        if (result == 0)
+        {
+            Console.WriteLine($"[ViewportService] RenderSceneToTexture: returned 0 (sceneHandle={_sceneHandle}, w={width}, h={height})");
+        }
+
+        return result;
     }
 
     /// <summary>获取最后渲染的场景纹理 ID。</summary>

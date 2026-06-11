@@ -85,11 +85,21 @@ namespace NN::Runtime::Renderer2D
         Core::NNRef<Render::INNSampler>  Sampler;
 
         // Diligent 缓存指针（从 NNRuntimeRender 包装器提取，用于渲染循环）
-        IPipelineState*              diliPSO        = nullptr;
-        IRenderPass*                 diliRenderPass = nullptr;
-        ITextureView*                whiteSRV       = nullptr;
-        ISampler*                    diliSampler    = nullptr;
-        IBuffer*                     diliCB         = nullptr;
+        RefCntAutoPtr<IPipelineState>  diliPSO;
+        RefCntAutoPtr<IRenderPass>     diliRenderPass;
+        ITextureView*                  whiteSRV       = nullptr;
+        ISampler*                      diliSampler    = nullptr;
+        IBuffer*                       diliCB         = nullptr;
+
+        // Diligent 缓存指针（VB/IB，用于状态转换和绑定）
+        IBuffer*                       diliVB         = nullptr;
+        IBuffer*                       diliIB         = nullptr;
+
+        // Framebuffer（BeginRenderPass 需要）
+        RefCntAutoPtr<IFramebuffer>  diliFramebuffer;
+        ITextureView*                pRTV = nullptr;  // 当前渲染目标 RTV
+        ITextureView*                pDSV = nullptr;  // 当前深度模板视图
+        ITextureView*                fbAttachments[2] = { nullptr, nullptr }; // 持久化附件数组
 
         // SRB 缓存：textureView* → SRB
         std::unordered_map<void*, RefCntAutoPtr<IShaderResourceBinding>> SRBCache;
@@ -176,20 +186,28 @@ namespace NN::Runtime::Renderer2D
 
         RenderPassAttachmentDesc attachments[] = { rtAttach, dsAttach };
 
+        // Subpass：引用 color + depth 附件
+        AttachmentReference colorRef{0, RESOURCE_STATE_RENDER_TARGET};
+        AttachmentReference depthRef{1, RESOURCE_STATE_DEPTH_WRITE};
+        SubpassDesc subpass{};
+        subpass.RenderTargetAttachmentCount = 1;
+        subpass.pRenderTargetAttachments    = &colorRef;
+        subpass.pDepthStencilAttachment     = &depthRef;
+
         RenderPassDesc RPDesc{};
         RPDesc.Name            = "SpriteRP";
         RPDesc.AttachmentCount = 2;
         RPDesc.pAttachments    = attachments;
+        RPDesc.SubpassCount    = 1;
+        RPDesc.pSubpasses      = &subpass;
 
-        RefCntAutoPtr<IRenderPass> renderPass;
-        m_Impl->diliDevice->CreateRenderPass(RPDesc, &renderPass);
-        if (!renderPass)
+        m_Impl->diliDevice->CreateRenderPass(RPDesc, &m_Impl->diliRenderPass);
+        if (!m_Impl->diliRenderPass)
         {
             delete m_Impl;
             m_Impl = nullptr;
             return false;
         }
-        m_Impl->diliRenderPass = renderPass;
 
         // ── 3. 创建 PSO（raw Diligent，控制变量类型为 MUTABLE） ──
         GraphicsPipelineStateCreateInfo psoCI{};
@@ -197,7 +215,7 @@ namespace NN::Runtime::Renderer2D
         psoCI.PSODesc.PipelineType             = PIPELINE_TYPE_GRAPHICS;
         psoCI.PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE;
 
-        psoCI.GraphicsPipeline.pRenderPass       = renderPass;
+        psoCI.GraphicsPipeline.pRenderPass       = m_Impl->diliRenderPass;
         psoCI.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
         // 顶点布局：Position(float3, offset 0) + TexCoord(float2, offset 12)
@@ -229,15 +247,30 @@ namespace NN::Runtime::Renderer2D
         psoCI.pVS = diliVS;
         psoCI.pPS = diliPS;
 
-        RefCntAutoPtr<IPipelineState> pso;
-        m_Impl->diliDevice->CreatePipelineState(psoCI, &pso);
-        if (!pso)
+        // 资源布局：texture 为 MUTABLE，sampler 为 ImmutableSampler
+        ShaderResourceVariableDesc variables[] = {
+            {SHADER_TYPE_PIXEL, "u_Texture", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+        };
+        psoCI.PSODesc.ResourceLayout.Variables    = variables;
+        psoCI.PSODesc.ResourceLayout.NumVariables = _countof(variables);
+
+        SamplerDesc samLinearClamp;
+        samLinearClamp.AddressU = TEXTURE_ADDRESS_CLAMP;
+        samLinearClamp.AddressV = TEXTURE_ADDRESS_CLAMP;
+        samLinearClamp.AddressW = TEXTURE_ADDRESS_CLAMP;
+        ImmutableSamplerDesc imtblSamplers[] = {
+            {SHADER_TYPE_PIXEL, "u_Sampler", samLinearClamp},
+        };
+        psoCI.PSODesc.ResourceLayout.ImmutableSamplers    = imtblSamplers;
+        psoCI.PSODesc.ResourceLayout.NumImmutableSamplers = _countof(imtblSamplers);
+
+        m_Impl->diliDevice->CreatePipelineState(psoCI, &m_Impl->diliPSO);
+        if (!m_Impl->diliPSO)
         {
             delete m_Impl;
             m_Impl = nullptr;
             return false;
         }
-        m_Impl->diliPSO = pso;
 
         // ── 4. 创建顶点缓冲（Static） ──
         Render::NNBufferDesc vbDesc{};
@@ -277,8 +310,24 @@ namespace NN::Runtime::Renderer2D
             m_Impl = nullptr;
             return false;
         }
-        // 提取 CB 指针（用于 SRB 绑定 — SRB 的 Set(IBuffer*) 接受 buffer 对象）
+        // 提取 Diligent 指针（用于渲染循环，避免每帧 cast）
         m_Impl->diliCB = static_cast<NNDiligent::NNDiligentBuffer*>(m_Impl->CB.Get())->GetDiligentBuffer();
+        m_Impl->diliVB = static_cast<NNDiligent::NNDiligentBuffer*>(m_Impl->VB.Get())->GetDiligentBuffer();
+        m_Impl->diliIB = static_cast<NNDiligent::NNDiligentBuffer*>(m_Impl->IB.Get())->GetDiligentBuffer();
+
+        // VB/IB 一次性状态转换（创建后停留在 COPY_DEST → 转为 VERTEX_BUFFER/INDEX_BUFFER）
+        {
+            StateTransitionDesc transitions[2];
+            transitions[0].pResource    = m_Impl->diliVB;
+            transitions[0].OldState     = RESOURCE_STATE_COPY_DEST;
+            transitions[0].NewState     = RESOURCE_STATE_VERTEX_BUFFER;
+            transitions[0].Flags        = STATE_TRANSITION_FLAG_UPDATE_STATE;
+            transitions[1].pResource    = m_Impl->diliIB;
+            transitions[1].OldState     = RESOURCE_STATE_COPY_DEST;
+            transitions[1].NewState     = RESOURCE_STATE_INDEX_BUFFER;
+            transitions[1].Flags        = STATE_TRANSITION_FLAG_UPDATE_STATE;
+            m_Impl->diliContext->TransitionResourceStates(2, transitions);
+        }
 
         // ── 7. 创建 1x1 白色纹理 ──
         Render::NNTextureDesc texDesc{};
@@ -319,6 +368,9 @@ namespace NN::Runtime::Renderer2D
     {
         if (m_Impl)
         {
+            m_Impl->diliFramebuffer.Release();
+            m_Impl->diliPSO.Release();
+            m_Impl->diliRenderPass.Release();
             m_Impl->SRBCache.clear();
             m_Impl->CB.Reset();
             m_Impl->VB.Reset();
@@ -328,6 +380,40 @@ namespace NN::Runtime::Renderer2D
             delete m_Impl;
             m_Impl = nullptr;
         }
+    }
+
+    void Renderer2D::SetRenderTarget(void* rtv, void* dsv)
+    {
+        if (!m_Impl) return;
+
+        m_Impl->pRTV = static_cast<ITextureView*>(rtv);
+        m_Impl->pDSV = static_cast<ITextureView*>(dsv);
+
+        // 创建 Diligent Framebuffer（用于 BeginRenderPass）
+        // 附件顺序：[0]=RTV, [1]=DSV（与 RenderPass 附件顺序一致）
+        // 使用持久化数组，避免 CreateFramebuffer 存悬空指针
+        m_Impl->fbAttachments[0] = m_Impl->pRTV;
+        m_Impl->fbAttachments[1] = m_Impl->pDSV;
+        Uint32 attachCount = m_Impl->pDSV ? 2 : (m_Impl->pRTV ? 1 : 0);
+
+        FramebufferDesc fbDesc{};
+        fbDesc.Name = "SpriteFB";
+        fbDesc.pRenderPass = m_Impl->diliRenderPass;  // Diligent 要求 Framebuffer 关联 RenderPass
+        fbDesc.AttachmentCount = attachCount;
+        fbDesc.ppAttachments = m_Impl->fbAttachments;
+        if (m_Impl->pRTV)
+        {
+            auto* tex = m_Impl->pRTV->GetTexture();
+            if (tex)
+            {
+                const auto& desc = tex->GetDesc();
+                fbDesc.Width = desc.Width;
+                fbDesc.Height = desc.Height;
+            }
+        }
+
+        m_Impl->diliFramebuffer.Release();
+        m_Impl->diliDevice->CreateFramebuffer(fbDesc, &m_Impl->diliFramebuffer);
     }
 
     void Renderer2D::BeginScene(const CameraData& camera, std::uint32_t width, std::uint32_t height)
@@ -347,6 +433,30 @@ namespace NN::Runtime::Renderer2D
         vp.MinDepth = 0.0f;
         vp.MaxDepth = 1.0f;
         m_Impl->diliContext->SetViewports(1, &vp, 0, 0);
+
+        // BeginRenderPass（Diligent 要求 PSO 关联 RenderPass 时必须 begin）
+        if (m_Impl->diliRenderPass && m_Impl->diliFramebuffer)
+        {
+            // 清除值：颜色=黑色透明，深度=1.0
+            OptimizedClearValue clearValues[2];
+            clearValues[0].Color[0] = 0.0f;
+            clearValues[0].Color[1] = 0.0f;
+            clearValues[0].Color[2] = 0.0f;
+            clearValues[0].Color[3] = 0.0f;
+            clearValues[0].Format = TEX_FORMAT_RGBA8_UNORM;
+            clearValues[1].Color[0] = 1.0f;  // depth
+            clearValues[1].Color[1] = 0.0f;
+            clearValues[1].Color[2] = 0.0f;
+            clearValues[1].Color[3] = 0.0f;
+            clearValues[1].Format = TEX_FORMAT_D24_UNORM_S8_UINT;
+
+            BeginRenderPassAttribs beginRP{};
+            beginRP.pRenderPass = m_Impl->diliRenderPass;
+            beginRP.pFramebuffer = m_Impl->diliFramebuffer;
+            beginRP.ClearValueCount = 2;
+            beginRP.pClearValues = clearValues;
+            m_Impl->diliContext->BeginRenderPass(beginRP);
+        }
     }
 
     void Renderer2D::Submit(const std::vector<SpriteDrawCommand>& commands)
@@ -356,12 +466,11 @@ namespace NN::Runtime::Renderer2D
         // 设置 PSO 和 VB/IB（整个 Submit 共享）
         m_Impl->diliContext->SetPipelineState(m_Impl->diliPSO);
 
-        auto* diliVB = static_cast<NNDiligent::NNDiligentBuffer*>(m_Impl->VB.Get())->GetDiligentBuffer();
-        auto* diliIB = static_cast<NNDiligent::NNDiligentBuffer*>(m_Impl->IB.Get())->GetDiligentBuffer();
-        IBuffer* pVBs[] = { diliVB };
+        IBuffer* pVBs[] = { m_Impl->diliVB };
         Uint64 offsets[] = { 0 };
-        m_Impl->diliContext->SetVertexBuffers(0, 1, pVBs, offsets, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAG_RESET);
-        m_Impl->diliContext->SetIndexBuffer(diliIB, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        // RenderPass 内部禁止状态转换，使用 VERIFY 模式（VB/IB 已在 RenderPass 外转换完成）
+        m_Impl->diliContext->SetVertexBuffers(0, 1, pVBs, offsets, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
+        m_Impl->diliContext->SetIndexBuffer(m_Impl->diliIB, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
 
         for (const auto& cmd : commands)
         {
@@ -402,13 +511,9 @@ namespace NN::Runtime::Renderer2D
                     auto* varPS = srb->GetVariableByName(SHADER_TYPE_PIXEL, "SpriteConstants");
                     if (varPS) varPS->Set(m_Impl->diliCB);
 
-                    // 绑定纹理
+                    // 绑定纹理（sampler 已通过 ImmutableSampler 自动绑定）
                     auto* texVar = srb->GetVariableByName(SHADER_TYPE_PIXEL, "u_Texture");
                     if (texVar) texVar->Set(texSRV);
-
-                    // 绑定采样器
-                    auto* sampVar = srb->GetVariableByName(SHADER_TYPE_PIXEL, "u_Sampler");
-                    if (sampVar) sampVar->Set(m_Impl->diliSampler);
                 }
                 it = m_Impl->SRBCache.emplace(texSRV, std::move(srb)).first;
             }
@@ -416,7 +521,7 @@ namespace NN::Runtime::Renderer2D
             // ── 提交 SRB 并绘制 ──
             if (it->second)
             {
-                m_Impl->diliContext->CommitShaderResources(it->second, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                m_Impl->diliContext->CommitShaderResources(it->second, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
             }
 
             DrawIndexedAttribs drawAttrs;
@@ -432,7 +537,13 @@ namespace NN::Runtime::Renderer2D
 
     void Renderer2D::EndScene()
     {
-        // Diligent immediate context 是同步的，无需显式 flush
+        if (!m_Impl) return;
+
+        // EndRenderPass（与 BeginScene 的 BeginRenderPass 配对）
+        if (m_Impl->diliRenderPass && m_Impl->diliFramebuffer)
+        {
+            m_Impl->diliContext->EndRenderPass();
+        }
     }
 
     std::uint32_t Renderer2D::GetDrawCallCount() const

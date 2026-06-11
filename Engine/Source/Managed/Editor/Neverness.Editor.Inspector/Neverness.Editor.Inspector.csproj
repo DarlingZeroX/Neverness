@@ -7,14 +7,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RollForward>LatestMinor</RollForward>
     <RootNamespace>Neverness.Editor.Inspector</RootNamespace>
-
-    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Editor.Inspector\$(Configuration)\</IntermediateOutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <DefaultItemExcludes>$(DefaultItemExcludes);Build/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Editor.Reflection\Neverness.Editor.Reflection.csproj" />

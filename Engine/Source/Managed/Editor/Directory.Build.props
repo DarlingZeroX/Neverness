@@ -1,7 +1,4 @@
 <Project>
-  <PropertyGroup>
-    <NevernessRepositoryRoot>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\..'))))</NevernessRepositoryRoot>
-    <SolutionDir Condition="'$(SolutionDir)' == ''">$(NevernessRepositoryRoot)</SolutionDir>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**;$(MSBuildProjectDirectory)\Build\**</DefaultItemExcludes>
-  </PropertyGroup>
+  <!-- 导入父目录的公共配置 -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 </Project>

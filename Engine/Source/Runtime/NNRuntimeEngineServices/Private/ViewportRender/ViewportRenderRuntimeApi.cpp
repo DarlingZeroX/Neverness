@@ -18,6 +18,10 @@
 #include "NNRuntimeScene/Include/Assets/IAssetResolver.h"
 #include "NativeEngineRuntimeServices.h"
 
+// 获取 Diligent 设备
+#include "Core/WindowRegistry.h"
+#include <Device/INNRenderDevice.h>
+
 #include <iostream>
 #include <exception>
 
@@ -84,10 +88,20 @@ bool EnsureSceneRenderer()
 
     std::cout << "[ViewportRender] EnsureSceneRenderer: 开始初始化" << std::endl;
 
+    // 从主窗口获取 Diligent 设备
+    NN::Runtime::Render::INNRenderDevice* device = nullptr;
+    if (auto* window = NN::Runtime::WindowRegistry::Resolve(NN::Runtime::WindowRegistry::GetPrimaryHandle()))
+    {
+        device = window->GetDevice();
+    }
+    if (!device)
+    {
+        std::cerr << "[ViewportRender] 无法获取 Diligent 设备" << std::endl;
+        return false;
+    }
+
     g_SceneRenderer = new NN::Runtime::Renderer2D::SceneRenderer();
-    // Phase 2: SceneRenderer 现在需要 INNRenderDevice* 参数
-    // Phase 6 迁移时传入真正的 Diligent 设备，当前传 nullptr（渲染器不会初始化）
-    if (!g_SceneRenderer->Initialize(nullptr))
+    if (!g_SceneRenderer->Initialize(device))
     {
         std::cerr << "[ViewportRender] SceneRenderer 初始化失败" << std::endl;
         delete g_SceneRenderer;
@@ -101,9 +115,7 @@ bool EnsureSceneRenderer()
     // 初始化 RmlUI 渲染器
     std::cout << "[ViewportRender] 初始化 RmlUIRenderer..." << std::endl;
     g_RmlUIRenderer = new NN::Runtime::Renderer::RmlUIRenderer();
-    // Phase 3: RmlUIRenderer 现在需要 INNRenderDevice* 参数
-    // Phase 6 迁移时传入真正的 Diligent 设备，当前传 nullptr
-    if (!g_RmlUIRenderer->Initialize(nullptr, 1280, 720))
+    if (!g_RmlUIRenderer->Initialize(device, 1280, 720))
     {
         std::cerr << "[ViewportRender] RmlUIRenderer 初始化失败" << std::endl;
         delete g_RmlUIRenderer;
@@ -136,8 +148,10 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_renderSceneToTexture(
     std::uint32_t width,
     std::uint32_t height)
 {
-    try
-    {
+
+
+    //try
+    //{
         if (!EnsureSceneRenderer())
         {
             H_LOG_WARN("Failed to ensure SceneRenderer initialization");
@@ -153,7 +167,17 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_renderSceneToTexture(
         }
 
         // 1. 渲染 Sprite 场景
-        std::uint32_t textureId = g_SceneRenderer->Render(*scene, width, height);
+		//H_LOG_INFO("Rendering scene to texture 1");
+		std::uint64_t textureId = g_SceneRenderer->Render(*scene, width, height);
+		//H_LOG_INFO("Rendering scene to texture 2");
+		//return textureId;
+        static int s_renderLogCount = 0;
+        if (s_renderLogCount < 5)
+        {
+            H_LOG_INFO("[ViewportRender] Render: sceneHandle=%llu w=%u h=%u textureId=%llu",
+                sceneHandle, width, height, textureId);
+            s_renderLogCount++;
+        }
 
         // 2. RmlUI: 构建 DrawList
         if (g_RmlUISystem)
@@ -187,17 +211,17 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_renderSceneToTexture(
 
         // 始终返回 Sprite 纹理 ID，RmlUI 纹理通过 GetLastRmluiTexture() 获取
         return textureId;
-    }
-    catch (const std::exception& e)
-    {
-        H_LOG_WARN("[ViewportRender] renderSceneToTexture 异常: {}", e.what());
-        return 0;
-    }
-    catch (...)
-    {
-        H_LOG_WARN("[ViewportRender] renderSceneToTexture SEH 异常");
-        return 0;
-    }
+    //}
+    //catch (const std::exception& e)
+    //{
+    //    H_LOG_WARN("[ViewportRender] renderSceneToTexture 异常: {}", e.what());
+    //    return 0;
+    //}
+    //catch (...)
+    //{
+    //    H_LOG_WARN("[ViewportRender] renderSceneToTexture SEH 异常");
+    //    return 0;
+    //}
 }
 
 std::uint64_t NN_ENGINE_ABI_STDCALL rt_viewportRender_getLastRenderedTexture(void)

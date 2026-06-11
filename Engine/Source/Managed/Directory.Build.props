@@ -1,0 +1,34 @@
+<Project>
+
+	<PropertyGroup>
+		<!-- ========================= -->
+		<!--  仓库根目录（所有项目共用） -->
+		<!-- ========================= -->
+		<NevernessRepositoryRoot>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..'))))</NevernessRepositoryRoot>
+
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**;$(MSBuildProjectDirectory)\Build\**</DefaultItemExcludes>
+		<!-- ========================= -->
+		<!--  关闭 pack（开发阶段）     -->
+		<!-- ========================= -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+		<!-- ========================= -->
+		<!--  输出优化                  -->
+		<!-- ========================= -->
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+		<BaseOutputPath>$(NevernessRepositoryRoot)Build\bin\</BaseOutputPath>
+
+		<OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+
+		<BaseIntermediateOutputPath>$(NevernessRepositoryRoot)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+		<!-- 允许并行（反而更快） -->
+		<BuildInParallel>true</BuildInParallel>
+	</PropertyGroup>
+</Project>
+
+

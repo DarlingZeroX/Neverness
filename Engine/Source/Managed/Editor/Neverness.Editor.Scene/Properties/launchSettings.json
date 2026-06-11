@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Neverness.Editor.Scene": {
+      "commandName": "Project",
+      "debugEngines": "managed,native"
+    }
+  }
+}

@@ -25,21 +25,10 @@
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 
+		<!-- 覆盖 Directory.Build.props 的值 -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
-
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-
-		<!-- 通用 -->
-		<!-- 关闭 Roslyn 共享编译器 -->
-		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-		<OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-
-		<!-- 直接写死项目名，强制生效，绕过变量解析bug -->
-		<BaseIntermediateOutputPath>$(SolutionDir)Build\VS\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Neverness.Editor.ImGui/1.0.0": {
+        "dependencies": {
+          "HexaGen.Runtime": "1.0.0"
+        },
+        "runtime": {
+          "Neverness.Editor.ImGui.dll": {}
+        }
+      },
+      "HexaGen.Runtime/1.0.0": {
+        "runtime": {
+          "HexaGen.Runtime.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Neverness.Editor.ImGui/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "HexaGen.Runtime/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

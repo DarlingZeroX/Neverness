@@ -363,8 +363,8 @@ namespace NN::Runtime::Renderer
 		m_Context->Render();
 		m_RenderInterface->EndFrame();
 
-		// 返回纹理句柄
-		return reinterpret_cast<std::uint64_t>(dilRT->GetColorView());
+		// 返回 SRV 纹理句柄（ImGui 需要 SRV 采样，不能用 RTV）
+		return reinterpret_cast<std::uint64_t>(dilRT->GetColorSRV());
 	}
 
 	void RmlUIRenderer::ProcessInput(

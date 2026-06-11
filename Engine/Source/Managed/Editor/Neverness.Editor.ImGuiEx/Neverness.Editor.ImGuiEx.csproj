@@ -10,28 +10,6 @@
 		<DebugType>portable</DebugType>
 		<RootNamespace>Neverness.Editor.ImGuiEx</RootNamespace>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-		<!-- ========================= -->
-		<!--  关闭 pack（开发阶段） -->
-		<!-- ========================= -->
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-
-		<!-- ========================= -->
-		<!--  输出优化 -->
-		<!-- ========================= -->
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-
-		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-
-		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-
-		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-
-		<!-- 允许并行（反而更快） -->
-		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\ThirdParty\Neverness.Editor.ImGui\Neverness.Editor.ImGui.csproj" />

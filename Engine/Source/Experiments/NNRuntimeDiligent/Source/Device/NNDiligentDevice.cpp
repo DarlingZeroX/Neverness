@@ -76,6 +76,10 @@ namespace NNDiligent
             if (F) {
                 ::Diligent::EngineD3D12CreateInfo ci;
                 ci.SetValidationLevel(info.EnableValidation ? ::Diligent::VALIDATION_LEVEL_2 : ::Diligent::VALIDATION_LEVEL_DISABLED);
+                // 增大 sampler 描述符堆（SRB 缓存 + RmlDiligent PSO 需要更多 sampler 描述符）
+                // D3D12 上限：GPUDescriptorHeapSize[1] + GPUDescriptorHeapDynamicSize[1] <= 2048
+                ci.GPUDescriptorHeapSize[1]        = 2048;  // sampler 静态堆（默认 1024）
+                ci.GPUDescriptorHeapDynamicSize[1]  = 0;    // sampler 动态堆（未使用动态 sampler 变量）
                 F->CreateDeviceAndContextsD3D12(ci, &m_Device, &m_Context);
                 if (m_Device && m_Context) { F->CreateSwapChainD3D12(m_Device, m_Context, scDesc, ::Diligent::FullScreenModeDesc{}, nw, &m_SwapChain); ok = true; }
             }
@@ -309,6 +313,17 @@ namespace NNDiligent
         }
 
         if (!texture) return {};
+
+        // 初始数据上传后纹理处于 COPY_DEST 状态，需要转为 SHADER_RESOURCE
+        if (initialData && texDesc.BindFlags & ::Diligent::BIND_SHADER_RESOURCE)
+        {
+            ::Diligent::StateTransitionDesc transition;
+            transition.pResource = texture;
+            transition.OldState  = ::Diligent::RESOURCE_STATE_COPY_DEST;
+            transition.NewState  = ::Diligent::RESOURCE_STATE_SHADER_RESOURCE;
+            transition.Flags     = ::Diligent::STATE_TRANSITION_FLAG_UPDATE_STATE;
+            m_Context->TransitionResourceStates(1, &transition);
+        }
 
         auto* wrapper = new NNDiligentTexture(texture, desc);
         wrapper->AddRef();

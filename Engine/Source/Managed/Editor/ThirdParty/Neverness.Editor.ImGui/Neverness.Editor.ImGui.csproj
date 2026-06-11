@@ -2,10 +2,6 @@
 
 	<PropertyGroup>
 		<AssemblyName>Neverness.Editor.ImGui</AssemblyName>
-
-		<!-- ========================= -->
-		<!-- ⚡ DEV ONLY: 单 TFM 极速 -->
-		<!-- ========================= -->
 		<TargetFramework>net10.0</TargetFramework>
 
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -14,37 +10,15 @@
 
 		<LangVersion>12</LangVersion>
 
-		<!-- ========================= -->
-		<!-- ❌ 关闭所有重型分析器 -->
-		<!-- ========================= -->
+		<!-- 关闭所有重型分析器 -->
 		<EnableTrimAnalyzer>false</EnableTrimAnalyzer>
 		<EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
 		<EnableAotAnalyzer>false</EnableAotAnalyzer>
 		<IsAotCompatible>false</IsAotCompatible>
 
-		<!-- ========================= -->
-		<!--  关闭 pack（开发阶段） -->
-		<!-- ========================= -->
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<!-- ThirdParty/Directory.Build.props 已覆盖 GenerateAssemblyInfo=true，此处关闭 -->
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-
-		<!-- ========================= -->
-		<!--  输出优化 -->
-		<!-- ========================= -->
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-
-		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-
-		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-
-		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-
-		<!-- 允许并行（反而更快） -->
-		<BuildInParallel>true</BuildInParallel>
-
 	</PropertyGroup>
 
 	<!-- ========================= -->

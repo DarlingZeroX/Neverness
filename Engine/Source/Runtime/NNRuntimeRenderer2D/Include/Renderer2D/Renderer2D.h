@@ -42,6 +42,11 @@ namespace NN::Runtime::Renderer2D
         bool Initialize(Render::INNRenderDevice* device);
         void Shutdown();
 
+        /// 设置渲染目标（创建 Diligent Framebuffer 用于 BeginRenderPass）
+        /// @param rtv 颜色附件 RTV
+        /// @param dsv 深度模板附件 DSV（可为 nullptr）
+        void SetRenderTarget(void* rtv, void* dsv);
+
         /// 开始一帧渲染
         void BeginScene(const CameraData& camera, std::uint32_t width, std::uint32_t height);
 

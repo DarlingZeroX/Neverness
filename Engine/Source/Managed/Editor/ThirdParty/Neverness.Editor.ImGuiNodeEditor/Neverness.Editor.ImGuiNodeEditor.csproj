@@ -12,17 +12,6 @@
 		<EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
 		<EnableAotAnalyzer>true</EnableAotAnalyzer>
 		<IsAotCompatible>true</IsAotCompatible>
-
-		<!-- 通用 -->
-		<!-- 关闭 Roslyn 共享编译器 -->
-		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-		<OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-
-		<!-- 直接写死项目名，强制生效，绕过变量解析bug -->
-		<BaseIntermediateOutputPath>$(SolutionDir)Build\VS\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

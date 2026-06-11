@@ -9,28 +9,6 @@
 
 		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
 		<DebugType>portable</DebugType>
-
-		<!-- ========================= -->
-		<!--  关闭 pack（开发阶段） -->
-		<!-- ========================= -->
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-
-		<!-- ========================= -->
-		<!--  输出优化 -->
-		<!-- ========================= -->
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-
-		<BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-
-		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-
-		<BaseIntermediateOutputPath>$(SolutionDir)Build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-
-		<!-- 允许并行（反而更快） -->
-		<BuildInParallel>true</BuildInParallel>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
@@ -56,6 +34,11 @@
 		<NevernessManagedDll>$(NevernessNativeBinDir)NevernessRuntime-Managed.dll</NevernessManagedDll>
 		<!-- 可通过 MSBuild 属性覆盖，例如 /p:NevernessSdl3DllDir=C:\vcpkg\installed\x64-windows\bin -->
 		<NevernessSdl3Dll Condition="'$(NevernessSdl3Dll)' == '' and Exists('$(NevernessNativeBinDir)SDL3.dll')">$(NevernessNativeBinDir)SDL3.dll</NevernessSdl3Dll>
+	</PropertyGroup>
+
+	<!-- csproj 开启 Native Debug -->
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<EnableNativeDebugging>true</EnableNativeDebugging>
 	</PropertyGroup>
 
 	<Target Name="CopyNativeRuntimeDependencies" AfterTargets="Build">

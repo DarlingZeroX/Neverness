@@ -6,14 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RollForward>LatestMinor</RollForward>
     <RootNamespace>Neverness.Editor.Serialization</RootNamespace>
-
-    <BaseOutputPath>$(SolutionDir)Build\bin\</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(SolutionDir)Build\Intermediate\Neverness.Editor.Serialization\$(Configuration)\</IntermediateOutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <DefaultItemExcludes>$(DefaultItemExcludes);Build/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Editor.Reflection\Neverness.Editor.Reflection.csproj" />

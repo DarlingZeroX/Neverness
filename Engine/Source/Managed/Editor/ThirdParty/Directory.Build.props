@@ -1,0 +1,14 @@
+<Project>
+  <!-- 导入父目录的公共配置 -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- ThirdParty 项目有自己的配置，覆盖 Editor 级别的设置 -->
+
+    <!-- 中间输出路径：ThirdParty 用 Build\VS\ 而非 Build\obj\ -->
+    <BaseIntermediateOutputPath>$(SolutionDir)Build\VS\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+
+    <!-- ThirdParty 保留 SDK 默认的 assembly info 生成 -->
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>
