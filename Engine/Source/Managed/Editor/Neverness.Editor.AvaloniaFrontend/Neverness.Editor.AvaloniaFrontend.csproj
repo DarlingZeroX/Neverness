@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>Neverness.Editor.AvaloniaFrontend</AssemblyName>
+		<TargetFramework>net10.0</TargetFramework>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
+		<DebugType>portable</DebugType>
+		<RootNamespace>Neverness.Editor.AvaloniaFrontend</RootNamespace>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Avalonia 核心 -->
+		<PackageReference Include="Avalonia" Version="12.0.4" />
+		<PackageReference Include="Avalonia.Desktop" Version="12.0.4" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.4" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.4" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.17" />
+		<!-- Dock 布局库 -->
+		<PackageReference Include="Dock.Avalonia" Version="12.0.0.2" />
+		<PackageReference Include="Dock.Model.Mvvm" Version="12.0.0.2" />
+		<PackageReference Include="Dock.Serializer.Newtonsoft" Version="12.0.0.2" />
+		<PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="12.0.0.2" />
+		<PackageReference Include="Tmds.DBus.Protocol" Version="0.94.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Framework（UI 无关基础设施：IView, IViewModel, IPanel, Services） -->
+		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
+		<!-- Core（ViewModel + Controller + CompositionRoot） -->
+		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AvaloniaResource Include="Themes\**" />
+	</ItemGroup>
+</Project>

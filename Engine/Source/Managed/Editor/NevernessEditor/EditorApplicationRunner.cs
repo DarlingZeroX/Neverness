@@ -1,4 +1,4 @@
-﻿using Neverness.Editor.Framework.Public;
+using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Bootstrap;
@@ -8,6 +8,7 @@ using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.Private;
 using Neverness.Editor.ImGuiFrontend.Features;
 using Neverness.Editor.ImGuiFrontend.Public;
+using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.Assets.Public;
 using Neverness.Editor.Scene.Public;
 using Neverness.Editor.MediaImporter;
@@ -20,16 +21,55 @@ using Neverness.Runtime.Scene;
 
 namespace NevernessEditor;
 
+/// <summary>
+/// 编辑器前端类型。
+/// </summary>
+internal enum EditorFrontend
+{
+    /// <summary>ImGui 前端（Developer Tools）。</summary>
+    ImGui,
+
+    /// <summary>Avalonia 前端（主编辑器）。</summary>
+    Avalonia
+}
+
 internal static class EditorApplicationRunner
 {
 	private const float FallbackDeltaSeconds = 1f / 60f;
 
 	private static bool s_isInstalled;
 	private static EditorEventPump? s_editorEventPump;
+	private static AvaloniaEditorHost? s_avaloniaHost;
 
-	public static int Run(EditorLaunchOptions options)
+	/// <summary>
+	/// 解析前端类型。
+	/// </summary>
+	private static EditorFrontend ParseFrontend(string[] args)
+	{
+		for (int i = 0; i < args.Length - 1; i++)
+		{
+			if (args[i] == "--frontend")
+			{
+				return args[i + 1].ToLowerInvariant() switch
+				{
+					"avalonia" => EditorFrontend.Avalonia,
+					"imgui" => EditorFrontend.ImGui,
+					_ => EditorFrontend.Avalonia // 默认使用 Avalonia
+				};
+			}
+		}
+
+		// 默认使用 Avalonia
+		return EditorFrontend.Avalonia;
+	}
+
+	public static int Run(EditorLaunchOptions options, string[]? args = null)
 	{
 		ArgumentNullException.ThrowIfNull(options);
+
+		// 解析前端类型
+		var frontend = args != null ? ParseFrontend(args) : EditorFrontend.Avalonia;
+		Console.WriteLine($"[EditorApplicationRunner] 使用前端: {frontend}");
 
 		if (!NativeApiTableLoader.TryResolve(out var nativeApiTable, out var loadError))
 		{
@@ -99,12 +139,33 @@ internal static class EditorApplicationRunner
 					var sceneManager = new SceneManager();
 
 					EditorFrameworkModule.Install();
-					ImGuiFrontendModule.InstallShell(window);  // 安装主窗口和菜单栏
+
+					// 根据前端类型选择安装方式
+					switch (frontend)
+					{
+						case EditorFrontend.Avalonia:
+							InstallAvaloniaFrontend(window);
+							break;
+						case EditorFrontend.ImGui:
+							ImGuiFrontendModule.InstallShell(window);
+							break;
+					}
+
 					EditorCoreModule.Install();
-					ImGuiFrontendModule.Install();  // 注册 ViewFactory、Inspector、ViewerService
+
+					switch (frontend)
+					{
+						case EditorFrontend.Avalonia:
+							s_avaloniaHost?.InstallModule();
+							break;
+						case EditorFrontend.ImGui:
+							ImGuiFrontendModule.Install();
+							break;
+					}
+
 					MediaImporterModule.Install();
 					MediaModule.Install();
-				CoreModuleImp.Context.RegisterService<IAudioService>(new NativeAudioService());
+					CoreModuleImp.Context.RegisterService<IAudioService>(new NativeAudioService());
 					RmluiModule.Install();
 					AssetsModule.Install(sceneManager);
 					SceneModule.Install(sceneManager);
@@ -121,8 +182,22 @@ internal static class EditorApplicationRunner
 					/* 编辑器组装层：创建 ViewModel、Controller、View，注册到 PanelManager */
 					EditorCompositionRoot.Build();
 
+					/* Avalonia 模式：将 View 设置到 Dock 面板 */
+					if (frontend == EditorFrontend.Avalonia)
+					{
+						AvaloniaFrontendModule.SetDockPanelContent();
+					}
+
 					/* 注册上下文菜单贡献者（需要 Controller 实例） */
-					ImGuiFrontendModule.RegisterContextMenuContributors();
+					switch (frontend)
+					{
+						case EditorFrontend.Avalonia:
+							s_avaloniaHost?.RegisterContextMenuContributors();
+							break;
+						case EditorFrontend.ImGui:
+							ImGuiFrontendModule.RegisterContextMenuContributors();
+							break;
+					}
 				}
 
 				var deltaTime = EngineTime.DeltaTime;
@@ -132,8 +207,14 @@ internal static class EditorApplicationRunner
 				}
 
 				RuntimeMainLoop.Tick(deltaTime);
-				EditorFrameworkModule.TickEditorUI();
-				ImGuiWindowFeature.Tick(deltaTime);
+
+				// ImGui 模式下需要每帧渲染 UI
+				if (frontend == EditorFrontend.ImGui)
+				{
+					EditorFrameworkModule.TickEditorUI();
+					ImGuiWindowFeature.Tick(deltaTime);
+				}
+
 				AssetsModule.Tick();
 
 				/* 刷新延迟事件 */
@@ -149,11 +230,29 @@ internal static class EditorApplicationRunner
 			s_editorEventPump?.Dispose();
 			s_editorEventPump = null;
 
+			/* 清理 Avalonia 宿主 */
+			s_avaloniaHost?.Dispose();
+			s_avaloniaHost = null;
+
 			/* 清理 CompositionRoot */
 			EditorCompositionRoot.Shutdown();
 
 			ApplicationHost.Shutdown();
 			RuntimeBootstrap.Shutdown();
 		}
+	}
+
+	/// <summary>
+	/// 安装 Avalonia 前端。
+	/// </summary>
+	private static void InstallAvaloniaFrontend(Window window)
+	{
+		Console.WriteLine("[EditorApplicationRunner] 安装 Avalonia 前端...");
+
+		s_avaloniaHost = new AvaloniaEditorHost();
+		s_avaloniaHost.Start(window);
+		s_avaloniaHost.InstallShell(window);
+
+		Console.WriteLine("[EditorApplicationRunner] Avalonia 前端已安装");
 	}
 }

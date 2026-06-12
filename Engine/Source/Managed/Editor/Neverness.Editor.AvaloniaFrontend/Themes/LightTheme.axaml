@@ -1,0 +1,39 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ── 浅色主题颜色 ── -->
+
+    <!-- 背景色 -->
+    <Color x:Key="Editor.BackgroundColor">#FFF5F5F5</Color>
+    <Color x:Key="Editor.SurfaceColor">#FFFFFFFF</Color>
+    <Color x:Key="Editor.PanelColor">#FFF0F0F0</Color>
+    <Color x:Key="Editor.HeaderColor">#FFE0E0E0</Color>
+
+    <!-- 前景色 -->
+    <Color x:Key="Editor.ForegroundColor">#FF1E1E1E</Color>
+    <Color x:Key="Editor.SecondaryForegroundColor">#FF666666</Color>
+    <Color x:Key="Editor.DisabledForegroundColor">#FF999999</Color>
+
+    <!-- 强调色 -->
+    <Color x:Key="Editor.AccentColor">#FF0078D4</Color>
+    <Color x:Key="Editor.AccentHoverColor">#FF1A8CE6</Color>
+    <Color x:Key="Editor.AccentPressedColor">#FF005FA3</Color>
+
+    <!-- 状态色 -->
+    <Color x:Key="Editor.SuccessColor">#FF4CAF50</Color>
+    <Color x:Key="Editor.WarningColor">#FFFF9800</Color>
+    <Color x:Key="Editor.ErrorColor">#FFF44336</Color>
+    <Color x:Key="Editor.InfoColor">#FF2196F3</Color>
+
+    <!-- 边框色 -->
+    <Color x:Key="Editor.BorderColor">#FFD0D0D0</Color>
+    <Color x:Key="Editor.BorderHoverColor">#FF0078D4</Color>
+
+    <!-- 选中色 -->
+    <Color x:Key="Editor.SelectionColor">#330078D4</Color>
+    <Color x:Key="Editor.SelectionActiveColor">#660078D4</Color>
+
+    <!-- 分割线 -->
+    <Color x:Key="Editor.SeparatorColor">#FFD0D0D0</Color>
+
+</ResourceDictionary>

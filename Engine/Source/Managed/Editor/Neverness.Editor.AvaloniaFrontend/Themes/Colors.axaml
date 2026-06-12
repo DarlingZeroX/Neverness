@@ -1,0 +1,46 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ── 编辑器颜色资源键 ── -->
+    <!--
+        使用方式：
+        1. AXAML 中：{DynamicResource Editor.Background}
+        2. Code 中：Application.Current.FindResource("Editor.Background")
+
+        主题切换时替换这些键的值即可。
+    -->
+
+    <!-- 背景色 -->
+    <Color x:Key="Editor.BackgroundColor">#FF1E1E1E</Color>
+    <Color x:Key="Editor.SurfaceColor">#FF252526</Color>
+    <Color x:Key="Editor.PanelColor">#FF2D2D30</Color>
+    <Color x:Key="Editor.HeaderColor">#FF3C3C3C</Color>
+
+    <!-- 前景色 -->
+    <Color x:Key="Editor.ForegroundColor">#FFCCCCCC</Color>
+    <Color x:Key="Editor.SecondaryForegroundColor">#FF999999</Color>
+    <Color x:Key="Editor.DisabledForegroundColor">#FF656565</Color>
+
+    <!-- 强调色 -->
+    <Color x:Key="Editor.AccentColor">#FF0078D4</Color>
+    <Color x:Key="Editor.AccentHoverColor">#FF1A8CE6</Color>
+    <Color x:Key="Editor.AccentPressedColor">#FF005FA3</Color>
+
+    <!-- 状态色 -->
+    <Color x:Key="Editor.SuccessColor">#FF4CAF50</Color>
+    <Color x:Key="Editor.WarningColor">#FFFFC107</Color>
+    <Color x:Key="Editor.ErrorColor">#FFF44336</Color>
+    <Color x:Key="Editor.InfoColor">#FF2196F3</Color>
+
+    <!-- 边框色 -->
+    <Color x:Key="Editor.BorderColor">#FF3F3F46</Color>
+    <Color x:Key="Editor.BorderHoverColor">#FF0078D4</Color>
+
+    <!-- 选中色 -->
+    <Color x:Key="Editor.SelectionColor">#330078D4</Color>
+    <Color x:Key="Editor.SelectionActiveColor">#660078D4</Color>
+
+    <!-- 分割线 -->
+    <Color x:Key="Editor.SeparatorColor">#FF3F3F46</Color>
+
+</ResourceDictionary>

@@ -25,6 +25,7 @@
 		<ProjectReference Include="..\Neverness.Editor.Rmlui\Neverness.Editor.Rmlui.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.ImGuiFrontend\Neverness.Editor.ImGuiFrontend.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.AvaloniaFrontend\Neverness.Editor.AvaloniaFrontend.csproj" />
 	</ItemGroup>
 
 	<!-- Native 运行时 DLL：CMake 产物目录（与 Engine/CMakeLists NN_OUTPUT_ROOT 对齐） -->
