@@ -49,10 +49,10 @@ target_link_libraries(NevernessRuntime-ImGui PRIVATE
 
 # Diligent include 路径（NNDiligentImGuiRenderer 需要）
 target_include_directories(NevernessRuntime-ImGui PRIVATE
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent/Include
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent/Include
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore
     ${PROJECT_SOURCE_DIR}/Engine/Source/ThirdParty/DiligentEngine/DiligentCore
     ${PROJECT_SOURCE_DIR}/Engine/Source/ThirdParty/DiligentEngine/DiligentTools/Imgui/interface
 )

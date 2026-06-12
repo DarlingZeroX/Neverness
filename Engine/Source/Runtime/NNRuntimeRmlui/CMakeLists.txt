@@ -26,7 +26,7 @@ list(REMOVE_ITEM NNRuntimeRmlui_SOURCES
 )
 
 # 添加 RmlDiligent 渲染源码（只取渲染部分，不取 Platform 层避免冲突）
-set(RML_DILIGENT_DIR "${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/RmlDiligent")
+set(RML_DILIGENT_DIR "${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/RmlDiligent")
 list(APPEND NNRuntimeRmlui_SOURCES
     ${RML_DILIGENT_DIR}/Private/RmlDiligentRenderInterface.cpp
     ${RML_DILIGENT_DIR}/Renderer/RmlDiligentRenderTargetPool.cpp
@@ -81,11 +81,11 @@ target_include_directories(NevernessRuntime-RmlUI PRIVATE
     ${RML_DILIGENT_DIR}/Private
     ${RML_DILIGENT_DIR}/Renderer
     ${RML_DILIGENT_DIR}/Shaders
-    # Experiments 核心 include
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent/Include
+    # Rendering 核心 include
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent/Include
     # Diligent Core（RmlDiligent 需要）
     ${PROJECT_SOURCE_DIR}/Engine/Source/ThirdParty/DiligentEngine/DiligentCore
 )

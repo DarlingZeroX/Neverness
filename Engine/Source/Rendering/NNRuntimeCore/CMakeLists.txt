@@ -12,9 +12,9 @@ add_library(NNRuntimeCore STATIC
 )
 
 # 外部使用 #include <NNRuntimeCore/NNObject.h>
-# 文件位于 Experiments/NNRuntimeCore/NNObject.h
+# 文件位于 Rendering/NNRuntimeCore/NNObject.h
 target_include_directories(NNRuntimeCore PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Experiments/ → NNRuntimeCore/NNObject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Rendering/ → NNRuntimeCore/NNObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}       # NNRuntimeCore/ → 内部可以用 <NNObject.h>
 )
 

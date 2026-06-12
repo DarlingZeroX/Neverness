@@ -7,7 +7,7 @@
 
 #include "DiligentRenderResourceFactory.h"
 
-// INNRenderDevice + INNTexture（定义 Experiments 版 NNTextureDesc）
+// INNRenderDevice + INNTexture（定义 Rendering 版 NNTextureDesc）
 #include <NNRuntimeRender/Device/INNRenderDevice.h>
 #include <NNRuntimeRender/Resources/INNTexture.h>
 
@@ -15,7 +15,7 @@
 
 namespace NN::Runtime::Render
 {
-    // 格式映射：NNTextureFormat → NNPixelFormat（Experiments 版）
+    // 格式映射：NNTextureFormat → NNPixelFormat（Rendering 版）
     static NNPixelFormat ToPixelFormat(NNTextureFormat format, bool isSRGB)
     {
         switch (format)
@@ -47,7 +47,7 @@ namespace NN::Runtime::Render
             return nullptr;
         }
 
-        // 构造 Experiments 版 NNTextureDesc（用于 INNRenderDevice::CreateTexture）
+        // 构造 Rendering 版 NNTextureDesc（用于 INNRenderDevice::CreateTexture）
         NNTextureDesc texDesc{};
         texDesc.Width     = width;
         texDesc.Height    = height;

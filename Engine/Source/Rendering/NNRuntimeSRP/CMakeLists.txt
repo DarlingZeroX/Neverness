@@ -18,7 +18,7 @@ add_library(NNRuntimeSRP STATIC
 
 # External: #include <NNRuntimeSRP/Pipeline/INNRenderPipeline.h>
 target_include_directories(NNRuntimeSRP PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Experiments/
+    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Rendering/
     ${CMAKE_CURRENT_SOURCE_DIR}       # NNRuntimeSRP/
 )
 

@@ -56,12 +56,12 @@ target_include_directories(NevernessRuntime-Application
 	PRIVATE
 		"${CMAKE_CURRENT_SOURCE_DIR}/Include"
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Core"
-		# Experiments include（Diligent 设备/交换链）
-		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender"
-		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore"
-		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent"
-		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeDiligent/Include"
-		"${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRenderBootstrap/Include"
+		# Rendering include（Diligent 设备/交换链）
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent/Include"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRenderBootstrap/Include"
 		"${PROJECT_SOURCE_DIR}/Engine/Source/ThirdParty/DiligentEngine/DiligentCore"
 )
 

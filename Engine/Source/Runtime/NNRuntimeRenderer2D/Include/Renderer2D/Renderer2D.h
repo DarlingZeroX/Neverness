@@ -22,7 +22,7 @@
 #include <vector>
 #include <cstdint>
 
-// 前向声明：避免暴露 Experiments 头文件到外部
+// 前向声明：避免暴露 Rendering 头文件到外部
 namespace NN::Runtime::Render { class INNRenderDevice; }
 
 namespace NN::Runtime::Renderer2D

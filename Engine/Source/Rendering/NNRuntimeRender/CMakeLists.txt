@@ -14,10 +14,10 @@ add_library(NNRuntimeRender STATIC
 )
 
 # 外部模块使用 #include <NNRuntimeRender/Device/INNRenderDevice.h>
-# 文件位于 Experiments/NNRuntimeRender/Device/INNRenderDevice.h
-# 所以 Experiments/ 目录需要在搜索路径中
+# 文件位于 Rendering/NNRuntimeRender/Device/INNRenderDevice.h
+# 所以 Rendering/ 目录需要在搜索路径中
 target_include_directories(NNRuntimeRender PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Experiments/ → 可以找到 NNRuntimeRender/Device/...
+    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Rendering/ → 可以找到 NNRuntimeRender/Device/...
     ${CMAKE_CURRENT_SOURCE_DIR}       # NNRuntimeRender/ → 内部可以用 <Device/...>
 )
 

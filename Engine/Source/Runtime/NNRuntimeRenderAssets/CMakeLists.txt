@@ -37,11 +37,11 @@ if (MSVC)
     target_compile_options(${MODULE_NAME} PRIVATE /utf-8)
 endif()
 
-# Experiments 静态库 include 路径（NNRuntimeRender 接口层）
+# Rendering 静态库 include 路径（NNRuntimeRender 接口层）
 target_include_directories(${MODULE_NAME}
     PRIVATE
-        "${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender"
-        "${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore"
+        "${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender"
+        "${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore"
 )
 
 target_link_libraries(${MODULE_NAME}

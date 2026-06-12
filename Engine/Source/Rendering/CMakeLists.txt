@@ -1,8 +1,8 @@
-# Experiments — 顶层 CMakeLists
-# 需要在 Engine/Source/CMakeLists.txt 中通过 add_subdirectory("Experiments") 引入
+# Rendering — 顶层 CMakeLists
+# 需要在 Engine/Source/CMakeLists.txt 中通过 add_subdirectory("Rendering") 引入
 
 cmake_minimum_required(VERSION 3.21)
-project(NNExperiments LANGUAGES CXX)
+project(NNRendering LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -45,10 +45,10 @@ target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRE
 target_include_directories(NevernessRuntime-EngineServices PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeApplication/Include
 	${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeVFS/Include
-	# Experiments include（INNRenderDevice 等接口）
-	${PROJECT_SOURCE_DIR}/Engine/Source/Experiments
-	${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeRender
-	${PROJECT_SOURCE_DIR}/Engine/Source/Experiments/NNRuntimeCore
+	# Rendering include（INNRenderDevice 等接口）
+	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering
+	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender
+	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore
 )
 
 target_link_libraries(NevernessRuntime-EngineServices PUBLIC

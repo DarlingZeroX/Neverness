@@ -33,7 +33,7 @@ endif()
 # 跳过 ATL 检查（系统已有 ATL）
 set(SKIP_ATL_CHECK TRUE CACHE BOOL "" FORCE)
 
-# NVAPI stub — 已移至 Experiments 主 CMakeLists.txt（必须在 Diligent 子目录之前设置）
+# NVAPI stub — 已移至 Rendering 主 CMakeLists.txt（必须在 Diligent 子目录之前设置）
 # 禁用 SuperResolution（避免下载 GitHub 依赖）
 set(DILIGENT_NO_DSR ON CACHE BOOL "" FORCE)
 set(DILIGENT_NO_DLSS ON CACHE BOOL "" FORCE)

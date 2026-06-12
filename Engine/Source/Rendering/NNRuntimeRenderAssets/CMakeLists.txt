@@ -19,7 +19,7 @@ add_library(NNRuntimeRenderAssets STATIC
 
 # External: #include <NNRuntimeRenderAssets/Material/NNMaterial.h>
 target_include_directories(NNRuntimeRenderAssets PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Experiments/
+    ${CMAKE_CURRENT_SOURCE_DIR}/..    # Rendering/
     ${CMAKE_CURRENT_SOURCE_DIR}       # NNRuntimeRenderAssets/
 )
 
