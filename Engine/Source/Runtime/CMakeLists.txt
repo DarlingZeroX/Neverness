@@ -34,7 +34,7 @@ add_subdirectory ("NNRuntimeImageCodec")
 add_subdirectory ("NNRuntimeRenderAssets")
 add_subdirectory ("NNAssetCooker")
 add_subdirectory ("NNRuntimeRmlui")
-add_subdirectory ("NNEngineLegacy")
+# add_subdirectory ("NNEngineLegacy")  # 冻结：缺少 NNRuntimeRmlui/Interface/UIDocumentLegacy.h
 add_subdirectory("NNRuntimeRenderer2D")
 add_subdirectory("NNRuntimeMedia")
-add_subdirectory("NNRuntimeMediaAssets")
+# add_subdirectory("NNRuntimeMediaAssets")  # 预先存在编译错误，待修复

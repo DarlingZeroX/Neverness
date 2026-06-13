@@ -55,6 +55,8 @@ public class ConsolePanelAvaloniaView : AvaloniaViewBase
         };
 
         panel.Children.Add(_logListBox);
+
+        Content = panel;
     }
 
     public override void Unbind()
@@ -78,8 +80,9 @@ public class ConsolePanelAvaloniaView : AvaloniaViewBase
         var clearButton = new Button
         {
             Content = "Clear",
-            Width = 60,
-            Height = 24,
+            MinWidth = 60,
+            MinHeight = 24,
+            Padding = new Avalonia.Thickness(4, 2),
         };
         clearButton.Click += (_, _) => _viewModel?.Clear();
         toolbar.Children.Add(clearButton);
@@ -114,9 +117,9 @@ public class ConsolePanelAvaloniaView : AvaloniaViewBase
         // 过滤文本框
         _filterTextBox = new TextBox
         {
-            Watermark = "Filter logs...",
-            Width = 200,
-            Height = 24,
+            PlaceholderText = "Filter logs...",
+            MinWidth = 200,
+            MinHeight = 24,
         };
         _filterTextBox.TextChanged += (_, e) =>
         {
@@ -128,8 +131,8 @@ public class ConsolePanelAvaloniaView : AvaloniaViewBase
         // 日志级别过滤
         var levelCombo = new ComboBox
         {
-            Width = 100,
-            Height = 24,
+            MinWidth = 100,
+            MinHeight = 24,
             ItemsSource = new[] { "All", "Debug", "Info", "Warning", "Error", "Fatal" },
             SelectedIndex = 0,
         };

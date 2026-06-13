@@ -6,6 +6,7 @@
   </Configurations>
   <Folder Name="/Editor/">
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Assets/Neverness.Editor.Assets.csproj" />
+    <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.AvaloniaFrontend/Neverness.Editor.AvaloniaFrontend.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Core/Neverness.Editor.Core.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.Framework/Neverness.Editor.Framework.csproj" />
     <Project Path="Engine/Source/Managed/Editor/Neverness.Editor.ImGuiEx/Neverness.Editor.ImGuiEx.csproj" />

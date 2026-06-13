@@ -10,9 +10,8 @@ namespace Neverness.Editor.AvaloniaFrontend.Inspectors;
 /// </summary>
 public class TransformInspector : AvaloniaInspectorBase
 {
-    // Transform 组件 TypeId（需要与 Native 端一致）
-    // TODO: 从 ComponentInspectorRegistry 获取实际 TypeId
-    private const ulong TransformTypeId = 1;
+    // Transform 组件 TypeId（与 Native NNTransformData 的 ComponentIdAttribute 一致）
+    private const ulong TransformTypeId = 0xC1FFF4F356DFB2FB;
 
     public override string DisplayName => "Transform";
 
@@ -23,20 +22,13 @@ public class TransformInspector : AvaloniaInspectorBase
 
     public override Control CreateInspector(ulong sceneHandle, ulong entityHandle, ulong typeId)
     {
-        var content = new StackPanel
-        {
-            Spacing = 4,
-            Margin = new Avalonia.Thickness(0, 4),
-        };
+        var content = new StackPanel { Spacing = 0 };
 
-        // Position
-        content.Children.Add(CreateVector3Input("Position", 0, 0, 0));
-
-        // Rotation (欧拉角)
-        content.Children.Add(CreateVector3Input("Rotation", 0, 0, 0));
-
-        // Scale
-        content.Children.Add(CreateVector3Input("Scale", 1, 1, 1));
+        // ImGui 风格：一行 Label + X/Y/Z 并排输入
+        // 点击 X/Y/Z 按钮重置：Position/Rotation 归零，Scale 置 1
+        content.Children.Add(CreateVector3Row("Position", 0, 0, 0, 0.1f, resetValue: 0f));
+        content.Children.Add(CreateVector3Row("Rotation", 0, 0, 0, 1f, resetValue: 0f));
+        content.Children.Add(CreateVector3Row("Scale", 1, 1, 1, 0.01f, resetValue: 1f));
 
         return CreateCollapsiblePanel("Transform", content);
     }

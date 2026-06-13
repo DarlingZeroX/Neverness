@@ -1,0 +1,330 @@
+﻿[0/2] Re-checking globbed directories...
+[1/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\HLSL2GLSLConverterLib\CMakeFiles\Diligent-HLSL2GLSLConverterLib.dir\src\HLSL2GLSLConverterObject.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[2/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\CommandPoolManager.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[3/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\BufferViewVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[4/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\DescriptorPoolManager.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[5/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\FramebufferVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[6/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\FenceVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[7/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\CommandQueueVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[8/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\HLSL2GLSLConverterLib\CMakeFiles\Diligent-HLSL2GLSLConverterLib.dir\src\HLSL2GLSLConverterImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[9/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\GenerateMipsVkHelper.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[10/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\DeviceMemoryVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[11/257] Linking CXX static library E:\Neverness\Build\lib\Debug\Diligent-HLSL2GLSLConverterLib.lib
+[12/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\FramebufferCache.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[13/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\DeviceObjectArchiveVk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[14/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\BottomLevelASVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[15/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\PipelineLayoutVk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[16/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\EngineFactoryVk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[17/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\QueryManagerVk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[18/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\BufferVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[19/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\PipelineStateCacheVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[20/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\SamplerVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[21/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\DeviceContextVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[22/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\RenderPassVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[23/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\PipelineResourceSignatureVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[24/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\ShaderVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[25/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\RenderDeviceVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[26/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\RenderPassCache.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[27/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\ShaderResourceCacheVk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[28/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\QueryVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[29/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\DearchiverVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[30/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\ShaderVariableManagerVk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[31/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\PipelineStateVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[32/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\ShaderBindingTableVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[33/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\ShaderResourceBindingVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[34/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanTypeConversions.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[35/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\TopLevelASVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[36/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\CommandBufferPool.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[37/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\RenderingInfoWrapper.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[38/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanDynamicHeap.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[39/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\Instance.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[40/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\SyncObjectManager.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[41/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\LogicalDevice.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[42/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUploadHeap.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[43/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\CommandBuffer.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[44/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\TextureVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[45/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\PhysicalDevice.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[46/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\Debug.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[47/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\VulkanUtilities\MemoryManager.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[48/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\SwapChainVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[49/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineVulkan\CMakeFiles\Diligent-GraphicsEngineVk-static.dir\src\TextureViewVkImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[50/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\GLObjectWrapper.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[51/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\BufferViewGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[52/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\GLTypeConversions.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[53/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\BufferGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[54/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\DeviceObjectArchiveGL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[55/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\FenceGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[56/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\GLContextState.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[57/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\EngineFactoryOpenGL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[58/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\GLProgram.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[59/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\FBOCache.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[60/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\DeviceContextGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[61/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\FramebufferGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[62/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\DearchiverGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[63/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\GLProgramCache.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[64/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\PipelineStateGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[65/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\PipelineResourceSignatureGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[66/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\SamplerGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[67/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\RenderDeviceGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[68/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\RenderPassGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[69/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\QueryGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[70/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\ShaderResourceBindingGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[71/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\ShaderGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[72/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\ShaderResourcesGL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[73/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\Texture1D_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[74/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\ShaderResourceCacheGL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[75/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\Texture2D_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[76/257] Linking CXX static library E:\Neverness\Build\lib\Debug\Diligent-GraphicsEngineVk-static.lib
+[77/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\ShaderVariableManagerGL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[78/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\Texture3D_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[79/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Resources\NNDiligentBuffer.cpp.obj
+[80/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\TextureCube_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[81/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\Texture2DArray_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[82/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\Texture1DArray_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[83/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Resources\NNDiligentTexture.cpp.obj
+[84/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Command\NNDiligentCommandList.cpp.obj
+[85/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Resources\NNDiligentRenderTarget.cpp.obj
+[86/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Resources\NNDiligentSampler.cpp.obj
+[87/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Device\NNDiligentDevice.cpp.obj
+[88/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Pipeline\NNDiligentShader.cpp.obj
+[89/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\TextureCubeArray_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[90/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\TextureBaseGL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[91/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Pipeline\NNDiligentPipelineState.cpp.obj
+[92/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\GLContextWindows.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[93/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\VAOCache.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[94/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\ImGui\NNDiligentImGuiRenderer.cpp.obj
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): warning C4005: “IMGUI_API”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): note: 之前在命令行上声明的“IMGUI_API”
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): warning C4005: “IMGUI_ENABLE_FREETYPE”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): note: 之前在命令行上声明的“IMGUI_ENABLE_FREETYPE”
+[95/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\__\__\ThirdParty\DiligentEngine\DiligentTools\Imgui\src\ImGuiImplSDL3.cpp.obj
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): warning C4005: “IMGUI_API”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): note: 之前在命令行上声明的“IMGUI_API”
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): warning C4005: “IMGUI_ENABLE_FREETYPE”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): note: 之前在命令行上声明的“IMGUI_ENABLE_FREETYPE”
+[96/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\Source\Command\NNDiligentRenderQueue.cpp.obj
+[97/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\SwapChainGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[98/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\__\__\ThirdParty\DiligentEngine\DiligentTools\Imgui\src\ImGuiImplDiligent.cpp.obj
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): warning C4005: “IMGUI_API”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): note: 之前在命令行上声明的“IMGUI_API”
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): warning C4005: “IMGUI_ENABLE_FREETYPE”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): note: 之前在命令行上声明的“IMGUI_ENABLE_FREETYPE”
+ImGuiImplDiligent.cpp: IMGUI_VERSION = 1.92.3
+[99/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\DurationQueryHelper.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[100/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\BufferSuballocator.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[101/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\DynamicBuffer.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[102/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\ScopedQueryHelper.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[103/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\DynamicTextureArray.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[104/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\GraphicsUtilities.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[105/257] Building CXX object Engine\Source\Rendering\NNRuntimeDiligent\CMakeFiles\NNRuntimeDiligent.dir\__\__\ThirdParty\DiligentEngine\DiligentTools\Imgui\src\ImGuiDiligentRenderer.cpp.obj
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): warning C4005: “IMGUI_API”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(21): note: 之前在命令行上声明的“IMGUI_API”
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): warning C4005: “IMGUI_ENABLE_FREETYPE”: 宏重定义
+E:\Neverness\Engine\Source\Runtime\NNRuntimeImGui\Include\Imgui\../imconfig.h(30): note: 之前在命令行上声明的“IMGUI_ENABLE_FREETYPE”
+[106/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsEngineOpenGL\CMakeFiles\Diligent-GraphicsEngineOpenGL-static.dir\src\TextureViewGLImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[107/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\BytecodeCache.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[108/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\ScreenCapture.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[109/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\ShaderSourceFactoryUtils.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[110/257] Linking CXX static library E:\Neverness\Build\lib\Debug\Diligent-GraphicsEngineOpenGL-static.lib
+[111/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\XXH128Hasher.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[112/257] Linking CXX static library E:\Neverness\Build\lib\Debug\NNRuntimeDiligent.lib
+[113/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\DynamicTextureAtlas.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[114/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\OffScreenSwapChain.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[115/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\GraphicsUtilitiesGL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[116/257] Building CXX object Engine\Source\Rendering\NNRuntimeRenderBootstrap\CMakeFiles\NNRuntimeRenderBootstrap.dir\Source\NNRenderBootstrap.cpp.obj
+[117/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\GraphicsUtilitiesVk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[118/257] Linking CXX static library E:\Neverness\Build\lib\Debug\NNRuntimeRenderBootstrap.lib
+[119/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\VertexPool.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[120/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\GPUUploadManagerImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[121/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\ReloadableShader.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[122/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\AsyncPipelineState.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[123/257] Building CXX object Engine\Source\Rendering\NNRuntimeNativeEngineAPI\CMakeFiles\NNRuntimeNativeEngineAPI.dir\Source\NNEngineContext.cpp.obj
+[124/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\SerializedShaderImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[125/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\SerializedResourceSignatureImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[126/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\SerializationDeviceImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[127/257] Building CXX object Engine\Source\Rendering\NNRuntimeNativeEngineAPI\CMakeFiles\NNRuntimeNativeEngineAPI.dir\Source\NNResourceAPI.cpp.obj
+[128/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\ArchiverImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[129/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\RenderStateCacheImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[130/257] Building CXX object Engine\Source\Rendering\NNRuntimeNativeEngineAPI\CMakeFiles\NNRuntimeNativeEngineAPI.dir\Source\NNMaterialAPI.cpp.obj
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP/Pipeline/NNForwardPipeline.h(1): warning C4828: 文件包含在偏移 0x1a1 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP/Pipeline/NNForwardPipeline.h(1): warning C4828: 文件包含在偏移 0x1fc 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP/Pipeline/NNForwardPipeline.h(1): warning C4828: 文件包含在偏移 0x23c 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP/Pipeline/NNForwardPipeline.h(1): warning C4828: 文件包含在偏移 0x26f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP/Pipeline/NNForwardPipeline.h(1): warning C4828: 文件包含在偏移 0x2a1 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Pipeline\INNRenderPipeline.h(1): warning C4828: 文件包含在偏移 0x199 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Pipeline\../Context/NNRenderContext.h(1): warning C4828: 文件包含在偏移 0x21e 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Context\NNCameraData.h(1): warning C4828: 文件包含在偏移 0xbb 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Context\NNSceneData.h(1): warning C4828: 文件包含在偏移 0xcc 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Context\NNSceneData.h(1): warning C4828: 文件包含在偏移 0x688 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Context\NNSceneData.h(1): warning C4828: 文件包含在偏移 0x82f 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Pipeline\../Features/NNShadowPass.h(1): warning C4828: 文件包含在偏移 0x236 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Pipeline\../Features/NNForwardPass.h(1): warning C4828: 文件包含在偏移 0x44b 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+E:\Neverness\Engine\Source\Rendering\NNRuntimeSRP\Pipeline\../Features/NNImGuiPass.h(1): warning C4828: 文件包含在偏移 0x19b 处开始的字符，该字符在当前源字符集中无效(代码页 65001)。
+[131/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\GraphicsTools\CMakeFiles\Diligent-GraphicsTools.dir\src\ReloadablePipelineState.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[132/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\SerializedPipelineStateImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[133/257] Building CXX object Engine\Source\Rendering\NNRuntimeNativeEngineAPI\CMakeFiles\NNRuntimeNativeEngineAPI.dir\Source\NNRenderAPI.cpp.obj
+[134/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\ArchiverFactory.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[135/257] Linking CXX shared library E:\Neverness\Build\bin\Debug\NevernessRuntime-Renderer2D.dll
+[136/257] Linking CXX static library E:\Neverness\Build\lib\Debug\Diligent-GraphicsTools.lib
+[137/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetEditor\VideoViewer.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/AssetEditor/VideoViewer.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetEditor\VideoViewer.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\AssetEditor\VideoViewer.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[138/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetEditor\TextureViewer.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/AssetEditor/TextureViewer.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetEditor\TextureViewer.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\AssetEditor\TextureViewer.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[139/257] Linking CXX shared library E:\Neverness\Build\bin\Debug\NevernessRuntime-ImGui.dll
+[140/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\SerializedRenderPassImpl.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[141/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetEditor\AudioViewer.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/AssetEditor/AudioViewer.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetEditor\AudioViewer.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\AssetEditor\AudioViewer.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[142/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\CodeStudio\CodeDocument.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/CodeStudio/CodeDocument.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\CodeStudio\CodeDocument.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\CodeStudio\CodeDocument.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[143/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\CodeStudio\CodeStudio.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/CodeStudio/CodeStudio.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\CodeStudio\CodeStudio.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\CodeStudio\CodeStudio.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[144/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetImporter\AssetImporterManager.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/AssetImporter/AssetImporterManager.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\AssetImporter\AssetImporterManager.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\AssetImporter\AssetImporterManager.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[145/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\ConsolePanel.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/ConsolePanel.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\ConsolePanel.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\ConsolePanel.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[146/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\CodeStudio\DocumentManager.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/CodeStudio/DocumentManager.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\CodeStudio\DocumentManager.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\CodeStudio\DocumentManager.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[147/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\ContentBrowser\ContentBrowserFileUIBox.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/ContentBrowser/ContentBrowserFileUIBox.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\ContentBrowser\ContentBrowserFileUIBox.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\ContentBrowser\ContentBrowserFileUIBox.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[148/257] Building CXX object Engine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\ContentBrowser\ContentBrowserPanel.cpp.obj
+FAILED: [code=2] Engine/Source/Editor/NNEditorFrameworkLegacy/CMakeFiles/VGEditorFramework.dir/Source/ContentBrowser/ContentBrowserPanel.cpp.obj 
+E:\PROGRA~2\MICROS~1\18\COMMUN~1\VC\Tools\MSVC\1451~1.362\bin\Hostx64\x64\cl.exe  /nologo /TP -DVGEditorFramework_EXPORTS -DVG_EDITOR_FRAMEWORK_API_EXPORT -IE:\Neverness\Engine\Source\Runtime -IE:\Neverness\Engine\Source\Core -IE:\Neverness\Engine\Source\Editor -IE:\Neverness\Engine\Source\Bridge -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Include -IE:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Interface /DWIN32 /D_WINDOWS /EHsc /MP /MP /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /wd4819 /utf-8 /FoEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\Source\ContentBrowser\ContentBrowserPanel.cpp.obj /FdEngine\Source\Editor\NNEditorFrameworkLegacy\CMakeFiles\VGEditorFramework.dir\ /FS -c E:\Neverness\Engine\Source\Editor\NNEditorFrameworkLegacy\Source\ContentBrowser\ContentBrowserPanel.cpp
+E:\Neverness\Engine\Source\Core\NNCore\Interface\HAssert.h(6): fatal error C1083: 无法打开包括文件: “SDL3/SDL_assert.h”: No such file or directory
+[149/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\Archiver_Vk.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[150/257] Linking CXX shared library E:\Neverness\Build\bin\Debug\NevernessRuntime-RmlUI.dll
+[151/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\SuperResolution\CMakeFiles\Diligent-SuperResolution-static.dir\src\SuperResolutionBase.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+[152/257] Building CXX object E:\Neverness\Engine\Build\ThirdParty\DiligentBin\DiligentCore\Graphics\Archiver\CMakeFiles\Diligent-Archiver-static.dir\src\Archiver_GL.cpp.obj
+cl: 命令行 warning D9025 :正在重写“/w”(用“/W4”)
+ninja: build stopped: subcommand failed.

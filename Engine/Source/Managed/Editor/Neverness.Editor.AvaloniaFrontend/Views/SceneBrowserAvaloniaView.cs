@@ -58,6 +58,9 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
 
         panel.Children.Add(_treeView);
 
+        // 设置为 UserControl 的内容
+        Content = panel;
+
         // 订阅 ViewModel 变更
         _viewModel.PropertyChanged += OnPropertyChanged;
     }
@@ -92,8 +95,9 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         var expandButton = new Button
         {
             Content = "Expand All",
-            Width = 80,
-            Height = 24,
+            MinWidth = 80,
+            MinHeight = 24,
+            Padding = new Avalonia.Thickness(4, 2),
         };
         expandButton.Click += (_, _) => _viewModel?.ExpandAll();
         toolbar.Children.Add(expandButton);
@@ -102,8 +106,9 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         var collapseButton = new Button
         {
             Content = "Collapse All",
-            Width = 80,
-            Height = 24,
+            MinWidth = 80,
+            MinHeight = 24,
+            Padding = new Avalonia.Thickness(4, 2),
         };
         collapseButton.Click += (_, _) => _viewModel?.CollapseAll();
         toolbar.Children.Add(collapseButton);
@@ -133,9 +138,9 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
 
         _searchBox = new TextBox
         {
-            Watermark = "Search entities...",
-            Width = 200,
-            Height = 24,
+            PlaceholderText = "Search entities...",
+            MinWidth = 200,
+            MinHeight = 24,
         };
         _searchBox.TextChanged += (_, e) =>
         {
@@ -152,12 +157,9 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
     {
         if (_viewModel == null || _controller == null) return;
 
-        if (e.AddedItems.Count > 0 && e.AddedItems[0] is TreeViewItem treeItem)
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is TreeViewItem treeItem && treeItem.Tag is ulong handle)
         {
-            if (treeItem.Tag is ulong handle)
-            {
-                _viewModel.Select(handle);
-            }
+            _viewModel.Select(handle);
         }
     }
 
@@ -232,7 +234,7 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         // 实体名称
         var name = new TextBlock
         {
-            Text = node.Name,
+            Text = node.Handle.ToString(),
             FontSize = 12,
             VerticalAlignment = VerticalAlignment.Center,
         };

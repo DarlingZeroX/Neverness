@@ -1,8 +1,10 @@
+using Dock.Avalonia.Controls;
 using Dock.Model;
 using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.Mvvm;
 using Dock.Model.Mvvm.Controls;
+using Dock.Model.Mvvm.Core;
 
 namespace Neverness.Editor.AvaloniaFrontend.Dock;
 
@@ -11,16 +13,23 @@ namespace Neverness.Editor.AvaloniaFrontend.Dock;
 ///
 /// 参考 Dock 官方 DockCodeOnlyMvvmSample。
 ///
-/// 默认布局：
-/// ┌──────────┬───────────────────┬──────────────────┐
-/// │  Scene   │                   │   Inspector      │
-/// │ Browser  │    Viewport       │                  │
-/// ├──────────┴───────────────────┴──────────────────┤
-/// │  Content Browser    │  Console                  │
-/// └─────────────────────┴──────────────────────────┘
+/// 默认布局（UE 风格）：
+/// ┌────────────────────────┬──────────────┐
+/// │                        │ Scene Browser│
+/// │       Viewport         ├──────────────┤
+/// │                        │              │
+/// ├──────────┬─────────────┤  Inspector   │
+/// │ Content  │  Console    │              │
+/// └──────────┴─────────────┴──────────────┘
 /// </summary>
 public class EditorDockFactory : Factory
 {
+    public EditorDockFactory()
+    {
+        // 注册浮动窗口定位器——FloatDockable 需要此定位器创建 IHostWindow 模型
+        DefaultHostWindowLocator = () => new HostWindow();
+    }
+
     /// <summary>面板 ID 常量。</summary>
     public static class PanelIds
     {
@@ -50,31 +59,45 @@ public class EditorDockFactory : Factory
     /// </summary>
     public IRootDock CreateDefaultLayout()
     {
-        // 创建面板
-        _sceneBrowser = new Document { Id = PanelIds.SceneBrowser, Title = "Scene Browser" };
-        _viewport = new Document { Id = PanelIds.Viewport, Title = "Viewport" };
-        _inspector = new Document { Id = PanelIds.Inspector, Title = "Inspector" };
-        _contentBrowser = new Document { Id = PanelIds.ContentBrowser, Title = "Content Browser" };
-        _console = new Document { Id = PanelIds.Console, Title = "Console" };
+        // 创建面板（启用浮动能力）
+        _sceneBrowser = new Document { Id = PanelIds.SceneBrowser, Title = "Scene Browser", CanFloat = true };
+        _viewport = new Document { Id = PanelIds.Viewport, Title = "Viewport", CanFloat = true };
+        _inspector = new Document { Id = PanelIds.Inspector, Title = "Inspector", CanFloat = true };
+        _contentBrowser = new Document { Id = PanelIds.ContentBrowser, Title = "Content Browser", CanFloat = true };
+        _console = new Document { Id = PanelIds.Console, Title = "Console", CanFloat = true };
 
-        // 左侧 ToolDock：SceneBrowser
-        var leftDock = new ToolDock
+        // 右侧上部 ToolDock：SceneBrowser
+        var rightTopDock = new ToolDock
         {
-            Id = "Left",
-            Alignment = Alignment.Left,
-            Proportion = 0.2,
+            Id = "RightTop",
+            Alignment = Alignment.Right,
+            Proportion = 0.5,
             ActiveDockable = _sceneBrowser,
             VisibleDockables = CreateList<IDockable>(_sceneBrowser)
         };
 
-        // 右侧 ToolDock：Inspector
-        var rightDock = new ToolDock
+        // 右侧下部 ToolDock：Inspector
+        var rightBottomDock = new ToolDock
         {
-            Id = "Right",
+            Id = "RightBottom",
             Alignment = Alignment.Right,
-            Proportion = 0.25,
+            Proportion = 0.5,
             ActiveDockable = _inspector,
             VisibleDockables = CreateList<IDockable>(_inspector)
+        };
+
+        // 右侧组合：SceneBrowser + Inspector 上下排列（占 25% 宽度）
+        var rightDock = new ProportionalDock
+        {
+            Id = "Right",
+            Orientation = Orientation.Vertical,
+            Proportion = 0.25,
+            ActiveDockable = rightTopDock,
+            VisibleDockables = CreateList<IDockable>(
+                rightTopDock,
+                new ProportionalDockSplitter { Id = "SplitRight" },
+                rightBottomDock
+            )
         };
 
         // 底部 ToolDock：ContentBrowser + Console
@@ -87,48 +110,50 @@ public class EditorDockFactory : Factory
             VisibleDockables = CreateList<IDockable>(_contentBrowser, _console)
         };
 
-        // 中央 DocumentDock：Viewport
+        // 中央 DocumentDock：Viewport（启用标签拖拽浮动）
         var centerDock = new DocumentDock
         {
             Id = "Center",
             ActiveDockable = _viewport,
-            VisibleDockables = CreateList<IDockable>(_viewport)
+            VisibleDockables = CreateList<IDockable>(_viewport),
+            EnableWindowDrag = true
         };
 
-        // 中间层：左侧 + 中央 + 右侧
-        var middleDock = new ProportionalDock
+        // 左侧组合：Viewport + 底部面板（占 75% 宽度）
+        var leftDock = new ProportionalDock
         {
-            Id = "Middle",
-            Orientation = Orientation.Horizontal,
+            Id = "Left",
+            Orientation = Orientation.Vertical,
+            Proportion = 0.75,
             ActiveDockable = centerDock,
             VisibleDockables = CreateList<IDockable>(
-                leftDock,
-                new ProportionalDockSplitter { Id = "Split1" },
                 centerDock,
-                new ProportionalDockSplitter { Id = "Split2" },
-                rightDock
-            )
-        };
-
-        // 根层：中间 + 底部
-        var rootDock = new ProportionalDock
-        {
-            Id = "Root",
-            Orientation = Orientation.Vertical,
-            ActiveDockable = middleDock,
-            VisibleDockables = CreateList<IDockable>(
-                middleDock,
-                new ProportionalDockSplitter { Id = "Split3" },
+                new ProportionalDockSplitter { Id = "SplitBottom" },
                 bottomDock
             )
         };
 
-        // 根 Dock
+        // 根层：左侧 + 右侧（水平排列）
+        var rootDock = new ProportionalDock
+        {
+            Id = "Root",
+            Orientation = Orientation.Horizontal,
+            ActiveDockable = leftDock,
+            VisibleDockables = CreateList<IDockable>(
+                leftDock,
+                new ProportionalDockSplitter { Id = "Split1" },
+                rightDock
+            )
+        };
+
+        // 根 Dock（启用原生浮动窗口）
         var root = new RootDock
         {
             Id = "Layout",
             ActiveDockable = rootDock,
-            VisibleDockables = CreateList<IDockable>(rootDock)
+            VisibleDockables = CreateList<IDockable>(rootDock),
+            FloatingWindowHostMode = DockFloatingWindowHostMode.Native,
+            Windows = CreateList<IDockWindow>()
         };
 
         InitLayout(root);

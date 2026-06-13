@@ -28,6 +28,8 @@ public class App : Application
         Styles.Add(new DockFluentTheme());
         RequestedThemeVariant = ThemeVariant.Dark;
 
+        // Document DataTemplate 不在这里注册——在 MainEditorWindow 中注册到 DockControl.DataTemplates 最前面
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // 在 Avalonia UI 线程中创建 MainEditorWindow

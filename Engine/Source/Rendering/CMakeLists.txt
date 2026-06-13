@@ -60,8 +60,9 @@ add_subdirectory(NNRuntimeRenderBootstrap)
 add_subdirectory(NNRuntimeDiligent)
 add_subdirectory(NNRuntimeNativeEngineAPI)
 
-# === RmlDiligent 实验模块 ===
+# === RmlDiligent 渲染后端 + 测试 ===
 add_subdirectory(RmlDiligent)
+add_subdirectory(RmlDiligentTest)
 
 # === Phase 1 测试可执行文件 ===
 add_executable(NNPhase1Test NNRuntimeDiligent/Tests/TestTriangleDemo.cpp)

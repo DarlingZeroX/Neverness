@@ -16,5 +16,6 @@
 
 namespace NN::Runtime::VGFX
 {
+	[[deprecated("Use NNRuntimeRender interfaces instead")]]
 	VG_RHI_API NN::Ref<ITexture> CreateTextureFromMemory(const TextureDesc& desc);
 } 

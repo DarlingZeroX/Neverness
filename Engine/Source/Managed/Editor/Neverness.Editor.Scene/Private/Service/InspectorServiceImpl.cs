@@ -16,25 +16,32 @@ public sealed class InspectorServiceImpl : IInspectorService
     public List<ComponentDataInfo> GetEntityComponents(ulong sceneHandle, ulong entityHandle)
     {
         var result = new List<ComponentDataInfo>();
-        var entity = new NNEntityHandle(entityHandle);
 
-        // 遍历所有已注册的 Inspector，检查实体是否拥有该组件
-        foreach (var inspector in ComponentInspectorRegistry.Inspectors)
+        if (sceneHandle == 0) return result;
+
+        // 通过原生桥直接查询实体组件
+        Span<NNEditorComponentInfo> componentInfos = stackalloc NNEditorComponentInfo[64];
+        uint written = EditorSceneNativeBridge.GetEntityComponents(sceneHandle, entityHandle, componentInfos);
+
+        for (int i = 0; i < (int)written; i++)
         {
-            if (inspector.HasComponent(sceneHandle, entity))
+            ref readonly var comp = ref componentInfos[i];
+            string displayName = $"Component 0x{comp.TypeId:X16}";
+
+            // 尝试从注册表获取友好名称
+            var inspector = ComponentInspectorRegistry.GetInspector(comp.TypeId);
+            if (inspector != null)
+                displayName = inspector.DisplayName;
+
+            result.Add(new ComponentDataInfo
             {
-                result.Add(new ComponentDataInfo
-                {
-                    TypeId = inspector.ComponentTypeId,
-                    DisplayName = inspector.DisplayName,
-                    Order = inspector.Order,
-                    CanRemove = true // 大部分组件可移除
-                });
-            }
+                TypeId = comp.TypeId,
+                DisplayName = displayName,
+                Order = i,
+                CanRemove = true
+            });
         }
 
-        // 按 Order 排序
-        result.Sort((a, b) => a.Order.CompareTo(b.Order));
         return result;
     }
 

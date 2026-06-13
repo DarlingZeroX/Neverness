@@ -4,8 +4,6 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Neverness.Editor.Core.Controllers;
 using Neverness.Editor.Core.ViewModels;
-using Neverness.Editor.AvaloniaFrontend.Services;
-using Neverness.Editor.AvaloniaFrontend.Viewport;
 
 namespace Neverness.Editor.AvaloniaFrontend.Views;
 
@@ -27,8 +25,6 @@ public class ViewportAvaloniaView : AvaloniaViewBase
 {
     private EditorViewportViewModel? _viewModel;
     private EditorViewportController? _controller;
-    private ViewportHostService? _viewportHostService;
-    private NativeControlHost? _nativeControlHost;
     private Panel? _viewportPanel;
 
     public ViewportAvaloniaView() : base("Viewport")
@@ -41,9 +37,6 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     {
         _viewModel = (EditorViewportViewModel)viewModel;
 
-        // 创建视口宿主服务
-        _viewportHostService = new ViewportHostService();
-
         // 创建 Avalonia 控件树
         var panel = new DockPanel();
 
@@ -52,44 +45,26 @@ public class ViewportAvaloniaView : AvaloniaViewBase
         Avalonia.Controls.DockPanel.SetDock(toolbar, Avalonia.Controls.Dock.Top);
         panel.Children.Add(toolbar);
 
-        // ── 视口区域 ──
+        // ── 视口区域（暂用占位面板，NativeControlHost 需要应用 manifest） ──
         _viewportPanel = new Panel
         {
             Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
             ClipToBounds = true,
         };
 
-        // 创建 NativeControlHost 表面
-        var surface = _viewportHostService.CreateSurface(
-            (int)(_viewModel?.ViewportWidth ?? 1920),
-            (int)(_viewModel?.ViewportHeight ?? 1080));
-
-        // 获取 NativeControlHost 控件并添加到视口面板
-        _nativeControlHost = _viewportHostService.GetControl();
-        if (_nativeControlHost != null)
+        // TODO: NativeControlHost 需要应用 manifest 支持，暂时用占位文本
+        _viewportPanel.Children.Add(new TextBlock
         {
-            _viewportPanel.Children.Add(_nativeControlHost);
-        }
+            Text = "Viewport (NativeControlHost 待配置)",
+            Foreground = new SolidColorBrush(Color.Parse("#FF656565")),
+            FontSize = 16,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
 
         panel.Children.Add(_viewportPanel);
 
-        // 监听尺寸变更
-        _viewportPanel.PropertyChanged += (_, e) =>
-        {
-            if (e.Property.Name == nameof(Panel.Bounds))
-            {
-                var bounds = _viewportPanel.Bounds;
-                if (bounds.Width > 0 && bounds.Height > 0)
-                {
-                    _viewportHostService?.Resize((int)bounds.Width, (int)bounds.Height);
-                    if (_viewModel != null)
-                    {
-                        _viewModel.ViewportWidth = (float)bounds.Width;
-                        _viewModel.ViewportHeight = (float)bounds.Height;
-                    }
-                }
-            }
-        };
+        Content = panel;
 
         // 订阅 ViewModel 变更
         _viewModel.PropertyChanged += OnPropertyChanged;
@@ -99,12 +74,8 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     {
         if (_viewModel != null)
             _viewModel.PropertyChanged -= OnPropertyChanged;
-
-        _viewportHostService?.Dispose();
-        _viewportHostService = null;
         _viewModel = null;
         _controller = null;
-        _nativeControlHost = null;
         _viewportPanel = null;
     }
 
@@ -128,8 +99,9 @@ public class ViewportAvaloniaView : AvaloniaViewBase
         var focusButton = new Button
         {
             Content = "Focus",
-            Width = 60,
-            Height = 24,
+            MinWidth = 60,
+            MinHeight = 24,
+            Padding = new Avalonia.Thickness(4, 2),
         };
         focusButton.Click += (_, _) =>
         {
@@ -155,8 +127,8 @@ public class ViewportAvaloniaView : AvaloniaViewBase
         // Gizmo 模式
         var gizmoCombo = new ComboBox
         {
-            Width = 100,
-            Height = 24,
+            MinWidth = 100,
+            MinHeight = 24,
             ItemsSource = new[] { "Translate", "Rotate", "Scale" },
             SelectedIndex = 0,
         };
@@ -183,29 +155,6 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     /// <summary>ViewModel 属性变更。</summary>
     private void OnPropertyChanged(string propertyName)
     {
-        // 可以在这里响应 ViewModel 属性变更
-        // 例如：SceneHandle 变化时重新绑定渲染目标
-    }
-
-    /// <summary>
-    /// 初始化原生句柄（在控件附加到可视树后调用）。
-    /// 需要在窗口显示后调用此方法。
-    /// </summary>
-    public void InitializeNativeRendering()
-    {
-        _viewportHostService?.InitializeNativeHandle();
-
-        var handle = _viewportHostService?.GetNativeHandle() ?? IntPtr.Zero;
-        if (handle != IntPtr.Zero)
-        {
-            Console.WriteLine($"[Viewport] 原生句柄已就绪: 0x{handle:X}");
-            // TODO: 将句柄传递给 Diligent 渲染引擎
-        }
-    }
-
-    /// <summary>获取原生窗口句柄（供渲染引擎使用）。</summary>
-    public IntPtr GetNativeHandle()
-    {
-        return _viewportHostService?.GetNativeHandle() ?? IntPtr.Zero;
+        // TODO: 响应 ViewModel 属性变更
     }
 }

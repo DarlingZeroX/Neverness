@@ -87,8 +87,9 @@ public class ToolbarAvaloniaView : AvaloniaViewBase
         var button = new Button
         {
             Content = icon,
-            Width = 28,
-            Height = 28,
+            MinWidth = 28,
+            MinHeight = 28,
+            Padding = new Avalonia.Thickness(4),
             Background = Brushes.Transparent,
             BorderThickness = new Avalonia.Thickness(0),
             FontSize = 14,

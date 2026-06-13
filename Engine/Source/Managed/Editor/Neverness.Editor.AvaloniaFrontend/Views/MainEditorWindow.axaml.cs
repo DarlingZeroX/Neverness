@@ -1,7 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Dock.Avalonia.Controls;
 using Neverness.Editor.AvaloniaFrontend.Dock;
 
 namespace Neverness.Editor.AvaloniaFrontend.Views;
@@ -16,13 +18,6 @@ public partial class MainEditorWindow : Window
 {
     private readonly EditorDockFactory _dockFactory;
 
-    // 面板内容容器（独立于 PanelManager，避免重复挂载）
-    private readonly Panel _sceneBrowserContent = new() { Background = new SolidColorBrush(Color.Parse("#FF252526")) };
-    private readonly Panel _viewportContent = new() { Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")) };
-    private readonly Panel _inspectorContent = new() { Background = new SolidColorBrush(Color.Parse("#FF252526")) };
-    private readonly Panel _contentBrowserContent = new() { Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")) };
-    private readonly Panel _consoleContent = new() { Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")) };
-
     public MainEditorWindow()
     {
         InitializeComponent();
@@ -32,16 +27,26 @@ public partial class MainEditorWindow : Window
         // 创建默认 Dock 布局
         var layout = _dockFactory.CreateDefaultLayout();
 
-        // 为每个 Document 设置内容容器
-        SetDocumentContent(_dockFactory.SceneBrowserPanel, _sceneBrowserContent, "Scene Browser");
-        SetDocumentContent(_dockFactory.ViewportPanel, _viewportContent, "Viewport");
-        SetDocumentContent(_dockFactory.InspectorPanel, _inspectorContent, "Inspector");
-        SetDocumentContent(_dockFactory.ContentBrowserPanel, _contentBrowserContent, "Content Browser");
-        SetDocumentContent(_dockFactory.ConsolePanel, _consoleContent, "Console");
-
         // 设置到 DockControl
         DockControl.Factory = _dockFactory;
         DockControl.Layout = layout;
+
+        // Document 模板：渲染 Document.Context（视图通过 SetPanelContent 设置）
+        DockControl.DataTemplates.Insert(0, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Controls.Document),
+            (data, _) =>
+            {
+                if (data is global::Dock.Model.Mvvm.Controls.Document doc && doc.Context is Control ctrl)
+                    return ctrl;
+                return new TextBlock { Text = "No Content" };
+            }));
+
+        // 配置浮动窗口工厂（Native 模式，原生 OS 窗口）
+        DockControl.HostWindowFactory = () => new HostWindow
+        {
+            IsToolWindow = true,
+            ToolChromeControlsWholeWindow = true,
+        };
 
         // 创建菜单、工具栏、状态栏
         InitializeSubViews();
@@ -51,36 +56,32 @@ public partial class MainEditorWindow : Window
     /// 设置 Document 的内容。
     /// 用 Panel 包装，避免 Avalonia 控件重复挂载。
     /// </summary>
-    private void SetDocumentContent(global::Dock.Model.Mvvm.Controls.Document? doc, Panel contentPanel, string title)
-    {
-        if (doc != null)
-        {
-            // Document.Context 设置为 Panel，DataTemplate 会渲染它
-            doc.Context = contentPanel;
-        }
-    }
-
     /// <summary>
     /// 设置面板内容（由 AvaloniaFrontendModule 调用）。
-    /// 将 View 添加到对应的 Panel 容器中。
+    /// 直接设置 Document.Context 为视图，FuncDataTemplate 的绑定会自动渲染。
     /// </summary>
     public void SetPanelContent(string panelId, Control content)
     {
-        var panel = panelId switch
+        Console.WriteLine($"[MainEditorWindow] SetPanelContent 调用: {panelId}, 内容类型: {content.GetType().Name}");
+
+        var doc = panelId switch
         {
-            EditorDockFactory.PanelIds.SceneBrowser => _sceneBrowserContent,
-            EditorDockFactory.PanelIds.Viewport => _viewportContent,
-            EditorDockFactory.PanelIds.Inspector => _inspectorContent,
-            EditorDockFactory.PanelIds.ContentBrowser => _contentBrowserContent,
-            EditorDockFactory.PanelIds.Console => _consoleContent,
+            EditorDockFactory.PanelIds.SceneBrowser => _dockFactory.SceneBrowserPanel,
+            EditorDockFactory.PanelIds.Viewport => _dockFactory.ViewportPanel,
+            EditorDockFactory.PanelIds.Inspector => _dockFactory.InspectorPanel,
+            EditorDockFactory.PanelIds.ContentBrowser => _dockFactory.ContentBrowserPanel,
+            EditorDockFactory.PanelIds.Console => _dockFactory.ConsolePanel,
             _ => null
         };
 
-        if (panel != null)
+        if (doc != null)
         {
-            panel.Children.Clear();
-            panel.Children.Add(content);
-            Console.WriteLine($"[MainEditorWindow] 面板内容已设置: {panelId}");
+            doc.Context = content;
+            Console.WriteLine($"[MainEditorWindow] Document.Context 已设置: {panelId}");
+        }
+        else
+        {
+            Console.Error.WriteLine($"[MainEditorWindow] 未找到 Document: {panelId}");
         }
     }
 
@@ -158,8 +159,9 @@ public partial class MainEditorWindow : Window
         var button = new Button
         {
             Content = icon,
-            Width = 28,
-            Height = 28,
+            MinWidth = 28,
+            MinHeight = 28,
+            Padding = new Thickness(4),
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             FontSize = 14,

@@ -198,46 +198,20 @@ AvaloniaFrontend 实现：
 
 ---
 
-### Phase 1：Dock 布局基础设施 ✅ 已完成（简化版）
+### Phase 1：Dock 布局基础设施 ✅ 已完成
 
 **目标**：集成 Dock 库，实现默认编辑器布局
 
-**实施说明**：
-- Dock 11.3.2 API 与文档中的 11.2.0 有差异，IDockable 接口体系有变化
-- 已实现最小化 Dock 集成（EditorDockFactory + EditorDockLayout + MainEditorWindow）
-- 完整布局（SceneBrowser/Viewport/Inspector/ContentBrowser/Console 五区域）需要进一步适配 Dock 11.3.2 API
-- Dock theme（FluentDockTheme.axaml）资源路径需确认
-
-**设计约束**：
-- Dock 只做容器，不参与业务数据流
-- 不创建 Dock PanelViewModel 桥接层
-- Core ViewModel 直接绑定到 Avalonia View，View 放入 DockControl
+> 详细的 Dock 集成指南、踩坑记录和浮动窗口配置请参阅：
+> **[AvaloniaFrontend_Dock_Guide.md](AvaloniaFrontend_Dock_Guide.md)**
 
 **文件变更**：
-
-1. **新建** `Engine/Source/Managed/Editor/Neverness.Editor.AvaloniaFrontend/Dock/EditorDockFactory.cs`
-   - 继承 `Factory`（Dock.Model.Mvvm）
-   - 创建默认布局：SceneBrowser(左) + Viewport(中) + Inspector(右) + ContentBrowser(底) + Console(底Tab)
-   - 定义面板类型映射
-
-2. **新建** `Engine/Source/Managed/Editor/Neverness.Editor.AvaloniaFrontend/Dock/EditorDockLayout.cs`
-   - 布局序列化/反序列化
-   - 默认布局定义
-   - 布局保存/恢复逻辑
-
-3. **新建** `Engine/Source/Managed/Editor/Neverness.Editor.AvaloniaFrontend/Views/MainEditorWindow.axaml`
-   - 主编辑器窗口
-   - 包含 DockControl、菜单栏、工具栏、状态栏
-   - 参考 UE 编辑器布局
-
-4. **新建** `Engine/Source/Managed/Editor/Neverness.Editor.AvaloniaFrontend/Views/MainEditorWindow.axaml.cs`
-   - 窗口代码绑定
-   - Dock 布局初始化
-   - 主题切换逻辑
+- `Dock/EditorDockFactory.cs` — 工厂类，五区域布局 + 浮动窗口配置
+- `Dock/EditorDockLayout.cs` — 布局持久化（TODO）
+- `Views/MainEditorWindow.axaml` — DockControl 声明
+- `Views/MainEditorWindow.axaml.cs` — Dock 初始化 + HostWindowFactory
 
 **依赖关系**：Phase 0
-
-**验证方式**：主窗口显示 Dock 布局，面板可拖拽停靠
 
 ---
 
@@ -814,7 +788,7 @@ Phase 2 (核心面板：SceneBrowser, ContentBrowser, Console)
 | Phase 2：核心面板 | ✅ 已完成 | 2026-06-12 | SceneBrowserView（TreeView + 搜索 + 展开/折叠）、ContentBrowserView（目录树 + 文件网格 + 面包屑）、ConsoleView（ListBox + 过滤 + 级别着色） |
 | Phase 3：Viewport | ✅ 已完成 | 2026-06-12 | IViewportSurface 接口、NativeControlHostSurface 实现、ViewportHostService、ViewportAvaloniaView 集成 NativeControlHost |
 | Phase 3.5：Guizmo | ⬜ 未开始 | - | 放在 Scene 模块，不在 AvaloniaFrontend |
-| Phase 4：Inspector | ✅ 已完成 | 2026-06-12 | AvaloniaInspectorBase、TransformInspector、CameraInspector、SpriteRendererInspector、AvaloniaComponentInspectorRegistry |
+| Phase 4：Inspector | ✅ 已完成 | 2026-06-12 | AvaloniaInspectorBase、TransformInspector、CameraInspector、SpriteRendererInspector、AvaloniaComponentInspectorRegistry。2026-06-13 更新：TypeId 对齐、DragFloat 控件、毛玻璃 UI、SceneBrowser↔Inspector 桥接 |
 | Phase 5：拖放 | ✅ 已完成（简化版） | 2026-06-12 | AvaloniaAssetDragDropService、AvaloniaDropHandler。TODO: 适配 Avalonia 12.0 DragDrop API |
 | Phase 6：菜单工具栏 | ✅ 已完成 | 2026-06-12 | MenuBarAvaloniaView、ToolbarAvaloniaView、StatusBarAvaloniaView、MainEditorWindow 集成 |
 | Phase 7：主题 | ✅ 已完成 | 2026-06-12 | DarkTheme.axaml、LightTheme.axaml、ThemeService（Dark/Light 切换） |
@@ -828,163 +802,53 @@ Phase 2 (核心面板：SceneBrowser, ContentBrowser, Console)
 1. **Dock 序列化**：EditorDockLayout 的 SaveLayout/LoadLayout 为 TODO
 2. **DragDrop API**：Avalonia 12.0 的 DragDrop API 有变化，当前为简化实现
 3. **Avalonia 线程同步**：Avalonia 在独立线程启动，与 Native 事件循环的同步使用 ManualResetEventSlim
+4. **NativeControlHost**：需要应用 manifest 才能创建子窗口，Viewport 暂用占位面板
 
 ---
 
-## Dock 12.0 集成踩坑记录（2026-06-12）
+## 2026-06-13 工作进展
 
-### 问题 1：DockControl 全黑，不渲染任何内容
+### Dock 面板内容渲染修复
+- **根本原因**：`UserControl.Bind()` 未设置 `this.Content`，Dock 12.0 的 `AutoCreateDataTemplates` 不渲染 Document.Context
+- **修复**：5 个 AvaloniaView 添加 `Content = panel` + 注册 `FuncDataTemplate<Document>` 到 DockControl.DataTemplates
+- **浮动窗口**：`DefaultHostWindowLocator` + `EnableWindowDrag` + `HostWindowFactory`
 
-**现象**：DockControl 放在 XAML 中，Layout 正确设置，但窗口中间全黑，看不到任何面板。
+### ContentBrowser 实施
+- 左侧 TreeView 显示目录树，单击导航（`TreeView.SelectionChanged`）
+- 右侧缩略图网格（90x90 WrapPanel）
+- 面包屑可点击跳转
+- 数据从 `ContentBrowserController` 加载（在 `SetController()` 中执行）
 
-**根因**：Dock 12.0 需要 `DockFluentTheme` 才能渲染控件。没有这个主题，DockControl 的 ControlTemplate 不存在，所有 Dock 元素都不会显示。
+### SceneBrowser ↔ Inspector 桥接修复
+- **根本原因**：`InspectorServiceImpl.GetEntityName` 用不同 ISQueryService 实例，缓存不同步
+- **修复**：`EditorCompositionRoot.ConnectSceneBrowserToInspector` 直接用 `ISceneQueryService` 获取实体名
+- **组件列表**：改用 `EditorSceneNativeBridge.GetEntityComponents()` 原生桥查询
 
-**修复**：
-```csharp
-// App.axaml.cs - OnFrameworkInitializationCompleted 中
-Styles.Add(new DockFluentTheme());
-```
+### Inspector TypeId 对齐
+- Transform: `0xC1FFF4F356DFB2FB`
+- Camera: `0x54D1B2A64667E32E`
+- SpriteRenderer: `0x51387BA3968C343B`
 
-**参考**：Dock 官方示例 `DockCodeOnlyMvvmSample/Program.cs`
+### DragFloat 控件
+- 自定义控件，类似 ImGui DragFloat
+- 拖动调整数值 + 双击编辑 + 毛玻璃背景
+- 全局指针监听：点击任何区域自动退出编辑
 
----
+### Inspector UI 改进
+- Transform：X/Y/Z 并排输入，轴标签按钮点击重置
+- SpriteRenderer：RGBA 并排输入，同风格
+- 毛玻璃半透明背景
+- 文字居中显示
 
-### 问题 2：Dock 版本兼容性
-
-**现象**：Dock 11.2.0 → 11.3.2 → 12.0.0.2，API 变化较大。
-
-**关键变化**：
-- `IDockable` 接口在 `Dock.Model.Core` 命名空间
-- `IRootDock` 在 `Dock.Model.Controls` 命名空间
-- `Document`/`Tool` 没有 `Content` 属性，通过 `Context` 存储内容
-- `CreateList<T>()` 方法签名：`CreateList<T>(params T[] items)`
-- 必须使用 `DockFluentTheme`，不能用 AXAML StyleInclude
-
-**正确版本组合**（2026-06-12）：
-```xml
-<PackageReference Include="Avalonia" Version="12.0.4" />
-<PackageReference Include="Dock.Avalonia" Version="12.0.0.2" />
-<PackageReference Include="Dock.Model.Mvvm" Version="12.0.0.2" />
-<PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="12.0.0.2" />
-```
-
----
-
-### 问题 3：Dock 布局创建方式
-
-**正确方式**（参考 Dock 官方示例）：
-```csharp
-var factory = new Factory();
-
-// 创建面板
-var doc = new Document { Id = "Id", Title = "Title" };
-
-// 创建 Dock
-var docDock = new DocumentDock
-{
-    Id = "Documents",
-    ActiveDockable = doc,
-    VisibleDockables = factory.CreateList<IDockable>(doc)
-};
-
-// 创建 Root
-var root = new RootDock
-{
-    Id = "Root",
-    ActiveDockable = docDock,
-    VisibleDockables = factory.CreateList<IDockable>(docDock)
-};
-
-// 初始化
-factory.InitLayout(root);
-
-// 设置到 DockControl
-dockControl.Factory = factory;
-dockControl.Layout = root;
-```
-
-**错误方式**：
-- 不设置 `DockControl.Factory`（必须设置）
-- 不调用 `factory.InitLayout(root)`（必须调用）
-- 不添加 `DockFluentTheme`（必须添加）
+### 相关文档
+- [AvaloniaFrontend_Dock_Guide.md](AvaloniaFrontend_Dock_Guide.md) — Dock 集成踩坑
+- [AvaloniaFrontend_ContentBrowser.md](AvaloniaFrontend_ContentBrowser.md) — ContentBrowser 实施
+- [AvaloniaFrontend_SceneBrowser_Inspector.md](AvaloniaFrontend_SceneBrowser_Inspector.md) — SceneBrowser + Inspector
 
 ---
 
-### 问题 4：Document 内容渲染
+## Dock 集成踩坑记录
 
-**Dock 12.0 的 Document 没有 Content 属性**。内容通过 DataTemplate 渲染：
-
-```xml
-<dock:DockControl x:Name="DockControl" AutoCreateDataTemplates="True">
-    <dock:DockControl.DataTemplates>
-        <DataTemplate DataType="dockModels:Document">
-            <ContentControl Content="{Binding Context}"/>
-        </DataTemplate>
-    </dock:DockControl.DataTemplates>
-</dock:DockControl>
-```
-
-代码中设置内容：
-```csharp
-document.Context = actualControl;  // DataTemplate 会渲染 Context
-```
-
----
-
-### 问题 5：Avalonia 控件线程安全
-
-**现象**：`System.InvalidOperationException: Call from invalid thread`
-
-**根因**：Avalonia 控件必须在 Avalonia UI 线程创建。EditorCompositionRoot.Build() 在主 UI 线程调用，但 Avalonia 控件需要在 Avalonia 线程创建。
-
-**修复**：
-```csharp
-public IEditorPanel CreateConsoleView(ConsolePanelViewModel viewModel)
-{
-    return Dispatcher.UIThread.Invoke(() =>
-    {
-        var view = new ConsolePanelAvaloniaView();
-        view.Bind(viewModel);
-        return (IEditorPanel)view;
-    });
-}
-```
-
----
-
-### 问题 6：Avalonia 控件父节点冲突
-
-**现象**：`The control Button already has a visual parent StackPanel while trying to add it as a child of StackPanel`
-
-**根因**：Avalonia 中控件只能有一个父节点。不能把已属于 A 的子控件移动到 B。
-
-**修复**：直接在目标控件中创建子控件，不要复制引用：
-```csharp
-// 错误：复制引用
-foreach (var child in source.Children.ToList())
-    target.Children.Add(child);  // 报错！
-
-// 正确：直接创建
-AddToolButton("▶", "Play", () => ExecuteCommand("scene.play"));
-```
-
----
-
-### 问题 7：Avalonia 窗口启动顺序
-
-**现象**：`Unable to locate 'Avalonia.Platform.IWindowingPlatform'`
-
-**根因**：MainEditorWindow 在非 Avalonia UI 线程创建，此时平台服务尚未初始化。
-
-**修复**：延迟窗口创建到 `App.OnFrameworkInitializationCompleted`：
-```csharp
-public override void OnFrameworkInitializationCompleted()
-{
-    if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-    {
-        desktop.MainWindow = new MainEditorWindow();  // 此时平台已初始化
-    }
-}
-```
-
-使用 `ManualResetEventSlim` 同步等待窗口就绪。
+> 已迁移至独立文档：**[AvaloniaFrontend_Dock_Guide.md](AvaloniaFrontend_Dock_Guide.md)**
+>
+> 包含：Dock 12.0 集成踩坑（8 个问题）、浮动窗口配置、布局创建方式、版本兼容性等。

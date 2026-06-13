@@ -75,6 +75,10 @@ public static class AvaloniaFrontendModule
     {
         Console.WriteLine("[AvaloniaFrontendModule] 安装 AvaloniaFrontend...");
 
+        // 发现 Avalonia Inspector（扫描当前程序集中的 AvaloniaInspectorBase 实现）
+        Inspectors.AvaloniaComponentInspectorRegistry.DiscoverFromAssembly(
+            typeof(AvaloniaFrontendModule).Assembly);
+
         // 创建 View 工厂
         _viewFactory = new AvaloniaViewFactory();
 
@@ -107,26 +111,48 @@ public static class AvaloniaFrontendModule
             return;
         }
 
+        Console.WriteLine($"[AvaloniaFrontendModule] 开始设置 Dock 面板内容...");
+        Console.WriteLine($"[AvaloniaFrontendModule] SceneBrowserView: {_viewFactory.SceneBrowserView?.GetType().Name ?? "null"}");
+        Console.WriteLine($"[AvaloniaFrontendModule] ViewportView: {_viewFactory.ViewportView?.GetType().Name ?? "null"}");
+        Console.WriteLine($"[AvaloniaFrontendModule] InspectorView: {_viewFactory.InspectorView?.GetType().Name ?? "null"}");
+        Console.WriteLine($"[AvaloniaFrontendModule] ContentBrowserView: {_viewFactory.ContentBrowserView?.GetType().Name ?? "null"}");
+        Console.WriteLine($"[AvaloniaFrontendModule] ConsoleView: {_viewFactory.ConsoleView?.GetType().Name ?? "null"}");
+
         Dispatcher.UIThread.Invoke(() =>
         {
             // 将 View 添加到 MainEditorWindow 管理的 Panel 容器中
             // Document.Context 已经是 Panel，View 作为 Panel 的子控件
             if (_viewFactory.SceneBrowserView != null)
+            {
                 MainWindow.SetPanelContent(Dock.EditorDockFactory.PanelIds.SceneBrowser, _viewFactory.SceneBrowserView);
+                Console.WriteLine($"[AvaloniaFrontendModule] 已设置 SceneBrowser 面板内容");
+            }
 
             if (_viewFactory.ViewportView != null)
+            {
                 MainWindow.SetPanelContent(Dock.EditorDockFactory.PanelIds.Viewport, _viewFactory.ViewportView);
+                Console.WriteLine($"[AvaloniaFrontendModule] 已设置 Viewport 面板内容");
+            }
 
             if (_viewFactory.InspectorView != null)
+            {
                 MainWindow.SetPanelContent(Dock.EditorDockFactory.PanelIds.Inspector, _viewFactory.InspectorView);
+                Console.WriteLine($"[AvaloniaFrontendModule] 已设置 Inspector 面板内容");
+            }
 
             if (_viewFactory.ContentBrowserView != null)
+            {
                 MainWindow.SetPanelContent(Dock.EditorDockFactory.PanelIds.ContentBrowser, _viewFactory.ContentBrowserView);
+                Console.WriteLine($"[AvaloniaFrontendModule] 已设置 ContentBrowser 面板内容");
+            }
 
             if (_viewFactory.ConsoleView != null)
+            {
                 MainWindow.SetPanelContent(Dock.EditorDockFactory.PanelIds.Console, _viewFactory.ConsoleView);
+                Console.WriteLine($"[AvaloniaFrontendModule] 已设置 Console 面板内容");
+            }
 
-            Console.WriteLine("[AvaloniaFrontendModule] Dock 面板内容已设置");
+            Console.WriteLine("[AvaloniaFrontendModule] Dock 面板内容已设置完成");
         });
     }
 

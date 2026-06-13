@@ -38,15 +38,19 @@ public class InspectorAvaloniaView : AvaloniaViewBase
     {
         _viewModel = (InspectorViewModel)viewModel;
 
-        // 创建 Avalonia 控件树
         var panel = new DockPanel();
 
-        // ── 实体头部 ──
+        // ── 实体头部（顶部） ──
         var entityHeader = CreateEntityHeader();
-        Avalonia.Controls.DockPanel.SetDock(entityHeader, Avalonia.Controls.Dock.Top);
+        DockPanel.SetDock(entityHeader, Avalonia.Controls.Dock.Top);
         panel.Children.Add(entityHeader);
 
-        // ── 组件列表（可滚动） ──
+        // ── Add Component 按钮（底部） ──
+        var bottomBar = CreateBottomBar();
+        DockPanel.SetDock(bottomBar, Avalonia.Controls.Dock.Bottom);
+        panel.Children.Add(bottomBar);
+
+        // ── 组件列表（填充剩余空间） ──
         var scrollViewer = new ScrollViewer
         {
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
@@ -61,12 +65,8 @@ public class InspectorAvaloniaView : AvaloniaViewBase
         scrollViewer.Content = _componentPanel;
         panel.Children.Add(scrollViewer);
 
-        // ── 底部：Add Component 按钮 ──
-        var bottomBar = CreateBottomBar();
-        Avalonia.Controls.DockPanel.SetDock(bottomBar, Avalonia.Controls.Dock.Bottom);
-        panel.Children.Add(bottomBar);
+        Content = panel;
 
-        // 订阅 ViewModel 变更
         _viewModel.PropertyChanged += OnPropertyChanged;
     }
 
@@ -139,8 +139,9 @@ public class InspectorAvaloniaView : AvaloniaViewBase
         var addButton = new Button
         {
             Content = "Add Component",
-            Width = 120,
-            Height = 24,
+            MinWidth = 120,
+            MinHeight = 24,
+            Padding = new Avalonia.Thickness(4, 2),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
         };

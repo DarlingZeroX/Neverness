@@ -11,9 +11,8 @@ namespace Neverness.Editor.AvaloniaFrontend.Inspectors;
 /// </summary>
 public class CameraInspector : AvaloniaInspectorBase
 {
-    // Camera 组件 TypeId
-    // TODO: 从 ComponentInspectorRegistry 获取实际 TypeId
-    private const ulong CameraTypeId = 2;
+    // Camera 组件 TypeId（与 Native NNCameraComponentData 的 ComponentIdAttribute 一致）
+    private const ulong CameraTypeId = 0x54D1B2A64667E32E;
 
     public override string DisplayName => "Camera";
 
@@ -24,35 +23,13 @@ public class CameraInspector : AvaloniaInspectorBase
 
     public override Control CreateInspector(ulong sceneHandle, ulong entityHandle, ulong typeId)
     {
-        var content = new StackPanel
-        {
-            Spacing = 4,
-            Margin = new Avalonia.Thickness(0, 4),
-        };
+        var content = new StackPanel { Spacing = 0 };
 
-        // 投影类型
-        var projectionCombo = new ComboBox
-        {
-            Width = 120,
-            Height = 24,
-            ItemsSource = new[] { "Perspective", "Orthographic" },
-            SelectedIndex = 0,
-        };
-        content.Children.Add(CreatePropertyRow("Projection", projectionCombo));
+        content.Children.Add(CreatePropertyRow("Projection", CreateComboBox(new[] { "Perspective", "Orthographic" })));
+        content.Children.Add(CreatePropertyRow("FOV", CreateNumericInput(60f, 1f)));
+        content.Children.Add(CreatePropertyRow("Near", CreateNumericInput(0.1f, 0.01f)));
+        content.Children.Add(CreatePropertyRow("Far", CreateNumericInput(1000f, 10f)));
 
-        // FOV
-        var fovInput = CreateNumericInput(60f, 1f);
-        content.Children.Add(CreatePropertyRow("FOV", fovInput));
-
-        // 近裁剪面
-        var nearInput = CreateNumericInput(0.1f, 0.01f);
-        content.Children.Add(CreatePropertyRow("Near", nearInput));
-
-        // 远裁剪面
-        var farInput = CreateNumericInput(1000f, 10f);
-        content.Children.Add(CreatePropertyRow("Far", farInput));
-
-        // 宽高比（只读）
         var aspectLabel = new TextBlock
         {
             Text = "16:9",

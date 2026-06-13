@@ -142,7 +142,7 @@ public static class EditorCompositionRoot
     /// <summary>连接 SceneBrowser 选中事件到 Inspector。</summary>
     private static void ConnectSceneBrowserToInspector()
     {
-        if (SceneBrowserVM == null || InspectorController == null) return;
+        if (SceneBrowserVM == null || InspectorController == null || InspectorVM == null) return;
 
         // 订阅 SceneBrowserViewModel 的选中变更事件
         SceneBrowserVM.PropertyChanged += (propertyName) =>
@@ -152,12 +152,19 @@ public static class EditorCompositionRoot
                 var selectedHandle = SceneBrowserVM.SelectedEntityHandle;
                 if (selectedHandle != 0)
                 {
-                    // 获取当前场景句柄
+                    // 直接用 ISceneQueryService 获取实体信息（与 SceneBrowser 同源，避免 InspectorService 缓存不同步）
                     var sceneQueryService = CoreModuleImp.Context.GetService<ISceneQueryService>();
                     var sceneHandle = sceneQueryService.ActiveSceneHandle;
+                    var entityName = sceneQueryService.GetEntityName(selectedHandle);
+                    var entityData = sceneQueryService.GetEntity(selectedHandle);
 
-                    // 通知 InspectorController
-                    InspectorController.SetSelectedEntity(sceneHandle, selectedHandle);
+                    // 直接更新 InspectorViewModel
+                    InspectorVM.SetSelectedEntity(selectedHandle, entityName);
+                    InspectorVM.SceneHandle = sceneHandle;
+                    InspectorVM.IsActive = entityData?.IsActive ?? true;
+
+                    // 刷新组件列表
+                    InspectorController.RefreshComponents();
                 }
                 else
                 {

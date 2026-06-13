@@ -18,7 +18,7 @@
         CanResize="True"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaTitleBarHeightHint="0"
-        ExtendClientAreaChromeHints="NoChrome">
+>
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>

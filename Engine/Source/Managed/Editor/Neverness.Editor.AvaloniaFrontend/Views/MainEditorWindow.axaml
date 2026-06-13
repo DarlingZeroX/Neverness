@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dock="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
+        xmlns:dockModels="clr-namespace:Dock.Model.Mvvm.Controls;assembly=Dock.Model.Mvvm"
         x:Class="Neverness.Editor.AvaloniaFrontend.Views.MainEditorWindow"
         Title="Neverness Editor"
         Width="1600"
@@ -23,13 +24,7 @@
         <DockPanel x:Name="StatusBar" DockPanel.Dock="Bottom" Height="24" Background="#FF007ACC"/>
 
         <!-- Dock 布局（中间） -->
-        <dock:DockControl x:Name="DockControl" AutoCreateDataTemplates="True">
-            <dock:DockControl.DataTemplates>
-                <DataTemplate>
-                    <ContentControl Content="{Binding}"/>
-                </DataTemplate>
-            </dock:DockControl.DataTemplates>
-        </dock:DockControl>
+        <dock:DockControl x:Name="DockControl" AutoCreateDataTemplates="True"/>
     </DockPanel>
 
 </Window>
