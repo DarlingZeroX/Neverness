@@ -1,10 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Dock.Avalonia.Controls;
 using Neverness.Editor.AvaloniaFrontend.Dock;
+using Neverness.Editor.Framework.Private.Menu;
+using Neverness.Editor.Framework.Public;
 
 namespace Neverness.Editor.AvaloniaFrontend.Views;
 
@@ -118,35 +121,241 @@ public partial class MainEditorWindow : Window
         InitializeStatusBar();
     }
 
+    /// <summary>
+    /// 从 EditorMenuRegistry 读取菜单树，渲染为 Avalonia Menu。
+    /// </summary>
     private void InitializeMenuBar()
     {
-        var fileMenu = new MenuItem { Header = "File" };
-        fileMenu.Items.Add(CreateMenuItem("New Scene", () => ExecuteCommand("file.new")));
-        fileMenu.Items.Add(CreateMenuItem("Open Scene", () => ExecuteCommand("file.open")));
-        fileMenu.Items.Add(new Separator());
-        fileMenu.Items.Add(CreateMenuItem("Save", () => ExecuteCommand("file.save")));
-        fileMenu.Items.Add(new Separator());
-        fileMenu.Items.Add(CreateMenuItem("Exit", () => ExecuteCommand("file.exit")));
-        MenuBar.Items.Add(fileMenu);
+        // 从 EditorMenuRegistry 获取菜单树
+        var tree = MenuRegistryImp.Instance.GetTree();
 
-        var editMenu = new MenuItem { Header = "Edit" };
-        editMenu.Items.Add(CreateMenuItem("Undo", () => ExecuteCommand("edit.undo")));
-        editMenu.Items.Add(CreateMenuItem("Redo", () => ExecuteCommand("edit.redo")));
-        editMenu.Items.Add(new Separator());
-        editMenu.Items.Add(CreateMenuItem("Cut", () => ExecuteCommand("edit.cut")));
-        editMenu.Items.Add(CreateMenuItem("Copy", () => ExecuteCommand("edit.copy")));
-        editMenu.Items.Add(CreateMenuItem("Paste", () => ExecuteCommand("edit.paste")));
-        MenuBar.Items.Add(editMenu);
+        // 清空现有菜单项
+        MenuBar.Items.Clear();
 
-        var sceneMenu = new MenuItem { Header = "Scene" };
-        sceneMenu.Items.Add(CreateMenuItem("Play", () => ExecuteCommand("scene.play")));
-        sceneMenu.Items.Add(CreateMenuItem("Pause", () => ExecuteCommand("scene.pause")));
-        sceneMenu.Items.Add(CreateMenuItem("Stop", () => ExecuteCommand("scene.stop")));
-        MenuBar.Items.Add(sceneMenu);
+        // 设置菜单栏样式
+        MenuBar.Background = new SolidColorBrush(Color.Parse("#FF2D2D30"));
+        MenuBar.Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC"));
 
-        var helpMenu = new MenuItem { Header = "Help" };
-        helpMenu.Items.Add(CreateMenuItem("About", () => ExecuteCommand("help.about")));
-        MenuBar.Items.Add(helpMenu);
+        // 遍历菜单树的根节点，创建顶级菜单
+        foreach (var rootNode in tree.SortedRoots)
+        {
+            var menuItem = CreateMenuFromNode(rootNode);
+            if (menuItem != null)
+            {
+                MenuBar.Items.Add(menuItem);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 从 MenuTreeNode 递归创建 Avalonia MenuItem。
+    /// </summary>
+    private MenuItem? CreateMenuFromNode(MenuTreeNode node)
+    {
+        // 分隔符
+        if (node.IsSeparator)
+        {
+            return null;
+        }
+
+        var menuItem = new MenuItem
+        {
+            Header = node.Name,
+        };
+
+        // 如果是叶子节点（有绑定的命令）
+        if (node.IsLeaf && node.Item.HasValue)
+        {
+            var item = node.Item.Value;
+
+            // 设置快捷键
+            if (!string.IsNullOrEmpty(item.Shortcut))
+            {
+                menuItem.InputGesture = ParseKeyGesture(item.Shortcut);
+            }
+
+            // 设置图标
+            if (!string.IsNullOrEmpty(item.Icon))
+            {
+                menuItem.Icon = new TextBlock
+                {
+                    Text = item.Icon,
+                    FontSize = 14,
+                };
+            }
+
+            // 绑定命令
+            if (item.Command != null)
+            {
+                var command = item.Command;
+                menuItem.Click += (_, _) =>
+                {
+                    try
+                    {
+                        command.Execute(new EditorCommandContext());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"[MainEditorWindow] 命令执行失败 '{command.Id}': {ex.Message}");
+                    }
+                };
+
+                // 设置 CanExecute
+                if (command.CanExecute != null)
+                {
+                    menuItem.IsEnabled = command.CanExecute();
+                }
+
+                // 设置 IsChecked
+                if (command.IsChecked != null)
+                {
+                    menuItem.IsChecked = command.IsChecked();
+                }
+            }
+
+            // 动态菜单
+            if (node.IsDynamic && node.DynamicBuilder != null)
+            {
+                menuItem.AttachedToVisualTree += (_, _) =>
+                {
+                    // 动态生成子菜单项
+                    var builder = new DynamicMenuBuilder();
+                    node.DynamicBuilder(builder);
+                    var dynamicItems = builder.Build();
+
+                    menuItem.Items.Clear();
+                    foreach (var dynamicItem in dynamicItems)
+                    {
+                        if (dynamicItem.IsSeparator)
+                        {
+                            menuItem.Items.Add(CreateSeparator());
+                        }
+                        else
+                        {
+                            var childMenuItem = CreateMenuItemFromEditorMenuItem(dynamicItem);
+                            if (childMenuItem != null)
+                            {
+                                menuItem.Items.Add(childMenuItem);
+                            }
+                        }
+                    }
+                };
+            }
+        }
+        else
+        {
+            // 非叶子节点，递归创建子菜单
+            foreach (var childNode in node.SortedChildren)
+            {
+                if (childNode.IsSeparator)
+                {
+                    menuItem.Items.Add(CreateSeparator());
+                }
+                else
+                {
+                    var childMenuItem = CreateMenuFromNode(childNode);
+                    if (childMenuItem != null)
+                    {
+                        menuItem.Items.Add(childMenuItem);
+                    }
+                }
+            }
+        }
+
+        return menuItem;
+    }
+
+    /// <summary>
+    /// 从 EditorMenuItem 创建 Avalonia MenuItem。
+    /// </summary>
+    private MenuItem? CreateMenuItemFromEditorMenuItem(EditorMenuItem item)
+    {
+        if (item.IsSeparator)
+        {
+            return null;
+        }
+
+        var menuItem = new MenuItem
+        {
+            Header = item.Path.Split('/').Last(),
+        };
+
+        // 设置快捷键
+        if (!string.IsNullOrEmpty(item.Shortcut))
+        {
+            menuItem.InputGesture = ParseKeyGesture(item.Shortcut);
+        }
+
+        // 设置图标
+        if (!string.IsNullOrEmpty(item.Icon))
+        {
+            menuItem.Icon = new TextBlock
+            {
+                Text = item.Icon,
+                FontSize = 14,
+            };
+        }
+
+        // 绑定命令
+        if (item.Command != null)
+        {
+            var command = item.Command;
+            menuItem.Click += (_, _) =>
+            {
+                try
+                {
+                    command.Execute(new EditorCommandContext());
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"[MainEditorWindow] 命令执行失败 '{command.Id}': {ex.Message}");
+                }
+            };
+
+            // 设置 CanExecute
+            if (command.CanExecute != null)
+            {
+                menuItem.IsEnabled = command.CanExecute();
+            }
+
+            // 设置 IsChecked
+            if (command.IsChecked != null)
+            {
+                menuItem.IsChecked = command.IsChecked();
+            }
+        }
+
+        return menuItem;
+    }
+
+    /// <summary>
+    /// 创建分隔符。
+    /// </summary>
+    private static Avalonia.Controls.MenuItem CreateSeparator()
+    {
+        return new Avalonia.Controls.MenuItem
+        {
+            Header = "-",
+            IsEnabled = false,
+            Height = 1,
+            Padding = new Thickness(0),
+        };
+    }
+
+    /// <summary>
+    /// 解析快捷键字符串为 KeyGesture。
+    /// </summary>
+    private static KeyGesture? ParseKeyGesture(string shortcut)
+    {
+        try
+        {
+            return KeyGesture.Parse(shortcut);
+        }
+        catch
+        {
+            Console.Error.WriteLine($"[MainEditorWindow] 无法解析快捷键: {shortcut}");
+            return null;
+        }
     }
 
     private void InitializeToolbar()
@@ -173,13 +382,6 @@ public partial class MainEditorWindow : Window
         StatusBar.Children.Add(statusText);
     }
 
-    private MenuItem CreateMenuItem(string header, Action onClick)
-    {
-        var item = new MenuItem { Header = header };
-        item.Click += (_, _) => onClick();
-        return item;
-    }
-
     private void AddToolButton(string icon, string tooltip, Action onClick)
     {
         var button = new Button
@@ -202,5 +404,6 @@ public partial class MainEditorWindow : Window
     private void ExecuteCommand(string commandId)
     {
         Console.WriteLine($"[MainEditorWindow] 命令: {commandId}");
+        EditorMenuRegistry.ExecuteCommand(commandId);
     }
 }

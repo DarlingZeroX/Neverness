@@ -102,12 +102,18 @@ public sealed class SceneWorld : IScene
 
     // ── 实体操作 ──
 
-    /// <summary>创建实体。</summary>
+    /// <summary>创建实体（仅基础组件，不发射事件）。
+    /// 调用方应在组件挂载完毕后手动调用 EmitEntityCreated。</summary>
     public SceneEntity? CreateEntity(string? displayName = null)
     {
         var entity = _scene.CreateEntity(displayName);
-        Events.Emit(SceneEvent.OnEntityCreated(entity));
         return new SceneEntity(entity, _scene);
+    }
+
+    /// <summary>发射 EntityCreated 事件（组件挂载完毕后调用）。</summary>
+    public void EmitEntityCreated(IEntity entity)
+    {
+        Events.Emit(SceneEvent.OnEntityCreated(entity));
     }
 
     /// <summary>IScene 接口：创建实体。</summary>

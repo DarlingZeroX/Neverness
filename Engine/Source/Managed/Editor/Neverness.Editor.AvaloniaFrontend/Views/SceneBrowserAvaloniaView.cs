@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Reactive;
+using Avalonia.Threading;
 using Neverness.Editor.AvaloniaFrontend.ContextMenus;
 using Neverness.Editor.Core.Controllers;
 using Neverness.Editor.Core.ViewModels;
@@ -173,12 +174,17 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         }
     }
 
-    /// <summary>ViewModel 属性变更。</summary>
+    /// <summary>ViewModel 属性变更——确保在 Avalonia UI 线程执行。</summary>
     private void OnPropertyChanged(string propertyName)
     {
         if (propertyName == nameof(SceneBrowserViewModel.VisibleNodes))
         {
-            RebuildTreeView();
+            // 事件从主线程（SceneWorld.CreateEntity → Emit → RefreshTree）触发，
+            // Avalonia 控件只能在 UI 线程修改
+            if (Dispatcher.UIThread.CheckAccess())
+                RebuildTreeView();
+            else
+                Dispatcher.UIThread.Invoke(RebuildTreeView);
         }
     }
 
@@ -265,15 +271,17 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         var world = SceneModule.GetActiveWorld();
         ctx.SetContext(SceneBrowserContextMenu.KeyActiveWorld, world);
 
-        // 判断右键位置：实体节点 or 空白区域
-        if (_treeView.SelectedItem is TreeViewItem treeItem && treeItem.Tag is int handle && handle > 0)
+        // 通过 e.Source 向上查找是否命中了 TreeViewItem（而非依赖 SelectedItem）
+        var hitItem = FindParentTreeViewItem(e.Source as Control);
+
+        if (hitItem != null && hitItem.Tag is int handle && handle > 0)
         {
             // 右键实体节点 → 实体菜单
             ctx.SetContext(SceneBrowserContextMenu.KeyEntityHandle, handle);
             _contextMenuRenderer.BuildAndShow(
                 SceneBrowserContextMenu.EntityId,
                 ctx,
-                treeItem);
+                hitItem);
         }
         else
         {
@@ -286,5 +294,17 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         }
 
         e.Handled = true;
+    }
+
+    /// <summary>从指定控件向上查找最近的 TreeViewItem。</summary>
+    private static TreeViewItem? FindParentTreeViewItem(Control? control)
+    {
+        while (control != null)
+        {
+            if (control is TreeViewItem tvi)
+                return tvi;
+            control = control.Parent as Control;
+        }
+        return null;
     }
 }

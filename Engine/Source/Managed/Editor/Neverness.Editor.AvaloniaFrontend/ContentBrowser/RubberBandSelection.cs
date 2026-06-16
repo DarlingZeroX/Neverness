@@ -211,12 +211,13 @@ public sealed class RubberBandSelection
         var w = Math.Abs(_dragCurrentCanvas.X - _dragStartCanvas.X);
         var h = Math.Abs(_dragCurrentCanvas.Y - _dragStartCanvas.Y);
 
-        // 考虑 ScrollViewer 的滚动偏移
-        var scrollOffset = _scrollViewer.Offset.Y;
-        y -= scrollOffset;
+        // 不需要加滚动偏移：_dragStartCanvas/_dragCurrentCanvas 已经是相对于 _canvas 的坐标，
+        // 而 _selectionBorder 在 _selectionCanvas 中，ScrollViewer 滚动时会自动跟随移动
 
-        Canvas.SetLeft(_selectionBorder, x);
-        Canvas.SetTop(_selectionBorder, y);
+        // 使用 Margin 定位（兼容 Grid 和 Canvas）
+        _selectionBorder.Margin = new Thickness(x, y, 0, 0);
+        _selectionBorder.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
+        _selectionBorder.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top;
         _selectionBorder.Width = w;
         _selectionBorder.Height = h;
         _selectionBorder.IsVisible = true;
@@ -254,13 +255,11 @@ public sealed class RubberBandSelection
         _onSelectionChanged(selected, _isCtrlHeld);
     }
 
-    /// <summary>获取选区矩形（Canvas 坐标系，已考虑滚动偏移）。</summary>
+    /// <summary>获取选区矩形（Canvas 坐标系）。</summary>
     private Rect GetSelectionRectInCanvasCoords()
     {
-        var scrollOffset = _scrollViewer.Offset.Y;
-
         var x = Math.Min(_dragStartCanvas.X, _dragCurrentCanvas.X);
-        var y = Math.Min(_dragStartCanvas.Y, _dragCurrentCanvas.Y) + scrollOffset;
+        var y = Math.Min(_dragStartCanvas.Y, _dragCurrentCanvas.Y);
         var w = Math.Abs(_dragCurrentCanvas.X - _dragStartCanvas.X);
         var h = Math.Abs(_dragCurrentCanvas.Y - _dragStartCanvas.Y);
 

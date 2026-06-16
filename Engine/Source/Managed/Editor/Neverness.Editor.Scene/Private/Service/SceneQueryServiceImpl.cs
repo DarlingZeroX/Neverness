@@ -1,6 +1,7 @@
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Scene.Private.Cache;
 using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Components;
 
 namespace Neverness.Editor.Scene.Private.Service;
 
@@ -93,11 +94,23 @@ public sealed class SceneQueryServiceImpl : ISceneQueryService
 
         var entity = _activeScene.CreateEntity();
 
+        // 添加 TransformComponent（SceneHierarchyCache 查询依赖此组件）
+        entity.Add(new TransformComponent
+        {
+            Position = System.Numerics.Vector3.Zero,
+            Rotation = System.Numerics.Quaternion.Identity,
+            Scale = System.Numerics.Vector3.One,
+        });
+
         // 设置父节点
         if (parent != null && parent.IsValid)
         {
             _activeScene.SetParent(entity, parent);
         }
+
+        // 组件挂载完毕，发射事件
+        if (_activeScene is SceneWorld world)
+            world.EmitEntityCreated(entity);
 
         return entity;
     }
@@ -128,6 +141,14 @@ public sealed class SceneQueryServiceImpl : ISceneQueryService
         // 创建新实体
         var newEntity = _activeScene.CreateEntity(entity.Name);
 
+        // 添加 TransformComponent（SceneHierarchyCache 查询依赖此组件）
+        newEntity.Add(new TransformComponent
+        {
+            Position = System.Numerics.Vector3.Zero,
+            Rotation = System.Numerics.Quaternion.Identity,
+            Scale = System.Numerics.Vector3.One,
+        });
+
         // TODO: 复制组件数据
         // 需要遍历源实体的所有组件并复制到新实体
 
@@ -137,6 +158,10 @@ public sealed class SceneQueryServiceImpl : ISceneQueryService
         {
             _activeScene.SetParent(newEntity, parent);
         }
+
+        // 组件挂载完毕，发射事件
+        if (_activeScene is SceneWorld world)
+            world.EmitEntityCreated(newEntity);
 
         return newEntity;
     }

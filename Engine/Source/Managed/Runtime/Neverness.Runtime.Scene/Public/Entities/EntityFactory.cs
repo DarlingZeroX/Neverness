@@ -54,6 +54,10 @@ public static class EntityFactory
             OrthographicSize = 10f,
         });
 
+        // 组件挂载完毕，发射事件（此时缓存查询能找到带 TransformComponent 的实体）
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
+
         return entity;
     }
 
@@ -89,6 +93,9 @@ public static class EntityFactory
             IsOrthographic = true,
             OrthographicSize = orthographicSize,
         });
+
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
 
         return entity;
     }
@@ -147,6 +154,9 @@ public static class EntityFactory
             Flags = SpriteFlags.Visible,
         });
 
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
+
         return entity;
     }
 
@@ -194,6 +204,9 @@ public static class EntityFactory
             Flags = flags,
         });
 
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
+
         return entity;
     }
 
@@ -231,6 +244,9 @@ public static class EntityFactory
             Volume = volume,
             Flags = flags,
         });
+
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
 
         return entity;
     }
@@ -273,6 +289,9 @@ public static class EntityFactory
             ViewTarget = viewTarget,
         });
 
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
+
         return entity;
     }
 
@@ -296,6 +315,9 @@ public static class EntityFactory
             Rotation = rotation ?? Quaternion.Identity,
             Scale = scale ?? Vector3.One,
         });
+
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
 
         return entity;
     }
@@ -321,6 +343,9 @@ public static class EntityFactory
         });
 
         entity.Add(ScriptComponent.Create(scriptTypeId));
+
+        if (scene is SceneWorld world)
+            world.EmitEntityCreated(entity);
 
         return entity;
     }
@@ -355,6 +380,13 @@ public static class EntityFactory
 
         scene.SetParent(child, parent);
 
+        // 组件挂载完毕后发射事件
+        if (scene is SceneWorld world)
+        {
+            world.EmitEntityCreated(parent);
+            world.EmitEntityCreated(child);
+        }
+
         return (parent, child);
     }
 
@@ -384,6 +416,13 @@ public static class EntityFactory
                 Scale = Vector3.One,
             });
             entities.Add(entity);
+        }
+
+        // 组件挂载完毕后发射事件
+        if (scene is SceneWorld world)
+        {
+            foreach (var entity in entities)
+                world.EmitEntityCreated(entity);
         }
 
         return entities;

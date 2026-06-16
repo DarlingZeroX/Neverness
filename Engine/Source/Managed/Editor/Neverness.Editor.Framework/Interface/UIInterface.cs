@@ -26,12 +26,6 @@ namespace Neverness.Editor.Framework.Interface
         bool IsWindowOpened();
     }
 
-    public interface ISidebarComponent : IPanel
-    {
-        void Toggle();
-        void OnSideBarUI();
-    }
-
     // =============================================
     //  基础设施接口（从具体类提取，供 Core 消费）
     // =============================================
