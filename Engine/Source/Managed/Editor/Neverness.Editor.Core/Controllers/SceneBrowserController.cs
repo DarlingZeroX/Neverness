@@ -24,11 +24,14 @@ public class SceneBrowserController : IController
     {
         // 初始刷新
         RefreshTree();
+
+        // 订阅场景实体变更事件，自动刷新树
+        SubscribeToSceneEvents();
     }
 
     public void Shutdown()
     {
-        // 清理资源
+        UnsubscribeFromSceneEvents();
     }
 
     /// <summary>刷新实体树。</summary>
@@ -71,6 +74,13 @@ public class SceneBrowserController : IController
     public void SetSearchText(string text)
     {
         _viewModel.SearchText = text;
+    }
+
+    /// <summary>场景切换时调用——重新订阅事件。</summary>
+    public void OnSceneChanged()
+    {
+        UnsubscribeFromSceneEvents();
+        SubscribeToSceneEvents();
     }
 
     /// <summary>开始重命名实体。</summary>
@@ -139,5 +149,43 @@ public class SceneBrowserController : IController
             Depth = data.Depth,
             Children = data.Children.Select(ConvertToVM).ToList()
         };
+    }
+
+    // ── 场景事件订阅 ──
+
+    private SceneEventBus.SceneEventHandler? _sceneEventHandler;
+
+    /// <summary>订阅场景实体变更事件。</summary>
+    private void SubscribeToSceneEvents()
+    {
+        var scene = _sceneQueryService.ActiveScene;
+        if (scene == null) return;
+
+        // 用 SubscribeAll 走 _globalSubscribers 路径，与 Emit 分发路径一致
+        _sceneEventHandler = OnSceneEvent;
+        if (scene.Events is SceneEventBus eventBus)
+            eventBus.SubscribeAll(_sceneEventHandler);
+    }
+
+    /// <summary>取消订阅场景事件。</summary>
+    private void UnsubscribeFromSceneEvents()
+    {
+        if (_sceneEventHandler == null) return;
+
+        var scene = _sceneQueryService.ActiveScene;
+        if (scene != null && scene.Events is SceneEventBus eventBus)
+            eventBus.UnsubscribeAll(_sceneEventHandler);
+
+        _sceneEventHandler = null;
+    }
+
+    /// <summary>场景事件回调——实体创建/销毁时刷新树。</summary>
+    private void OnSceneEvent(SceneEvent evt)
+    {
+        if (evt.Type is SceneEventType.EntityCreated
+            or SceneEventType.EntityDestroyed)
+        {
+            RefreshTree();
+        }
     }
 }

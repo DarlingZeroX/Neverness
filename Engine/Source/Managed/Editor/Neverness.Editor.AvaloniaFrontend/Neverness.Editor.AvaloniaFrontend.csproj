@@ -34,6 +34,8 @@
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
 		<!-- Assets（资产工厂、MetaFileManager、EditorAssetDatabase） -->
 		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
+		<!-- Scene（场景管理、SceneModule、SceneBrowserContextMenu） -->
+		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<!-- ProjectSystem（ProjectPaths） -->
 		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
 	</ItemGroup>

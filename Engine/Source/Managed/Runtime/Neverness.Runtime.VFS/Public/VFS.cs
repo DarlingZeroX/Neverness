@@ -1,5 +1,7 @@
 // Neverness.Runtime.VFS — 业务层 VFS 门面（经函数表调用 Native VFSService）。
 
+using Neverness.Runtime.Engine;
+
 namespace Neverness.Runtime.VFS.Public;
 
 /// <summary>
@@ -50,4 +52,39 @@ public static class VFS
 	/// </summary>
 	public static bool RebuildNativeFileSystemFiles(string path) =>
 		VFSHost.RebuildNativeFileSystemFiles(path);
+
+	// ── 文件系统管理 API（handle 机制） ──
+
+	/// <summary>
+	/// 创建并挂载文件系统，返回不透明 handle（0 表示失败）。
+	/// </summary>
+	/// <param name="alias">VFS 别名（如 <c>"/"</c>）。</param>
+	/// <param name="type">文件系统类型。</param>
+	/// <param name="path">Native/Zip 时为磁盘路径；Memory 时传 <see langword="null"/> 或空串。</param>
+	public static ulong AddFileSystem(string alias, NNVfsFileSystemType type, string? path) =>
+		VFSHost.AddFileSystem(alias, type, path);
+
+	/// <summary>
+	/// 根据 handle 精确移除文件系统。
+	/// </summary>
+	public static bool RemoveFileSystem(ulong handle) =>
+		VFSHost.RemoveFileSystem(handle);
+
+	/// <summary>
+	/// 查询 handle 对应的文件系统是否仍在 VFS 中。
+	/// </summary>
+	public static bool HasFileSystem(ulong handle) =>
+		VFSHost.HasFileSystem(handle);
+
+	/// <summary>
+	/// 移除 alias 下全部文件系统。
+	/// </summary>
+	public static void UnregisterAlias(string alias) =>
+		VFSHost.UnregisterAlias(alias);
+
+	/// <summary>
+	/// 查询 alias 是否有任何文件系统已注册。
+	/// </summary>
+	public static bool IsAliasRegistered(string alias) =>
+		VFSHost.IsAliasRegistered(alias);
 }

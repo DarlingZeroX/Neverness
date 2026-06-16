@@ -203,6 +203,76 @@ internal static unsafe class VFSHost
 		}
 	}
 
+	/// <summary>创建并挂载文件系统，返回 handle（0 失败）。</summary>
+	public static ulong AddFileSystem(string alias, NNVfsFileSystemType type, string? path)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(alias);
+		if (!TryGetVfsApi(out var api) || api.AddFileSystem == null)
+		{
+			return 0;
+		}
+
+		var utf8Alias = Encoding.UTF8.GetBytes(alias + '\0');
+		var utf8Path = Encoding.UTF8.GetBytes((path ?? string.Empty) + '\0');
+		fixed (byte* pAlias = utf8Alias)
+		fixed (byte* pPath = utf8Path)
+		{
+			return api.AddFileSystem(pAlias, type, pPath);
+		}
+	}
+
+	/// <summary>根据 handle 精确移除文件系统。</summary>
+	public static bool RemoveFileSystem(ulong handle)
+	{
+		if (!TryGetVfsApi(out var api) || api.RemoveFileSystem == null)
+		{
+			return false;
+		}
+		return api.RemoveFileSystem(handle) != 0;
+	}
+
+	/// <summary>查询 handle 是否仍在 VFS 中。</summary>
+	public static bool HasFileSystem(ulong handle)
+	{
+		if (!TryGetVfsApi(out var api) || api.HasFileSystem == null)
+		{
+			return false;
+		}
+		return api.HasFileSystem(handle) != 0;
+	}
+
+	/// <summary>移除 alias 下全部文件系统。</summary>
+	public static void UnregisterAlias(string alias)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(alias);
+		if (!TryGetVfsApi(out var api) || api.UnregisterAlias == null)
+		{
+			return;
+		}
+
+		var utf8Alias = Encoding.UTF8.GetBytes(alias + '\0');
+		fixed (byte* pAlias = utf8Alias)
+		{
+			api.UnregisterAlias(pAlias);
+		}
+	}
+
+	/// <summary>查询 alias 是否已注册。</summary>
+	public static bool IsAliasRegistered(string alias)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(alias);
+		if (!TryGetVfsApi(out var api) || api.IsAliasRegistered == null)
+		{
+			return false;
+		}
+
+		var utf8Alias = Encoding.UTF8.GetBytes(alias + '\0');
+		fixed (byte* pAlias = utf8Alias)
+		{
+			return api.IsAliasRegistered(pAlias) != 0;
+		}
+	}
+
 	private static bool TryGetVfsApi(out NNVfsApi api)
 	{
 		api = default;

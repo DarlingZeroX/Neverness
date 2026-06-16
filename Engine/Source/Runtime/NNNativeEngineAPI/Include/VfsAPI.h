@@ -26,6 +26,16 @@ extern "C" {
 #endif
 
 /**
+ * @brief VFS 文件系统类型（与 C# 端 NNVfsFileSystemType 对齐）。
+ */
+enum NNVfsFileSystemType : std::uint32_t
+{
+	NNVfsFS_Native = 0,  /**< NativeFileSystem（磁盘目录） */
+	NNVfsFS_Zip    = 1,  /**< ZipFileSystem（.zip/.pak）   */
+	NNVfsFS_Memory = 2,  /**< MemoryFileSystem（内存）     */
+};
+
+/**
  * @brief 读取 UTF-8 文本文件全文。
  * @param pathUtf8 NUL 结尾 VFS 虚拟路径；nullptr 失败。
  * @param outText 成功时写入 `malloc` 分配的 NUL 结尾缓冲区；调用方须 `freeBuffer`。
@@ -96,6 +106,40 @@ typedef int(NN_ENGINE_ABI_STDCALL* NNVfsWriteBufferToFileFn)(
 	const std::uint8_t* buffer,
 	std::uint64_t size);
 
+/**
+ * @brief 创建并挂载文件系统，返回不透明 handle（0 失败）。
+ * @param aliasUtf8 VFS 别名。
+ * @param type      文件系统类型（NNVfsFileSystemType）。
+ * @param pathUtf8  Native/Zip 时为磁盘路径；Memory 时可为空串。
+ */
+typedef std::uint64_t(NN_ENGINE_ABI_STDCALL* NNVfsAddFileSystemFn)(
+	const char* aliasUtf8,
+	NNVfsFileSystemType type,
+	const char* pathUtf8);
+
+/**
+ * @brief 根据 handle 精确移除指定文件系统。
+ * @return 非 0 成功；0 失败（handle 无效）。
+ */
+typedef int(NN_ENGINE_ABI_STDCALL* NNVfsRemoveFileSystemFn)(std::uint64_t handle);
+
+/**
+ * @brief 查询 handle 对应的文件系统是否仍挂载在 VFS 中。
+ * @return 非 0 存在；0 不存在。
+ */
+typedef int(NN_ENGINE_ABI_STDCALL* NNVfsHasFileSystemFn)(std::uint64_t handle);
+
+/**
+ * @brief 移除 alias 下全部文件系统。
+ */
+typedef void(NN_ENGINE_ABI_STDCALL* NNVfsUnregisterAliasFn)(const char* aliasUtf8);
+
+/**
+ * @brief 查询 alias 是否有任何文件系统已注册。
+ * @return 非 0 已注册；0 未注册。
+ */
+typedef int(NN_ENGINE_ABI_STDCALL* NNVfsIsAliasRegisteredFn)(const char* aliasUtf8);
+
 typedef struct NNVfsAPI
 {
 	std::uint32_t size;
@@ -107,6 +151,12 @@ typedef struct NNVfsAPI
 	NNVfsRebuildNativeFileSystemFilesFn rebuildNativeFileSystemFiles;
 	NNVfsGetAbsolutePathFn getAbsolutePath;
 	NNVfsWriteBufferToFileFn writeBufferToFile;
+	// ── 以下为 handle 机制的文件系统管理 API（追加，不破坏旧 ABI） ──
+	NNVfsAddFileSystemFn addFileSystem;
+	NNVfsRemoveFileSystemFn removeFileSystem;
+	NNVfsHasFileSystemFn hasFileSystem;
+	NNVfsUnregisterAliasFn unregisterAlias;
+	NNVfsIsAliasRegisteredFn isAliasRegistered;
 } NNVfsAPI;
 
 #ifdef __cplusplus

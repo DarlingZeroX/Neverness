@@ -12,9 +12,13 @@
 #include "VFSService.h"
 #include <NNFileSystem/Interface/HFileSystem.h>
 #include <filesystem>
+#include <unordered_map>
+#include <utility>
 
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "VFS/NativeFileSystem.h"
+#include "VFS/ZipFileSystem.h"
+#include "VFS/MemoryFileSystem.h"
 
 namespace NN::Runtime::VFS
 {
@@ -161,6 +165,103 @@ namespace NN::Runtime::VFS
 		}
 
 		return false;
+	}
+
+	// ── handle 注册表（handle → {alias, IFileSystemPtr}） ──
+
+	namespace
+	{
+		/** 文件系统类型枚举，与 NNVfsFileSystemType 对齐 */
+		enum class FSType : uint32_t
+		{
+			Native = 0,
+			Zip    = 1,
+			Memory = 2,
+		};
+
+		std::unordered_map<uint64_t, std::pair<std::string, IFileSystemPtr>>& GetFSRegistry()
+		{
+			static std::unordered_map<uint64_t, std::pair<std::string, IFileSystemPtr>> registry;
+			return registry;
+		}
+
+		uint64_t& GetNextHandle()
+		{
+			static uint64_t next = 1;
+			return next;
+		}
+	}
+
+	uint64_t VFSService::AddFileSystem(const std::string& alias, uint32_t type, const std::string& path)
+	{
+		IFileSystemPtr fs;
+
+		switch (static_cast<FSType>(type))
+		{
+		case FSType::Native:
+			fs = std::make_shared<NativeFileSystem>(path);
+			break;
+		case FSType::Zip:
+			fs = std::make_shared<ZipFileSystem>(path);
+			break;
+		case FSType::Memory:
+			fs = std::make_shared<MemoryFileSystem>();
+			break;
+		default:
+			return 0;
+		}
+
+		if (!fs)
+			return 0;
+
+		fs->Initialize();
+		GetInstance()->AddFileSystem(alias, fs);
+
+		uint64_t handle = GetNextHandle()++;
+		GetFSRegistry()[handle] = { alias, std::move(fs) };
+		return handle;
+	}
+
+	bool VFSService::RemoveFileSystem(uint64_t handle)
+	{
+		auto& registry = GetFSRegistry();
+		auto it = registry.find(handle);
+		if (it == registry.end())
+			return false;
+
+		GetInstance()->RemoveFileSystem(it->second.first, it->second.second);
+		registry.erase(it);
+		return true;
+	}
+
+	bool VFSService::HasFileSystem(uint64_t handle)
+	{
+		auto& registry = GetFSRegistry();
+		auto it = registry.find(handle);
+		if (it == registry.end())
+			return false;
+
+		return GetInstance()->HasFileSystem(it->second.first, it->second.second);
+	}
+
+	void VFSService::UnregisterAlias(const std::string& alias)
+	{
+		GetInstance()->UnregisterAlias(alias);
+
+		// 清理注册表中该 alias 的所有条目
+		auto& registry = GetFSRegistry();
+		for (auto it = registry.begin(); it != registry.end(); )
+		{
+			if (it->second.first == alias)
+				it = registry.erase(it);
+			else
+				++it;
+		}
+	}
+
+	bool VFSService::IsAliasRegistered(const std::string& alias)
+	{
+		return GetInstance()->IsAliasRegistered(alias);
 	}
 
 	IStringStreamVFS::~IStringStreamVFS()

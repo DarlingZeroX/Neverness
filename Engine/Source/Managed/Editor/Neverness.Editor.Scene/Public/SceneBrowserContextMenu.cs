@@ -22,6 +22,12 @@ public static class SceneBrowserContextMenu
     /// <summary>空白区域右键菜单 context ID。</summary>
     public const string BackgroundId = "scene_browser.background";
 
+    /// <summary>实体右键菜单 context ID。</summary>
+    public const string EntityId = "scene_browser.entity";
+
     /// <summary>当前活动世界 context key（类型 <c>SceneWorld</c>）。</summary>
     public const string KeyActiveWorld = "activeWorld";
+
+    /// <summary>当前右键实体 handle context key（类型 <c>int</c>）。</summary>
+    public const string KeyEntityHandle = "entityHandle";
 }

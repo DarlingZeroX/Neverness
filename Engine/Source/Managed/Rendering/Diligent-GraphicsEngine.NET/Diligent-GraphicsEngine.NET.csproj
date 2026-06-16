@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	  <AssemblyName>Diligent-GraphicsEngine.NET</AssemblyName>
+	  <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Version>2.5.6</Version>
+    <Title>Core graphics library of the Diligent Engine</Title>
+  </PropertyGroup>
+
+  <!-- SharpGen.Runtime 提供 COM 对象基类、Result 等运行时支持 -->
+  <ItemGroup>
+    <PackageReference Include="Diligent-SharpGen.Runtime" Version="2.0.3" />
+  </ItemGroup>
+
+</Project>

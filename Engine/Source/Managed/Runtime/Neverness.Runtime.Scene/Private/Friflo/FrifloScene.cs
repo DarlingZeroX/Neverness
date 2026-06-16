@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Friflo.Engine.ECS;
 using Neverness.Runtime.Scene.Components;
 using Neverness.Runtime.Scene.Query;
@@ -19,7 +20,10 @@ public sealed class FrifloScene : IScene
     public string Name { get; set; }
     public int EntityCount => _store.Count;
     public bool IsValid => !_disposed;
-    public ISceneEventBus Events { get; }
+    public SceneEventBus Events { get; }
+
+    // ── IScene 接口 ──
+    ISceneEventBus IScene.Events => Events;
 
     // ── 构造 ──
 
@@ -28,7 +32,7 @@ public sealed class FrifloScene : IScene
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         Name = name;
         _store = new EntityStore();
-        Events = new FrifloEventBus();
+        Events = new SceneEventBus();
     }
 
     // ── 实体操作 ──
@@ -37,15 +41,12 @@ public sealed class FrifloScene : IScene
     {
         ThrowIfDisposed();
         var entity = _store.CreateEntity();
-        var wrappedEntity = new FrifloEntity(entity, this);
 
-        // 设置实体名称（如果提供）
-        if (displayName != null)
-        {
-            wrappedEntity.Name = displayName;
-        }
+        // 每个实体自带 TagComponent（名字）和 RelationshipComponent（层级）
+        entity.AddComponent(TagComponent.Create(displayName ?? $"Entity_{entity.Id}"));
+        entity.AddComponent(RelationshipComponent.Default);
 
-        return wrappedEntity;
+        return new FrifloEntity(entity, this);
     }
 
     public void DestroyEntity(IEntity entity)
@@ -357,7 +358,7 @@ public sealed class FrifloScene : IScene
         }
     }
 
-    // ── 序列化 ──
+    // ── 序列化（调用 Source Generator 生成的 ComponentSerializer） ──
 
     public void Serialize(Stream stream, string format = "json")
     {
@@ -367,67 +368,80 @@ public sealed class FrifloScene : IScene
         if (format.ToLowerInvariant() != "json")
             throw new NotSupportedException($"不支持的序列化格式: {format}");
 
-        // 使用简化的 JSON 序列化
-        // 遍历所有实体，提取组件数据
-        var entities = new List<Dictionary<string, object>>();
-
-        _store.Query<TransformComponent>().ForEachEntity((ref TransformComponent transform, Entity entity) =>
+        using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions
         {
-            var entityData = new Dictionary<string, object>
-            {
-                ["id"] = entity.Id,
-                ["name"] = $"Entity_{entity.Id}",
-                ["components"] = new Dictionary<string, object>
-                {
-                    ["TransformComponent"] = new Dictionary<string, object>
-                    {
-                        ["position"] = new[] { transform.Position.X, transform.Position.Y, transform.Position.Z },
-                        ["rotation"] = new[] { transform.Rotation.X, transform.Rotation.Y, transform.Rotation.Z, transform.Rotation.W },
-                        ["scale"] = new[] { transform.Scale.X, transform.Scale.Y, transform.Scale.Z },
-                    }
-                }
-            };
-            entities.Add(entityData);
+            Indented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         });
 
-        // 写入 JSON
-        using var writer = new StreamWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true);
-        writer.Write("{\n  \"entities\": [\n");
-        for (int i = 0; i < entities.Count; i++)
-        {
-            var entity = entities[i];
-            writer.Write($"    {{\n");
-            writer.Write($"      \"id\": {entity["id"]},\n");
-            writer.Write($"      \"name\": \"{entity["name"]}\",\n");
-            writer.Write($"      \"components\": {{\n");
+        writer.WriteStartObject();
+        writer.WriteStartArray("entities");
 
-            var components = (Dictionary<string, object>)entity["components"];
-            int compIndex = 0;
-            foreach (var comp in components)
+        foreach (var entity in _store.Entities)
+        {
+            writer.WriteStartObject();
+
+            // id
+            writer.WriteNumber("id", entity.Id);
+
+            // name（从 TagComponent 读取）
+            string name = entity.HasComponent<TagComponent>()
+                ? entity.GetComponent<TagComponent>().Name
+                : $"Entity_{entity.Id}";
+            writer.WriteString("name", name);
+
+            // parentId（如果有 RelationshipComponent）
+            if (entity.HasComponent<RelationshipComponent>())
             {
-                var compData = (Dictionary<string, object>)comp.Value;
-                writer.Write($"        \"{comp.Key}\": {{\n");
-                int fieldIndex = 0;
-                foreach (var field in compData)
-                {
-                    var values = (float[])field.Value;
-                    writer.Write($"          \"{field.Key}\": [{string.Join(", ", values)}]");
-                    if (fieldIndex < compData.Count - 1) writer.Write(",");
-                    writer.Write("\n");
-                    fieldIndex++;
-                }
-                writer.Write($"        }}");
-                if (compIndex < components.Count - 1) writer.Write(",");
-                writer.Write("\n");
-                compIndex++;
+                ref var rel = ref entity.GetComponent<RelationshipComponent>();
+                writer.WriteNumber("parentId", rel.ParentId);
             }
 
-            writer.Write($"      }}\n");
-            writer.Write($"    }}");
-            if (i < entities.Count - 1) writer.Write(",");
-            writer.Write("\n");
+            // components（由 Generator 生成的 Write 方法）
+            writer.WriteStartObject("components");
+
+            if (entity.HasComponent<TransformComponent>())
+            {
+                ref var c = ref entity.GetComponent<TransformComponent>();
+                ComponentSerializer.WriteTransformComponent(ref c, writer);
+            }
+            if (entity.HasComponent<CameraComponent>())
+            {
+                ref var c = ref entity.GetComponent<CameraComponent>();
+                ComponentSerializer.WriteCameraComponent(ref c, writer);
+            }
+            if (entity.HasComponent<ScriptComponent>())
+            {
+                ref var c = ref entity.GetComponent<ScriptComponent>();
+                ComponentSerializer.WriteScriptComponent(ref c, writer);
+            }
+            if (entity.HasComponent<SpriteRendererComponent>())
+            {
+                ref var c = ref entity.GetComponent<SpriteRendererComponent>();
+                ComponentSerializer.WriteSpriteRendererComponent(ref c, writer);
+            }
+            if (entity.HasComponent<AudioSourceComponent>())
+            {
+                ref var c = ref entity.GetComponent<AudioSourceComponent>();
+                ComponentSerializer.WriteAudioSourceComponent(ref c, writer);
+            }
+            if (entity.HasComponent<VideoPlayerComponent>())
+            {
+                ref var c = ref entity.GetComponent<VideoPlayerComponent>();
+                ComponentSerializer.WriteVideoPlayerComponent(ref c, writer);
+            }
+            if (entity.HasComponent<RmlUIDocumentComponent>())
+            {
+                ref var c = ref entity.GetComponent<RmlUIDocumentComponent>();
+                ComponentSerializer.WriteRmlUIDocumentComponent(ref c, writer);
+            }
+
+            writer.WriteEndObject(); // components
+            writer.WriteEndObject(); // entity
         }
-        writer.Write("  ]\n}");
+
+        writer.WriteEndArray(); // entities
+        writer.WriteEndObject(); // root
     }
 
     public void Deserialize(Stream stream, string format = "json")
@@ -438,17 +452,57 @@ public sealed class FrifloScene : IScene
         if (format.ToLowerInvariant() != "json")
             throw new NotSupportedException($"不支持的序列化格式: {format}");
 
-        // 简化实现：读取 JSON 并创建实体
         using var reader = new StreamReader(stream, System.Text.Encoding.UTF8);
         var json = reader.ReadToEnd();
 
-        // 简单的 JSON 解析（生产环境应使用 System.Text.Json）
-        // 这里只是演示，实际实现需要更完整的解析
-        if (json.Contains("\"entities\""))
+        using var doc = JsonDocument.Parse(json);
+        var root = doc.RootElement;
+
+        if (!root.TryGetProperty("entities", out var entitiesElement))
+            return;
+
+        // 第一遍：创建所有实体 + 添加组件
+        var idMap = new Dictionary<int, Entity>();
+
+        foreach (var entityElem in entitiesElement.EnumerateArray())
         {
-            // 创建一个默认实体作为示例
-            var entity = _store.CreateEntity();
-            entity.AddComponent(TransformComponent.Default);
+            int id = entityElem.GetProperty("id").GetInt32();
+            string name = entityElem.TryGetProperty("name", out var nameElem)
+                ? nameElem.GetString() ?? $"Entity_{id}"
+                : $"Entity_{id}";
+
+            // CreateEntity 自带 TagComponent + RelationshipComponent
+            var wrapped = (FrifloEntity)CreateEntity(name);
+            var entity = wrapped.InternalEntity;
+            idMap[id] = entity;
+
+            // 添加组件（由 Generator 生成的 TryAddComponent 分发）
+            if (!entityElem.TryGetProperty("components", out var compsElem))
+                continue;
+
+            foreach (var compProp in compsElem.EnumerateObject())
+            {
+                ComponentSerializer.TryAddComponent(entity, compProp.Name, compProp.Value);
+            }
+        }
+
+        // 第二遍：重建父子层级
+        foreach (var entityElem in entitiesElement.EnumerateArray())
+        {
+            if (!entityElem.TryGetProperty("parentId", out var parentIdElem))
+                continue;
+
+            int parentId = parentIdElem.GetInt32();
+            if (parentId < 0)
+                continue;
+
+            int childId = entityElem.GetProperty("id").GetInt32();
+            if (idMap.TryGetValue(childId, out var child) && idMap.TryGetValue(parentId, out var parent))
+            {
+                var wrappedChild = new FrifloEntity(child, this);
+                var wrappedParent = new FrifloEntity(parent, this);
+                SetParent(wrappedChild, wrappedParent);
+            }
         }
     }
 

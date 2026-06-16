@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Neverness.Runtime.Engine;
 
 namespace Neverness.Runtime.Scene.Components;
 
@@ -20,6 +21,7 @@ public struct TransformComponent : IComponent
     public Vector3 Scale;
 
     /// <summary>世界矩阵（由 TransformSystem 每帧计算）。</summary>
+    [Transient]
     public Matrix4x4 WorldMatrix;
 
     /// <summary>创建默认变换（原点、无旋转、单位缩放）。</summary>

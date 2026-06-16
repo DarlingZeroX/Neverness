@@ -27,6 +27,7 @@ public struct AudioSourceComponent : IComponent
     public NNGuid AudioClipAsset;
 
     /// <summary>运行时播放器 ID（瞬态，不序列化）。</summary>
+    [Transient]
     public uint RuntimePlayerId;
 
     /// <summary>音量（0.0 ~ 1.0）。</summary>

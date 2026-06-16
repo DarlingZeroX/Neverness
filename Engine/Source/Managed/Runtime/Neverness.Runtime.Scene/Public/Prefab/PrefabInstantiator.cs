@@ -1,5 +1,7 @@
 using System.Numerics;
+using System.Text.Json;
 using Neverness.Runtime.Scene.Components;
+using Neverness.Runtime.Scene.Internal;
 
 namespace Neverness.Runtime.Scene.Prefab;
 
@@ -97,22 +99,15 @@ public sealed class PrefabInstantiator
 
     private void AddComponentFromData(IEntity entity, PrefabComponentData compData)
     {
-        // 简化实现：根据类型名称添加组件
-        // 实际实现应该使用反射或序列化系统
-        switch (compData.TypeName)
+        // TransformComponent 已经在创建实体时添加
+        if (compData.TypeName == "TransformComponent")
+            return;
+
+        // 通过 Generator 生成的 ComponentSerializer 反序列化组件
+        if (entity is FrifloEntity frifloEntity)
         {
-            case "TransformComponent":
-                // TransformComponent 已经在创建实体时添加
-                break;
-            case "CameraComponent":
-                entity.Add(CameraComponent.DefaultPerspective);
-                break;
-            case "ScriptComponent":
-                entity.Add(new ScriptComponent { ScriptTypeId = 0 });
-                break;
-            default:
-                // 未知组件类型，跳过
-                break;
+            using var doc = JsonDocument.Parse(compData.Data);
+            ComponentSerializer.TryAddComponent(frifloEntity.InternalEntity, compData.TypeName, doc.RootElement);
         }
     }
 }

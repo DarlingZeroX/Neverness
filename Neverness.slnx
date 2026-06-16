@@ -39,6 +39,9 @@
   <Folder Name="/Launcher/">
     <Project Path="Engine/Source/Managed/Launcher/NevernessLauncher/NevernessLauncher.csproj" />
   </Folder>
+  <Folder Name="/Rendering/">
+    <Project Path="Engine/Source/Managed/Rendering/Diligent-GraphicsEngine.NET/Diligent-GraphicsEngine.NET.csproj" />
+  </Folder>
   <Folder Name="/Runtime/">
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.App/Neverness.Runtime.App.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Application/Neverness.Runtime.Application.csproj" />
@@ -47,20 +50,15 @@
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Audio/Neverness.Runtime.Audio.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Bootstrap/Neverness.Runtime.Bootstrap.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj" />
-    <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Host/Neverness.Runtime.Host.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.ImageCodec/Neverness.Runtime.ImageCodec.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Interop/Neverness.Runtime.Interop.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.RuntimeLoop/Neverness.Runtime.RuntimeLoop.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Scene/Neverness.Runtime.Scene.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Scripting/Neverness.Runtime.Scripting.csproj" />
-    <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Serialization/Neverness.Runtime.Serialization.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.VFS/Neverness.Runtime.VFS.csproj" />
   </Folder>
   <Folder Name="/Runtime/Tests/">
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Scene/Tests/Neverness.Runtime.Scene.Tests.csproj" />
-  </Folder>
-  <Folder Name="/ThirdParty/">
-    <Project Path="Engine/Source/ThirdParty/DiligentEngine/DiligentCore/Graphics/GraphicsEngine.NET/Diligent-GraphicsEngine.NET.csproj" />
   </Folder>
   <Project Path="Engine/Source/Managed/Runtime/Tests/NevernessRuntimeManaged-Foundation.Tests.csproj" />
 </Solution>

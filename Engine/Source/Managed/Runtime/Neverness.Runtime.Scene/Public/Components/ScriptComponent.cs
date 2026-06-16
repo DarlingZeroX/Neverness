@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Neverness.Runtime.Engine;
 
 namespace Neverness.Runtime.Scene.Components;
 
@@ -12,9 +13,11 @@ public struct ScriptComponent : IComponent
     public ulong ScriptTypeId;
 
     /// <summary>脚本实例 ID（运行时用）。</summary>
+    [Transient]
     public int InstanceId;
 
     /// <summary>是否已初始化。</summary>
+    [Transient]
     public bool IsInitialized;
 
     /// <summary>创建脚本组件。</summary>

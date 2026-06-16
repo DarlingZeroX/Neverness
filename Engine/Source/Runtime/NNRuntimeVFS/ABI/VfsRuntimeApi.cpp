@@ -220,6 +220,63 @@ int NN_ENGINE_ABI_STDCALL VfsWriteBufferToFile(
 		size) ? 1 : 0;
 }
 
+std::uint64_t NN_ENGINE_ABI_STDCALL VfsAddFileSystem(
+	const char* aliasUtf8,
+	NNVfsFileSystemType type,
+	const char* pathUtf8)
+{
+	if (aliasUtf8 == nullptr)
+	{
+		return 0;
+	}
+	// Memory 类型允许 path 为空
+	if (type != NNVfsFS_Memory && pathUtf8 == nullptr)
+	{
+		return 0;
+	}
+
+	return NN::Runtime::VFS::VFSService::AddFileSystem(
+		aliasUtf8,
+		static_cast<std::uint32_t>(type),
+		pathUtf8 ? pathUtf8 : "");
+}
+
+int NN_ENGINE_ABI_STDCALL VfsRemoveFileSystem(std::uint64_t handle)
+{
+	if (handle == 0)
+	{
+		return 0;
+	}
+	return NN::Runtime::VFS::VFSService::RemoveFileSystem(handle) ? 1 : 0;
+}
+
+int NN_ENGINE_ABI_STDCALL VfsHasFileSystem(std::uint64_t handle)
+{
+	if (handle == 0)
+	{
+		return 0;
+	}
+	return NN::Runtime::VFS::VFSService::HasFileSystem(handle) ? 1 : 0;
+}
+
+void NN_ENGINE_ABI_STDCALL VfsUnregisterAlias(const char* aliasUtf8)
+{
+	if (aliasUtf8 == nullptr)
+	{
+		return;
+	}
+	NN::Runtime::VFS::VFSService::UnregisterAlias(aliasUtf8);
+}
+
+int NN_ENGINE_ABI_STDCALL VfsIsAliasRegistered(const char* aliasUtf8)
+{
+	if (aliasUtf8 == nullptr)
+	{
+		return 0;
+	}
+	return NN::Runtime::VFS::VFSService::IsAliasRegistered(aliasUtf8) ? 1 : 0;
+}
+
 } // namespace
 
 extern "C" void NNBuildVfsRuntimeApi(NNVfsAPI* api)
@@ -239,5 +296,10 @@ extern "C" void NNBuildVfsRuntimeApi(NNVfsAPI* api)
 	built.rebuildNativeFileSystemFiles = &VfsRebuildNativeFileSystemFiles;
 	built.getAbsolutePath = &VfsGetAbsolutePath;
 	built.writeBufferToFile = &VfsWriteBufferToFile;
+	built.addFileSystem = &VfsAddFileSystem;
+	built.removeFileSystem = &VfsRemoveFileSystem;
+	built.hasFileSystem = &VfsHasFileSystem;
+	built.unregisterAlias = &VfsUnregisterAlias;
+	built.isAliasRegistered = &VfsIsAliasRegistered;
 	*api = built;
 }

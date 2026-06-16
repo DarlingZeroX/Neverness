@@ -23,7 +23,6 @@
     <ProjectReference Include="..\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Bootstrap\Neverness.Runtime.Bootstrap.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Serialization\Neverness.Runtime.Serialization.csproj" />
     <ProjectReference Include="..\..\Editor\Neverness.Editor.Serialization\Neverness.Editor.Serialization.csproj" />
     <ProjectReference Include="..\..\Editor\Neverness.Editor.Reflection\Neverness.Editor.Reflection.csproj" />
   </ItemGroup>

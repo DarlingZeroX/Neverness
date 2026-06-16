@@ -44,18 +44,13 @@ public class AvaloniaContextMenuRenderer : IContextMenuRenderer
 
         manager.EnsureContributors();
 
-        // 渲染静态菜单项
+        // 收集所有菜单项（静态 + 回调），按 SortOrder 排序
+        var allItems = new List<EditorMenuItem>();
+
         var staticItems = manager.GetStaticItems(contextId);
         if (staticItems != null)
-        {
-            foreach (var item in staticItems)
-            {
-                var menuItem = ConvertToAvaloniaMenuItem(item, manager);
-                _activeMenu.Items.Add(menuItem);
-            }
-        }
+            allItems.AddRange(staticItems);
 
-        // 渲染回调式动态菜单项
         var callbacks = manager.GetCallbacks(contextId);
         if (callbacks != null)
         {
@@ -63,11 +58,32 @@ public class AvaloniaContextMenuRenderer : IContextMenuRenderer
             {
                 var builder = new ContextMenuBuilder();
                 callback(builder);
-                foreach (var item in builder.Build())
-                {
-                    var menuItem = ConvertToAvaloniaMenuItem(item, manager);
-                    _activeMenu.Items.Add(menuItem);
-                }
+                allItems.AddRange(builder.Build());
+            }
+        }
+
+        // 按 SortOrder 排序后，构建层级菜单
+        foreach (var item in allItems.OrderBy(i => i.SortOrder))
+        {
+            if (item.IsSeparator)
+            {
+                _activeMenu.Items.Add(CreateSeparator());
+                continue;
+            }
+
+            var segments = item.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            if (segments.Length <= 1)
+            {
+                // 扁平项，直接添加
+                _activeMenu.Items.Add(ConvertToAvaloniaMenuItem(item));
+            }
+            else
+            {
+                // 层级项：找到或创建子菜单容器，最后一段是实际菜单项
+                var parent = FindOrCreateSubmenu(_activeMenu, segments.AsSpan(0, segments.Length - 1));
+                var leafItem = ConvertToAvaloniaMenuItem(item with { Path = segments[^1] });
+                parent.Items.Add(leafItem);
             }
         }
     }
@@ -133,21 +149,49 @@ public class AvaloniaContextMenuRenderer : IContextMenuRenderer
         };
     }
 
-    /// <summary>将 EditorMenuItem 转换为 Avalonia MenuItem。</summary>
-    private static Avalonia.Controls.MenuItem ConvertToAvaloniaMenuItem(EditorMenuItem item, ContextMenuManager manager)
+    /// <summary>创建带样式的 Separator。</summary>
+    private static Avalonia.Controls.MenuItem CreateSeparator()
     {
-        // 分隔符
-        if (item.IsSeparator)
+        return new Avalonia.Controls.MenuItem
         {
-            return new Avalonia.Controls.MenuItem
+            Header = "-",
+            IsEnabled = false,
+            Height = 1,
+            Padding = new Thickness(0),
+        };
+    }
+
+    /// <summary>
+    /// 在 parent 容器中查找或创建子菜单路径。
+    /// 例如 segments = ["Create", "Rendering"] 会在 parent 下找 "Create" 子菜单，
+    /// 然后在 "Create" 下找 "Rendering" 子菜单，返回 "Rendering" 的 MenuItem。
+    /// </summary>
+    private static Avalonia.Controls.MenuItem FindOrCreateSubmenu(ItemsControl parent, ReadOnlySpan<string> segments)
+    {
+        foreach (var segment in segments)
+        {
+            var existing = parent.Items
+                .OfType<Avalonia.Controls.MenuItem>()
+                .FirstOrDefault(m => m.Header as string == segment && m.Items.Count > 0);
+
+            if (existing == null)
             {
-                Header = "-",
-                IsEnabled = false,
-                Height = 1,
-                Padding = new Thickness(0),
-            };
+                existing = new Avalonia.Controls.MenuItem
+                {
+                    Header = segment,
+                };
+                parent.Items.Add(existing);
+            }
+
+            parent = existing;
         }
 
+        return (Avalonia.Controls.MenuItem)parent;
+    }
+
+    /// <summary>将 EditorMenuItem 转换为 Avalonia MenuItem。</summary>
+    private static Avalonia.Controls.MenuItem ConvertToAvaloniaMenuItem(EditorMenuItem item)
+    {
         var menuItem = new Avalonia.Controls.MenuItem
         {
             Header = item.Path,
@@ -162,13 +206,6 @@ public class AvaloniaContextMenuRenderer : IContextMenuRenderer
                 FontSize = 14,
                 Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC")),
             };
-        }
-
-        // 快捷键（显示文本，不绑定实际手势）
-        if (!string.IsNullOrEmpty(item.Shortcut))
-        {
-            // Avalonia 12 MenuItem 没有直接的 InputGesture 属性用于显示
-            // TODO: 通过 InputBinding 或自定义样式显示快捷键文本
         }
 
         // CanExecute

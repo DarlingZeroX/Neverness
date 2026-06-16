@@ -1,0 +1,4 @@
+<Project>
+  <!-- 导入父目录的公共配置 -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+</Project>

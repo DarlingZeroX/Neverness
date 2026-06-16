@@ -27,9 +27,11 @@ public struct VideoPlayerComponent : IComponent
     public NNGuid VideoClipAsset;
 
     /// <summary>运行时播放器 ID（瞬态，不序列化）。</summary>
+    [Transient]
     public uint RuntimePlayerId;
 
     /// <summary>视频纹理 ID（瞬态，不序列化）。</summary>
+    [Transient]
     public uint VideoTextureId;
 
     /// <summary>音量（0.0 ~ 1.0）。</summary>

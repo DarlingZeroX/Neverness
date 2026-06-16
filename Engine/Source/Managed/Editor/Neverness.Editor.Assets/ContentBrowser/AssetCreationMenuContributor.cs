@@ -65,6 +65,7 @@ public sealed class AssetCreationMenuContributor : IContextMenuContributor
                                     RegisterCreatedAsset(createdPath.Value);
                                     cb.RefreshDirectory();
                                     cb.RefreshDirectoryTreeRoot();
+                                    cb.NotifyContentChanged();
                                 }
                             }
                         },

@@ -1,313 +1,37 @@
 {
-    "entities": [
-        {
-            "components": {
-                "Camera": {
-                    "AspectRatio": 1.7777777910232544,
-                    "FarPlane": 1000.0,
-                    "FovY": 60.0,
-                    "NearPlane": 0.30000001192092896,
-                    "OrthoHeight": 108.0,
-                    "OrthoWidth": 192.0,
-                    "Projection": 1,
-                    "ProjectionMatrix": [
-                        [
-                            0.010416666977107525,
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.018518518656492233,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            -0.0020006000995635986,
-                            0.0
-                        ],
-                        [
-                            -0.0,
-                            -0.0,
-                            -1.0006000995635986,
-                            1.0
-                        ]
-                    ],
-                    "_padding0": 0
-                },
-                "Relationship": {
-                    "ChildCount": 0,
-                    "Depth": 0,
-                    "Parent": null
-                },
-                "Tag": {
-                    "Flags": 0,
-                    "Name": ""
-                },
-                "Transform": {
-                    "Position": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "Rotation": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        1.0
-                    ],
-                    "Scale": [
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "WorldMatrix": [
-                        [
-                            1.0,
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            1.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            1.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            0.0,
-                            1.0
-                        ]
-                    ]
-                }
-            },
-            "id": "0x100000001"
+  "entities": [
+    {
+      "id": 1,
+      "name": "Camera",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
         },
-        {
-            "components": {
-                "Relationship": {
-                    "ChildCount": 0,
-                    "Depth": 0,
-                    "Parent": null
-                },
-                "Script": {
-                    "Enabled": true,
-                    "ScriptTypeId": 10034828209485886522
-                },
-                "SpriteRenderer": {
-                    "Blend": 1,
-                    "Color": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "Flags": 1,
-                    "Layer": 0,
-                    "MaterialAsset": "0000000000000000:0000000000000000",
-                    "SortOrder": 0,
-                    "TextureAsset": "c,6e8,1ad,72b,903,040:9,da6,90c,014,160,e5a",
-                    "UvRect": [
-                        0.0,
-                        1.0,
-                        1.0,
-                        0.0
-                    ]
-                },
-                "Tag": {
-                    "Flags": 0,
-                    "Name": ""
-                },
-                "Transform": {
-                    "Position": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "Rotation": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        1.0
-                    ],
-                    "Scale": [
-                        100.0,
-                        100.0,
-                        1.0
-                    ],
-                    "WorldMatrix": [
-                        [
-                            100.0,
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            100.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            1.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            0.0,
-                            1.0
-                        ]
-                    ]
-                }
-            },
-            "id": "0x100000002"
-        },
-        {
-            "components": {
-                "AudioSource": {
-                    "AudioClipAsset": "8,247,738,c52,60c,a46:b,801,987,c94,c36,69b",
-                    "Flags": 1,
-                    "MaxDistance": 100.0,
-                    "MinDistance": 1.0,
-                    "Pitch": 1.0,
-                    "RuntimePlayerId": 0,
-                    "Volume": 1.0
-                },
-                "Relationship": {
-                    "ChildCount": 0,
-                    "Depth": 0,
-                    "Parent": null
-                },
-                "Tag": {
-                    "Flags": 0,
-                    "Name": ""
-                },
-                "Transform": {
-                    "Position": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "Rotation": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        1.0
-                    ],
-                    "Scale": [
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "WorldMatrix": [
-                        [
-                            1.0,
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            1.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            1.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            0.0,
-                            1.0
-                        ]
-                    ]
-                }
-            },
-            "id": "0x100000003"
-        },
-        {
-            "components": {
-                "Relationship": {
-                    "ChildCount": 0,
-                    "Depth": 0,
-                    "Parent": null
-                },
-                "RmlUIDocument": {
-                    "DocumentAsset": "b,6bb,835,154,222,14c:b,9cb,1d0,ddd,e42,05a",
-                    "Flags": 11,
-                    "SortOrder": 0,
-                    "ViewTarget": 0
-                },
-                "Tag": {
-                    "Flags": 0,
-                    "Name": ""
-                },
-                "Transform": {
-                    "Position": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "Rotation": [
-                        0.0,
-                        0.0,
-                        0.0,
-                        1.0
-                    ],
-                    "Scale": [
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "WorldMatrix": [
-                        [
-                            1.0,
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            1.0,
-                            0.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            1.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            0.0,
-                            0.0,
-                            1.0
-                        ]
-                    ]
-                }
-            },
-            "id": "0x100000004"
+        "CameraComponent": {
+          "fieldOfView": 1.0471976,
+          "aspectRatio": 1.7777778,
+          "nearPlane": 0.1,
+          "farPlane": 1000,
+          "isOrthographic": false,
+          "orthographicSize": 10
         }
-    ],
-    "format": "NNScene",
-    "version": 2
+      }
+    }
+  ]
 }

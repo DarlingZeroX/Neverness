@@ -326,6 +326,19 @@ public unsafe struct NNWindowApi
 }
 
 /// <summary>
+/// 與 Native <c>NNVfsFileSystemType</c> 對齊（<c>VfsAPI.h</c>）：VFS 文件系统类型。
+/// </summary>
+public enum NNVfsFileSystemType : uint
+{
+	/// <summary>NativeFileSystem（磁盘目录）。</summary>
+	Native = 0,
+	/// <summary>ZipFileSystem（.zip/.pak）。</summary>
+	Zip = 1,
+	/// <summary>MemoryFileSystem（内存）。</summary>
+	Memory = 2,
+}
+
+/// <summary>
 /// 與 Native <c>NNVfsAPI</c> 對齊（<c>VfsAPI.h</c>）：VFS 文本/二进制 IO；缓冲区由 Native <c>malloc</c>，须 <see cref="FreeBuffer"/>。
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 8)]
@@ -342,6 +355,19 @@ public unsafe struct NNVfsApi
 	public delegate* unmanaged<byte*, byte**, int> GetAbsolutePath;
 	/// <summary>非 0 成功；将二进制缓冲区写入 VFS 路径。</summary>
 	public delegate* unmanaged<byte*, byte*, ulong, int> WriteBufferToFile;
+
+	// ── handle 机制的文件系统管理 API（追加，不破坏旧 ABI） ──
+
+	/// <summary>创建并挂载文件系统，返回 handle（0 失败）。</summary>
+	public delegate* unmanaged<byte*, NNVfsFileSystemType, byte*, ulong> AddFileSystem;
+	/// <summary>根据 handle 精确移除文件系统，非 0 成功。</summary>
+	public delegate* unmanaged<ulong, int> RemoveFileSystem;
+	/// <summary>查询 handle 是否仍在 VFS 中，非 0 存在。</summary>
+	public delegate* unmanaged<ulong, int> HasFileSystem;
+	/// <summary>移除 alias 下全部文件系统。</summary>
+	public delegate* unmanaged<byte*, void> UnregisterAlias;
+	/// <summary>查询 alias 是否已注册，非 0 已注册。</summary>
+	public delegate* unmanaged<byte*, int> IsAliasRegistered;
 }
 
 /// <summary>

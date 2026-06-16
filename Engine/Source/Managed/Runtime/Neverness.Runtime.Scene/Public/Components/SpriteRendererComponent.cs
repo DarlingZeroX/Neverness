@@ -46,6 +46,7 @@ public struct SpriteRendererComponent : IComponent
     public NNGuid MaterialAsset;
 
     /// <summary>纹理运行时 ID（瞬态，不序列化）。</summary>
+    [Transient]
     public uint TextureRuntimeId;
 
     /// <summary>颜色 R 通道。</summary>

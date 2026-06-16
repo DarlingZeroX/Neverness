@@ -106,6 +106,7 @@ public sealed class SceneWorld : IScene
     public SceneEntity? CreateEntity(string? displayName = null)
     {
         var entity = _scene.CreateEntity(displayName);
+        Events.Emit(SceneEvent.OnEntityCreated(entity));
         return new SceneEntity(entity, _scene);
     }
 
@@ -118,6 +119,8 @@ public sealed class SceneWorld : IScene
         ArgumentNullException.ThrowIfNull(entity);
         if (!entity.IsAlive) return false;
 
+        // 先发射事件（Destroy 后 entity 引用可能失效）
+        Events.Emit(SceneEvent.OnEntityDestroyed(entity.Entity));
         entity.Entity.Destroy();
         return true;
     }

@@ -31,6 +31,7 @@ public class DefaultDropHandler : IDropFileHandler
         EditorAssetDatabase.MarkDirty(meta.Guid);
 
         ContentBrowser.Instance?.RefreshDirectory();
+        ContentBrowser.Instance?.NotifyContentChanged();
         return true;
     }
 }

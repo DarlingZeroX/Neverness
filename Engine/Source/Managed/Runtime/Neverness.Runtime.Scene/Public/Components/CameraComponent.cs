@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Neverness.Runtime.Engine;
 
 namespace Neverness.Runtime.Scene.Components;
 
@@ -28,9 +29,11 @@ public struct CameraComponent : IComponent
     public float OrthographicSize;
 
     /// <summary>投影矩阵（由 CameraSystem 计算）。</summary>
+    [Transient]
     public Matrix4x4 ProjectionMatrix;
 
     /// <summary>视图矩阵（由 CameraSystem 计算）。</summary>
+    [Transient]
     public Matrix4x4 ViewMatrix;
 
     /// <summary>创建默认透视摄像机。</summary>

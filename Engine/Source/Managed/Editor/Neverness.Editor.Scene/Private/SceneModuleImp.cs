@@ -127,9 +127,10 @@ internal static class SceneModuleImp
             viewportVM.HasScene = world != null;
         }
 
-        // 刷新场景浏览器
+        // 刷新场景浏览器并重新订阅事件
         if (world != null)
         {
+            sceneBrowserCtrl?.OnSceneChanged();
             sceneBrowserCtrl?.RefreshTree();
         }
     }

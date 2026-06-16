@@ -60,11 +60,29 @@ public sealed class ContentBrowser
     private bool _isRefreshed;
 
     ////////////////////////////////////////////////////////////////
+    /// Events
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// 内容发生变化时触发（create / delete / rename）。
+    /// 仅由 mutating 操作触发，RefreshDirectory（Query）不触发。
+    /// </summary>
+    public event Action? ContentChanged;
+
+    /// <summary>
+    /// 通知外部调用方触发 ContentChanged（供外部 mutate 操作使用）。
+    /// </summary>
+    public void NotifyContentChanged()
+    {
+        ContentChanged?.Invoke();
+    }
+
+    ////////////////////////////////////////////////////////////////
     /// Public API
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// Refresh current directory
+    /// Refresh current directory（纯 Query，不触发 ContentChanged）
     /// </summary>
     public void RefreshDirectory()
     {
@@ -163,6 +181,7 @@ public sealed class ContentBrowser
                 RefreshDirectory();
                 RefreshDirectoryTreeRoot();
 
+                ContentChanged?.Invoke();
                 return;
             }
 
@@ -180,6 +199,8 @@ public sealed class ContentBrowser
             // AssetDatabase.RemoveAsset(item.NVirtualPath)
 
             RefreshDirectory();
+
+            ContentChanged?.Invoke();
         }
         catch (Exception ex)
         {
@@ -227,6 +248,8 @@ public sealed class ContentBrowser
 
             RefreshDirectory();
             RefreshDirectoryTreeRoot();
+
+            ContentChanged?.Invoke();
         }
         catch (Exception ex)
         {
@@ -308,8 +331,9 @@ public sealed class ContentBrowser
             Directory.CreateDirectory(newFolder);
 
             RefreshDirectory();
-
             RefreshDirectoryTreeRoot();
+
+            ContentChanged?.Invoke();
         }
         catch (Exception ex)
         {

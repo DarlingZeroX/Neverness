@@ -13,6 +13,7 @@
 
 #include "../RuntimeVFSExport.h"
 #include <NNCore/Interface/HConfig.h>
+#include <cstdint>
 #include <functional>
 #include <sstream>
 #include <string>
@@ -42,6 +43,23 @@ namespace NN::Runtime::VFS
 		static bool RebuildNativeFileSystemFiles(const std::string& path);
 
 		static bool MountFileSystem(const std::string& alias, IFileSystemPtr fs);
+
+		// ── C# 可用的文件系统管理 API（handle 机制） ──
+
+		/** 创建并挂载文件系统，返回不透明 handle（0 失败）。type: 0=Native, 1=Zip, 2=Memory。 */
+		static uint64_t AddFileSystem(const std::string& alias, uint32_t type, const std::string& path);
+
+		/** 根据 handle 精确移除指定文件系统。 */
+		static bool RemoveFileSystem(uint64_t handle);
+
+		/** 查询 handle 对应的文件系统是否仍挂载在 VFS 中。 */
+		static bool HasFileSystem(uint64_t handle);
+
+		/** 移除 alias 下全部文件系统。 */
+		static void UnregisterAlias(const std::string& alias);
+
+		/** 查询 alias 是否有任何文件系统已注册。 */
+		static bool IsAliasRegistered(const std::string& alias);
 	};
 
 	struct NN_RUNTIME_VFS_API IStringStreamVFS

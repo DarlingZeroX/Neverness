@@ -75,8 +75,7 @@ public class EditorDockFactory : Factory
             Alignment = Alignment.Right,
             Proportion = 0.5,
             ActiveDockable = _sceneBrowser,
-            VisibleDockables = CreateList<IDockable>(_sceneBrowser),
-            EnableWindowDrag = true
+            VisibleDockables = CreateList<IDockable>(_sceneBrowser)
         };
 
         // 右侧下部 ToolDock：Inspector
@@ -86,8 +85,7 @@ public class EditorDockFactory : Factory
             Alignment = Alignment.Right,
             Proportion = 0.5,
             ActiveDockable = _inspector,
-            VisibleDockables = CreateList<IDockable>(_inspector),
-            EnableWindowDrag = true
+            VisibleDockables = CreateList<IDockable>(_inspector)
         };
 
         // 右侧组合：SceneBrowser + Inspector 上下排列（占 25% 宽度）
@@ -111,8 +109,7 @@ public class EditorDockFactory : Factory
             Alignment = Alignment.Bottom,
             Proportion = 0.3,
             ActiveDockable = _contentBrowser,
-            VisibleDockables = CreateList<IDockable>(_contentBrowser, _console),
-            EnableWindowDrag = true
+            VisibleDockables = CreateList<IDockable>(_contentBrowser, _console)
         };
 
         // 中央 DocumentDock：Viewport（启用标签拖拽浮动）

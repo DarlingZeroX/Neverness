@@ -15,7 +15,6 @@
     <None Remove="Tests\**" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Neverness.Runtime.Serialization" />
     <InternalsVisibleTo Include="Neverness.Editor.Assets" />
     <InternalsVisibleTo Include="Neverness.Runtime.Scene.Tests" />
   </ItemGroup>
@@ -27,5 +26,8 @@
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
+    <!-- Source Generator：组件序列化代码生成 -->
+    <ProjectReference Include="..\..\Gameplay\Neverness.SourceGenerators\Neverness.SourceGenerators.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

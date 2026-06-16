@@ -1,6 +1,6 @@
 # ContentBrowser Avalonia 实施记录
 
-> 状态：基础功能已完成（2026-06-13）
+> 状态：Unreal 风格视觉重写 + 框选 + 搜索 + 选中 + 目录树高亮（2026-06-16）
 
 ---
 
@@ -13,51 +13,142 @@ ContentBrowserAvaloniaView (View)
   → IContentBrowserService (抽象接口)
   → ContentBrowserService (实现，包装 ContentBrowser 单例)
   → ContentBrowser (核心：文件系统扫描、数据填充)
+  → RubberBandSelection (鼠标框选逻辑)
+```
+
+---
+
+## 布局（Unreal Content Browser 风格）
+
+```
+┌──────────────────────────────────────────────────┐
+│ [◀][▶]  Content/Scenes            [🔍 Search]    │ ← 工具栏 (BgToolbar #3B3B3B)
+├─────────────┬─┬──────────────────────────────────┤
+│ Content     │ │ ┌──────┐ ┌──────┐ ┌──────┐      │
+│  ▾ Scenes   │ │ │  🗺️  │ │  🧊  │ │  📋  │      │
+│  ▾ Prefabs  │▓│ │SCENE │ │PREFB │ │MATER │      │
+│             │▓│ └──────┘ └──────┘ └──────┘      │
+│             │▓│ ┌──────┐ ┌──────┐               │
+│             │▓│ │  🖼️  │ │  🎵  │               │
+│             │ │ │ TEX  │ │ AUD  │               │
+│             │ │ └──────┘ └──────┘               │
+├─────────────┴─┴──────────────────────────────────┤
+│ Content/Scenes                     2 items sel.  │ ← 状态栏 (BgStatusBar #252525)
+└──────────────────────────────────────────────────┘
+  ▓ = 面板内阴影 (BoxShadow Inset)
 ```
 
 ---
 
 ## 已实现功能
 
+### 视觉风格（2026-06-16 Unreal 风格重写）
+
+**配色方案**：
+| 区域 | 颜色 |
+|------|------|
+| 主背景 | `#2B2B2B` |
+| 面板背景 | `#353535` |
+| 工具栏 | `#3B3B3B` |
+| 状态栏 | `#252525` |
+| 输入框 | `#1E1E1E` |
+| 缩略图（文件） | `#404040` |
+| 缩略图（目录） | `#484848` |
+| 缩略图（悬停） | `#505050` |
+| 缩略图（选中） | `#2A5D9E` |
+| 选中边框 | `#2196F3` |
+| 文字主色 | `#CCCCCC` |
+| 文字次色 | `#888888` |
+| 分割线 | `#1A1A1A` |
+
+**缩略图卡片**（80×118）：
+- 整体圆角 Border（4px），一个卡片 = 一个整体
+- 图标区 80×80（居中，FontSize 32）
+- 文件名（11px，截断省略，白色）
+- 资产类型标签（9px，粗体，彩色）：SCENE(绿) / PREFB(蓝) / MATER(橙) / TEX(紫) / AUD(红) / CODE(青)
+- BoxShadow 阴影（黑色 60%，模糊 6px，偏移 Y+2）
+- 选中：蓝色边框 2px + 蓝色背景 `#2A5D9E`
+
+**面板内阴影**：
+- 左面板（目录树）：右侧内阴影 `BoxShadow Inset, Blur=14, OffsetX=-8`，通过 Grid.ClipToBounds 裁剪左侧
+- 右面板（缩略图）：左侧内阴影 `BoxShadow Inset, Blur=14, OffsetX=+8`，通过 Grid.ClipToBounds 裁剪右侧
+
+**可拖拽分割线**：左右面板之间 `GridSplitter`（4px），MinWidth=120px
+
+**工具栏**：
+- ◀▶ 导航按钮（圆角 3px，hover 高亮 `#4A4A4A`）
+- 面包屑内嵌（› 分隔符，hover 变亮）
+- 搜索框（圆角 3px，PlaceholderText `🔍 Search...`）
+
+**状态栏**：底部显示相对路径 + "N items selected"
+
+**目录树**：
+- 标题 "Content"（粗体，次色）
+- 展开/折叠箭头 ▾/▸
+- 📁 文件夹图标
+- 无背景（透明）
+
 ### 目录树（左侧 TreeView）
 - 调用 `_controller.GetDirectoryTreeRoot()` 获取根节点
-- 递归创建 `TreeViewItem`，显示 📁 + 目录名
-- 单击节点 → `_controller.OpenDirectory()`（通过 `TreeView.SelectionChanged` 事件）
+- 递归创建 `TreeViewItem`
+- 单击节点 → `_controller.OpenDirectory()`（`TreeView.SelectionChanged`）
 - 根节点默认展开
+- `CurrentDirectory` 变更时自动高亮对应节点 + 展开父节点
 
-### 缩略图网格（右侧 WrapPanel，90x90）
+### 缩略图网格（右侧 WrapPanel）
 - 调用 `_controller.GetSubdirectories()` 获取子目录
 - 调用 `_controller.GetFiles()` 获取文件
-- 每个缩略图：图标区域（90x90）+ 文件名（截断省略）
+- WrapPanel 宽度绑定 ScrollViewer.ViewportWidth → 自动换行 → 垂直滚动
 - 双击目录 → 导航进入
 - 双击文件 → `_controller.OpenFile()`
-- 悬停高亮 + 手型光标
-- `WrapPanel` 自动换行
+- 悬停高亮（`#505050`）+ 手型光标
 
 ### 面包屑导航
-- 将路径拆分为可点击的段
+- 路径拆分为可点击段（› 分隔）
 - 点击任意段 → 跳转到该目录
-- 根目录 "Assets" 始终可点击
-- `ScrollViewer` 包裹，路径过长可滚动
+- 根目录 "Content" 始终可点击
+- hover 时文字变亮
 
-### 工具栏
-- ← 后退按钮（`_controller.GoBack()`）
-- ↻ 刷新按钮（`_controller.RefreshDirectory()`）
-- 搜索框（`_viewModel.SearchFilter`）
+### 搜索过滤
+- `SearchFilter` 变更时按名称过滤（不区分大小写）
+- 搜索时也显示匹配的子目录
+- 空搜索框显示全部
 
-### 数据刷新
-- `CurrentDirectory` 变更 → 刷新面包屑 + 文件列表
-- `SearchFilter` 变更 → 刷新文件列表
+### 选中状态
+- 单击 → 单选（蓝色边框 + 蓝色背景）
+- Ctrl+单击 → 多选切换
+- 点击空白 → 取消所有选中
+- 选中不会被悬停覆盖
+- 切换目录自动清除
 
-### 文件图标映射
-| 扩展名 | 图标 | 扩展名 | 图标 |
+### 鼠标框选（RubberBandSelection）
+- 空白区域拖拽 → 蓝色半透明矩形
+- 框内项目实时高亮选中
+- Ctrl+拖拽追加选中
+- 3px 阈值区分单击/拖拽
+- 边缘 30px 自动滚动（12px/次，30ms 间隔）
+- 指针捕获确保鼠标移出也能收到事件
+- 详见 ContentBrowser_RubberBand_Selection.md
+
+### 右键菜单
+- 缩略图右键 → Item 菜单（Rename / Remove / Show in Explorer / Copy Name）
+- 空白区域右键 → Background 菜单（Create Directory / Refresh / Show in Explorer）
+- 目录树节点右键 → Background 菜单
+
+### 文件信息映射
+| 扩展名 | 图标 | 类型标 | 颜色 |
 |--------|------|--------|------|
-| .png/.jpg/.bmp | 🖼️ 图片 | .cs/.cpp/.h | 📝 代码 |
-| .fbx/.obj/.gltf | 🧊 模型 | .json/.xml/.yaml | 📋 配置 |
-| .wav/.mp3/.ogg | 🎵 音频 | .txt/.md | 📄 文本 |
-| .mp4/.avi/.mov | 🎬 视频 | .shader/.hlsl | ☀️ 着色器 |
-| .scene | 🗺️ 场景 | .html | 🌐 网页 |
-| .lua | 📜 脚本 | 其他 | 📄 默认 |
+| .png/.jpg/.tga/.hdr | 🖼️ | TEX | 紫 |
+| .fbx/.obj/.gltf | 🧊 | MESH | 灰 |
+| .wav/.mp3/.ogg | 🎵 | AUD | 红 |
+| .mp4/.avi/.mov | 🎬 | VID | 红 |
+| .cs/.cpp/.h/.py | 📝 | CODE | 青 |
+| .json/.xml/.yaml | 📋 | CFG | 灰 |
+| .shader/.hlsl | ☀️ | SHD | 橙 |
+| .scene | 🗺️ | SCENE | 绿 |
+| .prefab | 🧊 | PREFB | 蓝 |
+| .mat | 📋 | MATER | 橙 |
+| 其他 | 📄 | FILE | 灰 |
 
 ---
 
@@ -65,10 +156,11 @@ ContentBrowserAvaloniaView (View)
 
 | 文件 | 职责 |
 |------|------|
-| `Views/ContentBrowserAvaloniaView.cs` | Avalonia 视图实现 |
+| `Views/ContentBrowserAvaloniaView.cs` | Avalonia 视图实现（Unreal 风格） |
+| `ContentBrowser/RubberBandSelection.cs` | 鼠标框选逻辑 |
 | `ViewModels/ContentBrowserViewModel.cs` | ViewModel（CurrentDirectory, SearchFilter 等） |
 | `Controllers/ContentBrowserController.cs` | Controller（OpenDirectory, GoBack, GetFiles 等） |
-| `Public/IContentBrowserService.cs` | 服务接口 + ContentDirectoryNode/ContentFileNode 数据模型 |
+| `Public/IContentBrowserService.cs` | 服务接口 + 数据模型 |
 | `ImGuiFrontend/Views/ContentBrowserImGuiView.cs` | ImGui 版本（功能参考） |
 
 ---
@@ -76,60 +168,69 @@ ContentBrowserAvaloniaView (View)
 ## 踩坑记录
 
 ### 问题 1：Bind() 中使用 _controller 为 null
-
-**现象**：目录树和文件列表不显示任何内容。
-
-**根因**：`Bind()` 在 `SetController()` 之前调用，`_controller` 还是 null。
-
-**修复**：数据加载（`RefreshDirectoryTree`、`RefreshFileList`、`RefreshBreadcrumb`）移到 `SetController()` 中执行。
+**修复**：数据加载移到 `SetController()` 中执行。
 
 ### 问题 2：Dock 命名空间冲突
-
-**现象**：`Dock.Top`、`Dock.Right` 编译错误。
-
-**根因**：项目引用了 `Dock.Avalonia` 库，`Dock` 被解析为库命名空间而非 `Avalonia.Controls.Dock` 枚举。
-
 **修复**：使用完整限定名 `Avalonia.Controls.Dock.Top`。
 
 ### 问题 3：TextBox.Watermark 废弃
-
-**现象**：`CS0618: "TextBox.Watermark" 已过时`。
-
 **修复**：改用 `PlaceholderText`。
 
 ### 问题 4：CursorType 不存在
-
-**现象**：`Avalonia.Input.CursorType` 编译错误。
-
-**修复**：Avalonia 12.0 中改为 `Avalonia.Input.StandardCursorType`。
+**修复**：Avalonia 12.0 中改为 `StandardCursorType`。
 
 ### 问题 5：TreeViewItem 双击不触发导航
+**修复**：改用 `TreeView.SelectionChanged` 事件，先 `-=` 再 `+=` 防止重复注册。
 
-**现象**：给 `TreeViewItem` 绑定 `DoubleTapped` 事件，点击目录树节点不触发导航。
+### 问题 6：Canvas 不接收鼠标事件
+**现象**：RubberBandSelection 的 PointerPressed 不触发。
+**根因**：Avalonia 只对有 Background 的控件做命中测试。
+**修复**：Canvas 添加 `Background = Brushes.Transparent`。
 
-**根因**：`TreeViewItem` 的点击事件被展开/折叠逻辑消耗，`DoubleTapped` 无法到达。
+### 问题 7：WrapPanel 不换行
+**现象**：缩略图一直向右扩展，不垂直滚动。
+**根因**：Canvas 给子控件无限宽度，WrapPanel 永远不换行。
+**修复**：将 Canvas 改为 Grid（Grid 约束子控件宽度），WrapPanel 自动换行。
 
-**修复**：改用 `TreeView.SelectionChanged` 事件，单击即触发导航：
-```csharp
-_directoryTree.SelectionChanged += (_, e) =>
-{
-    if (e.AddedItems[0] is TreeViewItem item && item.Tag is string path)
-        _controller.OpenDirectory(path);
-};
-```
-注意：`RefreshDirectoryTree()` 中需先 `-=` 再 `+=` 防止事件重复注册。
+### 问题 8：BoxShadow 被 ClipToBounds 裁剪
+**现象**：缩略图卡片阴影不显示。
+**根因**：`ClipToBounds = true` 裁剪了 Border 外部的阴影。
+**修复**：外层 Border（提供阴影空间 + Padding）包裹内层 Border（卡片内容）。
+
+### 问题 9：BoxShadows 不支持多阴影叠加
+**现象**：`new BoxShadows(shadow1, shadow2, shadow3, shadow4)` 编译错误。
+**根因**：Avalonia `BoxShadows` 构造函数只接受单个 `BoxShadow`。
+**解决**：单面板单阴影，通过 OffsetX 方向控制。
+
+### 问题 10：内阴影向两侧扩散
+**现象**：左面板左侧也有阴影。
+**根因**：`BoxShadow` 的 Blur 向四周扩散，无法只向一侧。
+**修复**：用两个层——底层 Border 的 BoxShadow 推向目标侧（OffsetX），上层 Grid 的 ClipToBounds 裁剪另一侧。
 
 ---
 
 ## 待实现功能
 
-1. **搜索过滤**：`SearchFilter` 变更时实际过滤文件列表（当前只是刷新）
-2. **目录树高亮**：`CurrentDirectory` 变更时高亮目录树中对应的节点
-3. **右键菜单**：Open、Rename、Delete、Copy Path、New Folder
+1. ~~**搜索过滤**~~ ✅
+2. ~~**目录树高亮**~~ ✅
+3. **右键菜单**：部分已实现，需完善
 4. **资产拖拽**：从 ContentBrowser 拖拽资产到 Inspector
 5. **网格/列表切换**：支持 Grid 和 List 两种视图模式
 6. **缩略图渲染**：用实际资产缩略图替代 emoji 图标
-7. **选中状态**：点击缩略图高亮选中，支持多选
+7. ~~**选中状态**~~ ✅
+8. ~~**鼠标框选**~~ ✅
+9. ~~**Unreal 风格视觉**~~ ✅
+
+---
+
+## 变更记录
+
+| 日期 | 版本 | 变更内容 |
+|------|------|----------|
+| 2026-06-13 | v1.0 | 基础功能：目录树、缩略图网格、面包屑、工具栏、数据刷新 |
+| 2026-06-16 | v2.0 | 搜索过滤、选中状态（单击/Ctrl多选）、目录树高亮 |
+| 2026-06-16 | v3.0 | 鼠标框选（RubberBandSelection）、Canvas→Grid 修复换行 |
+| 2026-06-16 | v4.0 | Unreal 风格视觉重写：配色、缩略图卡片（圆角+阴影+类型标签）、工具栏、状态栏、面板内阴影、可拖拽分割线 |
 
 ---
 
@@ -137,3 +238,4 @@ _directoryTree.SelectionChanged += (_, e) =>
 
 - **ImGui 版本**：`Neverness.Editor.ImGuiFrontend/Views/ContentBrowserImGuiView.cs`
 - **Dock 文档**：[AvaloniaFrontend_Dock_Guide.md](AvaloniaFrontend_Dock_Guide.md)
+- **框选计划**：[ContentBrowser_RubberBand_Selection.md](ContentBrowser_RubberBand_Selection.md)

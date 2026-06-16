@@ -1,4 +1,5 @@
 using Friflo.Engine.ECS;
+using Neverness.Runtime.Scene.Components;
 
 namespace Neverness.Runtime.Scene.Internal;
 
@@ -27,13 +28,24 @@ internal sealed class FrifloEntity : IEntity
     {
         get
         {
-            // 暂时使用实体 ID 作为名称
-            // TODO: 后续使用标签系统存储名称
+            if (_entity.HasComponent<TagComponent>())
+            {
+                return _entity.GetComponent<TagComponent>().Name;
+            }
             return $"Entity_{_entity.Id}";
         }
         set
         {
-            // 暂时忽略，后续实现标签功能
+            if (value == null) return;
+            if (_entity.HasComponent<TagComponent>())
+            {
+                ref var tag = ref _entity.GetComponent<TagComponent>();
+                tag.Name = value;
+            }
+            else
+            {
+                _entity.AddComponent(TagComponent.Create(value));
+            }
         }
     }
 
