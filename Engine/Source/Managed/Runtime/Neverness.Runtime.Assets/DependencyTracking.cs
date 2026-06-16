@@ -1,90 +1,74 @@
-using Neverness.Runtime.Engine;
-using Neverness.Runtime.Interop;
+using Neverness.Runtime.Assets.Registry;
 
 namespace Neverness.Runtime.Assets;
 
 /// <summary>
-/// 資產依賴關係追蹤；經 Native AssetRegistry 或託管側快取查詢。
+/// 資產依賴關係追蹤。
+///
+/// 遷移後：直接調用 C# <see cref="DependencyTable"/>，不再經過 Native ABI。
 /// </summary>
-public static unsafe class DependencyTracking
+public static class DependencyTracking
 {
-	private static readonly Dictionary<string, List<GUID>> s_dependencies = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>
+    /// 記錄資產依賴（委託給 C# DependencyTable）。
+    /// </summary>
+    public static void RecordDependency(GUID asset, GUID dependency)
+    {
+        if (asset.IsZero || dependency.IsZero)
+            return;
 
-	/// <summary>記錄資產依賴（託管快取）。</summary>
-	public static void RecordDependency(GUID asset, GUID dependency)
-	{
-		if (asset.IsZero || dependency.IsZero)
-		{
-			return;
-		}
+        AssetRegistry.Instance.DependencyTable.AddDependency(asset, dependency);
+    }
 
-		var key = asset.ToHexString();
-		if (!s_dependencies.TryGetValue(key, out var list))
-		{
-			list = [];
-			s_dependencies[key] = list;
-		}
+    /// <summary>
+    /// 取得依賴數量。
+    /// </summary>
+    public static uint GetDependencyCount(GUID asset)
+    {
+        if (asset.IsZero) return 0;
+        return AssetRegistry.Instance.DependencyTable.GetDependencyCount(asset);
+    }
 
-		if (!list.Contains(dependency))
-		{
-			list.Add(dependency);
-		}
-	}
+    /// <summary>
+    /// 取得指定索引之依賴 GUID。
+    /// </summary>
+    public static bool TryGetDependencyAt(GUID asset, uint index, out GUID dependency)
+    {
+        dependency = GUID.Zero;
+        if (asset.IsZero) return false;
+        return AssetRegistry.Instance.DependencyTable.TryGetDependencyAt(asset, index, out dependency);
+    }
 
-	/// <summary>取得依賴數量（優先 Native）。</summary>
-	public static uint GetDependencyCount(GUID asset)
-	{
-		if (asset.IsZero)
-		{
-			return 0;
-		}
+    /// <summary>
+    /// 取得所有依賴。
+    /// </summary>
+    public static IReadOnlyList<GUID> GetDependencies(GUID asset)
+    {
+        if (asset.IsZero) return Array.Empty<GUID>();
+        return AssetRegistry.Instance.DependencyTable.GetDependencies(asset);
+    }
 
-		if (EngineNativeApiBootstrap.IsInstalled)
-		{
-			var fn = EngineNativeApiBootstrap.EngineApi.AssetRegistry.GetDependencyCount;
-			if (fn != null)
-			{
-				return fn(asset.ToNative());
-			}
-		}
+    /// <summary>
+    /// 取得反向依賴數量。
+    /// </summary>
+    public static uint GetReverseDependencyCount(GUID asset)
+    {
+        if (asset.IsZero) return 0;
+        return AssetRegistry.Instance.DependencyTable.GetReverseDependencyCount(asset);
+    }
 
-		return (uint)(s_dependencies.TryGetValue(asset.ToHexString(), out var list) ? list.Count : 0);
-	}
+    /// <summary>
+    /// 取得所有反向依賴。
+    /// </summary>
+    public static IReadOnlyList<GUID> GetReverseDependencies(GUID asset)
+    {
+        if (asset.IsZero) return Array.Empty<GUID>();
+        return AssetRegistry.Instance.DependencyTable.GetReverseDependencies(asset);
+    }
 
-	/// <summary>取得指定索引之依賴 GUID。</summary>
-	public static bool TryGetDependencyAt(GUID asset, uint index, out GUID dependency)
-	{
-		dependency = GUID.Zero;
-		if (asset.IsZero)
-		{
-			return false;
-		}
-
-		if (EngineNativeApiBootstrap.IsInstalled)
-		{
-			var fn = EngineNativeApiBootstrap.EngineApi.AssetRegistry.GetDependencyAt;
-			if (fn != null)
-			{
-				unsafe
-				{
-					NNGuid native;
-					if (fn(asset.ToNative(), index, &native) == 0)
-					{
-						dependency = GUID.FromNative(native);
-						return !dependency.IsZero;
-					}
-				}
-			}
-		}
-
-		if (s_dependencies.TryGetValue(asset.ToHexString(), out var list) && index < list.Count)
-		{
-			dependency = list[(int)index];
-			return true;
-		}
-
-		return false;
-	}
-
-	internal static void ClearForTesting() => s_dependencies.Clear();
+    /// <summary>清空（單元測試重置）。</summary>
+    internal static void ClearForTesting()
+    {
+        AssetRegistry.Instance.DependencyTable.Clear();
+    }
 }

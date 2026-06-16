@@ -1,3 +1,5 @@
+using Neverness.Runtime.Scene;
+
 namespace Neverness.Editor.Core.Public;
 
 /// <summary>
@@ -6,8 +8,8 @@ namespace Neverness.Editor.Core.Public;
 /// </summary>
 public interface ISceneQueryService
 {
-    /// <summary>当前活跃场景句柄。</summary>
-    ulong ActiveSceneHandle { get; }
+    /// <summary>当前活跃场景。</summary>
+    IScene? ActiveScene { get; }
 
     /// <summary>是否有活跃场景。</summary>
     bool HasActiveScene { get; }
@@ -19,31 +21,31 @@ public interface ISceneQueryService
     List<EntityNodeData> GetAllNodes();
 
     /// <summary>获取指定实体的信息。</summary>
-    EntityNodeData? GetEntity(ulong entityHandle);
+    EntityNodeData? GetEntity(int entityId);
 
     /// <summary>获取实体的显示名称。</summary>
-    string GetEntityName(ulong entityHandle);
+    string GetEntityName(int entityId);
 
     /// <summary>检查实体是否存在。</summary>
-    bool EntityExists(ulong entityHandle);
+    bool EntityExists(int entityId);
 
     /// <summary>创建子实体。</summary>
-    ulong CreateChildEntity(ulong parentHandle);
+    IEntity? CreateChildEntity(IEntity? parent);
 
     /// <summary>删除实体。</summary>
-    bool DeleteEntity(ulong entityHandle);
+    bool DeleteEntity(IEntity entity);
 
     /// <summary>重命名实体。</summary>
-    bool RenameEntity(ulong entityHandle, string newName);
+    bool RenameEntity(IEntity entity, string newName);
 
     /// <summary>复制实体。</summary>
-    ulong DuplicateEntity(ulong entityHandle);
+    IEntity? DuplicateEntity(IEntity entity);
 
     /// <summary>设置实体父节点。</summary>
-    bool ReparentEntity(ulong entityHandle, ulong newParentHandle);
+    bool ReparentEntity(IEntity entity, IEntity newParent);
 
     /// <summary>设置活跃场景。</summary>
-    void SetActiveScene(ulong sceneHandle);
+    void SetActiveScene(IScene? scene);
 
     /// <summary>刷新层级缓存（版本轮询 + 增量更新）。</summary>
     bool TryRefreshHierarchy();
@@ -54,14 +56,14 @@ public interface ISceneQueryService
 /// </summary>
 public class EntityNodeData
 {
-    public ulong Handle { get; init; }
+    public int Id { get; init; }
     public string Name { get; init; } = "";
-    public ulong ParentHandle { get; init; }
+    public int ParentId { get; init; } = -1;
     public int Depth { get; init; }
     public int ChildCount { get; init; }
     public bool IsActive { get; init; }
     public bool IsPrefabInstance { get; init; }
     public List<EntityNodeData> Children { get; init; } = new();
-    public bool IsRoot => ParentHandle == 0;
+    public bool IsRoot => ParentId < 0;
     public bool HasChildren => Children.Count > 0;
 }

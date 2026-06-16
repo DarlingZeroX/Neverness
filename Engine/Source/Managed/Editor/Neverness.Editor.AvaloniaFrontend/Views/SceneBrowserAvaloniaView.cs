@@ -157,7 +157,7 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
     {
         if (_viewModel == null || _controller == null) return;
 
-        if (e.AddedItems.Count > 0 && e.AddedItems[0] is TreeViewItem treeItem && treeItem.Tag is ulong handle)
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is TreeViewItem treeItem && treeItem.Tag is int handle)
         {
             _viewModel.Select(handle);
         }
@@ -192,8 +192,8 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         var treeItem = new TreeViewItem
         {
             Header = CreateNodeHeader(node),
-            Tag = node.Handle,
-            IsExpanded = _viewModel?.IsExpanded(node.Handle) ?? false,
+            Tag = node.Id,
+            IsExpanded = _viewModel?.IsExpanded(node.Id) ?? false,
         };
 
         // 展开/折叠事件
@@ -201,7 +201,7 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         {
             if (e.Property.Name == nameof(TreeViewItem.IsExpanded))
             {
-                _viewModel?.SetExpanded(node.Handle, treeItem.IsExpanded);
+                _viewModel?.SetExpanded(node.Id, treeItem.IsExpanded);
             }
         };
 
@@ -234,7 +234,7 @@ public class SceneBrowserAvaloniaView : AvaloniaViewBase
         // 实体名称
         var name = new TextBlock
         {
-            Text = node.Handle.ToString(),
+            Text = node.Id.ToString(),
             FontSize = 12,
             VerticalAlignment = VerticalAlignment.Center,
         };

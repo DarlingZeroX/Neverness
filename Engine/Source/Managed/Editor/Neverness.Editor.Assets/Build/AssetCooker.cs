@@ -105,7 +105,7 @@ public static unsafe class AssetCooker
     {
         if (s_api != null) return s_api;
 
-        /* TODO: 从 NativeApiProvider 获取完整 API 表 */
+        /* TODO: 从 C# AssetManager 获取完整 API 表 */
         /* 当前创建空表 */
         s_api = new CookerApiTable();
         return s_api;

@@ -41,17 +41,18 @@ public class EditorDockFactory : Factory
     }
 
     // 面板引用（供外部设置内容）
-    private Document? _sceneBrowser;
+    // Viewport 使用 Document（放在 DocumentDock 中），其余使用 Tool（放在 ToolDock 中）
     private Document? _viewport;
-    private Document? _inspector;
-    private Document? _contentBrowser;
-    private Document? _console;
+    private Tool? _sceneBrowser;
+    private Tool? _inspector;
+    private Tool? _contentBrowser;
+    private Tool? _console;
 
-    public Document? SceneBrowserPanel => _sceneBrowser;
     public Document? ViewportPanel => _viewport;
-    public Document? InspectorPanel => _inspector;
-    public Document? ContentBrowserPanel => _contentBrowser;
-    public Document? ConsolePanel => _console;
+    public Tool? SceneBrowserPanel => _sceneBrowser;
+    public Tool? InspectorPanel => _inspector;
+    public Tool? ContentBrowserPanel => _contentBrowser;
+    public Tool? ConsolePanel => _console;
 
     /// <summary>
     /// 创建默认编辑器布局。
@@ -59,12 +60,13 @@ public class EditorDockFactory : Factory
     /// </summary>
     public IRootDock CreateDefaultLayout()
     {
-        // 创建面板（启用浮动能力）
-        _sceneBrowser = new Document { Id = PanelIds.SceneBrowser, Title = "Scene Browser", CanFloat = true };
+        // 创建面板
+        // Viewport 使用 Document（放在 DocumentDock 中），其余使用 Tool（放在 ToolDock 中）
         _viewport = new Document { Id = PanelIds.Viewport, Title = "Viewport", CanFloat = true };
-        _inspector = new Document { Id = PanelIds.Inspector, Title = "Inspector", CanFloat = true };
-        _contentBrowser = new Document { Id = PanelIds.ContentBrowser, Title = "Content Browser", CanFloat = true };
-        _console = new Document { Id = PanelIds.Console, Title = "Console", CanFloat = true };
+        _sceneBrowser = new Tool { Id = PanelIds.SceneBrowser, Title = "Scene Browser", CanFloat = true };
+        _inspector = new Tool { Id = PanelIds.Inspector, Title = "Inspector", CanFloat = true };
+        _contentBrowser = new Tool { Id = PanelIds.ContentBrowser, Title = "Content Browser", CanFloat = true };
+        _console = new Tool { Id = PanelIds.Console, Title = "Console", CanFloat = true };
 
         // 右侧上部 ToolDock：SceneBrowser
         var rightTopDock = new ToolDock
@@ -73,7 +75,8 @@ public class EditorDockFactory : Factory
             Alignment = Alignment.Right,
             Proportion = 0.5,
             ActiveDockable = _sceneBrowser,
-            VisibleDockables = CreateList<IDockable>(_sceneBrowser)
+            VisibleDockables = CreateList<IDockable>(_sceneBrowser),
+            EnableWindowDrag = true
         };
 
         // 右侧下部 ToolDock：Inspector
@@ -83,7 +86,8 @@ public class EditorDockFactory : Factory
             Alignment = Alignment.Right,
             Proportion = 0.5,
             ActiveDockable = _inspector,
-            VisibleDockables = CreateList<IDockable>(_inspector)
+            VisibleDockables = CreateList<IDockable>(_inspector),
+            EnableWindowDrag = true
         };
 
         // 右侧组合：SceneBrowser + Inspector 上下排列（占 25% 宽度）
@@ -107,7 +111,8 @@ public class EditorDockFactory : Factory
             Alignment = Alignment.Bottom,
             Proportion = 0.3,
             ActiveDockable = _contentBrowser,
-            VisibleDockables = CreateList<IDockable>(_contentBrowser, _console)
+            VisibleDockables = CreateList<IDockable>(_contentBrowser, _console),
+            EnableWindowDrag = true
         };
 
         // 中央 DocumentDock：Viewport（启用标签拖拽浮动）

@@ -16,10 +16,10 @@ public static class SceneModule
         Private.SceneModuleImp.Install(sceneManager);
     }
 
-    /// <summary>设置场景浏览器关联的场景句柄。</summary>
-    public static void SetSceneHandle(ulong sceneHandle)
+    /// <summary>设置场景浏览器关联的场景。</summary>
+    public static void SetScene(SceneWorld? world)
     {
-        Private.SceneModuleImp.SetSceneHandle(sceneHandle);
+        Private.SceneModuleImp.SetScene(world);
     }
 
     // ── PlayMode API ──

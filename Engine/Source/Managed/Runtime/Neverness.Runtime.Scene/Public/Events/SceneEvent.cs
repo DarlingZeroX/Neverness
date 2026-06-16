@@ -1,9 +1,7 @@
-using Neverness.Runtime.Engine;
-
 namespace Neverness.Runtime.Scene;
 
 /// <summary>
-/// 场景事件类型——与 Native <c>NNSceneEventType</c> 对齐。
+/// 场景事件类型——与旧 Native NNSceneEventType 对齐。
 /// </summary>
 public enum SceneEventType : byte
 {
@@ -16,58 +14,83 @@ public enum SceneEventType : byte
     /// <summary>父子关系变更。</summary>
     ParentChanged = 2,
 
-    /// <summary>组件被写入（Emplace / SetComponent）。</summary>
-    ComponentEmplaced = 3,
+    /// <summary>组件被添加。</summary>
+    ComponentAdded = 3,
+
+    /// <summary>组件被移除。</summary>
+    ComponentRemoved = 4,
+
+    /// <summary>场景加载完成。</summary>
+    SceneLoaded = 5,
+
+    /// <summary>场景卸载。</summary>
+    SceneUnloaded = 6,
 }
 
 /// <summary>
 /// 场景事件——描述实体生命周期和组件变更。
-/// 对应 Native <c>NNSceneEntityEvent</c> 结构体。
+/// 使用 IEntity 接口，不依赖 Native 句柄。
 /// </summary>
 public readonly struct SceneEvent
 {
     /// <summary>事件类型。</summary>
     public SceneEventType Type { get; }
 
-    /// <summary>主实体句柄（EntityCreated / EntityDestroyed / ComponentEmplaced 的目标实体）。</summary>
-    public NNEntityHandle Entity { get; }
+    /// <summary>主实体（EntityCreated / EntityDestroyed / ComponentAdded 的目标实体）。</summary>
+    public IEntity? Entity { get; }
 
     /// <summary>
-    /// 附属实体句柄：
+    /// 附属实体：
     /// - ParentChanged：新父实体
-    /// - 其他事件：零句柄
+    /// - 其他事件：null
     /// </summary>
-    public NNEntityHandle OtherEntity { get; }
+    public IEntity? OtherEntity { get; }
 
     /// <summary>
-    /// 组件类型 ID：
-    /// - ComponentEmplaced：被写入的组件 TypeId
-    /// - 其他事件：0
+    /// 组件类型名称：
+    /// - ComponentAdded / ComponentRemoved：组件类型名称
+    /// - 其他事件：null
     /// </summary>
-    public ulong ComponentTypeId { get; }
+    public string? ComponentTypeName { get; }
 
-    public SceneEvent(SceneEventType type, NNEntityHandle entity,
-        NNEntityHandle otherEntity = default, ulong componentTypeId = 0)
+    /// <summary>场景名称（SceneLoaded / SceneUnloaded 用）。</summary>
+    public string? SceneName { get; }
+
+    public SceneEvent(SceneEventType type, IEntity? entity = null,
+        IEntity? otherEntity = null, string? componentTypeName = null, string? sceneName = null)
     {
         Type = type;
         Entity = entity;
         OtherEntity = otherEntity;
-        ComponentTypeId = componentTypeId;
+        ComponentTypeName = componentTypeName;
+        SceneName = sceneName;
     }
 
     /// <summary>创建实体创建事件。</summary>
-    public static SceneEvent OnEntityCreated(NNEntityHandle entity) =>
+    public static SceneEvent OnEntityCreated(IEntity entity) =>
         new(SceneEventType.EntityCreated, entity);
 
     /// <summary>创建实体销毁事件。</summary>
-    public static SceneEvent OnEntityDestroyed(NNEntityHandle entity) =>
+    public static SceneEvent OnEntityDestroyed(IEntity entity) =>
         new(SceneEventType.EntityDestroyed, entity);
 
     /// <summary>创建父子关系变更事件。</summary>
-    public static SceneEvent OnParentChanged(NNEntityHandle entity, NNEntityHandle newParent) =>
+    public static SceneEvent OnParentChanged(IEntity entity, IEntity newParent) =>
         new(SceneEventType.ParentChanged, entity, newParent);
 
-    /// <summary>创建组件写入事件。</summary>
-    public static SceneEvent OnComponentEmplaced(NNEntityHandle entity, ulong componentTypeId) =>
-        new(SceneEventType.ComponentEmplaced, entity, componentTypeId: componentTypeId);
+    /// <summary>创建组件添加事件。</summary>
+    public static SceneEvent OnComponentAdded(IEntity entity, string componentTypeName) =>
+        new(SceneEventType.ComponentAdded, entity, componentTypeName: componentTypeName);
+
+    /// <summary>创建组件移除事件。</summary>
+    public static SceneEvent OnComponentRemoved(IEntity entity, string componentTypeName) =>
+        new(SceneEventType.ComponentRemoved, entity, componentTypeName: componentTypeName);
+
+    /// <summary>创建场景加载事件。</summary>
+    public static SceneEvent OnSceneLoaded(string sceneName) =>
+        new(SceneEventType.SceneLoaded, sceneName: sceneName);
+
+    /// <summary>创建场景卸载事件。</summary>
+    public static SceneEvent OnSceneUnloaded(string sceneName) =>
+        new(SceneEventType.SceneUnloaded, sceneName: sceneName);
 }

@@ -5,7 +5,6 @@ using Neverness.Editor.Core.Public;
 using Neverness.Editor.ImGuiEx;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Audio;
-using Neverness.Runtime.Engine;
 using Neverness.Runtime.VFS.Public;
 
 using ImportPipeline = Neverness.Editor.Assets.ImportPipeline;
@@ -101,7 +100,7 @@ public sealed class AudioAssetOpener : IAssetOpener
     private static (AssetHandle Handle, GUID Guid, AudioMetaInfo Meta, string VfsPath)
         LoadAudioAsset(AssetOpenContext context)
     {
-        var handle = AssetHandleExtensions.LoadSync(context.Guid, AssetTypeId.AudioClip);
+        var handle = AssetHandle.LoadSync(context.Guid, AssetTypeId.AudioClip);
         if (handle.IsZero)
         {
             var importResult = TryImportSource(context);
@@ -132,11 +131,7 @@ public sealed class AudioAssetOpener : IAssetOpener
     {
         try
         {
-            var api = NativeApiProvider.AssetManagerApi;
-            if (api.GetBlobCount == null || api.GetBlobSize == null)
-                return default;
-
-            ulong pcmBlobSize = api.GetBlobSize(handle.Value, 0);
+            ulong pcmBlobSize = (ulong)AssetManager.Instance.GetBlobSize(handle.Value, 0);
             if (pcmBlobSize == 0)
                 return default;
 
@@ -239,7 +234,7 @@ public sealed class AudioAssetOpener : IAssetOpener
             var result = ImportPipeline.Import(sourcePath);
             if (!result.Success) return (AssetHandle.Zero, context.Guid);
             var effectiveGuid = result.AssetGuid.IsZero ? context.Guid : result.AssetGuid;
-            var handle = AssetHandleExtensions.LoadSync(effectiveGuid, AssetTypeId.AudioClip);
+            var handle = AssetHandle.LoadSync(effectiveGuid, AssetTypeId.AudioClip);
             return (handle, effectiveGuid);
         }
         catch { return (AssetHandle.Zero, context.Guid); }

@@ -4,6 +4,8 @@
 // Entity 的扩展方法集合。
 // ============================================================================
 
+using Neverness.Runtime.Scene;
+
 namespace Neverness.Gameplay;
 
 /// <summary>
@@ -18,15 +20,14 @@ public static class EntityExtensions
     /// <summary>
     /// 获取或添加组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="entity">Entity 实例。</param>
     /// <returns>组件值。</returns>
-    public static T GetOrAddComponent<T>(this Entity entity) where T : struct
+    public static T GetOrAddComponent<T>(this Entity entity) where T : struct, IComponent
     {
-        var result = entity.GetComponent<T>();
-        if (result.HasValue)
+        if (entity.TryGetComponent<T>(out var component))
         {
-            return result.Value;
+            return component;
         }
         return entity.AddComponent<T>();
     }
@@ -34,12 +35,16 @@ public static class EntityExtensions
     /// <summary>
     /// 安全获取组件（无组件时返回默认值）。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="entity">Entity 实例。</param>
     /// <returns>组件值或默认值。</returns>
-    public static T GetComponentOrDefault<T>(this Entity entity) where T : struct
+    public static T GetComponentOrDefault<T>(this Entity entity) where T : struct, IComponent
     {
-        return entity.GetComponent<T>() ?? default;
+        if (entity.TryGetComponent<T>(out var component))
+        {
+            return component;
+        }
+        return default;
     }
 
     // ========================================================================

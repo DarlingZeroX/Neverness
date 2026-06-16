@@ -1,55 +1,47 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Neverness.Runtime.Engine;
+using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Components;
 
 namespace Neverness.Editor.Scene.Private.Cache;
 
 /// <summary>
-/// 场景层级缓存——Native Snapshot 的 Managed 端缓存层。
+/// 场景层级缓存——从 IScene 获取层级数据并缓存。
 ///
 /// 触发机制：
-///   每帧调用 TryRefresh() → getHierarchyVersion() 比较版本 → 变化才拉取全量 Snapshot。
-///   无变化帧：1 次轻量 P/Invoke（纯整数返回），0 数据拷贝。
+///   每帧调用 TryRefresh() → 比较版本 → 变化才重建缓存。
 ///
 /// 数据流：
-///   _snapshotBuffer (byte[])  ← Native 一次性写入 Header + Nodes + NamePool
-///       ↓ ParseSnapshot
-///   _allNodes (HierarchyNode[]) ← 解析后，名字已转为 string
-///   _entityToIndex (Dictionary)  ← O(1) Entity → Node 查找
+///   IScene → 遍历实体 → _allNodes (HierarchyNode[])
 ///       ↓ RebuildVisibleList
 ///   _visibleList (List<int>)     ← ImGui 直接遍历（DFS depth 跳跃跳过折叠子树）
 /// </summary>
 public sealed class SceneHierarchyCache
 {
-    // ── Snapshot 缓冲区（复用，避免每帧 GC）─────────────────────────
+    // ── 版本追踪 ──
 
-    /// <summary>原始字节缓冲区，Native 直接写入。容量不足时翻倍重新分配。</summary>
-    private byte[] _snapshotBuffer = [];
-
-    /// <summary>当前缓存的 hierarchyVersion（与 Native 同步）。</summary>
+    /// <summary>当前缓存的 hierarchyVersion（与 Scene 同步）。</summary>
     private ulong _cachedVersion = ulong.MaxValue;
 
-    /// <summary>当前缓存对应的场景句柄（用于检测场景切换，强制全量刷新）。</summary>
-    private ulong _cachedSceneHandle;
+    /// <summary>当前缓存对应的场景（用于检测场景切换，强制全量刷新）。</summary>
+    private IScene? _cachedScene;
 
     // ── 解析后的数据 ──
 
-    /// <summary>所有节点（DFS 顺序，与 Native 1:1 对应）。</summary>
+    /// <summary>所有节点（DFS 顺序）。</summary>
     private HierarchyNode[] _allNodes = [];
 
-    /// <summary>Entity → _allNodes 索引，O(1) 查找。</summary>
-    private readonly Dictionary<ulong, int> _entityToIndex = new(4096);
+    /// <summary>Entity ID → _allNodes 索引，O(1) 查找。</summary>
+    private readonly Dictionary<int, int> _entityToIndex = new(4096);
 
     /// <summary>根节点在 _allNodes 中的索引列表。</summary>
     private readonly List<int> _rootIndices = new(256);
 
     // ── UI 状态（独立于快照，快照刷新不清空）─────────────────────
 
-    /// <summary>展开的 Entity 集合。</summary>
-    private readonly HashSet<ulong> _expandedSet = new(256);
+    /// <summary>展开的 Entity ID 集合。</summary>
+    private readonly HashSet<int> _expandedSet = new(256);
 
-    /// <summary>选中的 Entity 集合。</summary>
-    private readonly HashSet<ulong> _selectedSet = new(64);
+    /// <summary>选中的 Entity ID 集合。</summary>
+    private readonly HashSet<int> _selectedSet = new(64);
 
     /// <summary>搜索过滤字符串（小写）。</summary>
     private string _searchText = "";
@@ -84,22 +76,21 @@ public sealed class SceneHierarchyCache
         }
     }
 
-    /// <summary>选中的 Entity 集合。</summary>
-    public IReadOnlyCollection<ulong> SelectedEntities => _selectedSet;
+    /// <summary>选中的 Entity ID 集合。</summary>
+    public IReadOnlyCollection<int> SelectedEntities => _selectedSet;
 
     // ── 版本轮询 + 按需拉取 ──
 
     /// <summary>
-    /// 每帧调用。比较 hierarchyVersion，变化时拉取全量 Snapshot 并重建缓存。
-    /// 无变化帧：仅 1 次 getHierarchyVersion()（纯整数 P/Invoke），无数据拷贝。
+    /// 每帧调用。比较 hierarchyVersion，变化时重建缓存。
     /// </summary>
     /// <returns>true = 缓存已更新；false = 版本未变，跳过</returns>
-    public unsafe bool TryRefresh(ulong sceneHandle)
+    public bool TryRefresh(IScene? scene)
     {
-        // 0. 场景句柄变化 → 强制全量刷新 + 清除旧 UI 状态
-        if (sceneHandle != _cachedSceneHandle)
+        // 0. 场景变化 → 强制全量刷新 + 清除旧 UI 状态
+        if (scene != _cachedScene)
         {
-            _cachedSceneHandle = sceneHandle;
+            _cachedScene = scene;
             _cachedVersion = ulong.MaxValue;
             _selectedSet.Clear();
             _expandedSet.Clear();
@@ -107,130 +98,35 @@ public sealed class SceneHierarchyCache
             _visibleDirty = true;
         }
 
-        // 1. 版本轮询（最热路径，纯整数返回）
-        ulong nativeVersion = EditorSceneNativeBridge.GetHierarchyVersion(sceneHandle);
-        if (nativeVersion == _cachedVersion)
-            return false; // 无变化，0 数据工作量
-
-        // 2. 查询所需大小
-        uint needed = EditorSceneNativeBridge.GetSnapshotSize(sceneHandle);
-        if (needed == 0)
+        if (scene == null)
             return false;
 
-        // 3. 确保缓冲区容量（翻倍预留，减少下次重分配概率）
-        if (_snapshotBuffer.Length < needed)
-            _snapshotBuffer = new byte[needed * 2];
-
-        // 4. 一次 P/Invoke 拷贝全部数据
-        uint written;
-        fixed (byte* buf = _snapshotBuffer)
-        {
-            written = EditorSceneNativeBridge.GetHierarchySnapshot(sceneHandle, buf, (uint)_snapshotBuffer.Length);
-        }
-        if (written == 0)
+        // 1. 版本轮询（通过场景的 HierarchyVersion 属性）
+        // TODO: 实现版本轮询
+        // 暂时每次都刷新
+        var newVersion = (ulong)scene.EntityCount;
+        if (newVersion == _cachedVersion)
             return false;
 
-        // 5. 解析 Snapshot → _allNodes
-        fixed (byte* buf = _snapshotBuffer)
-        {
-            ParseSnapshot(buf, written);
-        }
+        // 2. 从场景获取层级数据
+        RebuildFromScene(scene);
 
-        _cachedVersion = nativeVersion;
+        _cachedVersion = newVersion;
         _visibleDirty = true;
         return true;
     }
 
-    /// <summary>
-    /// 增量刷新：拉取脏条目并修补缓存。
-    ///
-    /// 策略：若脏条目数量占总节点数的比例低于阈值（10%），则仅标记受影响节点为脏；
-    /// 否则回退为 <see cref="TryRefresh"/>（全量拉取）。
-    ///
-    /// 注意：当前脏条目仅含 entity + changeFlags，不含节点完整数据。
-    /// 增量拉取后仍需 TryRefresh 进行全量同步。
-    /// 主要价值在于 Editor 端可以判断"哪些节点需要局部更新"，避免全量 UI 重建。
-    /// </summary>
-    /// <returns>true = 缓存需更新（_visibleDirty 已标记）；false = 无变化</returns>
-    public unsafe bool TryIncrementalRefresh(ulong sceneHandle)
+    /// <summary>从场景重建层级数据。</summary>
+    private void RebuildFromScene(IScene scene)
     {
-        // 0. 场景句柄变化 → 回退全量刷新
-        if (sceneHandle != _cachedSceneHandle)
-            return TryRefresh(sceneHandle);
-
-        // 1. 版本轮询
-        ulong nativeVersion = EditorSceneNativeBridge.GetHierarchyVersion(sceneHandle);
-        if (nativeVersion == _cachedVersion)
-            return false;
-
-        // 2. 若尚无节点数据，直接全量拉取
-        if (_allNodes.Length == 0)
-            return TryRefresh(sceneHandle);
-
-        // 3. 拉取增量脏条目
-        const int MaxDirtyEntries = 4096;
-        Span<NNDirtyNodeEntry> entries = stackalloc NNDirtyNodeEntry[MaxDirtyEntries];
-
-        uint bytesWritten;
-        fixed (NNDirtyNodeEntry* pEntries = entries)
+        // 收集所有实体
+        var entities = new List<IEntity>();
+        scene.Query<TransformComponent>().ForEach((ref TransformComponent t, IEntity entity) =>
         {
-            bytesWritten = EditorSceneNativeBridge.GetIncrementalSnapshot(
-                sceneHandle, pEntries, (uint)(MaxDirtyEntries * sizeof(NNDirtyNodeEntry)));
-        }
+            entities.Add(entity);
+        });
 
-        int entryCount = (int)(bytesWritten / 16); // sizeof(NNDirtyNodeEntry) = 16
-        if (entryCount == 0)
-        {
-            // 无脏条目但版本已变 → 回退全量
-            return TryRefresh(sceneHandle);
-        }
-
-        // 4. 阈值判断：脏条目超过 10% → 回退全量拉取
-        float dirtyRatio = (float)entryCount / _allNodes.Length;
-        if (dirtyRatio > 0.1f)
-        {
-            return TryRefresh(sceneHandle);
-        }
-
-        // 5. 应用脏条目到缓存节点
-        for (int i = 0; i < entryCount; i++)
-        {
-            ref readonly var entry = ref entries[i];
-            if (_entityToIndex.TryGetValue(entry.Entity, out int nodeIdx))
-            {
-                var node = _allNodes[nodeIdx];
-                node.Flags |= 0x04; // IsDirty 标记
-            }
-        }
-
-        _cachedVersion = nativeVersion;
-        _visibleDirty = true;
-        return true;
-    }
-
-    // ── Snapshot 解析 ──
-
-    /// <summary>
-    /// 解析二进制 Snapshot 数据为 _allNodes。
-    /// 布局：[Header 32B][Nodes * nodeCount * 40B][NamePool * namePoolBytes]
-    /// </summary>
-    public unsafe void ParseSnapshot(byte* buf, uint size)
-    {
-        // 校验 Header 最小大小
-        if (size < (uint)sizeof(NNSceneSnapshotHeader))
-            return;
-
-        var header = *(NNSceneSnapshotHeader*)buf;
-
-        // 校验魔数
-        if (header.Magic != 0x56475343) // 'VGSC'
-            return;
-
-        int nodeCount = (int)header.NodeCount;
-
-        // 指针定位：Nodes 紧跟 Header，NamePool 紧跟 Nodes
-        var nodePtr = (NNSceneNodeSnapshot*)(buf + sizeof(NNSceneSnapshotHeader));
-        var namePool = (byte*)(nodePtr + nodeCount);
+        int nodeCount = entities.Count;
 
         // 复用或重建节点数组
         if (_allNodes.Length != nodeCount)
@@ -241,35 +137,59 @@ public sealed class SceneHierarchyCache
             _allNodes = newNodes;
         }
 
-        // 预分配 Dictionary 容量（避免中途 resize）
+        // 预分配 Dictionary 容量
         if (_entityToIndex.Capacity < nodeCount)
             _entityToIndex.EnsureCapacity(nodeCount);
 
         _entityToIndex.Clear();
         _rootIndices.Clear();
 
+        // 填充节点数据
         for (int i = 0; i < nodeCount; i++)
         {
-            ref readonly var raw = ref nodePtr[i];
+            var entity = entities[i];
             var node = _allNodes[i];
 
-            node.Entity     = raw.Entity;
-            node.Parent     = raw.Parent;
-            node.Depth      = raw.Depth;
-            node.ChildCount = raw.ChildCount;
-            node.Flags      = raw.Flags;
-            node.FlatIndex  = i;
+            node.EntityId = entity.Id;
+            node.Name = entity.Name ?? $"Entity_{entity.Id}";
+            node.FlatIndex = i;
 
-            // 从 namePool 读取 UTF-8 字符串（nameLen 可为 0）
-            node.Name = raw.NameLen > 0
-                ? System.Text.Encoding.UTF8.GetString(namePool + raw.NameOffset, (int)raw.NameLen)
-                : "";
+            // 获取父节点
+            var parent = scene.GetParent(entity);
+            node.Parent = parent?.Id ?? -1;
 
-            _entityToIndex[raw.Entity] = i;
+            // 获取子节点数量
+            var children = scene.GetChildren(entity);
+            node.ChildCount = (uint)children.Count;
 
-            if (raw.Parent == 0)
+            // 计算深度
+            node.Depth = ComputeDepth(scene, entity);
+
+            // 更新标志位
+            node.Flags = 0; // IsActive = true by default
+            if (node.Parent < 0)
+                node.Flags |= 0x01; // IsActive
+
+            _entityToIndex[entity.Id] = i;
+
+            if (node.Parent < 0)
                 _rootIndices.Add(i);
         }
+    }
+
+    /// <summary>计算实体的层级深度。</summary>
+    private uint ComputeDepth(IScene scene, IEntity entity)
+    {
+        uint depth = 0;
+        var current = entity;
+        while (current != null && current.IsValid)
+        {
+            var parent = scene.GetParent(current);
+            if (parent == null || !parent.IsValid) break;
+            current = parent;
+            depth++;
+        }
+        return depth;
     }
 
     // ── 可见列表重建（DFS depth 跳跃）─────────────────────────────
@@ -277,7 +197,7 @@ public sealed class SceneHierarchyCache
     /// <summary>
     /// 重建可见节点列表。
     ///
-    /// 核心优化：利用 Snapshot 的 DFS 顺序 + depth 字段，折叠时直接跳过整个子树。
+    /// 核心优化：利用 DFS 顺序 + depth 字段，折叠时直接跳过整个子树。
     /// 不需要递归——DFS 连续输出保证：所有后代在当前节点之后，且 depth 更大。
     /// 遇到 depth &lt;= 当前 depth 的节点时，子树结束。
     ///
@@ -336,7 +256,7 @@ public sealed class SceneHierarchyCache
             _visibleList.Add(i);
 
             // 未展开 + 有子节点 + 非搜索模式 → 跳过整个子树
-            if (!hasSearch && node.ChildCount > 0 && !_expandedSet.Contains(node.Entity))
+            if (!hasSearch && node.ChildCount > 0 && !_expandedSet.Contains(node.EntityId))
             {
                 uint skipDepth = node.Depth;
                 i++;
@@ -365,8 +285,8 @@ public sealed class SceneHierarchyCache
                 continue;
 
             // 向上展开祖先链
-            ulong cur = nodes[i].Parent;
-            while (cur != 0 && _entityToIndex.TryGetValue(cur, out int idx))
+            int cur = nodes[i].Parent;
+            while (cur >= 0 && _entityToIndex.TryGetValue(cur, out int idx))
             {
                 _expandedSet.Add(cur);
                 cur = nodes[idx].Parent;
@@ -377,21 +297,21 @@ public sealed class SceneHierarchyCache
     // ── 展开 / 折叠 ──
 
     /// <summary>检查实体是否展开。</summary>
-    public bool IsExpanded(ulong entity) => _expandedSet.Contains(entity);
+    public bool IsExpanded(int entityId) => _expandedSet.Contains(entityId);
 
     /// <summary>设置实体展开状态。</summary>
-    public void SetExpanded(ulong entity, bool expanded)
+    public void SetExpanded(int entityId, bool expanded)
     {
-        if (expanded) _expandedSet.Add(entity);
-        else _expandedSet.Remove(entity);
+        if (expanded) _expandedSet.Add(entityId);
+        else _expandedSet.Remove(entityId);
         _visibleDirty = true;
     }
 
     /// <summary>切换实体展开状态。</summary>
-    public void ToggleExpanded(ulong entity)
+    public void ToggleExpanded(int entityId)
     {
-        if (!_expandedSet.Remove(entity))
-            _expandedSet.Add(entity);
+        if (!_expandedSet.Remove(entityId))
+            _expandedSet.Add(entityId);
         _visibleDirty = true;
     }
 
@@ -401,7 +321,7 @@ public sealed class SceneHierarchyCache
         var nodes = _allNodes;
         for (int i = 0; i < nodes.Length; i++)
             if (nodes[i].ChildCount > 0)
-                _expandedSet.Add(nodes[i].Entity);
+                _expandedSet.Add(nodes[i].EntityId);
         _visibleDirty = true;
     }
 
@@ -415,17 +335,17 @@ public sealed class SceneHierarchyCache
     // ── 选中 ──
 
     /// <summary>检查实体是否被选中。</summary>
-    public bool IsSelected(ulong entity) => _selectedSet.Contains(entity);
+    public bool IsSelected(int entityId) => _selectedSet.Contains(entityId);
 
     /// <summary>选中实体。additive=false 时先清空已有选中。</summary>
-    public void Select(ulong entity, bool additive = false)
+    public void Select(int entityId, bool additive = false)
     {
         if (!additive) _selectedSet.Clear();
-        _selectedSet.Add(entity);
+        _selectedSet.Add(entityId);
     }
 
     /// <summary>取消选中实体。</summary>
-    public void Deselect(ulong entity) => _selectedSet.Remove(entity);
+    public void Deselect(int entityId) => _selectedSet.Remove(entityId);
 
     // ── 搜索 ──
 
@@ -439,7 +359,7 @@ public sealed class SceneHierarchyCache
 
     // ── 查找 ──
 
-    /// <summary>按 Entity 句柄查找节点。</summary>
-    public HierarchyNode? GetNode(ulong entity)
-        => _entityToIndex.TryGetValue(entity, out int i) ? _allNodes[i] : null;
+    /// <summary>按 Entity ID 查找节点。</summary>
+    public HierarchyNode? GetNode(int entityId)
+        => _entityToIndex.TryGetValue(entityId, out int i) ? _allNodes[i] : null;
 }

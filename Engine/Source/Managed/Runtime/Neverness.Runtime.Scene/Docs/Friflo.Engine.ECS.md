@@ -1,0 +1,413 @@
+<div align="center">
+
+  [![friflo ECS](docs/images/friflo-ECS.svg)](https://github.com/friflo/Friflo.Engine.ECS)   ![splash](docs/images/paint-splatter.svg)
+
+</div>
+
+<div align="center">
+
+[![nuget](https://img.shields.io/nuget/v/Friflo.Engine.ECS?logo=nuget&logoColor=white)](https://www.nuget.org/packages/Friflo.Engine.ECS)
+[![codecov](https://img.shields.io/codecov/c/gh/friflo/Friflo.Engine.ECS?logo=codecov&logoColor=white&label=codecov)](https://app.codecov.io/gh/friflo/Friflo.Engine.ECS/tree/main/src/ECS)
+[![CI-Engine](https://img.shields.io/github/actions/workflow/status/friflo/Friflo.Engine.ECS/.github%2Fworkflows%2Fengine.yml?logo=github-actions&logoColor=white&label=CI)](https://github.com/friflo/Friflo.Engine.ECS/actions/workflows/engine.yml)
+[![Demos](https://img.shields.io/badge/Demos-22aa22?logo=github&logoColor=white)](https://github.com/friflo/Friflo.Engine.ECS-Demos)
+[![C# API](https://img.shields.io/badge/C%23%20API-22aaaa?logo=github&logoColor=white)](https://github.com/friflo/Friflo.Engine-docs)
+[![Discord](https://img.shields.io/discord/1209072279904976896?label=Discord&logo=discord&logoColor=white&labelColor=5E6AE9&color=4149A1)](https://discord.gg/nFfrhgQkb8)
+[![Docs](https://img.shields.io/badge/Docs-A200FF?logo=gitbook&logoColor=white)](https://friflo.gitbook.io/friflo.engine.ecs)
+
+</div>
+
+# friflo ECS
+
+Friflo ECS is a high performance C# ECS with focus on simplicity and reliability.  
+The library is designed for easy integration and a smooth developer experience.  
+Among various C# ECS projects, it is currently the only one fully implemented in Managed C#.  
+By this no use of `unsafe` code preventing crashes due to memory corruption.
+
+
+<details>
+<summary>What is ECS - Entity Component System?</summary>
+An ECS is a software architecture pattern. See [ECS ⋅ Wikipedia](https://en.wikipedia.org/wiki/Entity_component_system).  
+It is often used in the Gaming industry - e.g. Minecraft - and used for high performant data processing.  
+An ECS provide two strengths:
+
+1. It enables writing *highly decoupled code*. Data is stored in **Components** which are assigned to objects - aka **Entities** - at runtime.  
+   Code decoupling is accomplished by dividing implementation in pure data structures (**Component types**) - and code (**Systems**) to process them.  
+  
+2. It enables *high performant system execution* by storing components in continuous memory to leverage CPU caches L1, L2 & L3.  
+   It improves CPU branch prediction by minimizing conditional branches when processing components in tight loops.
+</details>
+
+
+### Highlights
+* 🔥 **Top Performance** - C/C++/Rust speed and memory efficiency. Various benchmarks below.
+* 🧩 **Bare Essentials** - Provide only ECS core concepts: components, tags, relations and systems. Thats it!
+* 🎯 **Simple** - Clean & Simple API. No boilerplate. Check the [Documentation](https://friflo.gitbook.io/friflo.engine.ecs) with many examples.
+* 🛡️ **Reliable** - Built for production. Fully Managed C# - No unsafe code. High test coverage.
+* 🙏 **Community** - Helpful and welcoming support on [Discord](https://discord.gg/nFfrhgQkb8) and Github.
+
+
+## Features
+
+**🚀 New in v3.5.0**  
+[Map components to enums](https://friflo.gitbook.io/friflo.engine.ecs/documentation/events#map-components-to-enums)
+and [Map tags to enums](https://friflo.gitbook.io/friflo.engine.ecs/documentation/events#map-tags-to-enums).  
+Introduced new pattern to process events on adding/removing components or tags more performant and concise.
+
+**🚀 New in v3.6.0**  
+[New feature: Query Generator](https://github.com/friflo/Friflo.Engine.ECS/issues/124)  
+Generates high-performance query code and reduces boilerplate code to a minimum.
+
+- [x] High performant / type-safe queries
+- [x] Efficient multithreaded queries
+- [x] Fast batch / bulk operations
+- [x] Command buffers *aka* deferred operations
+- [x] Clone / Copy entities
+- [x] Entity hierarchy *aka* scene tree
+- [x] Relationships and relations
+- [x] Component Search in O(1)
+- [x] Entity / component events
+- [x] Allocation free enumerators
+- [x] Systems and groups
+- [x] JSON Serialization
+- [x] SIMD Support
+- [x] Type-safe Add/Remove/Get component. No potential memory corruption like in Arch.
+- [x] Single library. No exclusive feature combinations such as events, assertions or debug/release.
+- [x] Zero allocations after buffers are large enough.
+- [x] Automatic component type registration
+- [x] Supports .NET Standard 2.1 .NET 5 .NET 6 .NET 7 .NET 8 .NET 9 .NET 10
+  WASM / WebAssembly, Unity (Mono, AOT/IL2CPP, WebGL), Godot, MonoGame
+- [x] Native AOT
+- [x] CLS Compliant API - supporting all .NET languages: C#, F#, VB.NET, ...
+- [x] Debug Tools: Watch entities, components, tags, relations, query results, systems, ...
+      <details>
+        <summary>Screenshot - Watch ad-hoc query result in debugger</summary>
+        <img src="docs/images/watch-query-result-set.png" width="656" height="202"/>
+      </details>
+- [x] Fully Managed C#. No [*unsafe code*](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/unsafe-code),
+      *native dll bindings* and *access violations*. 
+      <details>
+        <summary>Behavior of access violation bugs using unsafe code</summary>
+        <img src="docs/images/access_violation/VS-2022_access_violation.png" width="249" height="135"/>
+        <img src="docs/images/access_violation/Rider-access_violation.png"   width="230" height="115"/>
+        <img src="docs/images/access_violation/Unity_access_violation.png"   width="213" height="131"/>
+      </details>
+
+
+
+Get package on [nuget](https://www.nuget.org/packages/Friflo.Engine.ECS/) or use the dotnet CLI.
+```
+dotnet add package Friflo.Engine.ECS
+```
+
+
+
+
+## Projects using friflo ECS
+
+### [Vanguard Tides](https://store.steampowered.com/app/4683140/Vanguard_Tides/)
+
+<a href="https://store.steampowered.com/app/4683140/Vanguard_Tides/"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4683140/329a7b32d98e4c0a9e8f77935b6fe313f3341a17/header.jpg" width="460" height="215"/></a>  
+![Godot](https://img.shields.io/badge/Godot-FFFFFF?logo=godotengine&logoColor=3d85c6)
+![Steam](https://img.shields.io/badge/Steam-00ADEF?logo=steam&logoColor=white)  
+A survivors-like game exploiting the strength of ECS controlling a very high amount of AI units.  
+A Godot MultiMesh is used to enable reliable 2000 FPS.  
+It uses a single MultiMeshInstance2D node with a single material and shader.
+
+
+### [Louis Adventure](https://sergeik.itch.io/louis-adventure)
+
+<a href="https://sergeik.itch.io/louis-adventure"><img src="https://github.com/user-attachments/assets/ecf9357a-d240-414f-aa2f-edb0dfd551bd" width="460" height="287"/></a>  
+![Unity](https://img.shields.io/badge/Unity-000000?logo=unity&logoColor=white)
+![WASM](https://img.shields.io/badge/WASM-624DE8?logo=webassembly&logoColor=white)
+![Android](https://img.shields.io/badge/Android-3ddc84?logo=android&logoColor=white)    
+[Play in Browser](https://sergeik.itch.io/louis-adventure)  
+Tech Demo of a 2D platformer with focus on movement mechanics.  
+ECS is used for core game logic, component-base abilities, physics / collisions & triggers,  
+state machines / behavior logic, gameplay events and UI integration. [more ...](https://github.com/friflo/Friflo.Engine.ECS/discussions/119)
+
+
+### [RaygueLike Challenge](https://github.com/d-bucur/rl2025)
+
+<a href="https://github.com/d-bucur/rl2025"><img src="https://img.itch.zone/aW1nLzIzMDEyMjQ3LnBuZw==/original/us69f5.png" width="460" height="268"/></a>  
+![raylib](https://img.shields.io/badge/raylib-F5F5F5?logo=raylib&logoColor=black)
+![WASM](https://img.shields.io/badge/WASM-624DE8?logo=webassembly&logoColor=white)    
+[Play in Browser](https://sirdorius.itch.io/rayguelike-2025) ·
+[GitHub](https://github.com/d-bucur/rl2025)  
+Project is hosted on GitHub and supports Desktop and WASM.  
+Rendering of 3D environment and 2D sprites is implemented with Raylib.  
+Interesting note: It combines behavior trees with ECS. [more ...](https://github.com/friflo/Friflo.Engine.ECS/discussions/90)
+
+
+### [Horse Runner DX](https://store.steampowered.com/app/2955320/Horse_Runner_DX)
+
+<a href="https://store.steampowered.com/app/2955320/Horse_Runner_DX"><img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/2955320/library_header.jpg" width="460" height="215"/></a>  
+![MonoGame](https://img.shields.io/badge/MonoGame-E73C00?logo=monogame&logoColor=white)
+![Nintendo Switch](https://img.shields.io/badge/Nintendo%20Switch-E60012)
+![Steam Deck](https://img.shields.io/badge/Steam%20Deck-171A21?logo=steamdeck&logoColor=white)
+![Steam](https://img.shields.io/badge/Steam-00ADEF?logo=steam&logoColor=white)  
+Quote from developer: *"Just wanted to let you know that Friflo ECS 2.0.0 works like a charm in my little game.  
+I use it for basically everything (landscape segments, vegetation, players, animations,  collisions and even the floating dust particles are entities).  
+After some optimization there is no object allocation during gameplay - the allocation graph just stays flat - no garbage collection."*
+
+
+**Want to add a project?**  
+Create a GitHub [Discussion](https://github.com/friflo/Friflo.Engine.ECS/discussions/categories/show-and-tell) or message on [Discord](https://discord.gg/nFfrhgQkb8).
+
+
+## Demos
+
+MonoGame Demo is available as WASM / WebAssembly app. [**Try Demo in your browser**](https://sdl-wasm-sample-web.vercel.app/docs/MonoGame/).  
+Demo projects on GitHub below.
+<table>
+ <thead>
+  <tr>
+    <td><a href="https://github.com/friflo/Friflo.Engine.ECS-Demos/tree/main/MonoGame"><img src="https://raw.githubusercontent.com/friflo/Friflo.Engine-docs/main/docs/images/MonoGame-wasm.png" width="160px" height="100px"/></a></td>
+    <td><a href="https://github.com/friflo/Friflo.Engine.ECS-Demos/tree/main/Unity"   ><img src="https://raw.githubusercontent.com/friflo/Friflo.Engine-docs/main/docs/images/Unity.png"         width="160px" height="100px"/></a></td>
+    <td><a href="https://github.com/friflo/Friflo.Engine.ECS-Demos/tree/main/Godot"   ><img src="https://raw.githubusercontent.com/friflo/Friflo.Engine-docs/main/docs/images/Godot.png"         width="160px" height="100px"/></a></td>
+  </tr>
+ </thead>
+ <tbody>
+  <tr>
+    <td align="center"><a href="https://github.com/friflo/Friflo.Engine.ECS-Demos/tree/main/MonoGame" >MonoGame</a></td>
+    <td align="center"><a href="https://github.com/friflo/Friflo.Engine.ECS-Demos/tree/main/Unity"    >Unity</a></td>
+    <td align="center"><a href="https://github.com/friflo/Friflo.Engine.ECS-Demos/tree/main/Godot"    >Godot</a></td>
+  </tr>
+ </tbody>
+<table>
+
+*Desktop Demo performance:* Godot 202 FPS, Unity 100 FPS at 65536 entities.  
+All example Demos - **Windows**, **macOS** & **Linux** - available as projects for **MonoGame**, **Unity** and **Godot**.  
+See [Demos · GitHub](https://github.com/friflo/Friflo.Engine.ECS-Demos)
+
+<br/>
+
+
+## **New features in 3.0.0**
+
+- [Index / Search](https://friflo.gitbook.io/friflo.engine.ecs/documentation/component-index) used to search entities with specific component values in O(1). E.g
+  - To lookup entities having a *TileComponent* with a specific tile id.
+  - To lookup network entities with a *NetComponent* using a custom identifier like a `Guid`,`long` or a `string`.
+
+- [Relationships](https://friflo.gitbook.io/friflo.engine.ecs/documentation/relationships) to create links / connections between entities. Used for:
+  - Attack systems
+  - Path finding / Route tracing
+  - Model social networks. E.g friendship, alliances or rivalries
+  - Build any type of a [directed graph](https://en.wikipedia.org/wiki/Directed_graph)
+    using entities as *nodes* and links or relations as *edges*
+
+- [Relations](https://friflo.gitbook.io/friflo.engine.ecs/documentation/relations) to add multiple *"components"* of the same type to a single entity. E.g.
+  - Inventory systems
+  - To model one-to-many data structures
+
+
+Big shout out to [**fenn**ecs](https://github.com/outfox/fennecs) and [**flecs**](https://github.com/SanderMertens/flecs)
+for the challenge to improve the feature set and performance of this project!
+
+<br/>
+
+# ⏩ Examples
+
+This section contains two typical use cases when using an ECS.  
+More examples describing use of various features are at [friflo ECS - Documentation](https://friflo.gitbook.io/friflo.engine.ecs).
+
+
+## **🚀 Hello World**
+
+The hello world examples demonstrates the creation of a world, some entities with components  
+and their movement using a simple `ForEachEntity()` call.  
+
+```csharp
+public struct Velocity : IComponent { public Vector3 value; }
+
+public static void HelloWorld()
+{
+    var world = new EntityStore();
+    for (int n = 0; n < 10; n++) {
+        world.CreateEntity(new Position(n, 0, 0), new Velocity{ value = new Vector3(0, n, 0)});
+    }
+    var query = world.Query<Position, Velocity>();
+    query.ForEachEntity((ref Position position, ref Velocity velocity, Entity entity) => {
+        position.value += velocity.value;
+    });
+}
+```
+In case of moving (updating) thousands or millions of entities an optimized approach can be used.  
+See:
+[Enumerate Query Chunks](https://friflo.gitbook.io/friflo.engine.ecs/documentation/query-optimization#enumerate-query-chunks),
+[Parallel Query Job](https://friflo.gitbook.io/friflo.engine.ecs/documentation/query-optimization#parallel-query-job) and
+[Query Vectorization - SIMD](https://friflo.gitbook.io/friflo.engine.ecs/documentation/query-optimization#query-vectorization-simd).  
+All query optimizations are using the same `query` but with different enumeration techniques.
+
+<br/>
+
+
+
+
+
+## **⚙️ Systems**
+
+Systems are new in **Friflo.Engine.ECS v2.0.0**
+
+Systems in ECS are typically queries.  
+So you can still use the `world.Query<Position, Velocity>()` shown in the "Hello World" example.  
+
+Using Systems is optional but they have some significant advantages.
+
+**System features**
+
+- Enable chaining multiple decoupled [QuerySystem](https://github.com/friflo/Friflo.Engine-docs/blob/main/api/QuerySystem.md) classes in a
+  [SystemGroup](https://github.com/friflo/Friflo.Engine-docs/blob/main/api/SystemGroup.md).  
+  Each group provide a [CommandBuffer](https://friflo.gitbook.io/friflo.engine.ecs/documentation/query#commandbuffer).
+
+- A system can have state - fields or properties - which can be used as parameters in `OnUpdate()`.  
+  The system state can be serialized to JSON.
+
+- Systems can be enabled/disabled or removed.  
+  The order of systems in a group can be changed.
+
+- Systems have performance monitoring build-in to measure execution times and memory allocations.  
+  If enabled systems detected as bottleneck can be optimized.  
+  A perf log (see example below) provide a clear overview of all systems their amount of entities and impact on performance.
+
+- Multiple worlds can be added to a single  [SystemRoot](https://github.com/friflo/Friflo.Engine-docs/blob/main/api/SystemRoot.md) instance.  
+  `root.Update()` will execute every system on all worlds.
+
+
+```csharp
+public static void HelloSystem()
+{
+    var world = new EntityStore();
+    for (int n = 0; n < 10; n++) {
+        world.CreateEntity(new Position(n, 0, 0), new Velocity(), new Scale3());
+    }
+    var root = new SystemRoot(world) {
+        new MoveSystem(),
+    //  new PulseSystem(),
+    //  new ... multiple systems can be added. The execution order still remains clear.
+    };
+    root.Update(default);
+}
+        
+class MoveSystem : QuerySystem<Position, Velocity>
+{
+    protected override void OnUpdate() {
+        Query.ForEachEntity((ref Position position, ref Velocity velocity, Entity entity) => {
+            position.value += velocity.value;
+        });
+    }
+}
+```
+
+A valuable strength of an ECS is establishing a clear and decoupled code structure.  
+Adding the `PulseSystem` below to the `SystemRoot` above is trivial.  
+This system uses a `foreach (var entity in Query.Entities)` as an alternative to `Query.ForEachEntity((...) => {...})`  
+to iterate the query result.
+
+```csharp
+struct Pulsating : ITag { }
+
+class PulseSystem : QuerySystem<Scale3>
+{
+    float frequency = 4f;
+    
+    public PulseSystem() => Filter.AnyTags(Tags.Get<Pulsating>());
+    
+    protected override void OnUpdate() {
+        foreach (var entity in Query.Entities) {
+            ref var scale = ref entity.GetComponent<Scale3>().value;
+            scale = Vector3.One * (1 + 0.2f * MathF.Sin(frequency * Tick.time));
+        }
+    }
+}
+```
+
+### ⏱ System monitoring
+
+System performance monitoring is disabled by default.  
+To enable monitoring call:
+
+```csharp
+root.SetMonitorPerf(true);
+```
+
+When enabled system monitoring captures
+- Number of system executions.
+- System execution duration in ms.
+- Memory heap allocations per system in bytes.
+- The number of entities matching a query system.
+
+
+#### Realtime monitoring
+
+In a game editor like Unity system monitoring is available in the **ECS System Set** component.
+<details>
+<summary>Screenshot: <b>ECS System Set</b> component in Play mode</summary>
+<img src="docs/images/SystemSet-Unity.png" width="324" height="ddd"/>
+</details>
+
+
+#### Log monitoring
+
+The performance statistics available at [SystemPerf](https://github.com/friflo/Friflo.Engine-docs/blob/main/api/SystemPerf.md).  
+To get performance statistics on console use:
+
+```csharp
+root.Update(default);
+Console.WriteLine(root.GetPerfLog());
+```
+
+The log result will look like:
+```js
+stores: 1                  on   last ms    sum ms   updates  last mem   sum mem  entities
+---------------------      --  --------  --------  --------  --------  --------  --------
+Systems [2]                 +     0.076     3.322        10       128      1392
+| ScaleSystem               +     0.038     2.088        10        64       696     10000
+| PositionSystem            +     0.038     1.222        10        64       696     10000
+```
+```
+on                  + enabled  - disabled
+last ms, sum ms     last/sum system execution time in ms
+updates             number of executions
+last mem, sum mem   last/sum allocated bytes
+entities            number of entities matching a QuerySystem
+```
+
+<br/>
+
+
+# 🏁 ECS Benchmarks
+
+## ECS.CSharp.Benchmark - Common use-cases
+
+Created a new GitHub repository [ECS.CSharp.Benchmark - Common use-cases](https://github.com/friflo/ECS.CSharp.Benchmark-common-use-cases).  
+It compares the performance of multiple ECS projects with **simple** benchmarks.  
+So they can be used as a **guide to migrate** form one ECS to another.  
+See discussion of [reddit announcement Post](https://www.reddit.com/r/EntityComponentSystem/comments/1e0qo62/just_published_new_github_repo_ecs_c_benchmark/).
+
+**Performance Ratio Overview - see [C# ECS Benchmark](https://github.com/friflo/ECS.CSharp.Benchmark-common-use-cases)**
+
+|         |     friflo | Flecs.NET  | TinyEcs    | Arch       | fennecs    | Leopotam   | DefaultEcs | Morpeh     |
+| ------- | ----------:| ----------:| ----------:| ----------:| ----------:| ----------:| ----------:| ----------:|
+| *Ratio* |       1.00 |       2.55 |       3.42 |       6.96 |      19.02 |       2.57 |       3.81 |      21.09 |
+
+## ECS.CSharp.Benchmark
+
+Performance comparison using popular **ECS C# benchmark** on GitHub.  
+Two benchmarks - subset of [GitHub ⋅ Ecs.CSharp.Benchmark + PR #38](https://github.com/Doraku/Ecs.CSharp.Benchmark/pull/38)
+running on a Mac Mini M2.
+
+See [Benchmark results](docs/doraku-benchmark.md).
+
+<br/>
+
+*You Like this project?*  
+Leave a ⭐ at  [friflo ECS](https://github.com/friflo/Friflo.Engine.ECS)
+
+<br/>
+
+**License**
+
+This project is licensed under MIT.  
+
+Friflo.Engine.ECS  
+Copyright © 2026   Ullrich Praetz - https://github.com/friflo

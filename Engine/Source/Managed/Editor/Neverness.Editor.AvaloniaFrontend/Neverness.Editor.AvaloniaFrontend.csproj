@@ -32,6 +32,10 @@
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<!-- Core（ViewModel + Controller + CompositionRoot） -->
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
+		<!-- Assets（资产工厂、MetaFileManager、EditorAssetDatabase） -->
+		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
+		<!-- ProjectSystem（ProjectPaths） -->
+		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

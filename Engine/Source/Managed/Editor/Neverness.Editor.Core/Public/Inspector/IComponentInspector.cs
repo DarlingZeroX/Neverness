@@ -1,6 +1,6 @@
 using System.Reflection;
 using Neverness.Runtime.Engine;
-using Neverness.Runtime.Scene.Internal;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Editor.Core.Public.Inspector;
 
@@ -34,26 +34,26 @@ public interface IComponentInspector
     int Order { get; }
 
     /// <summary>查询实体是否拥有此组件。</summary>
-    bool HasComponent(ulong sceneHandle, NNEntityHandle entity);
+    bool HasComponent(IEntity entity);
 
     /// <summary>移除实体的此组件。</summary>
-    void RemoveComponent(ulong sceneHandle, NNEntityHandle entity);
+    void RemoveComponent(IEntity entity);
 
     /// <summary>
     /// 绘制组件的 Inspector UI。
-    /// 实现方负责读取组件数据、绘制 ImGui 控件、在用户修改时写回 Native ECS。
+    /// 实现方负责读取组件数据、绘制 ImGui 控件、在用户修改时写回 ECS。
     /// </summary>
     /// <returns>true = 组件数据已被修改（调用方可能需要标记 dirty）。</returns>
-    bool DrawInspector(ulong sceneHandle, NNEntityHandle entity);
+    bool DrawInspector(IEntity entity);
 }
 
 /// <summary>
-/// 泛型组件检查器基类——封装 <see cref="SceneNativeBridge"/> 的类型安全读写，
+/// 泛型组件检查器基类——封装 IEntity 的类型安全读写，
 /// 子类只需覆写 <see cref="DrawFields"/> 实现 UI 绘制。
 /// </summary>
-/// <typeparam name="T">blittable 组件结构体类型（须有 <see cref="ComponentIdAttribute"/>）。</typeparam>
+/// <typeparam name="T">组件结构体类型（须实现 IComponent）。</typeparam>
 public abstract class ComponentTypeInspector<T> : IComponentInspector
-    where T : struct
+    where T : struct, IComponent
 {
     /// <summary>静态缓存的 TypeId（泛型静态字段，每个 T 只计算一次）。</summary>
     private static readonly ulong s_typeId = ResolveTypeId();
@@ -74,24 +74,22 @@ public abstract class ComponentTypeInspector<T> : IComponentInspector
     public virtual int Order => 1000;
 
     /// <inheritdoc />
-    public bool HasComponent(ulong sceneHandle, NNEntityHandle entity) =>
-        SceneNativeBridge.HasComponent<T>(sceneHandle, entity);
+    public bool HasComponent(IEntity entity) =>
+        entity.Has<T>();
 
     /// <inheritdoc />
-    public void RemoveComponent(ulong sceneHandle, NNEntityHandle entity) =>
-        SceneNativeBridge.RemoveComponent<T>(sceneHandle, entity);
+    public void RemoveComponent(IEntity entity) =>
+        entity.Remove<T>();
 
     /// <inheritdoc />
-    public bool DrawInspector(ulong sceneHandle, NNEntityHandle entity)
+    public bool DrawInspector(IEntity entity)
     {
-        var data = SceneNativeBridge.GetComponent<T>(sceneHandle, entity);
-        if (data is null)
+        if (!entity.Has<T>())
             return false;
 
-        var value = data.Value;
+        ref var value = ref entity.Get<T>();
         bool modified = DrawFields(ref value);
-        if (modified)
-            SceneNativeBridge.SetComponent(sceneHandle, entity, value);
+        // 修改直接反映到 ECS（ref 返回）
 
         return modified;
     }

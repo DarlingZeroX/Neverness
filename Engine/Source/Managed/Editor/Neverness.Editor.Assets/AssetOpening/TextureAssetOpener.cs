@@ -61,7 +61,7 @@ public sealed class TextureAssetOpener : IAssetOpener
             try
             {
                 // 上传 GPU 纹理（通过 blob 数据直接传递，避免跨模块单例问题）
-                var textureKey = TextureInterop.LoadTextureFromBlob(new NNAssetHandle(assetHandle.Value), effectiveGuid.ToNative());
+                var textureKey = TextureInterop.LoadTextureFromBlob(assetHandle.Value, effectiveGuid.Low);
                 if (textureKey == 0)
                 {
                     Console.WriteLine($"[TextureAssetOpener] GPU 上传失败: {path}");
@@ -114,7 +114,7 @@ public sealed class TextureAssetOpener : IAssetOpener
     private static (AssetHandle Handle, GUID EffectiveGuid) LoadOrImportAsset(AssetOpenContext context)
     {
         // 先尝试直接加载已导入的 .nnasset
-        var handle = AssetHandleExtensions.LoadSync(context.Guid, context.AssetTypeId);
+        var handle = AssetHandle.LoadSync(context.Guid, context.AssetTypeId);
         if (!handle.IsZero)
             return (handle, context.Guid);
 
@@ -146,7 +146,7 @@ public sealed class TextureAssetOpener : IAssetOpener
         var effectiveGuid = importResult.AssetGuid.IsZero ? context.Guid : importResult.AssetGuid;
         Console.WriteLine($"[TextureAssetOpener] 导入成功: {context.VirtualPath} (GUID={effectiveGuid.ToHexString()})");
 
-        handle = AssetHandleExtensions.LoadSync(effectiveGuid, context.AssetTypeId);
+        handle = AssetHandle.LoadSync(effectiveGuid, context.AssetTypeId);
         if (handle.IsZero)
         {
             Console.WriteLine($"[TextureAssetOpener] 导入后加载仍失败: {context.VirtualPath} (GUID={effectiveGuid.ToHexString()})");

@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Neverness.Editor.AvaloniaFrontend.Viewport;
 
 namespace Neverness.Editor.AvaloniaFrontend.Services;
@@ -11,11 +10,6 @@ namespace Neverness.Editor.AvaloniaFrontend.Services;
 /// - 管理原生窗口句柄
 /// - 将句柄传递给 Diligent 渲染引擎
 /// - 处理窗口 resize
-///
-/// 设计原则：
-/// - NativeWindowHandle 不进 ViewModel
-/// - 通过 IViewportSurface 抽象平台差异
-/// - ViewportView 通过此服务获取渲染目标
 /// </summary>
 public class ViewportHostService : IDisposable
 {
@@ -31,10 +25,7 @@ public class ViewportHostService : IDisposable
     /// <summary>
     /// 创建视口表面。
     /// </summary>
-    /// <param name="width">初始宽度。</param>
-    /// <param name="height">初始高度。</param>
-    /// <returns>创建的表面。</returns>
-    public IViewportSurface CreateSurface(int width, int height)
+    public NativeControlHostSurface CreateSurface(int width, int height)
     {
         // 销毁旧表面
         _surface?.Dispose();
@@ -48,28 +39,27 @@ public class ViewportHostService : IDisposable
     }
 
     /// <summary>
-    /// 获取 NativeControlHost 控件（需要添加到 Avalonia 可视树）。
+    /// 获取 ViewportHostControl 控件（需要添加到 Avalonia 可视树）。
     /// </summary>
-    public NativeControlHost? GetControl()
+    public ViewportHostControl? GetControl()
     {
         return _surface?.GetControl();
     }
 
     /// <summary>
-    /// 初始化原生句柄（在控件附加到可视树后调用）。
-    /// </summary>
-    public void InitializeNativeHandle()
-    {
-        _surface?.InitializeNativeHandle();
-    }
-
-    /// <summary>
     /// 获取原生窗口句柄（传递给 Diligent 渲染引擎）。
     /// </summary>
-    /// <returns>原生窗口句柄，无效时返回 IntPtr.Zero。</returns>
     public IntPtr GetNativeHandle()
     {
         return _surface?.GetNativeHandle() ?? IntPtr.Zero;
+    }
+
+    /// <summary>
+    /// 获取原生句柄描述符（"HWND"/"X11"/"NSView"）。
+    /// </summary>
+    public string GetHandleDescriptor()
+    {
+        return _surface?.GetHandleDescriptor() ?? "";
     }
 
     /// <summary>

@@ -263,16 +263,23 @@ public sealed class ContentBrowser
     {
         try
         {
-            // Windows
             if (OperatingSystem.IsWindows())
             {
-                System.Diagnostics.Process.Start(
-                    "explorer.exe",
-                    $"\"{path}\"");
-            }
+                // 规范化路径：去尾部分隔符、统一反斜杠
+                var normalized = path.TrimEnd('/', '\\').Replace('/', '\\');
 
-            // TODO:
-            // Linux/macOS support
+                if (File.Exists(normalized))
+                {
+                    // 文件：打开所在目录并选中该文件
+                    System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{normalized}\"");
+                }
+                else
+                {
+                    // 目录（或不存在的路径）：直接打开
+                    System.Diagnostics.Process.Start("explorer.exe", $"\"{normalized}\"");
+                }
+            }
+            // TODO: Linux/macOS support
         }
         catch (Exception ex)
         {

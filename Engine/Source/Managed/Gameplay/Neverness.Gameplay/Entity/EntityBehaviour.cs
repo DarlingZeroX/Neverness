@@ -6,6 +6,9 @@
 // 由 ScriptBehaviourScheduler 唯一持有生命周期。
 // ============================================================================
 
+using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Components;
+
 namespace Neverness.Gameplay;
 
 /// <summary>
@@ -33,17 +36,13 @@ public abstract class EntityBehaviour
     public Entity Entity { get; internal set; } = null!;
 
     /// <summary>
-    /// 变换组件（快捷访问，返回 proxy view）。
+    /// 变换组件（快捷访问）。
     /// </summary>
-    /// <remarks>
-    /// ⚠️ 返回的是值的 copy，修改后需要调用 Entity.SetComponent 保存。
-    /// </remarks>
-    public TransformComponent Transform
+    public ref TransformComponent Transform
     {
         get
         {
-            var result = Entity.GetComponent<TransformComponent>();
-            return result ?? default;
+            return ref Entity.GetComponent<TransformComponent>();
         }
     }
 
@@ -119,24 +118,32 @@ public abstract class EntityBehaviour
     }
 
     /// <summary>
-    /// 获取组件（返回 proxy view）。
+    /// 获取组件引用。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
-    /// <returns>组件值，无组件时返回 null。</returns>
-    /// <remarks>
-    /// ⚠️ 返回的是值的 copy，修改后需要调用 SetComponent 保存。
-    /// </remarks>
-    protected T? GetComponent<T>() where T : struct
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
+    /// <returns>组件引用。</returns>
+    protected ref T GetComponent<T>() where T : struct, IComponent
     {
-        return Entity.GetComponent<T>();
+        return ref Entity.GetComponent<T>();
+    }
+
+    /// <summary>
+    /// 尝试获取组件。
+    /// </summary>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
+    /// <param name="component">输出的组件值。</param>
+    /// <returns>是否成功获取。</returns>
+    protected bool TryGetComponent<T>(out T component) where T : struct, IComponent
+    {
+        return Entity.TryGetComponent(out component);
     }
 
     /// <summary>
     /// 写入组件数据。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="data">要写入的组件数据。</param>
-    protected void SetComponent<T>(T data) where T : struct
+    protected void SetComponent<T>(T data) where T : struct, IComponent
     {
         Entity.SetComponent(data);
     }
@@ -144,9 +151,9 @@ public abstract class EntityBehaviour
     /// <summary>
     /// 添加组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <returns>新添加的组件值。</returns>
-    protected T AddComponent<T>() where T : struct
+    protected T AddComponent<T>() where T : struct, IComponent
     {
         return Entity.AddComponent<T>();
     }
@@ -154,19 +161,18 @@ public abstract class EntityBehaviour
     /// <summary>
     /// 移除组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
-    /// <returns>是否成功移除。</returns>
-    protected bool RemoveComponent<T>() where T : struct
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
+    protected void RemoveComponent<T>() where T : struct, IComponent
     {
-        return Entity.RemoveComponent<T>();
+        Entity.RemoveComponent<T>();
     }
 
     /// <summary>
     /// 检查是否拥有组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <returns>是否拥有该组件。</returns>
-    protected bool HasComponent<T>() where T : struct
+    protected bool HasComponent<T>() where T : struct, IComponent
     {
         return Entity.HasComponent<T>();
     }

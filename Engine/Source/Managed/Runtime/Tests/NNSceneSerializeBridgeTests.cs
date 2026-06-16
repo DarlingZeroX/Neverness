@@ -1,24 +1,25 @@
 using Neverness.Runtime.Serialization;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Runtime.Foundation.Tests;
 
-/// <summary>Runtime 场景序列化 ABI 薄封装占位测试（VFS 路径模式）。</summary>
+/// <summary>Runtime 场景序列化桥接测试。</summary>
 public sealed class NNSceneSerializeBridgeTests
 {
 	[Fact]
-	public void SerializeScene_ReturnsInvalid_WhenAbiNotWired()
+	public void SerializeScene_ThrowsException_WhenNoScene()
 	{
-		var result = NNSceneSerializeBridge.SerializeScene(1, "/assets/test.scene");
-		Assert.NotEqual(Neverness.Runtime.Engine.NNSceneResult.Ok, result);
-		Assert.False(NNSceneSerializeBridge.IsAvailable);
+		Assert.Throws<ArgumentNullException>(() =>
+			NNSceneSerializeBridge.SerializeScene(null!, "/assets/test.scene"));
 	}
 
 	[Fact]
-	public void DeserializeScene_ReturnsInvalid_WhenAbiNotWired()
+	public void DeserializeScene_ReturnsWorld_WhenNoFile()
 	{
-		var (result, handle) = NNSceneSerializeBridge.DeserializeScene("/assets/test.scene");
-		Assert.NotEqual(Neverness.Runtime.Engine.NNSceneResult.Ok, result);
-		Assert.Equal(0ul, handle);
+		// 注意：LoadFromAsset 在文件不存在时仍然返回一个空的 SceneWorld
+		var result = NNSceneSerializeBridge.DeserializeScene("TestScene", "/nonexistent/test.scene");
+		Assert.NotNull(result);
+		Assert.Equal(0, result!.EntityCount);
 	}
 
 	[Fact]

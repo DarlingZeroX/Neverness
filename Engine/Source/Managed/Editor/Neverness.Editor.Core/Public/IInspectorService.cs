@@ -1,3 +1,5 @@
+using Neverness.Runtime.Scene;
+
 namespace Neverness.Editor.Core.Public;
 
 /// <summary>
@@ -7,32 +9,32 @@ namespace Neverness.Editor.Core.Public;
 public interface IInspectorService
 {
     /// <summary>获取指定实体的所有组件信息。</summary>
-    List<ComponentDataInfo> GetEntityComponents(ulong sceneHandle, ulong entityHandle);
+    List<ComponentDataInfo> GetEntityComponents(IEntity entity);
 
     /// <summary>检查实体是否拥有指定组件。</summary>
-    bool HasComponent(ulong sceneHandle, ulong entityHandle, ulong componentTypeId);
+    bool HasComponent(IEntity entity, ulong componentTypeId);
 
     /// <summary>添加组件到实体。</summary>
-    bool AddComponent(ulong sceneHandle, ulong entityHandle, ulong componentTypeId);
+    bool AddComponent(IEntity entity, ulong componentTypeId);
 
     /// <summary>从实体移除组件。</summary>
-    bool RemoveComponent(ulong sceneHandle, ulong entityHandle, ulong componentTypeId);
+    bool RemoveComponent(IEntity entity, ulong componentTypeId);
 
     /// <summary>获取所有可用的组件类型（用于"添加组件"菜单）。</summary>
     List<ComponentTypeInfo> GetAvailableComponentTypes();
 
     /// <summary>获取实体的显示名称。</summary>
-    string GetEntityName(ulong sceneHandle, ulong entityHandle);
+    string GetEntityName(IEntity entity);
 
     /// <summary>获取实体是否激活。</summary>
-    bool IsEntityActive(ulong sceneHandle, ulong entityHandle);
+    bool IsEntityActive(IEntity entity);
 
     /// <summary>设置实体激活状态。</summary>
-    void SetEntityActive(ulong sceneHandle, ulong entityHandle, bool active);
+    void SetEntityActive(IEntity entity, bool active);
 
     /// <summary>绘制指定组件的 Inspector 字段（由 IComponentInspector 实现）。</summary>
     /// <returns>是否修改了组件数据。</returns>
-    bool DrawComponentInspector(ulong sceneHandle, ulong entityHandle, ulong componentTypeId);
+    bool DrawComponentInspector(IEntity entity, ulong componentTypeId);
 }
 
 /// <summary>

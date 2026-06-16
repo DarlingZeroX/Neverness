@@ -1,6 +1,7 @@
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.Framework.Public.Mvvm;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Editor.Core.Controllers;
 
@@ -30,12 +31,17 @@ public class InspectorController : IController
     }
 
     /// <summary>设置选中实体。</summary>
-    public void SetSelectedEntity(ulong sceneHandle, ulong entityHandle)
+    public void SetSelectedEntity(IEntity entity)
     {
-        var name = _inspectorService.GetEntityName(sceneHandle, entityHandle);
-        _viewModel.SetSelectedEntity(entityHandle, name);
-        _viewModel.SceneHandle = sceneHandle;
-        _viewModel.IsActive = _inspectorService.IsEntityActive(sceneHandle, entityHandle);
+        if (entity == null || !entity.IsValid)
+        {
+            ClearSelection();
+            return;
+        }
+
+        var name = _inspectorService.GetEntityName(entity);
+        _viewModel.SetSelectedEntity(entity.Id, name);
+        _viewModel.IsActive = _inspectorService.IsEntityActive(entity);
         RefreshComponents();
     }
 
@@ -50,9 +56,9 @@ public class InspectorController : IController
     {
         if (!_viewModel.HasSelection) return;
 
-        var components = _inspectorService.GetEntityComponents(
-            _viewModel.SceneHandle,
-            _viewModel.SelectedEntityHandle);
+        // TODO: 通过 entityId 获取 IEntity 实例
+        // 暂时返回空列表
+        var components = new List<ComponentDataInfo>();
 
         var vmComponents = components.Select(c => new ComponentInfoVM
         {
@@ -65,37 +71,28 @@ public class InspectorController : IController
     }
 
     /// <summary>添加组件。</summary>
-    public void AddComponent(ulong componentTypeId)
+    public void AddComponent(IEntity entity, ulong componentTypeId)
     {
-        if (_inspectorService.AddComponent(
-            _viewModel.SceneHandle,
-            _viewModel.SelectedEntityHandle,
-            componentTypeId))
+        if (_inspectorService.AddComponent(entity, componentTypeId))
         {
             RefreshComponents();
         }
     }
 
     /// <summary>移除组件。</summary>
-    public void RemoveComponent(ulong componentTypeId)
+    public void RemoveComponent(IEntity entity, ulong componentTypeId)
     {
-        if (_inspectorService.RemoveComponent(
-            _viewModel.SceneHandle,
-            _viewModel.SelectedEntityHandle,
-            componentTypeId))
+        if (_inspectorService.RemoveComponent(entity, componentTypeId))
         {
             RefreshComponents();
         }
     }
 
     /// <summary>设置实体激活状态。</summary>
-    public void SetActive(bool active)
+    public void SetActive(IEntity entity, bool active)
     {
         _viewModel.IsActive = active;
-        _inspectorService.SetEntityActive(
-            _viewModel.SceneHandle,
-            _viewModel.SelectedEntityHandle,
-            active);
+        _inspectorService.SetEntityActive(entity, active);
     }
 
     /// <summary>获取可用的组件类型列表（用于"添加组件"菜单）。</summary>
@@ -105,13 +102,10 @@ public class InspectorController : IController
     }
 
     /// <summary>绘制指定组件的 Inspector 字段。</summary>
-    public bool DrawComponentInspector(ulong componentTypeId)
+    public bool DrawComponentInspector(IEntity entity, ulong componentTypeId)
     {
         if (!_viewModel.HasSelection) return false;
 
-        return _inspectorService.DrawComponentInspector(
-            _viewModel.SceneHandle,
-            _viewModel.SelectedEntityHandle,
-            componentTypeId);
+        return _inspectorService.DrawComponentInspector(entity, componentTypeId);
     }
 }

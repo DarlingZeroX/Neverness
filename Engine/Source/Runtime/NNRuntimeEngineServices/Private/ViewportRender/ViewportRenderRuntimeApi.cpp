@@ -16,6 +16,7 @@
 #include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"
 #include "NNRuntimeScene/Include/Assets/IAssetResolver.h"
+#include "NNRuntimeDiligent/Device/NNDiligentDevice.h"
 #include "NativeEngineRuntimeServices.h"
 
 // 获取 Diligent 设备

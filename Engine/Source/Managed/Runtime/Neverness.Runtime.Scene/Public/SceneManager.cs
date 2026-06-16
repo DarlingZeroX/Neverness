@@ -1,59 +1,51 @@
-using Neverness.Runtime.Engine;
+using System.Text;
 using Neverness.Runtime.Scene.Internal;
+using Neverness.Runtime.VFS.Public;
 
 namespace Neverness.Runtime.Scene;
 
 /// <summary>
-/// 场景管理器——降级为"世界管理器"，负责场景生命周期（Load / Unload / Activate）。
-/// 实体管理委托给 <see cref="SceneWorld.Entities"/>，不再直接持有实体列表。
+/// 场景管理器——管理多个场景世界，负责场景生命周期（Load / Unload / Activate）。
+/// 替代旧的 SceneManager，使用 IScene 接口。
 /// </summary>
 public sealed class SceneManager
 {
-    /// <summary>已加载世界映射（名称 → SceneWorld）。</summary>
+    /// <summary>已加载世界映射（名称 → IScene）。</summary>
     private readonly Dictionary<string, SceneWorld> _worlds = new(StringComparer.Ordinal);
 
     /// <summary>当前激活的世界。</summary>
     private SceneWorld? _activeWorld;
 
     /// <summary>场景加载完成事件（激活前触发）。</summary>
-    public event Action<SceneWorld>? SceneLoaded;
+    public event Action<IScene>? SceneLoaded;
 
-        /// <summary>场景激活事件。</summary>
-    public event Action<SceneWorld>? SceneActivated;
+    /// <summary>场景激活事件。</summary>
+    public event Action<IScene>? SceneActivated;
 
-        /// <summary>场景卸载事件（Dispose 前触发）。</summary>
-    public event Action<SceneWorld>? SceneUnloaded;
+    /// <summary>场景卸载事件（Dispose 前触发）。</summary>
+    public event Action<IScene>? SceneUnloaded;
 
-        /// <summary>当前激活的世界。</summary>
+    /// <summary>当前激活的世界。</summary>
     public SceneWorld? ActiveWorld => _activeWorld;
-
-    /// <summary>当前激活场景的 Native 句柄（兼容旧 API）。</summary>
-    public ulong ActiveScene => _activeWorld?.NativeHandle ?? 0;
 
     /// <summary>已加载场景名称集合。</summary>
     public IReadOnlyCollection<string> LoadedSceneNames => _worlds.Keys;
 
-    /// <summary>本会话跟踪的实体（兼容旧 API，委托激活世界）。</summary>
-    public IReadOnlyList<SceneEntity> Entities => _activeWorld?.Entities.Entities ?? [];
-
     /// <summary>是否有激活场景。</summary>
     public bool HasActiveScene => _activeWorld != null;
 
-    /// <summary>加载场景：创建 <see cref="SceneWorld"/> 并记录映射。</summary>
-    public NNSceneResult LoadScene(string name)
+    /// <summary>加载场景：创建 SceneWorld 并记录映射。</summary>
+    public bool LoadScene(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         if (_worlds.ContainsKey(name))
         {
-            return NNSceneResult.Invalid;
+            return false;
         }
 
         var world = SceneWorld.Create(name);
-        if (world == null)
-        {
-            return NNSceneResult.Invalid;
-        }
+        if (world == null) return false;
 
         _worlds[name] = world;
 
@@ -64,17 +56,144 @@ public sealed class SceneManager
         if (_activeWorld == world)
             SceneActivated?.Invoke(world);
 
-        return NNSceneResult.Ok;
+        return true;
+    }
+
+    /// <summary>从 VFS 资产路径加载并激活场景世界。</summary>
+    /// <param name="name">场景名称。</param>
+    /// <param name="vfsPath">VFS 虚拟路径（例如 "assets://scenes/main.json"）。</param>
+    /// <returns>是否加载成功。</returns>
+    public bool LoadSceneFromAsset(string name, string vfsPath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
+
+        if (_worlds.ContainsKey(name))
+        {
+            // 已加载同名场景，直接激活
+            return ActivateScene(name);
+        }
+
+        // 使用 SceneWorld.LoadFromAsset 加载场景
+        var world = SceneWorld.LoadFromAsset(name, vfsPath);
+        if (world == null) return false;
+
+        _worlds[name] = world;
+        SceneLoaded?.Invoke(world);
+
+        // 首个加载的场景自动激活
+        _activeWorld ??= world;
+        if (_activeWorld == world)
+            SceneActivated?.Invoke(world);
+
+        return true;
+    }
+
+    /// <summary>从 VFS 资产路径加载并激活场景世界（二进制格式）。</summary>
+    /// <param name="name">场景名称。</param>
+    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <returns>是否加载成功。</returns>
+    public bool LoadSceneFromAssetBinary(string name, string vfsPath)
+    {
+        // 暂时使用 JSON 格式，后续可扩展二进制格式
+        return LoadSceneFromAsset(name, vfsPath);
+    }
+
+    /// <summary>从流加载并激活场景世界。</summary>
+    /// <param name="name">场景名称。</param>
+    /// <param name="stream">场景数据流（JSON 格式）。</param>
+    /// <returns>是否加载成功。</returns>
+    public bool LoadSceneFromStream(string name, Stream stream)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(stream);
+
+        if (_worlds.ContainsKey(name))
+        {
+            // 已加载同名场景，直接激活
+            return ActivateScene(name);
+        }
+
+        // 创建新场景
+        var world = SceneWorld.Create(name);
+        if (world == null) return false;
+
+        try
+        {
+            world.Deserialize(stream, "json");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[SceneManager] 从流加载场景失败: {ex.Message}");
+            world.Dispose();
+            return false;
+        }
+
+        _worlds[name] = world;
+        SceneLoaded?.Invoke(world);
+
+        // 首个加载的场景自动激活
+        _activeWorld ??= world;
+        if (_activeWorld == world)
+            SceneActivated?.Invoke(world);
+
+        return true;
+    }
+
+    /// <summary>保存激活场景到 VFS 路径。</summary>
+    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <returns>操作结果。</returns>
+    public NNSceneResult SaveActiveScene(string vfsPath)
+    {
+        if (_activeWorld == null) return NNSceneResult.Invalid;
+        ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
+
+        return _activeWorld.Save(vfsPath);
+    }
+
+    /// <summary>保存激活场景到默认路径。</summary>
+    /// <returns>操作结果。</returns>
+    public NNSceneResult SaveActiveScene()
+    {
+        if (_activeWorld == null) return NNSceneResult.Invalid;
+        if (string.IsNullOrEmpty(_activeWorld.AssetPath))
+            return NNSceneResult.Invalid;
+
+        return _activeWorld.Save(_activeWorld.AssetPath);
+    }
+
+    /// <summary>保存指定场景到 VFS 路径。</summary>
+    /// <param name="name">场景名称。</param>
+    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <returns>是否保存成功。</returns>
+    public bool SaveScene(string name, string vfsPath)
+    {
+        if (!_worlds.TryGetValue(name, out var world)) return false;
+        ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
+
+        return world.Save(vfsPath).IsSuccess();
+    }
+
+    /// <summary>保存激活场景到 VFS 路径（二进制格式）。</summary>
+    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <returns>是否保存成功。</returns>
+    public bool SaveActiveSceneBinary(string vfsPath)
+    {
+        if (_activeWorld == null) return false;
+        ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
+
+        // 暂时使用 JSON 格式，后续可扩展二进制格式
+        return _activeWorld.Save(vfsPath).IsSuccess();
     }
 
     /// <summary>卸载场景：销毁世界及其所有资源，移除映射。</summary>
-    public NNSceneResult UnloadScene(string name)
+    public bool UnloadScene(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         if (!_worlds.TryGetValue(name, out var world))
         {
-            return NNSceneResult.NotFound;
+            return false;
         }
 
         var isActive = _activeWorld == world;
@@ -91,60 +210,26 @@ public sealed class SceneManager
                 : null;
         }
 
-        return NNSceneResult.Ok;
+        return true;
     }
 
     /// <summary>激活指定名称的已加载场景。</summary>
-    public NNSceneResult ActivateScene(string name)
+    public bool ActivateScene(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         if (!_worlds.TryGetValue(name, out var world))
         {
-            return NNSceneResult.NotFound;
+            return false;
         }
 
         _activeWorld = world;
         SceneActivated?.Invoke(world);
-            return NNSceneResult.Ok;
-    }
-
-        /// <summary>从 VFS 资产路径加载并激活场景世界。</summary>
-    public NNSceneResult LoadSceneFromAsset(string name, string vfsPath)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-        if (_worlds.ContainsKey(name))
-        {
-            // 已加载同名场景，直接激活
-            return ActivateScene(name);
-        }
-
-        var world = SceneWorld.LoadFromAsset(name, vfsPath);
-        if (world == null)
-        {
-            return NNSceneResult.Invalid;
-        }
-
-        _worlds[name] = world;
-        SceneLoaded?.Invoke(world);
-
-        // 首个加载的场景自动激活
-        _activeWorld ??= world;
-        if (_activeWorld == world)
-            SceneActivated?.Invoke(world);
-
-        return NNSceneResult.Ok;
+        return true;
     }
 
     /// <summary>查询场景是否已加载。</summary>
     public bool IsSceneLoaded(string name) => _worlds.ContainsKey(name);
-
-    /// <summary>获取已加载场景的 Native 句柄（未加载返回 0）。</summary>
-    public ulong GetSceneHandle(string name)
-    {
-        return _worlds.TryGetValue(name, out var world) ? world.NativeHandle : 0;
-    }
 
     /// <summary>获取已加载的世界。</summary>
     public SceneWorld? GetWorld(string name)
@@ -153,69 +238,36 @@ public sealed class SceneManager
         return world;
     }
 
-    /// <summary>驱动激活场景的 ECS System Tick（委托激活世界的 Tick）。</summary>
+    /// <summary>驱动激活场景的 ECS System Tick。</summary>
     public void TickActiveScene(float deltaTime)
     {
         _activeWorld?.Tick(deltaTime);
     }
 
-    /// <summary>保存激活场景到其资产路径。无路径或无激活场景时返回 Invalid。</summary>
-    public NNSceneResult SaveActiveScene()
-    {
-        if (_activeWorld == null)
-            return NNSceneResult.Invalid;
-        if (string.IsNullOrEmpty(_activeWorld.AssetPath))
-            return NNSceneResult.Invalid;
-        return _activeWorld.Save(_activeWorld.AssetPath);
-    }
-
-    /// <summary>保存激活场景到指定路径，并更新 AssetPath。</summary>
-    public NNSceneResult SaveActiveSceneAs(string vfsPath)
-    {
-        if (_activeWorld == null)
-            return NNSceneResult.Invalid;
-        var result = _activeWorld.Save(vfsPath);
-        if (result == NNSceneResult.Ok)
-            _activeWorld.AssetPath = vfsPath;
-        return result;
-    }
-
-    /// <summary>在激活场景中创建实体（兼容旧 API，委托激活世界）。</summary>
+    /// <summary>在激活场景中创建实体。</summary>
     public SceneEntity? CreateEntity(string? displayName = null)
     {
-        return _activeWorld?.CreateEntity(displayName);
+        if (_activeWorld == null) return null;
+        var entity = _activeWorld.CreateEntity(displayName);
+        return new SceneEntity(entity, _activeWorld);
     }
 
     /// <summary>在指定场景中创建实体。</summary>
     public SceneEntity? CreateEntityIn(string sceneName, string? displayName = null)
     {
-        return _worlds.TryGetValue(sceneName, out var world)
-            ? world.CreateEntity(displayName)
-            : null;
+        if (!_worlds.TryGetValue(sceneName, out var world)) return null;
+        var entity = world.CreateEntity(displayName);
+        return new SceneEntity(entity, world);
     }
 
-    /// <summary>销毁实体（兼容旧 API，委托对应世界的注册表）。</summary>
-    public NNSceneResult DestroyEntity(SceneEntity entity)
+    /// <summary>销毁实体。</summary>
+    public bool DestroyEntity(SceneEntity entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
+        if (!entity.IsAlive) return false;
 
-        // 查找实体所属世界
-        foreach (var world in _worlds.Values)
-        {
-            if (world.Entities.Contains(entity))
-            {
-                return world.DestroyEntity(entity);
-            }
-        }
-
-        return NNSceneResult.NotFound;
-    }
-
-    /// <summary>将已有实体加入跟踪（兼容旧 API，委托激活世界）。</summary>
-    public void TrackEntity(SceneEntity entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-        _activeWorld?.Entities.Register(entity);
+        entity.Entity.Destroy();
+        return true;
     }
 
     /// <summary>清理所有世界（用于应用退出或重置）。</summary>
@@ -230,137 +282,6 @@ public sealed class SceneManager
         _activeWorld = null;
     }
 
-    /// <summary>
-    /// 从快照原子替换当前激活场景。
-    /// 不触发 SceneUnloaded / SceneLoaded 事件风暴，只触发一次 SceneActivated。
-    /// 内部：dispose old → deserialize new → 替换 _activeWorld 引用。
-    /// </summary>
-    public NNSceneResult ReplaceActiveSceneFromSnapshot(NNGuid sceneGuid, string snapshotPath)
-    {
-        if (_activeWorld == null)
-        {
-            return NNSceneResult.Invalid;
-        }
-
-        // 1. 反序列化快照
-        var result = SceneNativeBridge.DeserializeScene(out var newHandle, snapshotPath);
-        if (result != NNSceneResult.Ok || newHandle == 0)
-        {
-            return NNSceneResult.Invalid;
-        }
-
-        // 2. 保存旧 world 信息
-        var oldWorld = _activeWorld;
-        var oldName = oldWorld.Name;
-
-        // 3. 静默 Dispose 旧 world（释放 Native 资源 + Managed 映射，不触发事件）
-        oldWorld.DisposeQuiet();
-
-        // 4. 创建新 world 并替换
-        // 注意：DisposeQuiet 已销毁旧 Native 句柄，需要从 _worlds 移除
-        _worlds.Remove(oldName);
-
-        // 通过内部构造函数创建 world（避免 CreateScene 重复创建）
-        var newWorld = SceneWorld.RestoreFromSnapshotInternal(newHandle, oldName, sceneGuid);
-
-        _worlds[oldName] = newWorld;
-        _activeWorld = newWorld;
-
-        // 5. 触发一次 SceneActivated 事件（通知 Editor 面板刷新）
-        SceneActivated?.Invoke(newWorld);
-
-        return NNSceneResult.Ok;
-    }
-
-    // ── 热重载 ──
-
-    /// <summary>
-    /// 保存所有已加载世界的热重载快照。
-    /// 在程序集卸载前调用，捕获当前运行时状态。
-    /// </summary>
-    public GlobalHotReloadSnapshot SaveAllSnapshots()
-    {
-        var snapshots = new Dictionary<string, HotReloadSnapshot>(_worlds.Count);
-
-        foreach (var (name, world) in _worlds)
-        {
-            snapshots[name] = world.SaveSnapshot();
-        }
-
-        // 找出激活世界名称
-        string? activeName = null;
-        if (_activeWorld != null)
-        {
-            foreach (var (name, world) in _worlds)
-            {
-                if (world == _activeWorld)
-                {
-                    activeName = name;
-                    break;
-                }
-            }
-        }
-
-        return new GlobalHotReloadSnapshot
-        {
-            Worlds = snapshots,
-            ActiveWorldName = activeName,
-            CapturedAt = DateTimeOffset.UtcNow,
-        };
-    }
-
-    /// <summary>
-    /// 从全局热重载快照恢复所有世界。
-    /// 在新程序集加载后调用，重建 Managed 侧运行时状态。
-    /// </summary>
-    public void RestoreAllSnapshots(GlobalHotReloadSnapshot snapshot)
-    {
-        ArgumentNullException.ThrowIfNull(snapshot);
-
-        // 先清理当前所有世界（不销毁 Native 场景，因为快照中的句柄仍然有效）
-        foreach (var world in _worlds.Values)
-        {
-            // 仅释放 Managed 资源，不销毁 Native 场景
-            world.Systems.Dispose();
-            world.Events.Clear();
-            world.Queries.Clear();
-            world.Entities.Clear();
-        }
-
-        _worlds.Clear();
-        _activeWorld = null;
-
-        // 从快照恢复每个世界
-        foreach (var (name, worldSnapshot) in snapshot.Worlds)
-        {
-            var world = SceneWorld.RestoreFromSnapshot(worldSnapshot);
-            if (world != null)
-            {
-                _worlds[name] = world;
-            }
-        }
-
-        // 恢复激活世界
-        if (snapshot.ActiveWorldName != null &&
-            _worlds.TryGetValue(snapshot.ActiveWorldName, out var activeWorld))
-        {
-            _activeWorld = activeWorld;
-        }
-        else if (_worlds.Count > 0)
-        {
-            _activeWorld = _worlds.Values.First();
-        }
-    }
-
-    /// <summary>
-    /// 热重载后重建所有世界的 Managed 侧状态。
-    /// 在 <see cref="RestoreAllSnapshots"/> 之后、重新注册 System 之前调用。
-    /// </summary>
-    public void RebuildAllAfterReload()
-    {
-        foreach (var world in _worlds.Values)
-        {
-            world.RebuildAfterReload();
-        }
-    }
+    /// <summary>获取已加载场景的数量。</summary>
+    public int LoadedCount => _worlds.Count;
 }

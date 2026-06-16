@@ -23,6 +23,7 @@ set(RUNTIME_IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Runtime/NNRuntimeImGui"
 add_library(NNRuntimeDiligent STATIC
     # NNRuntimeDiligent core
     Source/Device/NNDiligentDevice.cpp
+    Source/Device/NNDiligentViewportSurface.cpp
     Source/Command/NNDiligentCommandList.cpp
     Source/Resources/NNDiligentBuffer.cpp
     Source/Resources/NNDiligentTexture.cpp
@@ -116,10 +117,24 @@ endif()
 # 平台定义（PUBLIC — 传播给所有链接 NNRuntimeDiligent 的 target）
 if(WIN32)
     target_compile_definitions(NNRuntimeDiligent PUBLIC PLATFORM_WIN32=1)
+
+    # D3D12 和 Vulkan 后端在 Windows 平台上可用
+    target_link_libraries(NNRuntimeDiligent PUBLIC Diligent-GraphicsEngineD3D12-static)
+    target_compile_definitions(NNRuntimeDiligent PUBLIC D3D12_SUPPORTED=1)
+
+    target_link_libraries(NNRuntimeDiligent PUBLIC Diligent-GraphicsEngineVk-static)
+    target_compile_definitions(NNRuntimeDiligent PUBLIC VULKAN_SUPPORTED=1)
 elseif(APPLE)
     target_compile_definitions(NNRuntimeDiligent PUBLIC PLATFORM_MACOS=1)
+
+    # Metal 后端在 macOS 平台上可用
+    target_compile_definitions(NNRuntimeDiligent PUBLIC METAL_SUPPORTED=1)
 elseif(UNIX)
     target_compile_definitions(NNRuntimeDiligent PUBLIC PLATFORM_LINUX=1)
+
+    # Vulkan 后端在 Linux 平台上可用
+    target_link_libraries(NNRuntimeDiligent PUBLIC Diligent-GraphicsEngineVk-static)
+    target_compile_definitions(NNRuntimeDiligent PUBLIC VULKAN_SUPPORTED=1)
 endif()
 
 target_compile_definitions(NNRuntimeDiligent PUBLIC NN_WITH_DILIGENT)

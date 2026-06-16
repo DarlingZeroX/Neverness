@@ -393,7 +393,7 @@ public static class SceneDebug
             var node = nodes[i];
             string indent = new string(' ', (int)node.Depth * 2);
             string flags = FormatNodeFlags(node.Flags);
-            Console.WriteLine($"  {indent}[{i,4}] 0x{node.Entity:X16} \"{node.Name}\" (children={node.ChildCount}) {flags}");
+            Console.WriteLine($"  {indent}[{i,4}] {node.EntityId} \"{node.Name}\" (children={node.ChildCount}) {flags}");
         }
 
         Console.WriteLine();

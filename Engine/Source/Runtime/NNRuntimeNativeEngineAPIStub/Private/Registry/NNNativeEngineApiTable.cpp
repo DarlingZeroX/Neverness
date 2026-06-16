@@ -21,17 +21,11 @@ extern "C" void NNNativeEngineApiTable_BuildDefault(NNNativeEngineAPI* outTable)
 	outTable->reserved0 = 0;
 
 	NNBuildRenderApiStubs(&outTable->render);
-	NNBuildUiApiStubs(&outTable->ui);
 	NNBuildAudioApiStubs(&outTable->audio);
-	NNBuildAssetApiStubs(&outTable->asset);
 	NNBuildInputApiStubs(&outTable->input);
-	NNBuildSceneApiStubs(&outTable->scene);
 	NNBuildEditorSceneApiStubs(&outTable->editorScene);
 	NNBuildTimingApiStubs(&outTable->timing);
 	NNBuildAsyncWaitApiStubs(&outTable->asyncWait);
-	NNBuildObjectApiStubs(&outTable->object);
-	NNBuildAssetRegistryApiStubs(&outTable->assetRegistry);
-	NNBuildAssetManagerApiStubs(&outTable->assetManager);
 	NNBuildAssetCookerApiStubs(&outTable->assetCooker);
 	NNBuildApplicationApiStubs(&outTable->application);
 	NNBuildWindowApiStubs(&outTable->window);

@@ -7,7 +7,7 @@
 #include <mutex>
 
 #include "Internal/RuntimeApiBuilders.h"
-#include "ManagedRuntimeBridge.h"
+//#include "ManagedRuntimeBridge.h"
 #include "ApplicationApiExport.h"
 #include "EventApiExport.h"
 #include "WindowApiExport.h"
@@ -32,12 +32,8 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 
 	NNBuildTimingRuntimeApi(&outTable->timing);
 	NNBuildAsyncWaitRuntimeApi(&outTable->asyncWait);
-	NNBuildSceneRuntimeApi(&outTable->scene);
+	//NNBuildSceneRuntimeApi(&outTable->scene);
 	NNBuildEditorSceneRuntimeApi(&outTable->editorScene);
-	NNBuildAssetRuntimeApi(&outTable->asset);
-	NNBuildObjectRuntimeApi(&outTable->object);
-	NNBuildAssetRegistryRuntimeApi(&outTable->assetRegistry);
-	NNBuildAssetManagerRuntimeApi(&outTable->assetManager);
 	NNBuildAssetCookerRuntimeApi(&outTable->assetCooker);
 	NNBuildApplicationRuntimeApi(&outTable->application);
 	NNBuildWindowRuntimeApi(&outTable->window);
@@ -45,6 +41,7 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildEventRuntimeApi(&outTable->events);
 	NNBuildRenderAssetRuntimeApi(&outTable->renderAsset);
 	NNBuildViewportRenderRuntimeApi(&outTable->viewportRender);
+	NNBuildViewportSurfaceRuntimeApi(&outTable->viewportSurface);
 
 	/* 将 VFS 函数表注入 SceneSubsystem，供序列化/反序列化使用 */
 	NN::Runtime::engine::NNEngineRuntime::Instance().Scene().SetVfsApi(&outTable->vfs);
@@ -83,7 +80,7 @@ extern "C" void NNEngineRuntimeHost_Tick(float deltaTimeSeconds)
 
 extern "C" void NNEngineRuntimeHost_Shutdown(void)
 {
-	NNEngineRuntimeHost_ClearManagedTickCallback();
+	ShutdownViewportSurface();
 	ShutdownViewportRender();
 	NN::Runtime::Render::NNRenderAssetManager::Get().Shutdown();
 	NN::Runtime::engine::NNEngineRuntime::Instance().Shutdown();

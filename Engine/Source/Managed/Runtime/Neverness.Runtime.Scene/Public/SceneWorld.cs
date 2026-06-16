@@ -1,26 +1,28 @@
+using System.Text;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene.Internal;
+using Neverness.Runtime.Scene.Query;
 
 namespace Neverness.Runtime.Scene;
 
 /// <summary>
 /// 场景世界——Gameplay Runtime Root。
-/// 持有一个 Native 场景的完整 Managed 映射，管理该场景中的所有实体、查询和事件。
-/// 不是 God Object：每个子系统（Entities / Queries / Systems / Events）各自负责，
-/// SceneWorld 仅做组合和生命周期管理。
+/// 持有一个 IScene 的完整 Managed 映射，管理该场景中的所有实体、查询和事件。
+/// 兼容旧的 SceneWorld API，内部使用 FrifloScene 实现。
 /// </summary>
-public sealed class SceneWorld : IDisposable
+public sealed class SceneWorld : IScene
 {
     private bool _disposed;
-    private NativeEventBridge? _nativeEventBridge;
+    private readonly FrifloScene _scene;
 
     // ── 核心标识 ──
 
-    /// <summary>Native 场景句柄（非零表示已创建）。</summary>
-    public ulong NativeHandle { get; }
-
     /// <summary>场景名称。</summary>
-    public string Name { get; set; }
+    public string Name
+    {
+        get => _scene.Name;
+        set => _scene.Name = value;
+    }
 
     /// <summary>场景资产 GUID（可选，用于序列化和热重载）。</summary>
     public NNGuid AssetGuid { get; set; }
@@ -30,35 +32,35 @@ public sealed class SceneWorld : IDisposable
 
     // ── 子系统 ──
 
-    /// <summary>实体注册表。</summary>
+    /// <summary>实体注册表（兼容旧 API）。</summary>
     public EntityRegistry Entities { get; }
 
-    /// <summary>查询缓存。</summary>
+    /// <summary>查询缓存（兼容旧 API）。</summary>
     public SceneQueryCache Queries { get; }
 
-    /// <summary>Managed System 调度器。</summary>
+    /// <summary>Managed System 调度器（兼容旧 API）。</summary>
     public SceneSystemScheduler Systems { get; }
 
     /// <summary>场景事件总线。</summary>
-    public SceneEventBus Events { get; }
+    public SceneEventBus Events => (SceneEventBus)_scene.Events;
 
-    /// <summary>是否有效（Native 句柄非零且未释放）。</summary>
-    public bool IsValid => NativeHandle != 0 && !_disposed;
+    /// <summary>底层 IScene 接口。</summary>
+    public IScene Scene => _scene;
+
+    /// <summary>是否有效（未释放）。</summary>
+    public bool IsValid => !_disposed;
 
     /// <summary>本场景跟踪的实体数量。</summary>
-    public int EntityCount => Entities.Count;
+    public int EntityCount => _scene.EntityCount;
 
-    private SceneWorld(ulong nativeHandle, string name)
+    // ── 构造 ──
+
+    private SceneWorld(string name)
     {
-        NativeHandle = nativeHandle;
-        Name = name;
-        Entities = new EntityRegistry(nativeHandle);
-        Queries = new SceneQueryCache(nativeHandle);
-        Systems = new SceneSystemScheduler(this);
-        Events = new SceneEventBus();
-
-        // 创建 Native 事件桥接（当前为 stub，待 ABI 扩展后自动桥接）
-        _nativeEventBridge = new NativeEventBridge(nativeHandle, Events);
+        _scene = new FrifloScene(name);
+        Entities = new EntityRegistry(_scene);
+        Queries = new SceneQueryCache(_scene.Store, _scene);
+        Systems = new SceneSystemScheduler(_scene);
     }
 
     // ── 工厂方法 ──
@@ -67,268 +69,341 @@ public sealed class SceneWorld : IDisposable
     public static SceneWorld? Create(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        return new SceneWorld(name);
+    }
 
-        var result = SceneNativeBridge.CreateScene(out var handle);
-        if (result != NNSceneResult.Ok || handle == 0)
+    /// <summary>从 VFS 资产路径加载并创建场景世界。</summary>
+    public static SceneWorld? LoadFromAsset(string name, string vfsPath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
+
+        var world = new SceneWorld(name);
+
+        try
         {
+            var json = Neverness.Runtime.VFS.Public.VFS.ReadText(vfsPath);
+            if (json != null)
+            {
+                using var stream = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(json));
+                world._scene.Deserialize(stream, "json");
+            }
+            world.AssetPath = vfsPath;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[SceneWorld] 从 VFS 加载场景失败: {ex.Message}");
+            world.Dispose();
             return null;
         }
 
-        return new SceneWorld(handle, name);
+        return world;
     }
 
-    // ── 实体操作（委托 EntityRegistry）──
+    // ── 实体操作 ──
 
     /// <summary>创建实体。</summary>
-    public SceneEntity? CreateEntity(string? displayName = null) =>
-        Entities.Create(displayName);
+    public SceneEntity? CreateEntity(string? displayName = null)
+    {
+        var entity = _scene.CreateEntity(displayName);
+        return new SceneEntity(entity, _scene);
+    }
+
+    /// <summary>IScene 接口：创建实体。</summary>
+    IEntity IScene.CreateEntity(string? displayName) => CreateEntity(displayName)!;
 
     /// <summary>销毁实体。</summary>
-    public NNSceneResult DestroyEntity(SceneEntity entity) =>
-        Entities.Destroy(entity);
+    public bool DestroyEntity(SceneEntity entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        if (!entity.IsAlive) return false;
+
+        entity.Entity.Destroy();
+        return true;
+    }
+
+    /// <summary>IScene 接口：销毁实体。</summary>
+    void IScene.DestroyEntity(IEntity entity) => _scene.DestroyEntity(entity);
+
+    /// <summary>IScene 接口：销毁所有实体。</summary>
+    void IScene.DestroyAllEntities() => _scene.DestroyAllEntities();
+
+    /// <summary>IScene 接口：获取实体。</summary>
+    IEntity? IScene.GetEntity(int entityId) => _scene.GetEntity(entityId);
+
+    /// <summary>IScene 接口：检查实体是否存在。</summary>
+    bool IScene.EntityExists(int entityId) => _scene.EntityExists(entityId);
 
     // ── Tick ──
 
-    /// <summary>
-    /// 主帧 Tick——按 TickGroup 顺序驱动所有 Managed System，中间穿插 Native System。
-    /// <code>
-    /// Managed EarlyUpdate → Managed FixedUpdate → Managed Update
-    /// → Native TickSystems → Managed LateUpdate → Managed Render
-    /// → Events.FlushDeferred
-    /// </code>
-    /// </summary>
+    /// <summary>主帧 Tick——按 TickGroup 顺序驱动所有系统。</summary>
     public void Tick(float deltaTime)
     {
-        if (!IsValid)
-        {
-            return;
-        }
-
-        // Managed: EarlyUpdate
-        Systems.Tick(TickGroup.EarlyUpdate, deltaTime);
-
-        // Managed: FixedUpdate（固定步长由调用方决定）
-        // 注意：FixedDeltaTime 由外部传入，此处使用 deltaTime
-        // 若需独立 FixedTick，调用方应使用 FixedTick(float fixedDeltaTime)
-
-        // Managed: Update
-        Systems.Tick(TickGroup.Update, deltaTime);
-
-        // Native System Tick（Native Scheduler 内部按其 TickGroup 调度）
-        SceneNativeBridge.TickSystems(NativeHandle, deltaTime);
-
-        // Managed: LateUpdate
-        Systems.Tick(TickGroup.LateUpdate, deltaTime);
-
-        // Managed: Render
-        Systems.Tick(TickGroup.Render, deltaTime);
-
-        // 处理延迟事件队列
-        Events.FlushDeferred();
+        if (_disposed) return;
+        _scene.Update(deltaTime);
     }
 
-    /// <summary>
-    /// 按标签掩码 Tick——仅 tick 匹配标签的系统，Native 同步过滤。
-    /// 由 Editor 侧 PlayModeController 驱动。
-    /// <code>
-    /// Editing  → Editor | Render | Audio | Streaming
-    /// Playing  → Gameplay | Physics | Render | Audio | Streaming
-    /// Paused   → Render | Audio | Streaming
-    /// </code>
-    /// </summary>
-    public void TickByTagMask(float deltaTime, SceneSystemTags mask)
-    {
-        if (!IsValid)
-        {
-            return;
-        }
-
-        Systems.TickByTagMask(TickGroup.EarlyUpdate, mask, deltaTime);
-        Systems.TickByTagMask(TickGroup.Update, mask, deltaTime);
-        SceneNativeBridge.TickSystems(NativeHandle, deltaTime, mask);
-        Systems.TickByTagMask(TickGroup.LateUpdate, mask, deltaTime);
-        Systems.TickByTagMask(TickGroup.Render, mask, deltaTime);
-        Events.FlushDeferred(mask);
-    }
-
-    /// <summary>
-    /// 固定步长 Tick——驱动 <see cref="ISystemFixedTick"/> 系统。
-    /// 调用方负责以固定间隔调用此方法。
-    /// </summary>
+    /// <summary>固定步长 Tick。</summary>
     public void FixedTick(float fixedDeltaTime)
     {
-        if (!IsValid)
-        {
-            return;
-        }
+        if (_disposed) return;
+        _scene.FixedUpdate(fixedDeltaTime);
+    }
 
-        Systems.FixedTick(TickGroup.FixedUpdate, fixedDeltaTime);
+    /// <summary>按标签掩码 Tick。</summary>
+    public void TickByTagMask(float deltaTime, SceneSystemTags mask)
+    {
+        if (_disposed) return;
+        _scene.UpdateByTagMask(deltaTime, mask);
     }
 
     // ── 查询 ──
 
     /// <summary>获取或创建单组件查询。</summary>
-    public SceneQuery<T> GetQuery<T>() where T : unmanaged =>
+    public SceneQuery<T> GetQuery<T>() where T : struct, IComponent =>
         Queries.GetQuery<T>();
 
     /// <summary>获取或创建双组件查询。</summary>
     public SceneQuery<T1, T2> GetQuery<T1, T2>()
-        where T1 : unmanaged
-        where T2 : unmanaged =>
+        where T1 : struct, IComponent
+        where T2 : struct, IComponent =>
         Queries.GetQuery<T1, T2>();
+
+    /// <summary>IScene 接口：创建单组件查询。</summary>
+    ISceneQuery<T1> IScene.Query<T1>() => _scene.Query<T1>();
+
+    /// <summary>IScene 接口：创建双组件查询。</summary>
+    ISceneQuery<T1, T2> IScene.Query<T1, T2>() => _scene.Query<T1, T2>();
+
+    /// <summary>IScene 接口：创建三组件查询。</summary>
+    ISceneQuery<T1, T2, T3> IScene.Query<T1, T2, T3>() => _scene.Query<T1, T2, T3>();
+
+    /// <summary>IScene 接口：创建单组件视图。</summary>
+    SceneView<T> IScene.CreateView<T>() => _scene.CreateView<T>();
+
+    /// <summary>IScene 接口：创建双组件视图。</summary>
+    SceneView<T1, T2> IScene.CreateView<T1, T2>() => _scene.CreateView<T1, T2>();
+
+    /// <summary>IScene 接口：添加系统。</summary>
+    void IScene.AddSystem(ISceneSystem system) => _scene.AddSystem(system);
+
+    /// <summary>IScene 接口：移除系统。</summary>
+    void IScene.RemoveSystem(ISceneSystem system) => _scene.RemoveSystem(system);
+
+    /// <summary>IScene 接口：获取系统。</summary>
+    T? IScene.GetSystem<T>() where T : class => _scene.GetSystem<T>();
+
+    /// <summary>IScene 接口：主帧更新。</summary>
+    void IScene.Update(float deltaTime) => Tick(deltaTime);
+
+    /// <summary>IScene 接口：固定步长更新。</summary>
+    void IScene.FixedUpdate(float fixedDeltaTime) => FixedTick(fixedDeltaTime);
+
+    /// <summary>IScene 接口：按标签掩码更新。</summary>
+    void IScene.UpdateByTagMask(float deltaTime, SceneSystemTags mask) => TickByTagMask(deltaTime, mask);
+
+    /// <summary>IScene 接口：设置父子关系。</summary>
+    void IScene.SetParent(IEntity child, IEntity parent) => _scene.SetParent(child, parent);
+
+    /// <summary>IScene 接口：获取父实体。</summary>
+    IEntity? IScene.GetParent(IEntity entity) => _scene.GetParent(entity);
+
+    /// <summary>IScene 接口：获取子实体列表。</summary>
+    IReadOnlyList<IEntity> IScene.GetChildren(IEntity entity) => _scene.GetChildren(entity);
+
+    /// <summary>IScene 接口：序列化场景到流。</summary>
+    void IScene.Serialize(Stream stream, string format) => _scene.Serialize(stream, format);
+
+    /// <summary>IScene 接口：从流反序列化场景。</summary>
+    void IScene.Deserialize(Stream stream, string format) => _scene.Deserialize(stream, format);
+
+    /// <summary>IScene 接口：事件总线。</summary>
+    ISceneEventBus IScene.Events => Events;
+
+    /// <summary>IScene 接口：是否有效。</summary>
+    bool IScene.IsValid => IsValid;
 
     // ── 序列化 ──
 
-    /// <summary>序列化场景到 VFS 路径（VGSC 二进制格式）。</summary>
-    public NNSceneResult Save(string vfsPath)
+    /// <summary>从流反序列化场景。</summary>
+    public void Deserialize(Stream stream, string format = "json")
     {
-        if (!IsValid)
-        {
-            return NNSceneResult.Invalid;
-        }
-
-        return SceneNativeBridge.SerializeScene(NativeHandle, vfsPath);
+        _scene.Deserialize(stream, format);
     }
 
-    /// <summary>从 VFS 路径反序列化并创建世界。</summary>
-    public static SceneWorld? LoadFromAsset(string name, string vfsPath)
+    /// <summary>序列化场景到流。</summary>
+    public void Serialize(Stream stream, string format = "json")
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        _scene.Serialize(stream, format);
+    }
 
-        var result = SceneNativeBridge.DeserializeScene(out var handle, vfsPath);
-        if (result != NNSceneResult.Ok || handle == 0)
+    /// <summary>序列化场景到 VFS 路径（JSON 格式）。</summary>
+    public NNSceneResult Save(string vfsPath)
+    {
+        if (_disposed) return NNSceneResult.Invalid;
+        ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
+
+        try
         {
-            return null;
+            using var stream = new System.IO.MemoryStream();
+            _scene.Serialize(stream, "json");
+            var json = Encoding.UTF8.GetString(stream.ToArray());
+            return Neverness.Runtime.VFS.Public.VFS.WriteText(vfsPath, json)
+                ? NNSceneResult.Ok
+                : NNSceneResult.Failed;
         }
-
-        var world = new SceneWorld(handle, name);
-        world.AssetPath = vfsPath;
-        return world;
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[SceneWorld] 保存场景失败: {ex.Message}");
+            return NNSceneResult.Failed;
+        }
     }
 
     // ── 热重载 ──
 
-    /// <summary>
-    /// 保存热重载状态快照。
-    /// Native 场景数据不受 C# 程序集重载影响，此方法仅保存 Managed 侧映射。
-    /// </summary>
+    /// <summary>保存热重载状态快照。</summary>
     public HotReloadSnapshot SaveSnapshot()
     {
         return new HotReloadSnapshot
         {
             Name = Name,
-            NativeHandle = NativeHandle,
-            AssetGuid = AssetGuid,
-            AssetPath = AssetPath,
-            EntityHandles = Entities.ExportHandleValues(),
             CapturedAt = DateTimeOffset.UtcNow,
         };
     }
 
-    /// <summary>
-    /// 从热重载快照恢复场景世界。
-    /// Native 场景句柄仍然有效，重建 Managed 侧映射即可。
-    /// </summary>
-    public static SceneWorld RestoreFromSnapshot(HotReloadSnapshot snapshot)
-    {
-        ArgumentNullException.ThrowIfNull(snapshot);
-
-        var world = new SceneWorld(snapshot.NativeHandle, snapshot.Name);
-        world.AssetGuid = snapshot.AssetGuid;
-        world.AssetPath = snapshot.AssetPath;
-
-        // 从快照恢复实体注册表
-        world.Entities.SyncFromHandles(snapshot.EntityHandles);
-
-        return world;
-    }
-
-    /// <summary>
-    /// 热重载后重建 Managed 侧状态。
-    /// 关闭所有 System（调用 Shutdown），允许新程序集重新注册。
-    /// Native 数据不受影响。
-    /// </summary>
+    /// <summary>热重载后重建 Managed 侧状态。</summary>
     public void RebuildAfterReload()
     {
-        // 关闭旧 System（新程序集重新注册时会重新 Initialize）
         Systems.Rebuild();
-
-        // 重建 Native 事件桥接
-        _nativeEventBridge?.Dispose();
-        _nativeEventBridge = new NativeEventBridge(NativeHandle, Events);
     }
 
     // ── 释放 ──
 
-    /// <summary>释放场景世界及其所有 Native 资源。</summary>
+    /// <summary>释放场景世界及其所有资源。</summary>
     public void Dispose()
     {
-        if (_disposed)
-        {
-            return;
-        }
-
+        if (_disposed) return;
         _disposed = true;
 
-        // 释放事件桥接
-        _nativeEventBridge?.Dispose();
-        _nativeEventBridge = null;
-
-        // 关闭 System（逆序 Shutdown）
         Systems.Dispose();
-
-        // 清空事件总线
-        Events.Clear();
-
-        // 清空查询缓存
-        Queries.Clear();
-
-        // 清空实体注册表
-        Entities.Clear();
-
-        // 销毁 Native 场景
-        if (NativeHandle != 0)
-        {
-            SceneNativeBridge.DestroyScene(NativeHandle);
-        }
+        _scene.Dispose();
     }
 
-    /// <summary>
-    /// 静默 Dispose——释放 Native 资源但不触发任何事件。
-    /// 用于快照恢复场景：旧 world 被静默销毁，新 world 替换其位置。
-    /// </summary>
+    /// <summary>静默 Dispose——释放资源但不触发事件。</summary>
     internal void DisposeQuiet()
     {
-        if (_disposed)
-        {
-            return;
-        }
-
+        if (_disposed) return;
         _disposed = true;
 
-        _nativeEventBridge?.Dispose();
-        _nativeEventBridge = null;
-
         Systems.Dispose();
-        Events.Clear();
-        Queries.Clear();
-        Entities.Clear();
-
-        if (NativeHandle != 0)
-        {
-            SceneNativeBridge.DestroyScene(NativeHandle);
-        }
+        _scene.Dispose();
     }
 
-    /// <summary>
-    /// 从已有 Native 句柄和元数据恢复世界（内部使用，快照恢复专用）。
-    /// 不调用 CreateScene，直接使用已反序列化的句柄。
-    /// </summary>
-    internal static SceneWorld RestoreFromSnapshotInternal(ulong nativeHandle, string name, NNGuid assetGuid)
+    /// <summary>从快照恢复世界（内部使用）。</summary>
+    internal static SceneWorld RestoreFromSnapshotInternal(string name, NNGuid assetGuid)
     {
-        var world = new SceneWorld(nativeHandle, name);
+        var world = new SceneWorld(name);
         world.AssetGuid = assetGuid;
-        // 注意：不设置 AssetPath（快照路径不是正式资产路径）
         return world;
+    }
+}
+
+/// <summary>
+/// 场景系统调度器——兼容旧 API。
+/// </summary>
+public sealed class SceneSystemScheduler : IDisposable
+{
+    private readonly IScene _scene;
+    private readonly List<ISceneSystem> _systems = new();
+
+    public SceneSystemScheduler(IScene scene)
+    {
+        _scene = scene;
+    }
+
+    /// <summary>注册系统。</summary>
+    public void Register(ISceneSystem system)
+    {
+        _scene.AddSystem(system);
+        _systems.Add(system);
+    }
+
+    /// <summary>重建系统（热重载后调用）。</summary>
+    public void Rebuild()
+    {
+        foreach (var system in _systems)
+        {
+            system.Shutdown();
+        }
+        _systems.Clear();
+    }
+
+    /// <summary>释放调度器。</summary>
+    public void Dispose()
+    {
+        foreach (var system in _systems)
+        {
+            system.Shutdown();
+            system.Dispose();
+        }
+        _systems.Clear();
+    }
+}
+
+/// <summary>
+/// 实体注册表——兼容旧 API。
+/// </summary>
+public sealed class EntityRegistry
+{
+    private readonly IScene _scene;
+    private readonly Dictionary<int, SceneEntity> _entities = new();
+
+    public EntityRegistry(IScene scene)
+    {
+        _scene = scene;
+    }
+
+    /// <summary>实体数量。</summary>
+    public int Count => _scene.EntityCount;
+
+    /// <summary>所有实体。</summary>
+    public IReadOnlyList<SceneEntity> Entities => _entities.Values.ToList();
+
+    /// <summary>创建实体。</summary>
+    public SceneEntity? Create(string? displayName = null)
+    {
+        var entity = _scene.CreateEntity(displayName);
+        var sceneEntity = new SceneEntity(entity, _scene);
+        _entities[entity.Id] = sceneEntity;
+        return sceneEntity;
+    }
+
+    /// <summary>销毁实体。</summary>
+    public bool Destroy(SceneEntity entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        if (!entity.IsAlive) return false;
+
+        entity.Entity.Destroy();
+        _entities.Remove(entity.Id);
+        return true;
+    }
+
+    /// <summary>注册实体。</summary>
+    public void Register(SceneEntity entity)
+    {
+        _entities[entity.Id] = entity;
+    }
+
+    /// <summary>是否包含实体。</summary>
+    public bool Contains(SceneEntity entity)
+    {
+        return _entities.ContainsKey(entity.Id);
+    }
+
+    /// <summary>清理所有注册。</summary>
+    public void Clear()
+    {
+        _entities.Clear();
     }
 }

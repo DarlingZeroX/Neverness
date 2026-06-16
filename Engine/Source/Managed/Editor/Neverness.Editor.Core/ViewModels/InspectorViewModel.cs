@@ -8,21 +8,20 @@ namespace Neverness.Editor.Core.ViewModels;
 public class InspectorViewModel : ViewModelBase
 {
     // ── 选中状态 ──
-    private ulong _selectedEntityHandle;
+    private int _selectedEntityId = -1;
     private string _selectedEntityName = "";
     private bool _isActive = true;
-    private ulong _sceneHandle;
 
     // ── 组件列表（显示用） ──
     private readonly List<ComponentInfoVM> _components = new();
 
     // ── 属性 ──
 
-    /// <summary>当前选中的实体句柄。</summary>
-    public ulong SelectedEntityHandle
+    /// <summary>当前选中的实体 ID。</summary>
+    public int SelectedEntityId
     {
-        get => _selectedEntityHandle;
-        set => SetProperty(ref _selectedEntityHandle, value);
+        get => _selectedEntityId;
+        set => SetProperty(ref _selectedEntityId, value);
     }
 
     /// <summary>当前选中实体的显示名称。</summary>
@@ -39,15 +38,8 @@ public class InspectorViewModel : ViewModelBase
         set => SetProperty(ref _isActive, value);
     }
 
-    /// <summary>关联的场景句柄。</summary>
-    public ulong SceneHandle
-    {
-        get => _sceneHandle;
-        set => SetProperty(ref _sceneHandle, value);
-    }
-
     /// <summary>是否有选中的实体。</summary>
-    public bool HasSelection => _selectedEntityHandle != 0;
+    public bool HasSelection => _selectedEntityId >= 0;
 
     /// <summary>组件信息列表（只读）。</summary>
     public IReadOnlyList<ComponentInfoVM> Components => _components;
@@ -55,11 +47,11 @@ public class InspectorViewModel : ViewModelBase
     // ── 方法（Controller 调用） ──
 
     /// <summary>设置选中实体。</summary>
-    public void SetSelectedEntity(ulong handle, string name)
+    public void SetSelectedEntity(int entityId, string name)
     {
-        _selectedEntityHandle = handle;
+        _selectedEntityId = entityId;
         _selectedEntityName = name;
-        OnPropertyChanged(nameof(SelectedEntityHandle));
+        OnPropertyChanged(nameof(SelectedEntityId));
         OnPropertyChanged(nameof(SelectedEntityName));
         OnPropertyChanged(nameof(HasSelection));
     }
@@ -67,10 +59,10 @@ public class InspectorViewModel : ViewModelBase
     /// <summary>清空选中。</summary>
     public void ClearSelection()
     {
-        _selectedEntityHandle = 0;
+        _selectedEntityId = -1;
         _selectedEntityName = "";
         _components.Clear();
-        OnPropertyChanged(nameof(SelectedEntityHandle));
+        OnPropertyChanged(nameof(SelectedEntityId));
         OnPropertyChanged(nameof(SelectedEntityName));
         OnPropertyChanged(nameof(HasSelection));
         OnPropertyChanged(nameof(Components));

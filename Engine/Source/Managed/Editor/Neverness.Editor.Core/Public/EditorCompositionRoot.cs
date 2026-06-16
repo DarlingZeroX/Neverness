@@ -147,20 +147,18 @@ public static class EditorCompositionRoot
         // 订阅 SceneBrowserViewModel 的选中变更事件
         SceneBrowserVM.PropertyChanged += (propertyName) =>
         {
-            if (propertyName == nameof(SceneBrowserViewModel.SelectedEntityHandle))
+            if (propertyName == nameof(SceneBrowserViewModel.SelectedEntityId))
             {
-                var selectedHandle = SceneBrowserVM.SelectedEntityHandle;
-                if (selectedHandle != 0)
+                var selectedId = SceneBrowserVM.SelectedEntityId;
+                if (selectedId >= 0)
                 {
                     // 直接用 ISceneQueryService 获取实体信息（与 SceneBrowser 同源，避免 InspectorService 缓存不同步）
                     var sceneQueryService = CoreModuleImp.Context.GetService<ISceneQueryService>();
-                    var sceneHandle = sceneQueryService.ActiveSceneHandle;
-                    var entityName = sceneQueryService.GetEntityName(selectedHandle);
-                    var entityData = sceneQueryService.GetEntity(selectedHandle);
+                    var entityName = sceneQueryService.GetEntityName(selectedId);
+                    var entityData = sceneQueryService.GetEntity(selectedId);
 
                     // 直接更新 InspectorViewModel
-                    InspectorVM.SetSelectedEntity(selectedHandle, entityName);
-                    InspectorVM.SceneHandle = sceneHandle;
+                    InspectorVM.SetSelectedEntity(selectedId, entityName);
                     InspectorVM.IsActive = entityData?.IsActive ?? true;
 
                     // 刷新组件列表

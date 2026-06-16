@@ -199,8 +199,8 @@ public class InspectorAvaloniaView : AvaloniaViewBase
         foreach (var component in _viewModel.Components)
         {
             var inspectorUI = AvaloniaComponentInspectorRegistry.CreateInspectorUI(
-                _viewModel.SceneHandle,
-                _viewModel.SelectedEntityHandle,
+                (ulong)_viewModel.SelectedEntityId,
+                (ulong)_viewModel.SelectedEntityId,
                 component.TypeId);
 
             if (inspectorUI != null)

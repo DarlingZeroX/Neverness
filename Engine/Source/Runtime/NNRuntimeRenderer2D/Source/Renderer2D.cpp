@@ -515,7 +515,7 @@ namespace NN::Runtime::Renderer2D
                     auto* texVar = srb->GetVariableByName(SHADER_TYPE_PIXEL, "u_Texture");
                     if (texVar) texVar->Set(texSRV);
                 }
-                it = m_Impl->SRBCache.emplace(texSRV, std::move(srb)).first;
+            it = m_Impl->SRBCache.emplace(texSRV, std::move(srb)).first;
             }
 
             // ── 提交 SRB 并绘制 ──

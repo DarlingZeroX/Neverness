@@ -1,11 +1,19 @@
 using System.IO;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Neverness.Editor.Assets.Private.Context;
+using Neverness.Editor.AvaloniaFrontend.ContextMenus;
 using Neverness.Editor.Core.Controllers;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
+using Neverness.Editor.Framework.Private.Menu;
+using Neverness.Runtime.Assets;
+using AssetsContentBrowser = Neverness.Editor.Assets.Private.Core.ContentBrowser;
+using AssetsContentFile = Neverness.Editor.Assets.Private.Core.ContentFile;
+using AssetsContentDirectory = Neverness.Editor.Assets.Private.Core.ContentDirectory;
 
 namespace Neverness.Editor.AvaloniaFrontend.Views;
 
@@ -28,6 +36,12 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
     private ScrollViewer? _fileScroll;
     private StackPanel? _breadcrumbBar;
     private ScrollViewer? _breadcrumbScroll;
+
+    // 右键菜单（使用 ContextMenuManager + AvaloniaContextMenuRenderer）
+    private AvaloniaContextMenuRenderer? _contextMenuRenderer;
+    private string? _selectedItemPath;
+    private string? _selectedItemName;
+    private bool _selectedItemIsDirectory;
 
     // 缩略图尺寸
     private const double ThumbSize = 90;
@@ -116,6 +130,17 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
         panel.Children.Add(mainContent);
 
         Content = panel;
+
+        // 创建右键菜单渲染器（从 ContextMenuManager 读取 EditorMenuItem）
+        _contextMenuRenderer = new AvaloniaContextMenuRenderer();
+
+        // 文件区域右键（空白处 = 背景菜单）
+        // PointerPressed 先清除选中，PointerReleased 再判断
+        _fileScroll!.PointerPressed += (_, _) => { _selectedItemPath = null; };
+        _fileScroll.PointerReleased += OnFileAreaPointerReleased;
+
+        // 目录树右键
+        _directoryTree!.PointerReleased += OnDirectoryTreePointerReleased;
 
         // 订阅 ViewModel 变更
         _viewModel.PropertyChanged += OnPropertyChanged;
@@ -419,6 +444,34 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
                 _controller?.OpenFile(path);
         };
 
+        // 右键菜单（记录选中项后弹出菜单）
+        container.PointerReleased += (s, e) =>
+        {
+            if (e.InitialPressMouseButton != MouseButton.Right) return;
+
+            _selectedItemPath = path;
+            _selectedItemName = name;
+            _selectedItemIsDirectory = isDirectory;
+
+            // 设置 ContextMenuManager 上下文
+            var ctx = ContextMenuManager.Instance;
+            ctx.SetContext(ContentBrowserContextMenu.KeyPath, path);
+            ctx.SetContext(ContentBrowserContextMenu.KeyContentBrowser, AssetsContentBrowser.Instance);
+
+            // 创建 ContentItem 供菜单命令使用（Rename/Remove/ShowInExplorer/CopyName）
+            Neverness.Editor.Assets.Private.Core.ContentItem contentItem = isDirectory
+                ? new AssetsContentDirectory { Name = name, SystemPath = new NPath(path) }
+                : new AssetsContentFile { Name = name, SystemPath = new NPath(path), Extension = System.IO.Path.GetExtension(path) };
+            ctx.SetContext(ContentBrowserContextMenu.KeyItem, contentItem);
+
+            // 渲染 Item 菜单
+            _contextMenuRenderer?.BuildAndShow(
+                ContentBrowserContextMenu.ItemId,
+                ctx,
+                s as Control ?? container);
+            e.Handled = true;
+        };
+
         // 悬停高亮
         var iconBg = isDirectory ? "#FF3F3F46" : "#FF2D2D30";
         var hoverBg = "#FF3E3E42";
@@ -453,6 +506,57 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
             ".lua" => "📜",
             _ => "📄"
         };
+    }
+
+    // ── 右键事件处理 ──
+
+    /// <summary>文件区域右键——判断点击的是缩略图还是空白处。</summary>
+    private void OnFileAreaPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton != MouseButton.Right) return;
+
+        // 如果 _selectedItemPath 已被缩略图的 PointerReleased 设置过，说明点在了项目上
+        if (!string.IsNullOrEmpty(_selectedItemPath)) return;
+
+        // 点在空白处 → 背景菜单
+        var ctx = ContextMenuManager.Instance;
+        ctx.SetContext(ContentBrowserContextMenu.KeyPath, _viewModel?.CurrentDirectory ?? "");
+        ctx.SetContext(ContentBrowserContextMenu.KeyContentBrowser, AssetsContentBrowser.Instance);
+
+        _contextMenuRenderer?.BuildAndShow(
+            ContentBrowserContextMenu.BackgroundId,
+            ctx,
+            _fileScroll!);
+
+        e.Handled = true;
+    }
+
+    /// <summary>目录树右键。</summary>
+    private void OnDirectoryTreePointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton != MouseButton.Right) return;
+
+        // 获取右键点击的节点
+        if (_directoryTree?.SelectedItem is TreeViewItem item && item.Tag is string path)
+        {
+            _selectedItemPath = path;
+            _selectedItemName = (item.Header as StackPanel)?.Children
+                .OfType<TextBlock>().LastOrDefault()?.Text ?? "";
+            _selectedItemIsDirectory = true;
+
+            // 设置上下文
+            var ctx = ContextMenuManager.Instance;
+            ctx.SetContext(ContentBrowserContextMenu.KeyPath, path);
+            ctx.SetContext(ContentBrowserContextMenu.KeyContentBrowser, AssetsContentBrowser.Instance);
+
+            // 渲染背景菜单（目录节点也用背景菜单：Create Directory / Refresh / Show in Explorer）
+            _contextMenuRenderer?.BuildAndShow(
+                ContentBrowserContextMenu.BackgroundId,
+                ctx,
+                item);
+        }
+
+        e.Handled = true;
     }
 
     // ── ViewModel 属性变更 ──

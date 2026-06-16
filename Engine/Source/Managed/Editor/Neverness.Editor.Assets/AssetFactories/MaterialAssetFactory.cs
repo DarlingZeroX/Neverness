@@ -10,7 +10,7 @@ public sealed class MaterialAssetFactory : IAssetFactory
 {
     public string DisplayName => "Material";
     public string Category => "Rendering";
-    public string Icon => FontAwesome5Pro.Palette;
+    public string Icon => "🎨";
     public string FileExtension => ".material";
 
     public NPath? CreateAsset(NPath directoryPath)

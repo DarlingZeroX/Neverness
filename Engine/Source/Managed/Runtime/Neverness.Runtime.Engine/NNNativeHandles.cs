@@ -11,8 +11,6 @@ public readonly record struct NNElementHandle(ulong Value);
 
 public readonly record struct NNAudioHandle(ulong Value);
 
-public readonly record struct NNAssetHandle(ulong Value);
-
 public readonly record struct NNAsyncWaitHandle(ulong Value);
 
 public readonly record struct NNEntityHandle(ulong Value);

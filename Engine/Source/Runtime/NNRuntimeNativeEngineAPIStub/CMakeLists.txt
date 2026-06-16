@@ -21,16 +21,9 @@ target_sources(NevernessRuntime-NativeEngineAPIStub
 		Private/Common/StubInvokeCounter.cpp
 		Private/Registry/NNNativeEngineApiTable.cpp
 		Private/Render/RenderApiStubs.cpp
-		Private/UI/UiApiStubs.cpp
 		Private/Audio/AudioApiStubs.cpp
-		Private/Asset/AssetApiStubs.cpp
 		Private/Input/InputApiStubs.cpp
 		Private/Scene/SceneApiStubs.cpp
-		Private/Object/ObjectStubDatabase.cpp
-		Private/Object/ObjectApiStubs.cpp
-		Private/AssetRegistry/AssetRegistryStubDatabase.cpp
-		Private/AssetRegistry/AssetRegistryApiStubs.cpp
-		Private/AssetManager/AssetManagerApiStubs.cpp
 		Private/AssetCooker/AssetCookerApiStubs.cpp
 		Private/Application/ApplicationApiStubs.cpp
 		Private/Window/WindowApiStubs.cpp

@@ -28,20 +28,22 @@ internal sealed class SceneEditorBridge : IDisposable
         _sceneManager.SceneUnloaded += OnSceneUnloaded;
     }
 
-    private void OnSceneActivated(SceneWorld world)
+    private void OnSceneActivated(IScene scene)
     {
-        Console.WriteLine($"[SceneEditorBridge] 场景已激活: {world.Name} (handle={world.NativeHandle})");
-        SceneModuleImp.SetSceneHandle(world.NativeHandle);
+        Console.WriteLine($"[SceneEditorBridge] 场景已激活: {scene.Name}");
+        SceneModuleImp.SetScene(scene as SceneWorld);
 
-        // 同步 EditorState：记录当前场景路径和句柄
+        // 同步 EditorState：记录当前场景路径
         var state = EditorCoreModule.Context.State;
-        state.CurrentScenePath = world.AssetPath;
-        state.CurrentSceneHandle = world.NativeHandle;
+        if (scene is SceneWorld world)
+        {
+            state.CurrentScenePath = world.AssetPath;
+        }
     }
 
-    private void OnSceneUnloaded(SceneWorld world)
+    private void OnSceneUnloaded(IScene scene)
     {
-        Console.WriteLine($"[SceneEditorBridge] 场景已卸载: {world.Name}");
+        Console.WriteLine($"[SceneEditorBridge] 场景已卸载: {scene.Name}");
 
         // 如果卸载的是当前显示的场景，清零 SceneBrowser handle
         // SceneManager 卸载后可能自动激活下一个场景（会再次触发 SceneActivated）

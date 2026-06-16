@@ -9,13 +9,8 @@ namespace Neverness.Runtime.Assets;
 ///   - 按 GUID 加载
 ///   - 包管理
 ///
-/// 解析流程：
-///   Address "character/hero"
-///     → 查 Catalog → GUID
-///     → 查 GUID → 所在 Package
-///     → Package 已挂载？直接返回
-///     → Package 未挂载？异步加载 .nnpack
-///     → 从 Package 中读取 .nnasset → 返回 Handle
+/// 迁移后：加载/释放直接调用 C# <see cref="AssetManager.Instance"/>，
+/// 不再经过 NativeApiProvider / C++ ABI。
 /// </summary>
 public static class Addressables
 {
@@ -162,26 +157,23 @@ public static class Addressables
     public static AssetHandle<T> LoadAsset<T>(string address)
     {
         var guid = ResolveAddress(address);
-        if (guid.IsZero)
-            return AssetHandle<T>.Zero;
+        if (guid.IsZero) return AssetHandle<T>.Zero;
 
-        return AssetHandleExtensions.LoadSync(guid).As<T>();
+        var raw = AssetManager.Instance.LoadAssetSync(guid);
+        return new AssetHandle<T>(raw);
     }
 
     /// <summary>按地址异步加载资产。</summary>
-    public static TaskCompletionSource<ulong> LoadAssetAsync(
+    public static async ValueTask<ulong> LoadAssetAsync(
         string address,
-        LoadPriority priority = LoadPriority.Normal)
+        LoadPriority priority = LoadPriority.Normal,
+        CancellationToken ct = default)
     {
         var guid = ResolveAddress(address);
         if (guid.IsZero)
-        {
-            var failTcs = new TaskCompletionSource<ulong>();
-            failTcs.SetException(new KeyNotFoundException($"地址未找到: {address}"));
-            return failTcs;
-        }
+            throw new KeyNotFoundException($"地址未找到: {address}");
 
-        return AssetHandleExtensions.LoadAsync(guid, priority: priority);
+        return await AssetManager.Instance.LoadAssetAsync(guid, 0, priority, ct).ConfigureAwait(false);
     }
 
     /* ========== 按标签加载 ========== */
@@ -201,16 +193,17 @@ public static class Addressables
         var handles = new List<AssetHandle<T>>(guids.Count);
         foreach (var guid in guids)
         {
-            var handle = AssetHandleExtensions.LoadSync(guid);
-            handles.Add(handle.As<T>());
+            var raw = AssetManager.Instance.LoadAssetSync(guid);
+            handles.Add(new AssetHandle<T>(raw));
         }
         return handles;
     }
 
     /// <summary>按标签异步加载所有资产。</summary>
-    public static List<TaskCompletionSource<ulong>> LoadAssetsByLabelAsync(
+    public static List<ValueTask<ulong>> LoadAssetsByLabelAsync(
         string label,
-        LoadPriority priority = LoadPriority.Normal)
+        LoadPriority priority = LoadPriority.Normal,
+        CancellationToken ct = default)
     {
         IReadOnlyList<GUID> guids;
         lock (s_lock)
@@ -221,9 +214,9 @@ public static class Addressables
                 guids = Array.Empty<GUID>();
         }
 
-        var tasks = new List<TaskCompletionSource<ulong>>(guids.Count);
+        var tasks = new List<ValueTask<ulong>>(guids.Count);
         foreach (var guid in guids)
-            tasks.Add(AssetHandleExtensions.LoadAsync(guid, priority: priority));
+            tasks.Add(AssetManager.Instance.LoadAssetAsync(guid, 0, priority, ct));
         return tasks;
     }
 
@@ -232,15 +225,19 @@ public static class Addressables
     /// <summary>按 GUID 同步加载资产。</summary>
     public static AssetHandle<T> LoadAssetByGuid<T>(GUID guid)
     {
-        return AssetHandleExtensions.LoadSync(guid).As<T>();
+        if (guid.IsZero) return AssetHandle<T>.Zero;
+        var raw = AssetManager.Instance.LoadAssetSync(guid);
+        return new AssetHandle<T>(raw);
     }
 
     /// <summary>按 GUID 异步加载资产。</summary>
-    public static TaskCompletionSource<ulong> LoadAssetByGuidAsync(
+    public static async ValueTask<ulong> LoadAssetByGuidAsync(
         GUID guid,
-        LoadPriority priority = LoadPriority.Normal)
+        LoadPriority priority = LoadPriority.Normal,
+        CancellationToken ct = default)
     {
-        return AssetHandleExtensions.LoadAsync(guid, priority: priority);
+        if (guid.IsZero) return 0;
+        return await AssetManager.Instance.LoadAssetAsync(guid, 0, priority, ct).ConfigureAwait(false);
     }
 
     /* ========== 释放 ========== */
@@ -248,13 +245,13 @@ public static class Addressables
     /// <summary>释放资产。</summary>
     public static void Release(AssetHandle handle)
     {
-        AssetHandleExtensions.Unload(handle);
+        if (!handle.IsZero) AssetManager.Instance.UnloadAsset(handle.Value);
     }
 
     /// <summary>释放资产（按 GUID）。</summary>
     public static void Release(GUID guid)
     {
-        AssetHandleExtensions.Unload(guid);
+        if (!guid.IsZero) AssetManager.Instance.UnloadAssetByGuid(guid);
     }
 
     /* ========== 查询 ========== */
@@ -287,17 +284,5 @@ public static class Addressables
     public static int AddressCount
     {
         get { lock (s_lock) return s_catalog.Count; }
-    }
-}
-
-/* ========== AssetHandle 类型转换扩展 ========== */
-
-/// <summary>AssetHandle 类型转换辅助。</summary>
-public static class AssetHandleCastExtensions
-{
-    /// <summary>将非泛型 Handle 转为泛型 Handle（零拷贝，仅类型转换）。</summary>
-    public static AssetHandle<T> As<T>(this AssetHandle handle)
-    {
-        return new AssetHandle<T>(handle.Value);
     }
 }

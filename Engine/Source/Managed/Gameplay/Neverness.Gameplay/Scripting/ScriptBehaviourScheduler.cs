@@ -34,7 +34,7 @@ namespace Neverness.Gameplay;
 /// - 使用 IReadOnlyList 避免 GC 分配
 /// </remarks>
 [SceneSystemTag(SceneSystemTags.Gameplay)]
-public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, ISystemTick, ISystemFixedTick, ISystemLateTick, ISystemShutdown
+public sealed class ScriptBehaviourScheduler : ISceneSystem
 {
     // ========================================================================
     // 单例
@@ -62,6 +62,9 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
     /// <summary>是否已初始化。</summary>
     private bool _isInitialized;
 
+    /// <summary>场景引用。</summary>
+    private IScene? _scene;
+
     // ========================================================================
     // ISceneSystem
     // ========================================================================
@@ -70,7 +73,7 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
     public string Name => "ScriptBehaviourScheduler";
 
     /// <inheritdoc/>
-    public TickGroup TickGroup => TickGroup.Update;
+    public bool IsInitialized => _isInitialized;
 
     // ========================================================================
     // 构造函数
@@ -83,26 +86,23 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
     }
 
     // ========================================================================
-    // ISystemInitialize
+    // ISceneSystem
     // ========================================================================
 
     /// <inheritdoc/>
-    public void Initialize(SceneWorld world)
+    public void Initialize(IScene scene)
     {
         if (_isInitialized)
         {
             return;
         }
 
+        _scene = scene;
         _isInitialized = true;
     }
 
-    // ========================================================================
-    // ISystemTick
-    // ========================================================================
-
     /// <inheritdoc/>
-    public void Tick(SceneWorld world, float deltaTime)
+    public void Update(float deltaTime)
     {
         // 1. 处理待启动的脚本（上一帧创建的）
         ProcessPendingStart();
@@ -123,12 +123,8 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
         _registry.ProcessPendingDestroy();
     }
 
-    // ========================================================================
-    // ISystemFixedTick
-    // ========================================================================
-
     /// <inheritdoc/>
-    public void FixedTick(SceneWorld world, float fixedDeltaTime)
+    public void FixedUpdate(float fixedDeltaTime)
     {
         foreach (var behaviour in _registry.AllBehaviours)
         {
@@ -139,28 +135,8 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
         }
     }
 
-    // ========================================================================
-    // ISystemLateTick
-    // ========================================================================
-
     /// <inheritdoc/>
-    public void LateTick(SceneWorld world, float deltaTime)
-    {
-        foreach (var behaviour in _registry.AllBehaviours)
-        {
-            if (behaviour.Enabled && !behaviour.IsDestroyed && behaviour.IsStarted)
-            {
-                behaviour.OnLateUpdate(deltaTime);
-            }
-        }
-    }
-
-    // ========================================================================
-    // ISystemShutdown
-    // ========================================================================
-
-    /// <inheritdoc/>
-    public void Shutdown(SceneWorld world)
+    public void Shutdown()
     {
         // 清空待处理队列
         _pendingCreate.Clear();
@@ -170,7 +146,14 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem, ISystemInitialize, 
         _registry.Clear();
 
         _isInitialized = false;
+        _scene = null;
         Instance = null;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Shutdown();
     }
 
     // ========================================================================

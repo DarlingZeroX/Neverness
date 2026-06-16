@@ -31,12 +31,22 @@ public partial class MainEditorWindow : Window
         DockControl.Factory = _dockFactory;
         DockControl.Layout = layout;
 
-        // Document 模板：渲染 Document.Context（视图通过 SetPanelContent 设置）
+        // Document 模板：渲染 Document.Context（Viewport 专用）
         DockControl.DataTemplates.Insert(0, new FuncDataTemplate(
             typeof(global::Dock.Model.Mvvm.Controls.Document),
             (data, _) =>
             {
                 if (data is global::Dock.Model.Mvvm.Controls.Document doc && doc.Context is Control ctrl)
+                    return ctrl;
+                return new TextBlock { Text = "No Content" };
+            }));
+
+        // Tool 模板：渲染 Tool.Context（其余面板使用）
+        DockControl.DataTemplates.Insert(1, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Controls.Tool),
+            (data, _) =>
+            {
+                if (data is global::Dock.Model.Mvvm.Controls.Tool tool && tool.Context is Control ctrl)
                     return ctrl;
                 return new TextBlock { Text = "No Content" };
             }));
@@ -64,24 +74,40 @@ public partial class MainEditorWindow : Window
     {
         Console.WriteLine($"[MainEditorWindow] SetPanelContent 调用: {panelId}, 内容类型: {content.GetType().Name}");
 
-        var doc = panelId switch
+        // Viewport 是 Document，其余面板是 Tool
+        if (panelId == EditorDockFactory.PanelIds.Viewport)
         {
-            EditorDockFactory.PanelIds.SceneBrowser => _dockFactory.SceneBrowserPanel,
-            EditorDockFactory.PanelIds.Viewport => _dockFactory.ViewportPanel,
-            EditorDockFactory.PanelIds.Inspector => _dockFactory.InspectorPanel,
-            EditorDockFactory.PanelIds.ContentBrowser => _dockFactory.ContentBrowserPanel,
-            EditorDockFactory.PanelIds.Console => _dockFactory.ConsolePanel,
-            _ => null
-        };
-
-        if (doc != null)
-        {
-            doc.Context = content;
-            Console.WriteLine($"[MainEditorWindow] Document.Context 已设置: {panelId}");
+            var doc = _dockFactory.ViewportPanel;
+            if (doc != null)
+            {
+                doc.Context = content;
+                Console.WriteLine($"[MainEditorWindow] Document.Context 已设置: {panelId}");
+            }
+            else
+            {
+                Console.Error.WriteLine($"[MainEditorWindow] 未找到 Document: {panelId}");
+            }
         }
         else
         {
-            Console.Error.WriteLine($"[MainEditorWindow] 未找到 Document: {panelId}");
+            var tool = panelId switch
+            {
+                EditorDockFactory.PanelIds.SceneBrowser => _dockFactory.SceneBrowserPanel,
+                EditorDockFactory.PanelIds.Inspector => _dockFactory.InspectorPanel,
+                EditorDockFactory.PanelIds.ContentBrowser => _dockFactory.ContentBrowserPanel,
+                EditorDockFactory.PanelIds.Console => _dockFactory.ConsolePanel,
+                _ => null
+            };
+
+            if (tool != null)
+            {
+                tool.Context = content;
+                Console.WriteLine($"[MainEditorWindow] Tool.Context 已设置: {panelId}");
+            }
+            else
+            {
+                Console.Error.WriteLine($"[MainEditorWindow] 未找到 Tool: {panelId}");
+            }
         }
     }
 

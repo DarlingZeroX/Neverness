@@ -6,11 +6,11 @@ namespace Neverness.Editor.Scene.Private.Cache;
 /// </summary>
 public sealed class HierarchyNode
 {
-    /// <summary>实体句柄（NNEntityHandle）。</summary>
-    public ulong Entity;
+    /// <summary>实体 ID。</summary>
+    public int EntityId;
 
-    /// <summary>父实体句柄（根节点 = 0）。</summary>
-    public ulong Parent;
+    /// <summary>父实体 ID（根节点 = -1）。</summary>
+    public int Parent = -1;
 
     /// <summary>DFS 深度（根 = 0）。</summary>
     public uint Depth;

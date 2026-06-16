@@ -2,6 +2,9 @@ using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Assets.Private.Core;
 
+// 图标使用 emoji（Avalonia 无法加载 FontAwesome 字体）
+// FolderPlus→📁, Redo→↻, Copy→📋, ExternalLinkAlt→📂, Pen→✏️, Trash→🗑️
+
 namespace Neverness.Editor.Assets.Private.Context;
 
 /// <summary>
@@ -36,7 +39,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                         cb.CreateNewDirectory(path);
                 },
             },
-            Icon: FontAwesome5Pro.FolderPlus,
+            Icon: "📁",
             SortOrder: 100));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -53,7 +56,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                         cb.ShowInExplorer(path);
                 },
             },
-            Icon: FontAwesome5Pro.ExternalLinkAlt,
+            Icon: "📂",
             SortOrder: 200));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -68,7 +71,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                     cb?.RefreshDirectory();
                 },
             },
-            Icon: FontAwesome5Pro.Redo,
+            Icon: "↻",
             SortOrder: 300));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -85,7 +88,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                         cb.CopyPath(path);
                 },
             },
-            Icon: FontAwesome5Pro.Copy,
+            Icon: "📋",
             SortOrder: 400));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -115,7 +118,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                         item.Renaming = true;
                 },
             },
-            Icon: FontAwesome5Pro.Pen,
+            Icon: "✏️",
             SortOrder: 100));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -132,7 +135,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                         cb.DeleteDirectoryItem(item);
                 },
             },
-            Icon: FontAwesome5Pro.Trash,
+            Icon: "🗑️",
             SortOrder: 200));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -149,7 +152,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                         cb.ShowInExplorer(item.SystemPath.ToString());
                 },
             },
-            Icon: FontAwesome5Pro.ExternalLinkAlt,
+            Icon: "📂",
             SortOrder: 300));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -166,7 +169,7 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                         cb.CopyPath(item.Name);
                 },
             },
-            Icon: FontAwesome5Pro.Copy,
+            Icon: "📋",
             SortOrder: 400));
     }
 }

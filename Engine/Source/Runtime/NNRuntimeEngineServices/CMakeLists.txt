@@ -21,11 +21,9 @@ target_sources(NevernessRuntime-EngineServices
 		Private/Timing/TimingRuntimeApi.cpp
 		Private/Async/AsyncWaitRuntimeApi.cpp
 		Private/Scene/SceneRuntimeApi.cpp
-		Private/Asset/AssetRuntimeApi.cpp
-		Private/Object/ObjectRuntimeApi.cpp
-		Private/AssetRegistry/AssetRegistryRuntimeApi.cpp
 		Private/RenderAsset/RenderAssetRuntimeApi.cpp
 		Private/ViewportRender/ViewportRenderRuntimeApi.cpp
+		Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp
 )
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
@@ -49,6 +47,8 @@ target_include_directories(NevernessRuntime-EngineServices PRIVATE
 	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering
 	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender
 	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore
+	# NNRuntimeDiligent include（NNDiligentViewportSurface 等）
+	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent
 )
 
 target_link_libraries(NevernessRuntime-EngineServices PUBLIC
@@ -57,13 +57,14 @@ target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-Engine
 	NevernessRuntime-Asset
 	NevernessRuntime-AssetCooker
-	NevernessRuntime-ManagedBridge
 	NevernessRuntime-Application
 	NevernessRuntime-VFS
 	NevernessRuntime-RenderAssets
 	NevernessRuntime-Renderer2D
 	NevernessRuntime-RmlUI
 	NevernessRuntime-Scene
+	# ViewportSurface 需要 NNRuntimeDiligent（NNDiligentViewportSurface、SwapChain 创建）
+	NNRuntimeDiligent
 )
 
 add_library(NNEngineRuntimeServices ALIAS NevernessRuntime-EngineServices)

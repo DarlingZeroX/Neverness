@@ -1,3 +1,5 @@
+using Neverness.Runtime.Scene;
+
 namespace Neverness.Editor.Core.Public;
 
 /// <summary>
@@ -6,9 +8,6 @@ namespace Neverness.Editor.Core.Public;
 /// </summary>
 public interface IViewportService
 {
-    /// <summary>当前关联的场景句柄。</summary>
-    ulong SceneHandle { get; }
-
     /// <summary>是否有有效的场景。</summary>
     bool HasScene { get; }
 
@@ -22,10 +21,10 @@ public interface IViewportService
     ulong GetLastRmluiTextureId();
 
     /// <summary>设置关联的场景。</summary>
-    void SetScene(ulong sceneHandle);
+    void SetScene(SceneWorld? scene);
 
     /// <summary>聚焦到指定实体（摄像机移动）。</summary>
-    void FocusEntity(ulong entityHandle);
+    void FocusEntity(IEntity entity);
 
     /// <summary>设置摄像机位置。</summary>
     void SetCameraPosition(float x, float y, float z);

@@ -37,7 +37,7 @@ public class BehaviourRegistryPerformanceTests
         var registry = new BehaviourRegistry();
         var stopwatch = Stopwatch.StartNew();
 
-        for (ulong i = 0; i < 1000; i++)
+        for (int i = 0; i < 1000; i++)
         {
             var behaviour = new TestBehaviour();
             registry.Register(i, behaviour);
@@ -57,7 +57,7 @@ public class BehaviourRegistryPerformanceTests
         var registry = new BehaviourRegistry();
 
         // 预先注册 1000 个 Behaviour
-        for (ulong i = 0; i < 1000; i++)
+        for (int i = 0; i < 1000; i++)
         {
             registry.Register(i, new TestBehaviour());
         }
@@ -67,7 +67,7 @@ public class BehaviourRegistryPerformanceTests
         // 执行 10000 次查找
         for (int i = 0; i < 10000; i++)
         {
-            registry.GetBehaviours((ulong)(i % 1000));
+            registry.GetBehaviours(i % 1000);
         }
 
         stopwatch.Stop();
@@ -83,7 +83,7 @@ public class BehaviourRegistryPerformanceTests
         var registry = new BehaviourRegistry();
 
         // 预先注册 100 个 Behaviour
-        for (ulong i = 0; i < 100; i++)
+        for (int i = 0; i < 100; i++)
         {
             registry.Register(i, new TestBehaviour());
         }

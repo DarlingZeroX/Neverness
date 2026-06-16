@@ -14,7 +14,7 @@ public sealed class SceneAssetFactory : IAssetFactory
 {
     public string DisplayName => "Scene";
     public string Category => "Scene";
-    public string Icon => FontAwesome5Pro.File;
+    public string Icon => "🗺️";
     public string FileExtension => ".scene";
 
     public NPath? CreateAsset(NPath directoryPath)

@@ -90,13 +90,10 @@ internal static class AssetsModuleImp
             {
                 ImportPipeline.Initialize(new NPath(libraryPath));
 
-                // 接线 Native AssetManager API 函数指针
-                NativeApiProvider.WireFromEngineCache();
-
-                // 初始化 Native AssetManager（projectRoot = Library 的父目录）
+                // 初始化 C# AssetManager（projectRoot = Library 的父目录）
                 var projectRoot = System.IO.Path.GetDirectoryName(libraryPath);
                 if (projectRoot != null)
-                    NativeApiProvider.InitializeAssetManager(projectRoot);
+                    AssetManager.Instance.Initialize(projectRoot);
             }
 
             s_hotReloadCoordinator = new HotReloadCoordinator(new NPath(path));

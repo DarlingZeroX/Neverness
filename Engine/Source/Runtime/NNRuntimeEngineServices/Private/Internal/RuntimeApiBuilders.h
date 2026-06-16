@@ -5,9 +5,6 @@
  * @brief 將 **NNEngineRuntime** 子系統能力覆寫至 **NNNativeEngineAPI** 子表（僅寫函數指標）。
  */
 
-#include "NNNativeEngineAPI/Include/AssetAPI.h"
-#include "NNNativeEngineAPI/Include/AssetManagerAPI.h"
-#include "NNNativeEngineAPI/Include/AssetRegistryAPI.h"
 #include "NNNativeEngineAPI/Include/AssetCookerAPI.h"
 #include "NNNativeEngineAPI/Include/AsyncWaitAPI.h"
 #include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
@@ -16,6 +13,7 @@
 #include "NNNativeEngineAPI/Include/TimingAPI.h"
 #include "NNNativeEngineAPI/Include/RenderAssetAPI.h"
 #include "NNNativeEngineAPI/Include/ViewportRenderAPI.h"
+#include "NNNativeEngineAPI/Include/ViewportSurfaceAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,13 +23,10 @@ void NNBuildTimingRuntimeApi(NNTimingAPI* api);
 void NNBuildAsyncWaitRuntimeApi(NNAsyncWaitAPI* api);
 void NNBuildSceneRuntimeApi(NNSceneAPI* api);
 void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api);
-void NNBuildAssetRuntimeApi(NNAssetAPI* api);
-void NNBuildObjectRuntimeApi(NNObjectAPI* api);
-void NNBuildAssetRegistryRuntimeApi(NNAssetRegistryAPI* api);
-void NNBuildAssetManagerRuntimeApi(NNAssetManagerAPI* api);
 void NNBuildAssetCookerRuntimeApi(NNAssetCookerAPI* api);
 void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api);
 void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api);
+void NNBuildViewportSurfaceRuntimeApi(NNViewportSurfaceAPI* api);
 
 #ifdef __cplusplus
 } /* extern "C" */
@@ -39,3 +34,4 @@ void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api);
 
 // C++ shutdown functions（引擎退出时调用）
 void ShutdownViewportRender();
+void ShutdownViewportSurface();

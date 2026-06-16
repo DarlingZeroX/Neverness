@@ -5,6 +5,7 @@ using Neverness.Editor.Scene.Private.Panel;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Engine;
 using Neverness.Editor.Scene.Private.Service;
+using Neverness.Editor.Core;
 using Neverness.Editor.Core.Public;
 
 namespace Neverness.Editor.Scene.Private;
@@ -31,6 +32,9 @@ internal static class SceneModuleImp
     /// <summary>视口服务实例。</summary>
     public static ViewportServiceImpl? ViewportService { get; private set; }
 
+    /// <summary>视口表面注册表实例。</summary>
+    public static ViewportSurfaceRegistryImpl? ViewportSurfaceRegistry { get; private set; }
+
     /// <summary>获取层级缓存（Debug / 诊断用，通过 Service 访问）。</summary>
     public static Cache.SceneHierarchyCache? HierarchyCache => SceneQueryService?.Cache;
 
@@ -52,10 +56,12 @@ internal static class SceneModuleImp
         SceneQueryService = new SceneQueryServiceImpl();
         InspectorService = new InspectorServiceImpl();
         ViewportService = new ViewportServiceImpl();
+        ViewportSurfaceRegistry = new ViewportSurfaceRegistryImpl();
 
         context.RegisterService<ISceneQueryService>(SceneQueryService);
         context.RegisterService<IInspectorService>(InspectorService);
         context.RegisterService<IViewportService>(ViewportService);
+        context.RegisterService<IViewportSurfaceRegistry>(ViewportSurfaceRegistry);
 
         // 注册上下文菜单贡献者
         EditorMenuRegistry.RegisterContextMenuContributor(new SceneBrowserContextMenuContributor());
@@ -74,7 +80,7 @@ internal static class SceneModuleImp
             Execute = _ =>
             {
                 var result = sceneManager.SaveActiveScene();
-                if (result == NNSceneResult.Ok)
+                if (result.IsSuccess())
                 {
                     Console.WriteLine("[Scene] 场景已保存");
                 }
@@ -98,12 +104,12 @@ internal static class SceneModuleImp
             SortOrder: 300));
     }
 
-    /// <summary>设置场景句柄（场景切换时调用）。</summary>
-    public static void SetSceneHandle(ulong sceneHandle)
+    /// <summary>设置场景（场景切换时调用）。</summary>
+    public static void SetScene(SceneWorld? world)
     {
-        // 同步场景句柄到 Service 层
-        SceneQueryService?.SetActiveScene(sceneHandle);
-        ViewportService?.SetScene(sceneHandle);
+        // 同步场景到 Service 层
+        SceneQueryService?.SetActiveScene(world);
+        ViewportService?.SetScene(world);
 
         // 同步到 ViewModel 和 Controller（通过 EditorCompositionRoot）
         var sceneBrowserVM = EditorCompositionRoot.SceneBrowserVM;
@@ -113,16 +119,16 @@ internal static class SceneModuleImp
 
         if (sceneBrowserVM != null)
         {
-            sceneBrowserVM.HasScene = sceneHandle != 0;
+            sceneBrowserVM.HasScene = world != null;
         }
 
         if (viewportVM != null)
         {
-            viewportVM.SceneHandle = sceneHandle;
+            viewportVM.HasScene = world != null;
         }
 
         // 刷新场景浏览器
-        if (sceneHandle != 0)
+        if (world != null)
         {
             sceneBrowserCtrl?.RefreshTree();
         }

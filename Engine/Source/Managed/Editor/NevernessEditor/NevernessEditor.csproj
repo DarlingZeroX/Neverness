@@ -9,6 +9,7 @@
 
 		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
 		<DebugType>portable</DebugType>
+		<ApplicationManifest>..\Neverness.Editor.AvaloniaFrontend\app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
@@ -24,7 +25,6 @@
 		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Rmlui\Neverness.Editor.Rmlui.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
-		<ProjectReference Include="..\Neverness.Editor.ImGuiFrontend\Neverness.Editor.ImGuiFrontend.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.AvaloniaFrontend\Neverness.Editor.AvaloniaFrontend.csproj" />
 	</ItemGroup>
 

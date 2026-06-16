@@ -1,8 +1,10 @@
 using Avalonia.Threading;
+using Neverness.Editor.AvaloniaFrontend.ContextMenus;
 using Neverness.Editor.Core.Private;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Private;
+using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Framework.Public.Services;
 using Neverness.Editor.AvaloniaFrontend.Services;
@@ -96,6 +98,9 @@ public static class AvaloniaFrontendModule
         // 注册 Avalonia ViewFactory 到 CompositionRoot
         EditorCompositionRoot.RegisterViewFactory(_viewFactory);
 
+        // 设置 Avalonia 上下文菜单渲染器（ContextMenuManager → Avalonia ContextMenu）
+        ContextMenuManager.Renderer = new AvaloniaContextMenuRenderer();
+
         Console.WriteLine("[AvaloniaFrontendModule] AvaloniaFrontend 安装完成");
     }
 
@@ -159,7 +164,10 @@ public static class AvaloniaFrontendModule
     /// <summary>注册上下文菜单贡献者（在 EditorCompositionRoot.Build() 之后调用）。</summary>
     public static void RegisterContextMenuContributors()
     {
-        // TODO: Phase 9 实现
+        // 注册 ContentBrowser 背景/项目菜单（Create Directory、Refresh、Rename 等）
+        // AssetCreationMenuContributor 由 AssetsModuleImp 自动注册，此处不重复
+        EditorMenuRegistry.RegisterContextMenuContributor(
+            new Neverness.Editor.Assets.Private.Context.ContentBrowserContextMenuContributor());
     }
 
     /// <summary>获取 Dock 服务。</summary>
@@ -173,4 +181,40 @@ public static class AvaloniaFrontendModule
     /// <summary>获取通知服务。</summary>
     public static INotificationService GetNotificationService() =>
         _notificationService ?? throw new InvalidOperationException("AvaloniaFrontendModule not installed");
+
+    // ── 渲染回调注册 ──
+
+    private static readonly List<Action> _renderCallbacks = new();
+
+    /// <summary>注册主线程渲染回调。</summary>
+    public static void RegisterRenderCallback(Action callback)
+    {
+        if (!_renderCallbacks.Contains(callback))
+            _renderCallbacks.Add(callback);
+    }
+
+    /// <summary>注销主线程渲染回调。</summary>
+    public static void UnregisterRenderCallback(Action callback)
+    {
+        _renderCallbacks.Remove(callback);
+    }
+
+    /// <summary>
+    /// 主线程渲染 Tick——由 EditorApplicationRunner 每帧调用。
+    /// 执行所有已注册的渲染回调（Diligent immediate context 非线程安全，必须主线程调用）。
+    /// </summary>
+    public static void TickRendering()
+    {
+        foreach (var callback in _renderCallbacks)
+        {
+            try
+            {
+                callback();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[AvaloniaFrontendModule] 渲染回调异常: {ex.Message}");
+            }
+        }
+    }
 }

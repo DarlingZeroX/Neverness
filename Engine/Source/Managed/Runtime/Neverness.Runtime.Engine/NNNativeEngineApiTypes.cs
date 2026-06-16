@@ -39,6 +39,7 @@ public unsafe struct NNRenderAssetApi
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNViewportRenderApi
 {
+	// ── 离屏渲染（ImGui 用） ──
 	public delegate* unmanaged<ulong, uint, uint, ulong> RenderSceneToTexture;
 	public delegate* unmanaged<ulong> GetLastRenderedTexture;
 	public delegate* unmanaged<uint*, uint*, void> GetRenderStats;
@@ -48,13 +49,57 @@ public unsafe struct NNViewportRenderApi
 }
 
 /// <summary>
-/// 與 Native <c>NNUIAPI</c> 對齊；語義層抽象 RmlUi，不暴露任何 Rml 原生指標。
+/// 视口 Surface API——管理 SwapChain 生命周期（Renderer 基础设施）。
+///
+/// 职责：Create / Destroy / Resize / Present
+/// 与 ViewportRenderApi 分离：Surface 是 Renderer 基础设施，RenderViewport 是 Editor 功能。
+/// 所有 Viewport（Scene / Material / Mesh / Texture / Shader）共用此 API。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNUIApi
+public unsafe struct NNViewportSurfaceApi
 {
-	public delegate* unmanaged<ulong, byte*, void> SetDialogueText;
-	public delegate* unmanaged<ulong, int, void> SetElementVisible;
+	/// <summary>创建视口表面（SwapChain）。返回 surfaceId。</summary>
+	public delegate* unmanaged<void*, NNNativeHandleType, uint, uint, ulong> CreateSurface;
+
+	/// <summary>销毁视口表面。</summary>
+	public delegate* unmanaged<ulong, void> DestroySurface;
+
+	/// <summary>标记 Resize（Deferred，不立即执行 ResizeBuffers）。</summary>
+	public delegate* unmanaged<ulong, uint, uint, void> MarkResize;
+
+	/// <summary>帧末统一执行所有 Deferred Resize（Flush Resize Queue）。</summary>
+	public delegate* unmanaged<void> FlushResizes;
+
+	/// <summary>Present SwapChain（提交渲染结果到屏幕）。</summary>
+	public delegate* unmanaged<ulong, void> Present;
+
+	/// <summary>查询表面是否丢失（HWND 重建后需要 Recreate SwapChain）。</summary>
+	public delegate* unmanaged<ulong, byte> IsSurfaceLost;
+
+	/// <summary>重建丢失的表面（新 HWND）。成功返回 1。</summary>
+	public delegate* unmanaged<ulong, void*, NNNativeHandleType, byte> RecreateSurface;
+
+	/// <summary>渲染视口到 SwapChain（SceneRenderer → FBO → CopyTexture → SwapChain → Present）。</summary>
+	public delegate* unmanaged<ulong, ulong, uint, uint, byte> RenderViewport;
+}
+
+/// <summary>
+/// 原生窗口句柄类型——跨平台标识 HWND / X11 / NSView。
+/// 与 C++ 端 NNNativeHandleType 枚举一一对应，不要用 C# 常量类镜像。
+/// </summary>
+public enum NNNativeHandleType : uint
+{
+	/// <summary>Win32 HWND（Windows）。</summary>
+	Win32HWND = 0,
+
+	/// <summary>X11 Window ID（Linux X11）。</summary>
+	X11Window = 1,
+
+	/// <summary>Wayland wl_surface（Linux Wayland）。</summary>
+	WaylandSurface = 2,
+
+	/// <summary>NSView 指针（macOS）。</summary>
+	NSView = 3,
 }
 
 /// <summary>
@@ -68,18 +113,6 @@ public unsafe struct NNAudioApi
 }
 
 /// <summary>
-/// 與 Native <c>NNAssetAPI</c> 對齊。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNAssetApi
-{
-	public delegate* unmanaged<byte*, ulong> LoadAsset;
-	public delegate* unmanaged<ulong, void> UnloadAsset;
-	public delegate* unmanaged<byte*, ulong> LoadTexture;
-	public delegate* unmanaged<byte*, ulong> LoadAudio;
-}
-
-/// <summary>
 /// 與 Native <c>NNInputAPI</c> 對齊。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -88,276 +121,6 @@ public unsafe struct NNInputApi
 	public delegate* unmanaged<int, int> IsKeyPressed;
 }
 
-/// <summary>
-/// 與 Native <c>NNVec3</c> 對齊（<c>SceneAPI.h</c>）：三維向量（位置 / 縮放）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNVec3
-{
-	public float X;
-	public float Y;
-	public float Z;
-}
-
-/// <summary>
-/// 與 Native <c>NNQuat</c> 對齊（<c>SceneAPI.h</c>）：四元數旋轉。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNQuat
-{
-	public float X;
-	public float Y;
-	public float Z;
-	public float W;
-}
-
-/// <summary>
-/// 4x4 浮點矩陣，與 <c>glm::mat4</c> 內存佈局一致（列主序，64 字節）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNMat4
-{
-    public float M00, M10, M20, M30;
-    public float M01, M11, M21, M31;
-    public float M02, M12, M22, M32;
-    public float M03, M13, M23, M33;
-}
-
-/// <summary>
-/// 與 Native <c>NNTransformData</c> 對齊（<c>SceneAPI.h</c>）：完整變換（位置 + 旋轉 + 縮放）。
-/// TypeId = FNV-1a("Transform")，須與 Native BuiltinComponentRegistration.cpp 一致。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-[ComponentId(0xC1FFF4F356DFB2FB, Name = "Transform")]
-public struct NNTransformData
-{
-	public NNVec3 Position;
-	public NNQuat Rotation;
-	public NNVec3 Scale;
-    public NNMat4 Matrix;
-}
-
-/// <summary>投影類型枚舉（與 Native <c>NNProjectionType</c> 對齊）。</summary>
-public enum NNProjectionType : uint
-{
-	Perspective = 0,
-	Orthographic = 1,
-}
-
-/// <summary>
-/// 相機組件——blittable 結構體，與 Native <c>NNCameraComponent</c> 內存佈局一致。
-/// ProjectionMatrix 由 Native NNCameraSystem 每幀計算，C# 端只讀。
-/// TypeId = FNV-1a("Camera")，須與 Native BuiltinComponentRegistration.cpp 一致。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-[ComponentId(0x54D1B2A64667E32E, Name = "Camera")]
-public struct NNCameraComponentData
-{
-	public NNProjectionType Projection;
-	public float NearPlane;
-	public float FarPlane;
-	public uint _padding0;
-
-	public float FovY;
-	public float AspectRatio;
-	public float OrthoWidth;
-	public float OrthoHeight;
-
-	public NNMat4 ProjectionMatrix;
-}
-
-/// <summary>精灵混合模式（与 Native <c>NNBlendMode</c> 對齊）。</summary>
-public enum NNBlendMode : uint
-{
-	Alpha = 0,
-	Additive = 1,
-	Multiply = 2,
-	Opaque = 3,
-	Premultiplied = 4,
-}
-
-/// <summary>精灵渲染标志位（与 Native <c>NNSpriteFlags</c> 對齊）。</summary>
-[Flags]
-public enum NNSpriteFlags : uint
-{
-	None = 0,
-	Visible = 1 << 0,
-	FlipX = 1 << 1,
-	FlipY = 1 << 2,
-	CastShadow = 1 << 3,
-	ReceiveShadow = 1 << 4,
-	Instanced = 1 << 5,
-	CustomShader = 1 << 6,
-}
-
-/// <summary>
-/// 精灵渲染组件——blittable 結構體，與 Native <c>NNSpriteRendererComponent</c> 內存佈局一致（88 字節）。
-/// TypeId = FNV-1a("SpriteRenderer")，須與 Native BuiltinComponentRegistration.cpp 一致。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-[ComponentId(0x51387BA3968C343B, Name = "SpriteRenderer")]
-public struct NNSpriteRendererComponentData
-{
-	public NNGuid TextureAsset;         // 16B offset 0
-	public NNGuid MaterialAsset;        // 16B offset 16
-	public uint TextureRuntimeId;       // 4B offset 32（瞬态，不序列化）
-	public float ColorR, ColorG, ColorB, ColorA;  // 16B offset 36
-	public float UvU0, UvV0, UvU1, UvV1;          // 16B offset 52
-	public uint Layer;                  // 4B offset 68
-	public uint SortOrder;              // 4B offset 72
-	public uint BlendMode;              // 4B offset 76 (NNBlendMode)
-	public uint Flags;                  // 4B offset 80 (NNSpriteFlags)
-}
-
-/// <summary>
-/// 音频源组件——blittable 結構體，與 Native <c>NNAudioSourceComponent</c> 內存佈局一致（48 字節）。
-/// TypeId = FNV-1a("AudioSource")，須與 Native BuiltinComponentRegistration.cpp 一致。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-[ComponentId(0x917CF03FFE5623A4, Name = "AudioSource")]
-public struct NNAudioSourceComponentData
-{
-	public NNGuid AudioClipAsset;       // 16B offset 0
-	public uint RuntimePlayerId;        // 4B offset 16（瞬态，不序列化）
-	public float Volume;                // 4B offset 20
-	public float Pitch;                 // 4B offset 24
-	public float MinDistance;           // 4B offset 28
-	public float MaxDistance;           // 4B offset 32
-	public uint Flags;                  // 4B offset 36 (NNAudioSourceFlags)
-	public uint _reserved0;             // 4B offset 40
-	public uint _reserved1;             // 4B offset 44
-}
-
-/// <summary>
-/// 视频播放器组件——blittable 結構體，與 Native <c>NNVideoPlayerComponent</c> 內存佈局一致（56 字節）。
-/// TypeId = FNV-1a("VideoPlayer")，須與 Native BuiltinComponentRegistration.cpp 一致。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-[ComponentId(0x6427180C8ECE43E1, Name = "VideoPlayer")]
-public struct NNVideoPlayerComponentData
-{
-	public NNGuid VideoClipAsset;       // 16B offset 0
-	public uint RuntimePlayerId;        // 4B offset 16（瞬态，不序列化）
-	public uint VideoTextureId;         // 4B offset 20（瞬态，不序列化）
-	public float Volume;                // 4B offset 24
-	public uint Flags;                  // 4B offset 28 (NNVideoPlayerFlags)
-	public NNGuid TargetSprite;         // 16B offset 32
-	public uint _reserved0;             // 4B offset 48
-	public uint _reserved1;             // 4B offset 52
-}
-
-/// <summary>
-/// RmlUI 文档视图目标——控制在哪个视图中显示（与 Native NNRmlUIViewTarget 对齐）。
-/// </summary>
-public enum NNRmlUIViewTarget : uint
-{
-	Scene = 0,  ///< 仅在 Scene View 中显示（编辑模式预览）
-	Game  = 1,  ///< 仅在 Game View 中显示（播放模式）
-	Both  = 2,  ///< 两个视图都显示
-}
-
-/// <summary>
-/// RmlUI 文档组件标志位（与 Native NNRmlUIDocumentFlags 对齐）。
-/// </summary>
-[Flags]
-public enum NNRmlUIDocumentFlags : uint
-{
-	None          = 0,
-	AutoLoad      = 1u << 0,   ///< 场景启动时自动加载文档
-	Focusable     = 1u << 1,   ///< 可接收焦点
-	ReceivesInput = 1u << 2,   ///< 可接收输入事件
-}
-
-/// <summary>
-/// RmlUI 文档组件——blittable 結構體，與 Native <c>NNRmlUIDocumentComponent</c> 內存佈局一致（32 字節）。
-/// TypeId = FNV-1a("RmlUIDocument")，須與 Native BuiltinComponentRegistration.cpp 一致。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-[ComponentId(0x1593AE057DEB826B, Name = "RmlUIDocument")]
-public struct NNRmlUIDocumentComponentData
-{
-	public NNGuid DocumentAsset;                // 16B offset 0（HTML 文档资产 GUID）
-	public NNRmlUIDocumentFlags Flags;          // 4B offset 16
-	public int SortOrder;                       // 4B offset 20
-	public NNRmlUIViewTarget ViewTarget;        // 4B offset 24
-	public uint _padding0;                      // 4B offset 28（对齐填充，与 C++ sizeof==32 对齐）
-}
-// 共 32 字节，与 C++ 侧 NNRmlUIDocumentComponent 完全对齐
-
-/// <summary>
-/// 脚本组件——blittable 結構體，與 Native <c>NNScriptComponent</c> 內存佈局一致（16 字節）。
-///
-/// ⚠️ ComponentTypeId 與 ScriptTypeId 是完全不同的概念：
-/// - ComponentTypeId = FNV1a64("Script") = 0x9565553D163FC92A（組件類型標識）
-/// - ScriptTypeId = FNV1a64(Type.FullName)（腳本類標識，如 "Neverness.Gameplay.PlayerController"）
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-[ComponentId(0x9565553D163FC92A, Name = "Script")]
-public unsafe struct NNScriptComponentData
-{
-	public ulong ScriptTypeId;          // 8B offset 0 — 脚本类型 ID（FNV1a64(Type.FullName)）
-	public byte  Enabled;               // 1B offset 8 — 启用状态（byte 对齐 C++ uint8_t）
-	public fixed byte _reserved[7];     // 7B offset 9 — 对齐填充
-}
-// 共 16 字节，与 C++ 侧 NNScriptComponent 完全对齐
-
-
-/// <summary>
-/// 與 Native <c>NNSceneResult</c> 對齊（<c>SceneAPI.h</c>）：場景操作結果碼。
-/// </summary>
-public enum NNSceneResult : int
-{
-	/// <summary>成功。</summary>
-	Ok = 0,
-	/// <summary>實體 / 場景未找到。</summary>
-	NotFound = 1,
-	/// <summary>句柄無效。</summary>
-	Invalid = 2,
-	/// <summary>輸出緩衝區容量不足。</summary>
-	BufferSmall = 3,
-	/// <summary>序列化 / 反序列化 I/O 錯誤。</summary>
-	IO = 4,
-}
-
-/// <summary>
-/// 與 Native <c>NNSceneAPI</c> 對齊（<c>SceneAPI.h</c>，layoutVersion = 6）。
-/// 首字段為 <c>LayoutVersion</c>，後接 17 個函數指標。
-/// NNSceneHandle = ulong（uint64），componentTypeId = ulong（FNV-1a name hash）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNSceneApi
-{
-	public uint LayoutVersion;  // = 6
-
-	// 场景管理
-	public delegate* unmanaged<ulong*, NNSceneResult> CreateScene;
-	public delegate* unmanaged<ulong, NNSceneResult> DestroyScene;
-	public delegate* unmanaged<ulong, float, NNSceneResult> TickSystems;
-
-	// 实体 CRUD
-	public delegate* unmanaged<ulong, ulong*, NNSceneResult> CreateEntity;
-	public delegate* unmanaged<ulong, ulong, NNSceneResult> DestroyEntity;
-
-	// 组件操作（FNV-1a name hash）
-	public delegate* unmanaged<ulong, ulong, ulong, NNSceneResult> AddComponent;
-	public delegate* unmanaged<ulong, ulong, ulong, NNSceneResult> RemoveComponent;
-	public delegate* unmanaged<ulong, ulong, ulong, int*, NNSceneResult> HasComponent;
-	public delegate* unmanaged<ulong, ulong, ulong, void*, uint, NNSceneResult> GetComponent;
-	public delegate* unmanaged<ulong, ulong, ulong, void*, uint, NNSceneResult> SetComponent;
-
-	// 层级
-	public delegate* unmanaged<ulong, ulong, ulong, NNSceneResult> SetParent;
-	public delegate* unmanaged<ulong, ulong, ulong*, NNSceneResult> GetParent;
-
-	// 序列化（经 VFS 路径）
-	public delegate* unmanaged<ulong, byte*, NNSceneResult> SerializeScene;
-	public delegate* unmanaged<ulong*, byte*, NNSceneResult> DeserializeScene;
-
-	// 批量查询（layoutVersion = 6 追加）
-	public delegate* unmanaged<ulong, ulong, ulong*, uint, uint*, NNSceneResult> QueryEntities;
-	public delegate* unmanaged<ulong, ulong, ulong*, uint, void*, uint, NNSceneResult> QueryComponents;
-	public delegate* unmanaged<ulong, ulong, ulong, uint*, NNSceneResult> QueryCount2;
-}
 
 // ── Editor Scene Snapshot 类型（与 EditorSceneAPI.h 对齐）──────────────────
 
@@ -526,48 +289,6 @@ public struct NNGuid
 }
 
 /// <summary>
-/// 與 Native <c>NNObjectAPI</c> 對齊（<c>ObjectAPI.h</c>）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNObjectApi
-{
-	public delegate* unmanaged<byte*, ulong> CreateObject;
-	public delegate* unmanaged<ulong, void> DestroyObject;
-	public delegate* unmanaged<ulong, void> RetainObject;
-	public delegate* unmanaged<ulong, void> ReleaseObject;
-	public delegate* unmanaged<ulong, uint> GetRefCount;
-	public delegate* unmanaged<ulong, int> IsAlive;
-	public delegate* unmanaged<ulong, byte*, nuint, int> GetTypeName;
-}
-
-/// <summary>
-/// 與 Native <c>NNAssetRegistryAPI</c> 對齊（<c>AssetRegistryAPI.h</c>）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNAssetRegistryApi
-{
-	public delegate* unmanaged<byte*, NNGuid, int> RegisterAsset;
-	public delegate* unmanaged<NNGuid, int> UnregisterByGuid;
-	public delegate* unmanaged<byte*, int> UnregisterByPath;
-	public delegate* unmanaged<NNGuid, byte*, nuint, int> ResolvePathByGuid;
-	public delegate* unmanaged<byte*, NNGuid*, int> ResolveGuidByPath;
-	public delegate* unmanaged<NNGuid, uint> GetDependencyCount;
-	public delegate* unmanaged<NNGuid, uint, NNGuid*, int> GetDependencyAt;
-	public delegate* unmanaged<byte*, NNGuid> ImportAsset;
-
-	// Phase 1 依赖管理（append-only，与 C++ NNAssetRegistryAPI 对齐）
-	public delegate* unmanaged<NNGuid, NNGuid*, uint, int> SetDependencies;
-	public delegate* unmanaged<NNGuid, NNGuid, int> AddDependency;
-	public delegate* unmanaged<NNGuid, NNGuid, int> RemoveDependency;
-	public delegate* unmanaged<NNGuid, uint> GetReverseDependencyCount;
-	public delegate* unmanaged<NNGuid, uint, NNGuid*, int> GetReverseDependencyAt;
-	public delegate* unmanaged<int> HasCycle;
-	public delegate* unmanaged<uint> GetAssetCount;
-	public delegate* unmanaged<uint> GetEdgeCount;
-}
-
-
-/// <summary>
 /// 與 Native <c>NNWindowDesc</c> 對齊（<c>WindowAPI.h</c>）：創建窗口時的描述塊。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -635,38 +356,6 @@ public unsafe struct NNApplicationApi
 	public delegate* unmanaged<void> Shutdown;
 	public delegate* unmanaged<void> BeginFrame;
 	public delegate* unmanaged<void> EndFrame;
-}
-
-/// <summary>
-/// 與 Native <c>NNAssetManagerAPI</c> 對齊（<c>AssetManagerAPI.h</c>）：Runtime 資產管理器（同步/異步載入、卸載、包管理）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 8)]
-public unsafe struct NNAssetManagerApi
-{
-	public delegate* unmanaged[Stdcall]<NNGuid, ulong, NNAssetHandle> LoadAssetSync;
-	public delegate* unmanaged[Stdcall]<NNGuid, ulong, int, delegate* unmanaged[Stdcall]<NNAssetHandle, int, void*, void>, void*, NNAsyncWaitHandle> LoadAssetAsync;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, void> UnloadAsset;
-	public delegate* unmanaged[Stdcall]<NNGuid, void> UnloadAssetByGuid;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, int> IsAssetLoaded;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, int> IsAssetLoading;
-	public delegate* unmanaged[Stdcall]<NNGuid, NNAssetHandle> GetAssetByGuid;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, NNGuid> GetGuidByAsset;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, void> AddRef;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, void> ReleaseRef;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint> GetRefCount;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, void*> GetAssetData;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, ulong> GetAssetDataSize;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint> GetBlobCount;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint, void*> GetBlobData;
-	public delegate* unmanaged[Stdcall]<NNAssetHandle, uint, ulong> GetBlobSize;
-	public delegate* unmanaged[Stdcall]<byte*, int> MountPackage;
-	public delegate* unmanaged[Stdcall]<byte*, void> UnmountPackage;
-	public delegate* unmanaged[Stdcall]<NNGuid, int> IsAssetInPackage;
-	public delegate* unmanaged[Stdcall]<NNGuid, void> MarkForReload;
-	public delegate* unmanaged[Stdcall]<void> ReloadMarkedAssets;
-	public delegate* unmanaged[Stdcall]<ulong> GetLoadedAssetCount;
-	public delegate* unmanaged[Stdcall]<ulong> GetTotalMemoryUsage;
-	public delegate* unmanaged[Stdcall]<byte*, int> initializeAssetManager;
 }
 
 /// <summary>
@@ -814,7 +503,7 @@ public unsafe struct NNEventApi
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v17**：新增 <c>NNAssetManagerAPI</c>、<c>NNAssetCookerAPI</c> 子表。
+/// **layout v27**：刪除 <c>NNUIAPI</c>、<c>NNObjectAPI</c> 空殼子表。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -822,25 +511,18 @@ public unsafe struct NNNativeEngineApi
 	public uint LayoutVersion;
 	public uint Reserved0;
 	public NNRenderApi Render;
-	public NNUIApi UI;
 	public NNAudioApi Audio;
-	public NNAssetApi Asset;
 	public NNInputApi Input;
-	public NNSceneApi Scene;
 	/// <summary>對應 C 聚合體成員 <c>editorScene</c>（型別 <c>NNEditorSceneAPI</c>）；Editor 快照查詢。</summary>
 	public NNEditorSceneApi EditorScene;
 	public NNTimingApi Timing;
 	public NNAsyncWaitApi AsyncWait;
-	public NNObjectApi Object;
-	public NNAssetRegistryApi AssetRegistry;
 	/// <summary>對應 C 聚合體成員 <c>application</c>（型別 <c>NNApplicationAPI</c>）。</summary>
 	public NNApplicationApi Application;
 	/// <summary>對應 C 聚合體成員 <c>window</c>（型別 <c>NNWindowAPI</c>）。</summary>
 	public NNWindowApi Window;
 	/// <summary>對應 C 聚合體末尾成員 <c>vfs</c>（型別 <c>NNVfsAPI</c>）。</summary>
 	public NNVfsApi Vfs;
-	/// <summary>對應 C 聚合體成員 <c>assetManager</c>（型別 <c>NNAssetManagerAPI</c>）；Runtime 資產管理器。</summary>
-	public NNAssetManagerApi AssetManager;
 	/// <summary>對應 C 聚合體成員 <c>assetCooker</c>（型別 <c>NNAssetCookerAPI</c>）；資產編譯/打包器。</summary>
 	public NNAssetCookerApi AssetCooker;
 	/// <summary>對應 C 聚合體成員 <c>events</c>（型別 <c>NNEventAPI</c>）；事件队列（Pull-Based）。</summary>
@@ -849,4 +531,5 @@ public unsafe struct NNNativeEngineApi
 	public NNRenderAssetApi RenderAsset;
 	/// <summary>對應 C 聚合體成員 <c>viewportRender</c>（型別 <c>NNViewportRenderAPI</c>）；场景渲染到离屏 FBO（v21）。</summary>
 	public NNViewportRenderApi ViewportRender;
+	public NNViewportSurfaceApi ViewportSurface;
 }

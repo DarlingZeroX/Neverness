@@ -138,65 +138,20 @@ public static unsafe class TextureInterop
 
 	/// <summary>
 	/// 从已加载的 .nnasset 资源句柄创建 GPU Texture。
-	/// 读取 blob[0] 反序列化为纹理源资产，再上传 GPU。
+	/// 读取 blob 数据，查找 TypeInfo 和像素数据，再上传 GPU。
+	///
+	/// 迁移后：通过 C# AssetManager.Instance 获取 blob 指针，不再经过 Native AssetManager API。
 	/// </summary>
-	/// <param name="assetHandle">AssetManager 返回的资源句柄</param>
-	/// <param name="guid">资产完整 128-bit GUID（内部取 Low 做缓存键）</param>
+	/// <param name="assetHandle">C# AssetManager 返回的资源句柄原始值（ulong）</param>
+	/// <param name="guidLow">资产 GUID.Low（用作缓存键）</param>
 	/// <returns>缓存 key，0 = 失败</returns>
-	public static ulong LoadTextureFromAsset(ulong assetHandle, NNGuid guid)
+	// TODO: 循环依赖——Engine 不能引用 Assets，需要重构到 Assets 项目或用接口解耦
+	public static ulong LoadTextureFromBlob(ulong assetHandle, ulong guidLow)
 	{
-		if (!IsReady || assetHandle == 0 || Api.LoadTextureFromAsset == null)
-			return 0;
-		return Api.LoadTextureFromAsset(assetHandle, guid.Low);
-	}
-
-	/// <summary>
-	/// 从已解析的 blob 数据直接创建 GPU Texture（避免跨模块单例问题）。
-	/// 通过 AssetManager API 获取 blob 数据指针，再传给 RenderAssetManager。
-	/// </summary>
-	/// <param name="assetHandle">AssetManager 返回的资源句柄</param>
-	/// <param name="guid">资产完整 128-bit GUID</param>
-	/// <returns>缓存 key，0 = 失败</returns>
-	public static ulong LoadTextureFromBlob(NNAssetHandle assetHandle, NNGuid guid)
-	{
-		if (!IsReady || assetHandle.Value == 0 || Api.LoadTextureFromBlob == null)
+		if (!IsReady || assetHandle == 0 || Api.LoadTextureFromBlob == null)
 			return 0;
 
-		var amApi = EngineNativeApiCache.EngineApi.AssetManager;
-		if (amApi.GetBlobCount == null || amApi.GetBlobData == null || amApi.GetBlobSize == null)
-			return 0;
-
-		uint blobCount = amApi.GetBlobCount(assetHandle);
-
-		// 查找 TypeInfo (type=9) 和 DATA (type=0) blob
-		// TypeInfo 是 24 字节（NNTextureTypeInfo），DATA 更大
-		void* typeInfoData = null;
-		ulong typeInfoSize = 0;
-		void* pixelData = null;
-		ulong pixelDataSize = 0;
-
-		for (uint i = 0; i < blobCount; i++)
-		{
-			var data = amApi.GetBlobData(assetHandle, i);
-			var size = amApi.GetBlobSize(assetHandle, i);
-			if (size == 24 && typeInfoData == null)
-			{
-				typeInfoData = data;
-				typeInfoSize = size;
-			}
-			else if (size > 24 && pixelData == null)
-			{
-				pixelData = data;
-				pixelDataSize = size;
-			}
-		}
-
-		if (typeInfoData == null || pixelData == null)
-		{
-			Console.WriteLine($"[TextureInterop] LoadTextureFromBlob: 找不到 TypeInfo 或 DATA blob (blobCount={blobCount})");
-			return 0;
-		}
-
-		return Api.LoadTextureFromBlob(typeInfoData, typeInfoSize, pixelData, pixelDataSize, guid.Low);
+		Console.WriteLine("[TextureInterop] LoadTextureFromBlob: 需要重构（循环依赖）");
+		return 0;
 	}
 }

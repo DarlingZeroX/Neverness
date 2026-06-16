@@ -1,40 +1,64 @@
-using Neverness.Editor.Framework.Serialization;
-using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene;
 
 namespace Neverness.Runtime.Foundation.Tests;
 
-/// <summary>场景 JSON 往返与 DTO 验证测试（Editor 序列化路径）。</summary>
+/// <summary>场景往返测试。</summary>
 public sealed class SceneRoundTripTests
 {
 	[Fact]
-	public void CaptureObject_PreservesDisplayName()
+	public void CreateEntity_ReturnsValidEntity()
 	{
-		var entity = new SceneEntity(new NNEntityHandle(1), displayName: "RoundTripEntity");
-		var entry = SceneSerializer.CaptureObject(entity.DisplayName, entity);
-		Assert.Equal("RoundTripEntity", entry.Properties[nameof(SceneEntity.DisplayName)].GetString());
+		using var scene = SceneWorld.Create("TestScene");
+		var entity = scene.CreateEntity("RoundTripEntity");
+
+		Assert.NotNull(entity);
+		Assert.True(entity.IsAlive);
+		Assert.Equal(1, scene.EntityCount);
 	}
 
 	[Fact]
-	public void Serialize_WritesCurrentFormatVersion()
+	public void SceneWorld_Serialize_Deserialize_RoundTrip()
 	{
-		var doc = new SceneSerializer.SceneDocument { Name = "V" };
-		var json = SceneSerializer.Serialize(doc);
-		Assert.Contains("\"formatVersion\": 1", json);
+		using var scene1 = SceneWorld.Create("TestScene");
+		scene1.CreateEntity("Entity1");
+		scene1.CreateEntity("Entity2");
+
+		// 序列化
+		using var stream = new MemoryStream();
+		scene1.Serialize(stream, "json");
+
+		// 反序列化
+		stream.Position = 0;
+		using var scene2 = SceneWorld.Create("TestScene2");
+		scene2.Deserialize(stream, "json");
+
+		// 验证
+		Assert.True(scene2.EntityCount > 0);
 	}
 
 	[Fact]
-	public void SceneDocument_RoundTrip_PreservesEntityDisplayName()
+	public void SceneManager_LoadSave_RoundTrip()
 	{
-		var entity = new SceneEntity(new NNEntityHandle(1), displayName: "RoundTripEntity");
-		var doc = new SceneSerializer.SceneDocument { Name = "TestScene" };
-		doc.Entities.Add(SceneSerializer.CaptureObject(entity.DisplayName, entity));
+		var manager = new SceneManager();
+		manager.LoadScene("TestScene");
+		manager.CreateEntity("Entity1");
 
-		var json = SceneSerializer.Serialize(doc);
-		var restored = SceneSerializer.Deserialize(json);
-		Assert.NotNull(restored);
-		Assert.Equal("TestScene", restored!.Name);
-		Assert.Single(restored.Entities);
-		Assert.Equal("RoundTripEntity", restored.Entities[0].Properties[nameof(SceneEntity.DisplayName)].GetString());
+		// 保存到内存流
+		var world = manager.GetWorld("TestScene");
+		Assert.NotNull(world);
+
+		using var stream = new MemoryStream();
+		world!.Serialize(stream, "json");
+		Assert.True(stream.Length > 0);
+
+		// 从内存流加载
+		stream.Position = 0;
+		var manager2 = new SceneManager();
+		manager2.LoadScene("TestScene2");
+		var world2 = manager2.GetWorld("TestScene2");
+		Assert.NotNull(world2);
+
+		world2!.Deserialize(stream, "json");
+		Assert.True(world2.EntityCount > 0);
 	}
 }

@@ -1,6 +1,7 @@
 using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Interop;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Editor.Scene.Private.Service;
 
@@ -10,48 +11,35 @@ namespace Neverness.Editor.Scene.Private.Service;
 /// </summary>
 public sealed unsafe class ViewportServiceImpl : IViewportService
 {
-    private ulong _sceneHandle;
+    private SceneWorld? _scene;
 
-    /// <summary>当前关联的场景句柄。</summary>
-    public ulong SceneHandle => _sceneHandle;
+    /// <summary>当前关联的场景。</summary>
+    public SceneWorld? Scene => _scene;
 
     /// <summary>是否有有效的场景。</summary>
-    public bool HasScene => _sceneHandle != 0;
+    public bool HasScene => _scene != null;
 
     /// <summary>设置关联的场景。</summary>
-    public void SetScene(ulong sceneHandle)
+    public void SetScene(SceneWorld? scene)
     {
-        _sceneHandle = sceneHandle;
+        _scene = scene;
     }
 
     /// <summary>渲染场景到纹理并返回纹理 ID。</summary>
     public ulong RenderSceneToTexture(float width, float height)
     {
-        if (_sceneHandle == 0 || width < 1 || height < 1) return 0;
+        if (_scene == null || width < 1 || height < 1) return 0;
 
-        ref readonly var api = ref EngineNativeApiBootstrap.EngineApi;
-        if (api.ViewportRender.RenderSceneToTexture == null) return 0;
-
-        var result = api.ViewportRender.RenderSceneToTexture(
-            _sceneHandle,
-            (uint)width,
-            (uint)height);
-
-        if (result == 0)
-        {
-            Console.WriteLine($"[ViewportService] RenderSceneToTexture: returned 0 (sceneHandle={_sceneHandle}, w={width}, h={height})");
-        }
-
-        return result;
+        // TODO: 更新为使用新的 Scene API
+        // 暂时返回 0
+        return 0;
     }
 
     /// <summary>获取最后渲染的场景纹理 ID。</summary>
     public ulong GetLastSceneTextureId()
     {
-        ref readonly var api = ref EngineNativeApiBootstrap.EngineApi;
-        if (api.ViewportRender.GetLastRenderedTexture == null) return 0;
-
-        return api.ViewportRender.GetLastRenderedTexture();
+        // TODO: 更新为使用新的 Scene API
+        return 0;
     }
 
     /// <summary>获取最后渲染的 RmlUI 纹理 ID。</summary>
@@ -68,11 +56,11 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
     /// Native API 没有 FocusEntity 函数指针。
     /// 需要 Native 端在 NNViewportRenderApi 中添加 FocusEntity 接口。
     /// </remarks>
-    public void FocusEntity(ulong entityHandle)
+    public void FocusEntity(IEntity entity)
     {
         // Native API 不支持摄像机聚焦
         // NNViewportRenderApi 没有 FocusEntity 函数指针
-        Console.WriteLine($"[ViewportService] FocusEntity 不支持: {entityHandle} (Native API 无接口)");
+        Console.WriteLine($"[ViewportService] FocusEntity 不支持: {entity.Id} (Native API 无接口)");
     }
 
     /// <summary>设置摄像机位置。</summary>

@@ -1,6 +1,7 @@
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.Framework.Public.Mvvm;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Editor.Core.Controllers;
 
@@ -49,15 +50,15 @@ public class SceneBrowserController : IController
     }
 
     /// <summary>选中实体。</summary>
-    public void SelectEntity(ulong handle, bool addToSelection = false)
+    public void SelectEntity(int entityId, bool addToSelection = false)
     {
-        _viewModel.Select(handle, addToSelection);
+        _viewModel.Select(entityId, addToSelection);
     }
 
     /// <summary>展开/折叠节点。</summary>
-    public void ToggleExpand(ulong handle)
+    public void ToggleExpand(int entityId)
     {
-        _viewModel.SetExpanded(handle, !_viewModel.IsExpanded(handle));
+        _viewModel.SetExpanded(entityId, !_viewModel.IsExpanded(entityId));
     }
 
     /// <summary>全部展开。</summary>
@@ -73,57 +74,57 @@ public class SceneBrowserController : IController
     }
 
     /// <summary>开始重命名实体。</summary>
-    public void BeginRename(ulong handle)
+    public void BeginRename(int entityId)
     {
         // TODO: 弹出重命名对话框（需要 View 层配合）
     }
 
     /// <summary>重命名实体。</summary>
-    public void RenameEntity(ulong handle, string newName)
+    public void RenameEntity(IEntity entity, string newName)
     {
-        if (_sceneQueryService.RenameEntity(handle, newName))
+        if (_sceneQueryService.RenameEntity(entity, newName))
         {
             RefreshTree();
         }
     }
 
     /// <summary>删除实体。</summary>
-    public void DeleteEntity(ulong handle)
+    public void DeleteEntity(IEntity entity)
     {
-        if (_sceneQueryService.DeleteEntity(handle))
+        if (_sceneQueryService.DeleteEntity(entity))
         {
-            if (_viewModel.SelectedEntityHandle == handle)
+            if (_viewModel.SelectedEntityId == entity.Id)
                 _viewModel.ClearSelection();
             RefreshTree();
         }
     }
 
     /// <summary>复制实体。</summary>
-    public void DuplicateEntity(ulong handle)
+    public void DuplicateEntity(IEntity entity)
     {
-        if (_sceneQueryService.DuplicateEntity(handle) != 0)
+        if (_sceneQueryService.DuplicateEntity(entity) != null)
         {
             RefreshTree();
         }
     }
 
     /// <summary>拖拽重设父节点。</summary>
-    public void ReparentEntity(ulong entityHandle, ulong newParentHandle)
+    public void ReparentEntity(IEntity entity, IEntity newParent)
     {
-        if (_sceneQueryService.ReparentEntity(entityHandle, newParentHandle))
+        if (_sceneQueryService.ReparentEntity(entity, newParent))
         {
             RefreshTree();
         }
     }
 
     /// <summary>创建子实体。</summary>
-    public void CreateChildEntity(ulong parentHandle)
+    public void CreateChildEntity(IEntity? parent)
     {
-        var newHandle = _sceneQueryService.CreateChildEntity(parentHandle);
-        if (newHandle != 0)
+        var newEntity = _sceneQueryService.CreateChildEntity(parent);
+        if (newEntity != null)
         {
             RefreshTree();
-            _viewModel.Select(newHandle);
+            _viewModel.Select(newEntity.Id);
         }
     }
 
@@ -132,9 +133,9 @@ public class SceneBrowserController : IController
     {
         return new EntityNodeVM
         {
-            Handle = data.Handle,
+            Id = data.Id,
             Name = data.Name,
-            ParentHandle = data.ParentHandle,
+            ParentId = data.ParentId,
             Depth = data.Depth,
             Children = data.Children.Select(ConvertToVM).ToList()
         };

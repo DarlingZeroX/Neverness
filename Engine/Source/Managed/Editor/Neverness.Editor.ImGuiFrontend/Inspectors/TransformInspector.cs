@@ -1,7 +1,7 @@
 using System.Numerics;
 using Hexa.NET.ImGui;
 using Neverness.Editor.Core.Public.Inspector;
-using Neverness.Runtime.Engine;
+using Neverness.Runtime.Scene.Components;
 
 namespace Neverness.Editor.ImGuiFrontend.Inspectors;
 
@@ -10,38 +10,36 @@ namespace Neverness.Editor.ImGuiFrontend.Inspectors;
 /// 旋转以欧拉角（度）编辑，内部存储为四元数。
 /// </summary>
 [InspectorOrder(0)]
-public sealed class TransformInspector : ComponentTypeInspector<NNTransformData>
+public sealed class TransformInspector : ComponentTypeInspector<TransformComponent>
 {
     /// <inheritdoc />
     public override int Order => 0;
     /// <inheritdoc />
-    protected override bool DrawFields(ref NNTransformData data)
+    protected override bool DrawFields(ref TransformComponent data)
     {
         bool modified = false;
 
         // ── Position ──
-        var pos = new Vector3(data.Position.X, data.Position.Y, data.Position.Z);
+        var pos = data.Position;
         if (DragFloat3("Position", ref pos))
         {
-            data.Position = new NNVec3 { X = pos.X, Y = pos.Y, Z = pos.Z };
+            data.Position = pos;
             modified = true;
         }
 
         // ── Rotation（以欧拉角显示/编辑）──
-        var euler = QuaternionToEuler(new Quaternion(
-            data.Rotation.X, data.Rotation.Y, data.Rotation.Z, data.Rotation.W));
+        var euler = QuaternionToEuler(data.Rotation);
         if (DragFloat3("Rotation", ref euler))
         {
-            var quat = EulerToQuaternion(euler);
-            data.Rotation = new NNQuat { X = quat.X, Y = quat.Y, Z = quat.Z, W = quat.W };
+            data.Rotation = EulerToQuaternion(euler);
             modified = true;
         }
 
         // ── Scale ──
-        var scl = new Vector3(data.Scale.X, data.Scale.Y, data.Scale.Z);
+        var scl = data.Scale;
         if (DragFloat3("Scale", ref scl))
         {
-            data.Scale = new NNVec3 { X = scl.X, Y = scl.Y, Z = scl.Z };
+            data.Scale = scl;
             modified = true;
         }
 

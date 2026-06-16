@@ -1,5 +1,5 @@
 // Neverness.Runtime.Interop — Native Object 子表薄封装；对齐 NNNativeEngineAPI.object。
-
+/*
 using System.Runtime.InteropServices;
 using System.Text;
 using Neverness.Runtime.Engine;
@@ -135,3 +135,4 @@ public static unsafe class NativeHandleBridge
 		}
 	}
 }
+*/

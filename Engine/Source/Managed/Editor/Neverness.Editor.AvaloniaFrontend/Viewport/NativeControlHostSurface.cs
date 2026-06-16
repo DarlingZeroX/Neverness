@@ -1,26 +1,26 @@
 using Avalonia.Controls;
-using Avalonia.Platform;
 
 namespace Neverness.Editor.AvaloniaFrontend.Viewport;
 
 /// <summary>
-/// NativeControlHost 视口表面实现——使用 Avalonia NativeControlHost 嵌入原生窗口。
+/// NativeControlHost 视口表面实现——使用 ViewportHostControl 嵌入原生窗口。
 ///
 /// 工作原理：
-/// 1. 创建一个 NativeControlHost 控件
-/// 2. 通过 IPlatformHandle 获取原生窗口句柄
-/// 3. 将句柄传递给 Diligent 渲染引擎
-/// 4. Diligent 直接渲染到该原生窗口
+/// 1. 创建 ViewportHostControl（子类化 NativeControlHost）
+/// 2. ViewportHostControl 重写 CreateNativeControlCore，直接使用 Avalonia 的 DumbWindow
+/// 3. 通过 HandleCreated 事件获取原生句柄
+/// 4. 将句柄传递给 Diligent 渲染引擎
 ///
-/// 平台支持：
-/// - Windows：HWND
-/// - Linux：X11 Window
-/// - macOS：NSView
+/// 跨平台：
+/// - Windows：HWND（DumbWindow，HandleDescriptor="HWND"）
+/// - Linux X11：X11 Window（HandleDescriptor="X11"）
+/// - macOS：NSView（HandleDescriptor="NSView"）
 /// </summary>
 public class NativeControlHostSurface : IViewportSurface
 {
-    private NativeControlHost? _host;
+    private ViewportHostControl? _host;
     private IntPtr _nativeHandle;
+    private string _handleDescriptor = "";
     private int _width;
     private int _height;
     private bool _isValid;
@@ -46,12 +46,12 @@ public class NativeControlHostSurface : IViewportSurface
 
         try
         {
-            // 创建 NativeControlHost
-            _host = new NativeControlHost();
+            _host = new ViewportHostControl();
 
-            // 获取原生窗口句柄
-            // 注意：NativeControlHost 需要先附加到可视树才能获取句柄
-            // 此处先标记为待初始化，等附加到可视树后再获取句柄
+            // 监听子窗口创建事件
+            _host.HandleCreated += OnHandleCreated;
+            _host.HandleDestroyed += OnHandleDestroyed;
+
             _isValid = true;
         }
         catch (Exception ex)
@@ -62,9 +62,9 @@ public class NativeControlHostSurface : IViewportSurface
     }
 
     /// <summary>
-    /// 获取 NativeControlHost 控件（需要添加到 Avalonia 可视树）。
+    /// 获取 ViewportHostControl 控件（需要添加到 Avalonia 可视树）。
     /// </summary>
-    public NativeControlHost GetControl()
+    public ViewportHostControl GetControl()
     {
         if (_host == null)
             throw new InvalidOperationException("Surface 已销毁");
@@ -72,40 +72,34 @@ public class NativeControlHostSurface : IViewportSurface
         return _host;
     }
 
-    /// <summary>
-    /// 初始化原生句柄（在控件附加到可视树后调用）。
-    /// </summary>
-    public void InitializeNativeHandle()
+    /// <summary>子窗口创建完成回调。</summary>
+    private void OnHandleCreated(Avalonia.Platform.IPlatformHandle handle)
     {
-        if (_host == null || _nativeHandle != IntPtr.Zero)
-            return;
+        _nativeHandle = handle.Handle;
+        _handleDescriptor = handle.HandleDescriptor;
+        _isValid = true;
+        Console.WriteLine($"[NativeControlHostSurface] 原生句柄已获取: 0x{handle.Handle:X} ({handle.HandleDescriptor}), SurfaceCreated 订阅者数: {SurfaceCreated?.GetInvocationList().Length ?? 0}");
+        SurfaceCreated?.Invoke(handle.Handle);
+    }
 
-        try
-        {
-            // 获取原生平台句柄
-            // NativeControlHost 在附加到可视树后会创建原生子窗口
-            var topLevel = TopLevel.GetTopLevel(_host);
-            if (topLevel?.PlatformImpl != null)
-            {
-                // 尝试获取原生句柄
-                // 注意：具体 API 取决于 Avalonia 版本和平台
-                _nativeHandle = _host.GetHashCode(); // 占位，实际需要平台特定代码
-                _isValid = true;
-
-                Console.WriteLine($"[NativeControlHostSurface] 原生句柄已初始化: 0x{_nativeHandle:X}");
-                SurfaceCreated?.Invoke(_nativeHandle);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"[NativeControlHostSurface] 初始化原生句柄失败: {ex.Message}");
-            _isValid = false;
-        }
+    /// <summary>子窗口销毁回调。</summary>
+    private void OnHandleDestroyed()
+    {
+        _nativeHandle = IntPtr.Zero;
+        _handleDescriptor = "";
+        _isValid = false;
+        SurfaceDestroyed?.Invoke();
     }
 
     public IntPtr GetNativeHandle()
     {
         return _nativeHandle;
+    }
+
+    /// <summary>获取原生句柄描述符（"HWND"/"X11"/"NSView"）。</summary>
+    public string GetHandleDescriptor()
+    {
+        return _handleDescriptor;
     }
 
     public void Resize(int width, int height)
@@ -116,9 +110,7 @@ public class NativeControlHostSurface : IViewportSurface
         _width = width;
         _height = height;
 
-        // 通知尺寸变更
         SurfaceResized?.Invoke(width, height);
-
         Console.WriteLine($"[NativeControlHostSurface] 尺寸变更: {width}x{height}");
     }
 
@@ -130,12 +122,15 @@ public class NativeControlHostSurface : IViewportSurface
         _disposed = true;
         _isValid = false;
 
-        SurfaceDestroyed?.Invoke();
+        if (_host != null)
+        {
+            _host.HandleCreated -= OnHandleCreated;
+            _host.HandleDestroyed -= OnHandleDestroyed;
+            _host = null;
+        }
 
-        // NativeControlHost 由 Avalonia 可视树管理生命周期
-        // 此处只需清理引用
-        _host = null;
         _nativeHandle = IntPtr.Zero;
+        SurfaceDestroyed?.Invoke();
 
         Console.WriteLine("[NativeControlHostSurface] 已销毁");
     }

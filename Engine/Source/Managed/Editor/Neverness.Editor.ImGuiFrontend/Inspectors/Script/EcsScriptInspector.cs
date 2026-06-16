@@ -1,7 +1,7 @@
 // ============================================================================
 // EcsScriptInspector.cs - ECS 脚本组件 Inspector
 // ============================================================================
-// 在 DetailInspector 中显示和编辑 NNScriptComponentData。
+// 在 DetailInspector 中显示和编辑 ScriptComponent。
 // 支持 ContentBrowser .cs 脚本资产拖拽绑定。
 //
 // UI 状态机：
@@ -12,28 +12,26 @@
 
 using Hexa.NET.ImGui;
 using System.Numerics;
-using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Core.Public.Inspector;
 using Neverness.Editor.Script.Private;
 using Neverness.Gameplay;
-using Neverness.Runtime.Assets;
-using Neverness.Runtime.Engine;
+using Neverness.Runtime.Scene.Components;
 using Vector2 = System.Numerics.Vector2;
 using Vector4 = System.Numerics.Vector4;
 
 namespace Neverness.Editor.ImGuiFrontend.Inspectors.Script;
 
 /// <summary>
-/// ECS 脚本组件 Inspector——编辑 NNScriptComponentData。
+/// ECS 脚本组件 Inspector——编辑 ScriptComponent。
 /// 支持拖拽 .cs 脚本资产绑定脚本类型。
 /// </summary>
-public sealed class EcsScriptInspector : ComponentTypeInspector<NNScriptComponentData>
+public sealed class EcsScriptInspector : ComponentTypeInspector<ScriptComponent>
 {
     /// <inheritdoc />
     public override int Order => 200;
 
     /// <inheritdoc />
-    protected override bool DrawFields(ref NNScriptComponentData data)
+    protected override bool DrawFields(ref ScriptComponent data)
     {
         bool modified = false;
 

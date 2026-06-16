@@ -14,8 +14,8 @@ namespace Neverness.Gameplay;
 /// ⚠️ 由 ScriptBehaviourScheduler 独立持有，不存储在 ECS 中。
 ///
 /// 映射关系：
-/// - Entity (ulong handle) → List&lt;EntityBehaviour&gt;
-/// - EntityBehaviour → Entity (ulong handle)
+/// - Entity (int id) → List&lt;EntityBehaviour&gt;
+/// - EntityBehaviour → Entity (int id)
 /// </remarks>
 public sealed class BehaviourRegistry
 {
@@ -23,11 +23,11 @@ public sealed class BehaviourRegistry
     // 内部状态
     // ========================================================================
 
-    /// <summary>Entity Handle → Behaviour 列表。</summary>
-    private readonly Dictionary<ulong, List<EntityBehaviour>> _entityToBehaviours = new();
+    /// <summary>Entity ID → Behaviour 列表。</summary>
+    private readonly Dictionary<int, List<EntityBehaviour>> _entityToBehaviours = new();
 
-    /// <summary>Behaviour 实例 → Entity Handle。</summary>
-    private readonly Dictionary<EntityBehaviour, ulong> _behaviourToEntity = new();
+    /// <summary>Behaviour 实例 → Entity ID。</summary>
+    private readonly Dictionary<EntityBehaviour, int> _behaviourToEntity = new();
 
     /// <summary>所有活跃的 Behaviour（用于遍历）。</summary>
     private readonly List<EntityBehaviour> _allBehaviours = new();
@@ -52,17 +52,17 @@ public sealed class BehaviourRegistry
     /// <summary>
     /// 注册 Behaviour。
     /// </summary>
-    /// <param name="entityHandle">Entity 句柄。</param>
+    /// <param name="entityId">Entity ID。</param>
     /// <param name="behaviour">Behaviour 实例。</param>
-    public void Register(ulong entityHandle, EntityBehaviour behaviour)
+    public void Register(int entityId, EntityBehaviour behaviour)
     {
         ArgumentNullException.ThrowIfNull(behaviour);
 
         // 获取或创建 Entity 的 Behaviour 列表
-        if (!_entityToBehaviours.TryGetValue(entityHandle, out var list))
+        if (!_entityToBehaviours.TryGetValue(entityId, out var list))
         {
             list = new List<EntityBehaviour>();
-            _entityToBehaviours[entityHandle] = list;
+            _entityToBehaviours[entityId] = list;
         }
 
         // 检查是否已注册
@@ -73,7 +73,7 @@ public sealed class BehaviourRegistry
 
         // 注册
         list.Add(behaviour);
-        _behaviourToEntity[behaviour] = entityHandle;
+        _behaviourToEntity[behaviour] = entityId;
         _allBehaviours.Add(behaviour);
     }
 
@@ -110,24 +110,24 @@ public sealed class BehaviourRegistry
     /// <summary>
     /// 获取 Entity 的所有 Behaviour。
     /// </summary>
-    /// <param name="entityHandle">Entity 句柄。</param>
+    /// <param name="entityId">Entity ID。</param>
     /// <returns>Behaviour 列表。</returns>
-    public IReadOnlyList<EntityBehaviour> GetBehaviours(ulong entityHandle)
+    public IReadOnlyList<EntityBehaviour> GetBehaviours(int entityId)
     {
-        return _entityToBehaviours.TryGetValue(entityHandle, out var list)
+        return _entityToBehaviours.TryGetValue(entityId, out var list)
             ? list
             : Array.Empty<EntityBehaviour>();
     }
 
     /// <summary>
-    /// 获取 Behaviour 所属的 Entity 句柄。
+    /// 获取 Behaviour 所属的 Entity ID。
     /// </summary>
     /// <param name="behaviour">Behaviour 实例。</param>
-    /// <param name="entityHandle">输出的 Entity 句柄。</param>
+    /// <param name="entityId">输出的 Entity ID。</param>
     /// <returns>是否找到。</returns>
-    public bool TryGetEntityHandle(EntityBehaviour behaviour, out ulong entityHandle)
+    public bool TryGetEntityId(EntityBehaviour behaviour, out int entityId)
     {
-        return _behaviourToEntity.TryGetValue(behaviour, out entityHandle);
+        return _behaviourToEntity.TryGetValue(behaviour, out entityId);
     }
 
     /// <summary>
@@ -176,10 +176,10 @@ public sealed class BehaviourRegistry
     /// <summary>
     /// 销毁 Entity 的所有 Behaviour。
     /// </summary>
-    /// <param name="entityHandle">Entity 句柄。</param>
-    public void DestroyAllBehaviours(ulong entityHandle)
+    /// <param name="entityId">Entity ID。</param>
+    public void DestroyAllBehaviours(int entityId)
     {
-        if (!_entityToBehaviours.TryGetValue(entityHandle, out var list))
+        if (!_entityToBehaviours.TryGetValue(entityId, out var list))
         {
             return;
         }

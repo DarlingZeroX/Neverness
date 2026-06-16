@@ -1,6 +1,7 @@
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.Framework.Public.Mvvm;
+using Neverness.Runtime.Scene;
 
 namespace Neverness.Editor.Core.Controllers;
 
@@ -21,8 +22,8 @@ public class EditorViewportController : IController
 
     public void Initialize()
     {
-        // 初始同步场景句柄
-        _viewModel.SceneHandle = _viewportService.SceneHandle;
+        // 初始同步场景状态
+        _viewModel.HasScene = _viewportService.HasScene;
     }
 
     public void Shutdown()
@@ -31,10 +32,10 @@ public class EditorViewportController : IController
     }
 
     /// <summary>设置关联的场景。</summary>
-    public void SetScene(ulong sceneHandle)
+    public void SetScene(SceneWorld? scene)
     {
-        _viewModel.SceneHandle = sceneHandle;
-        _viewportService.SetScene(sceneHandle);
+        _viewModel.HasScene = scene != null;
+        _viewportService.SetScene(scene);
     }
 
     /// <summary>更新视口尺寸（窗口 resize 时调用）。</summary>
@@ -63,14 +64,14 @@ public class EditorViewportController : IController
 
         if (textureId == 0)
         {
-            Console.WriteLine($"[ViewportController] RenderScene: textureId=0 (w={width}, h={height}, sceneHandle={_viewModel.SceneHandle})");
+            Console.WriteLine($"[ViewportController] RenderScene: textureId=0 (w={width}, h={height})");
         }
     }
 
     /// <summary>聚焦到指定实体。</summary>
-    public void FocusEntity(ulong entityHandle)
+    public void FocusEntity(IEntity entity)
     {
-        _viewportService.FocusEntity(entityHandle);
+        _viewportService.FocusEntity(entity);
     }
 
     /// <summary>设置摄像机位置。</summary>

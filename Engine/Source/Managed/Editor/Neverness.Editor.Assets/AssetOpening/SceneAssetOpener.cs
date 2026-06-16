@@ -23,9 +23,9 @@ public sealed class SceneAssetOpener : IAssetOpener
         var sceneName = context.VirtualPath.FileNameWithoutExtension;
 
         var result = _sceneManager.LoadSceneFromAsset(sceneName, context.VirtualPath.FullPath);
-        if (result != NNSceneResult.Ok)
+        if (!result)
         {
-            Console.WriteLine($"[SceneAssetOpener] 加载场景失败: {context.VirtualPath} ({result})");
+            Console.WriteLine($"[SceneAssetOpener] 加载场景失败: {context.VirtualPath}");
         }
 
         return Task.CompletedTask;

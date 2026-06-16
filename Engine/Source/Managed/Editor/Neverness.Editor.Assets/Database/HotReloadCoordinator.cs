@@ -214,10 +214,10 @@ public sealed class HotReloadCoordinator : IDisposable
 
         foreach (var guid in guids)
         {
-            AssetHandleExtensions.MarkForReload(guid);
+            AssetHandle.MarkForReload(guid);
         }
 
-        AssetHandleExtensions.ReloadMarkedAssets();
+        AssetHandle.ReloadMarkedAssets();
     }
 
     /* ======================== 辅助 ======================== */

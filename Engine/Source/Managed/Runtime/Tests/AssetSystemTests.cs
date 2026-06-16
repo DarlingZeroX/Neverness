@@ -1,9 +1,8 @@
 using Neverness.Runtime.Assets;
-using Neverness.Runtime.Engine;
 
 namespace Neverness.Runtime.Foundation.Tests;
 
-/// <summary>资产系统扩展单元测试（GUID + AssetHandle）。</summary>
+/// <summary>资产系统扩展单元测试（GUID + AssetHandle + AssetManager）。</summary>
 public sealed class AssetSystemTests
 {
 	/* ===== GUID 测试 ===== */
@@ -61,15 +60,38 @@ public sealed class AssetSystemTests
 	[Fact]
 	public void AssetHandle_DefaultIsInvalid()
 	{
-		var handle = default(NNAssetHandle);
-		Assert.Equal(default, handle);
+		var handle = default(AssetHandle);
+		Assert.True(handle.IsZero);
+		Assert.Equal(0ul, handle.Value);
 	}
 
 	[Fact]
-	public void AssetHandle_NativeApiFields_NotNull()
+	public void AssetHandle_Zero_IsInvalid()
 	{
-		/* 验证 API 结构体字段存在（不调用实际方法，避免需要 Native host） */
-		var api = NativeApiProvider.AssetManagerApi;
-		Assert.NotNull(api);
+		Assert.True(AssetHandle.Zero.IsZero);
+		Assert.True(AssetHandle<int>.Zero.IsZero);
+	}
+
+	[Fact]
+	public void AssetHandle_FromRaw_RoundTrip()
+	{
+		var handle = AssetHandle.FromRaw(0x00000002_00000001ul);
+		Assert.False(handle.IsZero);
+		Assert.Equal(0x00000002_00000001ul, handle.Value);
+	}
+
+	/* ===== AssetManager 测试 ===== */
+
+	[Fact]
+	public void AssetManager_Instance_NotNull()
+	{
+		Assert.NotNull(AssetManager.Instance);
+	}
+
+	[Fact]
+	public void AssetManager_LoadAssetSync_ZeroGuid_ReturnsZero()
+	{
+		var handle = AssetManager.Instance.LoadAssetSync(GUID.Zero);
+		Assert.Equal(0ul, handle);
 	}
 }

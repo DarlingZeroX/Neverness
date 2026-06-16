@@ -7,6 +7,7 @@
 
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Components;
 
 namespace Neverness.Gameplay;
 
@@ -34,7 +35,7 @@ public sealed class Entity
     // ========================================================================
 
     /// <summary>实体 ID（唯一标识）。</summary>
-    public ulong Id => SceneEntity.Handle.Value;
+    public int Id => SceneEntity.Id;
 
     /// <summary>实体名称。</summary>
     public string Name
@@ -51,7 +52,7 @@ public sealed class Entity
     // ========================================================================
 
     /// <summary>由 SceneEntity 和 SceneWorld 建立门面。</summary>
-    internal Entity(SceneEntity sceneEntity, SceneWorld sceneWorld)
+    public Entity(SceneEntity sceneEntity, SceneWorld sceneWorld)
     {
         SceneEntity = sceneEntity ?? throw new ArgumentNullException(nameof(sceneEntity));
         SceneWorld = sceneWorld ?? throw new ArgumentNullException(nameof(sceneWorld));
@@ -64,59 +65,59 @@ public sealed class Entity
     /// <summary>
     /// 添加组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <returns>新添加的组件值。</returns>
     /// <remarks>
-    /// ⚠️ 返回的是 ECS 组件的 proxy view，修改会直接反映到 Native ECS。
+    /// ⚠️ 返回的是 ECS 组件的 proxy view，修改会直接反映到 ECS。
     /// 组件的生命周期由 ECS 管理，Entity 销毁时组件自动移除。
     /// </remarks>
-    public T AddComponent<T>() where T : struct
+    public T AddComponent<T>() where T : struct, IComponent
     {
         var data = new T();
-        SceneEntity.AddComponent<T>();
+        SceneEntity.AddComponent(data);
         return data;
     }
 
     /// <summary>
-    /// 获取组件的 proxy view。
+    /// 添加组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
-    /// <returns>组件值，无组件时返回 null。</returns>
-    /// <remarks>
-    /// ⚠️ 返回的是值的 copy，修改后需要调用 SetComponent 保存。
-    /// </remarks>
-    public T? GetComponent<T>() where T : struct
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
+    /// <param name="data">组件数据。</param>
+    public void AddComponent<T>(T data) where T : struct, IComponent
     {
-        return SceneEntity.GetComponent<T>();
+        SceneEntity.AddComponent(data);
+    }
+
+    /// <summary>
+    /// 获取组件的引用。
+    /// </summary>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
+    /// <returns>组件引用。</returns>
+    public ref T GetComponent<T>() where T : struct, IComponent
+    {
+        return ref SceneEntity.GetComponent<T>();
     }
 
     /// <summary>
     /// 尝试获取组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="component">输出的组件值。</param>
     /// <returns>是否成功获取。</returns>
-    public bool TryGetComponent<T>(out T component) where T : struct
+    public bool TryGetComponent<T>(out T component) where T : struct, IComponent
     {
-        var result = SceneEntity.GetComponent<T>();
-        if (result.HasValue)
-        {
-            component = result.Value;
-            return true;
-        }
-        component = default;
-        return false;
+        return SceneEntity.TryGetComponent(out component);
     }
 
     /// <summary>
     /// 写入组件数据。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="data">要写入的组件数据。</param>
     /// <remarks>
-    /// ⚠️ 直接覆盖 Native ECS 数据，立即生效。
+    /// ⚠️ 直接覆盖 ECS 数据，立即生效。
     /// </remarks>
-    public void SetComponent<T>(T data) where T : struct
+    public void SetComponent<T>(T data) where T : struct, IComponent
     {
         SceneEntity.SetComponent(data);
     }
@@ -124,19 +125,18 @@ public sealed class Entity
     /// <summary>
     /// 移除组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
-    /// <returns>是否成功移除。</returns>
-    public bool RemoveComponent<T>() where T : struct
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
+    public void RemoveComponent<T>() where T : struct, IComponent
     {
-        return SceneEntity.RemoveComponent<T>() == NNSceneResult.Ok;
+        SceneEntity.RemoveComponent<T>();
     }
 
     /// <summary>
     /// 检查是否拥有组件。
     /// </summary>
-    /// <typeparam name="T">组件类型（必须是 struct）。</typeparam>
+    /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <returns>是否拥有该组件。</returns>
-    public bool HasComponent<T>() where T : struct
+    public bool HasComponent<T>() where T : struct, IComponent
     {
         return SceneEntity.HasComponent<T>();
     }
@@ -153,11 +153,12 @@ public sealed class Entity
         SceneEntity.SetParent(parent.SceneEntity);
     }
 
-    /// <summary>获取父实体句柄；无父时返回零句柄。</summary>
-    /// <returns>父实体句柄。</returns>
-    internal ulong GetParentHandle()
+    /// <summary>获取父实体 ID；无父时返回 -1。</summary>
+    /// <returns>父实体 ID。</returns>
+    internal int GetParentId()
     {
-        return SceneEntity.GetParent().Value;
+        var parent = SceneEntity.GetParent();
+        return parent?.Id ?? -1;
     }
 
     // ========================================================================

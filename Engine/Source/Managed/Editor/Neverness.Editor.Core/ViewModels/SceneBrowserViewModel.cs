@@ -14,14 +14,14 @@ public class SceneBrowserViewModel : ViewModelBase
     private List<EntityNodeVM> _visibleNodes = new();
 
     // ── 选中状态 ──
-    private ulong _selectedEntityHandle;
-    private readonly HashSet<ulong> _multiSelectedHandles = new();
+    private int _selectedEntityId = -1;
+    private readonly HashSet<int> _multiSelectedIds = new();
 
     // ── 过滤 ──
     private string _searchText = "";
 
     // ── 展开状态 ──
-    private readonly HashSet<ulong> _expandedHandles = new();
+    private readonly HashSet<int> _expandedIds = new();
 
     // ── 场景状态 ──
     private bool _hasScene;
@@ -49,11 +49,11 @@ public class SceneBrowserViewModel : ViewModelBase
     /// <summary>所有节点。</summary>
     public IReadOnlyList<EntityNodeVM> AllNodes => _allNodes;
 
-    /// <summary>当前选中的实体 Handle。</summary>
-    public ulong SelectedEntityHandle
+    /// <summary>当前选中的实体 ID。</summary>
+    public int SelectedEntityId
     {
-        get => _selectedEntityHandle;
-        set => SetProperty(ref _selectedEntityHandle, value);
+        get => _selectedEntityId;
+        set => SetProperty(ref _selectedEntityId, value);
     }
 
     /// <summary>搜索过滤文本。</summary>
@@ -81,52 +81,52 @@ public class SceneBrowserViewModel : ViewModelBase
     }
 
     /// <summary>设置实体展开状态。</summary>
-    public void SetExpanded(ulong handle, bool expanded)
+    public void SetExpanded(int entityId, bool expanded)
     {
-        if (expanded) _expandedHandles.Add(handle);
-        else _expandedHandles.Remove(handle);
+        if (expanded) _expandedIds.Add(entityId);
+        else _expandedIds.Remove(entityId);
     }
 
     /// <summary>检查实体是否展开。</summary>
-    public bool IsExpanded(ulong handle) => _expandedHandles.Contains(handle);
+    public bool IsExpanded(int entityId) => _expandedIds.Contains(entityId);
 
     /// <summary>全部展开。</summary>
     public void ExpandAll()
     {
         foreach (var node in _allNodes)
-            _expandedHandles.Add(node.Handle);
+            _expandedIds.Add(node.Id);
         RebuildVisibleList();
     }
 
     /// <summary>全部折叠。</summary>
     public void CollapseAll()
     {
-        _expandedHandles.Clear();
+        _expandedIds.Clear();
         RebuildVisibleList();
     }
 
     /// <summary>设置选中实体。</summary>
-    public void Select(ulong handle, bool addToSelection = false)
+    public void Select(int entityId, bool addToSelection = false)
     {
         if (!addToSelection)
         {
-            _multiSelectedHandles.Clear();
+            _multiSelectedIds.Clear();
         }
-        _selectedEntityHandle = handle;
-        _multiSelectedHandles.Add(handle);
-        OnPropertyChanged(nameof(SelectedEntityHandle));
+        _selectedEntityId = entityId;
+        _multiSelectedIds.Add(entityId);
+        OnPropertyChanged(nameof(SelectedEntityId));
     }
 
     /// <summary>清空选择。</summary>
     public void ClearSelection()
     {
-        _selectedEntityHandle = 0;
-        _multiSelectedHandles.Clear();
-        OnPropertyChanged(nameof(SelectedEntityHandle));
+        _selectedEntityId = -1;
+        _multiSelectedIds.Clear();
+        OnPropertyChanged(nameof(SelectedEntityId));
     }
 
     /// <summary>检查是否选中。</summary>
-    public bool IsSelected(ulong handle) => _multiSelectedHandles.Contains(handle);
+    public bool IsSelected(int entityId) => _multiSelectedIds.Contains(entityId);
 
     /// <summary>重建可见列表（过滤 + 展开状态）。</summary>
     private void RebuildVisibleList()
@@ -158,7 +158,7 @@ public class SceneBrowserViewModel : ViewModelBase
     {
         _visibleNodes.Add(node);
 
-        if (node.HasChildren && IsExpanded(node.Handle))
+        if (node.HasChildren && IsExpanded(node.Id))
         {
             foreach (var child in node.Children)
             {
@@ -171,11 +171,11 @@ public class SceneBrowserViewModel : ViewModelBase
 /// <summary>实体节点 ViewModel。</summary>
 public class EntityNodeVM
 {
-    public ulong Handle { get; init; }
+    public int Id { get; init; }
     public string Name { get; set; } = "";
-    public ulong ParentHandle { get; init; }
+    public int ParentId { get; init; } = -1;
     public List<EntityNodeVM> Children { get; init; } = new();
-    public bool IsRoot => ParentHandle == 0;
+    public bool IsRoot => ParentId < 0;
     public int Depth { get; init; }
     public bool HasChildren => Children.Count > 0;
 }

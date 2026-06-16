@@ -4,7 +4,6 @@ using Neverness.Editor.Assets.AssetOpening;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.ImGuiEx;
 using Neverness.Runtime.Assets;
-using Neverness.Runtime.Engine;
 using Neverness.Runtime.VFS.Public;
 
 using ImportPipeline = Neverness.Editor.Assets.ImportPipeline;
@@ -93,7 +92,7 @@ public sealed class VideoAssetOpener : IAssetOpener
     private static (AssetHandle Handle, GUID Guid, VideoMetaInfo Meta, (ulong Handle, Vector2 Size) Thumb)
         LoadVideoAsset(AssetOpenContext context)
     {
-        var handle = AssetHandleExtensions.LoadSync(context.Guid, AssetTypeId.VideoClip);
+        var handle = AssetHandle.LoadSync(context.Guid, AssetTypeId.VideoClip);
         if (handle.IsZero)
         {
             var importResult = TryImportSource(context);
@@ -163,7 +162,7 @@ public sealed class VideoAssetOpener : IAssetOpener
             if (!result.Success) return (AssetHandle.Zero, context.Guid);
 
             var effectiveGuid = result.AssetGuid.IsZero ? context.Guid : result.AssetGuid;
-            var handle = AssetHandleExtensions.LoadSync(effectiveGuid, AssetTypeId.VideoClip);
+            var handle = AssetHandle.LoadSync(effectiveGuid, AssetTypeId.VideoClip);
             return (handle, effectiveGuid);
         }
         catch

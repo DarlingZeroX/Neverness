@@ -24,14 +24,12 @@ target_sources(NevernessRuntime-Asset
 		Private/NNAssetCache.cpp
 		Private/NNStreamingManager.cpp
 		Private/NNAssetFormat.cpp
-		Private/NNAssetManagerApi.cpp
 		Private/NNPackManager.cpp
 		Private/NNAssetMemoryPool.cpp
 		# AssetRegistry（原 NNAssetRegistry 模块，合并到此）
 		Private/NNAssetRegistry.cpp
 		Private/NNGuidTable.cpp
 		Private/NNDependencyTable.cpp
-		Private/NNAssetRegistryApi.cpp
 )
 
 target_include_directories(NevernessRuntime-Asset PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)

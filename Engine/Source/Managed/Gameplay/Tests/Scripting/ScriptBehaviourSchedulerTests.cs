@@ -3,6 +3,7 @@
 // ============================================================================
 
 using Neverness.Gameplay;
+using Neverness.Runtime.Scene;
 using Xunit;
 
 namespace Neverness.Gameplay.Tests.Scripting;
@@ -55,7 +56,10 @@ public class ScriptBehaviourSchedulerTests
     {
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour);
 
@@ -68,12 +72,15 @@ public class ScriptBehaviourSchedulerTests
     {
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour);
 
         // 第一次 Tick：调用 OnCreate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         Assert.Equal(1, behaviour.OnCreateCallCount);
         Assert.Equal(0, behaviour.OnStartCallCount);  // OnStart 延迟 1 帧
@@ -84,15 +91,18 @@ public class ScriptBehaviourSchedulerTests
     {
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour);
 
         // 第一次 Tick：调用 OnCreate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 第二次 Tick：调用 OnStart
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         Assert.Equal(1, behaviour.OnCreateCallCount);
         Assert.Equal(1, behaviour.OnStartCallCount);
@@ -103,15 +113,18 @@ public class ScriptBehaviourSchedulerTests
     {
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour);
 
         // 第一次 Tick：OnCreate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 第二次 Tick：OnStart + OnUpdate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         Assert.Equal(1, behaviour.OnUpdateCallCount);
         Assert.Equal(0.016f, behaviour.LastDeltaTime, 4);
@@ -122,21 +135,24 @@ public class ScriptBehaviourSchedulerTests
     {
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour);
 
         // 第一次 Tick：OnCreate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 第二次 Tick：OnStart + OnUpdate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 第三次 Tick：OnUpdate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 第四次 Tick：OnUpdate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         Assert.Equal(3, behaviour.OnUpdateCallCount);
     }
@@ -146,21 +162,24 @@ public class ScriptBehaviourSchedulerTests
     {
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour);
 
         // 第一次 Tick：OnCreate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 第二次 Tick：OnStart + OnUpdate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 标记销毁
         scheduler.MarkForDestroy(behaviour);
 
         // 第三次 Tick：OnDestroy
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         Assert.Equal(1, behaviour.OnDestroyCallCount);
     }
@@ -170,21 +189,24 @@ public class ScriptBehaviourSchedulerTests
     {
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour);
 
         // 第一次 Tick：OnCreate
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 第二次 Tick：OnStart
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         // 禁用
         behaviour.Enabled = false;
 
         // 第三次 Tick：OnUpdate 应该被跳过
-        scheduler.Tick(null!, 0.016f);
+        scheduler.Update(0.016f);
 
         Assert.Equal(0, behaviour.OnUpdateCallCount);
     }
@@ -195,7 +217,10 @@ public class ScriptBehaviourSchedulerTests
         var scheduler = new ScriptBehaviourScheduler();
         var behaviour1 = new TestBehaviour();
         var behaviour2 = new TestBehaviour();
-        var entity = new Entity(new Neverness.Runtime.Scene.SceneEntity(new Neverness.Runtime.Scene.NNEntityHandle(1, 0)), null!);
+        var scene = SceneWorld.Create("TestScene");
+        var iEntity = scene.CreateEntity("TestEntity");
+        var sceneEntity = new SceneEntity(iEntity!, scene);
+        var entity = new Entity(sceneEntity, scene);
 
         scheduler.Register(entity, behaviour1);
         scheduler.Register(entity, behaviour2);

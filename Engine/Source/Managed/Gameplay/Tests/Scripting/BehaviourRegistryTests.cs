@@ -102,10 +102,10 @@ public class BehaviourRegistryTests
 
         registry.Register(42, behaviour);
 
-        var found = registry.TryGetEntityHandle(behaviour, out var handle);
+        var found = registry.TryGetEntityId(behaviour, out var entityId);
 
         Assert.True(found);
-        Assert.Equal(42, (int)handle);
+        Assert.Equal(42, entityId);
     }
 
     [Fact]
@@ -114,10 +114,10 @@ public class BehaviourRegistryTests
         var registry = new BehaviourRegistry();
         var behaviour = new TestBehaviour();
 
-        var found = registry.TryGetEntityHandle(behaviour, out var handle);
+        var found = registry.TryGetEntityId(behaviour, out var entityId);
 
         Assert.False(found);
-        Assert.Equal(0, (int)handle);
+        Assert.Equal(0, entityId);
     }
 
     // ========================================================================

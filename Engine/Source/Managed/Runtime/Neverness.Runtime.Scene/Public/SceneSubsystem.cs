@@ -3,11 +3,10 @@ using Neverness.Runtime.RuntimeLoop;
 namespace Neverness.Runtime.Scene;
 
 /// <summary>
-/// 场景子系统——将 <see cref="SceneManager.TickActiveScene"/> 接入 <see cref="RuntimeLoop"/> 调度。
+/// 场景子系统——将 SceneManager.TickActiveScene 接入 RuntimeLoop 调度。
 /// 在 Update 阶段驱动激活场景的 ECS System Tick。
 ///
-/// 支持 Editor 侧通过 <see cref="TickOverride"/> 注入自定义 tick 逻辑（如 PlayModeController 驱动的标签过滤）。
-/// 当 TickOverride 被设置时，优先调用委托而非默认的 SceneManager.TickActiveScene。
+/// 支持 Editor 侧通过 TickOverride 注入自定义 tick 逻辑（如 PlayModeController 驱动的标签过滤）。
 /// </summary>
 public sealed class SceneSubsystem : IManagedRuntimeSubsystem
 {
@@ -25,7 +24,7 @@ public sealed class SceneSubsystem : IManagedRuntimeSubsystem
         _sceneManager = sceneManager;
     }
 
-    /// <summary>在 Update 阶段 Tick，与 Native SceneTick 对齐。</summary>
+    /// <summary>在 Update 阶段 Tick。</summary>
     public RuntimeTickGroup TickGroup => RuntimeTickGroup.Update;
 
     public void Initialize()

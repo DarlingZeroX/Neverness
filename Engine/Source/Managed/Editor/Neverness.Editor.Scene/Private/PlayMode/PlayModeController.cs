@@ -218,10 +218,9 @@ internal sealed class PlayModeController
     {
         if (_prePlaySnapshot == null) return;
 
+        // TODO: 实现快照恢复
         // 原子替换——不触发事件风暴，不影响其他子场景
-        _sceneManager.ReplaceActiveSceneFromSnapshot(
-            _prePlaySnapshot.SceneGuid,
-            _prePlaySnapshot.SnapshotPath);
+        Console.WriteLine("[PlayModeController] RestoreSnapshot 待实现");
 
         _editorState.SelectedEntityHandle = _prePlaySnapshot.SelectedEntityHandle;
     }

@@ -6,8 +6,8 @@ using Neverness.Runtime.Engine;
 using Neverness.Runtime.Engine.Runtime;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.Private;
-using Neverness.Editor.ImGuiFrontend.Features;
-using Neverness.Editor.ImGuiFrontend.Public;
+// using Neverness.Editor.ImGuiFrontend.Features;
+// using Neverness.Editor.ImGuiFrontend.Public;
 using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.Assets.Public;
 using Neverness.Editor.Scene.Public;
@@ -146,9 +146,9 @@ internal static class EditorApplicationRunner
 						case EditorFrontend.Avalonia:
 							InstallAvaloniaFrontend(window);
 							break;
-						case EditorFrontend.ImGui:
-							ImGuiFrontendModule.InstallShell(window);
-							break;
+						//case EditorFrontend.ImGui:
+						//	ImGuiFrontendModule.InstallShell(window);
+						//	break;
 					}
 
 					EditorCoreModule.Install();
@@ -158,9 +158,9 @@ internal static class EditorApplicationRunner
 						case EditorFrontend.Avalonia:
 							s_avaloniaHost?.InstallModule();
 							break;
-						case EditorFrontend.ImGui:
-							ImGuiFrontendModule.Install();
-							break;
+						//case EditorFrontend.ImGui:
+						//	ImGuiFrontendModule.Install();
+						//	break;
 					}
 
 					MediaImporterModule.Install();
@@ -194,9 +194,9 @@ internal static class EditorApplicationRunner
 						case EditorFrontend.Avalonia:
 							s_avaloniaHost?.RegisterContextMenuContributors();
 							break;
-						case EditorFrontend.ImGui:
-							ImGuiFrontendModule.RegisterContextMenuContributors();
-							break;
+						//case EditorFrontend.ImGui:
+						//	ImGuiFrontendModule.RegisterContextMenuContributors();
+						//	break;
 					}
 				}
 
@@ -209,10 +209,16 @@ internal static class EditorApplicationRunner
 				RuntimeMainLoop.Tick(deltaTime);
 
 				// ImGui 模式下需要每帧渲染 UI
-				if (frontend == EditorFrontend.ImGui)
+				//if (frontend == EditorFrontend.ImGui)
+				//{
+				//	EditorFrameworkModule.TickEditorUI();
+				//	ImGuiWindowFeature.Tick(deltaTime);
+				//}
+
+				// Avalonia 模式下在主线程执行 Diligent 渲染（Diligent immediate context 非线程安全）
+				if (frontend == EditorFrontend.Avalonia)
 				{
-					EditorFrameworkModule.TickEditorUI();
-					ImGuiWindowFeature.Tick(deltaTime);
+					AvaloniaFrontendModule.TickRendering();
 				}
 
 				AssetsModule.Tick();

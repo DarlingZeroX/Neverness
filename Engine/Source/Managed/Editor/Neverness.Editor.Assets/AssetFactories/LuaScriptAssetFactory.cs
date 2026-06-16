@@ -11,7 +11,7 @@ public sealed class LuaScriptAssetFactory : IAssetFactory
 {
     public string DisplayName => "Lua Script";
     public string Category => "Scripting";
-    public string Icon => FontAwesome5Pro.Code;
+    public string Icon => "📜";
     public string FileExtension => ".lua";
 
     public NPath? CreateAsset(NPath directoryPath)

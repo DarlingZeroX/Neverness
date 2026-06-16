@@ -9,12 +9,23 @@
     <RootNamespace>Neverness.Runtime.Scene</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <!-- 排除测试目录 -->
+    <Compile Remove="Tests\**" />
+    <EmbeddedResource Remove="Tests\**" />
+    <None Remove="Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
     <InternalsVisibleTo Include="Neverness.Runtime.Serialization" />
     <InternalsVisibleTo Include="Neverness.Editor.Assets" />
+    <InternalsVisibleTo Include="Neverness.Runtime.Scene.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Friflo ECS 核心框架 -->
+    <PackageReference Include="Friflo.Engine.ECS" Version="3.6.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
   </ItemGroup>
 </Project>
