@@ -1,5 +1,6 @@
 using Avalonia.Threading;
 using Neverness.Editor.AvaloniaFrontend.ContextMenus;
+using Neverness.Editor.Assets.AssetOpening;
 using Neverness.Editor.Core.Private;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Interface;
@@ -23,8 +24,13 @@ public static class AvaloniaFrontendModule
     /// <summary>主编辑器窗口（由 App.OnFrameworkInitializationCompleted 创建）。</summary>
     internal static MainEditorWindow? MainWindow { get; set; }
 
+    /// <summary>主窗口的 DockControl。</summary>
+    internal static global::Dock.Avalonia.Controls.DockControl? MainDockControl { get; set; }
+
     /// <summary>Dock 工厂实例（供浮动窗口 DataTemplate 创建 DockControl 使用）。</summary>
     internal static global::Dock.Model.Core.IFactory? DockFactory { get; set; }
+
+    internal static Dock.EditorDockFactory? EditorDockFactoryInstance => DockFactory as Dock.EditorDockFactory;
 
     /// <summary>MainEditorWindow 就绪事件。</summary>
     private static readonly ManualResetEventSlim _windowReady = new(false);
@@ -84,6 +90,9 @@ public static class AvaloniaFrontendModule
         Inspectors.AvaloniaComponentInspectorRegistry.DiscoverFromAssembly(
             typeof(AvaloniaFrontendModule).Assembly);
 
+        // 注册 Avalonia 特定的 AssetOpener（延迟加载，AssetsModule 已经完成 Discover）
+        RegisterAssetOpeners();
+
         // 创建 View 工厂
         _viewFactory = new AvaloniaViewFactory();
 
@@ -115,6 +124,24 @@ public static class AvaloniaFrontendModule
         }
 
         Console.WriteLine("[AvaloniaFrontendModule] AvaloniaFrontend 安装完成");
+    }
+
+    /// <summary>注册 Avalonia 特定的 AssetOpener。</summary>
+    private static void RegisterAssetOpeners()
+    {
+        var openerRegistry = CoreModuleImp.Context.GetService<AssetOpenerRegistry>();
+        if (openerRegistry == null)
+        {
+            Console.WriteLine("[AvaloniaFrontendModule] AssetOpenerRegistry 不可用，跳过注册 AssetOpener");
+            return;
+        }
+
+        // 注册 TextureAssetOpener
+        var editorManager = CoreModuleImp.Context.GetService<AssetEditorManager>();
+        if (editorManager != null)
+        {
+            openerRegistry.Register(new AssetOpening.TextureAssetOpener(editorManager));
+        }
     }
 
     /// <summary>
@@ -194,6 +221,13 @@ public static class AvaloniaFrontendModule
     /// <summary>获取通知服务。</summary>
     public static INotificationService GetNotificationService() =>
         _notificationService ?? throw new InvalidOperationException("AvaloniaFrontendModule not installed");
+
+    public static Dock.DockableAssetEditorFramework CreateAssetEditorFramework(AssetEditorManager editorManager)
+    {
+        var mainWindow = MainWindow ?? throw new InvalidOperationException("Main window is not ready.");
+        var dockFactory = EditorDockFactoryInstance ?? throw new InvalidOperationException("Dock factory is not ready.");
+        return new Dock.DockableAssetEditorFramework(mainWindow, dockFactory, editorManager);
+    }
 
     // ── 渲染回调注册 ──
 

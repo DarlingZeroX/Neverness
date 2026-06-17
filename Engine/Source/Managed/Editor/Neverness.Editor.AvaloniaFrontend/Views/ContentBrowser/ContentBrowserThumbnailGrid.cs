@@ -38,6 +38,12 @@ internal sealed class ContentBrowserThumbnailGrid
     private string? _selectedItemName;
     private bool _selectedItemIsDirectory;
 
+    // 拖拽资产状态
+    private bool _isDragPending;
+    private Point _dragStartPos;
+    private PointerPressedEventArgs? _dragPressedArgs; // 保存原始按下事件用于 DoDragDropAsync
+    private const double DragThreshold = 5.0;
+
     /// <summary>选中的路径集合。</summary>
     internal IReadOnlySet<string> SelectedPaths => _selectedPaths;
 
@@ -316,7 +322,7 @@ internal sealed class ContentBrowserThumbnailGrid
 
         // ── 交互事件（挂在 outer 上，视觉效果改 card）──
 
-        // 单击选中
+        // 单击选中 + 记录拖拽起始位置
         outer.PointerPressed += (_, e) =>
         {
             var point = e.GetCurrentPoint(outer);
@@ -337,19 +343,59 @@ internal sealed class ContentBrowserThumbnailGrid
             }
 
             UpdateSelectionVisuals();
+
+            // 记录拖拽起始位置（用于区分单击和拖拽）
+            _isDragPending = true;
+            _dragStartPos = e.GetPosition(outer);
+            _dragPressedArgs = e; // 保存原始事件用于 DoDragDropAsync
+
             e.Handled = true;
         };
 
-        // 双击
-        outer.DoubleTapped += (_, _) =>
+        // 拖拽启动——左键按住移动超过阈值时启动资产拖拽
+        outer.PointerMoved += async (_, e) =>
         {
-            if (isDirectory) _onOpenDirectory?.Invoke(path);
-            else _onOpenFile?.Invoke(path);
+            if (!_isDragPending || _dragPressedArgs == null) return;
+            if (!e.GetCurrentPoint(outer).Properties.IsLeftButtonPressed)
+            {
+                _isDragPending = false;
+                _dragPressedArgs = null;
+                return;
+            }
+
+            var currentPos = e.GetPosition(outer);
+            var delta = currentPos - _dragStartPos;
+            if (Math.Abs(delta.X) < DragThreshold && Math.Abs(delta.Y) < DragThreshold)
+                return;
+
+            // 超过阈值 → 启动拖拽
+            _isDragPending = false;
+
+            // 获取虚拟路径（可选）
+            string? virtualPath = null;
+            try
+            {
+                var vPath = _controller.GetAssetVirtualPath(path);
+                if (!vPath.IsEmpty)
+                    virtualPath = vPath.ToString();
+            }
+            catch
+            {
+                // 获取虚拟路径失败不影响拖拽
+            }
+
+            var transfer = AssetDragFormats.CreateTransfer(path, virtualPath);
+            var pressedArgs = _dragPressedArgs;
+            _dragPressedArgs = null;
+            await Avalonia.Input.DragDrop.DoDragDropAsync(pressedArgs, transfer, DragDropEffects.Copy);
         };
 
-        // 右键
+        // 释放——重置拖拽状态
         outer.PointerReleased += (s, e) =>
         {
+            _isDragPending = false;
+            _dragPressedArgs = null;
+
             if (e.InitialPressMouseButton != MouseButton.Right) return;
 
             _selectedItemPath = path;
@@ -359,6 +405,15 @@ internal sealed class ContentBrowserThumbnailGrid
             // 触发右键菜单（由外部处理）
             OnContextMenuRequested?.Invoke(s as Control ?? outer, path, name, isDirectory);
             e.Handled = true;
+        };
+
+        // 双击
+        outer.DoubleTapped += (_, _) =>
+        {
+            _isDragPending = false;
+            _dragPressedArgs = null;
+            if (isDirectory) _onOpenDirectory?.Invoke(path);
+            else _onOpenFile?.Invoke(path);
         };
 
         // 悬停

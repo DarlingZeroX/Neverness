@@ -51,6 +51,19 @@ public sealed class GraphicsDevice : IDisposable
         return new GraphicsDevice(nativeBackend);
     }
 
+    /// <summary>
+    /// 从已有的原生指针创建图形设备（不接管所有权，调用方负责生命周期）。
+    /// 用于从 C++ 端获取主窗口的 Diligent 设备。
+    /// </summary>
+    /// <param name="devicePtr">IRenderDevice* 指针</param>
+    /// <param name="contextPtr">IDeviceContext* 指针</param>
+    /// <param name="swapChainPtr">ISwapChain* 指针（可选）</param>
+    public static GraphicsDevice FromNativePointers(IntPtr devicePtr, IntPtr contextPtr, IntPtr swapChainPtr = default)
+    {
+        var nativeBackend = new DiligentBackend(devicePtr, contextPtr, swapChainPtr);
+        return new GraphicsDevice(nativeBackend);
+    }
+
     // ═══════════════════════════════════════════
     //  资源创建
     // ═══════════════════════════════════════════

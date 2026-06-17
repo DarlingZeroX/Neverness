@@ -7,12 +7,14 @@
  * - Deferred Resize：MarkResize → FlushResizes（帧末统一执行）
  * - Surface Lost：HandleDestroyed → MarkLost → HandleCreated → Recreate
  * - 进程级 Surface 注册表，monotonic ID 分配
+ * - v29：新增 RenderViewportCommands——C# Scene → Flat Buffer → C++ Renderer
  */
 
 #include "Internal/RuntimeApiBuilders.h"
 
 #include "NNNativeEngineAPI/Include/NativeInterop.h"
 #include "NNNativeEngineAPI/Include/ViewportSurfaceAPI.h"
+#include "NNNativeEngineAPI/Include/RenderCommands.h"
 #include "Core/WindowRegistry.h"
 #include <Device/INNRenderDevice.h>
 
@@ -20,13 +22,34 @@
 #include "Device/NNDiligentViewportSurface.h"
 #include "Device/NNDiligentDevice.h"
 
+// Renderer2D（RenderCommands 路径直接使用）
+#include "Renderer2D/Renderer2D.h"
+#include "Renderer2D/FramebufferObject.h"
+#include "Renderer2D/CameraData.h"
+#include "Renderer2D/SpriteDrawCommand.h"
+
+// RmlUI（Overlay Pass）
+#include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"
+#include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
+#include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"
+
+// Diligent（CopyTexture / ITextureView）
+#include "NNDiligentConfig.h"
+#include <Texture.h>
+
 #include <iostream>
+#include <iomanip>
 #include <unordered_map>
 #include <mutex>
 #include <atomic>
 #include <vector>
+#include <cstring>
 
 #include "NativeEngineRuntimeServices.h"
+#include "NNCore/Interface/HLog.h"
+
+// RmlUI 单例 getter 函数声明
+#include "Internal/RmlUISingletonAccess.h"
 
 namespace
 {
@@ -277,6 +300,390 @@ namespace
         return 1;
     }
 
+    // ═══════════════════════════════════════════
+    //  RenderViewportCommands 相关单例
+    // ═══════════════════════════════════════════
+
+    // Renderer2D 和 FramebufferObject——惰性初始化
+    NN::Runtime::Renderer2D::Renderer2D* g_CommandsRenderer = nullptr;
+    NN::Runtime::Renderer2D::FramebufferObject* g_CommandsFBO = nullptr;
+    bool g_CommandsRendererInitialized = false;
+
+    // RmlUI 单例引用——通过 RmlUISingletonAccess.h 中声明的 getter 函数获取
+    // 注意：RmlUI 的生命周期由 ViewportRenderRuntimeApi 管理
+
+    /// 确保 RenderCommands 路径的 Renderer2D 已初始化
+    bool EnsureCommandsRenderer()
+    {
+        if (g_CommandsRendererInitialized)
+            return g_CommandsRenderer != nullptr;
+
+        // 从主窗口获取 Diligent 设备
+        NN::Runtime::Render::INNRenderDevice* device = nullptr;
+        if (auto* window = NN::Runtime::WindowRegistry::Resolve(
+                NN::Runtime::WindowRegistry::GetPrimaryHandle()))
+        {
+            device = window->GetDevice();
+        }
+        if (!device)
+        {
+            std::cerr << "[ViewportSurface] RenderCommands: 无法获取 Diligent 设备" << std::endl;
+            return false;
+        }
+
+        g_CommandsRenderer = new NN::Runtime::Renderer2D::Renderer2D();
+        if (!g_CommandsRenderer->Initialize(device))
+        {
+            std::cerr << "[ViewportSurface] RenderCommands: Renderer2D 初始化失败" << std::endl;
+            delete g_CommandsRenderer;
+            g_CommandsRenderer = nullptr;
+            g_CommandsRendererInitialized = true;
+            return false;
+        }
+
+        g_CommandsFBO = new NN::Runtime::Renderer2D::FramebufferObject();
+        if (!g_CommandsFBO->Initialize(device, 1280, 720))
+        {
+            std::cerr << "[ViewportSurface] RenderCommands: FramebufferObject 初始化失败" << std::endl;
+            g_CommandsRenderer->Shutdown();
+            delete g_CommandsRenderer;
+            g_CommandsRenderer = nullptr;
+            delete g_CommandsFBO;
+            g_CommandsFBO = nullptr;
+            g_CommandsRendererInitialized = true;
+            return false;
+        }
+
+        g_CommandsRendererInitialized = true;
+        std::cout << "[ViewportSurface] RenderCommands: Renderer2D + FBO 初始化成功" << std::endl;
+        return true;
+    }
+
+    /// NNSpriteInstance → SpriteDrawCommand 转换
+    void ConvertToSpriteDrawCommand(const NNSpriteInstance& src,
+                                    NN::Runtime::Renderer2D::SpriteDrawCommand& dst)
+    {
+        std::memcpy(dst.Transform, src.transform, sizeof(float) * 16);
+        dst.TextureHandle = src.textureHandle;
+        std::memcpy(dst.Color, src.color, sizeof(float) * 4);
+        std::memcpy(dst.UvRect, src.uvRect, sizeof(float) * 4);
+        dst.Layer     = src.layer;
+        dst.SortOrder = src.sortOrder;
+        dst.Blend     = static_cast<NN::Runtime::Renderer2D::BlendMode>(src.blendMode);
+        dst.FlipX     = (src.flags & NN_SPRITE_FLAG_FLIP_X) != 0;
+        dst.FlipY     = (src.flags & NN_SPRITE_FLAG_FLIP_Y) != 0;
+    }
+
+    /// NNSetCameraData → CameraData 转换
+    void ConvertToCameraData(const NNSetCameraData& src,
+                             NN::Runtime::Renderer2D::CameraData& dst)
+    {
+        std::memcpy(dst.ViewMatrix, src.viewMatrix, sizeof(float) * 16);
+        std::memcpy(dst.ProjectionMatrix, src.projectionMatrix, sizeof(float) * 16);
+        // ViewProjection = Projection * View（这里不计算，Renderer2D 内部处理）
+        NN::Runtime::Renderer2D::CameraData defaultData{};
+        std::memcpy(dst.ViewProjectionMatrix, defaultData.ViewProjectionMatrix, sizeof(float) * 16);
+        dst.OrthoWidth  = src.orthoWidth;
+        dst.OrthoHeight = src.orthoHeight;
+        dst.Near = src.nearPlane;
+        dst.Far  = src.farPlane;
+    }
+
+    /// 校验命令缓冲区
+    bool ValidateCommandBuffer(const void* data, std::uint32_t dataSize)
+    {
+        if (!data || dataSize < sizeof(NNRenderCommandBufferHeader))
+        {
+            std::cerr << "[ViewportSurface] RenderCommands: 缓冲区无效或过小" << std::endl;
+            return false;
+        }
+
+        auto* header = static_cast<const NNRenderCommandBufferHeader*>(data);
+        if (header->magic != NN_RENDER_COMMAND_BUFFER_MAGIC)
+        {
+            std::cerr << "[ViewportSurface] RenderCommands: 魔数不匹配 (期望 0x"
+                      << std::hex << NN_RENDER_COMMAND_BUFFER_MAGIC
+                      << "，实际 0x" << header->magic << std::dec << ")" << std::endl;
+            return false;
+        }
+
+        if (header->totalBytes != dataSize)
+        {
+            std::cerr << "[ViewportSurface] RenderCommands: totalBytes 不匹配 (header="
+                      << header->totalBytes << "，实际=" << dataSize << ")" << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
+    std::uint8_t NN_ENGINE_ABI_STDCALL rt_viewportSurface_renderViewportCommands(
+        std::uint64_t surfaceId,
+        const void* commands,
+        std::uint32_t commandsSize)
+    {
+        // 1. 校验参数
+        if (surfaceId == 0 || !commands || commandsSize == 0)
+            return 0;
+
+        if (!ValidateCommandBuffer(commands, commandsSize))
+            return 0;
+
+        // 2. 获取 Surface 和 SwapChain
+        std::lock_guard<std::mutex> lock(g_SurfaceMutex);
+        auto* surface = FindSurface(surfaceId);
+        if (!surface || !surface->IsCreated())
+            return 0;
+
+        auto* swapChain = surface->GetSwapChain();
+        if (!swapChain)
+            return 0;
+
+        // 3. 确保 Renderer2D 已初始化
+        if (!EnsureCommandsRenderer())
+            return 0;
+
+        // 4. 解析命令
+        auto* bufferHeader = static_cast<const NNRenderCommandBufferHeader*>(commands);
+        const auto* cmdPtr = static_cast<const std::uint8_t*>(commands) + sizeof(NNRenderCommandBufferHeader);
+        const auto* cmdEnd = static_cast<const std::uint8_t*>(commands) + commandsSize;
+
+        // 调试日志：dump buffer 头部和前几条命令
+        static int s_cmdLogCount = 0;
+        if (s_cmdLogCount < 3)
+        {
+            auto* raw = static_cast<const std::uint8_t*>(commands);
+            std::cout << "[RenderCommands] Buffer: magic=0x" << std::hex << bufferHeader->magic
+                      << " cmdCount=" << std::dec << bufferHeader->commandCount
+                      << " totalBytes=" << bufferHeader->totalBytes
+                      << " dataSize=" << commandsSize << std::endl;
+
+            // dump 全部字节（十六进制）
+            for (std::uint32_t b = 0; b + 15 < commandsSize; b += 16)
+            {
+                std::cout << "[RenderCommands] [" << std::dec << b << "] ";
+                for (int j = 0; j < 16; j++)
+                {
+                    std::cout << std::hex << std::setfill('0') << std::setw(2)
+                              << static_cast<int>(raw[b + j]) << " ";
+                }
+                std::cout << std::dec << std::endl;
+            }
+            s_cmdLogCount++;
+        }
+
+        // 暂存解析结果
+        NN::Runtime::Renderer2D::CameraData camera{};
+        bool hasCamera = false;
+        bool clearColorEnabled = false;
+        float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+        std::vector<NN::Runtime::Renderer2D::SpriteDrawCommand> spriteCommands;
+
+        for (std::uint32_t i = 0; i < bufferHeader->commandCount; ++i)
+        {
+            // 边界检查
+            if (cmdPtr + sizeof(NNRenderCommandHeader) > cmdEnd)
+            {
+                std::cerr << "[ViewportSurface] RenderCommands: 命令 " << i << " 越界" << std::endl;
+                return 0;
+            }
+
+            auto* cmdHeader = reinterpret_cast<const NNRenderCommandHeader*>(cmdPtr);
+            auto offset = static_cast<std::uint32_t>(cmdPtr - static_cast<const std::uint8_t*>(commands));
+
+            // 直接读原始字节验证
+            auto b0 = static_cast<int>(cmdPtr[0]);
+            auto b1 = static_cast<int>(cmdPtr[1]);
+            auto b2 = static_cast<int>(cmdPtr[2]);
+            auto b3 = static_cast<int>(cmdPtr[3]);
+            auto b4 = static_cast<int>(cmdPtr[4]);
+            auto b5 = static_cast<int>(cmdPtr[5]);
+            auto b6 = static_cast<int>(cmdPtr[6]);
+            auto b7 = static_cast<int>(cmdPtr[7]);
+
+            //std::cout << "[RenderCommands] Cmd[" << i << "]: offset=" << std::dec << offset
+            //          << " raw=[" << std::hex << std::setfill('0')
+            //          << std::setw(2) << b0 << " " << std::setw(2) << b1 << " "
+            //          << std::setw(2) << b2 << " " << std::setw(2) << b3 << " "
+            //          << std::setw(2) << b4 << " " << std::setw(2) << b5 << " "
+            //          << std::setw(2) << b6 << " " << std::setw(2) << b7
+            //          << "] type=0x" << cmdHeader->type
+            //          << " size=" << std::dec << cmdHeader->size << std::endl;
+
+            if (cmdPtr + cmdHeader->size > cmdEnd)
+            {
+                std::cerr << "[ViewportSurface] RenderCommands: 命令 " << i
+                          << " 数据越界 (type=0x" << std::hex << cmdHeader->type
+                          << " size=" << std::dec << cmdHeader->size << ")" << std::endl;
+                return 0;
+            }
+
+            switch (cmdHeader->type)
+            {
+                case NN_RENDER_COMMAND_SET_CAMERA:
+                {
+                    if (cmdHeader->size < NN_SET_CAMERA_TOTAL_SIZE)
+                    {
+                        std::cerr << "[ViewportSurface] RenderCommands: SetCamera size 不足" << std::endl;
+                        return 0;
+                    }
+                    auto* data = reinterpret_cast<const NNSetCameraData*>(cmdPtr + sizeof(NNRenderCommandHeader));
+                    ConvertToCameraData(*data, camera);
+                    hasCamera = true;
+                    break;
+                }
+
+                case NN_RENDER_COMMAND_SET_RENDER_PASS_STATE:
+                {
+                    if (cmdHeader->size < NN_SET_RENDER_PASS_STATE_TOTAL_SIZE)
+                    {
+                        std::cerr << "[ViewportSurface] RenderCommands: SetRenderPassState size 不足" << std::endl;
+                        return 0;
+                    }
+                    auto* data = reinterpret_cast<const NNRenderPassStateData*>(
+                        cmdPtr + sizeof(NNRenderCommandHeader));
+                    clearColorEnabled = (data->flags & NN_RENDER_PASS_FLAG_CLEAR_COLOR) != 0;
+                    std::memcpy(clearColor, data->clearColor, sizeof(float) * 4);
+                    break;
+                }
+
+                case NN_RENDER_COMMAND_DRAW_SPRITE_BATCH:
+                {
+                    if (cmdHeader->size < NN_DRAW_SPRITE_BATCH_HEADER_SIZE)
+                    {
+                        std::cerr << "[ViewportSurface] RenderCommands: DrawSpriteBatch size 不足" << std::endl;
+                        return 0;
+                    }
+                    auto* batchData = reinterpret_cast<const NNDrawSpriteBatchData*>(
+                        cmdPtr + sizeof(NNRenderCommandHeader));
+                    std::uint32_t spriteCount = batchData->spriteCount;
+
+                    // 校验精灵数据大小
+                    std::uint32_t expectedSize = NN_DRAW_SPRITE_BATCH_TOTAL_SIZE(spriteCount);
+                    if (cmdHeader->size < expectedSize)
+                    {
+                        std::cerr << "[ViewportSurface] RenderCommands: DrawSpriteBatch 精灵数据不足"
+                                  << " (期望=" << expectedSize << " 实际=" << cmdHeader->size << ")" << std::endl;
+                        return 0;
+                    }
+
+                    // 转换每个 NNSpriteInstance → SpriteDrawCommand
+                    auto* sprites = reinterpret_cast<const NNSpriteInstance*>(
+                        reinterpret_cast<const std::uint8_t*>(batchData) + sizeof(NNDrawSpriteBatchData));
+                    for (std::uint32_t s = 0; s < spriteCount; ++s)
+                    {
+                        NN::Runtime::Renderer2D::SpriteDrawCommand cmd;
+                        ConvertToSpriteDrawCommand(sprites[s], cmd);
+                        spriteCommands.push_back(cmd);
+                    }
+                    break;
+                }
+
+                default:
+                    // 未知命令类型——跳过（向前兼容）
+                    H_LOG_WARN("[ViewportSurface] RenderCommands: 未知命令类型 0x{:X}，跳过",
+                               cmdHeader->type);
+                    break;
+            }
+
+            // 移动到下一条命令
+            cmdPtr += cmdHeader->size;
+        }
+
+        // 5. 获取渲染上下文
+        auto* context = surface->GetContext();
+        if (!context)
+            return 0;
+
+        // 6. 确保 FBO 尺寸与 SwapChain 一致
+        auto& swapChainDesc = swapChain->GetDesc();
+        std::uint32_t width = swapChainDesc.Width;
+        std::uint32_t height = swapChainDesc.Height;
+
+        if (g_CommandsFBO->GetWidth() != width || g_CommandsFBO->GetHeight() != height)
+        {
+            g_CommandsFBO->Resize(width, height);
+        }
+
+        // 7. 设置渲染目标并渲染
+        g_CommandsRenderer->SetRenderTarget(
+            g_CommandsFBO->GetColorRTV(),
+            g_CommandsFBO->GetDepthDSV());
+
+        // 清屏（如果启用了）
+        // 注意：Renderer2D 的 BeginScene 可能会清屏，这里暂不单独清
+        // 后续可在 Renderer2D 中增加 ClearRenderTarget 方法
+
+        // 如果没有相机命令，使用默认相机
+        if (!hasCamera)
+        {
+            NN::Runtime::Renderer2D::CameraData defaultCamera{};
+            camera = defaultCamera;
+        }
+
+        g_CommandsRenderer->BeginScene(camera, width, height);
+        g_CommandsRenderer->Submit(spriteCommands);
+        g_CommandsRenderer->EndScene();
+
+        // 8. RmlUI Overlay Pass（独立于 RenderCommands）
+        //    TODO: RmlUI Tick 需要 C++ NNRuntimeScene 引用来查询 RmlUIDocumentComponent。
+        //    现在 Scene 已迁移到 C#（Friflo ECS），需要设计 RmlUI 的 C# 驱动方式。
+        //    暂时跳过，等 RmlUI + C# Scene 集成方案确定后再启用。
+        //
+        //    未来管线：
+        //    Renderer2D (World Pass) → RmlUI (UI Overlay Pass) → CopyTexture → Present
+        //
+        // {
+        //     auto* rmlRenderer = GetRmlUIRenderer();
+        //     auto* rmlSystem = GetRmlUISystem();
+        //     if (rmlRenderer && rmlSystem)
+        //     {
+        //         rmlRenderer->SetViewport(width, height);
+        //         const auto& drawList = rmlSystem->GetDrawList();
+        //         rmlRenderer->Sync(drawList);
+        //         if (g_CommandsFBO && g_CommandsFBO->GetColorRTV())
+        //         {
+        //             rmlRenderer->RenderOverlayOnScene(
+        //                 drawList,
+        //                 NN::Runtime::Scene::NNRmlUIViewTarget::Scene,
+        //                 g_CommandsFBO->GetColorRTV(),
+        //                 g_CommandsFBO->GetDepthDSV(),
+        //                 width, height);
+        //         }
+        //     }
+        // }
+
+        // 9. CopyTexture（FBO → SwapChain back buffer）
+        auto* srcTextureView = reinterpret_cast<::Diligent::ITextureView*>(
+            g_CommandsFBO->GetColorTextureHandle());
+        if (!srcTextureView)
+            return 0;
+
+        auto* srcTexture = srcTextureView->GetTexture();
+        if (!srcTexture)
+            return 0;
+
+        auto* dstRTV = swapChain->GetCurrentBackBufferRTV();
+        if (!dstRTV)
+            return 0;
+
+        auto* dstTexture = dstRTV->GetTexture();
+        if (!dstTexture)
+            return 0;
+
+        ::Diligent::CopyTextureAttribs copyAttribs;
+        copyAttribs.pSrcTexture = srcTexture;
+        copyAttribs.SrcTextureTransitionMode = ::Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+        copyAttribs.pDstTexture = dstTexture;
+        copyAttribs.DstTextureTransitionMode = ::Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
+        context->CopyTexture(copyAttribs);
+
+        // 10. Present
+        swapChain->Present();
+
+        return 1;
+    }
+
 } // anonymous namespace
 
 // ── Builder ──
@@ -295,8 +702,9 @@ extern "C" void NNBuildViewportSurfaceRuntimeApi(NNViewportSurfaceAPI* api)
     api->IsSurfaceLost   = &rt_viewportSurface_isSurfaceLost;
     api->RecreateSurface = &rt_viewportSurface_recreateSurface;
     api->RenderViewport  = &rt_viewportSurface_renderViewport;
+    api->RenderViewportCommands = &rt_viewportSurface_renderViewportCommands;
 
-    std::cout << "ViewportSurface Runtime API built." << std::endl;
+    std::cout << "ViewportSurface Runtime API built (v29: +RenderViewportCommands)." << std::endl;
 }
 
 // ── Shutdown ──
@@ -311,5 +719,21 @@ void ShutdownViewportSurface()
     }
     g_Surfaces.clear();
     g_PendingResizes.clear();
+
+    // 清理 RenderCommands 路径的单例
+    if (g_CommandsFBO)
+    {
+        g_CommandsFBO->Shutdown();
+        delete g_CommandsFBO;
+        g_CommandsFBO = nullptr;
+    }
+    if (g_CommandsRenderer)
+    {
+        g_CommandsRenderer->Shutdown();
+        delete g_CommandsRenderer;
+        g_CommandsRenderer = nullptr;
+    }
+    g_CommandsRendererInitialized = false;
+
     std::cout << "[ViewportSurface] 已关闭" << std::endl;
 }

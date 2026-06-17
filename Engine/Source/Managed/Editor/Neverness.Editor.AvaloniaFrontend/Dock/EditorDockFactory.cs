@@ -98,18 +98,22 @@ public class EditorDockFactory : Factory
     // 面板引用（供外部设置内容）
     // Viewport 使用 Document（放在 DocumentDock 中），其余使用 Tool（放在 ToolDock 中）
     private Document? _viewport;
+    private DocumentDock? _centerDock;
     private Tool? _sceneBrowser;
     private Tool? _inspector;
     private Tool? _contentBrowser;
     private Tool? _console;
     private readonly Dictionary<string, Tool> _textureViewers = new();
+    private readonly Dictionary<string, Document> _textureViewerDocuments = new();
 
     public Document? ViewportPanel => _viewport;
+    public DocumentDock? CenterDock => _centerDock;
     public Tool? SceneBrowserPanel => _sceneBrowser;
     public Tool? InspectorPanel => _inspector;
     public Tool? ContentBrowserPanel => _contentBrowser;
     public Tool? ConsolePanel => _console;
     public IReadOnlyDictionary<string, Tool> TextureViewerPanels => _textureViewers;
+    public IReadOnlyDictionary<string, Document> TextureViewerDocuments => _textureViewerDocuments;
 
     /// <summary>
     /// 创建默认编辑器布局。
@@ -170,7 +174,7 @@ public class EditorDockFactory : Factory
         };
 
         // 中央 DocumentDock：Viewport（启用标签拖拽浮动）
-        var centerDock = new DocumentDock
+        _centerDock = new DocumentDock
         {
             Id = "Center",
             ActiveDockable = _viewport,
@@ -184,9 +188,9 @@ public class EditorDockFactory : Factory
             Id = "Left",
             Orientation = Orientation.Vertical,
             Proportion = 0.75,
-            ActiveDockable = centerDock,
+            ActiveDockable = _centerDock,
             VisibleDockables = CreateList<IDockable>(
-                centerDock,
+                _centerDock,
                 new ProportionalDockSplitter { Id = "SplitBottom" },
                 bottomDock
             )
@@ -236,9 +240,36 @@ public class EditorDockFactory : Factory
         return tool;
     }
 
+    /// <summary>创建纹理查看器文档页（可停靠到中央文档区）。</summary>
+    public Document CreateTextureViewerDocument(string assetName, Guid guid)
+    {
+        var panelId = $"{PanelIds.TextureViewerPrefix}{guid}";
+        var document = new Document
+        {
+            Id = panelId,
+            Title = $"Texture - {assetName}",
+            CanFloat = true,
+            CanClose = true,
+        };
+
+        _textureViewerDocuments[panelId] = document;
+        return document;
+    }
+
+    public Document? FindDocument(string panelId)
+    {
+        if (_viewport?.Id == panelId)
+        {
+            return _viewport;
+        }
+
+        return _textureViewerDocuments.TryGetValue(panelId, out var document) ? document : null;
+    }
+
     /// <summary>移除纹理查看器面板。</summary>
     public void RemoveTextureViewerPanel(string panelId)
     {
         _textureViewers.Remove(panelId);
+        _textureViewerDocuments.Remove(panelId);
     }
 }

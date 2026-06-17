@@ -52,6 +52,7 @@ internal static class AssetsModuleImp
         EditorCoreModule.Context.RegisterService(assetEditorManager);
         var openerRegistry = new AssetOpenerRegistry();
         openerRegistry.Discover(EditorCoreModule.Context);
+        EditorCoreModule.Context.RegisterService(openerRegistry);
         var openService = new AssetOpenService(openerRegistry);
         EditorCoreModule.Context.RegisterService(openService);
 

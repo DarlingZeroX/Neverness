@@ -262,14 +262,18 @@ public class ViewportAvaloniaView : AvaloniaViewBase
         // 2. FlushResizes（SwapChain ResizeBuffers）
         _surfaceRegistry.FlushResizes();
 
-        // 3. 渲染视口（FBO → CopyTexture → SwapChain → Present）
-        var sceneHandle = 0ul; // TODO: 从 Controller 获取当前场景句柄
-        var w = (uint)(_viewModel?.ViewportWidth ?? 0);
-        var h = (uint)(_viewModel?.ViewportHeight ?? 0);
+        // 3. 渲染视口（RenderCommands 路径）
+        var w = (_viewModel?.ViewportWidth ?? 0);
+        var h = (_viewModel?.ViewportHeight ?? 0);
 
-        if (w > 0 && h > 0)
+        if (w > 0 && h > 0 && _controller != null)
         {
-            _surfaceRegistry.RenderViewport(_surfaceId, sceneHandle, w, h);
+            // 从 ECS 收集渲染命令（SetCamera + DrawSpriteBatch）
+            var commands = _controller.CollectRenderCommands(w, h);
+            if (commands != null)
+            {
+                _surfaceRegistry.RenderViewportCommands(_surfaceId, commands);
+            }
         }
     }
 

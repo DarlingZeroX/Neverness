@@ -83,6 +83,22 @@ public sealed class AssetOpenerRegistry
     /// <summary>检查是否有 opener 支持该 TypeId。</summary>
     public bool IsSupported(ulong typeId) => _openers.ContainsKey(typeId);
 
+    /// <summary>手动注册 opener（用于延迟加载的程序集）。</summary>
+    public void Register(IAssetOpener opener)
+    {
+        // 从 AssetOpenerAttribute 获取 TypeId
+        var attr = opener.GetType().GetCustomAttribute<AssetOpenerAttribute>();
+        if (attr == null)
+        {
+            Console.WriteLine($"[AssetOpenerRegistry] 无法注册 opener: {opener.GetType().FullName}（缺少 AssetOpenerAttribute）");
+            return;
+        }
+
+        _allOpeners.Add(opener);
+        _openers[attr.TypeId] = opener;
+        Console.WriteLine($"[AssetOpenerRegistry] 手动注册 opener: {opener.GetType().FullName} (TypeId={attr.TypeId})");
+    }
+
     /// <summary>
     /// 尝试实例化 opener：优先无参构造，其次从 context 解析构造函数参数。
     /// </summary>

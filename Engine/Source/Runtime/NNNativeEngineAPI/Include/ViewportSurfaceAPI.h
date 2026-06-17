@@ -12,6 +12,7 @@
  */
 
 #include "NativeInterop.h"
+#include "RenderCommands.h"
 #include <cstdint>
 
 #ifdef __cplusplus
@@ -110,6 +111,28 @@ typedef struct NNViewportSurfaceAPI
         std::uint64_t sceneHandle,
         std::uint32_t width,
         std::uint32_t height);
+
+    /**
+     * @brief 通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。
+     *
+     * 新接口，替代 RenderViewport(sceneHandle)。
+     * C# 端从 Friflo ECS 收集渲染数据 → 序列化为 Flat Buffer → 传给 C++ 执行渲染。
+     *
+     * 渲染管线：
+     * 1. 解析 Commands → SetCamera / SetRenderPassState / DrawSpriteBatch
+     * 2. Renderer2D（World Pass）
+     * 3. RmlUI（UI Overlay Pass，独立于 Commands）
+     * 4. CopyTexture → SwapChain → Present
+     *
+     * @param surfaceId    表面 ID
+     * @param commands     命令缓冲区指针（NNRenderCommandBufferHeader + commands[]）
+     * @param commandsSize 缓冲区总字节数
+     * @return 1 = 成功，0 = 失败
+     */
+    std::uint8_t (NN_ENGINE_ABI_STDCALL *RenderViewportCommands)(
+        std::uint64_t surfaceId,
+        const void* commands,
+        std::uint32_t commandsSize);
 
 } NNViewportSurfaceAPI;
 

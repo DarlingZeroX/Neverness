@@ -3,58 +3,68 @@ using Neverness.Runtime.Assets;
 namespace Neverness.Editor.Assets.AssetOpening;
 
 /// <summary>
-/// 资产编辑器窗口映射管理器。
-/// 维护 Asset GUID → Window ID 的双向映射，实现"重复打开聚焦已有窗口"。
-///
-/// 由 <see cref="TextureAssetOpener"/> 等 Opener 在打开窗口后注册映射。
-/// 窗口关闭时通过 <see cref="Unregister"/> 清除映射。
+/// Tracks the relationship between an asset GUID and its active editor instance.
 /// </summary>
 public sealed class AssetEditorManager
 {
-    private readonly Dictionary<GUID, Guid> _assetToWindow = new();
-    private readonly Dictionary<Guid, GUID> _windowToAsset = new();
+    private readonly Dictionary<GUID, Guid> _assetToEditor = new();
+    private readonly Dictionary<Guid, GUID> _editorToAsset = new();
 
-    /// <summary>注册资产→窗口映射。</summary>
     public void Register(GUID assetGuid, Guid windowId)
     {
-        _assetToWindow[assetGuid] = windowId;
-        _windowToAsset[windowId] = assetGuid;
+        RegisterEditor(assetGuid, windowId);
     }
 
-    /// <summary>查找资产对应的已打开窗口 ID。</summary>
+    public void RegisterEditor(GUID assetGuid, Guid editorId)
+    {
+        _assetToEditor[assetGuid] = editorId;
+        _editorToAsset[editorId] = assetGuid;
+    }
+
     public bool TryGetWindowId(GUID assetGuid, out Guid windowId)
     {
-        return _assetToWindow.TryGetValue(assetGuid, out windowId);
+        return TryGetEditorId(assetGuid, out windowId);
     }
 
-    /// <summary>查找窗口对应的资产 GUID。</summary>
+    public bool TryGetEditorId(GUID assetGuid, out Guid editorId)
+    {
+        return _assetToEditor.TryGetValue(assetGuid, out editorId);
+    }
+
     public bool TryGetAssetGuid(Guid windowId, out GUID assetGuid)
     {
-        return _windowToAsset.TryGetValue(windowId, out assetGuid);
+        return TryGetAssetGuidFromEditor(windowId, out assetGuid);
     }
 
-    /// <summary>移除窗口映射（窗口关闭时调用）。</summary>
+    public bool TryGetAssetGuidFromEditor(Guid editorId, out GUID assetGuid)
+    {
+        return _editorToAsset.TryGetValue(editorId, out assetGuid);
+    }
+
     public void Unregister(Guid windowId)
     {
-        if (_windowToAsset.Remove(windowId, out var assetGuid))
+        UnregisterEditor(windowId);
+    }
+
+    public void UnregisterEditor(Guid editorId)
+    {
+        if (_editorToAsset.Remove(editorId, out var assetGuid))
         {
-            _assetToWindow.Remove(assetGuid);
+            _assetToEditor.Remove(assetGuid);
         }
     }
 
-    /// <summary>移除资产映射。</summary>
     public void UnregisterAsset(GUID assetGuid)
     {
-        if (_assetToWindow.Remove(assetGuid, out var windowId))
+        if (_assetToEditor.Remove(assetGuid, out var editorId))
         {
-            _windowToAsset.Remove(windowId);
+            _editorToAsset.Remove(editorId);
         }
     }
 
-    /// <summary>清除所有映射。</summary>
     public void Clear()
     {
-        _assetToWindow.Clear();
-        _windowToAsset.Clear();
+        _assetToEditor.Clear();
+        _editorToAsset.Clear();
     }
 }

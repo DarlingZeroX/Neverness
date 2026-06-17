@@ -34,6 +34,20 @@ public interface IViewportService
 
     /// <summary>设置 RmlUI 视口尺寸。</summary>
     void SetRmlUIViewportSize(uint width, uint height);
+
+    /// <summary>
+    /// 从 ECS 收集渲染命令并序列化为 Flat Buffer。
+    ///
+    /// 数据流：
+    /// Friflo ECS (TransformComponent + SpriteRendererComponent + CameraComponent)
+    ///   → SetCamera + DrawSpriteBatch 命令
+    ///   → RenderCommandBuffer.Build()
+    ///   → byte[]
+    /// </summary>
+    /// <param name="width">视口宽度。</param>
+    /// <param name="height">视口高度。</param>
+    /// <returns>序列化的命令缓冲区，可直接传给 RenderViewportCommands。无场景时返回 null。</returns>
+    byte[]? CollectRenderCommands(float width, float height);
 }
 
 /// <summary>

@@ -33,8 +33,8 @@
 extern "C" {
 #endif
 
-/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v28：新增 NNDiligentAPI 子表。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 28u
+/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v29：ViewportSurfaceAPI 新增 RenderViewportCommands。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 29u
 
 typedef struct NNNativeEngineAPI
 {
@@ -62,7 +62,7 @@ typedef struct NNNativeEngineAPI
 	NNRenderAssetAPI renderAsset;
 	/** @brief 视口渲染 API（场景 → 离屏 Framebuffer → Texture ID）；見 `ViewportRenderAPI.h`。 */
 	NNViewportRenderAPI viewportRender;
-	/** @brief 视口 Surface API（SwapChain 生命周期管理）；見 `ViewportSurfaceAPI.h`。v23 新增。 */
+	/** @brief 视口 Surface API（SwapChain 生命周期管理 + RenderCommands）；見 `ViewportSurfaceAPI.h`。v23 新增，v29 新增 RenderViewportCommands。 */
 	NNViewportSurfaceAPI viewportSurface;
 	/** @brief Diligent 底层设备指针暴露；見 `DiligentAPI.h`。v28 新增。 */
 	NNDiligentAPI diligent;

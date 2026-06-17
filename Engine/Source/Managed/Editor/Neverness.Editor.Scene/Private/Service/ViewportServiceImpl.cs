@@ -1,7 +1,12 @@
+using System.Numerics;
+using System.Runtime.InteropServices;
 using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Interop;
 using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Components;
+using Neverness.Rendering.Diligent.Commands;
+using SpriteFlags = Neverness.Runtime.Scene.Components.SpriteFlags;
 
 namespace Neverness.Editor.Scene.Private.Service;
 
@@ -105,4 +110,132 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
             api.ViewportRender.SetRmlUIViewportSize(width, height);
         }
     }
+
+    /// <summary>
+    /// 从 ECS 收集渲染命令并序列化为 Flat Buffer。
+    ///
+    /// 数据流：
+    /// Friflo ECS → SetCamera + DrawSpriteBatch → RenderCommandBuffer → byte[]
+    /// </summary>
+    public byte[]? CollectRenderCommands(float width, float height)
+    {
+        if (_scene == null || width < 1 || height < 1)
+            return null;
+
+        var buffer = new RenderCommandBuffer();
+
+        // ── 1. 收集相机数据（取第一个 CameraComponent） ──
+        bool hasCamera = false;
+        var cameraView = _scene.Scene.CreateView<TransformComponent, CameraComponent>();
+        cameraView.Refresh();
+        cameraView.ForEach(
+            (IEntity entity, TransformComponent transform, CameraComponent camera) =>
+            {
+                if (hasCamera) return; // 只取第一个
+
+                // 计算 ViewMatrix = 逆 WorldMatrix
+                var worldMatrix = transform.WorldMatrix;
+                // 相机 Z 偏移（与 C++ SceneRenderer 一致：避免近平面裁剪）
+                float nearZ = camera.NearPlane;
+                float farZ = camera.FarPlane;
+                float cameraZ = (nearZ + farZ) * 0.5f;
+                worldMatrix.M43 = cameraZ;
+
+                Matrix4x4.Invert(worldMatrix, out var viewMatrix);
+
+                // ProjectionMatrix（由 CameraSystem 每帧计算）
+                var projMatrix = camera.ProjectionMatrix;
+
+                // System.Numerics 是行主序，Diligent/GLM 是列主序，需要转置
+                var viewT = Matrix4x4.Transpose(viewMatrix);
+                var projT = Matrix4x4.Transpose(projMatrix);
+                unsafe
+                {
+                    buffer.AddSetCamera(
+                        new ReadOnlySpan<float>(&viewT, 16),
+                        new ReadOnlySpan<float>(&projT, 16),
+                        width, height,
+                        camera.NearPlane, camera.FarPlane,
+                        camera.OrthographicSize * camera.AspectRatio,
+                        camera.OrthographicSize);
+                }
+
+                hasCamera = true;
+            });
+
+        // 如果没有相机，使用默认正交相机
+        if (!hasCamera)
+        {
+            var identity = Matrix4x4.Identity;
+            unsafe
+            {
+                buffer.AddSetCamera(
+                    new ReadOnlySpan<float>(&identity, 16),
+                    new ReadOnlySpan<float>(&identity, 16),
+                    width, height, -1f, 1f,
+                    width, height);
+            }
+        }
+
+        // ── 2. 设置渲染 Pass 状态 ──
+        ReadOnlySpan<float> clearColor = stackalloc float[] { 0.1f, 0.1f, 0.1f, 1f };
+        buffer.AddSetRenderPassState(clearColor, RenderPassFlags.ClearColor | RenderPassFlags.DepthTest);
+
+        // ── 3. 收集精灵数据 ──
+        var sprites = new List<SpriteInstance>();
+        var spriteView = _scene.Scene.CreateView<TransformComponent, SpriteRendererComponent>();
+        spriteView.Refresh();
+        spriteView.ForEach(
+            (IEntity entity, TransformComponent transform, SpriteRendererComponent sprite) =>
+            {
+                // 跳过不可见的精灵
+                if ((sprite.Flags & SpriteFlags.Visible) == 0)
+                    return;
+
+                var instance = new SpriteInstance();
+                unsafe
+                {
+                    // WorldMatrix（4x4 列主序）
+                    // System.Numerics Matrix4x4 是行主序，需要转置
+                    var transposed = Matrix4x4.Transpose(transform.WorldMatrix);
+                    var matBytes = new byte[64];
+                    MemoryMarshal.Write(matBytes.AsSpan(), in transposed);
+                    fixed (byte* src = matBytes)
+                    {
+                        Buffer.MemoryCopy(src, instance.Transform, 64, 64);
+                    }
+
+                    // 颜色
+                    instance.Color[0] = sprite.ColorR;
+                    instance.Color[1] = sprite.ColorG;
+                    instance.Color[2] = sprite.ColorB;
+                    instance.Color[3] = sprite.ColorA;
+
+                    // UV
+                    instance.UvRect[0] = sprite.UvU0;
+                    instance.UvRect[1] = sprite.UvV0;
+                    instance.UvRect[2] = sprite.UvU1;
+                    instance.UvRect[3] = sprite.UvV1;
+                }
+
+                instance.TextureHandle = 0; // TODO: 从 TextureAsset GUID 解析 GPU Handle
+                instance.Layer = sprite.Layer;
+                instance.SortOrder = sprite.SortOrder;
+                instance.BlendMode = (uint)sprite.Blend;
+                instance.Flags = 0;
+                if ((sprite.Flags & SpriteFlags.FlipX) != 0) instance.Flags |= (uint)SpriteFlags.FlipX;
+                if ((sprite.Flags & SpriteFlags.FlipY) != 0) instance.Flags |= (uint)SpriteFlags.FlipY;
+
+                sprites.Add(instance);
+            });
+
+        if (sprites.Count > 0)
+        {
+            buffer.AddDrawSpriteBatch(CollectionsMarshal.AsSpan(sprites));
+        }
+
+        // ── 4. 构建并返回 ──
+        return buffer.Build();
+    }
+
 }

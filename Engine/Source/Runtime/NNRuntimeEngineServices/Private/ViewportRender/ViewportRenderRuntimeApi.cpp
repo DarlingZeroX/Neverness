@@ -267,6 +267,22 @@ void NN_ENGINE_ABI_STDCALL rt_viewportRender_processRmlUIInput(
 
 } // namespace
 
+// ── Getter 函数（供 ViewportSurfaceRuntimeApi 访问 RmlUI 单例） ──
+// 注意：g_RmlUIRenderer / g_RmlUISystem 在匿名 namespace 中定义（内部链接），
+// getter 函数在同一翻译单元中，可以访问它们。
+
+/// 获取 RmlUI 渲染器单例（由 ViewportRenderRuntimeApi 管理生命周期）。
+NN::Runtime::Renderer::RmlUIRenderer* GetRmlUIRenderer()
+{
+    return g_RmlUIRenderer;
+}
+
+/// 获取 RmlUI 系统单例（由 ViewportRenderRuntimeApi 管理生命周期）。
+NN::Runtime::RmlUI::NNRmlUISystem* GetRmlUISystem()
+{
+    return g_RmlUISystem;
+}
+
 /// 关闭 ViewportRender 资源（引擎退出时调用）
 void ShutdownViewportRender()
 {

@@ -4,6 +4,8 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Dock.Avalonia.Controls;
+using Dock.Model.Core;
+using Dock.Model.Mvvm.Controls;
 using Neverness.Editor.AvaloniaFrontend.Dock;
 using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.Framework.Private.Menu;
@@ -41,6 +43,9 @@ public partial class MainEditorWindow : Window
 
         // 配置浮动窗口工厂（Native 模式，原生 OS 窗口）
         DockControl.HostWindowFactory = App.CreateDockHostWindow;
+
+        // 保存 DockControl 到静态字段（供 TextureAssetOpener 等使用）
+        AvaloniaFrontendModule.MainDockControl = DockControl;
 
         // 创建菜单、工具栏、状态栏
         InitializeSubViews();
@@ -93,6 +98,52 @@ public partial class MainEditorWindow : Window
                 Console.Error.WriteLine($"[MainEditorWindow] 未找到 Tool: {panelId}");
             }
         }
+    }
+
+    public bool TryActivateDocument(string panelId)
+    {
+        var document = _dockFactory.FindDocument(panelId);
+        var centerDock = _dockFactory.CenterDock;
+        if (document == null || centerDock == null)
+        {
+            return false;
+        }
+
+        if (document.Owner is null)
+        {
+            centerDock.AddDocument(document);
+        }
+
+        _dockFactory.SetActiveDockable(document);
+        return true;
+    }
+
+    public Document ShowDocument(Document document, Control content)
+    {
+        var centerDock = _dockFactory.CenterDock
+            ?? throw new InvalidOperationException("Center document dock is not initialized.");
+
+        document.Context = content;
+
+        if (document.Owner is null)
+        {
+            centerDock.AddDocument(document);
+        }
+
+        _dockFactory.SetActiveDockable(document);
+        return document;
+    }
+
+    public bool RemoveDocument(string panelId)
+    {
+        var document = _dockFactory.FindDocument(panelId);
+        if (document == null)
+        {
+            return false;
+        }
+
+        _dockFactory.RemoveDockable(document, true);
+        return true;
     }
 
     private void InitializeSubViews()

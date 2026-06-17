@@ -1,6 +1,6 @@
 # ContentBrowser Avalonia 实施记录
 
-> 状态：Unreal 风格视觉重写 + 框选 + 搜索 + 选中 + 目录树高亮（2026-06-16）
+> 状态：Unreal 风格视觉重写 + 框选 + 搜索 + 选中 + 目录树高亮 + 资产拖拽（2026-06-16）
 
 ---
 
@@ -130,10 +130,41 @@ ContentBrowserAvaloniaView (View)
 - 指针捕获确保鼠标移出也能收到事件
 - 详见 ContentBrowser_RubberBand_Selection.md
 
+### 资产拖拽架构
+```
+ContentBrowserThumbnailGrid          InspectorAvaloniaView
+  缩略图 PointerPressed              ┌─ CreateAssetDropTarget()
+    → 记录 _dragStartPos             │   DragDrop.AddDragEnterHandler
+  缩略图 PointerMoved                │   DragDrop.AddDragOverHandler
+    → 阈值 > 5px                     │   DragDrop.AddDragLeaveHandler
+    → new DataObject                 │   DragDrop.AddDropHandler
+    → DoDragDrop(Copy)               │     → onAssetDropped(path)
+    → 携带 SystemPath + VirtualPath  │     → 更新显示文字
+                                     └─ DragDrop.SetAllowDrop = true
+
+数据格式：
+  "nnasset/systempath"  → 文件系统绝对路径
+  "nnasset/virtualpath" → 资产虚拟路径（优先使用）
+
+AssetDragFormats 辅助类：
+  GetAssetPath(DataObject)       → 优先虚拟路径，回退系统路径
+  GetAssetPathFromDrag(DragEventArgs) → 从拖拽事件提取路径
+```
+
 ### 右键菜单
 - 缩略图右键 → Item 菜单（Rename / Remove / Show in Explorer / Copy Name）
 - 空白区域右键 → Background 菜单（Create Directory / Refresh / Show in Explorer）
 - 目录树节点右键 → Background 菜单
+
+### 资产拖拽（ContentBrowser → Inspector）
+- 缩略图左键按住 + 移动超过 5px 阈值 → 启动 `DragDrop.DoDragDrop`
+- 携带两种数据格式：`nnasset/systempath`（绝对路径）+ `nnasset/virtualpath`（虚拟路径）
+- Inspector 侧通过 `CreateAssetDropTarget()` 创建可接收拖拽的资产引用字段
+- 拖拽进入时蓝色高亮边框（`#2196F3`），离开时恢复
+- 放下后显示资产名称（不含扩展名），触发 `onAssetDropped` 回调
+- 不与 RubberBandSelection 冲突：框选仅在空白区域触发，拖拽仅在缩略图上触发
+- 双击时自动取消拖拽状态，防止误触发
+- 当前已在 SpriteRendererInspector 的 Texture 字段接入
 
 ### 文件信息映射
 | 扩展名 | 图标 | 类型标 | 颜色 |
@@ -158,8 +189,9 @@ ContentBrowserAvaloniaView (View)
 |------|------|
 | `Views/ContentBrowserAvaloniaView.cs` | Avalonia 视图实现（Unreal 风格） |
 | `ContentBrowser/RubberBandSelection.cs` | 鼠标框选逻辑 |
+| `ContentBrowser/AssetDragFormats.cs` | 资产拖拽数据格式常量 + 辅助方法 |
 | `ViewModels/ContentBrowserViewModel.cs` | ViewModel（CurrentDirectory, SearchFilter 等） |
-| `Controllers/ContentBrowserController.cs` | Controller（OpenDirectory, GoBack, GetFiles 等） |
+| `Controllers/ContentBrowserController.cs` | Controller（OpenDirectory, GoBack, GetFiles, GetAssetVirtualPath 等） |
 | `Public/IContentBrowserService.cs` | 服务接口 + 数据模型 |
 | `ImGuiFrontend/Views/ContentBrowserImGuiView.cs` | ImGui 版本（功能参考） |
 
@@ -214,7 +246,7 @@ ContentBrowserAvaloniaView (View)
 1. ~~**搜索过滤**~~ ✅
 2. ~~**目录树高亮**~~ ✅
 3. **右键菜单**：部分已实现，需完善
-4. **资产拖拽**：从 ContentBrowser 拖拽资产到 Inspector
+4. ~~**资产拖拽**~~ ✅ 基础框架已实现（拖拽源 + Inspector Drop Target），SpriteRenderer 已接入
 5. **网格/列表切换**：支持 Grid 和 List 两种视图模式
 6. **缩略图渲染**：用实际资产缩略图替代 emoji 图标
 7. ~~**选中状态**~~ ✅
@@ -231,6 +263,7 @@ ContentBrowserAvaloniaView (View)
 | 2026-06-16 | v2.0 | 搜索过滤、选中状态（单击/Ctrl多选）、目录树高亮 |
 | 2026-06-16 | v3.0 | 鼠标框选（RubberBandSelection）、Canvas→Grid 修复换行 |
 | 2026-06-16 | v4.0 | Unreal 风格视觉重写：配色、缩略图卡片（圆角+阴影+类型标签）、工具栏、状态栏、面板内阴影、可拖拽分割线 |
+| 2026-06-16 | v5.0 | 资产拖拽：缩略图拖拽源 + Inspector Drop Target + AssetDragFormats + SpriteRendererInspector 接入 |
 
 ---
 

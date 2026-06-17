@@ -14,6 +14,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
+		<ProjectReference Include="..\..\Rendering\Neverness.Rendering.Diligent\Neverness.Rendering.Diligent.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
 	</ItemGroup>

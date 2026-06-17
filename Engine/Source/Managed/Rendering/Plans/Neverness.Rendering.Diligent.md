@@ -326,39 +326,73 @@ Neverness.Rendering.Diligent
 
 ## 7. 实施阶段
 
-### Phase 0：项目脚手架
-- 创建 `Neverness.Rendering.Diligent.csproj`
-- 建立目录结构
-- 引用 `Diligent-GraphicsEngine.NET`
-- 确保编译通过
+### Phase 0：项目脚手架 ✅ 已完成
+- [x] 创建 `Neverness.Rendering.Diligent.csproj`
+- [x] 建立目录结构（Resources / Pipeline / Synchronization / Internal / Docs）
+- [x] 引用 `Diligent-GraphicsEngine.NET`
+- [x] 编译通过（0 错误 0 警告）
 
-### Phase 1：GraphicsDevice + BackendFactory
-- 实现 `DiligentBackend`（internal，持有原生对象）
-- 实现 `BackendFactory`（D3D12 / Vulkan 工厂创建）
-- 实现 `GraphicsDevice.Create()` 入口
-- 实现 `GraphicsDevice.Dispose()` 生命周期管理
+### Phase 1：GraphicsDevice + BackendFactory ✅ 已完成
+- [x] 实现 `DiligentBackend`（internal，持有原生对象）
+- [x] 实现 `BackendFactory`（D3D12 / Vulkan 工厂创建 + SwapChain 创建）
+- [x] 实现 `GraphicsDevice.Create()` 工厂入口
+- [x] 实现 `GraphicsDevice.FromNativePointers()`（从 C++ 端接收原生指针）
+- [x] 实现 `GraphicsDevice.Dispose()` 生命周期管理
+- [x] 实现 `CreateSwapChain()` 分离式 SwapChain 创建
 
-### Phase 2：资源句柄（Buffer / Texture / TextureView / Sampler）
-- 实现 `BufferHandle`（含 Map / Unmap / WriteData / Dispose）
-- 实现 `TextureHandle`（含 GetDefaultView 缓存 / Dispose）
-- 实现 `TextureView`（轻量引用，无 IDisposable）
-- 实现 `SamplerHandle`
-- 实现 `GraphicsDevice` 上的 CreateBuffer / CreateTexture / CreateSampler
+### Phase 2：资源句柄（Buffer / Texture / TextureView / Sampler）⚠️ 部分完成
+- [x] 实现 `BufferHandle`（Dispose ✅，Map / Unmap / WriteData 仍是 NotImplementedException）
+- [x] 实现 `TextureHandle`（含 ConcurrentDictionary 缓存 GetDefaultView / Dispose）
+- [x] 实现 `TextureView`（轻量引用，无 IDisposable，持有 NativeObject）
+- [x] 实现 `SamplerHandle`（Desc + Dispose）
+- [x] 实现 `GraphicsDevice` 上的 CreateBuffer / CreateTexture / CreateSampler
+- [ ] **待完成**：BufferHandle.Map / Unmap / WriteData 需要对接 RenderContext 的 MapBuffer / UnmapBuffer
 
-### Phase 3：管线句柄
-- 实现 `ShaderHandle` / `PipelineStateHandle` / `ResourceSignatureHandle` / `ShaderResourceBindingHandle`
-- 实现 `GraphicsDevice` 上的 CreateShader / CreateGraphicsPipelineState / CreateComputePipelineState / CreateSRB
+### Phase 3：管线句柄 ✅ 已完成
+- [x] 实现 `ShaderHandle`（GetBytecode + Dispose）
+- [x] 实现 `PipelineStateHandle`（CreateShaderResourceBinding + Dispose）
+- [x] 实现 `ResourceSignatureHandle`（Dispose）
+- [x] 实现 `ShaderResourceBindingHandle`（GetVariable + Dispose）
+- [x] 实现 `GraphicsDevice` 上的 CreateShader / CreateGraphicsPipelineState / CreateComputePipelineState / CreatePipelineResourceSignature / CreateSRB
 
-### Phase 4：RenderContext（命令录制）
-- 实现 `RenderContext` 封装 `IDeviceContext`
-- Draw / Dispatch / Copy 等命令录制（公开）
-- RenderPass 系列 API（公开）
-- Fence / Barrier / Sync API（internal，为 RenderGraph 执行层预留）
+### Phase 4：RenderContext（命令录制）✅ 已完成
+- [x] 实现 `RenderContext` 封装 `IDeviceContext`
+- [x] 管线绑定：SetPipelineState / CommitShaderResources
+- [x] 顶点/索引缓冲：SetVertexBuffers / SetIndexBuffer
+- [x] 渲染目标：SetRenderTargets / SetViewports / SetScissorRects
+- [x] RenderPass：BeginRenderPass / NextSubpass / EndRenderPass
+- [x] Draw：Draw / DrawIndexed / DrawIndirect / DrawIndexedIndirect
+- [x] Compute：DispatchCompute
+- [x] Copy：CopyTexture / UpdateBuffer
+- [x] 状态管理：InvalidateState / Begin
+- [x] internal Fence/Barrier/Sync：TransitionResourceStates / EnqueueSignal / DeviceWaitForFence / WaitForIdle
 
-### Phase 5：SwapChainPresenter
-- 实现 `SwapChainPresenter` 封装 `ISwapChain`
-- Present / Resize / GetBackBuffer
+### Phase 5：SwapChainPresenter ✅ 已完成
+- [x] 实现 `SwapChainPresenter` 封装 `ISwapChain`
+- [x] GetCurrentBackBufferRTV / GetDepthBufferDSV（返回 TextureView）
+- [x] Present / Resize
+- [x] Dispose
 
-### Phase 6：枚举 re-export + 文档
-- 常用枚举和 Desc 结构体的类型转发
-- README.md 编写
+### Phase 6：枚举 re-export + 文档 ⚠️ 部分完成
+- [x] README.md 编写（含使用示例、项目结构、边界隔离规则）
+- [ ] **待完成**：常用枚举和 Desc 结构体的类型转发（如 TextureFormat / ResourceState 等 re-export）
+
+---
+
+## 8. 实施总结（2026-06-17）
+
+### 已完成
+- **Phase 0-1**：项目脚手架 + GraphicsDevice + BackendFactory 全部完成
+- **Phase 3-5**：管线句柄 + RenderContext + SwapChainPresenter 全部完成
+- **编译状态**：0 错误 0 警告，模块可正常编译
+
+### 待完成
+1. **BufferHandle.Map/Unmap/WriteData**：当前抛出 `NotImplementedException`，需要对接 `RenderContext` 的 `MapBuffer`/`UnmapBuffer`（Diligent 的 Map 操作在 DeviceContext 上，不在 Buffer 上）
+2. **枚举 re-export**：Phase 6 的类型转发尚未实施
+3. **UploadHelper.cs**：计划中的 Ring Buffer / Persistent Mapping 辅助工具未创建
+
+### 架构差异（相比原计划）
+- `BackendFactory` 增加了 `CreateSwapChain()` 方法，SwapChain 创建与设备创建分离（原计划中设备和 SwapChain 一起创建）
+- `DiligentBackend` 增加了从原生指针构造的重载，支持从 C++ 端接收已有设备
+- `GraphicsDevice` 增加了 `FromNativePointers()` 静态方法和 `CreateSwapChain()` 实例方法
+- `RenderContext` 的 Fence API 使用 `DeviceWaitForFence` 而非 `WaitForFence`（与 Diligent API 对齐）

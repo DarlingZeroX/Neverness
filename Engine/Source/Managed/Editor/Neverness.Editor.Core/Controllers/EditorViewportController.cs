@@ -91,4 +91,13 @@ public class EditorViewportController : IController
     {
         _viewportService.SetRmlUIViewportSize(width, height);
     }
+
+    /// <summary>
+    /// 从 ECS 收集渲染命令（SetCamera + DrawSpriteBatch）并序列化为 Flat Buffer。
+    /// 返回 null 表示无场景或收集失败。
+    /// </summary>
+    public byte[]? CollectRenderCommands(float width, float height)
+    {
+        return _viewportService.CollectRenderCommands(width, height);
+    }
 }

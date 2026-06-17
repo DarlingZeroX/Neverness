@@ -165,4 +165,28 @@ public sealed unsafe class ViewportSurfaceRegistryImpl : IViewportSurfaceRegistr
         // 这里简化处理：用 Count > 0 和 surfaceId != 0 判断
         return surfaceId != 0 && _registeredCount > 0;
     }
+
+    /// <summary>
+    /// 通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。
+    /// v29 新增。
+    /// </summary>
+    public bool RenderViewportCommands(ulong surfaceId, byte[] commands)
+    {
+        ref readonly var api = ref EngineNativeApiBootstrap.EngineApi;
+        if (api.ViewportSurface.RenderViewportCommands == null)
+        {
+            Console.WriteLine("[ViewportSurfaceRegistry] RenderViewportCommands 未实现（需要 layoutVersion >= 29）");
+            return false;
+        }
+
+        unsafe
+        {
+            fixed (byte* ptr = commands)
+            {
+                var result = api.ViewportSurface.RenderViewportCommands(
+                    surfaceId, ptr, (uint)commands.Length);
+                return result != 0;
+            }
+        }
+    }
 }

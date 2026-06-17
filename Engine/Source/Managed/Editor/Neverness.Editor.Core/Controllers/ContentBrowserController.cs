@@ -200,6 +200,12 @@ public class ContentBrowserController : IController
         return _viewModel.CurrentDirectory;
     }
 
+    /// <summary>获取文件的资产虚拟路径（用于拖拽等场景）。</summary>
+    public NVirtualPath GetAssetVirtualPath(string systemPath)
+    {
+        return _contentService.GetAssetVirtualPath(systemPath);
+    }
+
     /// <summary>更新 ViewModel 状态。</summary>
     private void UpdateViewModel(string path)
     {

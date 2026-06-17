@@ -2,6 +2,7 @@ using System.Text;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene.Internal;
 using Neverness.Runtime.Scene.Query;
+using Neverness.Runtime.Scene.Systems;
 
 namespace Neverness.Runtime.Scene;
 
@@ -61,6 +62,13 @@ public sealed class SceneWorld : IScene
         Entities = new EntityRegistry(_scene);
         Queries = new SceneQueryCache(_scene.Store, _scene);
         Systems = new SceneSystemScheduler(_scene);
+
+        // 注册核心 ECS 系统（每个场景都需要）
+        // 优先级顺序：HierarchySystem(10) → SceneUpdateSystem(50) → TransformSystem(100) → CameraSystem(200)
+        Systems.Register(new HierarchySystem());
+        Systems.Register(new SceneUpdateSystem());
+        Systems.Register(new TransformSystem());
+        Systems.Register(new CameraSystem());
     }
 
     // ── 工厂方法 ──

@@ -19,6 +19,25 @@ internal sealed class DiligentBackend : IDisposable
     }
 
     /// <summary>
+    /// 从已有的原生指针创建后端（不接管所有权，调用方负责生命周期）。
+    /// 用于从 C++ 端获取主窗口的 Diligent 设备。
+    /// </summary>
+    /// <param name="devicePtr">IRenderDevice* 指针</param>
+    /// <param name="contextPtr">IDeviceContext* 指针</param>
+    /// <param name="swapChainPtr">ISwapChain* 指针（可选）</param>
+    public DiligentBackend(IntPtr devicePtr, IntPtr contextPtr, IntPtr swapChainPtr = default)
+    {
+        if (devicePtr == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(devicePtr), "IRenderDevice 指针不能为空");
+        if (contextPtr == IntPtr.Zero)
+            throw new ArgumentNullException(nameof(contextPtr), "IDeviceContext 指针不能为空");
+
+        NativeDevice = new IRenderDevice(devicePtr);
+        NativeImmediateContext = new IDeviceContext(contextPtr);
+        NativeSwapChain = swapChainPtr != IntPtr.Zero ? new ISwapChain(swapChainPtr) : null;
+    }
+
+    /// <summary>
     /// 创建原生设备和上下文（不含 SwapChain）。
     /// </summary>
     public static DiligentBackend Create(GraphicsBackend backend, in GraphicsDeviceCreateInfo createInfo)
@@ -38,6 +57,7 @@ internal sealed class DiligentBackend : IDisposable
     public void Dispose()
     {
         // 释放顺序：SwapChain → Context → Device
+        // 注意：从指针构造的后端不接管所有权，不释放原生对象
         NativeSwapChain?.Dispose();
         NativeImmediateContext?.Dispose();
         NativeDevice?.Dispose();

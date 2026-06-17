@@ -81,6 +81,9 @@ public unsafe struct NNViewportSurfaceApi
 
 	/// <summary>渲染视口到 SwapChain（SceneRenderer → FBO → CopyTexture → SwapChain → Present）。</summary>
 	public delegate* unmanaged<ulong, ulong, uint, uint, byte> RenderViewport;
+
+	/// <summary>通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。v29 新增。</summary>
+	public delegate* unmanaged<ulong, void*, uint, byte> RenderViewportCommands;
 }
 
 /// <summary>

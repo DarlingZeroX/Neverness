@@ -73,4 +73,20 @@ public interface IViewportSurfaceRegistry
 
     /// <summary>获取已注册表面数量。</summary>
     int Count { get; }
+
+    /// <summary>
+    /// 通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。
+    ///
+    /// 新接口，替代 RenderViewport(sceneHandle)。
+    /// C# 端从 Friflo ECS 收集渲染数据 → 序列化为 Flat Buffer → 传给 C++ 执行渲染。
+    ///
+    /// 渲染管线：
+    /// 1. 解析 Commands → SetCamera / SetRenderPassState / DrawSpriteBatch
+    /// 2. Renderer2D（World Pass）
+    /// 3. CopyTexture → SwapChain → Present
+    /// </summary>
+    /// <param name="surfaceId">表面 ID。</param>
+    /// <param name="commands">命令缓冲区字节数组。</param>
+    /// <returns>是否成功。</returns>
+    bool RenderViewportCommands(ulong surfaceId, byte[] commands);
 }

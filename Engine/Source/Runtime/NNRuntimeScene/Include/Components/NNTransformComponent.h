@@ -21,10 +21,10 @@ namespace NN::Runtime::Scene
 	 */
 	struct NN_RUNTIME_SCENE_API NNTransformComponent
 	{
-		Core::float3 Position;        ///< 局部平移
-		Core::quaternion Rotation; ///< 局部旋转（四元数 wxyz，默认单位）
-		Core::float3 Scale;           ///< 局部缩放
-		Core::matrix WorldMatrix;                ///< 世界变换矩阵（由 NNTransformSystem 计算，默认单位阵）
+		NN::Core::float3 Position;        ///< 局部平移
+		NN::Core::quaternion Rotation; ///< 局部旋转（四元数 wxyz，默认单位）
+		NN::Core::float3 Scale;           ///< 局部缩放
+		NN::Core::matrix WorldMatrix;                ///< 世界变换矩阵（由 NNTransformSystem 计算，默认单位阵）
 
 		NNTransformComponent()
 			:Position(0.f, 0.f, 0.f),

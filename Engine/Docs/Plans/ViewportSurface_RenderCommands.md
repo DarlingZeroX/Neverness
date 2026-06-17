@@ -1,0 +1,422 @@
+# ViewportSurface RenderCommands 计划
+
+## 1. 背景与目标
+
+### 现状问题
+- 当前 `rt_viewportSurface_renderViewport(surfaceId, sceneHandle, w, h)` 接收 C++ `sceneHandle`
+- C++ `SceneRenderer::Render()` 内部通过 `SpriteRenderSystem::Collect(scene)` 遍历 C++ ECS 收集 SpriteDrawCommand
+- **C++ Scene 已废弃**，Scene 已迁移到 C#（Friflo ECS），C++ 端不再持有场景数据
+
+### 目标
+新增 `rt_viewportSurface_renderViewportCommands` 接口：
+- C# 从 Friflo ECS 收集渲染数据 → 序列化为 Flat Buffer（RenderCommands）
+- 通过新 ABI 将 Commands 传给 C++
+- C++ 解析 Commands → 调用现有 Renderer2D 执行渲染
+- **渐进替换**：旧 `RenderViewport(sceneHandle)` 保留，新接口并存
+
+### 渲染管线（目标架构）
+
+```
+C# Scene (Friflo ECS)
+    ↓ 收集 RenderCommands
+C++ RenderCommands 解析
+    ↓
+Renderer2D (World Pass)
+    ↓
+RmlUI (UI Overlay Pass，独立于 RenderCommands)
+    ↓
+CopyTexture → SwapChain → Present
+```
+
+**关键**：RmlUI 不进 RenderCommands，作为独立 Overlay Pass 在 Renderer2D 之后执行。
+
+---
+
+## 2. RenderCommand 体系设计
+
+### 2.1 命令类型枚举
+
+```c
+typedef enum NNRenderCommandType
+{
+    NN_RENDER_COMMAND_SET_CAMERA         = 0x01,  // 设置相机
+    NN_RENDER_COMMAND_SET_RENDER_PASS_STATE = 0x02,  // 设置渲染 Pass 状态（清屏、深度等）
+    NN_RENDER_COMMAND_DRAW_SPRITE_BATCH  = 0x10,  // 批量精灵绘制
+    // 第二阶段：
+    // NN_RENDER_COMMAND_DRAW_MESH       = 0x20,  // 网格绘制（待实现）
+} NNRenderCommandType;
+```
+
+### 2.2 Flat Buffer 布局
+
+```
+┌──────────────────────────────────────────────────┐
+│ NNRenderCommandBufferHeader (16 bytes)           │
+│   magic        : uint32_t  = 0x524E4443 ("RNDC")│
+│   commandCount : uint32_t                        │
+│   totalBytes   : uint32_t                        │
+│   reserved     : uint32_t                        │
+├──────────────────────────────────────────────────┤
+│ NNRenderCommandHeader[0] (8 bytes)               │
+│   type   : NNRenderCommandType (uint32_t)        │
+│   size   : uint32_t (含 header 自身 + data)      │
+│   data[] : 按 type 解释（见下方各命令结构）       │
+├──────────────────────────────────────────────────┤
+│ NNRenderCommandHeader[1] ...                     │
+│   ...                                            │
+└──────────────────────────────────────────────────┘
+```
+
+### 2.3 各命令数据结构
+
+#### SetCamera（type = 0x01, size = 8 + 136 = 144）
+
+```c
+typedef struct NNSetCameraData
+{
+    float viewMatrix[16];          // 64 bytes - View 矩阵（4x4 列主序）
+    float projectionMatrix[16];    // 64 bytes - Projection 矩阵（4x4 列主序）
+    float viewportWidth;           // 4 bytes
+    float viewportHeight;          // 4 bytes
+    float nearPlane;               // 4 bytes
+    float farPlane;                // 4 bytes
+} NNSetCameraData;                 // 总计 136 bytes（+ 8 bytes header = 144）
+```
+
+#### SetRenderPassState（type = 0x02, size = 8 + 32 = 40）
+
+```c
+typedef struct NNRenderPassStateData
+{
+    float clearColor[4];           // 16 bytes - RGBA 清屏颜色
+    std::uint32_t flags;           // 4 bytes  - 位标志
+        // bit0: 启用清屏
+        // bit1: 启用深度测试
+        // bit2: 启用深度写入
+        // bit3-31: 预留（Blend、Stencil 等后续扩展）
+    std::uint32_t stencilRef;      // 4 bytes  - Stencil 参考值（预留）
+    std::uint32_t reserved0;       // 4 bytes
+    std::uint32_t reserved1;       // 4 bytes
+} NNRenderPassStateData;           // 总计 32 bytes（+ 8 bytes header = 40）
+```
+
+#### DrawSpriteBatch（type = 0x10, size = 8 + 16 + N*120）
+
+```c
+typedef struct NNSpriteInstance
+{
+    float transform[16];           // 64 bytes - WorldMatrix（4x4 列主序）
+    std::uint64_t textureHandle;   // 8 bytes  - Diligent ITextureView* 编码为 uint64_t（0 = 白色默认纹理）
+    float color[4];                // 16 bytes - RGBA tint [0,1]
+    float uvRect[4];               // 16 bytes - [u0, v0, u1, v1]（Atlas UV 区域）
+    std::uint32_t layer;           // 4 bytes  - 渲染层（排序用）
+    std::uint32_t sortOrder;       // 4 bytes  - 层内排序
+    std::uint32_t blendMode;       // 4 bytes  - 混合模式（0=Alpha,1=Add,2=Mul,3=Opaque,4=Premul）
+    std::uint32_t flags;           // 4 bytes  - bit0: FlipX, bit1: FlipY
+} NNSpriteInstance;                // 总计 120 bytes
+
+typedef struct NNDrawSpriteBatchData
+{
+    std::uint32_t spriteCount;     // 4 bytes
+    std::uint32_t reserved0;       // 4 bytes
+    std::uint32_t reserved1;       // 4 bytes
+    std::uint32_t reserved2;       // 4 bytes
+    NNSpriteInstance sprites[];    // 变长数组
+} NNDrawSpriteBatchData;           // 头部 16 bytes + N * 120 bytes
+```
+
+### 2.4 NNSpriteInstance vs SpriteDrawCommand：独立 + 转换
+
+```
+NNSpriteInstance (ABI 层，120 bytes)
+    ↓ ConvertToSpriteDrawCommand()
+SpriteDrawCommand (Renderer2D 内部，96 bytes)
+```
+
+**设计理由**：
+- **ABI 必须稳定**：`NNSpriteInstance` 是 C#/C++ 跨 ABI 边界的结构，字段顺序、大小不能变
+- **Renderer2D 一定会变**：`SpriteDrawCommand` 是 C++ 内部结构，可以自由调整
+- **转换层隔离变化**：Renderer2D 内部重构不影响 ABI
+
+### 2.5 C# 端对齐设计
+
+```csharp
+// 与 C 结构体 1:1 内存布局对齐（blittable）
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct RenderCommandBufferHeader
+{
+    public uint Magic;          // 0x524E4443
+    public uint CommandCount;
+    public uint TotalBytes;
+    public uint Reserved;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct RenderCommandHeader
+{
+    public uint Type;           // NNRenderCommandType
+    public uint Size;           // 含 header + data
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct SetCameraData
+{
+    public unsafe fixed float ViewMatrix[16];
+    public unsafe fixed float ProjectionMatrix[16];
+    public float ViewportWidth;
+    public float ViewportHeight;
+    public float NearPlane;
+    public float FarPlane;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct RenderPassStateData
+{
+    public unsafe fixed float ClearColor[4];
+    public uint Flags;
+    public uint StencilRef;
+    public uint Reserved0;
+    public uint Reserved1;
+}
+
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct SpriteInstance
+{
+    public unsafe fixed float Transform[16];
+    public ulong TextureHandle;     // Diligent ITextureView* 编码为 uint64_t
+    public unsafe fixed float Color[4];
+    public unsafe fixed float UvRect[4];
+    public uint Layer;
+    public uint SortOrder;
+    public uint BlendMode;
+    public uint Flags;
+}
+```
+
+---
+
+## 3. C++ ABI 变更
+
+### 3.1 新增 API 函数指针（ViewportSurfaceAPI.h）
+
+```c
+// 在 NNViewportSurfaceAPI 结构体末尾追加（不破坏已有字段）
+
+/**
+ * @brief 通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。
+ * @param surfaceId   表面 ID
+ * @param commands    命令缓冲区指针（NNRenderCommandBufferHeader + commands[]）
+ * @param commandsSize 缓冲区总字节数
+ * @return 1 = 成功，0 = 失败
+ */
+std::uint8_t (NN_ENGINE_ABI_STDCALL *RenderViewportCommands)(
+    std::uint64_t surfaceId,
+    const void* commands,
+    std::uint32_t commandsSize);
+```
+
+### 3.2 新增头文件：RenderCommands.h
+
+定义所有命令结构体（见 2.3 节），独立头文件，不依赖任何 NNRuntime 头文件。
+
+路径：`Engine/Source/Runtime/NNNativeEngineAPI/Include/RenderCommands.h`
+
+### 3.3 Runtime 实现（ViewportSurfaceRuntimeApi.cpp）
+
+新增 `rt_viewportSurface_renderViewportCommands` 函数：
+
+```
+1. 校验 buffer（magic、size 一致性）
+2. 获取 SwapChain + Context + Renderer2D
+3. 遍历 commands[]：
+   - SetCamera → 暂存 CameraData
+   - SetRenderPassState → 暂存渲染状态
+   - DrawSpriteBatch → NNSpriteInstance[] 转换为 SpriteDrawCommand[] → 暂存
+4. 执行渲染：
+   a. Resize FBO（如需要）
+   b. 清屏（如果 RenderPassState.flags & ENABLE_CLEAR）
+   c. Renderer2D.SetRenderTarget(FBO RTV/DSV)
+   d. Renderer2D.BeginScene(camera, w, h)
+   e. Renderer2D.Submit(spriteCommands)
+   f. Renderer2D.EndScene()
+5. CopyTexture（FBO → SwapChain back buffer）
+6. Present
+```
+
+### 3.4 RmlUI Overlay Pass（独立于 RenderCommands）
+
+```
+// 在 rt_viewportSurface_renderViewportCommands 内部，步骤 4f 之后：
+7. RmlUI Overlay Pass（如果 RmlUI 系统已初始化）
+   a. g_RmlUISystem->Tick(scene, deltaTime)
+   b. g_RmlUIRenderer->SetViewport(w, h)
+   c. g_RmlUIRenderer->Sync(drawList)
+   d. g_RmlUIRenderer->RenderOverlayOnScene(drawList, Scene, FBO RTV, FBO DSV, w, h)
+8. CopyTexture（FBO → SwapChain back buffer）
+9. Present
+```
+
+**注意**：RmlUI 数据来源不是 RenderCommands，而是 RmlUI 系统自身的状态。RenderCommands 只负责 World Pass。
+
+---
+
+## 4. Renderer2D 对接
+
+现有 `Renderer2D` 接口：
+- `SetRenderTarget(rtv, dsv)` — 设置渲染目标
+- `BeginScene(camera, w, h)` — 开始渲染（传入 CameraData）
+- `Submit(vector<SpriteDrawCommand>)` — 提交精灵命令
+- `EndScene()` — 结束渲染
+
+**转换层**：
+
+```c
+/// NNSpriteInstance → SpriteDrawCommand 转换
+void ConvertToSpriteDrawCommand(const NNSpriteInstance& src, SpriteDrawCommand& dst)
+{
+    std::memcpy(dst.Transform, src.transform, sizeof(float) * 16);
+    dst.TextureHandle = src.textureHandle;
+    std::memcpy(dst.Color, src.color, sizeof(float) * 4);
+    std::memcpy(dst.UvRect, src.uvRect, sizeof(float) * 4);
+    dst.Layer     = src.layer;
+    dst.SortOrder = src.sortOrder;
+    dst.Blend     = static_cast<BlendMode>(src.blendMode);
+    dst.FlipX     = (src.flags & 0x01) != 0;
+    dst.FlipY     = (src.flags & 0x02) != 0;
+}
+```
+
+**CameraData 转换**：
+
+```c
+/// NNSetCameraData → CameraData 转换
+void ConvertToCameraData(const NNSetCameraData& src, CameraData& dst)
+{
+    std::memcpy(dst.ViewMatrix, src.viewMatrix, sizeof(float) * 16);
+    std::memcpy(dst.ProjectionMatrix, src.projectionMatrix, sizeof(float) * 16);
+    // ViewProjection = Projection * View（在 Renderer2D 内部计算，或由 C# 预计算）
+    std::memcpy(dst.ViewProjectionMatrix, src.viewProjectionMatrix, sizeof(float) * 16);
+    dst.OrthoWidth  = src.viewportWidth;
+    dst.OrthoHeight = src.viewportHeight;
+    dst.Near = src.nearPlane;
+    dst.Far  = src.farPlane;
+}
+```
+
+---
+
+## 5. C# 端使用方式（预期）
+
+```csharp
+// 1. 从 Friflo ECS 收集渲染数据
+var sprites = new List<SpriteInstance>();
+foreach (var entity in scene.Query<Transform, SpriteRenderer>())
+{
+    sprites.Add(new SpriteInstance
+    {
+        Transform = entity.Transform.WorldMatrix,
+        TextureHandle = entity.Sprite.TextureHandle,  // Diligent ITextureView* 编码
+        Color = entity.Sprite.Color,
+        UvRect = entity.Sprite.UvRect,
+        Layer = entity.Sprite.Layer,
+        SortOrder = entity.Sprite.SortOrder,
+        BlendMode = (uint)entity.Sprite.BlendMode,
+        Flags = (entity.Sprite.FlipX ? 1u : 0) | (entity.Sprite.FlipY ? 2u : 0),
+    });
+}
+
+// 2. 构建 Command Buffer
+var buffer = RenderCommandBuffer.Create();
+buffer.AddSetCamera(camera.ViewMatrix, camera.ProjectionMatrix, width, height);
+buffer.AddSetRenderPassState(new RenderPassStateData { ClearColor = ..., Flags = 0x01 });
+buffer.AddDrawSpriteBatch(sprites);
+
+// 3. 提交到 C++
+unsafe
+{
+    fixed (byte* ptr = buffer.Data)
+    {
+        surfaceRegistry.RenderViewportCommands(surfaceId, (IntPtr)ptr, (uint)buffer.Data.Length);
+    }
+}
+```
+
+---
+
+## 6. 实施阶段
+
+### Phase 1：命令体系基础设施（不改变渲染行为）✅ 已完成
+- [x] 创建 `RenderCommands.h`（C 端命令结构体定义）
+- [x] C# 端创建 `Neverness.Rendering.Diligent.Commands` 命名空间（blittable 结构体）
+- [x] 在 `ViewportSurfaceAPI.h` 追加 `RenderViewportCommands` 函数指针
+- [x] 在 `EngineAPIRegistry.h` 的 `layoutVersion` 递增（v29）
+- [x] C# 端 `NNNativeEngineApiTypes.cs` 同步新增函数指针
+
+### Phase 2：C++ 命令解析与执行 ✅ 已完成（RmlUI 暂跳过）
+- [x] 在 `ViewportSurfaceRuntimeApi.cpp` 实现 `rt_viewportSurface_renderViewportCommands`
+- [x] 实现命令遍历 + 校验逻辑（magic、size、边界检查）
+- [x] 实现 `SetCamera` → `CameraData` 转换
+- [x] 实现 `SetRenderPassState` → 清屏标志暂存
+- [x] 实现 `DrawSpriteBatch` → `NNSpriteInstance[] → SpriteDrawCommand[]` 转换 → 调用 Renderer2D
+- [ ] RmlUI Overlay Pass —— 暂跳过（RmlUI Tick 需要 C++ NNRuntimeScene，Scene 已迁移到 C#，需设计 RmlUI 的 C# 驱动方式）
+- [x] 实现 CopyTexture + Present 流程
+- [x] 新增 `RmlUISingletonAccess.h` 共享头文件（getter 函数声明）
+- [x] `ShutdownViewportSurface` 增加 Renderer2D + FBO 清理
+
+### Phase 3：C# 端 Command Buffer 构建器 ✅ 已完成
+- [x] 实现 `RenderCommandBuffer` 构建器（AddSetCamera / AddSetRenderPassState / AddDrawSpriteBatch / Build）
+- [x] 实现 `ViewportSurfaceRegistryImpl.RenderViewportCommands()` 方法
+- [x] 更新 `IViewportSurfaceRegistry` 接口
+- [x] 所有 C# 项目编译通过（0 错误）
+
+### Phase 4：Avalonia Viewport 接入 ✅ 已完成
+- [x] `ViewportAvaloniaView.OnMainThreadRender()` 改用 Commands 路径
+- [x] `IViewportService.CollectRenderCommands()` — 从 Friflo ECS 收集相机 + 精灵数据
+- [x] `ViewportServiceImpl.CollectRenderCommands()` — SetCamera + SetRenderPassState + DrawSpriteBatch
+- [x] `EditorViewportController.CollectRenderCommands()` — 委托到 IViewportService
+- [x] 所有 C# 项目编译通过（0 错误）
+- [ ] 验证渲染结果与旧路径一致（需要运行时测试）
+
+### Phase 5：清理（后续）
+- [ ] 旧 `RenderViewport(sceneHandle)` 标记废弃
+- [ ] 确认所有 C# 端已迁移后删除旧接口
+- [ ] 删除 C++ `SceneRenderer` 的 `NNRuntimeScene` 依赖
+
+---
+
+## 7. 关键设计决策
+
+| 决策 | 选择 | 理由 |
+|------|------|------|
+| 命令结构 | struct union（discriminated union） | AOT 友好、零分配、序列化简单 |
+| 数据传递 | Flat Buffer（指针 + 长度） | 零拷贝、ABI 简单、单次跨 ABI 调用 |
+| 兼容策略 | 渐进替换 | 新旧接口并存，等 C# 全部迁移后删旧 |
+| Sprite 数据 | NNSpriteInstance 独立 + 转换层 | ABI 稳定，Renderer2D 内部可自由变化 |
+| 命令头 | type + size 变长 | 向前兼容，旧客户端跳过未知命令 |
+| RenderPassState | 命名从 SetRenderState 改为 SetRenderPassState | 预留后续 Blend/Stencil 扩展 |
+| RmlUI | 独立 Overlay Pass，不进 RenderCommands | World Pass → UI Pass 分离，架构更清晰 |
+| textureHandle | Diligent ITextureView* 编码为 uint64_t | 与现有 Renderer2D 一致 |
+
+---
+
+## 8. ABI 兼容性
+
+- `NNViewportSurfaceAPI` 结构体末尾追加 `RenderViewportCommands` 字段
+- `layoutVersion` 从 28 → 29
+- C# 端读取 layoutVersion >= 29 才调用新接口，否则回退到旧接口
+- 旧 `RenderViewport(sceneHandle)` 保留不删
+
+---
+
+## 9. 未来扩展路径
+
+```
+Phase 1-4（当前）：
+  SetCamera → SetRenderPassState → DrawSpriteBatch → Renderer2D → RmlUI → Present
+
+Phase 2（未来）：
+  SetCamera → SetRenderPassState → DrawSpriteBatch → DrawMesh → Renderer2D → RmlUI → Present
+
+最终形态：
+  SetCamera → SetRenderPassState → World Pass (Sprites + Meshes) → PostProcess Pass → UI Pass → Present
+```

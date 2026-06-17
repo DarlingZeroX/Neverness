@@ -47,7 +47,7 @@ namespace NN::Runtime::Scene
 		float OrthoHeight  = 10.0f;
 
 		// ── 输出（由 NNCameraSystem 计算）──
-		Core::matrix ProjectionMatrix{1.0f};
+		NN::Core::matrix ProjectionMatrix{1.0f};
 
 		NNCameraComponent() = default;
 	};
