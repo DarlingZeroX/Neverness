@@ -11,6 +11,9 @@ public interface IInspectorService
     /// <summary>获取指定实体的所有组件信息。</summary>
     List<ComponentDataInfo> GetEntityComponents(IEntity entity);
 
+    /// <summary>按 ID 获取实体实例（返回 null 表示不存在）。</summary>
+    IEntity? GetEntityById(int entityId);
+
     /// <summary>检查实体是否拥有指定组件。</summary>
     bool HasComponent(IEntity entity, ulong componentTypeId);
 

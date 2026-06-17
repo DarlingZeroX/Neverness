@@ -31,7 +31,7 @@ public sealed class RmlUIContextMenuContributor : IContextMenuContributor
                     }
                 },
             },
-            Icon: FontAwesome5Pro.FileCode,
+            Icon: "📄",
             SortOrder: 500));
     }
 }

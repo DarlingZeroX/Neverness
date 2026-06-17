@@ -28,7 +28,7 @@ public class ContentBrowserImGuiView : PanelViewBase
     private readonly HashSet<string> _expandedDirectories = new();
 
     public ContentBrowserImGuiView()
-        : base("Content Browser", FontAwesome5Pro.Window + " Content Browser")
+        : base("Content Browser", "🖥️ Content Browser")
     {
         _thumbnail = new ThumbnailRenderer();
     }
@@ -101,7 +101,7 @@ public class ContentBrowserImGuiView : PanelViewBase
             // 后退按钮
             if (_viewModel!.CanGoBack)
             {
-                if (ImGui.Button(FontAwesome5Pro.ChevronCircleLeft + "##Back", thumbnailSize))
+                if (ImGui.Button("◀" + "##Back", thumbnailSize))
                 {
                     _controller?.GoBack();
                 }
@@ -109,14 +109,14 @@ public class ContentBrowserImGuiView : PanelViewBase
             else
             {
                 ImGui.BeginDisabled();
-                ImGui.Button(FontAwesome5Pro.ChevronCircleLeft + "##Back", thumbnailSize);
+                ImGui.Button("◀" + "##Back", thumbnailSize);
                 ImGui.EndDisabled();
             }
 
             ImGui.SameLine();
 
             // 刷新按钮
-            if (ImGui.Button(FontAwesome5Pro.Redo + "##Refresh", thumbnailSize))
+            if (ImGui.Button("🔄" + "##Refresh", thumbnailSize))
             {
                 _controller?.RefreshDirectory();
             }
@@ -124,7 +124,7 @@ public class ContentBrowserImGuiView : PanelViewBase
             ImGui.SameLine();
 
             // 新建文件夹按钮
-            if (ImGui.Button(FontAwesome5Pro.FolderPlus + "##NewFolder", thumbnailSize))
+            if (ImGui.Button("📁" + "##NewFolder", thumbnailSize))
             {
                 _controller?.CreateNewFolder();
             }
@@ -168,7 +168,7 @@ public class ContentBrowserImGuiView : PanelViewBase
             }
 
             ImGui.SameLine();
-            ImGui.Text(FontAwesome5Pro.ChevronRight);
+            ImGui.Text("›");
             ImGui.SameLine();
         }
     }
@@ -214,7 +214,7 @@ public class ContentBrowserImGuiView : PanelViewBase
     {
         ImGui.PushID(node.SystemPath.FullPath);
 
-        string nodeName = $"{FontAwesome5Pro.Folder} {node.Name}";
+        string nodeName = $"📁 {node.Name}";
 
         // TreeNodeEx 绘制
         if (ImGui.TreeNode(nodeName))
@@ -431,7 +431,7 @@ public class ContentBrowserImGuiView : PanelViewBase
                 ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 1.0f)));
 
             // 图标
-            string icon = isDir ? FontAwesome5Pro.Folder : GetFileIcon(name);
+            string icon = isDir ? "📁" : GetFileIcon(name);
             var iconSize = ImGui.CalcTextSize(icon);
             var iconPos = new Vector2(
                 imagePosStart.X + (ImageSize.X - iconSize.X) * 0.5f,
@@ -466,18 +466,18 @@ public class ContentBrowserImGuiView : PanelViewBase
             var ext = Path.GetExtension(fileName).ToLower();
             return ext switch
             {
-                ".png" or ".jpg" or ".jpeg" or ".bmp" or ".tga" => FontAwesome5Pro.Image,
-                ".fbx" or ".obj" or ".gltf" or ".glb" => FontAwesome5Pro.Cube,
-                ".wav" or ".mp3" or ".ogg" => FontAwesome5Pro.Music,
-                ".mp4" or ".avi" or ".mov" => FontAwesome5Pro.Film,
-                ".cs" or ".cpp" or ".h" or ".py" => FontAwesome5Pro.Code,
-                ".json" or ".xml" or ".yaml" or ".yml" => FontAwesome5Pro.FileAlt,
-                ".txt" or ".md" => FontAwesome5Pro.FileAlt,
-                ".shader" or ".hlsl" or ".glsl" => FontAwesome5Pro.Sun,
-                ".scene" => FontAwesome5Pro.Map,
-                ".prefab" => FontAwesome5Pro.Cubes,
-                ".mat" => FontAwesome5Pro.PaintBrush,
-                _ => FontAwesome5Pro.File
+                ".png" or ".jpg" or ".jpeg" or ".bmp" or ".tga" => "🖼️",
+                ".fbx" or ".obj" or ".gltf" or ".glb" => "🧊",
+                ".wav" or ".mp3" or ".ogg" => "🎵",
+                ".mp4" or ".avi" or ".mov" => "🎬",
+                ".cs" or ".cpp" or ".h" or ".py" => "📝",
+                ".json" or ".xml" or ".yaml" or ".yml" => "📋",
+                ".txt" or ".md" => "📄",
+                ".shader" or ".hlsl" or ".glsl" => "☀️",
+                ".scene" => "🗺️",
+                ".prefab" => "🧊",
+                ".mat" => "📋",
+                _ => "📄"
             };
         }
     }

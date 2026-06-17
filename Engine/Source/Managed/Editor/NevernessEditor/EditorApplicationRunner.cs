@@ -63,7 +63,49 @@ internal static class EditorApplicationRunner
 		return EditorFrontend.Avalonia;
 	}
 
-	public static int Run(EditorLaunchOptions options, string[]? args = null)
+    public static void Install(Window window)
+    {
+        /* Native 事件泵：RuntimeBootstrap 之后即可创建 */
+        var nativePump = new NativeEventPump();
+
+        s_isInstalled = true;
+        var sceneManager = new SceneManager();
+
+        /* Phase 1: 基础框架 */
+        EditorFrameworkModule.Install();
+        EditorCoreModule.Install(); // 注册 BuiltinMenuContributor
+
+        /* Phase 2: 业务模块（注册菜单贡献者、命令等） */
+        MediaImporterModule.Install();
+        MediaModule.Install();
+        CoreModuleImp.Context.RegisterService<IAudioService>(new NativeAudioService());
+        RmluiModule.Install();
+        AssetsModule.Install(sceneManager);
+        SceneModule.Install(sceneManager);
+        ScriptEditorModule.Install(CoreModuleImp.Context);
+
+        /* Phase 3: 前端安装（所有菜单贡献者已注册） */
+        InstallAvaloniaFrontend(window);
+        s_avaloniaHost?.InstallModule();
+
+        /* 注册场景子系统到 RuntimeLoop，驱动 ECS Tick */
+        RuntimeInitializer.RegisterSubsystem(new SceneSubsystem(sceneManager));
+
+        /* 模块就绪后创建编辑器事件路由器 */
+        s_editorEventPump = new EditorEventPump(
+            nativePump,
+            CoreModuleImp.Context.Events);
+
+        /* Phase 4: 编辑器组装（ViewModel、Controller、View） */
+        EditorCompositionRoot.Build();
+
+        /* Phase 5: 前端面板内容和上下文菜单 */
+        AvaloniaFrontendModule.SetDockPanelContent();
+        s_avaloniaHost?.RegisterContextMenuContributors();
+    }
+
+
+    public static int Run(EditorLaunchOptions options, string[]? args = null)
 	{
 		ArgumentNullException.ThrowIfNull(options);
 
@@ -109,18 +151,20 @@ internal static class EditorApplicationRunner
 				return 1;
 			}
 
-			/* Native 事件泵：RuntimeBootstrap 之后即可创建 */
-			var nativePump = new NativeEventPump();
+
 
 			Window? window = Window.Create(options.WindowTitle, options.Width, options.Height);
 			if (window is null)
 			{
 				Console.Error.WriteLine("NervernessEditor: Window.Create failed.");
-				nativePump.Dispose();
+				//nativePump.Dispose();
 				return 1;
 			}
 
-			while (ApplicationHost.PumpEvents())
+            // 安装编辑器（模块注册、前端安装、事件泵创建等）
+            Install(window);
+
+            while (ApplicationHost.PumpEvents())
 			{
 				/* 在 BeginFrame 之前消费 Native 事件 */
 				s_editorEventPump?.PollAndDispatch();
@@ -133,73 +177,6 @@ internal static class EditorApplicationRunner
 
 				ApplicationHost.BeginFrame();
 
-				if (!s_isInstalled)
-				{
-					s_isInstalled = true;
-					var sceneManager = new SceneManager();
-
-					EditorFrameworkModule.Install();
-
-					// 根据前端类型选择安装方式
-					switch (frontend)
-					{
-						case EditorFrontend.Avalonia:
-							InstallAvaloniaFrontend(window);
-							break;
-						//case EditorFrontend.ImGui:
-						//	ImGuiFrontendModule.InstallShell(window);
-						//	break;
-					}
-
-					EditorCoreModule.Install();
-
-					switch (frontend)
-					{
-						case EditorFrontend.Avalonia:
-							s_avaloniaHost?.InstallModule();
-							break;
-						//case EditorFrontend.ImGui:
-						//	ImGuiFrontendModule.Install();
-						//	break;
-					}
-
-					MediaImporterModule.Install();
-					MediaModule.Install();
-					CoreModuleImp.Context.RegisterService<IAudioService>(new NativeAudioService());
-					RmluiModule.Install();
-					AssetsModule.Install(sceneManager);
-					SceneModule.Install(sceneManager);
-					ScriptEditorModule.Install(CoreModuleImp.Context);
-
-					/* 注册场景子系统到 RuntimeLoop，驱动 ECS Tick */
-					RuntimeInitializer.RegisterSubsystem(new SceneSubsystem(sceneManager));
-
-					/* 模块就绪后创建编辑器事件路由器 */
-					s_editorEventPump = new EditorEventPump(
-						nativePump,
-						CoreModuleImp.Context.Events);
-
-					/* 编辑器组装层：创建 ViewModel、Controller、View，注册到 PanelManager */
-					EditorCompositionRoot.Build();
-
-					/* Avalonia 模式：将 View 设置到 Dock 面板 */
-					if (frontend == EditorFrontend.Avalonia)
-					{
-						AvaloniaFrontendModule.SetDockPanelContent();
-					}
-
-					/* 注册上下文菜单贡献者（需要 Controller 实例） */
-					switch (frontend)
-					{
-						case EditorFrontend.Avalonia:
-							s_avaloniaHost?.RegisterContextMenuContributors();
-							break;
-						//case EditorFrontend.ImGui:
-						//	ImGuiFrontendModule.RegisterContextMenuContributors();
-						//	break;
-					}
-				}
-
 				var deltaTime = EngineTime.DeltaTime;
 				if (deltaTime <= 0f)
 				{
@@ -207,13 +184,6 @@ internal static class EditorApplicationRunner
 				}
 
 				RuntimeMainLoop.Tick(deltaTime);
-
-				// ImGui 模式下需要每帧渲染 UI
-				//if (frontend == EditorFrontend.ImGui)
-				//{
-				//	EditorFrameworkModule.TickEditorUI();
-				//	ImGuiWindowFeature.Tick(deltaTime);
-				//}
 
 				// Avalonia 模式下在主线程执行 Diligent 渲染（Diligent immediate context 非线程安全）
 				if (frontend == EditorFrontend.Avalonia)

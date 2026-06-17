@@ -101,6 +101,16 @@ public static class AvaloniaFrontendModule
         // 设置 Avalonia 上下文菜单渲染器（ContextMenuManager → Avalonia ContextMenu）
         ContextMenuManager.Renderer = new AvaloniaContextMenuRenderer();
 
+        // 刷新菜单栏（在 CoreModuleImp.Install() 之后，菜单贡献者已注册）
+        if (MainWindow != null)
+        {
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                MainWindow.RefreshMenuBar();
+                Console.WriteLine("[AvaloniaFrontendModule] 菜单栏已刷新");
+            });
+        }
+
         Console.WriteLine("[AvaloniaFrontendModule] AvaloniaFrontend 安装完成");
     }
 

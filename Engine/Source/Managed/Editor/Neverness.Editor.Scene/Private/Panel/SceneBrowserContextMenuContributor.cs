@@ -1,3 +1,4 @@
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Scene.Public;
@@ -138,8 +139,14 @@ public sealed class SceneBrowserContextMenuContributor : IContextMenuContributor
                     var world = ctx.GetContext<SceneWorld>(SceneBrowserContextMenu.KeyActiveWorld);
                     if (world != null && handleObj is int handle && handle > 0)
                     {
-                        var entity = ((IScene)world).GetEntity(handle);
-                        entity?.Destroy();
+                        // 通过 Controller 删除实体，确保 SceneBrowser 刷新
+                        var controller = EditorCompositionRoot.SceneBrowserController;
+                        if (controller != null)
+                        {
+                            var entity = ((IScene)world).GetEntity(handle);
+                            if (entity != null)
+                                controller.DeleteEntity(entity);
+                        }
                     }
                 },
             },

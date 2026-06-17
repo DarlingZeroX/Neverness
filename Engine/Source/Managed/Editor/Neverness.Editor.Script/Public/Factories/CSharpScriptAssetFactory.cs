@@ -6,7 +6,6 @@
 // ============================================================================
 
 using Neverness.Editor.Assets.AssetFactories;
-using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Assets;
 
 namespace Neverness.Editor.Script.Public;
@@ -27,7 +26,7 @@ public sealed class CSharpScriptAssetFactory : IAssetFactory
     public string Category => "Scripting";
 
     /// <inheritdoc/>
-    public string Icon => FontAwesome5Pro.Code;
+    public string Icon => "📝";
 
     /// <inheritdoc/>
     public string FileExtension => ".cs";

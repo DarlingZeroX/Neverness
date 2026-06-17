@@ -115,7 +115,13 @@ public sealed class ContentBrowserContextMenuContributor : IContextMenuContribut
                 {
                     var item = ContextMenuManager.Instance.GetContext<ContentItem>(ContentBrowserContextMenu.KeyItem);
                     if (item != null)
+                    {
                         item.Renaming = true;
+                        // 通过回调触发内联重命名 UI（由 AvaloniaFrontend 注册）
+                        var beginRename = ContextMenuManager.Instance.GetContext<Action<string, string>>("content_browser.begin_rename");
+                        if (beginRename != null)
+                            beginRename(item.SystemPath.FullPath, item.Name);
+                    }
                 },
             },
             Icon: "✏️",

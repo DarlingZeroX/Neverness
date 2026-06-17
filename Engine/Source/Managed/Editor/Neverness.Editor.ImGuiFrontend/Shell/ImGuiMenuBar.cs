@@ -112,14 +112,14 @@ public class ImGuiMenuBar : IEditorPanel
 
         var size = new Vector2(40, ImGui.GetFrameHeight());
 
-        if (ImGui.Button(FontAwesome5Pro.Minus + "##MinEditor", size))
+        if (ImGui.Button("─" + "##MinEditor", size))
         {
             m_EditorWindow.Minimize();
         }
 
         if (m_EditorMaximized)
         {
-            if (ImGui.Button(FontAwesome5Pro.WindowRestore + "##RestoreEditor", size))
+            if (ImGui.Button("❐" + "##RestoreEditor", size))
             {
                 m_EditorWindow.Restore();
                 m_EditorMaximized = false;
@@ -127,13 +127,13 @@ public class ImGuiMenuBar : IEditorPanel
         }
         else
         {
-            if (ImGui.Button(FontAwesome5Pro.WindowMaximize + "##MaximizeEditor", size))
+            if (ImGui.Button("□" + "##MaximizeEditor", size))
             {
                 m_EditorWindow.Maximize();
                 m_EditorMaximized = true;
             }
         }
-        if (ImGui.Button(FontAwesome5Pro.Times + "##close", size))
+        if (ImGui.Button("✕" + "##close", size))
         {
            ApplicationHost.Shutdown();
         }

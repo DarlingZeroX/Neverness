@@ -24,7 +24,7 @@ public sealed class AssetDebugPanel : EditorPanel, IEditorPanel
 
     // ── IEditorPanel ──
 
-    public string GetWindowFullName() => FontAwesome5Pro.Database + " " + GetWindowName();
+    public string GetWindowFullName() => "🗄️ " + GetWindowName();
     public string GetWindowName() => Title;
     public void OpenWindow(bool open) => _isOpen = open;
     public bool IsWindowOpened() => _isOpen;

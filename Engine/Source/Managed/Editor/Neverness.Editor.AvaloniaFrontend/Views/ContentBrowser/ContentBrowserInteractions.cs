@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Threading;
 using Neverness.Editor.Assets.Private.Context;
 using Neverness.Editor.AvaloniaFrontend.ContextMenus;
 using Neverness.Editor.Core.Controllers;
@@ -45,7 +46,14 @@ internal sealed class ContentBrowserInteractions
         // 订阅事件
         _viewModel.PropertyChanged += OnPropertyChanged;
         _thumbnailGrid.OnContextMenuRequested += OnThumbnailContextMenu;
+        _thumbnailGrid.OnBackgroundContextMenuRequested += OnBackgroundContextMenu;
+        _thumbnailGrid.OnRenameCommitted += OnRenameCommitted;
         _directoryTree.DirectoryTree!.PointerReleased += OnDirectoryTreePointerReleased;
+
+        // 注册重命名回调到上下文（供 ContextMenuContributor 调用）
+        var ctx = ContextMenuManager.Instance;
+        ctx.SetContext("content_browser.begin_rename", (Action<string, string>)((path, name) =>
+            Dispatcher.UIThread.Post(() => _thumbnailGrid.BeginRename(path, name))));
     }
 
     /// <summary>释放资源。</summary>
@@ -53,6 +61,8 @@ internal sealed class ContentBrowserInteractions
     {
         _viewModel.PropertyChanged -= OnPropertyChanged;
         _thumbnailGrid.OnContextMenuRequested -= OnThumbnailContextMenu;
+        _thumbnailGrid.OnBackgroundContextMenuRequested -= OnBackgroundContextMenu;
+        _thumbnailGrid.OnRenameCommitted -= OnRenameCommitted;
         if (_directoryTree.DirectoryTree != null)
             _directoryTree.DirectoryTree.PointerReleased -= OnDirectoryTreePointerReleased;
     }
@@ -77,6 +87,15 @@ internal sealed class ContentBrowserInteractions
     }
 
     /* ======================== 右键菜单 ======================== */
+
+    private void OnBackgroundContextMenu(Control target)
+    {
+        var ctx = ContextMenuManager.Instance;
+        ctx.SetContext(ContentBrowserContextMenu.KeyPath, _viewModel.CurrentDirectory ?? "");
+        ctx.SetContext(ContentBrowserContextMenu.KeyContentBrowser, AssetsContentBrowser.Instance);
+
+        _contextMenuRenderer.BuildAndShow(ContentBrowserContextMenu.BackgroundId, ctx, target);
+    }
 
     private void OnThumbnailContextMenu(Control target, string path, string name, bool isDirectory)
     {
@@ -111,5 +130,12 @@ internal sealed class ContentBrowserInteractions
         }
 
         e.Handled = true;
+    }
+
+    /* ======================== 重命名 ======================== */
+
+    private void OnRenameCommitted(string path, string newName)
+    {
+        _controller.RenameItem(path, newName);
     }
 }

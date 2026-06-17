@@ -24,7 +24,7 @@ public class SceneBrowserImGuiView : PanelViewBase
     private ulong _pendingDeleteHandle;
 
     public SceneBrowserImGuiView()
-        : base("Scene Browser", FontAwesome5Pro.Window + " Scene Browser")
+        : base("Scene Browser", "🖥️ Scene Browser")
     {
     }
 

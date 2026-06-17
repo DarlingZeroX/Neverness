@@ -56,9 +56,16 @@ public class InspectorController : IController
     {
         if (!_viewModel.HasSelection) return;
 
-        // TODO: 通过 entityId 获取 IEntity 实例
-        // 暂时返回空列表
-        var components = new List<ComponentDataInfo>();
+        // 通过 entityId 获取 IEntity 实例
+        var entity = _inspectorService.GetEntityById(_viewModel.SelectedEntityId);
+        if (entity == null || !entity.IsValid)
+        {
+            _viewModel.UpdateComponents(new List<ComponentInfoVM>());
+            return;
+        }
+
+        // 从 Service 获取组件列表
+        var components = _inspectorService.GetEntityComponents(entity);
 
         var vmComponents = components.Select(c => new ComponentInfoVM
         {

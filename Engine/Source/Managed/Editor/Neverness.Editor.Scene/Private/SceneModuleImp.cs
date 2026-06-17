@@ -2,11 +2,14 @@ using Neverness.Editor.Framework.Private;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Scene.Private.PlayMode;
 using Neverness.Editor.Scene.Private.Panel;
+using Neverness.Editor.Scene.Private.Inspector;
 using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Components;
 using Neverness.Runtime.Engine;
 using Neverness.Editor.Scene.Private.Service;
 using Neverness.Editor.Core;
 using Neverness.Editor.Core.Public;
+using Neverness.Editor.Core.Public.Inspector;
 
 namespace Neverness.Editor.Scene.Private;
 
@@ -58,6 +61,10 @@ internal static class SceneModuleImp
         ViewportService = new ViewportServiceImpl();
         ViewportSurfaceRegistry = new ViewportSurfaceRegistryImpl();
 
+        // 注册通用组件检查器（使 ComponentInspectorRegistry 能枚举实体组件）
+        // Avalonia 前端不加载 ImGuiFrontend，需要在此注册
+        RegisterGenericInspectors();
+
         context.RegisterService<ISceneQueryService>(SceneQueryService);
         context.RegisterService<IInspectorService>(InspectorService);
         context.RegisterService<IViewportService>(ViewportService);
@@ -72,7 +79,50 @@ internal static class SceneModuleImp
         // 注册 PlayMode 命令（Shell 通过命令系统调用，不直接引用 Scene 模块）
         RegisterPlayModeCommands();
 
-        // 注册 Save Scene 命令
+        // 注册 Scene 相关菜单项（从 BuiltinMenuContributor 移入）
+        RegisterSceneMenuItems(sceneManager);
+    }
+
+    /// <summary>注册 Scene 相关菜单项和命令。</summary>
+    private static void RegisterSceneMenuItems(SceneManager sceneManager)
+    {
+        // File/New Scene 命令
+        var newSceneCommand = new EditorCommand
+        {
+            Id = "file.new",
+            DisplayName = "New Scene",
+            Execute = _ =>
+            {
+                Console.WriteLine("[Scene] 创建新场景");
+                // TODO: 实现新场景创建逻辑
+            },
+        };
+        EditorMenuRegistry.RegisterCommand(newSceneCommand);
+        EditorMenuRegistry.Register(new EditorMenuItem(
+            "File/New Scene",
+            Command: newSceneCommand,
+            Icon: "📄",
+            SortOrder: 100));
+
+        // File/Open Scene 命令
+        var openSceneCommand = new EditorCommand
+        {
+            Id = "file.open",
+            DisplayName = "Open Scene",
+            Execute = _ =>
+            {
+                Console.WriteLine("[Scene] 打开场景");
+                // TODO: 实现场景打开逻辑（文件对话框）
+            },
+        };
+        EditorMenuRegistry.RegisterCommand(openSceneCommand);
+        EditorMenuRegistry.Register(new EditorMenuItem(
+            "File/Open Scene",
+            Command: openSceneCommand,
+            Icon: "📂",
+            SortOrder: 200));
+
+        // File/Save Scene 命令
         var saveCommand = new EditorCommand
         {
             Id = "file.save",
@@ -92,16 +142,32 @@ internal static class SceneModuleImp
             },
             CanExecute = () => sceneManager.HasActiveScene,
         };
-
         EditorMenuRegistry.RegisterCommand(saveCommand);
-
-        // 覆盖菜单项，绑定命令（BuiltinMenuContributor 注册的无 Command）
         EditorMenuRegistry.Register(new EditorMenuItem(
             "File/Save Scene",
             Command: saveCommand,
-            Icon: FontAwesome5Pro.Save,
+            Icon: "💾",
             Shortcut: "Ctrl+S",
             SortOrder: 300));
+
+        // File/Save Scene As... 命令
+        var saveAsCommand = new EditorCommand
+        {
+            Id = "file.saveAs",
+            DisplayName = "Save Scene As...",
+            Execute = _ =>
+            {
+                Console.WriteLine("[Scene] 场景另存为");
+                // TODO: 实现场景另存为逻辑（文件对话框）
+            },
+            CanExecute = () => sceneManager.HasActiveScene,
+        };
+        EditorMenuRegistry.RegisterCommand(saveAsCommand);
+        EditorMenuRegistry.Register(new EditorMenuItem(
+            "File/Save Scene As...",
+            Command: saveAsCommand,
+            Icon: "💾",
+            SortOrder: 400));
     }
 
     /// <summary>设置场景（场景切换时调用）。</summary>
@@ -171,5 +237,20 @@ internal static class SceneModuleImp
             Execute = _ => PlayModeController.Pause(),
             CanExecute = () => PlayModeController.CurrentMode == Editor.Core.Public.PlayMode.Playing,
         });
+    }
+
+    /// <summary>注册通用组件检查器到 ComponentInspectorRegistry。
+    /// TypeId 须与 Native NN_REGISTER_COMPONENT 的 FNV-1a hash 一致。
+    /// TODO: 补全 Script/AudioSource/VideoPlayer/RmlUIDocument 的 TypeId。</summary>
+    private static void RegisterGenericInspectors()
+    {
+        ComponentInspectorRegistry.Register(new GenericComponentInspector<TransformComponent>(
+            0xC1FFF4F356DFB2FB, "Transform", order: 0));
+        ComponentInspectorRegistry.Register(new GenericComponentInspector<CameraComponent>(
+            0x54D1B2A64667E32E, "Camera", order: 10));
+        ComponentInspectorRegistry.Register(new GenericComponentInspector<SpriteRendererComponent>(
+            0x51387BA3968C343B, "SpriteRenderer", order: 20));
+
+        Console.WriteLine($"[SceneModule] 已注册 {ComponentInspectorRegistry.Inspectors.Count} 个通用组件检查器");
     }
 }

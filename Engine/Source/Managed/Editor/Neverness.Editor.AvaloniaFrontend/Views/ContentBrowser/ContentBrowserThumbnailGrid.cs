@@ -31,6 +31,7 @@ internal sealed class ContentBrowserThumbnailGrid
     // 选中状态
     private readonly HashSet<string> _selectedPaths = new();
     private readonly Dictionary<string, Border> _thumbnailBorders = new();
+    private readonly Dictionary<string, TextBlock> _nameLabels = new();
 
     // 右键菜单状态
     private string? _selectedItemPath;
@@ -95,8 +96,8 @@ internal sealed class ContentBrowserThumbnailGrid
             Content = _selectionCanvas,
         };
 
-        // 左侧内阴影
-        var fileLeftShadow = new Border
+        // 四边内阴影（左侧 + 顶部 + 底部，每层一个 Border）
+        var fileShadowLeft = new Border
         {
             Background = Brushes.Transparent,
             IsHitTestVisible = false,
@@ -104,16 +105,46 @@ internal sealed class ContentBrowserThumbnailGrid
             {
                 IsInset = true,
                 Color = Color.FromArgb(0x40, 0x00, 0x00, 0x00),
-                Blur = 6,
+                Blur = 4,
                 Spread = -1,
-                OffsetX = 4,
+                OffsetX = 3,
                 OffsetY = 0,
+            }),
+        };
+        var fileShadowTop = new Border
+        {
+            Background = Brushes.Transparent,
+            IsHitTestVisible = false,
+            BoxShadow = new BoxShadows(new BoxShadow
+            {
+                IsInset = true,
+                Color = Color.FromArgb(0x30, 0x00, 0x00, 0x00),
+                Blur = 4,
+                Spread = -1,
+                OffsetX = 0,
+                OffsetY = 3,
+            }),
+        };
+        var fileShadowBottom = new Border
+        {
+            Background = Brushes.Transparent,
+            IsHitTestVisible = false,
+            BoxShadow = new BoxShadows(new BoxShadow
+            {
+                IsInset = true,
+                Color = Color.FromArgb(0x30, 0x00, 0x00, 0x00),
+                Blur = 4,
+                Spread = -1,
+                OffsetX = 0,
+                OffsetY = -3,
             }),
         };
 
         var fileShadow = new Grid { [Grid.ColumnProperty] = 2, ClipToBounds = true };
         fileShadow.Children.Add(_fileScroll);
-        fileShadow.Children.Add(fileLeftShadow);
+        fileShadow.Children.Add(fileShadowLeft);
+        fileShadow.Children.Add(fileShadowTop);
+        fileShadow.Children.Add(fileShadowBottom);
 
         // 框选管理器
         _rubberBand = new RubberBandSelection(
@@ -123,6 +154,7 @@ internal sealed class ContentBrowserThumbnailGrid
 
         // 事件
         _fileScroll.PointerPressed += (_, _) => { _selectedItemPath = null; };
+        _fileScroll.PointerReleased += OnFileAreaPointerReleased;
 
         return fileShadow;
     }
@@ -219,10 +251,10 @@ internal sealed class ContentBrowserThumbnailGrid
             BorderThickness = new Thickness(isSelected ? 2 : 0),
             BoxShadow = new BoxShadows(new BoxShadow
             {
-                Color = Color.FromArgb(0x60, 0x00, 0x00, 0x00),
-                Blur = 6,
+                Color = Color.FromArgb(0xA0, 0x00, 0x00, 0x00),
+                Blur = 12,
                 OffsetX = 0,
-                OffsetY = 2,
+                OffsetY = 4,
             }),
         };
 
@@ -253,7 +285,7 @@ internal sealed class ContentBrowserThumbnailGrid
         };
 
         // 文件名
-        textArea.Children.Add(new TextBlock
+        var nameLabel = new TextBlock
         {
             Text = name,
             FontSize = 11,
@@ -262,7 +294,9 @@ internal sealed class ContentBrowserThumbnailGrid
             MaxLines = 1,
             Height = ThumbNameHeight,
             VerticalAlignment = VerticalAlignment.Center,
-        });
+        };
+        textArea.Children.Add(nameLabel);
+        _nameLabels[path] = nameLabel;
 
         // 资产类型
         textArea.Children.Add(new TextBlock
@@ -343,8 +377,111 @@ internal sealed class ContentBrowserThumbnailGrid
         return outer;
     }
 
-    /// <summary>右键菜单请求事件。</summary>
+    /// <summary>右键菜单请求事件（点击缩略图项）。</summary>
     internal event Action<Control, string, string, bool>? OnContextMenuRequested;
+
+    /// <summary>背景右键菜单请求事件（点击空白区域）。</summary>
+    internal event Action<Control>? OnBackgroundContextMenuRequested;
+
+    /// <summary>文件区域右键释放——空白区域显示背景菜单。</summary>
+    private void OnFileAreaPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton != MouseButton.Right) return;
+        if (!string.IsNullOrEmpty(_selectedItemPath)) return;
+
+        // 点击空白区域，触发背景菜单
+        OnBackgroundContextMenuRequested?.Invoke(_fileScroll!);
+        e.Handled = true;
+    }
+
+    /* ======================== 内联重命名 ======================== */
+
+    /// <summary>重命名提交事件（path, newName）。</summary>
+    internal event Action<string, string>? OnRenameCommitted;
+
+    /// <summary>开始内联重命名——将文件名 TextBlock 替换为 TextBox。</summary>
+    internal void BeginRename(string path, string currentName)
+    {
+        if (!_nameLabels.TryGetValue(path, out var nameLabel)) return;
+
+        // 找到 nameLabel 的父容器（StackPanel）
+        if (nameLabel.Parent is not StackPanel textArea) return;
+
+        // 隐藏原文件名
+        nameLabel.IsVisible = false;
+
+        // 创建内联编辑框
+        var textBox = new TextBox
+        {
+            Text = currentName,
+            FontSize = 11,
+            MinWidth = 60,
+            Height = ThumbNameHeight,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(-2, 0, -2, 0),
+            Padding = new Thickness(2, 0),
+            Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
+            Foreground = TextBright,
+            BorderBrush = new SolidColorBrush(Color.Parse("#FF007ACC")),
+            BorderThickness = new Thickness(1),
+        };
+
+        // 选中文件名（不含扩展名）
+        var dotIndex = currentName.LastIndexOf('.');
+        textBox.SelectionStart = 0;
+        textBox.SelectionEnd = dotIndex > 0 ? dotIndex : currentName.Length;
+
+        // 提交重命名
+        void CommitRename()
+        {
+            var newName = textBox.Text?.Trim() ?? "";
+            if (!string.IsNullOrEmpty(newName) && newName != currentName)
+            {
+                OnRenameCommitted?.Invoke(path, newName);
+            }
+            CancelRename(path, nameLabel, textBox);
+        }
+
+        // 取消重命名
+        void CancelRenameHandler()
+        {
+            CancelRename(path, nameLabel, textBox);
+        }
+
+        textBox.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Enter)
+            {
+                CommitRename();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape)
+            {
+                CancelRenameHandler();
+                e.Handled = true;
+            }
+        };
+
+        // 失焦也提交
+        textBox.LostFocus += (_, _) => CommitRename();
+
+        textArea.Children.Add(textBox);
+
+        // 聚焦并延迟选中（等控件加载完）
+        textBox.AttachedToVisualTree += (_, _) =>
+        {
+            textBox.Focus();
+            textBox.SelectAll();
+        };
+    }
+
+    /// <summary>取消重命名——移除 TextBox，恢复 TextBlock。</summary>
+    private static void CancelRename(string path, TextBlock nameLabel, TextBox textBox)
+    {
+        if (textBox.Parent is StackPanel textArea)
+            textArea.Children.Remove(textBox);
+        nameLabel.IsVisible = true;
+    }
 
     /* ======================== 框选回调 ======================== */
 

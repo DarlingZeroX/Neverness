@@ -19,7 +19,7 @@ public class DetailInspectorImGuiView : PanelViewBase
     private InspectorController? _controller;
 
     public DetailInspectorImGuiView()
-        : base("DetailInspector", FontAwesome5Pro.InfoCircle + " DetailInspector")
+        : base("DetailInspector", "ℹ️ DetailInspector")
     {
     }
 
@@ -166,7 +166,7 @@ public class DetailInspectorImGuiView : PanelViewBase
         float buttonWidth = 200f;
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (availWidth - buttonWidth) * 0.5f);
 
-        if (ImGui.Button(FontAwesome5Pro.Plus + " Add Component", new Vector2(buttonWidth, 0)))
+        if (ImGui.Button("➕ Add Component", new Vector2(buttonWidth, 0)))
         {
             ImGui.OpenPopup("##add_component_popup");
         }

@@ -190,19 +190,19 @@ public sealed class ImGuiMainWindow : IEditorPanel, IMainWindowHost
 
         if (!isPlaying)
         {
-            if (ImGui.Button(FontAwesome5Pro.Play + "##ScenePlay"))
+            if (ImGui.Button("▶️" + "##ScenePlay"))
             {
                 EditorMenuRegistry.ExecuteCommand("scene.play");
             }
         }
         else
         {
-            if (ImGui.Button(FontAwesome5Pro.Stop + "##SceneStop"))
+            if (ImGui.Button("⏹️" + "##SceneStop"))
             {
                 EditorMenuRegistry.ExecuteCommand("scene.stop");
             }
             ImGui.SameLine();
-            if (ImGui.Button(FontAwesome5Pro.Pause + "##ScenePause"))
+            if (ImGui.Button("⏸️" + "##ScenePause"))
             {
                 EditorMenuRegistry.ExecuteCommand("scene.pause");
             }

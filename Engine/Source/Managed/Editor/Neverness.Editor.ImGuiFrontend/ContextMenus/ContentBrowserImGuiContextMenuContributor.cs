@@ -38,7 +38,7 @@ public sealed class ContentBrowserImGuiContextMenuContributor : IContextMenuCont
                     _controller.CreateNewFolder();
                 },
             },
-            Icon: FontAwesome5Pro.FolderPlus,
+            Icon: "📁",
             SortOrder: 100));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -52,7 +52,7 @@ public sealed class ContentBrowserImGuiContextMenuContributor : IContextMenuCont
                     _controller.RefreshDirectory();
                 },
             },
-            Icon: FontAwesome5Pro.Redo,
+            Icon: "🔄",
             SortOrder: 200));
 
         ctx.RegisterItem(id, new EditorMenuItem(
@@ -80,7 +80,7 @@ public sealed class ContentBrowserImGuiContextMenuContributor : IContextMenuCont
                     }
                 },
             },
-            Icon: FontAwesome5Pro.ExternalLinkAlt,
+            Icon: "📂",
             SortOrder: 400));
     }
 }

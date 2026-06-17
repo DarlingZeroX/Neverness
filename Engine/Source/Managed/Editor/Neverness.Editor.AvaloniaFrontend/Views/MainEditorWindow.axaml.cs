@@ -122,6 +122,15 @@ public partial class MainEditorWindow : Window
     }
 
     /// <summary>
+    /// 刷新菜单栏（在 CoreModuleImp.Install() 之后调用）。
+    /// 解决时序问题：MainEditorWindow 在菜单贡献者注册之前创建。
+    /// </summary>
+    public void RefreshMenuBar()
+    {
+        InitializeMenuBar();
+    }
+
+    /// <summary>
     /// 从 EditorMenuRegistry 读取菜单树，渲染为 Avalonia Menu。
     /// </summary>
     private void InitializeMenuBar()
@@ -163,7 +172,7 @@ public partial class MainEditorWindow : Window
             Header = node.Name,
         };
 
-        // 如果是叶子节点（有绑定的命令）
+        // 如果是叶子节点（有绑定的菜单项）
         if (node.IsLeaf && node.Item.HasValue)
         {
             var item = node.Item.Value;
@@ -211,6 +220,22 @@ public partial class MainEditorWindow : Window
                 {
                     menuItem.IsChecked = command.IsChecked();
                 }
+            }
+            else
+            {
+                // 没有绑定命令的菜单项，使用路径作为命令 ID
+                var path = item.Path;
+                menuItem.Click += (_, _) =>
+                {
+                    try
+                    {
+                        EditorMenuRegistry.ExecuteCommand(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"[MainEditorWindow] 命令执行失败 '{path}': {ex.Message}");
+                    }
+                };
             }
 
             // 动态菜单
@@ -323,6 +348,22 @@ public partial class MainEditorWindow : Window
             {
                 menuItem.IsChecked = command.IsChecked();
             }
+        }
+        else
+        {
+            // 没有绑定命令的菜单项，使用路径作为命令 ID
+            var path = item.Path;
+            menuItem.Click += (_, _) =>
+            {
+                try
+                {
+                    EditorMenuRegistry.ExecuteCommand(path);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"[MainEditorWindow] 命令执行失败 '{path}': {ex.Message}");
+                }
+            };
         }
 
         return menuItem;

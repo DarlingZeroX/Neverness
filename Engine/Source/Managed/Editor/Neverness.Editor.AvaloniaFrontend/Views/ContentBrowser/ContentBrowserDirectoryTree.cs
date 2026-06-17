@@ -32,8 +32,8 @@ internal sealed class ContentBrowserDirectoryTree
     {
         var treePanel = new DockPanel { Background = BgPanel };
 
-        // 右侧内阴影
-        var treeRightShadow = new Border
+        // 四边内阴影（右侧 + 顶部 + 底部，每层一个 Border）
+        var treeShadowRight = new Border
         {
             Background = Brushes.Transparent,
             IsHitTestVisible = false,
@@ -41,16 +41,46 @@ internal sealed class ContentBrowserDirectoryTree
             {
                 IsInset = true,
                 Color = Color.FromArgb(0x40, 0x00, 0x00, 0x00),
-                Blur = 6,
+                Blur = 4,
                 Spread = -1,
-                OffsetX = -4,
+                OffsetX = -3,
                 OffsetY = 0,
+            }),
+        };
+        var treeShadowTop = new Border
+        {
+            Background = Brushes.Transparent,
+            IsHitTestVisible = false,
+            BoxShadow = new BoxShadows(new BoxShadow
+            {
+                IsInset = true,
+                Color = Color.FromArgb(0x30, 0x00, 0x00, 0x00),
+                Blur = 4,
+                Spread = -1,
+                OffsetX = 0,
+                OffsetY = 3,
+            }),
+        };
+        var treeShadowBottom = new Border
+        {
+            Background = Brushes.Transparent,
+            IsHitTestVisible = false,
+            BoxShadow = new BoxShadows(new BoxShadow
+            {
+                IsInset = true,
+                Color = Color.FromArgb(0x30, 0x00, 0x00, 0x00),
+                Blur = 4,
+                Spread = -1,
+                OffsetX = 0,
+                OffsetY = -3,
             }),
         };
 
         var treeShadow = new Grid { [Grid.ColumnProperty] = 0, ClipToBounds = true };
         treeShadow.Children.Add(treePanel);
-        treeShadow.Children.Add(treeRightShadow);
+        treeShadow.Children.Add(treeShadowRight);
+        treeShadow.Children.Add(treeShadowTop);
+        treeShadow.Children.Add(treeShadowBottom);
 
         // 标题
         var treeHeader = new TextBlock

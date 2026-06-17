@@ -12,7 +12,7 @@ public sealed class DynamicMenuBuilder
     /// <summary>添加动态菜单项。</summary>
     /// <param name="label">显示标签。</param>
     /// <param name="execute">点击回调。</param>
-    /// <param name="icon">图标（FontAwesome5Pro 常量）。</param>
+    /// <param name="icon">图标（Emoji 字符）。</param>
     /// <param name="shortcut">快捷键。</param>
     public DynamicMenuBuilder Add(string label, Action execute, string icon = "", string shortcut = "")
     {

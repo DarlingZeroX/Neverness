@@ -18,7 +18,7 @@ public class EditorViewportImGuiView : PanelViewBase
     private EditorViewportController? _controller;
 
     public EditorViewportImGuiView()
-        : base("Main Viewport", FontAwesome5Pro.Window + " Main Viewport")
+        : base("Main Viewport", "🖥️ Main Viewport")
     {
     }
 

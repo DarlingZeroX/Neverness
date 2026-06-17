@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Neverness.Editor.Core.Controllers;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.AvaloniaFrontend.Inspectors;
@@ -155,7 +156,7 @@ public class InspectorAvaloniaView : AvaloniaViewBase
         return bottomBar;
     }
 
-    /// <summary>ViewModel 属性变更。</summary>
+    /// <summary>ViewModel 属性变更——确保在 Avalonia UI 线程执行。</summary>
     private void OnPropertyChanged(string propertyName)
     {
         if (propertyName == nameof(InspectorViewModel.SelectedEntityName))
@@ -170,7 +171,11 @@ public class InspectorAvaloniaView : AvaloniaViewBase
         }
         else if (propertyName == nameof(InspectorViewModel.Components))
         {
-            RebuildComponentList();
+            // 事件可能从主线程触发，Avalonia 控件只能在 UI 线程修改
+            if (Dispatcher.UIThread.CheckAccess())
+                RebuildComponentList();
+            else
+                Dispatcher.UIThread.Invoke(RebuildComponentList);
         }
     }
 

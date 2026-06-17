@@ -12,7 +12,7 @@ public sealed class RmlDocumentAssetFactory : IAssetFactory
 {
     public string DisplayName => "RmlUI Document";
     public string Category => "UI";
-    public string Icon => FontAwesome5Pro.FileCode;
+    public string Icon => "📄";
     public string FileExtension => ".html";
 
     public NPath? CreateAsset(NPath directoryPath)

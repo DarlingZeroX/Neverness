@@ -10,6 +10,13 @@ namespace Neverness.Editor.Scene.Private.Service;
 /// </summary>
 public sealed class InspectorServiceImpl : IInspectorService
 {
+    /// <summary>按 ID 获取实体实例。</summary>
+    public IEntity? GetEntityById(int entityId)
+    {
+        var scene = SceneModuleImp.SceneQueryService?.ActiveScene;
+        return scene?.GetEntity(entityId);
+    }
+
     /// <summary>获取指定实体的所有组件信息。</summary>
     public List<ComponentDataInfo> GetEntityComponents(IEntity entity)
     {
