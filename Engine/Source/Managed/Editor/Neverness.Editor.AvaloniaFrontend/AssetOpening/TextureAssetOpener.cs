@@ -1,16 +1,22 @@
+using Avalonia.Threading;
+using Neverness.Editor.Assets;
+using Neverness.Editor.Assets.AssetOpening;
+using Neverness.Editor.AvaloniaFrontend.Dock;
+using Neverness.Editor.AvaloniaFrontend.Public;
+using Neverness.Editor.AvaloniaFrontend.Views;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.VFS.Public;
 
-namespace Neverness.Editor.Assets.AssetOpening;
+namespace Neverness.Editor.AvaloniaFrontend.AssetOpening;
 
 /// <summary>
-/// 纹理资产打开器——在新窗口中查看纹理资产。
+/// 纹理资产打开器——在浮动窗口中查看纹理资产。
 ///
 /// 流程：
 ///   1. 检查 AssetEditorManager 是否已有该资产的窗口 → 聚焦
 ///   2. 后台线程：同步加载已导入的资产，若未导入则先导入源文件再加载
-///   3. 主线程：创建查看器窗口
+///   3. 主线程：创建独立浮动窗口（可拖拽停靠到主窗口）
 /// </summary>
 [AssetOpener(AssetTypeId.Texture2D)]
 public sealed class TextureAssetOpener : IAssetOpener
@@ -26,10 +32,10 @@ public sealed class TextureAssetOpener : IAssetOpener
 
     public async Task OpenAsync(AssetOpenContext context)
     {
-        // 1. 检查是否已有窗口
+        // 1. 检查是否已有窗口（暂时跳过聚焦）
         if (_editorManager.TryGetWindowId(context.Guid, out var existingWindowId))
         {
-            Console.WriteLine($"[TextureAssetOpener] 窗口已存在，聚焦: {context.VirtualPath}");
+            Console.WriteLine($"[TextureAssetOpener] 窗口已存在: {context.VirtualPath}");
             // TODO: 聚焦现有窗口
             return;
         }
@@ -43,26 +49,58 @@ public sealed class TextureAssetOpener : IAssetOpener
             return;
         }
 
-        // 3. 创建查看器窗口
+        // 3. 在 UI 线程创建浮动窗口
+        var assetName = context.VirtualPath.FileNameWithoutExtension;
+        Console.WriteLine($"[TextureAssetOpener] 打开纹理查看器: {assetName} (GUID={effectiveGuid.ToHexString()})");
+
         try
         {
-            var assetName = context.VirtualPath.FileNameWithoutExtension;
-            Console.WriteLine($"[TextureAssetOpener] 打开纹理查看器: {assetName} (GUID={effectiveGuid.ToHexString()})");
-
-            // TODO: 创建 Avalonia 纹理查看器窗口
-            // 1. 从 AssetHandle 获取纹理数据
-            // 2. 创建 Avalonia Image 控件
-            // 3. 在新窗口中显示
-
-            // 注册 Asset→Window 映射
-            // _editorManager.Register(effectiveGuid, windowId);
-
-            // 释放 AssetHandle（窗口持有引用后可以释放）
-            assetHandle.Release();
+            // 确保在 UI 线程执行
+            if (!Dispatcher.UIThread.CheckAccess())
+            {
+                await Dispatcher.UIThread.InvokeAsync(() => CreateFloatingWindow(assetName, effectiveGuid, assetHandle));
+            }
+            else
+            {
+                CreateFloatingWindow(assetName, effectiveGuid, assetHandle);
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[TextureAssetOpener] 打开窗口异常: {ex}");
+            assetHandle.Release();
+        }
+    }
+
+    /// <summary>在 UI 线程创建浮动窗口。</summary>
+    private void CreateFloatingWindow(string assetName, GUID effectiveGuid, AssetHandle assetHandle)
+    {
+        try
+        {
+            // 创建纹理查看器控件
+            var viewerControl = new TextureViewerControl(assetName, effectiveGuid, _editorManager);
+
+            // 加载纹理数据
+            viewerControl.LoadFromAssetHandle(assetHandle);
+
+            // 创建独立浮动窗口
+            var window = new TextureViewerFloatingWindow(assetName, effectiveGuid, viewerControl);
+
+            // 显示窗口
+            window.Show();
+
+            // 注册 Asset→Window 映射（使用 GUID 的 HashCode 作为窗口标识）
+            var windowId = new Guid((int)(effectiveGuid.High >> 32), (short)(effectiveGuid.High >> 16), (short)effectiveGuid.High,
+                (byte)(effectiveGuid.Low >> 56), (byte)(effectiveGuid.Low >> 48), (byte)(effectiveGuid.Low >> 40), (byte)(effectiveGuid.Low >> 32),
+                (byte)(effectiveGuid.Low >> 24), (byte)(effectiveGuid.Low >> 16), (byte)(effectiveGuid.Low >> 8), (byte)effectiveGuid.Low);
+            _editorManager.Register(effectiveGuid, windowId);
+
+            // 释放 AssetHandle（控件已加载数据）
+            assetHandle.Release();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[TextureAssetOpener] 创建窗口失败: {ex}");
             assetHandle.Release();
         }
     }
@@ -94,7 +132,7 @@ public sealed class TextureAssetOpener : IAssetOpener
         }
 
         Console.WriteLine($"[TextureAssetOpener] 资产未导入，正在导入: {sourcePath}");
-        var importResult = ImportPipeline.Import(sourcePath);
+        var importResult = Neverness.Editor.Assets.ImportPipeline.Import(sourcePath);
 
         if (!importResult.Success)
         {

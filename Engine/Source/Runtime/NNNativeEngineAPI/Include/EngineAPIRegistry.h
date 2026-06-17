@@ -27,13 +27,14 @@
 #include "RenderAssetAPI.h"
 #include "ViewportRenderAPI.h"
 #include "ViewportSurfaceAPI.h"
+#include "DiligentAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v27：删除 NNUIAPI、NNObjectAPI 空壳子表。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 27u
+/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v28：新增 NNDiligentAPI 子表。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 28u
 
 typedef struct NNNativeEngineAPI
 {
@@ -63,6 +64,8 @@ typedef struct NNNativeEngineAPI
 	NNViewportRenderAPI viewportRender;
 	/** @brief 视口 Surface API（SwapChain 生命周期管理）；見 `ViewportSurfaceAPI.h`。v23 新增。 */
 	NNViewportSurfaceAPI viewportSurface;
+	/** @brief Diligent 底层设备指针暴露；見 `DiligentAPI.h`。v28 新增。 */
+	NNDiligentAPI diligent;
 } NNNativeEngineAPI;
 
 #ifdef __cplusplus

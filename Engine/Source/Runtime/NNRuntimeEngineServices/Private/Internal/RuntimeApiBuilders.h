@@ -14,6 +14,7 @@
 #include "NNNativeEngineAPI/Include/RenderAssetAPI.h"
 #include "NNNativeEngineAPI/Include/ViewportRenderAPI.h"
 #include "NNNativeEngineAPI/Include/ViewportSurfaceAPI.h"
+#include "NNNativeEngineAPI/Include/DiligentAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +28,7 @@ void NNBuildAssetCookerRuntimeApi(NNAssetCookerAPI* api);
 void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api);
 void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api);
 void NNBuildViewportSurfaceRuntimeApi(NNViewportSurfaceAPI* api);
+void NNBuildDiligentRuntimeApi(NNDiligentAPI* api);
 
 #ifdef __cplusplus
 } /* extern "C" */

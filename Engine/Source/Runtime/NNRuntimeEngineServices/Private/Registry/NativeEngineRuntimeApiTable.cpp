@@ -42,6 +42,7 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildRenderAssetRuntimeApi(&outTable->renderAsset);
 	NNBuildViewportRenderRuntimeApi(&outTable->viewportRender);
 	NNBuildViewportSurfaceRuntimeApi(&outTable->viewportSurface);
+	NNBuildDiligentRuntimeApi(&outTable->diligent);
 
 	/* 将 VFS 函数表注入 SceneSubsystem，供序列化/反序列化使用 */
 	NN::Runtime::engine::NNEngineRuntime::Instance().Scene().SetVfsApi(&outTable->vfs);

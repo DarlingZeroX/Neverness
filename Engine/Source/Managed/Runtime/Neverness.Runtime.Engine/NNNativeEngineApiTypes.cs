@@ -526,10 +526,30 @@ public unsafe struct NNEventApi
 }
 
 /// <summary>
+/// 與 Native <c>NNDiligentAPI</c> 對齊：Diligent 底层设备指针暴露。
+/// v28 新增。
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct NNDiligentApi
+{
+	/// <summary>获取主窗口的 Diligent IRenderDevice*。</summary>
+	public delegate* unmanaged<void*> GetPrimaryDevice;
+
+	/// <summary>获取主窗口的 Diligent IDeviceContext*。</summary>
+	public delegate* unmanaged<void*> GetPrimaryContext;
+
+	/// <summary>获取主窗口的 Diligent ISwapChain*。</summary>
+	public delegate* unmanaged<void*> GetPrimarySwapChain;
+
+	/// <summary>创建 ViewportSurface 并返回其 ISwapChain*。</summary>
+	public delegate* unmanaged<void*, uint, uint, uint, void*> CreateViewportSurfaceWithSwapChain;
+}
+
+/// <summary>
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v27**：刪除 <c>NNUIAPI</c>、<c>NNObjectAPI</c> 空殼子表。
+/// **layout v28**：新增 <c>NNDiligentAPI</c> 子表。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -557,5 +577,8 @@ public unsafe struct NNNativeEngineApi
 	public NNRenderAssetApi RenderAsset;
 	/// <summary>對應 C 聚合體成員 <c>viewportRender</c>（型別 <c>NNViewportRenderAPI</c>）；场景渲染到离屏 FBO（v21）。</summary>
 	public NNViewportRenderApi ViewportRender;
+	/// <summary>對應 C 聚合體成員 <c>viewportSurface</c>（型別 <c>NNViewportSurfaceAPI</c>）；SwapChain 生命周期管理（v23）。</summary>
 	public NNViewportSurfaceApi ViewportSurface;
+	/// <summary>對應 C 聚合體成員 <c>diligent</c>（型別 <c>NNDiligentAPI</c>）；Diligent 底层指针（v28）。</summary>
+	public NNDiligentApi Diligent;
 }

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using Dock.Avalonia.Controls;
 using Dock.Model;
 using Dock.Model.Controls;
@@ -7,6 +8,7 @@ using Dock.Model.Core;
 using Dock.Model.Mvvm;
 using Dock.Model.Mvvm.Controls;
 using Dock.Model.Mvvm.Core;
+using Neverness.Editor.AvaloniaFrontend.Public;
 
 namespace Neverness.Editor.AvaloniaFrontend.Dock;
 
@@ -29,10 +31,57 @@ public class EditorDockFactory : Factory
     public EditorDockFactory()
     {
         // 注册浮动窗口定位器——FloatDockable 需要此定位器创建 IHostWindow 模型
-        DefaultHostWindowLocator = () => new HostWindow
+        DefaultHostWindowLocator = () =>
         {
-            Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
+            var hostWin = new HostWindow
+            {
+                Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
+            };
+            hostWin.Opened += (_, _) =>
+            {
+                Console.WriteLine($"[FloatWin] Opened: Content={hostWin.Content?.GetType().Name ?? "null"}");
+                // 遍历可视化树，找 DockControl 并设置 Factory
+                DumpVisualTree(hostWin, 0);
+            };
+            return hostWin;
         };
+    }
+
+    private static void DumpVisualTree(Avalonia.Visual visual, int depth)
+    {
+        var indent = new string(' ', depth * 2);
+        var type = visual.GetType().Name;
+        var extra = "";
+        if (visual is global::Dock.Avalonia.Controls.DockControl dc)
+        {
+            extra = $" Layout={dc.Layout?.Id ?? "null"} Factory={dc.Factory?.GetType().Name ?? "null"}";
+            // 设置 Factory
+            if (dc.Factory == null && AvaloniaFrontendModule.DockFactory != null)
+            {
+                dc.Factory = AvaloniaFrontendModule.DockFactory;
+                Console.WriteLine($"{indent}[设置 Factory 到 DockControl]");
+            }
+        }
+        Console.WriteLine($"{indent}{type}{extra}");
+
+        if (visual is Avalonia.Controls.Panel panel)
+        {
+            foreach (var child in panel.Children)
+                if (child is Avalonia.Visual v) DumpVisualTree(v, depth + 1);
+        }
+        else if (visual is Avalonia.Controls.Decorator decorator && decorator.Child is Avalonia.Visual dChild)
+        {
+            DumpVisualTree(dChild, depth + 1);
+        }
+        else if (visual is Avalonia.Controls.ContentControl cc && cc.Content is Avalonia.Visual cChild)
+        {
+            DumpVisualTree(cChild, depth + 1);
+        }
+        else if (visual is Avalonia.Controls.ItemsControl ic)
+        {
+            foreach (var item in ic.GetVisualChildren())
+                if (item is Avalonia.Visual v) DumpVisualTree(v, depth + 1);
+        }
     }
 
     /// <summary>面板 ID 常量。</summary>
@@ -43,6 +92,7 @@ public class EditorDockFactory : Factory
         public const string Inspector = "Inspector";
         public const string ContentBrowser = "ContentBrowser";
         public const string Console = "Console";
+        public const string TextureViewerPrefix = "TextureViewer_";
     }
 
     // 面板引用（供外部设置内容）
@@ -52,12 +102,14 @@ public class EditorDockFactory : Factory
     private Tool? _inspector;
     private Tool? _contentBrowser;
     private Tool? _console;
+    private readonly Dictionary<string, Tool> _textureViewers = new();
 
     public Document? ViewportPanel => _viewport;
     public Tool? SceneBrowserPanel => _sceneBrowser;
     public Tool? InspectorPanel => _inspector;
     public Tool? ContentBrowserPanel => _contentBrowser;
     public Tool? ConsolePanel => _console;
+    public IReadOnlyDictionary<string, Tool> TextureViewerPanels => _textureViewers;
 
     /// <summary>
     /// 创建默认编辑器布局。
@@ -166,5 +218,27 @@ public class EditorDockFactory : Factory
         InitLayout(root);
 
         return root;
+    }
+
+    /// <summary>创建纹理查看器面板（浮动 Tool）。</summary>
+    public Tool CreateTextureViewerPanel(string assetName, Guid guid)
+    {
+        var panelId = $"{PanelIds.TextureViewerPrefix}{guid}";
+        var tool = new Tool
+        {
+            Id = panelId,
+            Title = $"Texture - {assetName}",
+            CanFloat = true,
+            CanClose = true,
+        };
+
+        _textureViewers[panelId] = tool;
+        return tool;
+    }
+
+    /// <summary>移除纹理查看器面板。</summary>
+    public void RemoveTextureViewerPanel(string panelId)
+    {
+        _textureViewers.Remove(panelId);
     }
 }

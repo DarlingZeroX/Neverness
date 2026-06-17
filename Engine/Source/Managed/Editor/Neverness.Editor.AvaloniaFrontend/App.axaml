@@ -1,5 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fluent="clr-namespace:Dock.Avalonia.Themes.Fluent;assembly=Dock.Avalonia.Themes.Fluent"
+             xmlns:dock="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
              x:Class="Neverness.Editor.AvaloniaFrontend.App"
              RequestedThemeVariant="Dark">
 
@@ -13,5 +15,19 @@
 
     <Application.Styles>
         <FluentTheme />
+        <fluent:DockFluentTheme />
+
+        <!-- HostWindow 显式模板：DockFluentTheme 的模板未被应用，手动指定 -->
+        <Style Selector="dock|HostWindow">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Panel>
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Panel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Styles>
 </Application>

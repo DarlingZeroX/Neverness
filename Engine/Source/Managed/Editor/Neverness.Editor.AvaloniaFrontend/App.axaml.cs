@@ -2,10 +2,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Templates;
+using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
-using Avalonia.Themes.Fluent;
-using Dock.Avalonia.Themes.Fluent;
+using Neverness.Editor.AvaloniaFrontend.Controls;
 using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.AvaloniaFrontend.Views;
 
@@ -18,6 +18,53 @@ namespace Neverness.Editor.AvaloniaFrontend;
 /// </summary>
 public class App : Application
 {
+    internal static void ConfigureDockControl(global::Dock.Avalonia.Controls.DockControl dockControl, global::Dock.Model.Core.IFactory? factory, global::Dock.Model.Core.IDock? layout)
+    {
+        dockControl.Factory = factory ?? AvaloniaFrontendModule.DockFactory;
+        dockControl.HostWindowFactory = CreateDockHostWindow;
+        dockControl.AutoCreateDataTemplates = true;
+
+        // DockControl 本地 DataTemplates 优先级高于 Application.DataTemplates。
+        // 浮动窗口内部新建的 DockControl 需要在本地重新覆盖 Document/Tool 模板，
+        // 否则会落回 Dock 自动生成的默认模板，导致 Context 中的实际控件不显示。
+        dockControl.DataTemplates.Insert(0, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Controls.Document),
+            (_, _) =>
+            {
+                var host = new DockContentHost();
+                host.Bind(DockContentHost.HostedContentProperty, new Binding(nameof(global::Dock.Model.Mvvm.Core.DockableBase.Context)));
+                return host;
+            }));
+
+        dockControl.DataTemplates.Insert(0, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Controls.Tool),
+            (_, _) =>
+            {
+                var host = new DockContentHost();
+                host.Bind(DockContentHost.HostedContentProperty, new Binding(nameof(global::Dock.Model.Mvvm.Core.DockableBase.Context)));
+                return host;
+            }));
+
+        dockControl.Layout = layout;
+    }
+
+    internal static global::Dock.Avalonia.Controls.HostWindow CreateDockHostWindow()
+    {
+        return new global::Dock.Avalonia.Controls.HostWindow
+        {
+            IsToolWindow = true,
+            ToolChromeControlsWholeWindow = true,
+            Background = new global::Avalonia.Media.SolidColorBrush(global::Avalonia.Media.Color.Parse("#FF1E1E1E")),
+        };
+    }
+
+    internal static global::Dock.Avalonia.Controls.DockControl CreateFloatingDockControl(global::Dock.Model.Core.IFactory? factory, global::Dock.Model.Core.IDock? layout)
+    {
+        var dockControl = new global::Dock.Avalonia.Controls.DockControl();
+        ConfigureDockControl(dockControl, factory, layout);
+        return dockControl;
+    }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -25,46 +72,52 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // 添加 Dock 主题（必须，否则 DockControl 不渲染）
-        Styles.Add(new DockFluentTheme());
+        // Dock 主题已在 App.axaml 中声明（fluent:DockFluentTheme）
         RequestedThemeVariant = ThemeVariant.Dark;
 
         // 全局 DataTemplate——注册在 Application 级别，所有窗口（含浮动窗口）共享
-        // 浮动窗口的 HostWindow.Content 是 Dock 模型对象（RootDock），需要 DataTemplate 渲染
 
-        // RootDock 模板：创建 DockControl 渲染浮动布局
-        // 浮动窗口的 Content 是 RootDock 模型，需要 DockControl 来渲染
+        // DockWindow 模板：原生浮动窗口 Content 实际是 DockWindow，需取其 Layout 创建 DockControl。
+        DataTemplates.Insert(0, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Core.DockWindow),
+            (data, _) =>
+            {
+                if (data is global::Dock.Model.Mvvm.Core.DockWindow dockWindow)
+                {
+                    return CreateFloatingDockControl(dockWindow.Factory, dockWindow.Layout as global::Dock.Model.Core.IDock);
+                }
+
+                return new TextBlock { Text = "No Content" };
+            }));
+
+        // RootDock 模板：某些场景 Content 直接是 RootDock 模型，也需要 DockControl 渲染。
         DataTemplates.Insert(0, new FuncDataTemplate(
             typeof(global::Dock.Model.Mvvm.Controls.RootDock),
             (data, _) =>
             {
                 if (data is global::Dock.Model.Mvvm.Controls.RootDock rootDock)
                 {
-                    return new global::Dock.Avalonia.Controls.DockControl
-                    {
-                        Factory = AvaloniaFrontendModule.DockFactory,
-                        Layout = rootDock,
-                    };
+                    return CreateFloatingDockControl(AvaloniaFrontendModule.DockFactory, rootDock);
                 }
                 return new TextBlock { Text = "No Content" };
             }));
 
         DataTemplates.Insert(1, new FuncDataTemplate(
             typeof(global::Dock.Model.Mvvm.Controls.Document),
-            (data, _) =>
+            (_, _) =>
             {
-                if (data is global::Dock.Model.Mvvm.Controls.Document doc && doc.Context is Control ctrl)
-                    return ctrl;
-                return new TextBlock { Text = "No Content" };
+                var host = new DockContentHost();
+                host.Bind(DockContentHost.HostedContentProperty, new Binding(nameof(global::Dock.Model.Mvvm.Core.DockableBase.Context)));
+                return host;
             }));
 
-        DataTemplates.Insert(2, new FuncDataTemplate(
+        DataTemplates.Insert(1, new FuncDataTemplate(
             typeof(global::Dock.Model.Mvvm.Controls.Tool),
-            (data, _) =>
+            (_, _) =>
             {
-                if (data is global::Dock.Model.Mvvm.Controls.Tool tool && tool.Context is Control ctrl)
-                    return ctrl;
-                return new TextBlock { Text = "No Content" };
+                var host = new DockContentHost();
+                host.Bind(DockContentHost.HostedContentProperty, new Binding(nameof(global::Dock.Model.Mvvm.Core.DockableBase.Context)));
+                return host;
             }));
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

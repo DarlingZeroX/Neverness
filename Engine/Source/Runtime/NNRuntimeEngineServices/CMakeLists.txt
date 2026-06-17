@@ -24,6 +24,7 @@ target_sources(NevernessRuntime-EngineServices
 		Private/RenderAsset/RenderAssetRuntimeApi.cpp
 		Private/ViewportRender/ViewportRenderRuntimeApi.cpp
 		Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp
+		Private/Diligent/DiligentRuntimeApi.cpp
 )
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)

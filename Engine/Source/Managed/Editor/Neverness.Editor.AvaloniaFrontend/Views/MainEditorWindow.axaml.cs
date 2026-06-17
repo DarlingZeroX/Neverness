@@ -5,6 +5,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Dock.Avalonia.Controls;
 using Neverness.Editor.AvaloniaFrontend.Dock;
+using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 
@@ -33,19 +34,13 @@ public partial class MainEditorWindow : Window
         var layout = _dockFactory.CreateDefaultLayout();
 
         // 设置到 DockControl
-        DockControl.Factory = _dockFactory;
-        DockControl.Layout = layout;
+        App.ConfigureDockControl(DockControl, _dockFactory, layout);
 
         // DataTemplate 已在 App.axaml.cs 中全局注册（Application.DataTemplates）
         // 浮动窗口是独立 HostWindow，不继承主窗口 DockControl 的 DataTemplates
 
         // 配置浮动窗口工厂（Native 模式，原生 OS 窗口）
-        DockControl.HostWindowFactory = () => new HostWindow
-        {
-            IsToolWindow = true,
-            ToolChromeControlsWholeWindow = true,
-            Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
-        };
+        DockControl.HostWindowFactory = App.CreateDockHostWindow;
 
         // 创建菜单、工具栏、状态栏
         InitializeSubViews();
