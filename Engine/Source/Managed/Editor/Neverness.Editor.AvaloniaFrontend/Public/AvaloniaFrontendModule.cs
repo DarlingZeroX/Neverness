@@ -23,6 +23,9 @@ public static class AvaloniaFrontendModule
     /// <summary>主编辑器窗口（由 App.OnFrameworkInitializationCompleted 创建）。</summary>
     internal static MainEditorWindow? MainWindow { get; set; }
 
+    /// <summary>Dock 工厂实例（供浮动窗口 DataTemplate 创建 DockControl 使用）。</summary>
+    internal static global::Dock.Model.Core.IFactory? DockFactory { get; set; }
+
     /// <summary>MainEditorWindow 就绪事件。</summary>
     private static readonly ManualResetEventSlim _windowReady = new(false);
 

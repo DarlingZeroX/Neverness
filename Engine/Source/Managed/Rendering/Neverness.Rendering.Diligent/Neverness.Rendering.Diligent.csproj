@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Rendering.Diligent</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Neverness.Rendering.Diligent</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Diligent-GraphicsEngine.NET/Diligent-GraphicsEngine.NET.csproj" />
+  </ItemGroup>
+</Project>

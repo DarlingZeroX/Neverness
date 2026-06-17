@@ -28,7 +28,7 @@ typedef struct NNRenderAssetAPI
         std::uint32_t width,
         std::uint32_t height,
         const std::uint8_t* pixels,
-        std::size_t pixelSize,
+        size_t pixelSize,
         int isSRGB);
 
     /** @brief 釋放 GPU Texture 資源。 */
@@ -40,7 +40,7 @@ typedef struct NNRenderAssetAPI
         std::uint32_t width,
         std::uint32_t height,
         const std::uint8_t* pixels,
-        std::size_t pixelSize,
+        size_t pixelSize,
         int isSRGB);
 
     /** @brief 取得 Texture 尺寸（1=成功, 0=失敗/未載入）。 */

@@ -81,15 +81,15 @@ namespace NN::Runtime
 		m_FrameEvents.emplace_back(std::move(evt));
 	}
 
-	void Viewport::SetViewportTexture(VGFX::ITexture* texture)
-	{
-		m_State.ViewportTexture = texture;
-	}
-
-	VGFX::ITexture* Viewport::GetViewportTexture()
-	{
-		return m_State.ViewportTexture;
-	}
+	//void Viewport::SetViewportTexture(VGFX::ITexture* texture)
+	//{
+	//	m_State.ViewportTexture = texture;
+	//}
+	//
+	//VGFX::ITexture* Viewport::GetViewportTexture()
+	//{
+	//	return m_State.ViewportTexture;
+	//}
 
 	void Viewport::MouseClick(float2 MousePosition)
 	{

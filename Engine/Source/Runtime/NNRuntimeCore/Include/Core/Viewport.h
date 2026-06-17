@@ -14,7 +14,7 @@
 #include "RuntimeCore.h"
 #include "../../Interface/GameInterface.h"
 //#include "../Graphics/Interface/Texture.h"
-#include <NNRuntimeRHI/Interface/Texture.h>
+//#include <NNRuntimeRHI/Interface/Texture.h>
 #include <NNPlatformCore/Include/WindowInterface.h>
 #include <NNCore/Include/Event/HEventDelegate.h>
 
@@ -52,7 +52,7 @@ namespace NN::Runtime
 
 		MouseHoveredData MouseHoveredData;
 
-		VGFX::ITexture* ViewportTexture = nullptr;
+		//VGFX::ITexture* ViewportTexture = nullptr;
 
 		ViewportState() = default;
 		ViewportState(const float2& viewport_size)
@@ -88,8 +88,8 @@ namespace NN::Runtime
 		void Focus();
 		void UnFocus();
 
-		void SetViewportTexture(VGFX::ITexture* texture);
-		VGFX::ITexture* GetViewportTexture();
+		//void SetViewportTexture(VGFX::ITexture* texture);
+		//VGFX::ITexture* GetViewportTexture();
 
 		void MouseClick(float2 MousePosition);
 		void MouseDragging(float2 MousePosition);

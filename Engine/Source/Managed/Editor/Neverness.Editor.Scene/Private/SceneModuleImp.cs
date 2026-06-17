@@ -240,8 +240,7 @@ internal static class SceneModuleImp
     }
 
     /// <summary>注册通用组件检查器到 ComponentInspectorRegistry。
-    /// TypeId 须与 Native NN_REGISTER_COMPONENT 的 FNV-1a hash 一致。
-    /// TODO: 补全 Script/AudioSource/VideoPlayer/RmlUIDocument 的 TypeId。</summary>
+    /// TypeId 须与 Native NN_REGISTER_COMPONENT 的 FNV-1a hash 一致。</summary>
     private static void RegisterGenericInspectors()
     {
         ComponentInspectorRegistry.Register(new GenericComponentInspector<TransformComponent>(
@@ -250,6 +249,8 @@ internal static class SceneModuleImp
             0x54D1B2A64667E32E, "Camera", order: 10));
         ComponentInspectorRegistry.Register(new GenericComponentInspector<SpriteRendererComponent>(
             0x51387BA3968C343B, "SpriteRenderer", order: 20));
+        ComponentInspectorRegistry.Register(new GenericComponentInspector<RmlUIDocumentComponent>(
+            0x1593AE057DEB826B, "RmlUI Document", order: 70));
 
         Console.WriteLine($"[SceneModule] 已注册 {ComponentInspectorRegistry.Inspectors.Count} 个通用组件检查器");
     }

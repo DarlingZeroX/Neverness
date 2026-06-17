@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Templates;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using Avalonia.Themes.Fluent;
@@ -28,7 +29,43 @@ public class App : Application
         Styles.Add(new DockFluentTheme());
         RequestedThemeVariant = ThemeVariant.Dark;
 
-        // Document DataTemplate 不在这里注册——在 MainEditorWindow 中注册到 DockControl.DataTemplates 最前面
+        // 全局 DataTemplate——注册在 Application 级别，所有窗口（含浮动窗口）共享
+        // 浮动窗口的 HostWindow.Content 是 Dock 模型对象（RootDock），需要 DataTemplate 渲染
+
+        // RootDock 模板：创建 DockControl 渲染浮动布局
+        // 浮动窗口的 Content 是 RootDock 模型，需要 DockControl 来渲染
+        DataTemplates.Insert(0, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Controls.RootDock),
+            (data, _) =>
+            {
+                if (data is global::Dock.Model.Mvvm.Controls.RootDock rootDock)
+                {
+                    return new global::Dock.Avalonia.Controls.DockControl
+                    {
+                        Factory = AvaloniaFrontendModule.DockFactory,
+                        Layout = rootDock,
+                    };
+                }
+                return new TextBlock { Text = "No Content" };
+            }));
+
+        DataTemplates.Insert(1, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Controls.Document),
+            (data, _) =>
+            {
+                if (data is global::Dock.Model.Mvvm.Controls.Document doc && doc.Context is Control ctrl)
+                    return ctrl;
+                return new TextBlock { Text = "No Content" };
+            }));
+
+        DataTemplates.Insert(2, new FuncDataTemplate(
+            typeof(global::Dock.Model.Mvvm.Controls.Tool),
+            (data, _) =>
+            {
+                if (data is global::Dock.Model.Mvvm.Controls.Tool tool && tool.Context is Control ctrl)
+                    return ctrl;
+                return new TextBlock { Text = "No Content" };
+            }));
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

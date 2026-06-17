@@ -58,7 +58,7 @@ internal static class ContentBrowserColors
     internal const double ThumbNameHeight = 16;  // 文件名行高
     internal const double ThumbTypeHeight = 12;  // 类型标签行高
     internal const double ThumbTextPad = 5;      // 文字区内边距
-    internal const double ThumbCardWidth = 96;   // 卡片总宽
+    internal const double ThumbCardWidth = 96;  // 卡片总宽
     internal const double ThumbCardHeight = ThumbIconSize + ThumbNameHeight + ThumbTypeHeight + ThumbTextPad * 2;
     internal const double ThumbSpacing = 8;
 }

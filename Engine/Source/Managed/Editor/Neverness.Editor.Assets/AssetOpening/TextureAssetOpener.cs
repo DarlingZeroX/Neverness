@@ -1,5 +1,3 @@
-using System.Numerics;
-using Neverness.Editor.ImGuiEx;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.VFS.Public;
@@ -7,29 +5,21 @@ using Neverness.Runtime.VFS.Public;
 namespace Neverness.Editor.Assets.AssetOpening;
 
 /// <summary>
-/// 纹理资产打开器——打开 ImTextureViewerWindow 查看纹理资产。
+/// 纹理资产打开器——在新窗口中查看纹理资产。
 ///
 /// 流程：
 ///   1. 检查 AssetEditorManager 是否已有该资产的窗口 → 聚焦
 ///   2. 后台线程：同步加载已导入的资产，若未导入则先导入源文件再加载
-///   3. 主线程：GPU 上传 + ImGui Handle 获取 + 窗口创建（通过 UIThreadDispatcher 调度）
-///
-/// 关键：OpenGL 纹理创建必须在主线程执行（只有主线程有 GL 上下文）。
-/// `await Task.Run` 之后的代码运行在主线程，但 GPU 操作需通过 UIThreadDispatcher
-/// 调度到 ProcessQueue 中执行，确保与 GL 帧同步。
+///   3. 主线程：创建查看器窗口
 /// </summary>
 [AssetOpener(AssetTypeId.Texture2D)]
 public sealed class TextureAssetOpener : IAssetOpener
 {
-    private readonly IImWindowManager _windowManager;
     private readonly AssetEditorManager _editorManager;
-    private readonly UIThreadDispatcher _dispatcher;
 
-    public TextureAssetOpener(IImWindowManager windowManager, AssetEditorManager editorManager, UIThreadDispatcher dispatcher)
+    public TextureAssetOpener(AssetEditorManager editorManager)
     {
-        _windowManager = windowManager;
         _editorManager = editorManager;
-        _dispatcher = dispatcher;
     }
 
     public bool CanOpen(ulong assetTypeId) => assetTypeId == AssetTypeId.Texture2D;
@@ -39,7 +29,8 @@ public sealed class TextureAssetOpener : IAssetOpener
         // 1. 检查是否已有窗口
         if (_editorManager.TryGetWindowId(context.Guid, out var existingWindowId))
         {
-            _windowManager.FocusWindow(existingWindowId);
+            Console.WriteLine($"[TextureAssetOpener] 窗口已存在，聚焦: {context.VirtualPath}");
+            // TODO: 聚焦现有窗口
             return;
         }
 
@@ -52,59 +43,28 @@ public sealed class TextureAssetOpener : IAssetOpener
             return;
         }
 
-        // 3. GPU 操作必须在主线程执行（GL 上下文）
-        //    通过 UIThreadDispatcher 调度到 ProcessQueue，用 TaskCompletionSource 等待完成
-        var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var path = context.VirtualPath;
-        _dispatcher.Enqueue(() =>
+        // 3. 创建查看器窗口
+        try
         {
-            try
-            {
-                // 上传 GPU 纹理（通过 blob 数据直接传递，避免跨模块单例问题）
-                var textureKey = TextureInterop.LoadTextureFromBlob(assetHandle.Value, effectiveGuid.Low);
-                if (textureKey == 0)
-                {
-                    Console.WriteLine($"[TextureAssetOpener] GPU 上传失败: {path}");
-                    assetHandle.Release();
-                    return;
-                }
+            var assetName = context.VirtualPath.FileNameWithoutExtension;
+            Console.WriteLine($"[TextureAssetOpener] 打开纹理查看器: {assetName} (GUID={effectiveGuid.ToHexString()})");
 
-                // 获取 ImGui Handle + 纹理尺寸
-                var imGuiHandle = TextureInterop.GetImGuiTextureHandle(textureKey);
-                var (w, h) = TextureInterop.GetTextureSize(textureKey);
+            // TODO: 创建 Avalonia 纹理查看器窗口
+            // 1. 从 AssetHandle 获取纹理数据
+            // 2. 创建 Avalonia Image 控件
+            // 3. 在新窗口中显示
 
-                if (imGuiHandle == 0)
-                {
-                    Console.WriteLine($"[TextureAssetOpener] ImGui Handle 无效: {path}");
-                    TextureInterop.ReleaseTexture(textureKey);
-                    assetHandle.Release();
-                    return;
-                }
+            // 注册 Asset→Window 映射
+            // _editorManager.Register(effectiveGuid, windowId);
 
-                // 打开 TextureViewer 窗口
-                var viewer = _windowManager.OpenWindow<ImTextureViewerWindow>(v =>
-                {
-                    v.AssetGuidHex = effectiveGuid.ToHexString();
-                    v.AssetName = path.FileNameWithoutExtension;
-                    v.SetTexture(imGuiHandle, new Vector2(w, h));
-                });
-
-                // 注册 Asset→Window 映射
-                _editorManager.Register(effectiveGuid, viewer.WindowId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[TextureAssetOpener] 主线程 GPU 操作异常: {ex}");
-                assetHandle.Release();
-            }
-            finally
-            {
-                tcs.TrySetResult();
-            }
-        });
-
-        // 等待主线程 ProcessQueue 执行完毕（下一帧处理）
-        await tcs.Task;
+            // 释放 AssetHandle（窗口持有引用后可以释放）
+            assetHandle.Release();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[TextureAssetOpener] 打开窗口异常: {ex}");
+            assetHandle.Release();
+        }
     }
 
     /// <summary>

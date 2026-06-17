@@ -41,6 +41,7 @@
   </Folder>
   <Folder Name="/Rendering/">
     <Project Path="Engine/Source/Managed/Rendering/Diligent-GraphicsEngine.NET/Diligent-GraphicsEngine.NET.csproj" />
+    <Project Path="Engine/Source/Managed/Rendering/Neverness.Rendering.Diligent/Neverness.Rendering.Diligent.csproj" />
   </Folder>
   <Folder Name="/Runtime/">
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.App/Neverness.Runtime.App.csproj" />

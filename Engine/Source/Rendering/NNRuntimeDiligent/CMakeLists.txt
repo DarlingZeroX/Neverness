@@ -138,3 +138,9 @@ elseif(UNIX)
 endif()
 
 target_compile_definitions(NNRuntimeDiligent PUBLIC NN_WITH_DILIGENT)
+
+# 构建后自动复制 Diligent 后端 DLL 到输出目录（D3D12、Vulkan 等）
+# 函数由 DiligentCore/BuildTools/CMake/BuildUtils.cmake 提供
+if(COMMAND copy_engine_dlls)
+    copy_engine_dlls(NNRuntimeDiligent)
+endif()

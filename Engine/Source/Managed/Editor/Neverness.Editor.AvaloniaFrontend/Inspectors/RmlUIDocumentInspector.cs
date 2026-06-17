@@ -10,8 +10,8 @@ namespace Neverness.Editor.AvaloniaFrontend.Inspectors;
 /// </summary>
 public class RmlUIDocumentInspector : AvaloniaInspectorBase
 {
-    // RmlUIDocument 组件 TypeId（FNV-1a hash of "RmlUIDocument"）
-    private static readonly ulong RmlUIDocumentTypeId = CalculateTypeId("RmlUIDocument");
+    // RmlUIDocument 组件 TypeId（FNV-1a hash of "RmlUIDocument" = 0x1593AE057DEB826B）
+    private const ulong RmlUIDocumentTypeId = 0x1593AE057DEB826B;
 
     public override string DisplayName => "RmlUI Document";
 
@@ -59,40 +59,5 @@ public class RmlUIDocumentInspector : AvaloniaInspectorBase
             Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC")),
         };
         return checkBox;
-    }
-
-    /// <summary>计算 FNV-1a 64-bit 哈希。</summary>
-    private static ulong CalculateTypeId(string name)
-    {
-        const ulong offsetBasis = 14695981039346656037UL;
-        const ulong prime = 1099511628211UL;
-
-        ulong hash = offsetBasis;
-        foreach (char c in name)
-        {
-            // UTF-8 编码
-            if (c < 0x80)
-            {
-                hash ^= (byte)c;
-                hash *= prime;
-            }
-            else if (c < 0x800)
-            {
-                hash ^= (byte)(0xC0 | (c >> 6));
-                hash *= prime;
-                hash ^= (byte)(0x80 | (c & 0x3F));
-                hash *= prime;
-            }
-            else
-            {
-                hash ^= (byte)(0xE0 | (c >> 12));
-                hash *= prime;
-                hash ^= (byte)(0x80 | ((c >> 6) & 0x3F));
-                hash *= prime;
-                hash ^= (byte)(0x80 | (c & 0x3F));
-                hash *= prime;
-            }
-        }
-        return hash;
     }
 }

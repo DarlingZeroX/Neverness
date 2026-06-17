@@ -271,7 +271,7 @@ internal sealed class ContentBrowserThumbnailGrid
         iconArea.Children.Add(new TextBlock
         {
             Text = icon,
-            FontSize = 32,
+            FontSize = 72,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
         });

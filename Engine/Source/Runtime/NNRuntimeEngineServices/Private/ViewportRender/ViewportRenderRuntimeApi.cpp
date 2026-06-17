@@ -44,32 +44,32 @@ class AssetRegistryResolver final : public NN::Runtime::Scene::IAssetResolver
 public:
 	bool Resolve(NNGuid guid, char* outPath, std::uint32_t outPathSize) noexcept override
 	{
-		const auto* api = NNNativeEngineApi_GetRuntimeTable();
-		if (!api || !api->assetRegistry.resolvePathByGuid)
-		{
-			std::cerr << "[AssetRegistryResolver] API table or resolvePathByGuid is null" << std::endl;
-			return false;
-		}
-
-		// 首次调用时打印注册表状态
-		static bool s_logged = false;
-		if (!s_logged)
-		{
-			auto countFn = api->assetRegistry.getAssetCount;
-			std::uint32_t assetCount = countFn ? countFn() : 0;
-			std::cout << "[AssetRegistryResolver] 注册表资产数: " << assetCount << std::endl;
-			s_logged = true;
-		}
-
-		// resolvePathByGuid 返回 > 0 表示成功（路径字节数），-1 表示失败
-		int result = api->assetRegistry.resolvePathByGuid(guid, outPath,
-			static_cast<std::size_t>(outPathSize));
-		if (result <= 0)
-		{
-			std::cerr << "[AssetRegistryResolver] GUID not found ("
-				<< guid.high << ":" << guid.low << ")" << std::endl;
-		}
-		return result > 0;
+		//const auto* api = NNNativeEngineApi_GetRuntimeTable();
+		//if (!api || !api->assetRegistry.resolvePathByGuid)
+		//{
+		//	std::cerr << "[AssetRegistryResolver] API table or resolvePathByGuid is null" << std::endl;
+		//	return false;
+		//}
+		//
+		//// 首次调用时打印注册表状态
+		//static bool s_logged = false;
+		//if (!s_logged)
+		//{
+		//	auto countFn = api->assetRegistry.getAssetCount;
+		//	std::uint32_t assetCount = countFn ? countFn() : 0;
+		//	std::cout << "[AssetRegistryResolver] 注册表资产数: " << assetCount << std::endl;
+		//	s_logged = true;
+		//}
+		//
+		//// resolvePathByGuid 返回 > 0 表示成功（路径字节数），-1 表示失败
+		//int result = api->assetRegistry.resolvePathByGuid(guid, outPath,
+		//	static_cast<std::size_t>(outPathSize));
+		//if (result <= 0)
+		//{
+		//	std::cerr << "[AssetRegistryResolver] GUID not found ("
+		//		<< guid.high << ":" << guid.low << ")" << std::endl;
+		//}
+		return false;
 	}
 };
 

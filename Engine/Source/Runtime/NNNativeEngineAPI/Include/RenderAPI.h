@@ -26,7 +26,7 @@ typedef NNTextureHandle(NN_ENGINE_ABI_STDCALL* NNRenderCreateTextureFn)(std::uin
 typedef void(NN_ENGINE_ABI_STDCALL* NNRenderUploadTextureFn)(
 	NNTextureHandle texture,
 	const std::uint8_t* pixelBytes,
-	std::size_t byteCount);
+	size_t byteCount);
 
 /** @brief 建立渲染目標；失敗回傳 0。 */
 typedef NNRenderTargetHandle(NN_ENGINE_ABI_STDCALL* NNRenderCreateRenderTargetFn)(std::uint32_t width, std::uint32_t height);

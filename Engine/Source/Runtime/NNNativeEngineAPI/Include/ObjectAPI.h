@@ -23,7 +23,7 @@ typedef int(NN_ENGINE_ABI_STDCALL* NNObjectIsAliveFn)(NNObjectHandle object);
 typedef int(NN_ENGINE_ABI_STDCALL* NNObjectGetTypeNameFn)(
 	NNObjectHandle object,
 	char* outUtf8,
-	std::size_t outCapacity);
+	size_t outCapacity);
 
 typedef struct NNObjectAPI
 {

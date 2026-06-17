@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+using Avalonia.Media;
 using Dock.Avalonia.Controls;
 using Dock.Model;
 using Dock.Model.Controls;
@@ -27,7 +29,10 @@ public class EditorDockFactory : Factory
     public EditorDockFactory()
     {
         // 注册浮动窗口定位器——FloatDockable 需要此定位器创建 IHostWindow 模型
-        DefaultHostWindowLocator = () => new HostWindow();
+        DefaultHostWindowLocator = () => new HostWindow
+        {
+            Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
+        };
     }
 
     /// <summary>面板 ID 常量。</summary>

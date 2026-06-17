@@ -28,6 +28,8 @@ public sealed class AssetOpenerRegistry
         _openers.Clear();
         _allOpeners.Clear();
 
+        Console.WriteLine($"[AssetOpenerRegistry] 开始发现 opener...");
+
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
             if (!IsTargetAssembly(assembly))
@@ -35,7 +37,11 @@ public sealed class AssetOpenerRegistry
 
             Type[] types;
             try { types = assembly.GetTypes(); }
-            catch { continue; }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AssetOpenerRegistry] 扫描程序集失败: {assembly.GetName().Name} → {ex.Message}");
+                continue;
+            }
 
             foreach (var type in types)
             {
@@ -49,6 +55,8 @@ public sealed class AssetOpenerRegistry
                 if (attr == null)
                     continue;
 
+                Console.WriteLine($"[AssetOpenerRegistry] 发现 opener: {type.FullName} (TypeId={attr.TypeId})");
+
                 var opener = TryCreateOpener(type, context);
                 if (opener == null)
                 {
@@ -58,6 +66,7 @@ public sealed class AssetOpenerRegistry
 
                 _allOpeners.Add(opener);
                 _openers[attr.TypeId] = opener;
+                Console.WriteLine($"[AssetOpenerRegistry] 注册 opener: {type.FullName} (TypeId={attr.TypeId})");
             }
         }
 

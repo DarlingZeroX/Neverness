@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -27,6 +26,9 @@ public partial class MainEditorWindow : Window
 
         _dockFactory = new EditorDockFactory();
 
+        // 保存 Factory 到静态字段（供浮动窗口 DataTemplate 使用）
+        AvaloniaFrontendModule.DockFactory = _dockFactory;
+
         // 创建默认 Dock 布局
         var layout = _dockFactory.CreateDefaultLayout();
 
@@ -34,31 +36,15 @@ public partial class MainEditorWindow : Window
         DockControl.Factory = _dockFactory;
         DockControl.Layout = layout;
 
-        // Document 模板：渲染 Document.Context（Viewport 专用）
-        DockControl.DataTemplates.Insert(0, new FuncDataTemplate(
-            typeof(global::Dock.Model.Mvvm.Controls.Document),
-            (data, _) =>
-            {
-                if (data is global::Dock.Model.Mvvm.Controls.Document doc && doc.Context is Control ctrl)
-                    return ctrl;
-                return new TextBlock { Text = "No Content" };
-            }));
-
-        // Tool 模板：渲染 Tool.Context（其余面板使用）
-        DockControl.DataTemplates.Insert(1, new FuncDataTemplate(
-            typeof(global::Dock.Model.Mvvm.Controls.Tool),
-            (data, _) =>
-            {
-                if (data is global::Dock.Model.Mvvm.Controls.Tool tool && tool.Context is Control ctrl)
-                    return ctrl;
-                return new TextBlock { Text = "No Content" };
-            }));
+        // DataTemplate 已在 App.axaml.cs 中全局注册（Application.DataTemplates）
+        // 浮动窗口是独立 HostWindow，不继承主窗口 DockControl 的 DataTemplates
 
         // 配置浮动窗口工厂（Native 模式，原生 OS 窗口）
         DockControl.HostWindowFactory = () => new HostWindow
         {
             IsToolWindow = true,
             ToolChromeControlsWholeWindow = true,
+            Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
         };
 
         // 创建菜单、工具栏、状态栏
