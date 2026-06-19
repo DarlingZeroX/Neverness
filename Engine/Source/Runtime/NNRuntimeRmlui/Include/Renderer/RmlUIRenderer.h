@@ -131,6 +131,7 @@ namespace NN::Runtime::Renderer
 
 	private:
 		Rml::ElementDocument* LoadDocument(NNGuid assetGuid);
+		Rml::ElementDocument* LoadDocumentByPath(const std::string& assetPath);
 		void UnloadDocument(NN::Runtime::Scene::NNEntity entity);
 
 		// Diligent 后端

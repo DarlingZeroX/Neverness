@@ -78,18 +78,15 @@ public sealed class TextureResource : IDisposable
     }
 
     /// <summary>
-    /// 获取 ImGui 兼容的 Texture Handle。
+    /// 获取 ImGui 兼容的 Texture Handle（ITextureView* 编码为 ulong）。
+    /// 与 C++ 端 reinterpret_cast&lt;uint64_t&gt;(m_RHIShaderResourceView) 等价。
     /// </summary>
     public ulong GetImGuiHandle()
     {
         if (_rhiShaderResourceView == null)
             return 0;
 
-        // 使用 SRV 的原生指针作为 ImGui Handle
-        // TextureView 内部持有 ITextureView，需要通过反射获取原生指针
-        // 或者使用 TextureHandle 的 GetDefaultView 返回的 TextureView
-        // 这里暂时返回 0，需要与 Neverness.Rendering.Diligent 配合
-        return 0;
+        return (ulong)_rhiShaderResourceView.NativePointer;
     }
 
     /// <summary>

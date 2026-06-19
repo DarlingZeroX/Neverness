@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Diligent;
 using Neverness.Rendering.Diligent.Internal;
+using Neverness.Runtime.Engine;
 
 namespace Neverness.Rendering.Diligent;
 
@@ -27,11 +28,38 @@ public struct GraphicsDeviceCreateInfo
 /// 所有资源/管线创建方法直接在设备上，调用方式：
 ///   var vb = device.CreateBuffer(...);
 ///   var pso = device.CreateGraphicsPipelineState(...);
+///
+/// 全局单例模式：通过 InitializePrimary() 初始化，通过 Instance 访问。
 /// </summary>
 public sealed class GraphicsDevice : IDisposable
 {
     private readonly DiligentBackend _backend;
     private bool _disposed;
+
+    // ═══════════════════════════════════════════
+    //  静态单例
+    // ═══════════════════════════════════════════
+
+    private static GraphicsDevice? _instance;
+    private static readonly object _instanceLock = new();
+
+    /// <summary>
+    /// 获取全局 GraphicsDevice 实例。
+    /// 必须先调用 InitializePrimary() 或 Initialize()，否则抛出 InvalidOperationException。
+    /// </summary>
+    public static GraphicsDevice Instance
+    {
+        get
+        {
+            if (_instance == null)
+                throw new InvalidOperationException(
+                    "GraphicsDevice 尚未初始化，请先调用 GraphicsDevice.InitializePrimary() 或 GraphicsDevice.Initialize()");
+            return _instance;
+        }
+    }
+
+    /// <summary>是否已初始化。</summary>
+    public static bool IsInitialized => _instance != null;
 
     private GraphicsDevice(DiligentBackend backend)
     {
@@ -43,25 +71,69 @@ public sealed class GraphicsDevice : IDisposable
     // ═══════════════════════════════════════════
 
     /// <summary>
-    /// 创建图形设备。
+    /// 创建图形设备并设置为全局单例。
     /// </summary>
-    public static GraphicsDevice Create(GraphicsBackend backend, in GraphicsDeviceCreateInfo createInfo = default)
+    public static GraphicsDevice Initialize(GraphicsBackend backend, in GraphicsDeviceCreateInfo createInfo = default)
     {
-        var nativeBackend = DiligentBackend.Create(backend, createInfo);
-        return new GraphicsDevice(nativeBackend);
+        lock (_instanceLock)
+        {
+            if (_instance != null)
+                throw new InvalidOperationException("GraphicsDevice 已初始化，不可重复创建");
+
+            var nativeBackend = DiligentBackend.Create(backend, createInfo);
+            _instance = new GraphicsDevice(nativeBackend);
+            return _instance;
+        }
     }
 
     /// <summary>
-    /// 从已有的原生指针创建图形设备（不接管所有权，调用方负责生命周期）。
+    /// 从已有的原生指针创建图形设备并设置为全局单例（不接管所有权，调用方负责生命周期）。
     /// 用于从 C++ 端获取主窗口的 Diligent 设备。
     /// </summary>
     /// <param name="devicePtr">IRenderDevice* 指针</param>
     /// <param name="contextPtr">IDeviceContext* 指针</param>
     /// <param name="swapChainPtr">ISwapChain* 指针（可选）</param>
-    public static GraphicsDevice FromNativePointers(IntPtr devicePtr, IntPtr contextPtr, IntPtr swapChainPtr = default)
+    public static GraphicsDevice InitializeFromPointers(IntPtr devicePtr, IntPtr contextPtr, IntPtr swapChainPtr = default)
     {
-        var nativeBackend = new DiligentBackend(devicePtr, contextPtr, swapChainPtr);
-        return new GraphicsDevice(nativeBackend);
+        lock (_instanceLock)
+        {
+            if (_instance != null)
+                throw new InvalidOperationException("GraphicsDevice 已初始化，不可重复创建");
+
+            var nativeBackend = new DiligentBackend(devicePtr, contextPtr, swapChainPtr);
+            _instance = new GraphicsDevice(nativeBackend);
+            return _instance;
+        }
+    }
+
+    /// <summary>
+    /// 从 NNDiligentAPI 初始化主窗口的图形设备（推荐用法）。
+    /// 统一全局管理：所有需要 Diligent 设备的模块应通过此方法获取，而非自行从 NativeAPI 取指针。
+    /// </summary>
+    /// <returns>初始化成功返回 GraphicsDevice 实例，失败返回 null（错误输出到 stderr）。</returns>
+    public static unsafe GraphicsDevice? InitializePrimary()
+    {
+        ref readonly var api = ref EngineNativeApiCache.EngineApi;
+        if (api.LayoutVersion == 0)
+        {
+            Console.Error.WriteLine("[GraphicsDevice] InitializePrimary: RuntimeTable 未初始化");
+            return null;
+        }
+
+        var devicePtr = api.Diligent.GetPrimaryDevice();
+        var contextPtr = api.Diligent.GetPrimaryContext();
+        var swapChainPtr = api.Diligent.GetPrimarySwapChain();
+
+        if (devicePtr == null || contextPtr == null)
+        {
+            Console.Error.WriteLine("[GraphicsDevice] InitializePrimary: Diligent 设备未初始化");
+            return null;
+        }
+
+        return InitializeFromPointers(
+            new IntPtr(devicePtr),
+            new IntPtr(contextPtr),
+            swapChainPtr != null ? new IntPtr(swapChainPtr) : IntPtr.Zero);
     }
 
     // ═══════════════════════════════════════════
@@ -163,6 +235,24 @@ public sealed class GraphicsDevice : IDisposable
     public RenderContext ImmediateContext => new(_backend.NativeImmediateContext);
 
     /// <summary>
+    /// 将纹理从 COPY_DEST 转换为 SHADER_RESOURCE 状态。
+    /// CreateTexture 带初始数据后必须调用此方法，否则纹理无法用于着色器采样。
+    /// 对应 C++ 端 NNDiligentDevice::CreateTexture 中的 TransitionResourceStates 调用。
+    /// </summary>
+    public void TransitionTextureToShaderResource(TextureHandle texture)
+    {
+        ThrowIfDisposed();
+        var transition = new StateTransitionDesc
+        {
+            Resource = texture.NativeObject,
+            OldState = ResourceState.CopyDest,
+            NewState = ResourceState.ShaderResource,
+            Flags = StateTransitionFlags.UpdateState
+        };
+        _backend.NativeImmediateContext.TransitionResourceStates(new[] { transition });
+    }
+
+    /// <summary>
     /// 初始化 SwapChain（需要窗口句柄）。
     /// 必须在使用 SwapChain 属性前调用。
     /// </summary>
@@ -200,6 +290,22 @@ public sealed class GraphicsDevice : IDisposable
     {
         ThrowIfDisposed();
         _backend.NativeDevice.IdleGPU();
+    }
+
+    /// <summary>
+    /// 关闭全局单例：释放设备资源并清除 Instance。
+    /// 调用后可重新调用 InitializePrimary() 创建新实例。
+    /// </summary>
+    public static void Shutdown()
+    {
+        lock (_instanceLock)
+        {
+            if (_instance != null)
+            {
+                _instance.Dispose();
+                _instance = null;
+            }
+        }
     }
 
     public void Dispose()

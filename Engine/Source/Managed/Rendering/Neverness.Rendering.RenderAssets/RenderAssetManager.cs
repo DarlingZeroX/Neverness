@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
 using Neverness.Rendering.Diligent;
+using Neverness.Runtime.Assets;
+using Neverness.Runtime.Assets.Formats;
 using Neverness.Runtime.Engine;
 
 namespace Neverness.Rendering.RenderAssets;
@@ -35,7 +37,7 @@ public sealed class RenderAssetManager
     private bool _initialized;
 
     /// <summary>
-    /// 获取单例实例。
+    /// 获取单例实例（首次访问自动调用 InitializeFromNative 完成初始化）。
     /// </summary>
     public static RenderAssetManager Instance
     {
@@ -45,7 +47,11 @@ public sealed class RenderAssetManager
             {
                 lock (_instanceLock)
                 {
-                    _instance ??= new RenderAssetManager();
+                    if (_instance == null)
+                    {
+                        _instance = new RenderAssetManager();
+                        _instance.InitializeFromNative();
+                    }
                 }
             }
             return _instance;
@@ -82,39 +88,22 @@ public sealed class RenderAssetManager
 
     /// <summary>
     /// 从 NNDiligentAPI 初始化。
+    /// 通过 GraphicsDevice.InitializePrimary() 统一获取主窗口设备，并创建渲染资源工厂。
     /// </summary>
     public bool InitializeFromNative()
     {
-        // 获取主窗口的 Diligent 设备指针
-        ref readonly var api = ref EngineNativeApiCache.EngineApi;
-        if (api.LayoutVersion == 0)
+        if (!GraphicsDevice.IsInitialized)
         {
-            Console.Error.WriteLine("[RenderAssetManager] InitializeFromNative: RuntimeTable 未初始化");
-            return false;
-        }
-
-        unsafe
-        {
-            var devicePtr = api.Diligent.GetPrimaryDevice();
-            var contextPtr = api.Diligent.GetPrimaryContext();
-            var swapChainPtr = api.Diligent.GetPrimarySwapChain();
-
-            if (devicePtr == null || contextPtr == null)
+            var device = GraphicsDevice.InitializePrimary();
+            if (device == null)
             {
-                Console.Error.WriteLine("[RenderAssetManager] InitializeFromNative: Diligent 设备未初始化");
+                Console.Error.WriteLine("[RenderAssetManager] InitializeFromNative: GraphicsDevice 初始化失败");
                 return false;
             }
-
-            // 创建 GraphicsDevice
-            var device = GraphicsDevice.FromNativePointers(
-                new IntPtr(devicePtr),
-                new IntPtr(contextPtr),
-                swapChainPtr != null ? new IntPtr(swapChainPtr) : IntPtr.Zero);
-
-            // 创建工厂
-            var factory = new DiligentRenderResourceFactory(device);
-            return Initialize(factory);
         }
+
+        var factory = new DiligentRenderResourceFactory(GraphicsDevice.Instance);
+        return Initialize(factory);
     }
 
     /// <summary>
@@ -465,6 +454,56 @@ public sealed class RenderAssetManager
                 return 0;
             return entry.Resource?.GetImGuiHandle() ?? 0;
         }
+    }
+
+    /// <summary>
+    /// 确保纹理已加载到 GPU，返回 TextureHandle（ITextureView* 编码为 ulong）。
+    /// 内部完成全链路：缓存查询 → AssetManager.LoadAssetSync → Blob 解析 → GPU 上传。
+    /// 返回 0 表示失败（空 GUID、加载失败、上传失败）。
+    /// </summary>
+    /// <param name="textureGuid">纹理资产 GUID（来自 SpriteRendererComponent.TextureAsset）。</param>
+    /// <returns>GPU TextureHandle，0 = 失败。</returns>
+    public ulong EnsureTextureLoaded(NNGuid textureGuid)
+    {
+        // 1. 空 GUID 检查
+        if (textureGuid.High == 0 && textureGuid.Low == 0)
+            return 0;
+
+        // 2. 查询缓存（GUID.Low → cacheKey → Handle）
+        var cacheKey = GetCacheKeyByGuidLow(textureGuid.Low);
+        if (cacheKey != 0)
+            return GetGLTextureId(cacheKey);
+
+        // 3. Cache miss → 从 AssetManager 同步加载 .nnasset
+        var guid = GUID.FromNative(textureGuid);
+        var handle = AssetManager.Instance.LoadAssetSync(guid);
+        if (handle == 0)
+            return 0;
+
+        // 4. 解析 Blob（TypeInfo = 9, Data = 0）
+        var typeInfo = AssetManager.Instance.GetBlobByType(handle, BlobType.TypeInfo);
+        var pixelData = AssetManager.Instance.GetBlobByType(handle, BlobType.Data);
+        if (typeInfo.IsEmpty || pixelData.IsEmpty)
+            return 0;
+
+        // 5. 上传 GPU 并注册 GUID → cacheKey 映射
+        unsafe
+        {
+            fixed (byte* typeInfoPtr = typeInfo)
+            fixed (byte* pixelPtr = pixelData)
+            {
+                cacheKey = LoadTextureFromBlob(
+                    (IntPtr)typeInfoPtr, (ulong)typeInfo.Length,
+                    (IntPtr)pixelPtr, (ulong)pixelData.Length,
+                    textureGuid.Low);
+            }
+        }
+
+        if (cacheKey == 0)
+            return 0;
+
+        // 6. 返回 GPU Handle
+        return GetGLTextureId(cacheKey);
     }
 
     /// <summary>

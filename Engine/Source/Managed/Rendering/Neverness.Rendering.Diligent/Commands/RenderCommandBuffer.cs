@@ -112,6 +112,32 @@ public sealed class RenderCommandBuffer
     }
 
     /// <summary>
+    /// 添加 SetRmlDocuments 命令。
+    /// </summary>
+    /// <param name="entries">RmlUI 文档条目数组</param>
+    public void AddSetRmlDocuments(ReadOnlySpan<RmlDocumentEntry> entries)
+    {
+        ObjectDisposedException.ThrowIf(_built, this);
+
+        int totalSize = RenderCommandConstants.SetRmlDocumentsTotalSize(entries.Length);
+        WriteCommandHeader((uint)RenderCommandType.SetRmlDocuments, totalSize);
+
+        // 写入 RmlDocumentsHeader（16 bytes）
+        WriteUInt((uint)entries.Length);  // documentCount
+        WriteUInt(0);                     // reserved0
+        WriteUInt(0);                     // reserved1
+        WriteUInt(0);                     // reserved2
+
+        // 写入每个 RmlDocumentEntry（276 bytes）
+        for (int i = 0; i < entries.Length; i++)
+        {
+            WriteRmlDocumentEntry(entries[i]);
+        }
+
+        _commandCount++;
+    }
+
+    /// <summary>
     /// 构建最终的命令缓冲区（含 BufferHeader）。
     /// 返回的字节数组可直接传给 C++ 的 RenderViewportCommands。
     /// </summary>
@@ -210,6 +236,29 @@ public sealed class RenderCommandBuffer
             WriteUInt(sprite.SortOrder);
             WriteUInt(sprite.BlendMode);
             WriteUInt(sprite.Flags);
+        }
+    }
+
+    private void WriteRmlDocumentEntry(in RmlDocumentEntry entry)
+    {
+        unsafe
+        {
+            // AssetPath（256 bytes，UTF-8 NUL-terminated）
+            Span<byte> pathBuf = stackalloc byte[256];
+            pathBuf.Clear();
+            fixed (byte* src = entry.AssetPath)
+            {
+                // 复制有效字节（NUL 终结由 fixed 数组保证）
+                for (int i = 0; i < 256; i++)
+                    pathBuf[i] = src[i];
+            }
+            _stream.Write(pathBuf);
+
+            // SortOrder, ViewTarget, EntityHandle, ViewportId（4 * 4 = 16 bytes）
+            WriteUInt((uint)entry.SortOrder);
+            WriteUInt(entry.ViewTarget);
+            WriteUInt(entry.EntityHandle);
+            WriteUInt(entry.ViewportId);
         }
     }
 

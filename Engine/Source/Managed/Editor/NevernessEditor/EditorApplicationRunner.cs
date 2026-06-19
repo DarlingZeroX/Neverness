@@ -15,6 +15,7 @@ using Neverness.Editor.MediaImporter;
 using Neverness.Editor.Media;
 using Neverness.Editor.Rmlui.Public;
 using Neverness.Editor.Script.Public;
+using Neverness.Runtime.Assets;
 using Neverness.Runtime.Audio;
 using Neverness.Runtime.Audio.Native;
 using Neverness.Runtime.Scene;
@@ -98,6 +99,9 @@ internal static class EditorApplicationRunner
 
         /* Phase 4: 编辑器组装（ViewModel、Controller、View） */
         EditorCompositionRoot.Build();
+
+        /* 注入 RmlUI 资产路径解析器（Editor.Assets → ViewportService） */
+        InjectRmlUIAssetPathResolver();
 
         /* Phase 5: 前端面板内容和上下文菜单 */
         AvaloniaFrontendModule.SetDockPanelContent();
@@ -216,6 +220,30 @@ internal static class EditorApplicationRunner
 			ApplicationHost.Shutdown();
 			RuntimeBootstrap.Shutdown();
 		}
+	}
+
+	/// <summary>
+	/// 注入 RmlUI 资产路径解析器——将 EditorAssetDatabase.TryGetPath 桥接到 ViewportService。
+	/// 避免 Editor.Scene 直接依赖 Editor.Assets。
+	/// </summary>
+	private static void InjectRmlUIAssetPathResolver()
+	{
+		var viewportService = CoreModuleImp.Context.GetService<IViewportService>();
+		if (viewportService == null)
+		{
+			Console.WriteLine("[EditorApplicationRunner] 注入 RmlUI 资产路径解析器失败: IViewportService 未注册");
+			return;
+		}
+
+		viewportService.AssetPathResolver = guid =>
+		{
+			var nGuid = new GUID(guid.High, guid.Low);
+			if (Neverness.Editor.Assets.EditorAssetDatabase.TryGetPath(nGuid, out var virtualPath))
+				return virtualPath.FullPath;
+			return null;
+		};
+
+		Console.WriteLine("[EditorApplicationRunner] RmlUI 资产路径解析器已注入");
 	}
 
 	/// <summary>

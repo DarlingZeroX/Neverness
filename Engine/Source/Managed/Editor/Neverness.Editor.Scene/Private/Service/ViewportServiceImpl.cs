@@ -6,6 +6,7 @@ using Neverness.Runtime.Interop;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Scene.Components;
 using Neverness.Rendering.Diligent.Commands;
+using Neverness.Rendering.RenderAssets;
 using SpriteFlags = Neverness.Runtime.Scene.Components.SpriteFlags;
 
 namespace Neverness.Editor.Scene.Private.Service;
@@ -23,6 +24,12 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
 
     /// <summary>是否有有效的场景。</summary>
     public bool HasScene => _scene != null;
+
+    /// <summary>
+    /// 资产 GUID → VFS 路径解析器（由上层注入，避免 Editor.Scene 直接依赖 Editor.Assets）。
+    /// 返回 null 表示解析失败。
+    /// </summary>
+    public Func<NNGuid, string?>? AssetPathResolver { get; set; }
 
     /// <summary>设置关联的场景。</summary>
     public void SetScene(SceneWorld? scene)
@@ -260,7 +267,7 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
                     instance.UvRect[3] = sprite.UvV1;
                 }
 
-                instance.TextureHandle = 0; // TODO: 从 TextureAsset GUID 解析 GPU Handle
+                instance.TextureHandle = RenderAssetManager.Instance.EnsureTextureLoaded(sprite.TextureAsset);
                 instance.Layer = sprite.Layer;
                 instance.SortOrder = sprite.SortOrder;
                 instance.BlendMode = (uint)sprite.Blend;
@@ -296,7 +303,48 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
             buffer.AddDrawSpriteBatch(CollectionsMarshal.AsSpan(sprites));
         }
 
-        // ── 4. 构建并返回 ──
+        // ── 4. 收集 RmlUIDocument 组件（直接 Friflo Query，不依赖 IInspectorService） ──
+        var rmlDocs = new List<RmlDocumentEntry>();
+        if (AssetPathResolver != null)
+        {
+            var rmlView = _scene.Scene.CreateView<RmlUIDocumentComponent>();
+            rmlView.Refresh();
+            rmlView.ForEach((IEntity entity, RmlUIDocumentComponent doc) =>
+            {
+                // 通过注入的解析器获取 VFS 路径
+                var path = AssetPathResolver(doc.DocumentAsset);
+                if (string.IsNullOrEmpty(path))
+                    return;
+
+                // 填充 RmlDocumentEntry（276 bytes）
+                var entry = new RmlDocumentEntry();
+                // 写入 UTF-8 路径到 fixed byte[256]
+                var pathBytes = System.Text.Encoding.UTF8.GetBytes(path);
+                int copyLen = Math.Min(pathBytes.Length, 255); // 留 1 字节 NUL
+                unsafe
+                {
+                    fixed (byte* src = pathBytes)
+                    {
+                        byte* dst = entry.AssetPath;
+                        for (int j = 0; j < copyLen; j++)
+                            dst[j] = src[j];
+                        dst[copyLen] = 0; // NUL 终结
+                    }
+                }
+                entry.SortOrder = doc.SortOrder;
+                entry.ViewTarget = (uint)doc.ViewTarget;
+                entry.EntityHandle = (uint)entity.Id;
+                entry.ViewportId = 0;
+                rmlDocs.Add(entry);
+            });
+        }
+
+        if (rmlDocs.Count > 0)
+        {
+            buffer.AddSetRmlDocuments(CollectionsMarshal.AsSpan(rmlDocs));
+        }
+
+        // ── 5. 构建并返回 ──
         var result = buffer.Build();
         if (shouldLog)
             Console.WriteLine($"[ViewportService] RenderCommands 构建完成: {result.Length} bytes, {buffer.CommandCount} commands");

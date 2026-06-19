@@ -61,13 +61,16 @@ public sealed class DiligentRenderResourceFactory : IRenderResourceFactory
                     SubResources = subresources
                 };
 
-                // 创建纹理
+                // 创建纹理（带初始数据，Diligent 内部将纹理置于 COPY_DEST）
                 var textureHandle = _device.CreateTexture(texDesc, textureData);
                 if (textureHandle == null)
                 {
                     Console.Error.WriteLine("[DiligentRenderResourceFactory] CreateTexture: 设备创建失败");
                     return null;
                 }
+
+                // 状态转换：COPY_DEST → SHADER_RESOURCE（与 C++ NNDiligentDevice::CreateTexture 一致）
+                _device.TransitionTextureToShaderResource(textureHandle);
 
                 // 获取 SRV
                 var srv = textureHandle.GetDefaultView(TextureViewType.ShaderResource);

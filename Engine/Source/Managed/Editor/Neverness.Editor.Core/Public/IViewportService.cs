@@ -1,3 +1,4 @@
+using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene;
 
 namespace Neverness.Editor.Core.Public;
@@ -48,6 +49,12 @@ public interface IViewportService
     /// <param name="height">视口高度。</param>
     /// <returns>序列化的命令缓冲区，可直接传给 RenderViewportCommands。无场景时返回 null。</returns>
     byte[]? CollectRenderCommands(float width, float height);
+
+    /// <summary>
+    /// 资产 GUID → VFS 路径解析器（由上层注入，避免 Scene 模块直接依赖 Assets 模块）。
+    /// 用于 RmlUIDocument 组件的 GUID → 路径解析。返回 null 表示解析失败。
+    /// </summary>
+    Func<NNGuid, string?>? AssetPathResolver { get; set; }
 }
 
 /// <summary>

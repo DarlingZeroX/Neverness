@@ -13,6 +13,8 @@ public enum RenderCommandType : uint
     SetRenderPassState = 0x02,
     /// <summary>批量精灵绘制。</summary>
     DrawSpriteBatch = 0x10,
+    /// <summary>设置 RmlUI 文档列表（Overlay Pass 数据源）。</summary>
+    SetRmlDocuments = 0x20,
 }
 
 /// <summary>
@@ -171,6 +173,42 @@ public struct DrawSpriteBatchHeader
     public uint Reserved2;
 }
 
+/// <summary>
+/// RmlUI 文档条目（276 bytes）——与 C++ NNRmlDocumentEntry 逐字节对齐。
+/// C# 端从 Friflo ECS 收集 RmlUIDocument 组件，解析 GUID → VFS 路径后传入。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public unsafe struct RmlDocumentEntry
+{
+    /// <summary>VFS 路径（UTF-8，NUL 终结，最长 255 字符）。</summary>
+    public fixed byte AssetPath[256];
+    /// <summary>渲染排序——小的在前。</summary>
+    public int SortOrder;
+    /// <summary>NNRmlUIViewTarget: 0=Scene, 1=Game, 2=Both。</summary>
+    public uint ViewTarget;
+    /// <summary>C# entity ID——用于 Renderer 内部 Diff。</summary>
+    public uint EntityHandle;
+    /// <summary>预留：视口 ID（0=默认）。</summary>
+    public uint ViewportId;
+}
+
+/// <summary>
+/// SetRmlDocuments 命令数据头部（16 bytes）——与 C++ NNRmlDocumentsData 逐字节对齐。
+/// 后跟 documentCount 个 RmlDocumentEntry。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct RmlDocumentsHeader
+{
+    /// <summary>文档数量。</summary>
+    public uint DocumentCount;
+    /// <summary>预留。</summary>
+    public uint Reserved0;
+    /// <summary>预留。</summary>
+    public uint Reserved1;
+    /// <summary>预留。</summary>
+    public uint Reserved2;
+}
+
 // ═══════════════════════════════════════════
 //  便利常量
 // ═══════════════════════════════════════════
@@ -204,4 +242,17 @@ public static class RenderCommandConstants
     /// <summary>计算 DrawSpriteBatch 命令的总字节数。</summary>
     public static int DrawSpriteBatchTotalSize(int spriteCount)
         => DrawSpriteBatchHeaderSize + spriteCount * SpriteInstanceSize;
+
+    /// <summary>单个 RmlDocument 条目大小（272 bytes = 256 path + 4×4 fields）。</summary>
+    public const int RmlDocumentEntrySize = 272;
+
+    /// <summary>SetRmlDocuments 命令头部大小（header 8 + data头部 16 = 24 bytes）。</summary>
+    public const int SetRmlDocumentsHeaderSize = 24;
+
+    /// <summary>assetPath 缓冲区大小（含 NUL 终结符）。</summary>
+    public const int RmlDocumentPathSize = 256;
+
+    /// <summary>计算 SetRmlDocuments 命令的总字节数。</summary>
+    public static int SetRmlDocumentsTotalSize(int docCount)
+        => SetRmlDocumentsHeaderSize + docCount * RmlDocumentEntrySize;
 }

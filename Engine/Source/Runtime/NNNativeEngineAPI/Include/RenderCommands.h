@@ -35,8 +35,10 @@ typedef enum NNRenderCommandType
     NN_RENDER_COMMAND_SET_RENDER_PASS_STATE = 0x02,
     /** 批量精灵绘制。 */
     NN_RENDER_COMMAND_DRAW_SPRITE_BATCH     = 0x10,
+    /** 设置 RmlUI 文档列表（Overlay Pass 数据源）。 */
+    NN_RENDER_COMMAND_SET_RML_DOCUMENTS     = 0x20,
     /* 第二阶段：
-    NN_RENDER_COMMAND_DRAW_MESH             = 0x20,  // 网格绘制
+    NN_RENDER_COMMAND_DRAW_MESH             = 0x30,  // 网格绘制
     */
 } NNRenderCommandType;
 
@@ -188,6 +190,53 @@ typedef struct NNDrawSpriteBatchData
 /** 计算 DrawSpriteBatch 命令的总字节数。 */
 #define NN_DRAW_SPRITE_BATCH_TOTAL_SIZE(spriteCount) \
     (NN_DRAW_SPRITE_BATCH_HEADER_SIZE + (spriteCount) * NN_SPRITE_INSTANCE_SIZE)
+
+/* ═══════════════════════════════════════════
+ *  SetRmlDocuments（type = 0x20）
+ * ═══════════════════════════════════════════ */
+
+/** 单个 RmlDocument 条目大小（272 bytes = 256 path + 4×4 fields）。 */
+#define NN_RML_DOCUMENT_ENTRY_SIZE 272u
+
+/** SetRmlDocuments 命令头部大小（header 8 + data头部 16 = 24 bytes）。 */
+#define NN_SET_RML_DOCUMENTS_HEADER_SIZE 24u
+
+/** assetPath 缓冲区大小（含 NUL 终结符）。 */
+#define NN_RML_DOCUMENT_PATH_SIZE 256u
+
+/**
+ * @brief 单个 RmlUI 文档条目（272 bytes）。
+ *
+ * C# 端从 Friflo ECS 收集 RmlUIDocument 组件，解析 GUID → VFS 路径后传入。
+ * C++ 端直接用 assetPath 加载文档，不经过 IAssetResolver。
+ */
+typedef struct NNRmlDocumentEntry
+{
+    char     assetPath[256];     /**< VFS 路径（UTF-8，NUL 终结，最长 255 字符） */
+    std::int32_t  sortOrder;    /**< 渲染排序——小的在前（4 bytes） */
+    std::uint32_t viewTarget;   /**< NNRmlUIViewTarget: 0=Scene, 1=Game, 2=Both（4 bytes） */
+    std::uint32_t entityHandle; /**< C# entity ID——用于 Renderer 内部 Diff（4 bytes） */
+    std::uint32_t viewportId;   /**< 预留：视口 ID（0=默认，4 bytes） */
+} NNRmlDocumentEntry;
+
+/**
+ * @brief SetRmlDocuments 命令数据。
+ *
+ * 紧跟 documentCount 个 NNRmlDocumentEntry。
+ * 命令总大小 = NN_SET_RML_DOCUMENTS_HEADER_SIZE + documentCount * NN_RML_DOCUMENT_ENTRY_SIZE
+ */
+typedef struct NNRmlDocumentsData
+{
+    std::uint32_t documentCount; /**< 文档数量（4 bytes） */
+    std::uint32_t reserved0;     /**< 预留（4 bytes） */
+    std::uint32_t reserved1;     /**< 预留（4 bytes） */
+    std::uint32_t reserved2;     /**< 预留（4 bytes） */
+    /* 后跟 NNRmlDocumentEntry entries[documentCount]（变长） */
+} NNRmlDocumentsData;
+
+/** 计算 SetRmlDocuments 命令的总字节数。 */
+#define NN_SET_RML_DOCUMENTS_TOTAL_SIZE(docCount) \
+    (NN_SET_RML_DOCUMENTS_HEADER_SIZE + (docCount) * NN_RML_DOCUMENT_ENTRY_SIZE)
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -283,6 +283,12 @@ NN::Runtime::RmlUI::NNRmlUISystem* GetRmlUISystem()
     return g_RmlUISystem;
 }
 
+/// 确保 ViewportRender 的 RmlUI 单例已初始化（惰性初始化，可重复调用）。
+void EnsureViewportRenderInitialized()
+{
+    EnsureSceneRenderer();
+}
+
 /// 关闭 ViewportRender 资源（引擎退出时调用）
 void ShutdownViewportRender()
 {

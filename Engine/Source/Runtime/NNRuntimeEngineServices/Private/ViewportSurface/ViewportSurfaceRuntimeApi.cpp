@@ -32,6 +32,7 @@
 #include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"
+#include "NNRuntimeScene/Include/Components/NNRmlUIDocumentComponent.h"
 
 // Diligent（CopyTexture / ITextureView）
 #include "NNDiligentConfig.h"
@@ -446,6 +447,9 @@ namespace
         if (!ValidateCommandBuffer(commands, commandsSize))
             return 0;
 
+        // 确保 RmlUI 渲染器已初始化（惰性，由 ViewportRenderRuntimeApi 管理生命周期）
+        EnsureViewportRenderInitialized();
+
         // 2. 获取 Surface 和 SwapChain
         std::lock_guard<std::mutex> lock(g_SurfaceMutex);
         auto* surface = FindSurface(surfaceId);
@@ -495,6 +499,7 @@ namespace
         bool clearColorEnabled = false;
         float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
         std::vector<NN::Runtime::Renderer2D::SpriteDrawCommand> spriteCommands;
+        std::vector<NN::Runtime::RmlUI::RmlDrawItem> rmlDrawItems;
 
         for (std::uint32_t i = 0; i < bufferHeader->commandCount; ++i)
         {
@@ -529,12 +534,18 @@ namespace
 
             if (cmdPtr + cmdHeader->size > cmdEnd)
             {
+                auto cmdOffset = static_cast<std::uint32_t>(cmdPtr - static_cast<const std::uint8_t*>(commands));
+                auto remainBytes = static_cast<std::uint32_t>(cmdEnd - cmdPtr);
                 std::cerr << "[ViewportSurface] RenderCommands: 命令 " << i
                           << " 数据越界 (type=0x" << std::hex << cmdHeader->type
-                          << " size=" << std::dec << cmdHeader->size << ")" << std::endl;
+                          << " size=" << std::dec << cmdHeader->size
+                          << " offset=" << cmdOffset
+                          << " remain=" << remainBytes
+                          << " cmdEnd-cmdPtr=" << (cmdEnd - cmdPtr)
+                          << " commandsSize=" << commandsSize << ")" << std::endl;
                 return 0;
             }
-
+			//std::cout << NN_RML_DOCUMENT_ENTRY_SIZE  << std::endl;
             switch (cmdHeader->type)
             {
                 case NN_RENDER_COMMAND_SET_CAMERA:
@@ -596,6 +607,43 @@ namespace
                     break;
                 }
 
+                case NN_RENDER_COMMAND_SET_RML_DOCUMENTS:
+                {
+                    if (cmdHeader->size < NN_SET_RML_DOCUMENTS_HEADER_SIZE)
+                    {
+                        std::cerr << "[ViewportSurface] RenderCommands: SetRmlDocuments size 不足" << std::endl;
+                        return 0;
+                    }
+                    auto* data = reinterpret_cast<const NNRmlDocumentsData*>(
+                        cmdPtr + sizeof(NNRenderCommandHeader));
+                    std::uint32_t docCount = data->documentCount;
+
+                    // 校验文档数据大小
+                    std::uint32_t expectedSize = NN_SET_RML_DOCUMENTS_TOTAL_SIZE(docCount);
+                    if (cmdHeader->size < expectedSize)
+                    {
+                        std::cerr << "[ViewportSurface] RenderCommands: SetRmlDocuments 数据不足"
+                                  << " (期望=" << expectedSize << " 实际=" << cmdHeader->size << ")" << std::endl;
+                        return 0;
+                    }
+
+                    // 转换每个 NNRmlDocumentEntry → RmlDrawItem
+                    auto* entries = reinterpret_cast<const NNRmlDocumentEntry*>(
+                        reinterpret_cast<const std::uint8_t*>(data) + sizeof(NNRmlDocumentsData));
+                    for (std::uint32_t d = 0; d < docCount; ++d)
+                    {
+                        const auto& entry = entries[d];
+                        NN::Runtime::RmlUI::RmlDrawItem item;
+                        item.entity = static_cast<NN::Runtime::Scene::NNEntity>(entry.entityHandle);
+                        item.assetPath = entry.assetPath;  // 直接用路径，不经过 IAssetResolver
+                        item.sortOrder = entry.sortOrder;
+                        item.viewTarget = static_cast<NN::Runtime::Scene::NNRmlUIViewTarget>(entry.viewTarget);
+                        item.viewportId = entry.viewportId;
+                        rmlDrawItems.push_back(std::move(item));
+                    }
+                    break;
+                }
+
                 default:
                     // 未知命令类型——跳过（向前兼容）
                     H_LOG_WARN("[ViewportSurface] RenderCommands: 未知命令类型 0x{:X}，跳过",
@@ -642,33 +690,28 @@ namespace
         g_CommandsRenderer->Submit(spriteCommands);
         g_CommandsRenderer->EndScene();
 
-        // 8. RmlUI Overlay Pass（独立于 RenderCommands）
-        //    TODO: RmlUI Tick 需要 C++ NNRuntimeScene 引用来查询 RmlUIDocumentComponent。
-        //    现在 Scene 已迁移到 C#（Friflo ECS），需要设计 RmlUI 的 C# 驱动方式。
-        //    暂时跳过，等 RmlUI + C# Scene 集成方案确定后再启用。
-        //
-        //    未来管线：
-        //    Renderer2D (World Pass) → RmlUI (UI Overlay Pass) → CopyTexture → Present
-        //
-        // {
-        //     auto* rmlRenderer = GetRmlUIRenderer();
-        //     auto* rmlSystem = GetRmlUISystem();
-        //     if (rmlRenderer && rmlSystem)
-        //     {
-        //         rmlRenderer->SetViewport(width, height);
-        //         const auto& drawList = rmlSystem->GetDrawList();
-        //         rmlRenderer->Sync(drawList);
-        //         if (g_CommandsFBO && g_CommandsFBO->GetColorRTV())
-        //         {
-        //             rmlRenderer->RenderOverlayOnScene(
-        //                 drawList,
-        //                 NN::Runtime::Scene::NNRmlUIViewTarget::Scene,
-        //                 g_CommandsFBO->GetColorRTV(),
-        //                 g_CommandsFBO->GetDepthDSV(),
-        //                 width, height);
-        //         }
-        //     }
-        // }
+        // 8. RmlUI Overlay Pass（C# 通过 SetRmlDocuments 命令传入文档列表）
+        //    管线：Renderer2D (World Pass) → RmlUI (UI Overlay Pass) → CopyTexture → Present
+        if (!rmlDrawItems.empty())
+        {
+            auto* rmlRenderer = GetRmlUIRenderer();
+            if (rmlRenderer)
+            {
+                rmlRenderer->SetViewport(width, height);
+                rmlRenderer->Sync(rmlDrawItems);
+                rmlRenderer->Update();
+
+                if (g_CommandsFBO && g_CommandsFBO->GetColorRTV())
+                {
+                    rmlRenderer->RenderOverlayOnScene(
+                        rmlDrawItems,
+                        NN::Runtime::Scene::NNRmlUIViewTarget::Scene,
+                        g_CommandsFBO->GetColorRTV(),
+                        g_CommandsFBO->GetDepthDSV(),
+                        width, height);
+                }
+            }
+        }
 
         // 9. CopyTexture（FBO → SwapChain back buffer）
         auto* srcTextureView = reinterpret_cast<::Diligent::ITextureView*>(

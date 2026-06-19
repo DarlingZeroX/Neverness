@@ -4,6 +4,7 @@
 
 ## 核心设计
 
+- **静态单例**：`GraphicsDevice.InitializePrimary()` 设置全局实例，`GraphicsDevice.Instance` 访问
 - **所有 Create 方法在 GraphicsDevice 上**：`device.CreateBuffer(...)` / `device.CreateGraphicsPipelineState(...)`
 - **TextureView 不是 IDisposable**：由 TextureHandle 拥有生命周期，上层只管用不管销毁
 - **Map/Unmap 在 BufferHandle 上**：支持 Persistent Mapping 和 Ring Buffer 模式
@@ -14,11 +15,11 @@
 ```csharp
 using Neverness.Rendering.Diligent;
 
-// 创建设备
-var device = GraphicsDevice.Create(GraphicsBackend.D3D12);
+// 初始化（启动时调用一次）
+GraphicsDevice.InitializePrimary();  // 从 C++ 端 NNDiligentAPI 获取主窗口设备
 
-// 创建 SwapChain（需要窗口句柄）
-device.CreateSwapChain(GraphicsBackend.D3D12, new SwapChainDesc(), hWnd);
+// 任意位置访问全局设备
+var device = GraphicsDevice.Instance;
 
 // 创建资源
 var vb = device.CreateBuffer(new BufferDesc
@@ -47,6 +48,9 @@ ctx.Draw(new DrawAttribs { NumVertices = 3 });
 
 // 呈现
 device.SwapChain.Present();
+
+// 关闭（退出时调用）
+GraphicsDevice.Shutdown();
 ```
 
 ## 项目结构
@@ -66,6 +70,9 @@ Neverness.Rendering.Diligent/
 │   ├── PipelineStateHandle.cs     // PipelineState 句柄
 │   ├── ResourceSignatureHandle.cs // ResourceSignature 句柄
 │   └── ShaderResourceBindingHandle.cs // SRB 句柄
+├── Commands/
+│   ├── RenderCommandBuffer.cs     // 命令缓冲区构建器（C#→C++ Flat Buffer 序列化）
+│   └── RenderCommandTypes.cs      // 命令类型、数据结构、常量（与 C++ ABI 对齐）
 ├── Synchronization/
 │   ├── FenceHandle.cs             // Fence 句柄（internal）
 │   └── QueryHandle.cs             // Query 句柄（internal）
@@ -74,6 +81,13 @@ Neverness.Rendering.Diligent/
     ├── BackendFactory.cs          // 工厂创建（D3D12/Vulkan）
     └── MarshalHelpers.cs          // marshalling 辅助
 ```
+
+## 文档索引
+
+| 文档 | 说明 |
+|------|------|
+| [README.md](README.md) | 核心设计、使用示例、项目结构、边界隔离规则 |
+| [API-Reference.md](API-Reference.md) | 完整 API 参考手册（18 个文件、全部公开类型和方法） |
 
 ## 边界隔离规则
 

@@ -98,7 +98,7 @@
           ]
         },
         "RmlUIDocumentComponent": {
-          "documentAsset": "00000000000000000000000000000000",
+          "documentAsset": "b6bb83515422214cb9cb1d0ddde4205a",
           "flags": "AutoLoad, ReceivesInput",
           "sortOrder": 0,
           "viewTarget": "Both"

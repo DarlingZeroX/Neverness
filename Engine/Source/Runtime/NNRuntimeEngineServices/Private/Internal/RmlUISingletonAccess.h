@@ -17,3 +17,6 @@ NN::Runtime::Renderer::RmlUIRenderer* GetRmlUIRenderer();
 
 /// 获取 RmlUI 系统单例（由 ViewportRenderRuntimeApi 管理生命周期）。
 NN::Runtime::RmlUI::NNRmlUISystem* GetRmlUISystem();
+
+/// 确保 ViewportRender 的 RmlUI 单例已初始化（惰性初始化，可重复调用）。
+void EnsureViewportRenderInitialized();

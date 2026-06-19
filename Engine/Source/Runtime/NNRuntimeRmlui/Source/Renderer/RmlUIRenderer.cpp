@@ -230,12 +230,12 @@ namespace NN::Runtime::Renderer
 		for (const auto& item : drawList)
 			activeEntities.insert(item.entity);
 
-		// 卸载不在 list 中的文档
+		// 三路 Diff：删除不在 list 中的文档
 		for (auto it = m_Documents.begin(); it != m_Documents.end(); )
 		{
 			if (activeEntities.find(it->first) == activeEntities.end())
 			{
-				std::cout << "[RmlUIRenderer] Sync: unloading document" << std::endl;
+				std::cout << "[RmlUIRenderer] Sync: unloading document entity=" << it->first << std::endl;
 				UnloadDocument(it->first);
 				it = m_Documents.erase(it);
 			}
@@ -243,17 +243,29 @@ namespace NN::Runtime::Renderer
 				++it;
 		}
 
-		// 加载新文档
+		// 三路 Diff：加载新文档（优先用 assetPath，回退到 assetGuid → IAssetResolver）
 		for (const auto& item : drawList)
 		{
 			if (m_Documents.find(item.entity) != m_Documents.end())
 				continue;
 
-			std::cout << "[RmlUIRenderer] Sync: loading document for entity" << std::endl;
-			auto* doc = LoadDocument(item.assetGuid);
+			std::cout << "[RmlUIRenderer] Sync: loading document entity=" << item.entity
+			          << " path=" << (item.assetPath.empty() ? "(from guid)" : item.assetPath) << std::endl;
+
+			Rml::ElementDocument* doc = nullptr;
+			if (!item.assetPath.empty())
+			{
+				// RenderCommands 路径：直接用路径加载
+				doc = LoadDocumentByPath(item.assetPath);
+			}
+			else
+			{
+				// 旧 RenderViewport 路径：通过 IAssetResolver 解析 GUID
+				doc = LoadDocument(item.assetGuid);
+			}
+
 			if (doc)
 			{
-				// 设置文档尺寸为 context 大小，使 CSS 100% 生效
 				doc->SetProperty(Rml::PropertyId::Width,
 					Rml::Property((float)m_ViewportWidth, Rml::Unit::PX));
 				doc->SetProperty(Rml::PropertyId::Height,
@@ -485,6 +497,35 @@ namespace NN::Runtime::Renderer
 		else
 		{
 			std::cout << "[RmlUIRenderer] LoadDocument success: " << path << std::endl;
+		}
+
+		return doc;
+	}
+
+	Rml::ElementDocument* RmlUIRenderer::LoadDocumentByPath(const std::string& assetPath)
+	{
+		if (!m_Context)
+		{
+			std::cerr << "[RmlUIRenderer] LoadDocumentByPath: m_Context is null" << std::endl;
+			return nullptr;
+		}
+
+		if (assetPath.empty())
+		{
+			std::cerr << "[RmlUIRenderer] LoadDocumentByPath: assetPath is empty" << std::endl;
+			return nullptr;
+		}
+
+		std::cout << "[RmlUIRenderer] LoadDocumentByPath: " << assetPath << std::endl;
+
+		auto* doc = m_Context->LoadDocument(assetPath.c_str());
+		if (!doc)
+		{
+			std::cerr << "[RmlUIRenderer] LoadDocumentByPath failed: " << assetPath << std::endl;
+		}
+		else
+		{
+			std::cout << "[RmlUIRenderer] LoadDocumentByPath success: " << assetPath << std::endl;
 		}
 
 		return doc;
