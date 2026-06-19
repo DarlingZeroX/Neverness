@@ -15,7 +15,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 find_package(SDL3 CONFIG REQUIRED)
-find_package(SDL3_image CONFIG REQUIRED)
+#find_package(SDL3_image CONFIG REQUIRED)
 
 add_library(NevernessRuntime-Application STATIC)
 
@@ -70,7 +70,7 @@ target_link_libraries(NevernessRuntime-Application
 		NevernessRuntime-NativeEngineAPI
 		SDL3::SDL3
 	PRIVATE
-		$<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
+		#$<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
 		NevernessCore-Core
 		NevernessCore-PlatformCore
 		NevernessCore-FileSystem

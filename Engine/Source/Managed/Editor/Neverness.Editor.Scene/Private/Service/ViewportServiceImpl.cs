@@ -111,6 +111,10 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
         }
     }
 
+    // 调试日志节流：每 120 帧打印一次（约 2 秒 @60fps）
+    private int _debugFrameCounter;
+    private const int DebugLogInterval = 120;
+
     /// <summary>
     /// 从 ECS 收集渲染命令并序列化为 Flat Buffer。
     ///
@@ -119,8 +123,20 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
     /// </summary>
     public byte[]? CollectRenderCommands(float width, float height)
     {
-        if (_scene == null || width < 1 || height < 1)
+        _debugFrameCounter++;
+        bool shouldLog = (_debugFrameCounter % DebugLogInterval == 1);
+
+        if (_scene == null)
+        {
+            if (shouldLog) Console.WriteLine("[ViewportService] CollectRenderCommands: _scene = null");
             return null;
+        }
+
+        if (width < 1 || height < 1)
+        {
+            if (shouldLog) Console.WriteLine($"[ViewportService] CollectRenderCommands: 尺寸无效 {width}x{height}");
+            return null;
+        }
 
         var buffer = new RenderCommandBuffer();
 
@@ -128,9 +144,12 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
         bool hasCamera = false;
         var cameraView = _scene.Scene.CreateView<TransformComponent, CameraComponent>();
         cameraView.Refresh();
+        int cameraCount = 0;
+
         cameraView.ForEach(
             (IEntity entity, TransformComponent transform, CameraComponent camera) =>
             {
+                cameraCount++;
                 if (hasCamera) return; // 只取第一个
 
                 // 计算 ViewMatrix = 逆 WorldMatrix
@@ -146,22 +165,34 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
                 // ProjectionMatrix（由 CameraSystem 每帧计算）
                 var projMatrix = camera.ProjectionMatrix;
 
-                // System.Numerics 是行主序，Diligent/GLM 是列主序，需要转置
-                var viewT = Matrix4x4.Transpose(viewMatrix);
-                var projT = Matrix4x4.Transpose(projMatrix);
+                // System.Numerics 行主序内存布局 = HLSL 列主序 float4x4 布局（不需要转置）
+                // 行主序 [M11..M14, M21..M24, M31..M34, M41..M44]
+                // HLSL 读为 Col0=[M11..M14], Col1=[M21..M24], ..., Col3=[M41..M44]
+                // 平移 M41/M42/M43 自动成为 M[0][3]/M[1][3]/M[2][3]（正确的列主序平移位置）
                 unsafe
                 {
                     buffer.AddSetCamera(
-                        new ReadOnlySpan<float>(&viewT, 16),
-                        new ReadOnlySpan<float>(&projT, 16),
+                        new ReadOnlySpan<float>(&viewMatrix, 16),
+                        new ReadOnlySpan<float>(&projMatrix, 16),
                         width, height,
                         camera.NearPlane, camera.FarPlane,
                         camera.OrthographicSize * camera.AspectRatio,
                         camera.OrthographicSize);
                 }
 
+                if (shouldLog)
+                {
+                    Console.WriteLine($"[ViewportService] Camera: pos=({transform.Position.X:F2}, {transform.Position.Y:F2}, {transform.Position.Z:F2}), " +
+                        $"ortho={camera.IsOrthographic}, fov={camera.FieldOfView:F2}, near={camera.NearPlane:F2}, far={camera.FarPlane:F2}, " +
+                        $"projMatrix=[{projMatrix.M11:F3}, {projMatrix.M22:F3}, {projMatrix.M33:F3}, {projMatrix.M44:F3}], " +
+                        $"worldMatrix.M43={transform.WorldMatrix.M43:F3}");
+                }
+
                 hasCamera = true;
             });
+
+        if (shouldLog)
+            Console.WriteLine($"[ViewportService] 场景相机数量: {cameraCount}");
 
         // 如果没有相机，使用默认正交相机
         if (!hasCamera)
@@ -175,6 +206,9 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
                     width, height, -1f, 1f,
                     width, height);
             }
+
+            if (shouldLog)
+                Console.WriteLine("[ViewportService] 无相机实体，使用默认单位矩阵相机");
         }
 
         // ── 2. 设置渲染 Pass 状态 ──
@@ -185,21 +219,29 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
         var sprites = new List<SpriteInstance>();
         var spriteView = _scene.Scene.CreateView<TransformComponent, SpriteRendererComponent>();
         spriteView.Refresh();
+        int totalSpriteEntities = 0;
+        int skippedInvisible = 0;
+        int skippedZeroTexture = 0;
+
         spriteView.ForEach(
             (IEntity entity, TransformComponent transform, SpriteRendererComponent sprite) =>
             {
+                totalSpriteEntities++;
+
                 // 跳过不可见的精灵
                 if ((sprite.Flags & SpriteFlags.Visible) == 0)
+                {
+                    skippedInvisible++;
                     return;
+                }
 
                 var instance = new SpriteInstance();
                 unsafe
                 {
-                    // WorldMatrix（4x4 列主序）
-                    // System.Numerics Matrix4x4 是行主序，需要转置
-                    var transposed = Matrix4x4.Transpose(transform.WorldMatrix);
+                    // System.Numerics 行主序 = HLSL 列主序（不需要转置，直接写入）
+                    var worldMatrix = transform.WorldMatrix;
                     var matBytes = new byte[64];
-                    MemoryMarshal.Write(matBytes.AsSpan(), in transposed);
+                    MemoryMarshal.Write(matBytes.AsSpan(), in worldMatrix);
                     fixed (byte* src = matBytes)
                     {
                         Buffer.MemoryCopy(src, instance.Transform, 64, 64);
@@ -226,8 +268,28 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
                 if ((sprite.Flags & SpriteFlags.FlipX) != 0) instance.Flags |= (uint)SpriteFlags.FlipX;
                 if ((sprite.Flags & SpriteFlags.FlipY) != 0) instance.Flags |= (uint)SpriteFlags.FlipY;
 
+                if (shouldLog)
+                {
+                    var texGuid = sprite.TextureAsset;
+                    bool hasTexture = !texGuid.High.Equals(0) || !texGuid.Low.Equals(0);
+                    if (!hasTexture) skippedZeroTexture++;
+
+                    Console.WriteLine($"[ViewportService] Sprite[{totalSpriteEntities - 1}] entity={entity.Id}: " +
+                        $"pos=({transform.Position.X:F2}, {transform.Position.Y:F2}, {transform.Position.Z:F2}), " +
+                        $"scale=({transform.Scale.X:F2}, {transform.Scale.Y:F2}, {transform.Scale.Z:F2}), " +
+                        $"color=({sprite.ColorR:F2}, {sprite.ColorG:F2}, {sprite.ColorB:F2}, {sprite.ColorA:F2}), " +
+                        $"flags={sprite.Flags}, texGuid=0x{texGuid.High:X16}{texGuid.Low:X16}, " +
+                        $"hasTexture={hasTexture}, layer={sprite.Layer}");
+                }
+
                 sprites.Add(instance);
             });
+
+        if (shouldLog)
+        {
+            Console.WriteLine($"[ViewportService] 精灵统计: 总数={totalSpriteEntities}, " +
+                $"不可见跳过={skippedInvisible}, 无纹理={skippedZeroTexture}, 最终提交={sprites.Count}");
+        }
 
         if (sprites.Count > 0)
         {
@@ -235,7 +297,11 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
         }
 
         // ── 4. 构建并返回 ──
-        return buffer.Build();
+        var result = buffer.Build();
+        if (shouldLog)
+            Console.WriteLine($"[ViewportService] RenderCommands 构建完成: {result.Length} bytes, {buffer.CommandCount} commands");
+
+        return result;
     }
 
 }

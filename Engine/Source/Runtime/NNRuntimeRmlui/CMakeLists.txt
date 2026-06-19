@@ -41,7 +41,7 @@ target_compile_definitions(NevernessRuntime-RmlUI PRIVATE VG_UI_EXPORT)
 
 # ── 依赖包查找（必须在 include 路径之前，确保 RmlUi PUBLIC include 生效）──
 find_package(SDL3 CONFIG REQUIRED)
-find_package(SDL3_image CONFIG REQUIRED)
+#find_package(SDL3_image CONFIG REQUIRED)
 find_package(RmlUi CONFIG REQUIRED)
 
 # ── 链接依赖（顺序重要：RmlUi 先于 RmlDiligent 源码）──
@@ -49,7 +49,7 @@ target_link_libraries(NevernessRuntime-RmlUI PRIVATE
     # RmlUi（提供 RmlUi/Core/*.h PUBLIC include 路径）
     RmlUi::RmlUi
     SDL3::SDL3
-    $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
+    #$<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
     # NNRuntimeRender + NNRuntimeDiligent（替代 NevernessRuntime-RHI）
     NNRuntimeRender
     NNRuntimeDiligent

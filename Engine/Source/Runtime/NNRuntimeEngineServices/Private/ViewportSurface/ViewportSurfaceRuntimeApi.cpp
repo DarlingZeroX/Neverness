@@ -380,9 +380,26 @@ namespace
     {
         std::memcpy(dst.ViewMatrix, src.viewMatrix, sizeof(float) * 16);
         std::memcpy(dst.ProjectionMatrix, src.projectionMatrix, sizeof(float) * 16);
-        // ViewProjection = Projection * View（这里不计算，Renderer2D 内部处理）
-        NN::Runtime::Renderer2D::CameraData defaultData{};
-        std::memcpy(dst.ViewProjectionMatrix, defaultData.ViewProjectionMatrix, sizeof(float) * 16);
+
+        // ViewProjection = Projection * View（列主序矩阵乘法）
+        // C# 传来的 view/proj 已 Transpose，Diligent 读为列主序。
+        // 列主序下 P * V = 先 V 后 P，与 GLM 的 cameraComp.ProjectionMatrix * viewMat 一致。
+        const float* P = src.projectionMatrix;
+        const float* V = src.viewMatrix;
+        float* VP = dst.ViewProjectionMatrix;
+        for (int col = 0; col < 4; ++col)
+        {
+            for (int row = 0; row < 4; ++row)
+            {
+                float sum = 0.0f;
+                for (int k = 0; k < 4; ++k)
+                {
+                    sum += P[k * 4 + row] * V[col * 4 + k];
+                }
+                VP[col * 4 + row] = sum;
+            }
+        }
+
         dst.OrthoWidth  = src.orthoWidth;
         dst.OrthoHeight = src.orthoHeight;
         dst.Near = src.nearPlane;

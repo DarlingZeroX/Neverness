@@ -247,7 +247,8 @@ namespace NN::Runtime::Renderer2D
         psoCI.pVS = diliVS;
         psoCI.pPS = diliPS;
 
-        // 资源布局：texture 为 MUTABLE，sampler 为 ImmutableSampler
+        // 资源布局：texture 为 MUTABLE（每帧切换），sampler 由 ImmutableSampler 自动管理
+        // 注意：不能声明 u_Sampler 为变量，否则 DefaultVariableType=MUTABLE 会覆盖 ImmutableSampler
         ShaderResourceVariableDesc variables[] = {
             {SHADER_TYPE_PIXEL, "u_Texture", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
         };
@@ -258,8 +259,10 @@ namespace NN::Runtime::Renderer2D
         samLinearClamp.AddressU = TEXTURE_ADDRESS_CLAMP;
         samLinearClamp.AddressV = TEXTURE_ADDRESS_CLAMP;
         samLinearClamp.AddressW = TEXTURE_ADDRESS_CLAMP;
+        // Combined texture samplers 模式下，SamplerOrTextureName 必须填 texture 变量名
+        // Diligent 文档: "the name of the texture variable that this immutable sampler is assigned to"
         ImmutableSamplerDesc imtblSamplers[] = {
-            {SHADER_TYPE_PIXEL, "u_Sampler", samLinearClamp},
+            {SHADER_TYPE_PIXEL, "u_Texture", samLinearClamp},
         };
         psoCI.PSODesc.ResourceLayout.ImmutableSamplers    = imtblSamplers;
         psoCI.PSODesc.ResourceLayout.NumImmutableSamplers = _countof(imtblSamplers);
@@ -502,7 +505,7 @@ namespace NN::Runtime::Renderer2D
             if (it == m_Impl->SRBCache.end())
             {
                 RefCntAutoPtr<IShaderResourceBinding> srb;
-                m_Impl->diliPSO->CreateShaderResourceBinding(&srb, true);
+                m_Impl->diliPSO->CreateShaderResourceBinding(&srb, true); 
                 if (srb)
                 {
                     // 绑定 CB（VS 和 PS 都引用 SpriteConstants）
@@ -511,7 +514,7 @@ namespace NN::Runtime::Renderer2D
                     auto* varPS = srb->GetVariableByName(SHADER_TYPE_PIXEL, "SpriteConstants");
                     if (varPS) varPS->Set(m_Impl->diliCB);
 
-                    // 绑定纹理（sampler 已通过 ImmutableSampler 自动绑定）
+                    // 绑定纹理（ImmutableSampler 自动跟随 texture 绑定）
                     auto* texVar = srb->GetVariableByName(SHADER_TYPE_PIXEL, "u_Texture");
                     if (texVar) texVar->Set(texSRV);
                 }

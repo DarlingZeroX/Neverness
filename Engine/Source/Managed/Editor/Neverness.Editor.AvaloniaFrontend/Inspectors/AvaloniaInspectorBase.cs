@@ -14,18 +14,18 @@ namespace Neverness.Editor.AvaloniaFrontend.Inspectors;
 public abstract class AvaloniaInspectorBase
 {
     // ── 颜色常量 ──
-    private static readonly SolidColorBrush ColorBg = new(Color.Parse("#FF1E1E1E"));
-    private static readonly SolidColorBrush ColorHeaderBg = new(Color.Parse("#FF2D2D30"));
-    private static readonly SolidColorBrush ColorRowBg = new(Color.Parse("#FF252526"));
-    private static readonly SolidColorBrush ColorLabel = new(Color.Parse("#FF999999"));
-    private static readonly SolidColorBrush ColorText = new(Color.Parse("#FFCCCCCC"));
-    private static readonly SolidColorBrush ColorAxisX = new(Color.Parse("#FFF44336"));
-    private static readonly SolidColorBrush ColorAxisY = new(Color.Parse("#FF4CAF50"));
-    private static readonly SolidColorBrush ColorAxisZ = new(Color.Parse("#FF2196F3"));
-    private static readonly SolidColorBrush ColorR = new(Color.Parse("#FFF44336"));
-    private static readonly SolidColorBrush ColorG = new(Color.Parse("#FF4CAF50"));
-    private static readonly SolidColorBrush ColorB = new(Color.Parse("#FF2196F3"));
-    private static readonly SolidColorBrush ColorA = new(Color.Parse("#FFCCCCCC"));
+    protected static readonly SolidColorBrush ColorBg = new(Color.Parse("#FF1E1E1E"));
+    protected static readonly SolidColorBrush ColorHeaderBg = new(Color.Parse("#FF2D2D30"));
+    protected static readonly SolidColorBrush ColorRowBg = new(Color.Parse("#FF252526"));
+    protected static readonly SolidColorBrush ColorLabel = new(Color.Parse("#FF999999"));
+    protected static readonly SolidColorBrush ColorText = new(Color.Parse("#FFCCCCCC"));
+    protected static readonly SolidColorBrush ColorAxisX = new(Color.Parse("#FFF44336"));
+    protected static readonly SolidColorBrush ColorAxisY = new(Color.Parse("#FF4CAF50"));
+    protected static readonly SolidColorBrush ColorAxisZ = new(Color.Parse("#FF2196F3"));
+    protected static readonly SolidColorBrush ColorR = new(Color.Parse("#FFF44336"));
+    protected static readonly SolidColorBrush ColorG = new(Color.Parse("#FF4CAF50"));
+    protected static readonly SolidColorBrush ColorB = new(Color.Parse("#FF2196F3"));
+    protected static readonly SolidColorBrush ColorA = new(Color.Parse("#FFCCCCCC"));
 
     public abstract string DisplayName { get; }
     public abstract bool CanInspect(ulong typeId);

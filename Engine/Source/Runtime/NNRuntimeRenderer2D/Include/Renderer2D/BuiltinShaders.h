@@ -63,8 +63,9 @@ cbuffer SpriteConstants : register(b0)
     int      u_FlipY;
 };
 
-Texture2D    u_Texture : register(t0);
-SamplerState u_Sampler : register(s0);
+// Diligent combined texture samplers 要求 sampler 命名为 {TextureName}_sampler
+Texture2D    u_Texture        : register(t0);
+SamplerState u_Texture_sampler : register(s0);
 
 struct PSInput
 {
@@ -74,7 +75,7 @@ struct PSInput
 
 float4 main(PSInput input) : SV_Target
 {
-    float4 texColor = u_Texture.Sample(u_Sampler, input.TexCoord);
+    float4 texColor = u_Texture.Sample(u_Texture_sampler, input.TexCoord);
     return texColor * u_Color;
 }
 )";

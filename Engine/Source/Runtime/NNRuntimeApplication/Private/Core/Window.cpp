@@ -6,7 +6,7 @@
  */
 
 #include "Core/Window.h"
-#include <SDL3_image/SDL_image.h>
+//#include <SDL3_image/SDL_image.h>
 #include <NNCore/Interface/HLog.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 
@@ -143,22 +143,22 @@ namespace NN::Runtime
 		SDL_Window* window = SDL_CreateWindowWithProperties(props);
 		SDL_DestroyProperties(props);
 
-		std::string iconPath = "/editor/icons/engineIcon.png";
-		VFS::VFSService::SafeReadFileFromVFS(iconPath, [&](const VFS::VFSService::DataRef& data) {
-
-			const size_t i_ext = iconPath.rfind('.');
-			std::string extension = (i_ext == std::string::npos ? std::string() : iconPath.substr(i_ext + 1));
-
-			auto CreateSurface = [&]() { return IMG_LoadTyped_IO(SDL_IOFromMem(data->data(), data->size()), 1, extension.c_str()); };
-			SDL_Surface* surface = CreateSurface();
-
-			if (surface) {
-				SDL_SetWindowIcon(window, surface);
-				SDL_DestroySurface(surface);
-			}
-
-			return 0;
-			});
+		//std::string iconPath = "/editor/icons/engineIcon.png";
+		//VFS::VFSService::SafeReadFileFromVFS(iconPath, [&](const VFS::VFSService::DataRef& data) {
+		//
+		//	const size_t i_ext = iconPath.rfind('.');
+		//	std::string extension = (i_ext == std::string::npos ? std::string() : iconPath.substr(i_ext + 1));
+		//
+		//	auto CreateSurface = [&]() { return IMG_LoadTyped_IO(SDL_IOFromMem(data->data(), data->size()), 1, extension.c_str()); };
+		//	SDL_Surface* surface = CreateSurface();
+		//
+		//	if (surface) {
+		//		SDL_SetWindowIcon(window, surface);
+		//		SDL_DestroySurface(surface);
+		//	}
+		//
+		//	return 0;
+		//	});
 
 		SetSDLWindowPtr(window);
 
