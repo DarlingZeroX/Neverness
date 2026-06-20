@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Neverness.Editor.AvaloniaFrontend.ContentBrowser;
+using Neverness.Editor.AvaloniaFrontend.DragDrop;
 using Neverness.Editor.Core.Controllers;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Runtime.Assets;
@@ -43,6 +44,10 @@ internal sealed class ContentBrowserThumbnailGrid
     private Point _dragStartPos;
     private PointerPressedEventArgs? _dragPressedArgs; // 保存原始按下事件用于 DoDragDropAsync
     private const double DragThreshold = 5.0;
+
+    // 外部文件拖入相关
+    private AvaloniaDropHandler? _dropHandler;
+    private Border? _dropHighlight; // 拖拽高亮边框
 
     /// <summary>选中的路径集合。</summary>
     internal IReadOnlySet<string> SelectedPaths => _selectedPaths;
@@ -146,7 +151,12 @@ internal sealed class ContentBrowserThumbnailGrid
             }),
         };
 
-        var fileShadow = new Grid { [Grid.ColumnProperty] = 2, ClipToBounds = true };
+        var fileShadow = new Grid
+        {
+            [Grid.ColumnProperty] = 2,
+            ClipToBounds = true,
+            Background = Brushes.Transparent, // 必须有 Background 才能接收拖拽 hit-test
+        };
         fileShadow.Children.Add(_fileScroll);
         fileShadow.Children.Add(fileShadowLeft);
         fileShadow.Children.Add(fileShadowTop);
@@ -161,6 +171,28 @@ internal sealed class ContentBrowserThumbnailGrid
         // 事件
         _fileScroll.PointerPressed += (_, _) => { _selectedItemPath = null; };
         _fileScroll.PointerReleased += OnFileAreaPointerReleased;
+
+        // 添加拖拽高亮边框（初始隐藏）
+        _dropHighlight = new Border
+        {
+            Background = Brushes.Transparent,
+            BorderBrush = new SolidColorBrush(Color.FromArgb(0x80, 0x21, 0x96, 0xF3)),
+            BorderThickness = new Thickness(3),
+            CornerRadius = new CornerRadius(4),
+            IsHitTestVisible = false,
+            IsVisible = false,
+            ZIndex = 100,
+        };
+        _selectionCanvas.Children.Add(_dropHighlight);
+
+        // 初始化外部文件拖拽处理器
+        // 注意：附加到 fileShadow（Grid 容器）而不是 _fileScroll
+        // 因为 ScrollViewer 可能会拦截拖拽事件
+        _dropHandler = new AvaloniaDropHandler();
+        _dropHandler.Attach(fileShadow);
+        _dropHandler.FilesDropped += OnFilesDropped;
+        _dropHandler.DragEnter += OnExternalDragEnter;
+        _dropHandler.DragLeave += OnExternalDragLeave;
 
         return fileShadow;
     }
@@ -224,8 +256,48 @@ internal sealed class ContentBrowserThumbnailGrid
     /// <summary>释放资源。</summary>
     internal void Dispose()
     {
+        _dropHandler?.DetachAll();
+        _dropHandler = null;
+
         _rubberBand?.Detach();
         _rubberBand = null;
+    }
+
+    // ── 外部文件拖入处理 ──
+
+    /// <summary>处理外部文件拖入。</summary>
+    private void OnFilesDropped(string[] files)
+    {
+        // 隐藏高亮
+        if (_dropHighlight != null)
+            _dropHighlight.IsVisible = false;
+
+        // 过滤出支持的图片文件
+        var imageExtensions = new HashSet<string>(
+            new[] { ".png", ".jpg", ".jpeg", ".tga", ".bmp", ".dds", ".hdr" },
+            StringComparer.OrdinalIgnoreCase);
+
+        var imageFiles = files.Where(f => imageExtensions.Contains(Path.GetExtension(f))).ToArray();
+
+        if (imageFiles.Length == 0)
+            return;
+
+        // 触发导入（通过 Controller）
+        _controller.ImportDroppedFiles(imageFiles);
+    }
+
+    /// <summary>外部拖拽进入时显示高亮。</summary>
+    private void OnExternalDragEnter()
+    {
+        if (_dropHighlight != null)
+            _dropHighlight.IsVisible = true;
+    }
+
+    /// <summary>外部拖拽离开时隐藏高亮。</summary>
+    private void OnExternalDragLeave()
+    {
+        if (_dropHighlight != null)
+            _dropHighlight.IsVisible = false;
     }
 
     /* ======================== 缩略图创建 ======================== */

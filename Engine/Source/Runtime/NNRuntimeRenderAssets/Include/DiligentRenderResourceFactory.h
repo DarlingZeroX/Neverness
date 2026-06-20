@@ -29,7 +29,8 @@ namespace NN::Runtime::Render
         std::unique_ptr<NNTextureResource> CreateTexture(
             uint32_t width, uint32_t height,
             NNTextureFormat format,
-            const uint8_t* pixels, size_t pixelSize) override;
+            const uint8_t* pixels, size_t pixelSize,
+            bool isSRGB = false) override;
 
         bool UpdateTexturePixels(
             NNTextureResource* resource,

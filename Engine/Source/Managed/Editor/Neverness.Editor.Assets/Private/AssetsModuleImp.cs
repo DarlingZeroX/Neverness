@@ -103,6 +103,10 @@ internal static class AssetsModuleImp
             // 8. 启动 DropImportService（拖放外部文件导入）
             s_dropImportService = new DropImportService(EditorCoreModule.Context.Events, path);
             s_dropImportService.Start();
+
+            // 8.1 注册 IDropImportService 到编辑器上下文（供 Controller 消费）
+            EditorCoreModule.Context.RegisterService<IDropImportService>(
+                new DropImportServiceImp());
         }
 
     }

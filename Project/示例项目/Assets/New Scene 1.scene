@@ -40,7 +40,7 @@
       "components": {
         "TransformComponent": {
           "position": [
-            0.90000033,
+            0,
             0,
             0
           ],
@@ -51,8 +51,8 @@
             1
           ],
           "scale": [
-            19,
             10,
+            8,
             1
           ]
         },
@@ -71,37 +71,6 @@
           "sortOrder": 0,
           "blend": "Alpha",
           "flags": "Visible"
-        }
-      }
-    },
-    {
-      "id": 3,
-      "name": "RmlUI Document",
-      "parentId": -1,
-      "components": {
-        "TransformComponent": {
-          "position": [
-            0,
-            0,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0,
-            1
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ]
-        },
-        "RmlUIDocumentComponent": {
-          "documentAsset": "b6bb83515422214cb9cb1d0ddde4205a",
-          "flags": "AutoLoad, ReceivesInput",
-          "sortOrder": 0,
-          "viewTarget": "Both"
         }
       }
     }

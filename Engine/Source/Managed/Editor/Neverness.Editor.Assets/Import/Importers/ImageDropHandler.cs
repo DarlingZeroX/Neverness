@@ -42,11 +42,9 @@ public class ImageDropHandler : IDropFileHandler
         EditorAssetDatabase.Register(virtualPath, meta.Guid, AssetTypeId.Texture2D);
         EditorAssetDatabase.SetSourcePath(virtualPath, targetPath);
 
-        // 5. 标记脏，触发 ContentBrowser 刷新
+        // 5. 标记脏（由调用方负责刷新 UI，不在这里直接调用 ContentBrowser）
         EditorAssetDatabase.MarkDirty(meta.Guid);
 
-        ContentBrowser.Instance?.RefreshDirectory();
-        ContentBrowser.Instance?.NotifyContentChanged();
         return true;
     }
 }

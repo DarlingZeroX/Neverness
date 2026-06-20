@@ -2,8 +2,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Neverness.Editor.AvaloniaFrontend.DragDrop;
 using Neverness.Editor.AvaloniaFrontend.Views.ContentBrowser;
 using Neverness.Editor.Core.Controllers;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
 using static Neverness.Editor.AvaloniaFrontend.Views.ContentBrowser.ContentBrowserColors;
 
@@ -39,6 +41,7 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
     private ContentBrowserDirectoryTree? _directoryTree;
     private ContentBrowserThumbnailGrid? _thumbnailGrid;
     private ContentBrowserInteractions? _interactions;
+    private AvaloniaDropHandler? _dropHandler;
 
     /* ======================== UI 容器 ======================== */
 
@@ -56,6 +59,11 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
         _viewModel = (ContentBrowserViewModel)viewModel;
 
         _root = new DockPanel { Background = BgMain };
+
+        // 设置拖拽支持
+        _dropHandler = new AvaloniaDropHandler();
+        _dropHandler.Attach(_root);
+        _dropHandler.FilesDropped += OnFilesDropped;
 
         // ── 工具栏（顶部）──
         _toolbar = new ContentBrowserToolbar(_viewModel, OnNavigate);
@@ -97,6 +105,9 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
 
     public override void Unbind()
     {
+        _dropHandler?.DetachAll();
+        _dropHandler = null;
+
         _interactions?.Dispose();
         _interactions = null;
 
@@ -195,5 +206,41 @@ public class ContentBrowserAvaloniaView : AvaloniaViewBase
     private void OnSelectionCountChanged(int count)
     {
         _statusBar?.Update(count);
+    }
+
+    private void OnFilesDropped(string[] files)
+    {
+        Console.WriteLine($"[ContentBrowserAvaloniaView] 收到 {files.Length} 个拖拽文件");
+
+        // 获取当前目录
+        var currentDir = _viewModel?.CurrentDirectory;
+        if (string.IsNullOrEmpty(currentDir))
+        {
+            Console.WriteLine("[ContentBrowserAvaloniaView] 当前目录为空，无法导入");
+            return;
+        }
+
+        Console.WriteLine($"[ContentBrowserAvaloniaView] 目标目录: {currentDir}");
+
+        // 调用导入服务
+        try
+        {
+            var context = EditorCoreModule.Context;
+            if (!context.TryGetService<IDropImportService>(out var importService) || importService == null)
+            {
+                Console.WriteLine("[ContentBrowserAvaloniaView] IDropImportService 未注册");
+                return;
+            }
+
+            var (successCount, failCount) = importService.ImportFiles(files, currentDir);
+            Console.WriteLine($"[ContentBrowserAvaloniaView] 导入完成: 成功={successCount}, 失败={failCount}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ContentBrowserAvaloniaView] 导入异常: {ex.Message}");
+        }
+
+        // 刷新 Content Browser
+        _thumbnailGrid?.Refresh();
     }
 }

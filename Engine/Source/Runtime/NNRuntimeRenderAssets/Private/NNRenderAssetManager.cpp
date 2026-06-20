@@ -432,7 +432,8 @@ NNTextureResource* NNRenderAssetManager::UploadTextureInternal(const NNTextureSo
     auto resource = m_Factory->CreateTexture(
         source.GetWidth(), source.GetHeight(),
         source.GetFormat(),
-        baseMip.Pixels.data(), baseMip.Pixels.size());
+        baseMip.Pixels.data(), baseMip.Pixels.size(),
+        source.IsSRGB());
 
     if (!resource)
     {

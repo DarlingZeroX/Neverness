@@ -42,6 +42,7 @@ public class AvaloniaEditorHost : IDisposable
         Console.WriteLine("[AvaloniaEditorHost] 启动 Avalonia 编辑器...");
 
         // 在独立线程启动 Avalonia 应用
+        // 必须设置 STA：Windows OLE DragDrop、剪贴板、文件对话框等 COM 功能要求 STA 线程
         _avaloniaThread = new Thread(() =>
         {
             try
@@ -63,6 +64,7 @@ public class AvaloniaEditorHost : IDisposable
             Name = "AvaloniaUIThread",
             IsBackground = true
         };
+        _avaloniaThread.SetApartmentState(ApartmentState.STA);
         _avaloniaThread.Start();
 
         // 等待 Avalonia 应用初始化完成

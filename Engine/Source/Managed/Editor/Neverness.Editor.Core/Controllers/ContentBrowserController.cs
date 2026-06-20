@@ -14,18 +14,28 @@ public class ContentBrowserController : IController
     private readonly ContentBrowserViewModel _viewModel;
     private readonly IContentBrowserService _contentService;
     private readonly IAssetOpenService? _assetOpenService;
+    private readonly IEditorEventBus? _eventBus;
+    private readonly IDropImportService? _dropImportService;
     private readonly Stack<string> _navigationHistory = new();
+
+    /// <summary>UI 线程的 SynchronizationContext（构造时捕获）。</summary>
+    private readonly SynchronizationContext? _uiSyncContext;
 
     public ContentBrowserController(ContentBrowserViewModel viewModel, IContentBrowserService contentService)
     {
         _viewModel = viewModel;
         _contentService = contentService;
 
-        // 尝试获取资产打开服务（可选依赖）
+        // 捕获 UI 线程的 SynchronizationContext（用于后台线程切回 UI 线程）
+        _uiSyncContext = SynchronizationContext.Current;
+
+        // 尝试获取服务（可选依赖）
         try
         {
             var context = EditorCoreModule.Context;
             context.TryGetService<IAssetOpenService>(out _assetOpenService);
+            context.TryGetService<IEditorEventBus>(out _eventBus);
+            context.TryGetService<IDropImportService>(out _dropImportService);
         }
         catch
         {
@@ -204,6 +214,78 @@ public class ContentBrowserController : IController
     public NVirtualPath GetAssetVirtualPath(string systemPath)
     {
         return _contentService.GetAssetVirtualPath(systemPath);
+    }
+
+    /// <summary>导入拖入的外部文件到当前目录。</summary>
+    public void ImportDroppedFiles(string[] filePaths)
+    {
+        // 获取当前目录路径
+        var currentDir = _viewModel.CurrentDirectory;
+        if (string.IsNullOrEmpty(currentDir))
+        {
+            Console.WriteLine("[ContentBrowserController] 无法导入：当前目录为空");
+            return;
+        }
+
+        // 检查导入服务是否可用
+        if (_dropImportService == null)
+        {
+            Console.WriteLine("[ContentBrowserController] 无法导入：DropImportService 不可用");
+            return;
+        }
+
+        // 显示导入中 Toast
+        ShowToast(filePaths.Length == 1
+            ? $"Importing {Path.GetFileName(filePaths[0])}..."
+            : $"Importing {filePaths.Length} assets...",
+            ToastType.Info);
+
+        // 异步导入（避免阻塞 UI）
+        Task.Run(() =>
+        {
+            var (successCount, failCount) = _dropImportService.ImportFiles(filePaths, currentDir);
+
+            // 切回 UI 线程执行 UI 操作（Toast、刷新）
+            void UiAction()
+            {
+                // 显示结果 Toast
+                if (filePaths.Length == 1)
+                {
+                    if (failCount == 0)
+                        ShowToast($"✓ Imported {Path.GetFileName(filePaths[0])}", ToastType.Success);
+                    else
+                        ShowToast($"✗ Failed to import {Path.GetFileName(filePaths[0])}", ToastType.Error);
+                }
+                else
+                {
+                    if (failCount == 0)
+                        ShowToast($"✓ Imported {successCount} assets", ToastType.Success);
+                    else
+                        ShowToast($"✓ {successCount} succeeded, ✗ {failCount} failed", ToastType.Warning);
+                }
+
+                // 刷新 Content Browser
+                RefreshDirectory();
+            }
+
+            if (_uiSyncContext != null)
+                _uiSyncContext.Post(_ => UiAction(), null);
+            else
+                UiAction(); // 回退：如果没有 SynchronizationContext，直接执行
+        });
+    }
+
+    /// <summary>显示 Toast 通知。</summary>
+    private void ShowToast(string message, ToastType type)
+    {
+        if (_eventBus != null)
+        {
+            _eventBus.Emit(new EditorEvent(EditorEventType.ShowToast, new ToastRequest(message, type)));
+        }
+        else
+        {
+            Console.WriteLine($"[Toast] {type}: {message}");
+        }
     }
 
     /// <summary>更新 ViewModel 状态。</summary>

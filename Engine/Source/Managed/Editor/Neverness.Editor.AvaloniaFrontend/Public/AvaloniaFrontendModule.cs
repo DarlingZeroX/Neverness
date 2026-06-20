@@ -113,6 +113,9 @@ public static class AvaloniaFrontendModule
         // 设置 Avalonia 上下文菜单渲染器（ContextMenuManager → Avalonia ContextMenu）
         ContextMenuManager.Renderer = new AvaloniaContextMenuRenderer();
 
+        // 订阅 ShowToast 事件
+        SubscribeToEvents();
+
         // 刷新菜单栏（在 CoreModuleImp.Install() 之后，菜单贡献者已注册）
         if (MainWindow != null)
         {
@@ -124,6 +127,43 @@ public static class AvaloniaFrontendModule
         }
 
         Console.WriteLine("[AvaloniaFrontendModule] AvaloniaFrontend 安装完成");
+    }
+
+    /// <summary>订阅编辑器事件。</summary>
+    private static void SubscribeToEvents()
+    {
+        try
+        {
+            var context = CoreModuleImp.Context;
+            if (context.TryGetService<IEditorEventBus>(out var eventBus))
+            {
+                eventBus.Subscribe(EditorEventType.ShowToast, OnShowToast);
+                Console.WriteLine("[AvaloniaFrontendModule] 已订阅 ShowToast 事件");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[AvaloniaFrontendModule] 订阅事件失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>处理 ShowToast 事件。</summary>
+    private static void OnShowToast(EditorEvent evt)
+    {
+        if (evt.Payload is not Neverness.Editor.Core.Public.ToastRequest request)
+            return;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            var toastType = request.Type switch
+            {
+                Neverness.Editor.Core.Public.ToastType.Success => Services.ToastType.Success,
+                Neverness.Editor.Core.Public.ToastType.Warning => Services.ToastType.Warning,
+                Neverness.Editor.Core.Public.ToastType.Error => Services.ToastType.Error,
+                _ => Services.ToastType.Info,
+            };
+            ToastService.Instance.Show(request.Message, toastType, request.DurationMs);
+        });
     }
 
     /// <summary>注册 Avalonia 特定的 AssetOpener。</summary>

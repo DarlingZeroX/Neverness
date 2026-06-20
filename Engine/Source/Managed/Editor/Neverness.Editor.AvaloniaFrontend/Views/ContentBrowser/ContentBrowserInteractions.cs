@@ -71,19 +71,24 @@ internal sealed class ContentBrowserInteractions
 
     private void OnPropertyChanged(string? propertyName)
     {
-        if (propertyName == nameof(ContentBrowserViewModel.CurrentDirectory))
+        // PropertyChanged 可能在后台线程触发（如 Task.Run 中的 RefreshDirectory），
+        // 必须切到 UI 线程执行 UI 操作
+        Dispatcher.UIThread.Invoke(() =>
         {
-            _thumbnailGrid.ClearSelection();
-            _toolbar.RefreshBreadcrumb();
-            _thumbnailGrid.Refresh();
-            _directoryTree.HighlightNode(_viewModel.CurrentDirectory);
-            _statusBar.Update(_thumbnailGrid.SelectedPaths.Count);
-        }
-        else if (propertyName == nameof(ContentBrowserViewModel.SearchFilter))
-        {
-            _thumbnailGrid.Refresh();
-            _statusBar.Update(_thumbnailGrid.SelectedPaths.Count);
-        }
+            if (propertyName == nameof(ContentBrowserViewModel.CurrentDirectory))
+            {
+                _thumbnailGrid.ClearSelection();
+                _toolbar.RefreshBreadcrumb();
+                _thumbnailGrid.Refresh();
+                _directoryTree.HighlightNode(_viewModel.CurrentDirectory);
+                _statusBar.Update(_thumbnailGrid.SelectedPaths.Count);
+            }
+            else if (propertyName == nameof(ContentBrowserViewModel.SearchFilter))
+            {
+                _thumbnailGrid.Refresh();
+                _statusBar.Update(_thumbnailGrid.SelectedPaths.Count);
+            }
+        });
     }
 
     /* ======================== 右键菜单 ======================== */

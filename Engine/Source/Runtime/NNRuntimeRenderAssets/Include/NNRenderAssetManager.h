@@ -34,11 +34,13 @@ public:
     /// @param format 纹理格式
     /// @param pixels 像素数据
     /// @param pixelSize 像素数据大小
+    /// @param isSRGB 是否为 sRGB 纹理（影响 gamma 校正）
     /// @return 纹理资源（m_RHITexture + m_RHIShaderResourceView 已填充），失败返回 nullptr
     virtual std::unique_ptr<NNTextureResource> CreateTexture(
         uint32_t width, uint32_t height,
         NNTextureFormat format,
-        const uint8_t* pixels, size_t pixelSize) = 0;
+        const uint8_t* pixels, size_t pixelSize,
+        bool isSRGB = false) = 0;
 
     /// 更新已存在纹理的像素数据
     /// @param resource 目标纹理资源

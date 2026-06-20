@@ -14,6 +14,7 @@ public enum EditorEventType
     SceneClosed,
     PlayModeChanged,
     ModuleInstalled,
+    ShowToast,
 }
 
 /// <summary>

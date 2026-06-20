@@ -39,7 +39,8 @@ namespace NN::Runtime::Render
     std::unique_ptr<NNTextureResource> DiligentRenderResourceFactory::CreateTexture(
         uint32_t width, uint32_t height,
         NNTextureFormat format,
-        const uint8_t* pixels, size_t pixelSize)
+        const uint8_t* pixels, size_t pixelSize,
+        bool isSRGB)
     {
         if (!m_Device || !pixels || pixelSize == 0 || width == 0 || height == 0)
         {
@@ -52,7 +53,7 @@ namespace NN::Runtime::Render
         texDesc.Width     = width;
         texDesc.Height    = height;
         texDesc.MipLevels = 1;
-        texDesc.Format    = ToPixelFormat(format, false);
+        texDesc.Format    = ToPixelFormat(format, isSRGB);
         texDesc.Usage     = NNTextureUsage::Default;
         texDesc.DebugName = "NNRenderAsset_Texture";
 
@@ -78,7 +79,7 @@ namespace NN::Runtime::Render
         resource->m_Desc.Height   = height;
         resource->m_Desc.MipCount = 1;
         resource->m_Desc.Format   = format;
-        resource->m_Desc.IsSRGB   = false;
+        resource->m_Desc.IsSRGB   = isSRGB;
         resource->m_RHITexture            = texture.Detach();  // 转移所有权到 void*
         resource->m_RHIShaderResourceView = srv;
         resource->m_Residency = NNTextureResidency::Resident;
