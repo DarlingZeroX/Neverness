@@ -10,21 +10,66 @@
         MinHeight="720"
         WindowStartupLocation="CenterScreen"
         WindowState="Normal"
-        SystemDecorations="Full"
+        WindowDecorations="None"
         Background="#FF1E1E1E">
 
-    <DockPanel>
-        <!-- 菜单栏（顶部） -->
-        <Menu x:Name="MenuBar" DockPanel.Dock="Top"/>
+    <!-- 3×3 Grid：边框作为 resize 手柄 -->
+    <Grid RowDefinitions="5,*,5" ColumnDefinitions="5,*,5">
 
-        <!-- 工具栏（菜单下方） -->
-        <StackPanel x:Name="ToolbarPanel" DockPanel.Dock="Top" Orientation="Horizontal" Background="#FF2D2D30" Height="32"/>
+        <!-- 主内容区域 -->
+        <DockPanel Grid.Row="1" Grid.Column="1">
+            <!-- 菜单栏 + 窗口控制按钮（命名为 TitleBar 支持拖动） -->
+            <Grid x:Name="TitleBar" DockPanel.Dock="Top" Height="32" ColumnDefinitions="Auto,*,Auto">
+                <!-- 左侧：菜单栏 -->
+                <Menu x:Name="MenuBar" Grid.Column="0"/>
 
-        <!-- 状态栏（底部） -->
-        <DockPanel x:Name="StatusBar" DockPanel.Dock="Bottom" Height="24" Background="#FF007ACC"/>
+                <!-- 右侧：窗口控制按钮 -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <StackPanel.Styles>
+                        <Style Selector="Button">
+                            <Setter Property="MinWidth" Value="46"/>
+                            <Setter Property="MinHeight" Value="32"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Foreground" Value="#FFCCCCCC"/>
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        </Style>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#FF3C3C3C"/>
+                        </Style>
+                        <Style Selector="Button#CloseButton:pointerover">
+                            <Setter Property="Background" Value="#FFE81123"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </StackPanel.Styles>
+                    <Button x:Name="MinimizeButton" Content="&#xE949;" FontFamily="Segoe MDL2 Assets"/>
+                    <Button x:Name="MaximizeButton" Content="&#xE739;" FontFamily="Segoe MDL2 Assets"/>
+                    <Button x:Name="CloseButton" Content="&#xE106;" FontFamily="Segoe MDL2 Assets"/>
+                </StackPanel>
+            </Grid>
 
-        <!-- Dock 布局（中间） -->
-        <dock:DockControl x:Name="DockControl" AutoCreateDataTemplates="True"/>
-    </DockPanel>
+            <!-- 工具栏（菜单下方） -->
+            <StackPanel x:Name="ToolbarPanel" DockPanel.Dock="Top" Orientation="Horizontal" Background="#FF2D2D30" Height="32"/>
+
+            <!-- 状态栏（底部） -->
+            <DockPanel x:Name="StatusBar" DockPanel.Dock="Bottom" Height="24" Background="#FF007ACC"/>
+
+            <!-- Dock 布局（中间） -->
+            <dock:DockControl x:Name="DockControl" AutoCreateDataTemplates="True"/>
+        </DockPanel>
+
+        <!-- Resize 手柄（8个边角） -->
+        <Border Name="TopLeft" Background="Transparent" Grid.Row="0" Grid.Column="0"/>
+        <Border Name="Top" Background="Transparent" Grid.Row="0" Grid.Column="1"/>
+        <Border Name="TopRight" Background="Transparent" Grid.Row="0" Grid.Column="2"/>
+        <Border Name="Left" Background="Transparent" Grid.Row="1" Grid.Column="0"/>
+        <Border Name="Right" Background="Transparent" Grid.Row="1" Grid.Column="2"/>
+        <Border Name="BottomLeft" Background="Transparent" Grid.Row="2" Grid.Column="0"/>
+        <Border Name="Bottom" Background="Transparent" Grid.Row="2" Grid.Column="1"/>
+        <Border Name="BottomRight" Background="Transparent" Grid.Row="2" Grid.Column="2"/>
+    </Grid>
 
 </Window>

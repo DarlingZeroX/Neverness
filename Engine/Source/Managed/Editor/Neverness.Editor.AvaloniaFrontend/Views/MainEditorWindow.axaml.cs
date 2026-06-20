@@ -11,6 +11,9 @@ using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 
+// 窗口边缘方向枚举（用于 resize 拖拽）
+using WindowEdge = Avalonia.Controls.WindowEdge;
+
 namespace Neverness.Editor.AvaloniaFrontend.Views;
 
 /// <summary>
@@ -151,6 +154,8 @@ public partial class MainEditorWindow : Window
         InitializeMenuBar();
         InitializeToolbar();
         InitializeStatusBar();
+        InitializeWindowControls();
+        InitializeResizeHandles();
     }
 
     /// <summary>
@@ -478,5 +483,67 @@ public partial class MainEditorWindow : Window
     {
         Console.WriteLine($"[MainEditorWindow] 命令: {commandId}");
         EditorMenuRegistry.ExecuteCommand(commandId);
+    }
+
+    /// <summary>
+    /// 初始化窗口控制按钮（最小化、最大化、关闭）。
+    /// </summary>
+    private void InitializeWindowControls()
+    {
+        // 最小化
+        MinimizeButton.Click += (_, _) => WindowState = WindowState.Minimized;
+
+        // 最大化/还原切换
+        MaximizeButton.Click += (_, _) =>
+        {
+            WindowState = WindowState == WindowState.Maximized
+                ? WindowState.Normal
+                : WindowState.Maximized;
+        };
+
+        // 关闭
+        CloseButton.Click += (_, _) => Close();
+
+        // 双击标题栏最大化/还原
+        TitleBar.DoubleTapped += (_, _) =>
+        {
+            WindowState = WindowState == WindowState.Maximized
+                ? WindowState.Normal
+                : WindowState.Maximized;
+        };
+    }
+
+    /// <summary>
+    /// 初始化 resize 手柄（8个边角）。
+    /// </summary>
+    private void InitializeResizeHandles()
+    {
+        // 四个角
+        SetupSide(TopLeft, StandardCursorType.TopLeftCorner, WindowEdge.NorthWest);
+        SetupSide(TopRight, StandardCursorType.TopRightCorner, WindowEdge.NorthEast);
+        SetupSide(BottomLeft, StandardCursorType.BottomLeftCorner, WindowEdge.SouthWest);
+        SetupSide(BottomRight, StandardCursorType.BottomRightCorner, WindowEdge.SouthEast);
+
+        // 四条边
+        SetupSide(Top, StandardCursorType.TopSide, WindowEdge.North);
+        SetupSide(Bottom, StandardCursorType.BottomSide, WindowEdge.South);
+        SetupSide(Left, StandardCursorType.LeftSide, WindowEdge.West);
+        SetupSide(Right, StandardCursorType.RightSide, WindowEdge.East);
+    }
+
+    /// <summary>
+    /// 设置 resize 手柄的拖拽行为。
+    /// </summary>
+    private void SetupSide(Control ctl, StandardCursorType cursor, WindowEdge edge)
+    {
+        ctl.Cursor = new Cursor(cursor);
+        ctl.PointerPressed += (_, e) =>
+        {
+            // 仅在窗口未最大化时允许 resize
+            if (WindowState == WindowState.Normal)
+            {
+                BeginResizeDrag(edge, e);
+            }
+        };
     }
 }

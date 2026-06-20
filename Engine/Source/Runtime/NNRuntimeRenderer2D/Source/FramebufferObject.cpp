@@ -34,7 +34,10 @@ namespace NN::Runtime::Renderer2D
         Render::NNRenderTargetDesc rtDesc{};
         rtDesc.Width       = width;
         rtDesc.Height      = height;
-        rtDesc.ColorFormat = Render::NNPixelFormat::RGBA8_UNORM;
+        // 必须用 SRGB 格式：纹理采样时 GPU 自动 sRGB→linear，
+        // 写入 FBO 时 GPU 自动 linear→sRGB，CopyTexture 到 SRGB SwapChain 才正确。
+        // 如果用 UNORM，线性值直接存为字节，显示时被当 sRGB 解读，暗色会双重线性化（÷7~10）。
+        rtDesc.ColorFormat = Render::NNPixelFormat::RGBA8_SRGB;
         rtDesc.DepthFormat = Render::NNPixelFormat::D24_UNORM_S8_UINT;
         rtDesc.SampleCount = 1;
 
