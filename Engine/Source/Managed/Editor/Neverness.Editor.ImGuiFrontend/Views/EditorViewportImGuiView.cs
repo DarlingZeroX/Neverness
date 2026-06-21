@@ -64,32 +64,8 @@ public class EditorViewportImGuiView : PanelViewBase
             // 更新视口尺寸
             _controller?.UpdateViewportSize(viewportSize.X, viewportSize.Y);
 
-            // 调用 Native 渲染
-            _controller?.RenderScene();
-
-            // 显示场景纹理
-            if (_viewModel.SceneTextureId != 0)
-            {
-                var cursorPos = ImGui.GetCursorScreenPos();
-
-                ImGui.Image(
-                    new ImTextureRef(null, _viewModel.SceneTextureId),
-                    viewportSize,
-                    new Vector2(0, 0),
-                    new Vector2(1, 1));
-
-                // 叠加 RmlUI 纹理
-                if (_viewModel.RmluiTextureId != 0)
-                {
-                    var drawList = ImGui.GetWindowDrawList();
-                    drawList.AddImage(
-                        new ImTextureRef(null, _viewModel.RmluiTextureId),
-                        cursorPos,
-                        cursorPos + viewportSize,
-                        new Vector2(0, 1),
-                        new Vector2(1, 0));
-                }
-            }
+            // 已移除：RenderScene()（Legacy Scene 渲染路径已删除）
+            // ImGuiFrontend 仅保留作历史参考，使用 RenderViewportCommands 路径替代
         }
 
         ImGui.End();

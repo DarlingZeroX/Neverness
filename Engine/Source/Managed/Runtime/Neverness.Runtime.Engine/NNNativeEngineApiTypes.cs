@@ -34,15 +34,12 @@ public unsafe struct NNRenderAssetApi
 
 /// <summary>
 /// 與 Native <c>NNViewportRenderAPI</c> 逐欄位對齊（<c>ViewportRenderAPI.h</c>）。
-/// v21 新增：场景渲染到离屏 Framebuffer，返回 OpenGL Texture ID。
+/// v21 新增子表。已移除 RenderSceneToTexture / GetLastRenderedTexture / GetRenderStats（Legacy Scene）。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNViewportRenderApi
 {
-	// ── 离屏渲染（ImGui 用） ──
-	public delegate* unmanaged<ulong, uint, uint, ulong> RenderSceneToTexture;
-	public delegate* unmanaged<ulong> GetLastRenderedTexture;
-	public delegate* unmanaged<uint*, uint*, void> GetRenderStats;
+	// ── RmlUI 渲染管理 ──
 	public delegate* unmanaged<uint, uint, void> SetRmlUIViewportSize;
 	public delegate* unmanaged<uint, int, int, int, int, uint, uint, uint, void> ProcessRmlUIInput;
 	public delegate* unmanaged<ulong> GetLastRmluiTexture;
@@ -78,9 +75,6 @@ public unsafe struct NNViewportSurfaceApi
 
 	/// <summary>重建丢失的表面（新 HWND）。成功返回 1。</summary>
 	public delegate* unmanaged<ulong, void*, NNNativeHandleType, byte> RecreateSurface;
-
-	/// <summary>渲染视口到 SwapChain（SceneRenderer → FBO → CopyTexture → SwapChain → Present）。</summary>
-	public delegate* unmanaged<ulong, ulong, uint, uint, byte> RenderViewport;
 
 	/// <summary>通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。v29 新增。</summary>
 	public delegate* unmanaged<ulong, void*, uint, byte> RenderViewportCommands;

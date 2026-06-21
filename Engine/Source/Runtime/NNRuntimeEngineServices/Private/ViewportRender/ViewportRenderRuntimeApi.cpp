@@ -156,10 +156,6 @@ extern "C" void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api)
         return;
     }
 
-    // 已移除：RenderSceneToTexture / GetLastRenderedTexture / GetRenderStats（SceneRenderer 移至 Legacy）
-    api->RenderSceneToTexture   = nullptr;
-    api->GetLastRenderedTexture = nullptr;
-    api->GetRenderStats         = nullptr;
     api->SetRmlUIViewportSize   = &rt_viewportRender_setRmlUIViewportSize;
     api->ProcessRmlUIInput      = &rt_viewportRender_processRmlUIInput;
     api->GetLastRmluiTexture    = &rt_viewportRender_getLastRmluiTexture;

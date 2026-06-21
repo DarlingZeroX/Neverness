@@ -227,79 +227,6 @@ namespace
         return surface->Recreate(newHandle, static_cast<uint32_t>(newHandleType)) ? 1 : 0;
     }
 
-    std::uint8_t NN_ENGINE_ABI_STDCALL rt_viewportSurface_renderViewport(
-        std::uint64_t surfaceId,
-        std::uint64_t sceneHandle,
-        std::uint32_t width,
-        std::uint32_t height)
-    {
-        if (surfaceId == 0 || sceneHandle == 0 || width == 0 || height == 0)
-            return 0;
-
-        // 0. 获取 SwapChain
-        std::lock_guard<std::mutex> lock(g_SurfaceMutex);
-        auto* surface = FindSurface(surfaceId);
-        if (!surface || !surface->IsCreated())
-            return 0;
-
-        auto* swapChain = surface->GetSwapChain();
-        if (!swapChain)
-            return 0;
-
-        // 1. 渲染场景到离屏 FBO（通过 ViewportRender API）
-        //    内部会：SceneRenderer::Render → EndRenderPass → RmlUI::CompositeOnTop → EndRenderPass
-        const auto* api = NNNativeEngineApi_GetRuntimeTable();
-        if (!api || !api->viewportRender.RenderSceneToTexture)
-            return 0;
-
-        std::uint64_t sceneTextureId = api->viewportRender.RenderSceneToTexture(sceneHandle, width, height);
-        if (sceneTextureId == 0)
-            return 0;
-
-        // 2. 确保 SwapChain 尺寸与渲染目标一致
-        auto& swapChainDesc = swapChain->GetDesc();
-        if (swapChainDesc.Width != width || swapChainDesc.Height != height)
-        {
-            swapChain->Resize(width, height);
-        }
-
-        // 3. 获取离屏纹理（ITextureView* 编码为 uint64_t）
-        auto* srcTextureView = reinterpret_cast<::Diligent::ITextureView*>(sceneTextureId);
-        if (!srcTextureView)
-            return 0;
-
-        auto* srcTexture = srcTextureView->GetTexture();
-        if (!srcTexture)
-            return 0;
-
-        // 4. 获取 SwapChain back buffer 纹理
-        auto* dstRTV = swapChain->GetCurrentBackBufferRTV();
-        if (!dstRTV)
-            return 0;
-
-        auto* dstTexture = dstRTV->GetTexture();
-        if (!dstTexture)
-            return 0;
-
-        // 5. CopyTexture（FBO → SwapChain back buffer）+ Present
-        //    CopyTexture 和 Present 在同一个命令列表中，一起提交
-        auto* context = surface->GetContext();
-        if (!context)
-            return 0;
-
-        ::Diligent::CopyTextureAttribs copyAttribs;
-        copyAttribs.pSrcTexture = srcTexture;
-        copyAttribs.SrcTextureTransitionMode = ::Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-        copyAttribs.pDstTexture = dstTexture;
-        copyAttribs.DstTextureTransitionMode = ::Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-        context->CopyTexture(copyAttribs);
-
-        // 6. Present（内部会 Flush + Close 命令列表）
-        swapChain->Present();
-
-        return 1;
-    }
-
     // ═══════════════════════════════════════════
     //  RenderViewportCommands 相关单例
     // ═══════════════════════════════════════════
@@ -760,7 +687,6 @@ extern "C" void NNBuildViewportSurfaceRuntimeApi(NNViewportSurfaceAPI* api)
     api->Present         = &rt_viewportSurface_present;
     api->IsSurfaceLost   = &rt_viewportSurface_isSurfaceLost;
     api->RecreateSurface = &rt_viewportSurface_recreateSurface;
-    api->RenderViewport  = &rt_viewportSurface_renderViewport;
     api->RenderViewportCommands = &rt_viewportSurface_renderViewportCommands;
 
     std::cout << "ViewportSurface Runtime API built (v29: +RenderViewportCommands)." << std::endl;

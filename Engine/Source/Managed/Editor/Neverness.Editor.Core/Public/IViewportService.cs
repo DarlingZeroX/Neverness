@@ -12,12 +12,6 @@ public interface IViewportService
     /// <summary>是否有有效的场景。</summary>
     bool HasScene { get; }
 
-    /// <summary>渲染场景到纹理并返回纹理 ID。</summary>
-    ulong RenderSceneToTexture(float width, float height);
-
-    /// <summary>获取最后渲染的场景纹理 ID。</summary>
-    ulong GetLastSceneTextureId();
-
     /// <summary>获取最后渲染的 RmlUI 纹理 ID。</summary>
     ulong GetLastRmluiTextureId();
 
@@ -29,9 +23,6 @@ public interface IViewportService
 
     /// <summary>设置摄像机位置。</summary>
     void SetCameraPosition(float x, float y, float z);
-
-    /// <summary>获取渲染统计信息。</summary>
-    RenderStats GetRenderStats();
 
     /// <summary>设置 RmlUI 视口尺寸。</summary>
     void SetRmlUIViewportSize(uint width, uint height);
@@ -55,14 +46,4 @@ public interface IViewportService
     /// 用于 RmlUIDocument 组件的 GUID → 路径解析。返回 null 表示解析失败。
     /// </summary>
     Func<NNGuid, string?>? AssetPathResolver { get; set; }
-}
-
-/// <summary>
-/// 渲染统计信息。
-/// </summary>
-public struct RenderStats
-{
-    public uint DrawCalls;
-    public uint Vertices;
-    public uint Triangles;
 }

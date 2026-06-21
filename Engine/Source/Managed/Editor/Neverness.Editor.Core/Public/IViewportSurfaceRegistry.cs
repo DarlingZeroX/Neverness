@@ -36,29 +36,12 @@ public interface IViewportSurfaceRegistry
     /// <summary>帧末统一执行所有 Deferred Resize。</summary>
     void FlushResizes();
 
-    /// <summary>渲染一个视口。</summary>
-    /// <param name="surfaceId">表面 ID。</param>
-    /// <param name="cameraId">相机 ID。
-    /// TODO: cameraId 是临时设计。未来应改为 ViewportContext，
-    /// 因为 Material Preview / Texture Preview / Shader Preview 可能没有 Camera。</param>
-    void RenderViewport(ulong surfaceId, ulong cameraId);
-
     /// <summary>Present SwapChain（提交渲染结果到屏幕）。</summary>
     void Present(ulong surfaceId);
 
     /// <summary>
-    /// 渲染视口到 SwapChain（完整路径：SceneRenderer → FBO → CopyTexture → SwapChain → Present）。
-    /// </summary>
-    /// <param name="surfaceId">表面 ID。</param>
-    /// <param name="sceneHandle">场景句柄。</param>
-    /// <param name="width">渲染宽度。</param>
-    /// <param name="height">渲染高度。</param>
-    /// <returns>是否成功。</returns>
-    bool RenderViewport(ulong surfaceId, ulong sceneHandle, uint width, uint height);
-
-    /// <summary>
     /// 标记表面丢失（HWND 被销毁/重建，如 Dock 浮动窗口）。
-    /// 下次 RenderViewport 前需调用 RecreateSurface。
+    /// 下次渲染前需调用 RecreateSurface。
     /// </summary>
     void MarkSurfaceLost(ulong surfaceId);
 
@@ -77,7 +60,6 @@ public interface IViewportSurfaceRegistry
     /// <summary>
     /// 通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。
     ///
-    /// 新接口，替代 RenderViewport(sceneHandle)。
     /// C# 端从 Friflo ECS 收集渲染数据 → 序列化为 Flat Buffer → 传给 C++ 执行渲染。
     ///
     /// 渲染管线：

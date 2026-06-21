@@ -45,29 +45,6 @@ public class EditorViewportController : IController
         _viewModel.ViewportHeight = height;
     }
 
-    /// <summary>调用渲染服务并更新纹理 ID。</summary>
-    public void RenderScene()
-    {
-        if (!_viewModel.HasScene) return;
-
-        var width = (uint)_viewModel.ViewportWidth;
-        var height = (uint)_viewModel.ViewportHeight;
-
-        if (width < 1 || height < 1) return;
-
-        // 调用 Service 渲染场景
-        var textureId = _viewportService.RenderSceneToTexture(width, height);
-        _viewModel.SceneTextureId = textureId;
-
-        // 获取 RmlUI 纹理
-        _viewModel.RmluiTextureId = _viewportService.GetLastRmluiTextureId();
-
-        if (textureId == 0)
-        {
-            Console.WriteLine($"[ViewportController] RenderScene: textureId=0 (w={width}, h={height})");
-        }
-    }
-
     /// <summary>聚焦到指定实体。</summary>
     public void FocusEntity(IEntity entity)
     {
@@ -78,12 +55,6 @@ public class EditorViewportController : IController
     public void SetCameraPosition(float x, float y, float z)
     {
         _viewportService.SetCameraPosition(x, y, z);
-    }
-
-    /// <summary>获取渲染统计。</summary>
-    public RenderStats GetRenderStats()
-    {
-        return _viewportService.GetRenderStats();
     }
 
     /// <summary>设置 RmlUI 视口尺寸。</summary>

@@ -83,26 +83,6 @@ public sealed unsafe class ViewportSurfaceRegistryImpl : IViewportSurfaceRegistr
         api.ViewportSurface.FlushResizes();
     }
 
-    /// <summary>渲染一个视口（旧接口，保留兼容）。</summary>
-    public void RenderViewport(ulong surfaceId, ulong cameraId)
-    {
-        // 旧接口，保留兼容
-    }
-
-    /// <summary>渲染视口到 SwapChain（完整路径：SceneRenderer → FBO → CopyTexture → SwapChain → Present）。</summary>
-    public bool RenderViewport(ulong surfaceId, ulong sceneHandle, uint width, uint height)
-    {
-        ref readonly var api = ref EngineNativeApiBootstrap.EngineApi;
-        if (api.ViewportSurface.RenderViewport == null)
-        {
-            Console.WriteLine("[ViewportSurfaceRegistry] RenderViewport 未实现（Native API 未就绪）");
-            return false;
-        }
-
-        var result = api.ViewportSurface.RenderViewport(surfaceId, sceneHandle, width, height);
-        return result != 0;
-    }
-
     /// <summary>Present SwapChain。</summary>
     public void Present(ulong surfaceId)
     {

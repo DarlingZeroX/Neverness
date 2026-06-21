@@ -5,7 +5,7 @@
  * @brief 视口 Surface API：管理 SwapChain 生命周期（Renderer 基础设施）。
  *
  * 职责：Create / Destroy / Resize / FlushResizes / Present / SurfaceLost / Recreate
- * 与 ViewportRenderAPI 分离：Surface 是 Renderer 基础设施，RenderViewport 是 Editor 功能。
+ * 与 ViewportRenderAPI 分离：Surface 是 Renderer 基础设施，RenderViewportCommands 是 Editor 功能。
  * 所有 Viewport（Scene / Material / Mesh / Texture / Shader）共用此 API。
  *
  * v23 新增子表。
@@ -99,23 +99,8 @@ typedef struct NNViewportSurfaceAPI
         NNNativeHandleType newHandleType);
 
     /**
-     * @brief 渲染视口到 SwapChain（完整路径：SceneRenderer → FBO → CopyTexture → SwapChain → Present）。
-     * @param surfaceId   表面 ID
-     * @param sceneHandle 场景句柄
-     * @param width       渲染宽度
-     * @param height      渲染高度
-     * @return 1 = 成功，0 = 失败
-     */
-    std::uint8_t (NN_ENGINE_ABI_STDCALL *RenderViewport)(
-        std::uint64_t surfaceId,
-        std::uint64_t sceneHandle,
-        std::uint32_t width,
-        std::uint32_t height);
-
-    /**
      * @brief 通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。
      *
-     * 新接口，替代 RenderViewport(sceneHandle)。
      * C# 端从 Friflo ECS 收集渲染数据 → 序列化为 Flat Buffer → 传给 C++ 执行渲染。
      *
      * 渲染管线：
