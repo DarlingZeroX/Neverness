@@ -11,7 +11,7 @@
 
 #pragma once
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 
 namespace NN::Editor {
 	class NewDirectoryUITask : public ImGuiEx::ImTaskInterface

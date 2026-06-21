@@ -263,13 +263,13 @@ bool HFileSystem::WriteTextToFile(const fsPath& path, const std::string& text)
 
 void HFileSystem::SplitPath(const fsPath& inFullPath, string* outDirectory, string* outFileName, string* outFileExt)
 {
-	if (outDirectory != nullptr) 
+	if (outDirectory != nullptr)
 		*outDirectory = inFullPath.parent_path().string();
 
-	if (outFileName != nullptr)  
+	if (outFileName != nullptr)
 		*outFileName = inFullPath.stem().string();
 
-	if (outFileExt != nullptr)   
+	if (outFileExt != nullptr)
 		*outFileExt = inFullPath.extension().string();
 }
 

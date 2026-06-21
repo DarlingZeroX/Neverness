@@ -15,7 +15,6 @@
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "NativeEngineRuntimeServices.h"
-#include "NNRuntimeRenderAssets/Include/NNRenderAssetManager.h"
 
 extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 {
@@ -34,17 +33,15 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildAsyncWaitRuntimeApi(&outTable->asyncWait);
 	//NNBuildSceneRuntimeApi(&outTable->scene);           // 已移除：SceneRuntimeApi 随 NNRuntimeScene 移至 Legacy
 	//NNBuildEditorSceneRuntimeApi(&outTable->editorScene); // 已移除：同上
-	NNBuildAssetCookerRuntimeApi(&outTable->assetCooker);
+	//NNBuildAssetCookerRuntimeApi(&outTable->assetCooker); // 已移除：已迁移至 C#
 	NNBuildApplicationRuntimeApi(&outTable->application);
 	NNBuildWindowRuntimeApi(&outTable->window);
 	NNBuildVfsRuntimeApi(&outTable->vfs);
 	NNBuildEventRuntimeApi(&outTable->events);
-	NNBuildRenderAssetRuntimeApi(&outTable->renderAsset);
+	//NNBuildRenderAssetRuntimeApi(&outTable->renderAsset);  // 已移除：RenderAssetRuntimeApi 随 NNRenderAssets 移至 Legacy
 	NNBuildViewportRenderRuntimeApi(&outTable->viewportRender);
 	NNBuildViewportSurfaceRuntimeApi(&outTable->viewportSurface);
 	NNBuildDiligentRuntimeApi(&outTable->diligent);
-
-	/* RenderAssetManager 延迟到设备创建后初始化（VGWindow::Initialize） */
 
 	std::cout << "NNNative Engine Api Table built." << std::endl;
 	std::cout << "---------------------------------------" << std::endl;
@@ -80,6 +77,5 @@ extern "C" void NNEngineRuntimeHost_Shutdown(void)
 {
 	ShutdownViewportSurface();
 	ShutdownViewportRender();
-	NN::Runtime::Render::NNRenderAssetManager::Get().Shutdown();
 	NN::Runtime::engine::NNEngineRuntime::Instance().Shutdown();
 }

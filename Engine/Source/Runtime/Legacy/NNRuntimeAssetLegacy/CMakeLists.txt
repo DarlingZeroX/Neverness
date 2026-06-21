@@ -67,7 +67,6 @@ target_link_libraries(NevernessRuntime-AssetLegacy PRIVATE $<IF:$<TARGET_EXISTS:
 
 target_link_libraries(NevernessRuntime-AssetLegacy PRIVATE NevernessCore-Core)
 target_link_libraries(NevernessRuntime-AssetLegacy PRIVATE NevernessCore-PlatformCore)
-target_link_libraries(NevernessRuntime-AssetLegacy PRIVATE NevernessCore-FileSystem)
 target_link_libraries(NevernessRuntime-AssetLegacy PRIVATE NevernessCore-MediaCore)
 target_link_libraries(NevernessRuntime-AssetLegacy PRIVATE NevernessRuntime-Core)
 target_link_libraries(NevernessRuntime-AssetLegacy PRIVATE NevernessRuntime-VFS)

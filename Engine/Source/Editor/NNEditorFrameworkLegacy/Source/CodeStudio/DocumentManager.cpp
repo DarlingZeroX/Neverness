@@ -1,5 +1,5 @@
 #include "CodeStudio/DocumentManager.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "NNRuntimeCore/Interface/VGAsset.h"
 #include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "NNRuntimeVFS/Include/VFSService.h"

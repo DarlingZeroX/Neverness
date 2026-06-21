@@ -16,7 +16,7 @@
 
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNCore/Interface/HStringTools.h>
-#include <NNFileSystem/Interface/HFileSystemGenerator.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystemGenerator.h>
 #include <NNPlatformCore/Interface/HClipboard.h>
 
 #include "AssetEditor.h"

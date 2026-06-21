@@ -10,7 +10,7 @@
 */
 
 #include "VFSService.h"
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 #include <filesystem>
 #include <unordered_map>
 #include <utility>

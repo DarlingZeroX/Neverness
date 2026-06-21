@@ -53,8 +53,8 @@ target_include_directories(NevernessRuntime-Renderer2D
 )
 
 # 依赖 RenderAssets + Asset（纹理缓存解析、GUID→GPU 资源映射）
-target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-RenderAssets)
-target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-Asset)
+# target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-RenderAssets)
+# target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-Asset)
 
 # 依赖 Diligent 后端（替代 NevernessRuntime-RHI + opengl32）
 target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NNRuntimeRender NNRuntimeDiligent)

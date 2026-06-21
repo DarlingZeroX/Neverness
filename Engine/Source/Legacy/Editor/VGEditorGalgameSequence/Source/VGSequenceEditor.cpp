@@ -22,7 +22,7 @@
 #include "Widgets/SequenceRuntimeBridgePanelWidget.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
 #include "NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 

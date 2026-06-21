@@ -17,7 +17,7 @@
 #include "NNRuntimeAssetLegacy/Include/UIAsset.h"
 #include "NNRuntimeAssetLegacy/Interface/SceneAccessor.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "NNRuntimeCore/Interface/ISceneFactory.h"
 
 namespace NN::Runtime

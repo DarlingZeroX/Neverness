@@ -47,7 +47,5 @@ target_include_directories(NevernessRuntime-Media PUBLIC
 target_link_libraries(NevernessRuntime-Media PUBLIC
     NevernessCore-Core
     NevernessCore-MediaCore
-    NevernessRuntime-Asset
-    NevernessRuntime-RenderAssets
     NevernessRuntime-VFS
 )

@@ -13,7 +13,6 @@
 
 #include "ApplicationAPI.h"
 #include "WindowAPI.h"
-#include "AssetCookerAPI.h"
 #include "AsyncWaitAPI.h"
 #include "EditorSceneAPI.h"
 #include "AudioAPI.h"
@@ -33,8 +32,8 @@
 extern "C" {
 #endif
 
-/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v29：ViewportSurfaceAPI 新增 RenderViewportCommands。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 29u
+/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v30：移除 AssetCookerAPI（已迁移至 C#）。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 30u
 
 typedef struct NNNativeEngineAPI
 {
@@ -54,8 +53,6 @@ typedef struct NNNativeEngineAPI
 	NNWindowAPI window;
 	/** @brief 虚拟文件系统（Phase 1 文本/二进制 IO）；见 `VfsAPI.h`。 */
 	NNVfsAPI vfs;
-	/** @brief 資產編譯/打包器（.nnpack 構建）；見 `AssetCookerAPI.h`。 */
-	NNAssetCookerAPI assetCooker;
 	/** @brief 事件队列（Pull-Based Event Pump）；見 `EventAPI.h`。 */
 	NNEventAPI events;
 	/** @brief Render 資產 GPU 管理器（CPU Asset → GPU Resource、ImGui Handle）；見 `RenderAssetAPI.h`。 */

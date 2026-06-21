@@ -21,7 +21,7 @@
 #include "NNRuntimePak/Include/VFSMount.h"
 #include "NNRuntimeCore/Include/Core/Core.h"
 #include "NNRuntimeCore/Include/Core/EventBus.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 
 namespace VisionGal::GalGame
 {

@@ -15,7 +15,7 @@
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNCore/Interface/HStringTools.h>
 #include <NNPlatformCore/Interface/HClipboard.h>
-#include <NNFileSystem/Interface/HFileSystemGenerator.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystemGenerator.h>
 //#include <NNRuntimeAssetLegacy/Include/HPackage.h>
 //#include "Engine/Manager/AssetManager.h"
 #include "NNRuntimeVFS/Include/VFSService.h"

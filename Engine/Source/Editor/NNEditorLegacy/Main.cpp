@@ -11,7 +11,7 @@
 
 #include "Include/EngineEditor.h"
 #include "Include/EditorInitializer.h"
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 #include <NNEngineLegacy/Include/Engine/VGEngine.h>
 
 #if defined(NEVERNESS_USE_RUNTIME_KERNEL) && NEVERNESS_USE_RUNTIME_KERNEL

@@ -13,7 +13,7 @@
 #include "PanelManager.h"
 #include "Setting/Style.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/Localization.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "MainEditor/MainPanel.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNRuntimeImGui/IncludeImGuiEx.h"

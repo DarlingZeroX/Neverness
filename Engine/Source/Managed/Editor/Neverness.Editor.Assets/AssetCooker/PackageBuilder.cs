@@ -71,7 +71,7 @@ public static class PackageBuilder
     /// <summary>
     /// 核心打包逻辑（与 C++ NNPackBuilder::Build 对齐的纯 C# 实现）。
     /// </summary>
-    private static bool Build(List<(GUID guid, ulong typeId, byte[] data)> assets,
+    public static bool Build(List<(GUID guid, ulong typeId, byte[] data)> assets,
                                string outputPath, string packageName)
     {
         if (assets.Count == 0 || string.IsNullOrEmpty(outputPath))
@@ -85,7 +85,7 @@ public static class PackageBuilder
 
             /* 计算偏移 */
             const int headerSize = 64;
-            var entrySize = 48; /* NNPackAssetEntry size */
+            const int entrySize = 56; /* NNPackAssetEntry: 6*uint64 + 2*uint32 = 56 bytes */
             var tableSize = assets.Count * entrySize;
             var tableOffset = headerSize;
 

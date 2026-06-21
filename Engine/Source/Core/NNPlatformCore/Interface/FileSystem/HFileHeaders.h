@@ -39,7 +39,7 @@ namespace NN::Core
 
 	BITFLAG_ENUM_CLASS_HELPER(FileCreationMode);
 
-	enum class FileAccessMode 
+	enum class FileAccessMode
 	{
 		// Chose the access mode automatically based on creation mode
 		Default = -1,

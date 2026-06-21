@@ -11,7 +11,7 @@
 
 #include "ArchiveSystem.h"
 #include "NNEngineLegacy/Include/Render/TextureConverter.h"
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 #include <NNCore/Include/File/nlohmann/json.hpp>
 
 namespace VisionGal::GalGame

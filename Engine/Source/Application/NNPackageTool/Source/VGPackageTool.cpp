@@ -15,7 +15,7 @@
 #include <NNRuntimeCore/Include/Core/Core.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include <VGEditorCore/Include/EditorCore/EditorCore.h>
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 
 namespace VisionGal::Editor
 {

@@ -12,7 +12,7 @@
 #include "Project/ProjectBuilder.h"
 #include "NNRuntimeAssetLegacy/Interface/Package.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "Project/ProjectSettings.h"
 #include <NNRuntimePak/Include/PakWriter.h>
 

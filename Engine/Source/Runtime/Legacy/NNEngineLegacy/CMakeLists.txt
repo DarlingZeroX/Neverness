@@ -65,7 +65,6 @@ target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC $<IF:$<TARGET_EXISTS:
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC RmlUi::RmlUi)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessCore-Core)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessCore-PlatformCore)
-target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessCore-FileSystem)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessCore-MediaCore)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-Lua)
 target_link_libraries(NevernessRuntime-EngineLegacy PUBLIC NevernessRuntime-RHI)

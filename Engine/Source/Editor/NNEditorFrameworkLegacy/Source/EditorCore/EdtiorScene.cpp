@@ -15,7 +15,7 @@
 #include <NNEngineLegacy/Include/Engine/Manager.h>
 #include <NNRuntimeImGui/Include/ImGuiEx/ImNotify.h>
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 
 namespace NN::Editor

@@ -10,7 +10,7 @@
  */
 
 #include "EditorInitializer.h"
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 #include <NNPlatformCore/Include/NativeFileDialog/portable-file-dialogs.h>
 #include <NNRuntimePak/Include/PakWriter.h>
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>

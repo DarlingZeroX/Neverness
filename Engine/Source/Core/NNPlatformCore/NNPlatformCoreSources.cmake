@@ -8,6 +8,9 @@ set(NNPlatformCore_SOURCES
     Include/SDL3/SDL3Window.cpp
     Include/SDL3/SDL3Window.h
     Include/WindowInterface.h
+    Interface/FileSystem/HFileHeaders.h
+    Interface/FileSystem/HFileSystem.h
+    Interface/FileSystem/HFileSystemGenerator.h
     Interface/HClipboard.h
     Interface/HCpuInfo.h
     Interface/HInput.h
@@ -17,6 +20,8 @@ set(NNPlatformCore_SOURCES
     Interface/HSystemTimer.h
     Interface/HTimer.h
     Interface/HWindow.h
+    Source/FileSystem/HFileSystem.cpp
+    Source/FileSystem/HFileSystemGenerator.cpp
     Source/HClipboard.cpp
     Source/HCpuInfo.cpp
     Source/HInput.cpp

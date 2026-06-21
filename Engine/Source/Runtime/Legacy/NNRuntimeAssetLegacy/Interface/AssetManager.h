@@ -15,7 +15,7 @@
 #include "NNRuntimeAssetLegacy/Include/TextureAsset.h"
 #include <unordered_set>
 #include <NNCore/Interface/HTypeInfo.h>
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 
 namespace NN::Runtime
 {

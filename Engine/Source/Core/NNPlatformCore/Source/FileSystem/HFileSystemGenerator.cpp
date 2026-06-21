@@ -62,5 +62,5 @@ namespace NN::Core
 		return nextName;
 	}
 
-	
+
 }

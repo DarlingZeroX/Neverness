@@ -53,4 +53,4 @@ target_include_directories(NevernessRuntime-VFS PRIVATE ${CMAKE_CURRENT_SOURCE_D
 
 target_link_libraries(NevernessRuntime-VFS PUBLIC NevernessRuntime-NativeEngineAPI)
 target_link_libraries(NevernessRuntime-VFS PRIVATE NevernessCore-Core)
-target_link_libraries(NevernessRuntime-VFS PRIVATE NevernessCore-FileSystem)
+target_link_libraries(NevernessRuntime-VFS PRIVATE NevernessCore-PlatformCore)

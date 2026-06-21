@@ -12,7 +12,7 @@
 #pragma once
 #include <NNRuntimeImGui/IncludeImGuiEx.h>
 #include <NNRuntimeCore/Include/Core/RuntimeCore.h>
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 
 namespace NN::Editor
 {

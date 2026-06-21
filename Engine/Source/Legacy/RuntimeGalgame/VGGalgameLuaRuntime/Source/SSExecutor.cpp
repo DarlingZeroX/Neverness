@@ -23,7 +23,7 @@
 #include <sol/state.hpp>
 
 #include "NNRuntimeCore/Include/Core/EventBus.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "NNEngineLegacy/Include/Lua/LuaInterface.h"
 #include "LuaBinding.h"
 #include "VGLuaCore/LuaErrorManager.h"

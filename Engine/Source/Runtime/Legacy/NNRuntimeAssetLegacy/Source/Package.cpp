@@ -13,7 +13,7 @@
 
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNCore/Interface/HStringTools.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 
 namespace NN::Runtime
 {

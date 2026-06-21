@@ -11,7 +11,7 @@
 
 #include "AssetInterface.h"
 #include "NNCore/Include/Utils/HStringGenerator.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 
 namespace NN::Runtime
 {

@@ -32,3 +32,22 @@
 #else
 #define H_CORE_PLATFORM_API
 #endif
+
+// 文件系统 API（静态库模式下为空，原 NNFileSystem 已合并到 NNPlatformCore）
+#ifdef H_FILE_SYSTEM_DYNAMIC
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#ifdef H_FILE_SYSTEM_EXPORT
+#define H_FILE_SYSTEM_API __declspec(dllexport)
+#else
+#define H_FILE_SYSTEM_API __declspec(dllimport)
+#endif
+#else
+#ifdef H_FILE_SYSTEM_EXPORT
+#define H_FILE_SYSTEM_API __attribute__((visibility("default")))
+#else
+#define H_FILE_SYSTEM_API
+#endif
+#endif
+#else
+#define H_FILE_SYSTEM_API
+#endif

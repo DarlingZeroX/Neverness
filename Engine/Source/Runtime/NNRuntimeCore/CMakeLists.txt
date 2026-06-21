@@ -66,11 +66,8 @@ target_include_directories(NevernessRuntime-Core PRIVATE ${CMAKE_CURRENT_SOURCE_
 target_include_directories(NevernessRuntime-Core PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeLua/Include)
  
 find_package(SDL3 CONFIG REQUIRED)
-find_package(RmlUi REQUIRED)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-Lua)
 target_link_libraries(NevernessRuntime-Core PUBLIC SDL3::SDL3)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-Core)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-PlatformCore)
-target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-FileSystem)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-VFS)
-target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-Pak)

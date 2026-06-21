@@ -15,10 +15,6 @@
 #include <Device/INNSwapChain.h>
 #include <NNRuntimeRenderBootstrap/Include/NNRenderBootstrap.h>
 
-// RenderAssetManager 初始化（Diligent 工厂）
-#include "NNRenderAssetManager.h"
-#include "DiligentRenderResourceFactory.h"
-
 namespace NN::Runtime
 {
 	VGWindow::VGWindow()
@@ -184,10 +180,6 @@ namespace NN::Runtime
 			return false;
 		}
 		m_Device = device.Detach(); // 转移所有权
-
-		// 设备就绪，初始化 RenderAssetManager（Diligent 工厂）
-		auto factory = std::make_unique<Render::DiligentRenderResourceFactory>(m_Device);
-		Render::NNRenderAssetManager::Get().Initialize(std::move(factory));
 
 		if (m_Borderless)
 		{

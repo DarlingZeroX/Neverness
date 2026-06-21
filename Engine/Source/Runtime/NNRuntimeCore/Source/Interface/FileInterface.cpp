@@ -10,7 +10,6 @@
 */
 
 #include "FileInterface.h"
-#include <RmlUi/Core/Log.h>
 
 namespace NN::Runtime
 {

@@ -73,7 +73,6 @@ target_link_libraries(NevernessRuntime-Application
 		#$<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
 		NevernessCore-Core
 		NevernessCore-PlatformCore
-		NevernessCore-FileSystem
 		NevernessRuntime-Core
 		NevernessRuntime-VFS
 		NevernessRuntime-ImGui
@@ -82,7 +81,5 @@ target_link_libraries(NevernessRuntime-Application
 		NNRuntimeRender
 		NNRuntimeDiligent
 		NNRuntimeRenderBootstrap
-		# RenderAssets（IRenderResourceFactory + NNRenderAssetManager）
-		NevernessRuntime-RenderAssets
 )
 

@@ -26,7 +26,6 @@ extern "C" void NNNativeEngineApiTable_BuildDefault(NNNativeEngineAPI* outTable)
 	NNBuildEditorSceneApiStubs(&outTable->editorScene);
 	NNBuildTimingApiStubs(&outTable->timing);
 	NNBuildAsyncWaitApiStubs(&outTable->asyncWait);
-	NNBuildAssetCookerApiStubs(&outTable->assetCooker);
 	NNBuildApplicationApiStubs(&outTable->application);
 	NNBuildWindowApiStubs(&outTable->window);
 	NNBuildVfsApiStubs(&outTable->vfs);

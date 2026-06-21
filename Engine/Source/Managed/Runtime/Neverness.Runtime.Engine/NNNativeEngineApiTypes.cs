@@ -388,35 +388,6 @@ public unsafe struct NNApplicationApi
 }
 
 /// <summary>
-/// 與 Native <c>NNCookResultData</c> 對齊（<c>AssetCookerAPI.h</c>）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNCookResultData
-{
-	public int Success;
-	public uint TotalAssets;
-	public uint CookedAssets;
-	public uint FailedAssets;
-	public uint GeneratedPacks;
-	public double ElapsedSeconds;
-}
-
-/// <summary>
-/// 與 Native <c>NNAssetCookerAPI</c> 對齊（<c>AssetCookerAPI.h</c>）：資產編譯/打包器。
-/// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 8)]
-public unsafe struct NNAssetCookerApi
-{
-	public delegate* unmanaged[Stdcall]<ulong> CreateManifest;
-	public delegate* unmanaged[Stdcall]<ulong, void> DestroyManifest;
-	public delegate* unmanaged[Stdcall]<ulong, byte*, void> SetOutputRoot;
-	public delegate* unmanaged[Stdcall]<ulong, byte*, void> SetLibraryRoot;
-	public delegate* unmanaged[Stdcall]<ulong, NNGuid, ulong, byte*, uint, void> AddAsset;
-	public delegate* unmanaged[Stdcall]<ulong, byte*, byte*, uint, byte*, void> AddGroup;
-	public delegate* unmanaged[Stdcall]<ulong, NNCookResultData> Cook;
-}
-
-/// <summary>
 /// 與 Native <c>NNEventType</c> 對齊（<c>EventTypes.h</c>）：事件粗分类。
 /// type = 粗分类（Engine-Level Category），subtype = 细分类（Per-Type Specific）。
 /// </summary>
@@ -572,8 +543,6 @@ public unsafe struct NNNativeEngineApi
 	public NNWindowApi Window;
 	/// <summary>對應 C 聚合體末尾成員 <c>vfs</c>（型別 <c>NNVfsAPI</c>）。</summary>
 	public NNVfsApi Vfs;
-	/// <summary>對應 C 聚合體成員 <c>assetCooker</c>（型別 <c>NNAssetCookerAPI</c>）；資產編譯/打包器。</summary>
-	public NNAssetCookerApi AssetCooker;
 	/// <summary>對應 C 聚合體成員 <c>events</c>（型別 <c>NNEventAPI</c>）；事件队列（Pull-Based）。</summary>
 	public NNEventApi Events;
 	/// <summary>對應 C 聚合體成員 <c>renderAsset</c>（型別 <c>NNRenderAssetAPI</c>）；GPU Texture 資源管理（v20）。</summary>

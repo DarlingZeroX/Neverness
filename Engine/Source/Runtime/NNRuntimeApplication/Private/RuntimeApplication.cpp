@@ -22,7 +22,7 @@
 #include "Core/WindowRegistry.h"
 #include "Device/NNDiligentDevice.h"
 #include "Editor/EditorInitializer.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "NNRuntimeCore/Include/Core/RuntimeCore.h"
 #include "NNRuntimeImGui/Include/imgui/imgui.h"
 #include "NNRuntimeImGui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"

@@ -9,31 +9,15 @@ add_subdirectory ("NNRuntimeApplication")
 add_subdirectory ("NNRuntimeNativeEngineAPIStub")
 add_subdirectory ("NNRuntimeManaged")
 
-############ Legacy 托管宿主（CoreCLR via nethost，可选；默认不构建）
-option(VISIONGAL_ENABLE_MANAGED_HOST_LEGACY "Build NNRuntimeManagedHostLegacy (CoreCLR via nethost)" OFF)
-
-if (VISIONGAL_ENABLE_MANAGED_HOST)
-	message(WARNING "VISIONGAL_ENABLE_MANAGED_HOST is deprecated; use VISIONGAL_ENABLE_MANAGED_HOST_LEGACY")
-	set(VISIONGAL_ENABLE_MANAGED_HOST_LEGACY ON CACHE BOOL "Legacy managed host" FORCE)
-endif()
-
-if (VISIONGAL_ENABLE_MANAGED_HOST_LEGACY)
-	if (NOT WIN32 OR NOT MSVC)
-		message(FATAL_ERROR "VISIONGAL_ENABLE_MANAGED_HOST_LEGACY requires WIN32 and MSVC (nethost).")
-	endif()
-	add_subdirectory("NNRuntimeManagedHostLegacy")
-endif()
-
 #add_subdirectory("NNRuntimeManagedBridge")
 add_subdirectory ("NNRuntimeEngine")
+add_subdirectory("NNRuntimeRenderer2D")
 add_subdirectory ("NNRuntimeEngineServices")
 #add_subdirectory ("NNRuntimeAssetLegacy")
-add_subdirectory ("NNRuntimeAsset")
+#add_subdirectory ("NNRuntimeAsset")  # 已移至 Legacy
 #add_subdirectory ("NNRuntimeImageCodec")
-add_subdirectory ("NNRuntimeRenderAssets")
-add_subdirectory ("NNAssetCooker")
+#add_subdirectory ("NNRuntimeRenderAssets")  # 已移至 Legacy
 add_subdirectory ("NNRuntimeRmlui")
 # add_subdirectory ("NNEngineLegacy")  # 冻结：缺少 NNRuntimeRmlui/Interface/UIDocumentLegacy.h
-add_subdirectory("NNRuntimeRenderer2D")
 add_subdirectory("NNRuntimeMedia")
 # add_subdirectory("NNRuntimeMediaAssets")  # 预先存在编译错误，待修复

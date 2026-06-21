@@ -2,7 +2,6 @@
 set(VISIONGAL_KERNEL_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "")
 add_subdirectory(NNCore)
 add_subdirectory(NNPlatformCore)
-add_subdirectory(NNFileSystem)
 add_subdirectory(NNMediaCore)
 #add_subdirectory(NNNodeGraphCore)
 #add_subdirectory(NNNodeGraphNodes)

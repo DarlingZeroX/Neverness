@@ -10,7 +10,7 @@
  */
 
 #include "AssetManager.h"
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "TextureAsset.h"
 #include "VideoAsset.h"

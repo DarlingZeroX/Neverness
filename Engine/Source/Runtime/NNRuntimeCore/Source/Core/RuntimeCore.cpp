@@ -10,7 +10,7 @@
 */
 
 #include "Core/RuntimeCore.h"
-#include <NNFileSystem/Interface/HFileSystem.h>
+#include <NNPlatformCore/Interface/FileSystem/HFileSystem.h>
 #include <NNRuntimeVFS/Include/VFSService.h>
 
 namespace NN::Runtime

@@ -6,7 +6,6 @@
  */
 
 #include "ApplicationAPI.h"
-#include "AssetCookerAPI.h"
 #include "AsyncWaitAPI.h"
 #include "AudioAPI.h"
 #include "EditorSceneAPI.h"
@@ -32,7 +31,6 @@ void NNBuildSceneApiStubs(NNSceneAPI* api);
 void NNBuildEditorSceneApiStubs(NNEditorSceneAPI* api);
 void NNBuildTimingApiStubs(NNTimingAPI* api);
 void NNBuildAsyncWaitApiStubs(NNAsyncWaitAPI* api);
-void NNBuildAssetCookerApiStubs(NNAssetCookerAPI* api);
 void NNBuildWindowApiStubs(NNWindowAPI* api);
 void NNBuildVfsApiStubs(NNVfsAPI* api);
 void NNBuildEventApiStubs(NNEventAPI* api);

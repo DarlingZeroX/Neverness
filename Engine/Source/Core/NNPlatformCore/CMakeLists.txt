@@ -1,11 +1,11 @@
-# ÉèÖÃ C++ ±ê×¼Îª C++17
+# ï¿½ï¿½ï¿½ï¿½ C++ ï¿½ï¿½×¼Îª C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
 
-# ¿ªÆôutf-8±àÂëÖ§³Ö
+# ï¿½ï¿½ï¿½ï¿½utf-8ï¿½ï¿½ï¿½ï¿½Ö§ï¿½ï¿½
 if (MSVC)
     add_compile_options(/utf-8)
 endif()
@@ -23,14 +23,15 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/NNPlatformCoreSources.cmake)
 add_library(NevernessCore-PlatformCore STATIC)
 target_sources(NevernessCore-PlatformCore PRIVATE ${NNPlatformCore_SOURCES})
 
-# ½ö¶Ô¶¯Ì¬¿âÄ¿±ê¶¨Òå CORE_MODULE_EXPORT
+# ï¿½ï¿½ï¿½Ô¶ï¿½Ì¬ï¿½ï¿½Ä¿ï¿½ê¶¨ï¿½ï¿½ CORE_MODULE_EXPORT
 #target_compile_definitions(NevernessCore-PlatformCore PRIVATE H_CORE_PLATFORM_EXPORT)
 
-# Ìí¼ÓÍ·ÎÄ¼þËÑË÷Â·¾¶
+# ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 target_include_directories(NevernessCore-PlatformCore PUBLIC ${VISIONGAL_KERNEL_ROOT})
 target_include_directories(NevernessCore-PlatformCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessCore-PlatformCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
+target_include_directories(NevernessCore-PlatformCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface/FileSystem)
 
 find_package(SDL3 CONFIG REQUIRED)
-# ¹«¹²Í·£¨Èç Include/SDL3/SDL3Window.h£©Ö±½Ó #include <SDL3/...>£¬ÒÀÀµ·½±ØÐë»ñµÃ SDL Í·Â·¾¶ÓëÁ´½Ó½Ó¿Ú
+# ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ Include/SDL3/SDL3Window.hï¿½ï¿½Ö±ï¿½ï¿½ #include <SDL3/...>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SDL Í·Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó½Ó¿ï¿½
 target_link_libraries(NevernessCore-PlatformCore PUBLIC NevernessCore-Core SDL3::SDL3)

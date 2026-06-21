@@ -20,7 +20,6 @@ target_sources(NevernessRuntime-EngineServices
 		Private/Registry/NativeEngineRuntimeApiTable.cpp
 		Private/Timing/TimingRuntimeApi.cpp
 		Private/Async/AsyncWaitRuntimeApi.cpp
-		Private/RenderAsset/RenderAssetRuntimeApi.cpp
 		Private/ViewportRender/ViewportRenderRuntimeApi.cpp
 		Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp
 		Private/Diligent/DiligentRuntimeApi.cpp
@@ -32,10 +31,6 @@ target_include_directories(NevernessRuntime-EngineServices PUBLIC ${CMAKE_CURREN
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeEngine/Include)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeAsset/Include)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNAssetCooker/Include)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeRenderAssets/Include)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeRenderer2D/Include)
 
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 
@@ -54,15 +49,13 @@ target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-NativeEngineAPI
 	NevernessRuntime-NativeEngineAPIStub
 	NevernessRuntime-Engine
-	NevernessRuntime-Asset
-	NevernessRuntime-AssetCooker
 	NevernessRuntime-Application
 	NevernessRuntime-VFS
-	NevernessRuntime-RenderAssets
-	NevernessRuntime-Renderer2D
 	NevernessRuntime-RmlUI
 	# ViewportSurface 需要 NNRuntimeDiligent（NNDiligentViewportSurface、SwapChain 创建）
 	NNRuntimeDiligent
+	# ViewportSurfaceRuntimeApi 直接使用 Renderer2D（RenderCommands 路径）
+	NevernessRuntime-Renderer2D
 )
 
 add_library(NNEngineRuntimeServices ALIAS NevernessRuntime-EngineServices)

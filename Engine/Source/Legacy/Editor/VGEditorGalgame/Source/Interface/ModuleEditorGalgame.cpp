@@ -12,7 +12,7 @@
 #include "ModuleEditorGalgame.h"
 #include "GalComDrawer.h"
 #include "SequenceEditor.h"
-#include "NNFileSystem/Interface/HFileSystem.h"
+#include "NNPlatformCore/Interface/FileSystem/HFileSystem.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
 #include "NNEditorFrameworkLegacy/Interface/ComponentDrawerRegistry.h"
 #include "NNEditorFrameworkLegacy/Include/EditorCore/AssetWatcher.h"

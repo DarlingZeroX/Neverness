@@ -56,7 +56,6 @@ target_link_libraries(NevernessRuntime-RmlUI PRIVATE
     # Neverness 内部依赖
     NevernessCore-Core
     NevernessCore-PlatformCore
-    NevernessCore-FileSystem
     NevernessCore-MediaCore
     NevernessRuntime-Lua
     NevernessRuntime-Core

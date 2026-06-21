@@ -23,10 +23,10 @@
 #include "Device/NNDiligentDevice.h"
 
 // Renderer2D（RenderCommands 路径直接使用）
-#include "Renderer2D/Renderer2D.h"
-#include "Renderer2D/FramebufferObject.h"
-#include "Renderer2D/CameraData.h"
-#include "Renderer2D/SpriteDrawCommand.h"
+#include "NNRuntimeRenderer2D/Include/Renderer2D/Renderer2D.h"
+#include "NNRuntimeRenderer2D/Include/Renderer2D/FramebufferObject.h"
+#include "NNRuntimeRenderer2D/Include/Renderer2D/CameraData.h"
+#include "NNRuntimeRenderer2D/Include/Renderer2D/SpriteDrawCommand.h"
 
 // RmlUI（Overlay Pass）
 #include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"

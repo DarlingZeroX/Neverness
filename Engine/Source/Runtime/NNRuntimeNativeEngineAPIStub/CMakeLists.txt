@@ -24,7 +24,6 @@ target_sources(NevernessRuntime-NativeEngineAPIStub
 		Private/Audio/AudioApiStubs.cpp
 		Private/Input/InputApiStubs.cpp
 		Private/Scene/SceneApiStubs.cpp
-		Private/AssetCooker/AssetCookerApiStubs.cpp
 		Private/Application/ApplicationApiStubs.cpp
 		Private/Window/WindowApiStubs.cpp
 		Private/Vfs/VfsApiStubs.cpp
