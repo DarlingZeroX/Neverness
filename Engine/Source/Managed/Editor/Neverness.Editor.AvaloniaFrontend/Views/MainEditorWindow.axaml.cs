@@ -438,12 +438,30 @@ public partial class MainEditorWindow : Window
 
     private void InitializeToolbar()
     {
-        AddToolButton("▶", "Play", () => ExecuteCommand("scene.play"));
-        AddToolButton("⏸", "Pause", () => ExecuteCommand("scene.pause"));
-        AddToolButton("⏹", "Stop", () => ExecuteCommand("scene.stop"));
-        AddToolButton("💾", "Save", () => ExecuteCommand("file.save"));
-        AddToolButton("↩", "Undo", () => ExecuteCommand("edit.undo"));
-        AddToolButton("↪", "Redo", () => ExecuteCommand("edit.redo"));
+        // Save/Undo/Redo 靠左
+        var leftPanel = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing = 0,
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        AddToolButtonTo(leftPanel, "💾", "Save", () => ExecuteCommand("file.save"));
+        AddToolButtonTo(leftPanel, "↩", "Undo", () => ExecuteCommand("edit.undo"));
+        AddToolButtonTo(leftPanel, "↪", "Redo", () => ExecuteCommand("edit.redo"));
+
+        // Play/Pause/Stop 居中
+        var centerPanel = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing = 0,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        AddToolButtonTo(centerPanel, "▶", "Play", () => ExecuteCommand("scene.play"));
+        AddToolButtonTo(centerPanel, "⏸", "Pause", () => ExecuteCommand("scene.pause"));
+        AddToolButtonTo(centerPanel, "⏹", "Stop", () => ExecuteCommand("scene.stop"));
+
+        ToolbarPanel.Children.Add(leftPanel);
+        ToolbarPanel.Children.Add(centerPanel);
     }
 
     private void InitializeStatusBar()
@@ -460,23 +478,32 @@ public partial class MainEditorWindow : Window
         StatusBar.Children.Add(statusText);
     }
 
-    private void AddToolButton(string icon, string tooltip, Action onClick)
+    private void AddToolButtonTo(Panel target, string icon, string tooltip, Action onClick)
     {
-        var button = new Button
+        var iconText = new TextBlock
         {
-            Content = icon,
-            MinWidth = 28,
-            MinHeight = 28,
-            Padding = new Thickness(4),
-            Background = Brushes.Transparent,
-            BorderThickness = new Thickness(0),
-            FontSize = 14,
+            Text = icon,
+            FontSize = 20,
+            Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC")),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
         };
-        ToolTip.SetTip(button, tooltip);
-        button.Click += (_, _) => onClick();
-        button.PointerEntered += (_, _) => button.Background = new SolidColorBrush(Color.Parse("#FF3C3C3C"));
-        button.PointerExited += (_, _) => button.Background = Brushes.Transparent;
-        ToolbarPanel.Children.Add(button);
+
+        var border = new Border
+        {
+            Width = 40,
+            Height = 40,
+            Background = Brushes.Transparent,
+            Margin = new Thickness(0),
+            Padding = new Thickness(0),
+            Child = iconText,
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+        ToolTip.SetTip(border, tooltip);
+        border.PointerPressed += (_, _) => onClick();
+        border.PointerEntered += (_, _) => border.Background = new SolidColorBrush(Color.Parse("#FF3C3C3C"));
+        border.PointerExited += (_, _) => border.Background = Brushes.Transparent;
+        target.Children.Add(border);
     }
 
     private void ExecuteCommand(string commandId)

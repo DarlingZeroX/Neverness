@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 
@@ -43,7 +44,7 @@ public class ToolbarAvaloniaView : AvaloniaViewBase
             Spacing = 2,
             Background = new SolidColorBrush(Color.Parse("#FF2D2D30")),
             Margin = new Avalonia.Thickness(0),
-            Height = 32,
+            Height = 40,
         };
 
         // 从 ToolbarManager 读取按钮定义
@@ -81,36 +82,43 @@ public class ToolbarAvaloniaView : AvaloniaViewBase
         AddToolButton("↪", "Redo", () => ExecuteCommand("edit.redo"));
     }
 
-    /// <summary>添加工具栏按钮。</summary>
+    /// <summary>添加工具栏按钮（用 Border+TextBlock 避免 Button 模板的额外空间）。</summary>
     private void AddToolButton(string icon, string tooltip, Action onClick)
     {
-        var button = new Button
+        var iconText = new TextBlock
         {
-            Content = icon,
-            MinWidth = 28,
-            MinHeight = 28,
-            Padding = new Avalonia.Thickness(4),
+            Text = icon,
+            FontSize = 20,
+            Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC")),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        var border = new Border
+        {
+            Width = 40,
+            Height = 40,
             Background = Brushes.Transparent,
-            BorderThickness = new Avalonia.Thickness(0),
-            FontSize = 14,
+            Margin = new Avalonia.Thickness(0),
+            Padding = new Avalonia.Thickness(0),
+            Child = iconText,
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
 
-        // 设置 ToolTip（附加属性）
-        ToolTip.SetTip(button, tooltip);
+        ToolTip.SetTip(border, tooltip);
 
-        button.Click += (_, _) => onClick();
+        border.PointerPressed += (_, _) => onClick();
 
-        // 悬停效果
-        button.PointerEntered += (_, _) =>
+        border.PointerEntered += (_, _) =>
         {
-            button.Background = new SolidColorBrush(Color.Parse("#FF3C3C3C"));
+            border.Background = new SolidColorBrush(Color.Parse("#FF3C3C3C"));
         };
-        button.PointerExited += (_, _) =>
+        border.PointerExited += (_, _) =>
         {
-            button.Background = Brushes.Transparent;
+            border.Background = Brushes.Transparent;
         };
 
-        _toolbarPanel?.Children.Add(button);
+        _toolbarPanel?.Children.Add(border);
     }
 
     /// <summary>添加分隔线。</summary>
@@ -119,9 +127,10 @@ public class ToolbarAvaloniaView : AvaloniaViewBase
         var separator = new Border
         {
             Width = 1,
-            Height = 20,
+            Height = 32,
             Background = new SolidColorBrush(Color.Parse("#FF3F3F46")),
-            Margin = new Avalonia.Thickness(4, 6),
+            Margin = new Avalonia.Thickness(6, 0),
+            VerticalAlignment = VerticalAlignment.Center,
         };
         _toolbarPanel?.Children.Add(separator);
     }

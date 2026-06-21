@@ -55,7 +55,7 @@
             </Grid>
 
             <!-- 工具栏（菜单下方） -->
-            <StackPanel x:Name="ToolbarPanel" DockPanel.Dock="Top" Orientation="Horizontal" Background="#FF2D2D30" Height="32"/>
+            <Panel x:Name="ToolbarPanel" DockPanel.Dock="Top" Background="#FF2D2D30" Height="40"/>
 
             <!-- 状态栏（底部） -->
             <DockPanel x:Name="StatusBar" DockPanel.Dock="Bottom" Height="24" Background="#FF007ACC"/>
