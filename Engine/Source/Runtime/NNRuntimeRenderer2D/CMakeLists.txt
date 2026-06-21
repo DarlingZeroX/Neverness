@@ -1,7 +1,8 @@
 # NNRuntimeRenderer2D — 最小 2D 渲染管线 MVP
-# 职责：Sprite Batch / Quad Renderer / Builtin Shader / Camera MVP / Scene Rendering / Render Target
-# 依赖：NNRuntimeScene（ECS Query）、NNRuntimeRender/NNRuntimeDiligent（Diligent 后端）
+# 职责：Sprite Batch / Quad Renderer / Builtin Shader / Camera MVP / Render Target
+# 依赖：NNRuntimeRender/NNRuntimeDiligent（Diligent 后端）
 # 着色器：保留 GLSL，由 Diligent 内部编译为 SPIRV
+# 已移除：SceneRenderer / SpriteRenderSystem（依赖 NNRuntimeScene，移至 Legacy）
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,14 +28,10 @@ target_sources(NevernessRuntime-Renderer2D
         Include/Renderer2D/BuiltinShaders.h
         Include/Renderer2D/FramebufferObject.h
         Include/Renderer2D/Renderer2D.h
-        Include/Renderer2D/SpriteRenderSystem.h
-        Include/Renderer2D/SceneRenderer.h
 
         # ── 实现文件 ──
         Source/FramebufferObject.cpp
         Source/Renderer2D.cpp
-        Source/SpriteRenderSystem.cpp
-        Source/SceneRenderer.cpp
 )
 
 target_compile_definitions(NevernessRuntime-Renderer2D PRIVATE NN_RUNTIME_RENDERER2D_EXPORT)
@@ -54,9 +51,6 @@ target_include_directories(NevernessRuntime-Renderer2D
         # Diligent Core（Texture.h 等）
         ${PROJECT_SOURCE_DIR}/Engine/Source/ThirdParty/DiligentEngine/DiligentCore
 )
-
-# 依赖 Scene（ECS Query）
-target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-Scene)
 
 # 依赖 RenderAssets + Asset（纹理缓存解析、GUID→GPU 资源映射）
 target_link_libraries(NevernessRuntime-Renderer2D PRIVATE NevernessRuntime-RenderAssets)

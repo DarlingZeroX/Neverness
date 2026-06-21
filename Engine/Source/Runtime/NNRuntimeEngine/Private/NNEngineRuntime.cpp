@@ -4,13 +4,13 @@
  *
  * Tick 顺序：
  * - 先 timing_.Tick，再构造 RuntimeFrameContext，最后 scheduler_.Tick
- *   （其中 NNRuntimeSceneTickSubsystem 位于 RuntimeTickGroup::Update）。
  *
  * Shutdown：
  * - 先 async_.Shutdown（join 后台等待），再 scheduler_.ShutdownRegistered()。
  *
  * 已移除：
  * - EntitySubsystem（ABI 骨架，已删除）
+ * - NNRuntimeScene / SceneSubsystem / NNRuntimeSceneTickSubsystem（移至 Legacy）
  */
 
 #include "NNEngineRuntime.h"
@@ -33,8 +33,6 @@ bool NNEngineRuntime::Initialize() noexcept
 	}
 
 	timing_.Reset();
-	sceneTick_.SetScene(&ecsScene_);
-	scheduler_.RegisterSubsystem(&sceneTick_);
 	scheduler_.InitializeRegistered();
 	initialized_ = true;
 	return true;

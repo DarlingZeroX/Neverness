@@ -8,7 +8,6 @@ add_subdirectory ("NNNativeEngineAPI")
 add_subdirectory ("NNRuntimeApplication")
 add_subdirectory ("NNRuntimeNativeEngineAPIStub")
 add_subdirectory ("NNRuntimeManaged")
-add_subdirectory ("NNRuntimeScene")
 
 ############ Legacy 托管宿主（CoreCLR via nethost，可选；默认不构建）
 option(VISIONGAL_ENABLE_MANAGED_HOST_LEGACY "Build NNRuntimeManagedHostLegacy (CoreCLR via nethost)" OFF)

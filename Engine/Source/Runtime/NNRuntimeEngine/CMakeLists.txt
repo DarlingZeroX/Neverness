@@ -21,10 +21,8 @@ target_sources(NevernessRuntime-Engine
 		Private/TimingSystem.cpp
 		Private/AsyncSystem.cpp
 		Private/ObjectSubsystem.cpp
-		Private/NNRuntimeSceneTickSubsystem.cpp
 		Private/RuntimeSubsystemCollection.cpp
 		Private/RuntimeScheduler.cpp
-		Include/NNRuntimeSceneTickSubsystem.h
 )
 
 target_include_directories(NevernessRuntime-Engine PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
@@ -33,4 +31,3 @@ target_include_directories(NevernessRuntime-Engine PRIVATE ${CMAKE_CURRENT_SOURC
 target_include_directories(NevernessRuntime-Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 target_link_libraries(NevernessRuntime-Engine PUBLIC NevernessRuntime-NativeEngineAPI)
-target_link_libraries(NevernessRuntime-Engine PRIVATE NevernessRuntime-Scene)

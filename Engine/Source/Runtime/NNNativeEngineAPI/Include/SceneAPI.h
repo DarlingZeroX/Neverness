@@ -160,7 +160,7 @@ typedef NNSceneResult (NN_ENGINE_ABI_STDCALL* NNSceneQueryCount2Fn)(
 
 // ── 函数表 ───────────────────────────────────────────────
 
-/** @brief 场景 Engine Service 子表（layoutVersion = 6，对齐 NNRuntimeScene ECS）。 */
+/** @brief 场景 Engine Service 子表（layoutVersion = 6，对齐 ECS）。 */
 typedef struct NNSceneAPI
 {
 	uint32_t layoutVersion; ///< 当前 = 6；破坏性变更时递增

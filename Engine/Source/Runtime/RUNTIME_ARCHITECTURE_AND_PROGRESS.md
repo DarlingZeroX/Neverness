@@ -128,7 +128,7 @@ flowchart TB
 | NNRuntimePak | `NevernessRuntime-Pak` | VGPackage | [Docs](NNRuntimePak/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 包体 / 资源包相关 | 生产 |
 | NNRuntimeImGui | `NevernessRuntime-ImGui` | VGImgui | [Docs](NNRuntimeImGui/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | ImGui / 工具向 UI 扩展 | 生产 |
 | NNRuntimeCore | `NevernessRuntime-Core` | VGCore | [Docs](NNRuntimeCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 应用壳、窗口、与多子系统绑定的核心动态库 | 生产 |
-| NNRuntimeScene | `NevernessRuntime-Scene` | — | [Docs](NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | ECS-first Scene（System、层级、字段反射、二进制序列化） | **Phase 2–3 已落地** |
+| NNRuntimeScene | `NevernessRuntime-Scene` | — | [Docs](Legacy/NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | ECS-first Scene（System、层级、字段反射、二进制序列化） | **已移至 Legacy**（C# Friflo ECS 替代） |
 | NNNativeEngineAPI | `NevernessRuntime-NativeEngineAPI` | NNNativeEngineAPI | [Docs](NNNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Engine Service C ABI（仅头文件契约）；**layout v10** 含 **`NNVfsAPI`** 等 | ABI 稳定演进 |
 | NNRuntimeApplication | `NevernessRuntime-Application` | — | [Docs](NNRuntimeApplication/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 统一 SDL Application 宿主（`NNApplicationAPI` Runtime 实现） | **已落地** |
 | NNRuntimeNativeEngineAPIStub | `NevernessRuntime-NativeEngineAPIStub` | NNNativeEngineAPIStub | [Docs](NNRuntimeNativeEngineAPIStub/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Stub / Mock / GetDefaultTable | 已落地 |

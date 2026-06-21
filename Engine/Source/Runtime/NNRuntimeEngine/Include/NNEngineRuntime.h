@@ -3,9 +3,6 @@
 #include "AsyncSystem.h"
 #include "ObjectSubsystem.h"
 #include "RuntimeScheduler/RuntimeScheduler.h"
-#include "NNRuntimeSceneTickSubsystem.h"
-#include "Scene/NNRuntimeScene.h"
-#include "Scene/SceneSubsystem.h"
 #include "TimingSystem.h"
 
 namespace NN::Runtime::engine
@@ -17,6 +14,8 @@ namespace NN::Runtime::engine
  * - AssetRegistrySubsystem — 合并到 NNRuntimeAsset 模块（NNAssetRegistry）
  * - AssetSubsystem — 空壳 stub，已由 NNAssetManager 替代
  * - EntitySubsystem — ABI 骨架（getServiceAbiToken + getRuntimeTick），已删除
+ * - NNRuntimeScene / SceneSubsystem — 移至 Legacy（C# Friflo ECS 替代）
+ * - NNRuntimeSceneTickSubsystem — 随 NNRuntimeScene 一起移除
  */
 class NNEngineRuntime final
 {
@@ -29,14 +28,8 @@ public:
 
 	TimingSystem& Timing() noexcept { return timing_; }
 	AsyncSystem& Async() noexcept { return async_; }
-	SceneSubsystem& Scene() noexcept { return scene_; }
 	ObjectSubsystem& Object() noexcept { return object_; }
 	RuntimeScheduler& Scheduler() noexcept { return scheduler_; }
-
-	/** @brief Phase 2+ ECS 场景（NNEntity Handle + entt）；与 SceneSubsystem 并存。 */
-	Scene::NNRuntimeScene& EcsScene() noexcept { return ecsScene_; }
-
-	NNRuntimeSceneTickSubsystem& SceneTickSubsystem() noexcept { return sceneTick_; }
 
 	bool IsInitialized() const noexcept { return initialized_; }
 
@@ -46,10 +39,7 @@ private:
 	bool initialized_{false};
 	TimingSystem timing_{};
 	AsyncSystem async_{};
-	SceneSubsystem scene_{};
 	ObjectSubsystem object_{};
 	RuntimeScheduler scheduler_{};
-	Scene::NNRuntimeScene ecsScene_{};
-	NNRuntimeSceneTickSubsystem sceneTick_{&ecsScene_};
 };
 } // namespace NN::Runtime::engine

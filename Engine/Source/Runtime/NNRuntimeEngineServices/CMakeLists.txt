@@ -20,7 +20,6 @@ target_sources(NevernessRuntime-EngineServices
 		Private/Registry/NativeEngineRuntimeApiTable.cpp
 		Private/Timing/TimingRuntimeApi.cpp
 		Private/Async/AsyncWaitRuntimeApi.cpp
-		Private/Scene/SceneRuntimeApi.cpp
 		Private/RenderAsset/RenderAssetRuntimeApi.cpp
 		Private/ViewportRender/ViewportRenderRuntimeApi.cpp
 		Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp
@@ -33,7 +32,6 @@ target_include_directories(NevernessRuntime-EngineServices PUBLIC ${CMAKE_CURREN
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeEngine/Include)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeScene/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeAsset/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNAssetCooker/Include)
 target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeRenderAssets/Include)
@@ -63,7 +61,6 @@ target_link_libraries(NevernessRuntime-EngineServices PUBLIC
 	NevernessRuntime-RenderAssets
 	NevernessRuntime-Renderer2D
 	NevernessRuntime-RmlUI
-	NevernessRuntime-Scene
 	# ViewportSurface 需要 NNRuntimeDiligent（NNDiligentViewportSurface、SwapChain 创建）
 	NNRuntimeDiligent
 )

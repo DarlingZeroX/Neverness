@@ -32,7 +32,6 @@
 #include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"
-#include "NNRuntimeScene/Include/Components/NNRmlUIDocumentComponent.h"
 
 // Diligent（CopyTexture / ITextureView）
 #include "NNDiligentConfig.h"
@@ -634,10 +633,10 @@ namespace
                     {
                         const auto& entry = entries[d];
                         NN::Runtime::RmlUI::RmlDrawItem item;
-                        item.entity = static_cast<NN::Runtime::Scene::NNEntity>(entry.entityHandle);
+                        item.entity = static_cast<std::uint64_t>(entry.entityHandle);
                         item.assetPath = entry.assetPath;  // 直接用路径，不经过 IAssetResolver
                         item.sortOrder = entry.sortOrder;
-                        item.viewTarget = static_cast<NN::Runtime::Scene::NNRmlUIViewTarget>(entry.viewTarget);
+                        item.viewTarget = static_cast<NN::Runtime::RmlUI::NNRmlUIViewTarget>(entry.viewTarget);
                         item.viewportId = entry.viewportId;
                         rmlDrawItems.push_back(std::move(item));
                     }
@@ -705,7 +704,7 @@ namespace
                 {
                     rmlRenderer->RenderOverlayOnScene(
                         rmlDrawItems,
-                        NN::Runtime::Scene::NNRmlUIViewTarget::Scene,
+                        NN::Runtime::RmlUI::NNRmlUIViewTarget::Scene,
                         g_CommandsFBO->GetColorRTV(),
                         g_CommandsFBO->GetDepthDSV(),
                         width, height);

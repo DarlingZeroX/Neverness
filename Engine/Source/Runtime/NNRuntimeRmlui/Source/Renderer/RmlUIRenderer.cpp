@@ -4,6 +4,10 @@
  *
  * 替换原 GL3 后端，使用 RmlDiligentRenderInterface。
  * 保留 Runtime 的 SystemInterface_SDL 和 UIFileInterfaceVFS（VFS 支持）。
+ *
+ * 已移除：
+ * - NNRuntimeScene 依赖（移至 Legacy）
+ * - IAssetResolver 接口（简化为 IRmlUIAssetResolver）
  */
 
 #include "Renderer/RmlUIRenderer.h"
@@ -23,9 +27,6 @@
 #include "Rml/RmlUi_Platform_SDL.h"
 #include "Rml/Shell.h"
 #include "Rml/ShellFileInterface.h"
-
-// 资产解析
-#include "NNRuntimeScene/Include/Assets/IAssetResolver.h"
 
 // NNRuntimeRender 接口
 #include <Device/INNRenderDevice.h>
@@ -225,6 +226,8 @@ namespace NN::Runtime::Renderer
 			return;
 		}
 
+		using namespace NN::Runtime::RmlUI;
+
 		// 收集 active entity 集合
 		std::unordered_set<NNEntity> activeEntities;
 		for (const auto& item : drawList)
@@ -295,8 +298,10 @@ namespace NN::Runtime::Renderer
 	}
 
 	void RmlUIRenderer::Render(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
-		Scene::NNRmlUIViewTarget viewTarget)
+		NN::Runtime::RmlUI::NNRmlUIViewTarget viewTarget)
 	{
+		using namespace NN::Runtime::RmlUI;
+
 		if (!m_Initialized || !m_Context) return;
 
 		// 按 ViewTarget 控制文档可见性
@@ -306,7 +311,7 @@ namespace NN::Runtime::Renderer
 			if (it == m_Documents.end() || it->second.state != RmlDocState::Ready)
 				continue;
 
-			bool shouldShow = (item.viewTarget == Scene::NNRmlUIViewTarget::Both ||
+			bool shouldShow = (item.viewTarget == NNRmlUIViewTarget::Both ||
 			                   item.viewTarget == viewTarget);
 
 			if (shouldShow && !it->second.doc->IsVisible())
@@ -323,8 +328,10 @@ namespace NN::Runtime::Renderer
 
 	std::uint64_t RmlUIRenderer::RenderToTexture(
 		const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
-		Scene::NNRmlUIViewTarget viewTarget)
+		NN::Runtime::RmlUI::NNRmlUIViewTarget viewTarget)
 	{
+		using namespace NN::Runtime::RmlUI;
+
 		if (!m_Initialized || !m_Context || !m_RenderInterface)
 			return 0;
 
@@ -338,7 +345,7 @@ namespace NN::Runtime::Renderer
 			if (it == m_Documents.end() || it->second.state != RmlDocState::Ready)
 				continue;
 
-			bool shouldShow = (item.viewTarget == Scene::NNRmlUIViewTarget::Both ||
+			bool shouldShow = (item.viewTarget == NNRmlUIViewTarget::Both ||
 			                   item.viewTarget == viewTarget);
 
 			if (shouldShow && !it->second.doc->IsVisible())
@@ -375,10 +382,12 @@ namespace NN::Runtime::Renderer
 
 	void RmlUIRenderer::RenderOverlayOnScene(
 		const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
-		Scene::NNRmlUIViewTarget viewTarget,
+		NN::Runtime::RmlUI::NNRmlUIViewTarget viewTarget,
 		void* sceneRTV, void* sceneDSV,
 		std::uint32_t width, std::uint32_t height)
 	{
+		using namespace NN::Runtime::RmlUI;
+
 		if (!m_Initialized || !m_Context || !m_RenderInterface || !sceneRTV)
 			return;
 
@@ -389,7 +398,7 @@ namespace NN::Runtime::Renderer
 			if (it == m_Documents.end() || it->second.state != RmlDocState::Ready)
 				continue;
 
-			bool shouldShow = (item.viewTarget == Scene::NNRmlUIViewTarget::Both ||
+			bool shouldShow = (item.viewTarget == NNRmlUIViewTarget::Both ||
 			                   item.viewTarget == viewTarget);
 
 			if (shouldShow && !it->second.doc->IsVisible())
@@ -452,7 +461,7 @@ namespace NN::Runtime::Renderer
 		}
 	}
 
-	void RmlUIRenderer::SetAssetResolver(NN::Runtime::Scene::IAssetResolver* resolver)
+	void RmlUIRenderer::SetAssetResolver(NN::Runtime::RmlUI::IRmlUIAssetResolver* resolver)
 	{
 		m_AssetResolver = resolver;
 	}
@@ -531,7 +540,7 @@ namespace NN::Runtime::Renderer
 		return doc;
 	}
 
-	void RmlUIRenderer::UnloadDocument(NNEntity entity)
+	void RmlUIRenderer::UnloadDocument(NN::Runtime::RmlUI::NNEntity entity)
 	{
 		auto it = m_Documents.find(entity);
 		if (it != m_Documents.end() && it->second.doc)

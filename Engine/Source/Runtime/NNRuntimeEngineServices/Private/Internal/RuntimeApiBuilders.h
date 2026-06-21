@@ -7,9 +7,10 @@
 
 #include "NNNativeEngineAPI/Include/AssetCookerAPI.h"
 #include "NNNativeEngineAPI/Include/AsyncWaitAPI.h"
-#include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
+// 已移除：SceneAPI / EditorSceneAPI（NNRuntimeScene 移至 Legacy）
+// #include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "NNNativeEngineAPI/Include/ObjectAPI.h"
-#include "NNNativeEngineAPI/Include/SceneAPI.h"
+// #include "NNNativeEngineAPI/Include/SceneAPI.h"
 #include "NNNativeEngineAPI/Include/TimingAPI.h"
 #include "NNNativeEngineAPI/Include/RenderAssetAPI.h"
 #include "NNNativeEngineAPI/Include/ViewportRenderAPI.h"
@@ -22,8 +23,9 @@ extern "C" {
 
 void NNBuildTimingRuntimeApi(NNTimingAPI* api);
 void NNBuildAsyncWaitRuntimeApi(NNAsyncWaitAPI* api);
-void NNBuildSceneRuntimeApi(NNSceneAPI* api);
-void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api);
+// 已移除：NNBuildSceneRuntimeApi / NNBuildEditorSceneRuntimeApi（NNRuntimeScene 移至 Legacy）
+// void NNBuildSceneRuntimeApi(NNSceneAPI* api);
+// void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api);
 void NNBuildAssetCookerRuntimeApi(NNAssetCookerAPI* api);
 void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api);
 void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api);

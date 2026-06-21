@@ -179,7 +179,7 @@ NN_STATIC_ASSERT(offsetof(NNEditorFieldInfo, dataSize)   == 16, "dataSize offset
  * @brief 查询当前 hierarchyVersion（不拷贝数据，C# 每帧调用）。
  *
  * 这是最热路径的函数——每帧调用 1 次，纯整数返回。
- * Native 实现：返回 NNRuntimeScene::m_HierarchyVersion（atomic load）。
+ * Native 实现：返回 m_HierarchyVersion（atomic load）。
  */
 typedef uint64_t (NN_ENGINE_ABI_STDCALL* NNEditorGetHierarchyVersionFn)(
     NNSceneHandle scene);

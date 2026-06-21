@@ -12,6 +12,10 @@
  * - 处理输入事件
  *
  * 渲染后端：RmlDiligent（Diligent Engine）
+ *
+ * 已移除：
+ * - NNRuntimeScene 依赖（移至 Legacy）
+ * - IAssetResolver 接口（简化为直接路径加载）
  */
 
 #include "../../VGUIConfig.h"
@@ -19,10 +23,9 @@
 #include <unordered_map>
 #include <vector>
 
-// 包含 NNEntity 和 NNGuid 定义
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
-#include "NNRuntimeScene/Include/Scene/NNEntity.h"
-#include "NNRuntimeScene/Include/Components/NNRmlUIDocumentComponent.h"
+// 本地类型（替代 NNRuntimeScene 中的类型）
+#include "../System/RmlUITypes.h"
+#include "../System/RmlUIAssetResolver.h"
 
 // RmlUI 核心头文件
 #include <RmlUi/Core/Context.h>
@@ -39,9 +42,6 @@ namespace NN::Runtime::Render
     class INNRenderDevice;
     class INNRenderTarget;
 }
-
-// 前向声明 IAssetResolver
-namespace NN::Runtime::Scene { class IAssetResolver; }
 
 // 包含完整定义（NNEntityHash 需要完整定义用于 unordered_map）
 #include "../System/NNRmlUISystem.h"
@@ -98,24 +98,17 @@ namespace NN::Runtime::Renderer
 
 		/// @brief 纯渲染（Render 阶段调用）。
 		void Render(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
-		            NN::Runtime::Scene::NNRmlUIViewTarget viewTarget);
+		            NN::Runtime::RmlUI::NNRmlUIViewTarget viewTarget);
 
 		/// @brief 渲染到内部 RenderTarget 并返回纹理句柄。
 		/// 适用于 Editor 子渲染器场景（ImGui 帧内调用）。
 		/// @return RmlUI 渲染结果的纹理句柄（uint64_t，0 = 无内容或失败）。
 		std::uint64_t RenderToTexture(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
-		                              NN::Runtime::Scene::NNRmlUIViewTarget viewTarget);
+		                              NN::Runtime::RmlUI::NNRmlUIViewTarget viewTarget);
 
 		/// @brief 在已有 Scene RT 上叠加渲染 RmlUI（alpha 混合）。
-		/// 不创建中间纹理，直接在 Scene 渲染结果上叠加半透明 UI。
-		/// @param drawList RmlUI 绘制列表
-		/// @param viewTarget 视图目标过滤
-		/// @param sceneRTV Scene 渲染目标的颜色视图
-		/// @param sceneDSV Scene 渲染目标的深度模板视图
-		/// @param width 视口宽度
-		/// @param height 视口高度
 		void RenderOverlayOnScene(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList,
-		                          NN::Runtime::Scene::NNRmlUIViewTarget viewTarget,
+		                          NN::Runtime::RmlUI::NNRmlUIViewTarget viewTarget,
 		                          void* sceneRTV, void* sceneDSV,
 		                          std::uint32_t width, std::uint32_t height);
 
@@ -127,12 +120,12 @@ namespace NN::Runtime::Renderer
 		                  std::uint32_t keyCode, std::uint32_t keyMod);
 
 		/// @brief 设置资产路径解析器。
-		void SetAssetResolver(Scene::IAssetResolver* resolver);
+		void SetAssetResolver(NN::Runtime::RmlUI::IRmlUIAssetResolver* resolver);
 
 	private:
 		Rml::ElementDocument* LoadDocument(NNGuid assetGuid);
 		Rml::ElementDocument* LoadDocumentByPath(const std::string& assetPath);
-		void UnloadDocument(NN::Runtime::Scene::NNEntity entity);
+		void UnloadDocument(NN::Runtime::RmlUI::NNEntity entity);
 
 		// Diligent 后端
 		Render::INNRenderDevice* m_Device = nullptr;  // 观察指针
@@ -144,10 +137,10 @@ namespace NN::Runtime::Renderer
 		UIFileInterfaceVFS* m_FileInterface = nullptr;
 
 		Rml::Context* m_Context = nullptr;
-		Scene::IAssetResolver* m_AssetResolver = nullptr;
+		NN::Runtime::RmlUI::IRmlUIAssetResolver* m_AssetResolver = nullptr;
 
-		// NNEntity（带 generation）→ 文档运行时实例
-		std::unordered_map<NN::Runtime::Scene::NNEntity, RmlDocumentRuntime,
+		// NNEntity（uint64_t）→ 文档运行时实例
+		std::unordered_map<NN::Runtime::RmlUI::NNEntity, RmlDocumentRuntime,
 		                   NN::Runtime::RmlUI::NNEntityHash> m_Documents;
 
 		std::uint32_t m_ViewportWidth = 0;

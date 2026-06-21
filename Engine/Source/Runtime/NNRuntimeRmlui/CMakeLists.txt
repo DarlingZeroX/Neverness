@@ -61,7 +61,6 @@ target_link_libraries(NevernessRuntime-RmlUI PRIVATE
     NevernessRuntime-Lua
     NevernessRuntime-Core
     NevernessRuntime-VFS
-    NevernessRuntime-Scene
 )
 
 # ── Include 路径 ──

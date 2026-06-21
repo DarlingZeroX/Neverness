@@ -32,8 +32,8 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 
 	NNBuildTimingRuntimeApi(&outTable->timing);
 	NNBuildAsyncWaitRuntimeApi(&outTable->asyncWait);
-	//NNBuildSceneRuntimeApi(&outTable->scene);
-	NNBuildEditorSceneRuntimeApi(&outTable->editorScene);
+	//NNBuildSceneRuntimeApi(&outTable->scene);           // 已移除：SceneRuntimeApi 随 NNRuntimeScene 移至 Legacy
+	//NNBuildEditorSceneRuntimeApi(&outTable->editorScene); // 已移除：同上
 	NNBuildAssetCookerRuntimeApi(&outTable->assetCooker);
 	NNBuildApplicationRuntimeApi(&outTable->application);
 	NNBuildWindowRuntimeApi(&outTable->window);
@@ -43,9 +43,6 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildViewportRenderRuntimeApi(&outTable->viewportRender);
 	NNBuildViewportSurfaceRuntimeApi(&outTable->viewportSurface);
 	NNBuildDiligentRuntimeApi(&outTable->diligent);
-
-	/* 将 VFS 函数表注入 SceneSubsystem，供序列化/反序列化使用 */
-	NN::Runtime::engine::NNEngineRuntime::Instance().Scene().SetVfsApi(&outTable->vfs);
 
 	/* RenderAssetManager 延迟到设备创建后初始化（VGWindow::Initialize） */
 
