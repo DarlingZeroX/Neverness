@@ -152,7 +152,7 @@ namespace NN::Runtime::Renderer2D
         psDesc.SourceCode  = BuiltinShaders::SpriteFS;
         psDesc.EntryPoint  = "main";
         psDesc.DebugName   = "SpritePS";
-
+		//std::cout << BuiltinShaders::SpriteFS;
         auto vs = device->CreateShader(vsDesc);
         auto ps = device->CreateShader(psDesc);
         if (!vs || !ps)
@@ -167,8 +167,7 @@ namespace NN::Runtime::Renderer2D
 
         // ── 2. 创建 RenderPass ──
         RenderPassAttachmentDesc rtAttach{};
-        // 必须与 FBO 格式一致（RGBA8_SRGB），否则 RenderPass 和 Framebuffer 格式不匹配
-        rtAttach.Format          = TEX_FORMAT_RGBA8_UNORM_SRGB;
+        rtAttach.Format          = TEX_FORMAT_RGBA8_UNORM;
         rtAttach.LoadOp          = ATTACHMENT_LOAD_OP_CLEAR;
         rtAttach.StoreOp         = ATTACHMENT_STORE_OP_STORE;
         rtAttach.StencilLoadOp   = ATTACHMENT_LOAD_OP_DISCARD;
@@ -447,7 +446,7 @@ namespace NN::Runtime::Renderer2D
             clearValues[0].Color[1] = 0.0f;
             clearValues[0].Color[2] = 0.0f;
             clearValues[0].Color[3] = 0.0f;
-            clearValues[0].Format = TEX_FORMAT_RGBA8_UNORM_SRGB;
+            clearValues[0].Format = TEX_FORMAT_RGBA8_UNORM;
             clearValues[1].Color[0] = 1.0f;  // depth
             clearValues[1].Color[1] = 0.0f;
             clearValues[1].Color[2] = 0.0f;
@@ -492,7 +491,7 @@ namespace NN::Runtime::Renderer2D
                 mappedCB->Padding[0] = 0;
                 mappedCB->Padding[1] = 0;
             }
-
+	
             // ── 获取纹理 SRV ──
             ITextureView* texSRV = (cmd.TextureHandle == 0)
                 ? m_Impl->whiteSRV

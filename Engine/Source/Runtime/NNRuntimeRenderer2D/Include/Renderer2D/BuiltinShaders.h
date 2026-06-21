@@ -9,7 +9,7 @@
  */
 
 namespace NN::Runtime::Renderer2D::BuiltinShaders
-{
+{ 
     /// Sprite Vertex Shader（HLSL）
     inline constexpr const char* SpriteVS = R"(
 cbuffer SpriteConstants : register(b0)
@@ -73,10 +73,23 @@ struct PSInput
     float2 TexCoord : TEXCOORD0;
 };
 
+// 线性 → sRGB 转换（GPU 采样 SRGB 纹理时自动做了 sRGB→linear，这里转回去）
+float3 LinearToSRGB(float3 lin)
+{
+    // 精确 sRGB 曲线：低值线性段 + gamma 2.4 段
+    return float3(
+        lin.r <= 0.0031308 ? lin.r * 12.92 : 1.055 * pow(lin.r, 1.0 / 2.4) - 0.055,
+        lin.g <= 0.0031308 ? lin.g * 12.92 : 1.055 * pow(lin.g, 1.0 / 2.4) - 0.055,
+        lin.b <= 0.0031308 ? lin.b * 12.92 : 1.055 * pow(lin.b, 1.0 / 2.4) - 0.055);
+}
+
 float4 main(PSInput input) : SV_Target
 {
     float4 texColor = u_Texture.Sample(u_Texture_sampler, input.TexCoord);
-    return texColor * u_Color;
+    float4 result = texColor * u_Color;
+    // linear→sRGB：FBO 是 UNORM，需要手动转回 sRGB 空间，
+    // CopyTexture 到 SRGB SwapChain 时字节直接显示，不做转换。
+    return float4(LinearToSRGB(result.rgb), result.a);
 }
 )";
 }

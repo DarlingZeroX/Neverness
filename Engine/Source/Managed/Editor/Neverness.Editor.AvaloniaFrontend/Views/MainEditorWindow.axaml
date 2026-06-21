@@ -18,10 +18,13 @@
 
         <!-- 主内容区域 -->
         <DockPanel Grid.Row="1" Grid.Column="1">
-            <!-- 菜单栏 + 窗口控制按钮（命名为 TitleBar 支持拖动） -->
-            <Grid x:Name="TitleBar" DockPanel.Dock="Top" Height="32" ColumnDefinitions="Auto,*,Auto">
+            <!-- 菜单栏 + 窗口控制按钮 -->
+            <Grid DockPanel.Dock="Top" Height="32" ColumnDefinitions="Auto,*,Auto">
                 <!-- 左侧：菜单栏 -->
                 <Menu x:Name="MenuBar" Grid.Column="0"/>
+
+                <!-- 中间：拖动区域（覆盖菜单右侧空白区域） -->
+                <Border x:Name="TitleBar" Grid.Column="1" Background="Transparent"/>
 
                 <!-- 右侧：窗口控制按钮 -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">

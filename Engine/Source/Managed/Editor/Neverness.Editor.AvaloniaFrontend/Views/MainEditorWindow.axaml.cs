@@ -504,6 +504,15 @@ public partial class MainEditorWindow : Window
         // 关闭
         CloseButton.Click += (_, _) => Close();
 
+        // 拖动窗口（按下鼠标左键时开始拖动）
+        TitleBar.PointerPressed += (_, e) =>
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                BeginMoveDrag(e);
+            }
+        };
+
         // 双击标题栏最大化/还原
         TitleBar.DoubleTapped += (_, _) =>
         {
