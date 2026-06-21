@@ -14,13 +14,9 @@
 #include "ApplicationAPI.h"
 #include "WindowAPI.h"
 #include "AsyncWaitAPI.h"
-#include "EditorSceneAPI.h"
 #include "AudioAPI.h"
 #include "InputAPI.h"
 #include "RenderAPI.h"
-#include "SceneAPI.h"
-#include "TimingAPI.h"
-#include "UIAPI.h"
 #include "VfsAPI.h"
 #include "EventAPI.h"
 #include "RenderAssetAPI.h"
@@ -32,8 +28,8 @@
 extern "C" {
 #endif
 
-/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v30：移除 AssetCookerAPI（已迁移至 C#）。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 30u
+/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v32：移除 EditorSceneAPI（已迁移至 C# Friflo ECS）。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 32u
 
 typedef struct NNNativeEngineAPI
 {
@@ -43,9 +39,7 @@ typedef struct NNNativeEngineAPI
 	NNAudioAPI audio;
 	NNInputAPI input;
 	//NNSceneAPI scene;
-	/** @brief Editor 专用场景查询子表（独立 ABI，layoutVersion = 2）。见 EditorSceneAPI.h。 */
-	NNEditorSceneAPI editorScene;
-	NNTimingAPI timing;
+	//NNEditorSceneAPI editorScene; — 已移除：迁移至 C# Friflo ECS
 	NNAsyncWaitAPI asyncWait;
 	/** @brief Runtime Host 生命周期（SDL 子系统、事件泵、帧边界）；见 `ApplicationAPI.h`。 */
 	NNApplicationAPI application;

@@ -125,151 +125,6 @@ public unsafe struct NNInputApi
 }
 
 
-// ── Editor Scene Snapshot 类型（与 EditorSceneAPI.h 对齐）──────────────────
-
-/// <summary>
-/// 快照头部——位于 buffer 开头，描述后续 Node 数组和名字池的布局。32 字节。
-/// 与 Native <c>NNSceneSnapshotHeader</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNSceneSnapshotHeader
-{
-	public uint  Magic;            // 0x56475343
-	public uint  LayoutVersion;    // = 1
-	public ulong HierarchyVersion;
-	public uint  NodeCount;
-	public uint  NamePoolBytes;
-	public uint  RootCount;
-	public uint  Pad;
-}
-
-/// <summary>
-/// 场景层级节点快照——单个 Entity 的 Hierarchy 信息。40 字节。
-/// 名字通过 NameOffset + NameLen 引用 Header 之后的 namePool。
-/// 与 Native <c>NNSceneNodeSnapshot</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNSceneNodeSnapshot
-{
-	public ulong Entity;
-	public ulong Parent;
-	public uint  Depth;
-	public uint  ChildCount;
-	public uint  NameOffset;
-	public uint  NameLen;
-	public uint  Flags;
-	public uint  Pad;
-}
-
-/// <summary>
-/// 脏节点条目——增量快照使用。16 字节。
-/// 与 Native <c>NNDirtyNodeEntry</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNDirtyNodeEntry
-{
-	public ulong Entity;
-	public uint  ChangeFlags;
-	public uint  Pad;
-}
-
-/// <summary>
-/// Transform 快照数据——批量读取 Transform 组件。48 字节。
-/// 与 Native <c>NNEditorTransformData</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNEditorTransformData
-{
-	public ulong Entity;
-	public float PosX, PosY, PosZ;
-	public float RotX, RotY, RotZ, RotW;
-	public float SclX, SclY, SclZ;
-}
-
-/// <summary>ChangeFlags 常量（与 Native <c>NN_DIRTY_*</c> 宏对齐）。</summary>
-public static class SnapshotChangeFlags
-{
-	public const uint NameChanged     = 1u << 0;
-	public const uint ParentChanged   = 1u << 1;
-	public const uint ChildrenChanged = 1u << 2;
-	public const uint ActiveChanged   = 1u << 3;
-	public const uint FlagsChanged    = 1u << 4;
-}
-
-/// <summary>
-/// 组件类型信息——描述单个组件类型的元数据。24 字节。
-/// 与 Native <c>NNEditorComponentInfo</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
-/// nameOffset + nameLen 引用快照内嵌的 namePool。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNEditorComponentInfo
-{
-	public ulong TypeId;       ///< FNV-1a name hash，与 componentTypeId 一致
-	public uint NameOffset;    ///< 在 namePool 中的字节偏移
-	public uint NameLen;       ///< 名字字节长度（不含 NUL）
-	public uint FieldCount;    ///< 该组件类型的字段数量
-	public uint Flags;         ///< 保留
-}
-
-/// <summary>
-/// 组件字段信息——描述单个字段的反射元数据。24 字节。
-/// 与 Native <c>NNEditorFieldInfo</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public struct NNEditorFieldInfo
-{
-	public uint NameOffset;    ///< 在 namePool 中的字节偏移
-	public uint NameLen;       ///< 名字字节长度（不含 NUL）
-	public uint FieldType;     ///< NNComponentFieldType 枚举值
-	public uint DataOffset;    ///< 字段在组件原始数据中的字节偏移
-	public uint DataSize;      ///< 字段占用字节数
-	public uint Pad;           ///< 对齐填充
-}
-
-/// <summary>
-/// Editor 专用场景查询函数表——独立于 <see cref="NNSceneApi"/>，layoutVersion = 3。
-/// 与 Native <c>NNEditorSceneAPI</c>（<c>EditorSceneAPI.h</c>）逐字段对齐。
-/// v1: hierarchy + transform 快照
-/// v2: 增量快照
-/// v3: Runtime Reflection API
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNEditorSceneApi
-{
-	public uint LayoutVersion;  // = 3
-
-	// ── Phase 1：Hierarchy / Transform 快照 ──
-	public delegate* unmanaged<ulong, ulong> GetHierarchyVersion;
-	public delegate* unmanaged<ulong, uint> GetSnapshotSize;
-	public delegate* unmanaged<ulong, void*, uint, uint> GetHierarchySnapshot;
-
-	public delegate* unmanaged<ulong, ulong> GetTransformVersion;
-	public delegate* unmanaged<ulong, ulong*, uint, NNEditorTransformData*, uint> GetTransformSnapshot;
-
-	// ── Phase 2：增量快照（layoutVersion = 2 追加）──
-	public delegate* unmanaged<ulong, void*, uint, uint> GetIncrementalSnapshot;
-
-	// ── Phase 3：Runtime Reflection（layoutVersion = 3 追加）──
-	public delegate* unmanaged<ulong, ulong> GetReflectionVersion;
-	public delegate* unmanaged<ulong, uint> GetTypeInfoSnapshotSize;
-	public delegate* unmanaged<ulong, void*, uint, uint> GetTypeInfoSnapshot;
-	public delegate* unmanaged<ulong, ulong, uint> GetEntityComponentCount;
-	public delegate* unmanaged<ulong, ulong, NNEditorComponentInfo*, uint, uint> GetEntityComponents;
-	public delegate* unmanaged<ulong, ulong, NNEditorFieldInfo*, uint, uint> GetComponentFieldInfos;
-	public delegate* unmanaged<ulong, ulong, ulong, void*, uint, uint> GetComponentRawData;
-}
-
-/// <summary>
-/// 與 Native <c>NNTimingAPI</c> 對齊。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNTimingApi
-{
-	public delegate* unmanaged<float> GetDeltaTime;
-	public delegate* unmanaged<float> GetTotalTime;
-	public delegate* unmanaged<ulong> GetFrameIndex;
-}
-
 /// <summary>
 /// 與 Native <c>NNAsyncWaitAPI</c> 對齊。
 /// </summary>
@@ -523,7 +378,7 @@ public unsafe struct NNDiligentApi
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v28**：新增 <c>NNDiligentAPI</c> 子表。
+/// **layout v32**：移除 EditorSceneAPI（已迁移至 C# Friflo ECS）。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -533,9 +388,6 @@ public unsafe struct NNNativeEngineApi
 	public NNRenderApi Render;
 	public NNAudioApi Audio;
 	public NNInputApi Input;
-	/// <summary>對應 C 聚合體成員 <c>editorScene</c>（型別 <c>NNEditorSceneAPI</c>）；Editor 快照查詢。</summary>
-	public NNEditorSceneApi EditorScene;
-	public NNTimingApi Timing;
 	public NNAsyncWaitApi AsyncWait;
 	/// <summary>對應 C 聚合體成員 <c>application</c>（型別 <c>NNApplicationAPI</c>）。</summary>
 	public NNApplicationApi Application;

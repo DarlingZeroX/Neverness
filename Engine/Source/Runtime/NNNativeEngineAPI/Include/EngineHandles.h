@@ -28,5 +28,41 @@ typedef std::uint64_t NNAsyncWaitHandle;
 typedef std::uint64_t NNEntityHandle;
 /** @brief NNEntity 全局别名——与 NNEntityHandle 为同一类型，收口实体句柄定义。 */
 using NNEntity = NNEntityHandle;
+/** @brief 不透明场景 ID，0 = Invalid（原 SceneAPI.h，现收口至 EngineHandles）。 */
+typedef std::uint64_t NNSceneHandle;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** @brief 场景操作结果码（原 SceneAPI.h，现收口至 EngineHandles）。 */
+typedef enum NNSceneResult
+{
+	NN_SCENE_OK               = 0, ///< 成功
+	NN_SCENE_ERR_NOT_FOUND    = 1, ///< 实体 / 场景未找到
+	NN_SCENE_ERR_INVALID      = 2, ///< 句柄无效（0 或世代不匹配）
+	NN_SCENE_ERR_BUFFER_SMALL = 3, ///< 输出缓冲区容量不足
+	NN_SCENE_ERR_IO           = 4, ///< 序列化 / 反序列化 I/O 错误
+} NNSceneResult;
+
+/** @brief 资产加载优先级（原 AssetManagerAPI.h，现收口至 EngineHandles）。 */
+typedef enum NNLoadPriority
+{
+	NN_LOAD_PRIORITY_CRITICAL   = 0,  ///< 立即需要（UI 纹理等）
+	NN_LOAD_PRIORITY_HIGH       = 1,  ///< 相机附近资源
+	NN_LOAD_PRIORITY_NORMAL     = 2,  ///< 默认
+	NN_LOAD_PRIORITY_LOW        = 3,  ///< 后台预载
+	NN_LOAD_PRIORITY_BACKGROUND = 4   ///< 最低优先级
+} NNLoadPriority;
+
+/** @brief 资产加载完成回调（原 AssetManagerAPI.h，现收口至 EngineHandles）。 */
+typedef void(NN_ENGINE_ABI_STDCALL* NNAssetLoadCompletedCallback)(
+	NNAssetHandle handle,
+	int result,
+	void* userData);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 /** @brief 託管 VGObject 與 Native 子系統對應之不透明控制代碼。 */
 typedef std::uint64_t NNObjectHandle;

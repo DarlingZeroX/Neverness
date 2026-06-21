@@ -8,11 +8,8 @@
 #include "ApplicationAPI.h"
 #include "AsyncWaitAPI.h"
 #include "AudioAPI.h"
-#include "EditorSceneAPI.h"
 #include "InputAPI.h"
 #include "RenderAPI.h"
-#include "SceneAPI.h"
-#include "TimingAPI.h"
 #include "VfsAPI.h"
 #include "WindowAPI.h"
 #include "EventAPI.h"
@@ -27,9 +24,6 @@ void NNBuildApplicationApiStubs(NNApplicationAPI* api);
 void NNBuildRenderApiStubs(NNRenderAPI* api);
 void NNBuildAudioApiStubs(NNAudioAPI* api);
 void NNBuildInputApiStubs(NNInputAPI* api);
-void NNBuildSceneApiStubs(NNSceneAPI* api);
-void NNBuildEditorSceneApiStubs(NNEditorSceneAPI* api);
-void NNBuildTimingApiStubs(NNTimingAPI* api);
 void NNBuildAsyncWaitApiStubs(NNAsyncWaitAPI* api);
 void NNBuildWindowApiStubs(NNWindowAPI* api);
 void NNBuildVfsApiStubs(NNVfsAPI* api);

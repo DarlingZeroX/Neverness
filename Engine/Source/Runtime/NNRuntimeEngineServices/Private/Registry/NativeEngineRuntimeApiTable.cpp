@@ -29,7 +29,6 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	outTable->layoutVersion = NN_NATIVE_ENGINE_API_LAYOUT_VERSION;
 	outTable->reserved0 = 0;
 
-	NNBuildTimingRuntimeApi(&outTable->timing);
 	NNBuildAsyncWaitRuntimeApi(&outTable->asyncWait);
 	//NNBuildSceneRuntimeApi(&outTable->scene);           // 已移除：SceneRuntimeApi 随 NNRuntimeScene 移至 Legacy
 	//NNBuildEditorSceneRuntimeApi(&outTable->editorScene); // 已移除：同上

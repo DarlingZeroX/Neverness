@@ -44,8 +44,6 @@ target_sources(NevernessRuntime-Scene
 		Include/Runtime/NNDirtyTracker.h
 		Include/Serialization/NNSceneSerializer.h
 		Include/Serialization/NNJsonSceneSerializer.h
-		Include/Snapshot/NNHierarchySnapshotBuilder.h
-		Include/Snapshot/NNReflectionSnapshotBuilder.h
 		Include/Prefab/NNPrefab.h
 		Include/Scene/NNSceneAssetLoader.h
 		Include/Scene/NNStreamingZone.h
@@ -65,8 +63,6 @@ target_sources(NevernessRuntime-Scene
 		Source/Runtime/NNDirtyTracker.cpp
 		Source/Serialization/NNSceneSerializer.cpp
 		Source/Serialization/NNJsonSceneSerializer.cpp
-		Source/Snapshot/NNHierarchySnapshotBuilder.cpp
-		Source/Snapshot/NNReflectionSnapshotBuilder.cpp
 		Source/Prefab/NNPrefab.cpp
 )
 

@@ -1,7 +1,7 @@
 namespace Neverness.Editor.Scene.Private.Cache;
 
 /// <summary>
-/// 层级缓存节点——从 NNSceneNodeSnapshot 解析而来。
+/// 层级缓存节点——从 IScene 查询构建。
 /// 仅在 SceneHierarchyCache 内部使用，不对外暴露 Native 结构体。
 /// </summary>
 public sealed class HierarchyNode

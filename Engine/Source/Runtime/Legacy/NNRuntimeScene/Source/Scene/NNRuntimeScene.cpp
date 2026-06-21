@@ -6,7 +6,6 @@
 #include "Scene/NNRuntimeScene.h"
 
 #include "Components/NNScriptComponent.h"
-#include "NNNativeEngineAPI/Include/EditorSceneAPI.h"
 #include "Runtime/NNSceneEventBus.h"
 
 namespace NN::Runtime::Scene

@@ -18,7 +18,6 @@ add_library(NevernessRuntime-EngineServices STATIC)
 target_sources(NevernessRuntime-EngineServices
 	PRIVATE
 		Private/Registry/NativeEngineRuntimeApiTable.cpp
-		Private/Timing/TimingRuntimeApi.cpp
 		Private/Async/AsyncWaitRuntimeApi.cpp
 		Private/ViewportRender/ViewportRenderRuntimeApi.cpp
 		Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp
