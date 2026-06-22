@@ -11,6 +11,9 @@ using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 
+// 类型别名（与 SceneModule 保持一致）
+using EditorPlayMode = Neverness.Editor.Core.Public.PlayMode;
+
 // 窗口边缘方向枚举（用于 resize 拖拽）
 using WindowEdge = Avalonia.Controls.WindowEdge;
 
@@ -25,6 +28,10 @@ namespace Neverness.Editor.AvaloniaFrontend.Views;
 public partial class MainEditorWindow : Window
 {
     private readonly EditorDockFactory _dockFactory;
+
+    // Play/Stop 按钮引用（用于动态切换）
+    private Border? _playButton;
+    private TextBlock? _playIcon;
 
     public MainEditorWindow()
     {
@@ -230,10 +237,13 @@ public partial class MainEditorWindow : Window
                 };
             }
 
-            // 绑定命令
-            if (item.Command != null)
+            // 绑定命令（优先 Command 对象，其次 CommandId 查找）
+            var resolvedCommand = item.Command
+                ?? (string.IsNullOrEmpty(item.CommandId) ? null : EditorMenuRegistry.FindCommand(item.CommandId));
+
+            if (resolvedCommand != null)
             {
-                var command = item.Command;
+                var command = resolvedCommand;
                 menuItem.Click += (_, _) =>
                 {
                     try
@@ -456,12 +466,86 @@ public partial class MainEditorWindow : Window
             Spacing = 0,
             HorizontalAlignment = HorizontalAlignment.Center,
         };
-        AddToolButtonTo(centerPanel, "▶", "Play", () => ExecuteCommand("scene.play"));
+
+        // Play/Stop 切换按钮（同一个位置）
+        _playButton = CreatePlayStopButton();
+        centerPanel.Children.Add(_playButton);
+
+        // Pause 按钮
         AddToolButtonTo(centerPanel, "⏸", "Pause", () => ExecuteCommand("scene.pause"));
-        AddToolButtonTo(centerPanel, "⏹", "Stop", () => ExecuteCommand("scene.stop"));
 
         ToolbarPanel.Children.Add(leftPanel);
         ToolbarPanel.Children.Add(centerPanel);
+    }
+
+    /// <summary>创建 Play/Stop 切换按钮。</summary>
+    private Border CreatePlayStopButton()
+    {
+        _playIcon = new TextBlock
+        {
+            Text = "▶",
+            FontSize = 20,
+            Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC")),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        var border = new Border
+        {
+            Width = 40,
+            Height = 40,
+            Background = Brushes.Transparent,
+            Margin = new Thickness(0),
+            Padding = new Thickness(0),
+            Child = _playIcon,
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+
+        ToolTip.SetTip(border, "Play");
+        border.PointerPressed += (_, _) =>
+        {
+            // 根据当前状态决定执行 Play 还是 Stop
+            var playMode = GetCurrentPlayMode();
+            if (playMode == EditorPlayMode.Editing)
+            {
+                ExecuteCommand("scene.play");
+            }
+            else
+            {
+                ExecuteCommand("scene.stop");
+            }
+        };
+        border.PointerEntered += (_, _) => border.Background = new SolidColorBrush(Color.Parse("#FF3C3C3C"));
+        border.PointerExited += (_, _) => border.Background = Brushes.Transparent;
+
+        return border;
+    }
+
+    /// <summary>获取当前 PlayMode 状态。</summary>
+    private EditorPlayMode GetCurrentPlayMode()
+    {
+        // 通过 SceneModule 获取当前 PlayMode
+        return Neverness.Editor.Scene.Public.SceneModule.CurrentPlayMode;
+    }
+
+    /// <summary>更新 Play/Stop 按钮状态（由 AvaloniaFrontendModule 调用）。</summary>
+    public void UpdatePlayStopButton(EditorPlayMode mode)
+    {
+        if (_playIcon == null || _playButton == null)
+            return;
+
+        if (mode == EditorPlayMode.Editing)
+        {
+            // 编辑模式：显示 Play 按钮
+            _playIcon.Text = "▶";
+            ToolTip.SetTip(_playButton, "Play");
+        }
+        else
+        {
+            // 播放/暂停模式：显示 Stop 按钮
+            _playIcon.Text = "⏹";
+            ToolTip.SetTip(_playButton, "Stop");
+        }
     }
 
     private void InitializeStatusBar()

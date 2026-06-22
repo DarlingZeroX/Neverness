@@ -247,7 +247,8 @@ public static class ScriptEditorModule
             factory,
             scheduler.Registry,
             _gameplayContext.ScriptRegistry,
-            scheduler);
+            scheduler,
+            () => Neverness.Editor.Scene.Public.SceneModule.GetActiveWorld());
         world.Systems.Register(_bridge);
         Console.WriteLine("[ScriptEditorModule] ScriptBehaviourBridge registered");
 

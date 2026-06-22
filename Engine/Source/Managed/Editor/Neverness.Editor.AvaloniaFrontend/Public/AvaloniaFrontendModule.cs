@@ -93,6 +93,9 @@ public static class AvaloniaFrontendModule
         // 注册 Avalonia 特定的 AssetOpener（延迟加载，AssetsModule 已经完成 Discover）
         RegisterAssetOpeners();
 
+        // 注册偏好设置菜单命令（IPreferencesService 已在 EditorApplicationRunner 中注册）
+        RegisterPreferencesCommand();
+
         // 创建 View 工厂
         _viewFactory = new AvaloniaViewFactory();
 
@@ -138,12 +141,28 @@ public static class AvaloniaFrontendModule
             if (context.TryGetService<IEditorEventBus>(out var eventBus))
             {
                 eventBus.Subscribe(EditorEventType.ShowToast, OnShowToast);
-                Console.WriteLine("[AvaloniaFrontendModule] 已订阅 ShowToast 事件");
+                eventBus.Subscribe(EditorEventType.PlayModeChanged, OnPlayModeChanged);
+                Console.WriteLine("[AvaloniaFrontendModule] 已订阅 ShowToast 和 PlayModeChanged 事件");
             }
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"[AvaloniaFrontendModule] 订阅事件失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>处理 PlayModeChanged 事件。</summary>
+    private static void OnPlayModeChanged(EditorEvent evt)
+    {
+        if (evt.Payload is not Neverness.Editor.Scene.Private.PlayMode.PlayModeChangedEvent playModeEvent)
+            return;
+
+        Console.WriteLine($"[AvaloniaFrontendModule] PlayModeChanged: {playModeEvent.OldMode} -> {playModeEvent.NewMode}");
+
+        // 通知 MainEditorWindow 更新按钮状态
+        if (MainWindow != null)
+        {
+            Dispatcher.UIThread.Post(() => MainWindow.UpdatePlayStopButton(playModeEvent.NewMode));
         }
     }
 
@@ -182,6 +201,50 @@ public static class AvaloniaFrontendModule
         {
             openerRegistry.Register(new AssetOpening.TextureAssetOpener(editorManager));
         }
+    }
+
+    /// <summary>注册偏好设置菜单命令（BuiltinMenuContributor 通过 CommandId 引用此命令）。</summary>
+    private static void RegisterPreferencesCommand()
+    {
+        var preferencesCmd = new EditorCommand
+        {
+            Id = "editor.preferences",
+            DisplayName = "Preferences",
+            Execute = _ => OpenPreferencesWindow(),
+            Tooltip = "打开偏好设置"
+        };
+
+        CoreModuleImp.Context.Menus.RegisterCommand(preferencesCmd);
+        Console.WriteLine("[AvaloniaFrontendModule] 偏好设置菜单命令已注册 (Id=editor.preferences)");
+    }
+
+    /// <summary>打开偏好设置窗口。</summary>
+    private static void OpenPreferencesWindow()
+    {
+        if (!CoreModuleImp.Context.TryGetService<IPreferencesService>(out var preferencesService))
+        {
+            Console.WriteLine("[AvaloniaFrontendModule] 偏好设置服务未初始化");
+            return;
+        }
+
+        if (MainWindow == null)
+        {
+            Console.WriteLine("[AvaloniaFrontendModule] 主窗口未就绪");
+            return;
+        }
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            try
+            {
+                var window = new PreferencesWindow(preferencesService);
+                window.ShowDialog(MainWindow);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AvaloniaFrontendModule] 打开偏好设置窗口失败: {ex.Message}");
+            }
+        });
     }
 
     /// <summary>

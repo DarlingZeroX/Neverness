@@ -73,6 +73,9 @@ public sealed class ScriptBehaviourScheduler : ISceneSystem
     public string Name => "ScriptBehaviourScheduler";
 
     /// <inheritdoc/>
+    public SceneSystemTags Tags => SceneSystemTags.Gameplay;
+
+    /// <inheritdoc/>
     public bool IsInitialized => _isInitialized;
 
     // ========================================================================

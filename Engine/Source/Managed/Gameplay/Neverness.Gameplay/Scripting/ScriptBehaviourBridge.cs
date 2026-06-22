@@ -36,6 +36,7 @@ public sealed class ScriptBehaviourBridge : ISceneSystem
     private readonly BehaviourRegistry _registry;
     private readonly ScriptRegistry _scriptRegistry;
     private readonly ScriptBehaviourScheduler _scheduler;
+    private readonly Func<SceneWorld?> _getWorld; // 获取 SceneWorld 的回调
     private IScene? _scene;
     private bool _isInitialized;
 
@@ -51,12 +52,14 @@ public sealed class ScriptBehaviourBridge : ISceneSystem
         IScriptFactory factory,
         BehaviourRegistry registry,
         ScriptRegistry scriptRegistry,
-        ScriptBehaviourScheduler scheduler)
+        ScriptBehaviourScheduler scheduler,
+        Func<SceneWorld?> getWorld)
     {
         _factory = factory;
         _registry = registry;
         _scriptRegistry = scriptRegistry;
         _scheduler = scheduler;
+        _getWorld = getWorld;
     }
 
     // ========================================================================
@@ -65,6 +68,9 @@ public sealed class ScriptBehaviourBridge : ISceneSystem
 
     /// <inheritdoc/>
     public string Name => "ScriptBehaviourBridge";
+
+    /// <inheritdoc/>
+    public SceneSystemTags Tags => SceneSystemTags.Gameplay;
 
     /// <inheritdoc/>
     public bool IsInitialized => _isInitialized;
@@ -79,7 +85,9 @@ public sealed class ScriptBehaviourBridge : ISceneSystem
     /// <inheritdoc/>
     public void Update(float deltaTime)
     {
-        if (_scene is SceneWorld world)
+        // 通过回调获取 SceneWorld
+        var world = _getWorld();
+        if (world != null && world.IsValid)
         {
             Sync(world);
         }
@@ -142,7 +150,7 @@ public sealed class ScriptBehaviourBridge : ISceneSystem
                 if (behaviour != null)
                 {
                     behaviour.Entity = gameEntity;
-                    behaviour.Enabled = script.IsInitialized;
+                    behaviour.Enabled = true; // 创建时默认启用
                     _scheduler.Register(gameEntity, behaviour);
                 }
             }
@@ -154,15 +162,13 @@ public sealed class ScriptBehaviourBridge : ISceneSystem
                 if (behaviour != null)
                 {
                     behaviour.Entity = gameEntity;
-                    behaviour.Enabled = script.IsInitialized;
+                    behaviour.Enabled = true; // 创建时默认启用
                     _scheduler.Register(gameEntity, behaviour);
                 }
             }
-            else
-            {
-                // 同步 Enabled
-                existing.Enabled = script.IsInitialized;
-            }
+            // 注意: 不再从 script.IsInitialized 同步 Enabled
+            // IsInitialized 是 [Transient] 字段，反序列化后永远是 false
+            // 如果需要禁用脚本，应该使用独立的 IsDisabled 字段
         });
 
         // 检测 ScriptComponent 被删除的 Entity（上一帧有，这一帧没有）

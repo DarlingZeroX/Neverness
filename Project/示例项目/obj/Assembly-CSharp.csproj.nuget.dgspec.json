@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj": {}
+    "G:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj": {}
   },
   "projects": {
-    "E:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj": {
+    "G:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj",
+        "projectUniqueName": "G:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj",
         "projectName": "Assembly-CSharp",
-        "projectPath": "E:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj",
+        "projectPath": "G:\\Neverness\\Project\\示例项目\\Assembly-CSharp.csproj",
         "packagesPath": "C:\\Users\\30749\\.nuget\\packages\\",
-        "outputPath": "E:\\Neverness\\Project\\示例项目\\obj\\",
+        "outputPath": "G:\\Neverness\\Project\\示例项目\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30749\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -63,7 +63,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

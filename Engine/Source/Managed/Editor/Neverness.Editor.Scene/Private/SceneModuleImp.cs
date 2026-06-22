@@ -251,6 +251,12 @@ internal static class SceneModuleImp
             0x51387BA3968C343B, "SpriteRenderer", order: 20));
         ComponentInspectorRegistry.Register(new GenericComponentInspector<RmlUIDocumentComponent>(
             0x1593AE057DEB826B, "RmlUI Document", order: 70));
+        ComponentInspectorRegistry.Register(new GenericComponentInspector<AudioSourceComponent>(
+            0x917CF03FFE5623A4, "AudioSource", order: 30));
+        ComponentInspectorRegistry.Register(new GenericComponentInspector<VideoPlayerComponent>(
+            0x6427180C8ECE43E1, "VideoPlayer", order: 40));
+        ComponentInspectorRegistry.Register(new GenericComponentInspector<ScriptComponent>(
+            0x9565553D163FC92A, "Script", order: 50));
 
         Console.WriteLine($"[SceneModule] 已注册 {ComponentInspectorRegistry.Inspectors.Count} 个通用组件检查器");
     }

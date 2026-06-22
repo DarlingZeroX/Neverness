@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Neverness.Editor.AvaloniaFrontend.Views.PreferencesWindow"
+        Title="偏好设置"
+        Width="450"
+        Height="200"
+        MinWidth="400"
+        MinHeight="180"
+        WindowStartupLocation="CenterOwner"
+        Background="#FF2D2D30"
+        Foreground="#FFCCCCCC">
+
+    <DockPanel Margin="16">
+        <!-- 标题 -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="IDE 设置"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Margin="0,0,0,16"/>
+
+        <!-- IDE 选择区域 -->
+        <StackPanel Orientation="Vertical" Spacing="8">
+            <TextBlock Text="首选 IDE：" VerticalAlignment="Center"/>
+            <ComboBox x:Name="IDEComboBox" Width="200" HorizontalAlignment="Left"/>
+        </StackPanel>
+
+        <!-- 按钮区域 -->
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0,16,0,0">
+            <Button x:Name="SaveButton"
+                    Content="保存"
+                    Width="80"
+                    HorizontalAlignment="Right"/>
+            <Button x:Name="CancelButton"
+                    Content="取消"
+                    Width="80"
+                    HorizontalAlignment="Right"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

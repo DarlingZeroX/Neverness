@@ -11,18 +11,8 @@ add_subdirectory ("Rendering")   # 必须先于 Runtime（提供 NNRuntimeRender
 add_subdirectory ("Runtime")
 add_subdirectory ("Bridge")
 
-############ Legacy 兼容层（预设不编译）
-# Phase 5：Legacy Galgame 產品線（預設不編譯）
-option(NEVERNESS_BUILD_LEGACY_GALGAME "Build Legacy Galgame stack (Frozen / Compatibility Only)" OFF)
-if(NEVERNESS_BUILD_LEGACY_GALGAME)
-	add_subdirectory("Legacy")
-endif()
-
 ############ 模块
 add_subdirectory ("Editor")
-#add_subdirectory ("Application")
-
-
 
 ########## 自动加载 Plugins 目录下所有子项目
 file(GLOB PLUGINS_DIRS RELATIVE ${CMAKE_SOURCE_DIR}/Plugins ${CMAKE_SOURCE_DIR}/Plugins/*)
@@ -31,8 +21,6 @@ foreach(child ${PLUGINS_DIRS})
         add_subdirectory(${CMAKE_SOURCE_DIR}/Plugins/${child})
     endif()
 endforeach()
-
-add_subdirectory ("Host")
 
 ############ Rendering（渲染模块，在 Runtime 之前编译）
 # Rendering 提供 NNRuntimeRender/NNRuntimeDiligent/RmlDiligent 等静态库

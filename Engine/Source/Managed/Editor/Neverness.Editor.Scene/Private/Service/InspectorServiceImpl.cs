@@ -1,3 +1,4 @@
+using System.Reflection;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.Public.Inspector;
 using Neverness.Runtime.Scene;
@@ -50,12 +51,31 @@ public sealed class InspectorServiceImpl : IInspectorService
         return inspector?.HasComponent(entity) ?? false;
     }
 
-    /// <summary>添加组件到实体。</summary>
+    /// <summary>添加组件到实体——通过 Inspector.ClrType 反射调用 IEntity.Add&lt;T&gt;。
+    /// 优先使用组件的静态 Default 属性（含合理初始值），无则 fallback 到零值。</summary>
     public bool AddComponent(IEntity entity, ulong componentTypeId)
     {
-        // TODO: 通过 ComponentRegistry 创建组件实例并添加
-        Console.WriteLine($"[InspectorService] AddComponent 待实现: 0x{componentTypeId:X16}");
-        return false;
+        var inspector = ComponentInspectorRegistry.GetInspector(componentTypeId);
+        if (inspector == null)
+        {
+            Console.WriteLine($"[InspectorService] 未找到 TypeId=0x{componentTypeId:X16} 的 Inspector");
+            return false;
+        }
+
+        var clrType = inspector.ClrType;
+        if (clrType == null) return false;
+
+        // 优先取静态 Default 属性（AudioSource.Default、VideoPlayer.Default 等含非零初始值）
+        var defaultProp = clrType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
+        var component = defaultProp?.GetValue(null) ?? Activator.CreateInstance(clrType);
+        if (component == null) return false;
+
+        // 反射调用 IEntity.Add<T>(T component)
+        var addMethod = typeof(IEntity).GetMethod(nameof(IEntity.Add))?.MakeGenericMethod(clrType);
+        if (addMethod == null) return false;
+
+        addMethod.Invoke(entity, [component]);
+        return true;
     }
 
     /// <summary>从实体移除组件。</summary>

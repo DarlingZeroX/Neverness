@@ -38,6 +38,13 @@
 		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<!-- ProjectSystem（ProjectPaths） -->
 		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
+		<!-- Script（ScriptAssetIndex、脚本资产索引） -->
+		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Gameplay（ScriptRegistry、GameplayContext、EntityBehaviour） -->
+		<ProjectReference Include="..\..\Gameplay\Neverness.Gameplay\Neverness.Gameplay.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

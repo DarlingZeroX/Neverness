@@ -1,231 +1,843 @@
-# Neverness Native Runtime — 架构与总进度
+# Neverness Runtime 架构文档
 
-本文描述根 [`CMakeLists.txt`](../../../CMakeLists.txt) 中纳入的 **12 个** `Engine/Source/Runtime` **NN\*** 子模块的分层、依赖与文档入口。**NevernessCore** 原生基建位于 [`Engine/Source/Core`](../Core/KERNEL_ARCHITECTURE_AND_PROGRESS.md)（**4** 个默认构建 + **NNMeta** 目录预留；节点图模块目录存在但默认未构建）。**VisionGal 2026 Native 主线分工**（与 Managed **§0** 对齐）见本文 **§0**。各 Runtime 子模块的详细说明见 **该模块目录下** `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md`（路径索引见 [§2 模块索引](#2-模块索引)）。
-
-与 **Managed** 栈的关系见 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md)；其中 **Engine Service ABI** 与 **行程级 Runtime** 的 C 侧入口见 [NNNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](NNNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)、[NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md](NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。
+> 最后更新：2026-06-22
 
 ---
 
-## 0. Native 主线分工（2026，与 Managed 对齐）
+## 目录
 
-| 原则 | Native 职责 | 非职责 |
-|------|---------------|--------|
-| **Kernel 化** | **NevernessRuntime-Engine**（`NNRuntimeEngine`，类名仍为 `VGEngineRuntime`）演进为真正 **Runtime Kernel**（排程、子系统生命周期、Scene／Entity 执行时等，见 Managed [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§0.3**） | 不承载 **Gameplay 产品逻辑**（变量表、剧本 DSL、Graph VM 等均在 **Managed**） |
-| **Lua** | **NevernessRuntime-Lua**（`NNRuntimeLua`）等仍存在于基建图中，**主线不再演进**；仅 **Legacy** 兼容 | 新能力不依赖 Lua Runtime 扩展 |
-| **Graph** | **不**引入 Native Graph VM | **VisionGal.Managed.Graph.Runtime** 100% Managed（见 Managed **§0.3** P0-5） |
+- [1. 概述](#1-概述)
+- [2. 模块总览](#2-模块总览)
+- [3. 活跃模块详解](#3-活跃模块详解)
+  - [3.1 NNAPI — ABI 契约层](#31-nnapi--abi-契约层)
+  - [3.2 NNRuntimeCore — 核心运行时框架](#32-nnruntimecore--核心运行时框架)
+  - [3.3 NNRuntimeEngine — 引擎运行时门面](#33-nnruntimeengine--引擎运行时门面)
+  - [3.4 NNRuntimeApplication — 应用宿主层](#34-nnruntimeapplication--应用宿主层)
+  - [3.5 NNRuntimeVFS — 虚拟文件系统](#35-nnruntimevfs--虚拟文件系统)
+  - [3.6 NNRuntimeLua — Lua 脚本运行时](#36-nnruntimelua--lua-脚本运行时)
+  - [3.7 NNRuntimeImGui — ImGui 扩展模块](#37-nnruntimeimgui--imgui-扩展模块)
+  - [3.8 NNRuntimeRenderer2D — 2D 精灵渲染器](#38-nnruntimerenderer2d--2d-精灵渲染器)
+  - [3.9 NNRuntimeRmlui — RmlUI 集成](#39-nnruntimermlui--rmlui-集成)
+  - [3.10 NNRuntimePak — Pak 打包系统](#310-nnruntimepak--pak-打包系统)
+  - [3.11 NNRuntimeMedia — 音视频播放](#311-nnruntimemedia--音视频播放)
+  - [3.12 NNRuntimeEngineServices — 引擎服务桥接](#312-nnruntimeengineservices--引擎服务桥接)
+- [4. Legacy 模块（已废弃）](#4-legacy-模块已废弃)
+- [5. 依赖关系图](#5-依赖关系图)
+- [6. ABI 层架构](#6-abi-层架构)
+- [7. 构建系统](#7-构建系统)
+- [8. 当前状态与进度](#8-当前状态与进度)
 
 ---
 
-## 命名约定（目录 / CMake / 命名空间 vs C ABI）
+## 1. 概述
 
-| 层级 | 现行约定 | 说明 |
-|------|----------|------|
-| **源码目录** | `NNRuntime*`、`NNNativeEngineAPI`、`NNEngineLegacy` | 物理路径在 `Engine/Source/Runtime/` |
-| **CMake 目标** | `NevernessRuntime-*`、`NevernessCore-*` | 链接与 `target_link_libraries` 以此为准 |
-| **C++ 命名空间** | `NN::Runtime` | 应用壳、RHI、Legacy 引擎、Asset、RmlUI 等 |
-| **C++ 命名空间** | `NN::Runtime::engine` | 行程级 Runtime Facade（`VGEngineRuntime`）与子系统 |
-| **Include** | `#include <NNCore/...>` | Core 根为 `Engine/Source/Core`（CMake 变量 `VISIONGAL_KERNEL_ROOT`） |
-| **Include** | `#include "NNNativeEngineAPI/Include/..."` | Runtime 内跨 ABI 模块常见写法 |
-| **C ABI（Engine Service）** | `NNNativeEngineAPI`、`NNRenderAPI`、`NNNativeEngineApi_GetRuntimeTable()` 等 **`NN*`** | 与 **Neverness.Managed.Engine** 镜像对齐；**`VGEngineRuntime`** 等 C++ Facade 仍保留 **VG** 前缀（见 **NNRuntimeEngine**） |
+Neverness Runtime 是 Neverness 引擎（内部代号 VisionGal — 视觉小说引擎）的运行时层，由 C++17 编写，通过 C ABI 函数指针表与 C# 托管代码互操作。
 
-**曾用名对照（脚注）**：VGLua→`NNRuntimeLua`；VGRHI→`NNRuntimeRHI`；VGPackage→`NNRuntimePak`；VGImgui→`NNRuntimeImGui`；VGCore→`NNRuntimeCore`；NNNativeEngineAPI→`NNNativeEngineAPI`；**VGEngineRuntime**→`NNRuntimeEngine`；VGEngineRuntimeServices→`NNRuntimeEngineServices`；VGAsset→`NNRuntimeAsset`；VGUI→`NNRuntimeRmlui`；**VGEngine**→`NNEngineLegacy`。
+**设计原则：**
+
+- **ABI 稳定**：所有跨 DLL/跨语言边界通过 `extern "C"` 函数指针表传递，避免 C++ name mangling 和 vtable ABI 问题
+- **依赖倒置**：Core 模块定义纯虚接口（`I*` 前缀），具体实现在下游模块
+- **Handle 化**：所有跨边界的对象引用使用 `uint64_t` opaque handle，不暴露 C++ 指针
+- **模块独立**：每个模块有独立的 CMakeLists.txt、导出宏、Public/Private 头文件约定
+
+**技术栈：**
+
+| 技术 | 用途 |
+|------|------|
+| SDL3 | 窗口管理、输入事件、音频输出 |
+| Diligent Engine | GPU 渲染后端（替代 OpenGL） |
+| RmlUI | HTML/CSS UI 中间件 |
+| ImGui 1.92.3 | 编辑器 UI |
+| Lua 5.4.8 + sol2 | 脚本系统 |
+| entt | ECS 实体组件系统 |
+| FFmpeg | 视频解码 |
+| miniz | ZIP 归档读取 |
+| Zstd/LZ4 | Pak 压缩 |
+| Freetype | 字体渲染 |
 
 ---
 
-## 1. 分层总览（Native）
+## 2. 模块总览
 
-```mermaid
-flowchart TB
-  subgraph core [Core — NevernessCore 基建]
-    NNCore[NevernessCore-Core]
-    NNPlatform[NevernessCore-PlatformCore]
-    NNFileSystem[NevernessCore-FileSystem]
-    NNMedia[NevernessCore-MediaCore]
-  end
-  subgraph mediaTool [Runtime — 媒体与工具]
-    NNLua[NevernessRuntime-Lua]
-    NNRHI[NevernessRuntime-RHI]
-    NNPak[NevernessRuntime-Pak]
-    NNImGui[NevernessRuntime-ImGui]
-  end
-  subgraph coreUi [Runtime — 核心与内容]
-    NNRuntimeCore[NevernessRuntime-Core]
-    NNScene[NevernessRuntime-Scene]
-    NNAsset[NevernessRuntime-Asset]
-    NNRmlUI[NevernessRuntime-RmlUI]
-  end
-  subgraph engineLegacy [Runtime — 单体引擎 Legacy]
-    NNEngineLegacy[NevernessRuntime-EngineLegacy]
-  end
-  subgraph abiRuntime [Runtime — ABI 与行程级 Runtime]
-    NNNativeAPI[NevernessRuntime-NativeEngineAPI]
-    NNStub[NevernessRuntime-NativeEngineAPIStub]
-    NNManaged[NevernessRuntime-Managed]
-    NNEngine[NevernessRuntime-Engine]
-    NNEngineSvc[NevernessRuntime-EngineServices]
-    NNNativeAPI --> NNStub
-    NNStub --> NNEngineSvc
-    NNManaged --> NNNativeAPI
-    NNManaged --> NNStub
-    NNManaged -.-> NNEngineSvc
-  end
-  NNPlatform --> NNCore
-  NNFileSystem --> NNCore
-  NNMedia --> NNCore
-  NNLua --> NNCore
-  NNRHI --> NNCore
-  NNImGui --> NNCore
-  NNImGui --> NNPlatform
-  NNPak --> NNCore
-  NNRuntimeCore --> NNLua
-  NNRuntimeCore --> NNCore
-  NNRuntimeCore --> NNPlatform
-  NNRuntimeCore --> NNFileSystem
-  NNRuntimeCore --> NNImGui
-  NNRuntimeCore --> NNRHI
-  NNRuntimeCore --> NNPak
-  NNScene --> NNCore
-  NNAsset --> NNCore
-  NNAsset --> NNPlatform
-  NNAsset --> NNFileSystem
-  NNAsset --> NNRuntimeCore
-  NNAsset --> NNMedia
-  NNRmlUI --> NNCore
-  NNRmlUI --> NNPlatform
-  NNRmlUI --> NNFileSystem
-  NNRmlUI --> NNLua
-  NNRmlUI --> NNRuntimeCore
-  NNRmlUI --> NNMedia
-  NNRmlUI --> NNRHI
-  NNEngineLegacy --> NNCore
-  NNEngineLegacy --> NNPlatform
-  NNEngineLegacy --> NNFileSystem
-  NNEngineLegacy --> NNMedia
-  NNEngineLegacy --> NNLua
-  NNEngineLegacy --> NNRHI
-  NNEngineLegacy --> NNPak
-  NNEngineLegacy --> NNImGui
-  NNEngineLegacy --> NNRuntimeCore
-  NNEngineLegacy --> NNAsset
-  NNEngineLegacy --> NNRmlUI
-  NNEngine --> NNNativeAPI
-  NNEngine --> NNScene
-  NNEngineSvc --> NNStub
-  NNEngineSvc --> NNEngine
+### 活跃模块（当前构建参与）
+
+| 模块 | CMake 目标 | 类型 | 职责 |
+|------|-----------|------|------|
+| **NNAPI** | `NevernessRuntime-API` | STATIC | ABI 契约 + Stub 实现 |
+| **NNRuntimeCore** | `NevernessRuntime-Core` | SHARED | 核心接口、事件、输入、视口 |
+| **NNRuntimeEngine** | `NevernessRuntime-Engine` | STATIC | 引擎生命周期、调度器、计时、异步、对象表 |
+| **NNRuntimeApplication** | `NevernessRuntime-Application` | STATIC | SDL3 宿主、窗口、事件队列、ImGui 层 |
+| **NNRuntimeVFS** | `NevernessRuntime-VFS` | SHARED | 虚拟文件系统（Native/Memory/Zip） |
+| **NNRuntimeLua** | `NevernessRuntime-Lua` | SHARED | Lua 5.4.8 VM |
+| **NNRuntimeImGui** | `NevernessRuntime-ImGui` | SHARED | ImGui 核心 + 扩展 |
+| **NNRuntimeRenderer2D** | `NevernessRuntime-Renderer2D` | SHARED | 2D 精灵批量渲染 |
+| **NNRuntimeRmlui** | `NevernessRuntime-RmlUI` | SHARED | RmlUI 文档管理 + 渲染 |
+| **NNRuntimePak** | `NevernessRuntime-Pak` | SHARED | .pak 打包/解包 + VFS 挂载 |
+| **NNRuntimeMedia** | `NevernessRuntime-Media` | SHARED | 音频/视频播放 |
+| **NNRuntimeEngineServices** | `NevernessRuntime-EngineServices` | SHARED | ABI 转发层，桥接 Stub → 真实实现 |
+
+### Legacy 模块（已废弃/冻结）
+
+| 模块 | 状态 | 替代方案 |
+|------|------|---------|
+| NNEngineLegacy | 冻结 | 拆分为独立模块 |
+| NNRuntimeScene | Legacy | C# Friflo ECS |
+| NNRuntimeAsset | Legacy | C# AssetManager |
+| NNRuntimeAssetLegacy | Legacy | C# 资产系统 |
+| NNRuntimeRHI | 已禁用 | NNRuntimeDiligent |
+| NNRuntimeRenderAssets | Legacy | C# 资产管线 |
+| NNRuntimeImageCodec | Legacy | stb_image 直接使用 |
+| NNRuntimeManagedBridge | Legacy | Entry.Bootstrap |
+| NNRuntimeManagedHostLegacy | Legacy | 产品 hostfxr |
+| NNRuntimeMediaAssets | 待修复 | — |
+
+---
+
+## 3. 活跃模块详解
+
+### 3.1 NNAPI — ABI 契约层
+
+**路径：** `Runtime/NNAPI`
+**目标：** `NevernessRuntime-API` (STATIC)
+**依赖：** 无（纯头文件 + Stub）
+
+#### 职责
+
+定义引擎暴露给 C# 托管代码的完整 C ABI 函数指针表。Stub 实现只做日志记录不做任何事，真实实现在 NNRuntimeEngineServices。
+
+#### 核心类型
+
+```
+NNNativeAPI                          // 顶层导出表，C# 拿到的就是这个
+├── apiVersion (uint32_t, 当前 3)
+├── reserved0
+└── const NNNativeEngineAPI* engineServices
+    ├── NNRenderAPI                  // createTexture, uploadTexture, createRenderTarget
+    ├── NNAudioAPI                   // 音频控制
+    ├── NNInputAPI                   // 输入查询
+    ├── NNAsyncWaitAPI               // 异步等待
+    ├── NNApplicationAPI             // 应用生命周期
+    ├── NNWindowAPI                  // 窗口操作
+    ├── NNVfsAPI                     // 虚拟文件系统
+    ├── NNEventAPI                   // 事件轮询
+    ├── NNRenderAssetAPI             // 渲染资产
+    ├── NNViewportRenderAPI          // 视口渲染
+    ├── NNViewportSurfaceAPI         // 视口表面
+    └── NNDiligentAPI                // Diligent 设备访问
 ```
 
-说明：上图为 **主要链接依赖** 的简化视图（以各模块 `CMakeLists.txt` 中 `target_link_libraries` 为准）；**NevernessCore** 细节见 [Core 总览](../Core/KERNEL_ARCHITECTURE_AND_PROGRESS.md)。**`NevernessRuntime-NativeEngineAPI` / `NevernessRuntime-Engine` / `NevernessRuntime-EngineServices` 不链接 `NevernessRuntime-EngineLegacy`**，供托管宿主与 Stub/Runtime 表路径使用。**`NNEngineLegacy`** 与根 CMake 选项 **`VISIONGAL_BUILD_LEGACY_GALGAME`**（`Engine/Source/Legacy` 旧产品线）不是同一概念。
+#### Handle 类型（全部 `uint64_t`）
+
+| Handle | 用途 |
+|--------|------|
+| `NNTextureHandle` | GPU 纹理 |
+| `NNRenderTargetHandle` | 渲染目标 |
+| `NNElementHandle` | UI 元素 |
+| `NNAudioHandle` | 音频实例 |
+| `NNAssetHandle` | 资产引用 |
+| `NNAsyncWaitHandle` | 异步等待 |
+| `NNEntityHandle` | ECS 实体 |
+
+#### RenderCommands — 二进制命令缓冲
+
+C# → C++ 渲染数据传递使用紧凑的二进制命令缓冲格式：
+
+| 命令码 | 类型 | 大小 |
+|--------|------|------|
+| `0x01` | `SetCamera` | `NNSetCameraData` |
+| `0x02` | `SetRenderPassState` | `NNRenderPassStateData` |
+| `0x10` | `DrawSpriteBatch` | `NNSpriteInstance[]` (120 bytes/个) |
+| `0x20` | `SetRmlDocuments` | `NNRmlDocumentEntry[]` (272 bytes/个) |
 
 ---
 
-## 2. 模块索引
+### 3.2 NNRuntimeCore — 核心运行时框架
 
-| 目录 | CMake 目标 | 曾用名 | 文档 | 一句话职责 | 成熟度 |
-|------|------------|--------|------|------------|--------|
-| *(Core 基建)* | — | H\* | [Core 模块索引](../Core/KERNEL_ARCHITECTURE_AND_PROGRESS.md#2-模块索引) | NNCore、平台、文件系统、媒体等 | 见 Core 文档 |
-| NNRuntimeLua | `NevernessRuntime-Lua` | VGLua | [Docs](NNRuntimeLua/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Lua + sol2 绑定栈 | 生产 |
-| NNRuntimeRHI | `NevernessRuntime-RHI` | VGRHI | [Docs](NNRuntimeRHI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | OpenGL 渲染硬件抽象 | 生产 |
-| NNRuntimePak | `NevernessRuntime-Pak` | VGPackage | [Docs](NNRuntimePak/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 包体 / 资源包相关 | 生产 |
-| NNRuntimeImGui | `NevernessRuntime-ImGui` | VGImgui | [Docs](NNRuntimeImGui/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | ImGui / 工具向 UI 扩展 | 生产 |
-| NNRuntimeCore | `NevernessRuntime-Core` | VGCore | [Docs](NNRuntimeCore/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 应用壳、窗口、与多子系统绑定的核心动态库 | 生产 |
-| NNRuntimeScene | `NevernessRuntime-Scene` | — | [Docs](Legacy/NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | ECS-first Scene（System、层级、字段反射、二进制序列化） | **已移至 Legacy**（C# Friflo ECS 替代） |
-| NNNativeEngineAPI | `NevernessRuntime-NativeEngineAPI` | NNNativeEngineAPI | [Docs](NNNativeEngineAPI/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Engine Service C ABI（仅头文件契约）；**layout v10** 含 **`NNVfsAPI`** 等 | ABI 稳定演进 |
-| NNRuntimeApplication | `NevernessRuntime-Application` | — | [Docs](NNRuntimeApplication/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 统一 SDL Application 宿主（`NNApplicationAPI` Runtime 实现） | **已落地** |
-| NNRuntimeNativeEngineAPIStub | `NevernessRuntime-NativeEngineAPIStub` | NNNativeEngineAPIStub | [Docs](NNRuntimeNativeEngineAPIStub/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Stub / Mock / GetDefaultTable | 已落地 |
-| NNRuntimeManaged | `NevernessRuntime-Managed` | VGManagedCore | [Docs](NNRuntimeManaged/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | **NNNativeAPI** 函数表 SHARED 导出；托管镜像在 Managed/Runtime/Core | Phase 2–3 已落地 |
-| NNRuntimeManagedHostLegacy | `NevernessRuntime-ManagedHostLegacy` | VGManagedHost（弃用别名） | [Docs](NNRuntimeManagedHostLegacy/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Legacy CoreCLR 宿主（**可选**，`VISIONGAL_ENABLE_MANAGED_HOST_LEGACY`）；主路径见 Entry.Bootstrap | Migration-3 |
-| NNRuntimeManagedBridge | `NevernessRuntime-ManagedBridge` | — | [Docs](NNRuntimeManagedBridge/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | `NNEngineRuntimeHost_TickManaged` 桥接 | Migration-6a |
-| NNRuntimeEngine | `NevernessRuntime-Engine` | **VGEngineRuntime** | [Docs](NNRuntimeEngine/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 行程级 Timing / Async / 子系统门面 | Phase4 首包 |
-| NNRuntimeEngineServices | `NevernessRuntime-EngineServices` | VGEngineRuntimeServices | [Docs](NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 将 ABI 表覆写为转发表（别名 **NNEngineRuntimeServices**） | Phase4 首包 |
-| NNRuntimeAsset | `NevernessRuntime-Asset` | VGAsset | [Docs](NNRuntimeAsset/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | Galgame 等资源类型与加载 | 生产 |
-| NNRuntimeRmlui | `NevernessRuntime-RmlUI` | VGUI | [Docs](NNRuntimeRmlui/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | RmlUi + Lua 元素等 UI 运行时 | 生产 |
-| NNEngineLegacy | `NevernessRuntime-EngineLegacy` | **VGEngine** | [Docs](NNEngineLegacy/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md) | 单体游戏引擎（场景、资源、渲染管线等；编辑器主链） | 生产 |
+**路径：** `Runtime/NNRuntimeCore`
+**目标：** `NevernessRuntime-Core` (SHARED)
+**导出宏：** `NN_RUNTIME_CORE_API`
+
+#### 职责
+
+所有上层运行时模块的基础抽象层。定义接口契约，具体实现交给下游模块。
+
+#### 三层架构
+
+```
+Include/Core/       ← 具体实现：RuntimeCore、Input、Viewport、EventBus、Events
+Interface/          ← 纯虚接口：I* 前缀，依赖倒置
+Include/Data/       ← 数据持久化：VGDataVariant（Lua 绑定 + JSON 序列化）
+Include/Utils/      ← 工具函数：LuaHelper、TimeHelper、TransitionHelper
+```
+
+#### 核心类型
+
+**基础设施：**
+
+| 类型 | 说明 |
+|------|------|
+| `RuntimeCore` | 静态单例：初始化、时间、文件接口、VFS 路径解析 |
+| `VGObject` | 所有引擎对象基类（虚析构 + `ToString()`） |
+| `VGEngineResource` | 资源基类，携带资源路径 |
+
+**事件系统 (`EngineEventBus` 单例)：**
+
+| 事件通道 | 事件类型 |
+|----------|---------|
+| SceneEvent | Actor 创建/移除/选中 |
+| EngineEvent | 主场景变更、进入/退出 Play Mode |
+| LuaScriptEvent | 脚本错误（路径、消息、行号） |
+| UISystemEvent | UI 文件打开/关闭 |
+| ViewportEvent | 尺寸变更、悬停、焦点、鼠标、拖放 |
+
+**Scene/ECS 接口（基于 entt）：**
+
+| 接口 | 说明 |
+|------|------|
+| `IEntity` | 实体基类，包装 `entt::entity` |
+| `IGameActor` | 游戏实体：标签、可见性、组件增删查 |
+| `IComponent` | 组件基类：类型字符串 + cereal 序列化 |
+| `IScene` | 场景接口：Actor CRUD、实体-组件管理、更新 |
+
+**脚本接口：**
+
+| 接口 | 说明 |
+|------|------|
+| `IScript` | 生命周期：`Awake` → `Start` → `Update` → `FixedUpdate` |
+| `IScriptVariable` | 可序列化脚本变量（EntityID、Path、String、Bool、Double） |
+| `IAnimationScript` | 动画脚本：`Start`、`IsFinished`、`OnUpdate` |
+
+**数据系统：**
+
+| 类型 | 说明 |
+|------|------|
+| `VGDataVariant` | 变体类型（Nil/Bool/Int/Num/String/Table），sol2 Lua 互操作 + JSON |
+| `VGDataNamespace` | 命名键值存储 |
+| `VGDataContainer` | 命名空间容器 |
+
+#### 依赖
+
+| 依赖 | 链接方式 | 用途 |
+|------|---------|------|
+| NNRuntimeLua | PRIVATE | sol2/Lua 绑定 |
+| NNCore | PRIVATE | 核心类型、事件委托、UUID、JSON |
+| NNPlatformCore | PRIVATE | SDL3 窗口/输入抽象 |
+| NNRuntimeVFS | PRIVATE | 虚拟文件系统 |
+| SDL3 | PUBLIC | 窗口管理、输入 |
 
 ---
 
-## 3. 全局构建开关（与本树相关）
+### 3.3 NNRuntimeEngine — 引擎运行时门面
 
-| 选项 | 默认 | 说明 |
-|------|------|------|
-| `NEVERNESS_USE_ENGINE_RUNTIME_SERVICES` | ON | 为 **NNRuntimeManaged** 的默认 Native 表挂载 `NNNativeEngineApi_GetRuntimeTable()`；OFF 时 Stub 表路径见 [NNRuntimeEngineServices 文档](NNRuntimeEngineServices/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
-| `VISIONGAL_BUILD_LEGACY_GALGAME` | OFF | **Legacy Galgame** 不在 `Source/Runtime` 内；开启后在 `Engine/Source/Legacy` 追加旧产品线目标。 |
-| `VISIONGAL_ENABLE_MANAGED_HOST_LEGACY` | **OFF** | 为 **ON** 时（仅 Win/MSVC）构建 **NNRuntimeManagedHostLegacy**；旧名 `VISIONGAL_ENABLE_MANAGED_HOST` 转发并 WARNING。 |
-| `NEVERNESS_BUILD_RUNTIME_KERNEL_APP` | **OFF** | 构建 **NNRuntimeKernelApplication** 演示（Native+Managed 双 Tick）。 |
+**路径：** `Runtime/NNRuntimeEngine`
+**目标：** `NevernessRuntime-Engine` (STATIC)
+
+#### 职责
+
+进程级引擎运行时门面，提供核心游戏循环骨架：**Initialize → Tick → Shutdown**。
+
+#### 四个子系统
+
+```
+NNEngineRuntime (单例门面)
+├── TimingSystem        ← 帧计时：deltaTime、totalTime、frameIndex
+├── AsyncSystem         ← 可轮询异步等待（std::thread 后台睡眠）
+├── ObjectSubsystem     ← 原生侧引用计数对象表（NNObjectHandle）
+└── RuntimeScheduler    ← Unity PlayerLoop 风格的 Tick 调度器
+```
+
+#### Tick 调度顺序
+
+```
+每帧：
+  EarlyUpdate
+  → FixedUpdate × (0..N)     // 默认 50Hz，每帧最多 5 次，防螺旋死亡
+  → Update
+  → LateUpdate
+  → FlushMainThreadDelegates  // 占位符
+  → Render
+```
+
+#### 核心类型
+
+| 类型 | 说明 |
+|------|------|
+| `NNEngineRuntime` | 单例门面：`Instance()`、`Initialize()`、`Tick(dt)`、`Shutdown()` |
+| `TimingSystem` | `GetDeltaTime()`、`GetTotalTime()`、`GetFrameIndex()` |
+| `AsyncSystem` | `CreateWait()` → handle，`TryComplete(handle)`，`ReleaseWait(handle)` |
+| `ObjectSubsystem` | `CreateObject(typeName)` → handle，引用计数管理，线程安全 |
+| `IRuntimeSubsystem` | 实现此接口注册到调度器：`Tick(context)` + `TickGroup()` |
+| `RuntimeTickGroup` | 枚举：EarlyUpdate / FixedUpdate / Update / LateUpdate / Render |
+| `RuntimeFrameContext` | POD：deltaTimeSeconds、totalTimeSeconds、frameIndex、fixedDeltaTimeSeconds |
+
+#### 依赖
+
+仅依赖 `NevernessRuntime-NativeEngineAPI`（Handle 定义），无外部第三方依赖。
 
 ---
 
-## 4. Phase 总览（Runtime 视角）
+### 3.4 NNRuntimeApplication — 应用宿主层
 
-| Phase | 内容 | 状态 |
-|-------|------|------|
-| Core 基建 | NevernessCore-Core / 平台 / 文件系统 / 媒体（见 [Core](../Core/KERNEL_ARCHITECTURE_AND_PROGRESS.md)） | 持续维护 |
-| Runtime 基建 | Lua / RHI / 包 / ImGui / Core | 持续维护 |
-| 引擎主体 | EngineLegacy（原 VGEngine）+ Asset + RmlUI 聚合 | 持续维护 |
-| Engine ABI | NNNativeEngineAPI / `NNNativeEngineAPI`（函数表 + Stub） | 已落地，随 layout 演进 |
-| 行程级 Runtime | NNRuntimeEngine + NNRuntimeEngineServices | Phase 4 首包已合入；**§2.7.1** **EntitySubsystem** 与 **`entity.*`** Runtime 覆写（**layout v5**）已合入 |
+**路径：** `Runtime/NNRuntimeApplication`
+**目标：** `NevernessRuntime-Application` (STATIC)
+
+#### 职责
+
+SDL3 子系统生命周期管理、原生 OS 窗口创建（SDL3 + Diligent GPU 设备/交换链）、事件翻译与传递管线、ImGui 集成。
+
+#### 架构
+
+```
+RuntimeApplication (中心宿主)
+├── SDL3 子系统初始化/关闭
+├── EventQueue (SPSC 无锁环形缓冲, 4096 槽 × 128 字节 + 64KB 字符串池)
+├── SDL3EventTranslator (SDL_Event → NNEvent ABI 稳定结构体)
+├── WindowRegistry (NNWindowHandle → VGWindow 映射)
+├── VGWindow (SDL3 窗口 + Diligent 交换链)
+└── ImguiDiligentLayer (ImGui Diligent 后端)
+```
+
+#### 暴露的 C ABI 函数表
+
+| API 表 | 功能 |
+|--------|------|
+| `NNApplicationAPI` | initialize / pumpEvents / beginFrame / endFrame / shutdown |
+| `NNWindowAPI` | create / destroy / setTitle / setSize / maximize / minimize / ... |
+| `NNEventAPI` | pollEvent / peekEvent / waitEvent / getEventString / pushUserEvent |
+
+#### 事件系统
+
+SDL3 事件通过 `SDL3EventTranslator` 翻译为 ABI 稳定的 `NNEvent` POD 结构体（128 字节），使用两级 type+subtype 方案：
+
+| 事件类别 | 子类型数量 |
+|----------|-----------|
+| 窗口事件 | 17 种（尺寸、位置、焦点、最小化...） |
+| 输入事件 | 鼠标移动/按钮/滚轮、键盘按下/释放、文本输入/编辑、拖放 |
+| 系统事件 | 退出、终止、低内存 |
+
+#### 依赖
+
+| 依赖 | 用途 |
+|------|------|
+| NNAPI (PUBLIC) | ABI 类型定义 |
+| SDL3 (PUBLIC) | 窗口/输入/事件 |
+| NNRuntimeCore | 核心服务 |
+| NNRuntimeVFS | 虚拟文件系统 |
+| NNRuntimeImGui | ImGui 核心 |
+| NNRuntimeDiligent | Diligent 渲染后端 |
 
 ---
 
-## 5. 开发进展与总体状态
+### 3.5 NNRuntimeVFS — 虚拟文件系统
 
-### 5.1 里程碑时间线
+**路径：** `Runtime/NNRuntimeVFS`
+**目标：** `NevernessRuntime-VFS` (SHARED)
+**导出宏：** `NN_RUNTIME_VFS_API`
 
-| 日期 | 进展 |
+#### 职责
+
+统一的文件访问抽象层，支持多种存储后端（磁盘、内存、ZIP 归档），通过路径别名路由文件请求。
+
+#### 后端实现
+
+| 后端 | 类 | 读写 | 说明 |
+|------|-----|------|------|
+| Native | `NativeFileSystem` / `NativeFile` | 读写 | `std::fstream`，磁盘目录 |
+| Memory | `MemoryFileSystem` / `MemoryFile` | 读写 | `std::vector<uint8_t>`，纯内存 |
+| Zip | `ZipFileSystem` / `ZipFile` | 只读 | miniz，ZIP 归档 |
+
+#### 核心架构
+
+```
+VirtualFileSystem (中央多路复用器)
+├── alias → [IFileSystemPtr, ...] 映射
+├── 别名按最长前缀匹配排序
+└── OpenFile() 遍历别名 → 剥离前缀 → 尝试每个后端
+
+VFSService (静态服务层)
+├── GetInstance() → 全局 VirtualFileSystem
+├── MountFileSystem(alias, fs)
+├── ReadTextFromFile / WriteTextToFile / WriteBufferToFile
+├── AddFileSystem(alias, type, path) → handle (C# 互操作)
+└── NNBuildVfsRuntimeApi() → NNVfsAPI 函数表
+```
+
+#### 线程安全
+
+编译时开关 `VFS_ENABLE_MULTITHREADING`，启用后所有 VirtualFileSystem 方法加 mutex 保护。
+
+#### 依赖
+
+| 依赖 | 用途 |
 |------|------|
-| 2026-05-17 | **NNRuntimeScene Phase 1**：`NevernessRuntime-Scene`（世代 **NNEntity**、entt registry、Query、**NNComponentRegistry**）；**standalone**，不修改 EngineLegacy / SceneSubsystem / ABI layout；见 [NNRuntimeScene 文档](NNRuntimeScene/Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md)。 |
-| 2026-05-17 | **NNRuntimeScene Phase 2–3**：**ISceneSystem** 调度、**NNHierarchySystem**、**NNSceneEventBus**/**NNDirtyTracker**、字段反射（**NN_FIELD**）、**NNSceneSerializer**（**VGSC**）；**NevernessRuntime-Engine** 私有链接 Scene，**NNRuntimeSceneTickSubsystem** 挂 **Update** 驱动 **`VGEngineRuntime::EcsScene()`**。 |
-| 2026-05-17 | **NN\*** 目录与 **NevernessRuntime-\*** / **NevernessCore-\*** CMake 目标重命名后，Runtime/Core 架构文档与代码对齐（命名约定见上文）。 |
-| 2026-05-16 | **H\*** 模块迁入 `Engine/Source/Core`；Runtime 根文档改为 **11** 个 Runtime 子模块 + Core 互链。 |
-| 2026-05-15 | 补齐 Runtime 根总览与各模块 `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md` 索引，统一简体中文与互链。 |
-| 2026-05-15 | Managed Phase 6 slice 5：**VisionGal.Managed.Gameplay** 序列分支与 **Advance** 可恢复等待（纯托管）；总览见 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) §2.6.1。 |
-| 2026-05-16 | 根文档补充 **§5.2** 总体状态表（完成度 / 未完成项 / 未来规划）；与 **NNNativeEngineAPI**、**NNRuntimeEngine** 模块文档交叉更新。 |
-| 2026-05-17 | 与 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§2** 对齐：**Phase 6 托管** slice 2–5 已落地；验证侧以 **VisionGal.Managed.Foundation.Tests**（dotnet）为主。 |
-| 2026-05-18 | Managed **§5.1** 增 **Phase 6 Native**（Gameplay／存档）推进顺序草案；本根 **§6** 与之对齐。 |
-| 2026-05-19 | 托管 **P0 VisionGal.Managed.Entity** 递增至 **HasComponent** / **GetComponent**（纯 C#）；当时 **Native `NNEntityAPI` 子表**仍未纳入 **NNNativeEngineAPI**（随后由 **layout v4** 骨架落地，见 MANAGED **§2.7.1**）。 |
-| 2026-05-20 | 托管 **EntityWorld** 增 **GetComponentCount** 与关键路径中文注释（MANAGED **§2.5.3**）；**Native** 侧无变更；验证仍以 **Foundation.Tests** 为主。 |
-| 2026-05-21 | 托管 **EntityWorld** 增 **Type** 键 **HasComponent**／**TryGetComponent**（MANAGED **§2.5.4**）；当时 **Native `NNEntityAPI`** 仍未纳入表（随后由 **layout v4** 骨架取代，见下行）。 |
-| 2026-05-15 | **layout v4**：**NNNativeEngineAPI** 尾部 **`NNEntityAPI`** 骨架（**`EntityAPI.h`**、`getServiceAbiToken`）；与托管 **VisionGal.Managed.Engine** 镜像及 **VGManagedHostTest** / **NativeEngineApiEntityServiceTests** 对齐；**NNRuntimeEngineServices** 当前继承 Stub；**NNEntityHandle** 与托管 **EntityHandle** 边界见 MANAGED **§2.7.1**。 |
-| 2026-05-15 | Managed **§2.7.1 首包**：见上；RUNTIME **§5.2** / **§6** 同步「子表已纳入、系统未开始」语义。 |
-| 2026-05-15 | **layout v5 / §2.7.1 Kernel 首包**：**`getRuntimeTick`**、**EntitySubsystem**、**`BuildRuntime`** 覆写 **`entity.*`**；MANAGED **§2.7.1** 与 **§5.2**／**§6** 同步「Runtime 已驱动 Entity 子表观测」语义；完整 **VGEntitySystem** 仍为后续项。 |
+| NNAPI (PUBLIC) | `NNVfsAPI` 结构体定义 |
+| NNCore (PRIVATE) | `NN::Ref`、日志宏 |
+| NNPlatformCore (PRIVATE) | 路径工具 |
+| miniz (内嵌) | ZIP 读取 |
 
-### 5.2 Runtime 总体状态（2026-05-17，与 MANAGED §2.5 对齐）
+---
 
-| 维度 | 说明 |
+### 3.6 NNRuntimeLua — Lua 脚本运行时
+
+**路径：** `Runtime/NNRuntimeLua`
+**目标：** `NevernessRuntime-Lua` (SHARED)
+
+#### 职责
+
+打包 Lua 5.4.8（ANSI C）为共享 DLL，附带错误行号跟踪和本地化工具函数。包含 sol2 兼容性头文件。
+
+#### 内容
+
+- Lua 5.4.8 完整 VM（C90 编译）
+- `VGLuaCoreSetErrorLineNumber()` / `VGLuaCoreGetErrorLineNumber()` — Lua 错误行号跟踪
+- `VGLuaCoreLocalize()` — Lua 消息本地化
+- sol2 兼容性头文件（compat-5.3/5.4 shims）
+
+#### 依赖
+
+仅依赖 `NevernessCore-Core`。
+
+---
+
+### 3.7 NNRuntimeImGui — ImGui 扩展模块
+
+**路径：** `Runtime/NNRuntimeImGui`
+**目标：** `NevernessRuntime-ImGui` (SHARED)
+
+#### 职责
+
+ImGui 1.92.3 核心编译 + 丰富扩展集。正在从 OpenGL3 后端迁移到 Diligent 后端。
+
+#### 扩展列表
+
+| 扩展 | 说明 |
 |------|------|
-| **完成度** | **12** 个 Runtime 子模块 + **4** 个默认构建 Core 子模块（**NNMeta** 目录预留）；**NevernessRuntime-Scene** Phase 2–3（ECS Handle + System + 字段反射 + 二进制序列化）已合入；**NevernessRuntime-Engine** 经 **NNRuntimeSceneTickSubsystem** 在 **Update** 组驱动 **`EcsScene()`**（与 **SceneSubsystem** 并存）；**NevernessRuntime-EngineLegacy**（原 VGEngine）、**NevernessRuntime-Asset**、**NevernessRuntime-RmlUI** 等为生产级；**NNNativeEngineAPI**（函数表 + Stub，**layout v4** 起含尾部 **`NNEntityAPI`**；**layout v5** 起含 **`getRuntimeTick`**）与 **NevernessRuntime-Engine** / **NevernessRuntime-EngineServices**（Phase 4 首包 + **EntitySubsystem**；**P0-1** 起 **RuntimeScheduler** / **IRuntimeSubsystem** 统一 Tick 管线，**EntitySubsystem** 挂 **Update** 组）已与托管 **Phase 4** 打通 Tick、Async、Scene 内存模型、Object、AssetRegistry 等转发路径；**`BuildRuntime`** 覆写 **`entity.*`** 至 **EntitySubsystem**。托管 **P0 Entity**（**VisionGal.Managed.Entity**）在 **EntityWorld** 上已具备泛型与 **Type** 键查询／**GetComponent**／**RemoveComponent** 及 **GetComponentCount**（MANAGED **§2.5.2–§2.5.5**），与 Native 场景 **NNEntityHandle** 仍无自动桥接；**`NNEntityAPI`** 当前为 ABI 冒烟 + **`getRuntimeTick`** 可观测性，**不代表**托管 **EntityWorld** 已镜像（见 MANAGED **§2.7.1**）。对称托管 **VisionGal.Managed.RuntimeLoop** 见 MANAGED **§0.3**。 |
-| **开发进展** | 各 Native 模块以 `Docs/MODULE_ARCHITECTURE_AND_PROGRESS.md` 末尾「开发进展」为准。托管 **Phase 6 托管子阶段**（slice 2–5，见 MANAGED **§2.3–§2.6.1**）为纯 C#，**不**修改本树 C++ 与 ABI layout；托管 **P0 Entity** slice 2–5 见 MANAGED **§2.5.2**–**§2.5.5**。**Phase 6** 整体在 MANAGED **§2** 仍标「进行中」系因 **Native Gameplay／存档** 子项未纳入 ABI 表。 |
-| **未完成项** | **NNRuntimeScene** Phase 4+（**Prefab**、**NNSceneRuntime** Streaming、**SceneSubsystem** 数据桥接、C API **`NN_AddComponent`**、JSON 导出）；**VGEntitySystem**（完整实体子系统实现）未开始；**`NNEntityAPI`** Kernel 首包已随 **layout v5** 纳入并由 **BuildRuntime** 转发（见 MANAGED **§2.7.1**）。**EntityWorld** 与 Native **数据镜像**仍为后续文档与实现项。**NevernessRuntime-Engine** 与 **NevernessRuntime-Asset** 真实资源管线、**EngineLegacy** 全量 Adapter 仍为长期项；Lua 栈迁移依赖产品与 Graph 路线。**P0-1 Scheduler 首包**已落地（**Timing → FrameContext → RuntimeScheduler**；**Async** 主线程队列仍为占位）；**Kernel 化第一阶段**其余项（Scene Runtime、双世界深化、Graph.Runtime、Managed Component）见 Managed **§0.3**。索引性清单见 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§2.7**。 |
-| **未来规划** | 与 Managed [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§5** 总表及 **§5.1** Native 子项草案对齐：**NNNativeEngineAPI** 扩展 Gameplay／存档子表、**NNRuntimeEngineServices** 转发、跨栈测试；并继续 **P0+**（**VGEntitySystem**、Scene Runtime、Graph）与 **Kernel 化**。**Runtime Kernel 第一阶段路线**（Scheduler、Scene Runtime、双世界实体等）见 Managed **§0**。 |
+| ImGuiColorTextEdit | 代码文本编辑器 |
+| ImNodeEditor | 节点编辑器 |
+| Imnodes | 轻量节点编辑器 |
+| ImGuizmo | 3D Gizmo 操作 |
+| FontAwesome / MaterialDesign / Kenney 图标字体 | 图标集 |
+| ImWindow / IDockSpaceWindow | 窗口/Dock 框架 |
+| ImTaskManager | 后台任务管理器 |
+| ImFontManager | 字体图集管理器 |
+| ImToast | Toast 通知系统 |
 
-## 6. 未来规划（与 Managed §5 / §5.1 对齐）
+#### 核心类型
 
-| 维度 | 说明 |
+| 类型 | 说明 |
 |------|------|
-| **完成度（Native 侧）** | **Phase 6 Native 子项**（Gameplay／存档服务表与文件 I/O）尚未纳入 **NNNativeEngineAPI**；托管侧 **GameplaySessionSnapshot** 等已提供 JSON 容器，可与 Native 层「文件句柄 + 字节缓冲」策略对接（见 Managed **§5.1**）。 |
-| **开发进展** | 以 **NNNativeEngineAPI**、**NNRuntimeEngineServices** 模块文档「开发进展」为准；ABI 变更前维持 Stub 与现有 Host 测试路径。 |
-| **未完成项** | 与 Managed **§2.7** 一致：**VGEntitySystem**（完整实现）与 **EntityWorld**／Native **数据镜像**；Gameplay／存档 Native 表、**VGSceneRuntime**、Graph、Lua 迁出等。**`NNEntityAPI`** Kernel 首包已纳入 **layout v5**，**`BuildRuntime`** 已覆写 **`entity.*`**（MANAGED **§2.7.1**）。 |
-| **推进顺序（索引）** | 详细四步草案见 [MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md](../Managed/MANAGED_RUNTIME_ARCHITECTURE_AND_PROGRESS.md) **§5.1**（布局与版本、最小 I/O 语义、Runtime 转发、产品化）。 |
+| `ImWindow` | 窗口基类：`OnGUI()`、`OnWindowGUI()` |
+| `IDockSpaceWindow` | Dock 窗口，通过 `InsertWindow()` 托管子窗口 |
+| `ImPanelInterface` | 面板接口：`FrameUpdate()`、`OnGUI()`、`IsAsync()` |
+| `ImTaskInterface` | 后台任务：进度、强制停止、完成状态 |
+| `ImTaskManager` | 单例任务管理器 |
+| `ImFontManager` | 单例字体管理器 |
 
-### 6.1 里程碑补充
+#### 依赖
 
-| 日期 | 进展 |
+| 依赖 | 用途 |
 |------|------|
-| 2026-05-18 | 根文档新增 **§6**；与 Managed **§5.1** Phase 6 Native 子项推进顺序交叉引用。 |
-| 2026-05-19 | 与 MANAGED **§2.5.2** 对齐：托管 **EntityWorld** 查询 API；**Native NNEntityAPI** 仍见 MANAGED **§2.7.1**。 |
-| 2026-05-20 | 与 MANAGED **§2.5.3** 对齐：**GetComponentCount** 与注释补强；**Runtime Kernel** 子系统与托管 **EntityWorld** 仍无自动桥接。 |
-| 2026-05-21 | 与 MANAGED **§2.5.4** 对齐：**Type** 键查询仍纯 C#；**`NNEntityAPI`** 子表尚未落地（已由 **layout v4** 取代，见下行）。 |
-| 2026-05-15 | 与 MANAGED **§2.5.5** 对齐：**Type** 键 **GetComponent**／**RemoveComponent** 仍纯 C#；**Kernel** 无新增转发。 |
-| 2026-05-15 | **layout v4**：**`NNEntityAPI`** 子表骨架已纳入 **NNNativeEngineAPI**；**`getServiceAbiToken`** 冒烟；**VGEntitySystem** 仍未实现。 |
-| 2026-05-15 | **layout v5**：**`getRuntimeTick`**；**EntitySubsystem**；**`BuildRuntime`** 覆写 **`entity.*`**；**VGEntitySystem** 完整实现仍为后续。 |
-| 2026-05-20 | **layout v6**：**`NNApplicationAPI`**；**NNRuntimeApplication**（SDL 窗口/事件泵）；**`BuildRuntime`** 覆写 **`application.*`**；托管 **Neverness.Runtime.Application**。 |
-| 2026-05-21 | **layout v10**：**`NNVfsAPI`** 追加 `getAbsolutePath`。 |
-| 2026-05-21 | **layout v9**：**`NNVfsAPI`** 追加路径工具与 Native FS 刷新。 |
-| 2026-05-21 | **layout v8**：**`NNVfsAPI`**；**NNRuntimeVFS** `VfsRuntimeApi`；托管 **Neverness.Runtime.VFS**。 |
-| 2026-05-21 | **layout v7**：**`NNApplicationAPI`** 瘦身；**`NNWindowAPI`** + **WindowRegistry**；**`WindowHost`** 托管门面。 |
-| 2026-05-15 | **P0 文档对齐**：**§5.2** 表头日期与 Phase 表「行程级 Runtime」行补充 **Entity** 转发语义；与 MANAGED **§2.5**／**§2.7.1** 一致。 |
-| 2026-05-15 | **P0 对齐审计**：与 MANAGED **§2.7.1** 再核一致；**MERGED** 由 **merge_docs** 源文档刷新；无 Native 行为变更。 |
-| 2026-05-15 | **§0 对齐**：新增本文 **§0** Native 主线分工；与 Managed **§0**（2026 原则、P0–P2）互链；**§5.2** 未来规划指向 **Kernel 化** 阶段表。 |
-| 2026-05-15 | **§0 主线叙事落地**：Managed **§0** 写入 **P0-1～P0-5**／**P1／P2** 表；本根 **§5.2** 未完成项补 **§0.3** 索引。 |
-| 2026-05-17 | **NNRuntimeScene Phase 1** 与 MANAGED **§0.3 P0-2/P0-3** 对齐：**NNEntity** 打包与 **EntityHandle** 一致；仍无 C# 自动桥接。 |
-| 2026-05-17 | **NNRuntimeScene Phase 2–3**：Native 字段反射首包 + **VGSC** 序列化；**Engine→Scene** 适配已合入；仍无 C# 自动组件绑定。 |
-| 2026-05-15 | **P0-1**：**NNRuntimeEngine** 内 **RuntimeScheduler**；**EntitySubsystem** 实现 **IRuntimeSubsystem**；托管 **VisionGal.Managed.RuntimeLoop**；**ABI layout** 未变。 |
+| Freetype | 字体渲染 |
+| SDL3 | 平台后端 |
+| NNRuntimeDiligent | Diligent 渲染后端（迁移中） |
+| NNRuntimeRender | 渲染设备接口 |
+
+---
+
+### 3.8 NNRuntimeRenderer2D — 2D 精灵渲染器
+
+**路径：** `Runtime/NNRuntimeRenderer2D`
+**目标：** `NevernessRuntime-Renderer2D` (SHARED)
+
+#### 职责
+
+极简 2D 精灵批量渲染管线。接受 `SpriteDrawCommand` 数组，通过 Diligent 后端批量绘制四边形。
+
+#### 核心类型
+
+| 类型 | 说明 |
+|------|------|
+| `Renderer2D` | 主渲染器：`Initialize` → `BeginScene` → `Submit` → `EndScene` |
+| `CameraData` | 相机 MVP 矩阵（4×4 列主序）、正交宽高、近远平面 |
+| `FramebufferObject` | 离屏渲染目标，`GetColorTextureHandle()` 返回 ImGui 可用的 handle |
+| `BuiltinShaders` | 内联 HLSL 着色器：MVP 变换、UV 矩形映射、翻转、颜色着色、linear→sRGB |
+
+#### 渲染流程
+
+```
+BeginScene(CameraData, width, height)  ← 设置 VP 矩阵、绑定 RTV/DSV
+  Submit(vector<SpriteDrawCommand>)    ← 收集精灵实例
+EndScene()                             ← 批量绘制、sRGB 转换
+```
+
+#### 依赖
+
+`NNRuntimeRender`、`NNRuntimeDiligent`、`NevernessCore-Core`。
+
+---
+
+### 3.9 NNRuntimeRmlui — RmlUI 集成
+
+**路径：** `Runtime/NNRuntimeRmlui`
+**目标：** `NevernessRuntime-RmlUI` (SHARED)
+
+#### 职责
+
+RmlUI（HTML/CSS UI 中间件）集成模块。管理文档生命周期，通过 Diligent 后端渲染。
+
+#### 双层架构
+
+```
+系统层 (NNRmlUISystem)
+├── Tick(deltaTime)
+├── SetDrawItems(vector<RmlDrawItem>)  ← 纯数据，无 ECS 依赖
+└── GetDrawList() → RmlDrawList
+
+渲染层 (RmlUIRenderer)
+├── Initialize(INNRenderDevice*, w, h)
+├── Sync(DrawList)                     ← 同步文档状态
+├── Update()                           ← RmlUI 逻辑更新
+├── Render(DrawList, ViewTarget)       ← 渲染到屏幕
+├── RenderToTexture(...)               ← 渲染到纹理
+└── ProcessInput(...)                  ← 输入转发
+```
+
+#### 核心类型
+
+| 类型 | 说明 |
+|------|------|
+| `RmlDrawItem` | 纯数据：entity、assetGuid、assetPath、sortOrder、viewTarget |
+| `NNRmlUIViewTarget` | 枚举：Scene / Game / Both |
+| `RmlDocumentRuntime` | 每文档状态：`Rml::ElementDocument*`、状态（Ready/Hidden/Failed） |
+| `IRmlUIAssetResolver` | GUID→路径解析接口 |
+
+#### 依赖
+
+`RmlUi`、`SDL3`、`NNRuntimeRender`、`NNRuntimeDiligent`、`NNRuntimeLua`、`NNRuntimeCore`、`NNRuntimeVFS`。
+
+---
+
+### 3.10 NNRuntimePak — Pak 打包系统
+
+**路径：** `Runtime/NNRuntimePak`
+**目标：** `NevernessRuntime-Pak` (SHARED)
+
+#### 职责
+
+自定义 `.pak` 打包格式，用于捆绑游戏资产。支持 Zstd/LZ4 压缩和 AES 加密。
+
+#### Pak 文件格式
+
+```
+PakHeader (Magic: "VGPC", major/minor version, index offset)
+PakEntry[] (offset, encryption, compression, compressed/original size, CRC32, path)
+FileData[] (实际文件数据)
+```
+
+#### 核心类型
+
+| 类型 | 说明 |
+|------|------|
+| `PakFileReader` | 读取 pak 文件、解压条目、CRC32 校验 |
+| `PakFileWriter` | 写入 pak 文件、压缩、加密 |
+| `VGPackageFileSystem` | 实现 `IFileSystem`，可挂载到 VFS |
+| `VGPackageFile` | 实现 `IFile`，内存流读取 |
+| `MountPackageFileSystem()` | 便捷挂载函数 |
+
+#### 依赖
+
+`SDL3`、`NevernessCore-Core`、`NevernessRuntime-VFS`。
+
+---
+
+### 3.11 NNRuntimeMedia — 音视频播放
+
+**路径：** `Runtime/NNRuntimeMedia`
+**目标：`NevernessRuntime-Media` (SHARED)
+
+#### 职责
+
+音频播放（SDL3 音频输出）、视频播放（FFmpeg 解码 + SDL3 音频 + GPU 纹理更新）、视频纹理管理。
+
+#### 核心类型
+
+| 类型 | 说明 |
+|------|------|
+| `NNAudioPlayer` | `Play/Stop/Pause/Resume/Seek`，音高/音量/循环控制 |
+| `NNVideoPlayer` | `Play/Stop/Update(deltaTime)`，每帧解码 + 纹理更新 |
+| `NNVideoTexture` | RGBA 帧 → GPU 纹理桥接，`GetImGuiHandle()` |
+| `NNAudioClipAsset` | 运行时音频资产：PCM 数据、采样率、声道、时长 |
+| `NNVideoClipAsset` | 运行时视频资产：RGBA 帧、宽高、FPS、时长 |
+| `NNMediaRuntimeAPI` | C ABI 函数指针表，供 C# P/Invoke |
+
+#### 状态
+
+部分源文件仍为 TODO（AudioClipAsset.cpp、VideoClipAsset.cpp、VideoPlayer.cpp）。
+
+#### 依赖
+
+`NevernessCore-Core`、`NevernessCore-MediaCore`、`NevernessRuntime-VFS`。
+
+---
+
+### 3.12 NNRuntimeEngineServices — 引擎服务桥接
+
+**路径：** `Runtime/NNRuntimeEngineServices`
+**目标：** `NevernessRuntime-EngineServices` (SHARED)
+
+#### 职责
+
+ABI 运行时转发层。将 NNAPI 的 Stub 定义桥接到真实的引擎运行时实现。
+
+#### 导出函数
+
+| 函数 | 说明 |
+|------|------|
+| `NNNativeApi_GetDefaultTable()` | 返回进程级单例 `NNNativeAPI*` |
+| `NNNativeApiTable_BuildDefault()` | 填充函数指针表为真实实现 |
+| `NNNativeEngineApiTable_BuildRuntime()` | 覆写 Timing/Async/Scene/Asset 字段 |
+| `NNEngineRuntimeHost_Initialize()` | 引擎初始化 |
+| `NNEngineRuntimeHost_Tick()` | 引擎 Tick |
+| `NNEngineRuntimeHost_Shutdown()` | 引擎关闭 |
+
+#### 内部源文件
+
+- `NativeEngineRuntimeApiTable.cpp` — 运行时转发
+- `AsyncWaitRuntimeApi.cpp` — 异步等待实现
+- `ViewportRenderRuntimeApi.cpp` — 视口渲染实现
+- `ViewportSurfaceRuntimeApi.cpp` — 视口表面实现
+- `DiligentRuntimeApi.cpp` — Diligent 设备访问
+- `ManagedExports.cpp` — 托管导出
+- `ManagedRuntimeServices.cpp` — 托管运行时服务
+
+#### 依赖
+
+| 依赖 | 链接方式 |
+|------|---------|
+| NNAPI | PUBLIC |
+| NNRuntimeEngine | PRIVATE |
+| NNRuntimeApplication | PRIVATE |
+| NNRuntimeVFS | PRIVATE |
+| NNRuntimeRmlui | PRIVATE |
+| NNRuntimeDiligent | PRIVATE |
+| NNRuntimeRenderer2D | PRIVATE |
+
+---
+
+## 4. Legacy 模块（已废弃）
+
+### 4.1 NNEngineLegacy
+
+原单体引擎模块。包含动画系统、引擎管理器、游戏/渲染管线、Lua 接口、渲染原语、场景系统。**已冻结**，缺少 `NNRuntimeRmlui/Interface/UIDocumentLegacy.h`。
+
+### 4.2 NNRuntimeScene
+
+ECS 优先的运行时场景图。实体/世界管理、组件系统（Transform、Relationship、Tag、Camera、SpriteRenderer、AudioSource、Script、RmlUIDocument、VideoPlayer）、场景系统、JSON 序列化器、Prefab 支持。**已被 C# Friflo ECS 替代**。
+
+### 4.3 NNRuntimeAsset
+
+运行时资产管理系统。资产管理器、Handle 表、资产缓存、流式加载、GUID 表、依赖表。**已被 C# AssetManager 替代**。
+
+### 4.4 NNRuntimeAssetLegacy
+
+旧版资产类型实现（Audio、GalGame、LuaScript、Scene、Texture、UI、Video）。**已被 C# 资产系统替代**。
+
+### 4.5 NNRuntimeRHI
+
+原始 OpenGL 3 渲染硬件接口。**已被 NNRuntimeDiligent 替代**。
+
+### 4.6 NNRuntimeRenderAssets
+
+GPU 渲染资产管理。CPU 资产 → GPU 资源桥接。**已被 C# 资产管线替代**。
+
+### 4.7 NNRuntimeImageCodec
+
+stb_image 图像解码。静态库。
+
+### 4.8 NNRuntimeManagedBridge / NNRuntimeManagedHostLegacy
+
+原生→托管运行时桥接（CoreCLR hostfxr）。**已被 Entry.Bootstrap + 产品 hostfxr 替代**。
+
+### 4.9 NNRuntimeMediaAssets
+
+媒体资产烘焙管线。**存在编译错误，待修复**。
+
+---
+
+## 5. 依赖关系图
+
+```
+                        ┌─────────────────────────────────────────────┐
+                        │              C# 托管代码                      │
+                        └──────────────────┬──────────────────────────┘
+                                           │ P/Invoke (C ABI)
+                        ┌──────────────────▼──────────────────────────┐
+                        │        NNRuntimeEngineServices              │
+                        │        (ABI 转发层)                          │
+                        └──┬───┬───┬───┬───┬───┬───┬──────────────────┘
+                           │   │   │   │   │   │   │
+              ┌────────────┘   │   │   │   │   │   └──────────────┐
+              ▼                ▼   ▼   ▼   ▼   ▼                  ▼
+    ┌─────────────┐  ┌────────┐ ┌───┐ ┌───┐ ┌───┐ ┌──────┐  ┌──────────┐
+    │Application  │  │Engine  │ │VFS│ │Lua│ │Rml│ │Render│  │Renderer2D│
+    │(SDL3 宿主)  │  │(调度器)│ │   │ │   │ │UI │ │ er2D │  │          │
+    └──────┬──────┘  └───┬────┘ └─┬─┘ └─┬─┘ └─┬─┘ └──┬───┘  └────┬─────┘
+           │             │        │     │      │       │           │
+           ▼             ▼        ▼     ▼      ▼       ▼           ▼
+    ┌──────────────────────────────────────────────────────────────────┐
+    │                        NNRuntimeCore                             │
+    │              (接口、事件、输入、视口、数据)                          │
+    └──────────────────────────────┬───────────────────────────────────┘
+                                   │
+    ┌──────────────────────────────▼───────────────────────────────────┐
+    │                        NNRuntimeImGui                            │
+    │              (ImGui 核心 + 扩展 + Diligent 后端)                   │
+    └──────────────────────────────┬───────────────────────────────────┘
+                                   │
+    ┌──────────────────────────────▼───────────────────────────────────┐
+    │                     NNRuntimeDiligent                             │
+    │              (Diligent Engine COM 绑定)                           │
+    └──────────────────────────────┬───────────────────────────────────┘
+                                   │
+    ┌──────────────────────────────▼───────────────────────────────────┐
+    │                        NNRuntimePak                              │
+    │              (.pak 打包/解包 + VFS 挂载)                           │
+    └──────────────────────────────┬───────────────────────────────────┘
+                                   │
+    ┌──────────────────────────────▼───────────────────────────────────┐
+    │                       NNRuntimeMedia                             │
+    │              (音频/视频播放 + GPU 纹理)                            │
+    └──────────────────────────────┬───────────────────────────────────┘
+                                   │
+    ┌──────────────────────────────▼───────────────────────────────────┐
+    │                         NNAPI                                    │
+    │              (ABI 契约 + Stub，零依赖)                             │
+    └──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6. ABI 层架构
+
+### 设计原则
+
+1. **所有跨 DLL 边界的调用通过 `extern "C"` 函数指针表**，不使用 C++ vtable
+2. **Handle 化**：所有对象引用使用 `uint64_t` opaque handle
+3. **POD 结构体**：跨边界传递的数据必须是 POD（Plain Old Data）
+4. **调用约定**：统一使用 `NN_ENGINE_ABI_STDCALL`（Windows: `__stdcall`）
+5. **内存管理**：输出缓冲区用 `malloc` 分配，调用方用 `freeBuffer` 释放，避免 CRT 不匹配
+
+### 调用链
+
+```
+C# 代码
+  ↓ P/Invoke
+NNNativeAPI (函数指针表)
+  ↓ 函数指针调用
+NNRuntimeEngineServices (转发层)
+  ↓ 直接调用
+NNRuntimeApplication / NNRuntimeEngine / NNRuntimeVFS / ... (真实实现)
+```
+
+### API 版本管理
+
+- `NNNativeAPI.apiVersion`：顶层版本号，当前 **3**
+- `NNNativeEngineAPI` 布局版本：当前 **32**
+- 版本不匹配时 C# 端应拒绝加载
+
+---
+
+## 7. 构建系统
+
+### CMake 配置
+
+- **C++ 标准**：C++17
+- **构建工具**：CMake 3.x
+- **编译器标志**：`/MP`（MSVC 并行编译）、`/utf-8`（UTF-8 源/执行字符集）
+
+### 模块类型
+
+| 类型 | 说明 |
+|------|------|
+| STATIC | 编译进最终 DLL，不单独分发（NNAPI、NNRuntimeEngine、NNRuntimeApplication） |
+| SHARED | 独立 DLL，有导出宏（NNRuntimeCore、NNRuntimeVFS、NNRuntimeLua 等） |
+
+### 导出宏约定
+
+每个 SHARED 模块有自己的导出宏：
+
+| 模块 | 导出宏 |
+|------|--------|
+| NNRuntimeCore | `NN_RUNTIME_CORE_API` |
+| NNRuntimeVFS | `NN_RUNTIME_VFS_API` |
+| NNRuntimeApplication | `NN_RUNTIME_APPLICATION_API` |
+| NNRuntimeLua | `NNRUNTIMELUA_EXPORT` |
+
+### 活跃构建目标（CMakeLists.txt）
+
+```cmake
+add_subdirectory("NNRuntimeLua")
+add_subdirectory("NNRuntimeVFS")
+add_subdirectory("NNRuntimePak")
+add_subdirectory("NNRuntimeImGui")
+add_subdirectory("NNRuntimeCore")
+add_subdirectory("NNRuntimeApplication")
+add_subdirectory("NNAPI")
+add_subdirectory("NNRuntimeEngine")
+add_subdirectory("NNRuntimeRenderer2D")
+add_subdirectory("NNRuntimeEngineServices")
+add_subdirectory("NNRuntimeRmlui")
+add_subdirectory("NNRuntimeMedia")
+```
+
+---
+
+## 8. 当前状态与进度
+
+### 已完成
+
+- [x] NNAPI ABI 契约层（Layout Version 32, API Version 3）
+- [x] NNRuntimeCore 核心框架（接口、事件、输入、视口）
+- [x] NNRuntimeEngine 引擎调度器（5 Tick Group + 固定步长）
+- [x] NNRuntimeApplication 应用宿主（SDL3 + 事件队列 + ImGui 层）
+- [x] NNRuntimeVFS 虚拟文件系统（Native/Memory/Zip 三后端）
+- [x] NNRuntimeLua Lua 5.4.8 VM
+- [x] NNRuntimeImGui ImGui 1.92.3 + 扩展集
+- [x] NNRuntimeRenderer2D 2D 精灵批量渲染
+- [x] NNRuntimeRmlui RmlUI 集成（Diligent 后端）
+- [x] NNRuntimePak Pak 打包系统
+- [x] NNRuntimeEngineServices ABI 转发层
+- [x] C# AssetManager 全面接管（C++/C# Asset ABI 已删除）
+- [x] C# Friflo ECS 替代 NNRuntimeScene
+
+### 进行中
+
+- [ ] NNRuntimeMedia 音视频播放（部分源文件 TODO）
+- [ ] ImGui OpenGL3 → Diligent 后端迁移
+- [ ] Viewport RenderCommands 修复验证
+
+### 待做
+
+- [ ] NNRuntimeMediaAssets 编译错误修复
+- [ ] Path 类型迁移 Phase 5
+- [ ] Legacy 模块清理（确认无依赖后删除）
+
+---
+
+## 附录：模块文件统计
+
+| 模块 | 头文件 | 源文件 | 总计 |
+|------|--------|--------|------|
+| NNAPI | ~15 | ~12 | ~27 |
+| NNRuntimeCore | 27 | 17 | 44 |
+| NNRuntimeEngine | 12 | 6 | 18 |
+| NNRuntimeApplication | 13 | 10 | 23 |
+| NNRuntimeVFS | 21 | 4 | 25 |
+| NNRuntimeLua | ~10 | ~20 | ~30 |
+| NNRuntimeImGui | ~30 | ~15 | ~45 |
+| NNRuntimeRenderer2D | ~5 | ~3 | ~8 |
+| NNRuntimeRmlui | ~20 | ~8 | ~28 |
+| NNRuntimePak | ~8 | ~4 | ~12 |
+| NNRuntimeMedia | ~10 | ~6 | ~16 |
+| NNRuntimeEngineServices | ~5 | ~10 | ~15 |
+| **合计** | **~176** | **~115** | **~291** |

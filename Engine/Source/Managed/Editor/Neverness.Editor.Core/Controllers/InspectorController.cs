@@ -86,6 +86,17 @@ public class InspectorController : IController
         }
     }
 
+    /// <summary>添加组件（便捷重载——自动通过 ViewModel 中的 EntityId 查找实体）。</summary>
+    public void AddComponent(ulong componentTypeId)
+    {
+        if (!_viewModel.HasSelection) return;
+
+        var entity = _inspectorService.GetEntityById(_viewModel.SelectedEntityId);
+        if (entity == null || !entity.IsValid) return;
+
+        AddComponent(entity, componentTypeId);
+    }
+
     /// <summary>移除组件。</summary>
     public void RemoveComponent(IEntity entity, ulong componentTypeId)
     {

@@ -26,7 +26,7 @@ public sealed class BuiltinMenuContributor : IMenuContributor
         registry.Register(new EditorMenuItem("Edit/Paste", SortOrder: 600, Icon: "📌", Shortcut: "Ctrl+V"));
         registry.Register(new EditorMenuItem("Edit/sep2", IsSeparator: true, SortOrder: 700));
         registry.Register(new EditorMenuItem("Edit/Project Settings...", SortOrder: 800, Icon: "⚙️"));
-        registry.Register(new EditorMenuItem("Edit/Preferences...", SortOrder: 900, Icon: "🔧"));
+        registry.Register(new EditorMenuItem("Edit/Preferences...", CommandId: "editor.preferences", SortOrder: 900, Icon: "🔧"));
 
         // Window 菜单
         registry.Register(new EditorMenuItem("Window/Rendering", SortOrder: 100, Icon: "🖥️"));

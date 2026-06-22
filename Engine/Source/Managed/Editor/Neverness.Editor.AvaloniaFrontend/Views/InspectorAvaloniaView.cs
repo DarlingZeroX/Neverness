@@ -3,6 +3,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Neverness.Editor.Core.Controllers;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.AvaloniaFrontend.Inspectors;
 
@@ -146,14 +147,66 @@ public class InspectorAvaloniaView : AvaloniaViewBase
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
         };
-        addButton.Click += (_, _) =>
-        {
-            // TODO: 显示 Add Component 弹窗
-            Console.WriteLine("[Inspector] Add Component clicked");
-        };
+        addButton.Click += (_, _) => ShowAddComponentPopup(addButton);
         bottomBar.Children.Add(addButton);
 
         return bottomBar;
+    }
+
+    /// <summary>显示 Add Component 弹出菜单——列出尚未添加的组件类型。</summary>
+    private void ShowAddComponentPopup(Button target)
+    {
+        if (_controller == null || _viewModel == null || !_viewModel.HasSelection)
+            return;
+
+        // 获取可用组件类型，过滤掉已有的
+        var availableTypes = _controller.GetAvailableComponentTypes();
+        var currentTypeIds = _viewModel.Components.Select(c => c.TypeId).ToHashSet();
+        var filtered = availableTypes.Where(t => !currentTypeIds.Contains(t.TypeId)).ToList();
+
+        var menu = new ContextMenu
+        {
+            Background = new SolidColorBrush(Color.Parse("#FF2D2D30")),
+            Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC")),
+            BorderBrush = new SolidColorBrush(Color.Parse("#FF3F3F46")),
+            BorderThickness = new Avalonia.Thickness(1),
+            MinWidth = 180,
+        };
+
+        if (filtered.Count == 0)
+        {
+            // 没有可添加的组件
+            menu.Items.Add(new Avalonia.Controls.MenuItem
+            {
+                Header = "No more components available.",
+                IsEnabled = false,
+            });
+        }
+        else
+        {
+            foreach (var type in filtered)
+            {
+                var typeId = type.TypeId; // 闭包捕获局部变量
+                var item = new Avalonia.Controls.MenuItem
+                {
+                    Header = type.DisplayName,
+                };
+                item.Click += (_, _) =>
+                {
+                    try
+                    {
+                        _controller.AddComponent(typeId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"[Inspector] 添加组件失败 '{type.DisplayName}': {ex.Message}");
+                    }
+                };
+                menu.Items.Add(item);
+            }
+        }
+
+        menu.Open(target);
     }
 
     /// <summary>ViewModel 属性变更——确保在 Avalonia UI 线程执行。</summary>
