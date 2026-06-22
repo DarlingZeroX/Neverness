@@ -218,11 +218,39 @@ internal sealed class PlayModeController
     {
         if (_prePlaySnapshot == null) return;
 
-        // TODO: 实现快照恢复
-        // 原子替换——不触发事件风暴，不影响其他子场景
-        Console.WriteLine("[PlayModeController] RestoreSnapshot 待实现");
+        // 保存原始场景标识（卸载后快照世界的 AssetPath 是快照路径，需要还原）
+        var originalSceneGuid = _prePlaySnapshot.SceneGuid;
+        var originalAssetPath = _prePlaySnapshot.SceneAssetPath;
 
+        // 1. 卸载当前活动场景 → 触发 SceneUnloaded，渲染子系统清理旧资源
+        var sceneName = _sceneManager.ActiveWorld?.Name;
+        if (string.IsNullOrEmpty(sceneName))
+        {
+            Console.Error.WriteLine("[PlayModeController] RestoreSnapshot 失败: 无活动场景名称");
+            return;
+        }
+
+        _sceneManager.UnloadScene(sceneName);
+
+        // 2. 从快照路径完整加载 → 触发 SceneLoaded + SceneActivated，渲染子系统重建
+        if (!_sceneManager.LoadSceneFromAsset(sceneName, _prePlaySnapshot.SnapshotPath))
+        {
+            Console.Error.WriteLine($"[PlayModeController] RestoreSnapshot 失败: 无法从快照加载 {_prePlaySnapshot.SnapshotPath}");
+            return;
+        }
+
+        // 3. 还原原始场景标识（快照路径是临时的，AssetPath 应指向原始场景文件）
+        var restoredWorld = _sceneManager.ActiveWorld;
+        if (restoredWorld != null)
+        {
+            restoredWorld.AssetGuid = originalSceneGuid;
+            restoredWorld.AssetPath = originalAssetPath;
+        }
+
+        // 4. 恢复编辑器选中实体
         _editorState.SelectedEntityHandle = _prePlaySnapshot.SelectedEntityHandle;
+
+        Console.WriteLine("[PlayModeController] 快照已恢复");
     }
 
     private void CleanupSnapshot()

@@ -118,31 +118,66 @@ public abstract class EntityBehaviour
     }
 
     /// <summary>
-    /// 获取组件引用。
+    /// 获取组件引用——直接修改生效，无需 SetComponent。
     /// </summary>
     /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
-    /// <returns>组件引用。</returns>
+    /// <returns>组件的 ref 引用，修改直接反映到 ECS。</returns>
+    /// <remarks>
+    /// ⚠️ 组件不存在时抛异常。对核心组件可在 OnCreate 中验证，对可选组件请先使用 HasComponent 检查。
+    ///
+    /// <code>
+    /// // ✅ 正确：ref 直接修改
+    /// ref var transform = ref GetComponent&lt;TransformComponent&gt;();
+    /// transform.Position.X += Speed * deltaTime;
+    ///
+    /// // ❌ 错误：值拷贝，修改不会生效
+    /// TransformComponent transform = GetComponent&lt;TransformComponent&gt;();
+    /// transform.Position.X = 10;  // 修改的是拷贝，不影响 ECS
+    /// </code>
+    /// </remarks>
     protected ref T GetComponent<T>() where T : struct, IComponent
     {
         return ref Entity.GetComponent<T>();
     }
 
     /// <summary>
-    /// 尝试获取组件。
+    /// 尝试获取组件（只读快照，适用于条件判断和数据读取）。
     /// </summary>
     /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
-    /// <param name="component">输出的组件值。</param>
+    /// <param name="component">输出的组件值拷贝。</param>
     /// <returns>是否成功获取。</returns>
+    /// <remarks>
+    /// ⚠️ out 参数是值拷贝，修改不会反映到 ECS。
+    /// 如需修改组件，请使用 HasComponent + GetComponent 组合：
+    /// <code>
+    /// if (HasComponent&lt;TransformComponent&gt;())
+    /// {
+    ///     ref var transform = ref GetComponent&lt;TransformComponent&gt;();
+    ///     transform.Position.X = 10;  // 直接生效
+    /// }
+    /// </code>
+    /// </remarks>
     protected bool TryGetComponent<T>(out T component) where T : struct, IComponent
     {
         return Entity.TryGetComponent(out component);
     }
 
     /// <summary>
-    /// 写入组件数据。
+    /// 写入组件数据（批量覆盖整个组件）。
     /// </summary>
     /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="data">要写入的组件数据。</param>
+    /// <remarks>
+    /// 适用于从外部数据源恢复组件状态。日常单字段修改请直接使用 ref GetComponent：
+    /// <code>
+    /// // ✅ 推荐：ref 直接修改单个字段
+    /// ref var transform = ref GetComponent&lt;TransformComponent&gt;();
+    /// transform.Position.X = 10;
+    ///
+    /// // 适用场景：从序列化数据恢复整个组件
+    /// SetComponent(savedTransformData);
+    /// </code>
+    /// </remarks>
     protected void SetComponent<T>(T data) where T : struct, IComponent
     {
         Entity.SetComponent(data);

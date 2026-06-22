@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Neverness.Editor.Assets;
+using Neverness.Editor.AvaloniaFrontend.PropertyEditor;
+using Neverness.Editor.AvaloniaFrontend.Styling;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Script.Private;
 using Neverness.Gameplay;
@@ -57,10 +59,10 @@ public class ScriptInspector : AvaloniaInspectorBase
         {
             Text = scriptName,
             FontSize = 12,
-            Foreground = isBound ? ColorText : new SolidColorBrush(Color.Parse("#FFFFCC66")),
+            Foreground = isBound ? EditorTheme.TextPrimary : new SolidColorBrush(Color.Parse("#FFFFCC66")),
             Margin = new Thickness(8, 4),
         };
-        content.Children.Add(CreatePropertyRow("Script", statusLabel));
+        content.Children.Add(PropertyRows.Create("Script", statusLabel));
 
         // ── ScriptTypeId 只读显示 ──
         var typeIdLabel = new TextBlock
@@ -71,12 +73,12 @@ public class ScriptInspector : AvaloniaInspectorBase
             Foreground = new SolidColorBrush(Color.Parse("#FF656565")),
             Margin = new Thickness(8, 2),
         };
-        content.Children.Add(CreatePropertyRow("TypeId", typeIdLabel));
+        content.Children.Add(PropertyRows.Create("TypeId", typeIdLabel));
 
         // ── 脚本选择下拉（已注册的脚本类型列表） ──
         var scriptCombo = CreateScriptTypeComboBox(currentScriptTypeId, entityHandle,
             statusLabel, typeIdLabel);
-        content.Children.Add(CreatePropertyRow("Type", scriptCombo));
+        content.Children.Add(PropertyRows.Create("Type", scriptCombo));
 
         // ── 拖拽目标区域 ──
         var dropTarget = CreateScriptDropTarget(currentScriptTypeId, entityHandle,
@@ -106,7 +108,7 @@ public class ScriptInspector : AvaloniaInspectorBase
     // ── 脚本类型下拉 ──
 
     /// <summary>创建脚本类型选择下拉框。</summary>
-    private static Control CreateScriptTypeComboBox(ulong currentTypeId, ulong entityHandle,
+    private Control CreateScriptTypeComboBox(ulong currentTypeId, ulong entityHandle,
         TextBlock statusLabel, TextBlock typeIdLabel)
     {
         var registry = GameplayContext.Current?.ScriptRegistry;
@@ -157,7 +159,7 @@ public class ScriptInspector : AvaloniaInspectorBase
             // 刷新 UI
             var (name, bound) = ResolveScriptName(sc.ScriptTypeId);
             statusLabel.Text = name;
-            statusLabel.Foreground = bound ? ColorText : new SolidColorBrush(Color.Parse("#FFFFCC66"));
+            statusLabel.Foreground = bound ? EditorTheme.TextPrimary : new SolidColorBrush(Color.Parse("#FFFFCC66"));
             typeIdLabel.Text = sc.ScriptTypeId == 0 ? "—" : $"0x{sc.ScriptTypeId:X16}";
         };
 
@@ -167,14 +169,14 @@ public class ScriptInspector : AvaloniaInspectorBase
     // ── 拖拽目标 ──
 
     /// <summary>创建脚本拖拽目标区域。</summary>
-    private static Control CreateScriptDropTarget(ulong currentTypeId, ulong entityHandle,
+    private Control CreateScriptDropTarget(ulong currentTypeId, ulong entityHandle,
         TextBlock statusLabel, TextBlock typeIdLabel)
     {
         var placeholderText = currentTypeId == 0
             ? "Drop .cs script here"
             : "Drop .cs to change";
 
-        var dropTarget = CreateAssetDropTarget(
+        var dropTarget = AssetReferenceField.Create(
             placeholderText,
             assetPath => ApplyScriptAsset(assetPath, entityHandle, statusLabel, typeIdLabel),
             width: 160, height: 48);
@@ -189,7 +191,7 @@ public class ScriptInspector : AvaloniaInspectorBase
     }
 
     /// <summary>拖拽 .cs 脚本资产后，更新 ECS 中 ScriptComponent 的 ScriptTypeId。</summary>
-    private static void ApplyScriptAsset(string assetPath, ulong entityHandle,
+    private void ApplyScriptAsset(string assetPath, ulong entityHandle,
         TextBlock statusLabel, TextBlock typeIdLabel)
     {
         // 1. 从路径查找资产 GUID
@@ -247,7 +249,7 @@ public class ScriptInspector : AvaloniaInspectorBase
         // 5. 刷新 UI
         var (name, bound) = ResolveScriptName(scriptTypeId);
         statusLabel.Text = name;
-        statusLabel.Foreground = bound ? ColorText : new SolidColorBrush(Color.Parse("#FFFFCC66"));
+        statusLabel.Foreground = bound ? EditorTheme.TextPrimary : new SolidColorBrush(Color.Parse("#FFFFCC66"));
         typeIdLabel.Text = $"0x{scriptTypeId:X16}";
 
         Console.WriteLine($"[ScriptInspector] 脚本已绑定: {assetPath} → TypeId=0x{scriptTypeId:X16} ({name})");
@@ -267,21 +269,4 @@ public class ScriptInspector : AvaloniaInspectorBase
         return hash;
     }
 
-    /// <summary>通过 IInspectorService 获取实体。</summary>
-    private static Runtime.Scene.IEntity? GetEntityById(int entityId)
-    {
-        try
-        {
-            var context = EditorCoreModule.Context;
-            if (context.TryGetService<IInspectorService>(out var inspectorService))
-            {
-                return inspectorService.GetEntityById(entityId);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[ScriptInspector] 获取实体失败: {ex.Message}");
-        }
-        return null;
-    }
 }

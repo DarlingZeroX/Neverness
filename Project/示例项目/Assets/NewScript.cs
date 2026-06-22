@@ -5,6 +5,7 @@
 // ============================================================================
 
 using Neverness.Gameplay;
+using Neverness.Runtime.Scene.Components;
 
 namespace Game.Scripts
 {
@@ -52,18 +53,24 @@ namespace Game.Scripts
         public override void OnUpdate(float deltaTime)
         {
             base.OnUpdate(deltaTime);
-            Debug.Log("NewScript: OnUpdate1");
-            //TransformComponent? transform = GetComponent<TransformComponent>();
-            //Debug.Log("Has TransformComponent:" + HasComponent<TransformComponent>());
-            //Debug.Log("HasValue TransformComponent:" + transform.HasValue);
-            //if (transform.HasValue)
-            //{
-            //    Debug.Log("Current Position: " + transform.Value.Position);
-            //    TransformComponent com = transform.Value;
-            //    com.Position.X = 10;
-            //    SetComponent(com);
-            //}
-            // TODO: 在此添加游戏逻辑
+
+            // ── 直接通过 ref 修改组件，无需 SetComponent ──
+            // Transform 是 EntityBehaviour 的快捷属性，返回 ref TransformComponent
+            Transform.Position.X += Speed * deltaTime;
+            Debug.Log(Transform.Position.X);
+
+            // 获取其他组件也是 ref，修改直接生效
+            // ref var camera = ref GetComponent<CameraComponent>();
+            // camera.FieldOfView = 60f;
+
+            // 可选组件先检查再获取
+            // if (HasComponent<RigidbodyComponent>())
+            // {
+            //     ref var rb = ref GetComponent<RigidbodyComponent>();
+            //     rb.Velocity = Vector3.Zero;
+            // }
+
+            //TODO: 在此添加游戏逻辑
         }
 
         /// <summary>

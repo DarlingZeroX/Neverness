@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Neverness.Editor.Assets;
+using Neverness.Editor.AvaloniaFrontend.PropertyEditor;
 using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
@@ -31,21 +32,60 @@ public class SpriteRendererInspector : AvaloniaInspectorBase
     {
         var content = new StackPanel { Spacing = 0 };
 
-        // ── 纹理（支持从 ContentBrowser 拖拽资产）──
-        // 获取当前组件的纹理 GUID，用于显示初始纹理名称
-        string? currentTextureName = GetCurrentTextureName(entityHandle);
+        // 获取当前组件数据
+        var entity = GetEntityById((int)entityHandle);
+        if (entity == null || !entity.IsValid || !entity.Has<SpriteRendererComponent>())
+            return CreateCollapsiblePanel("SpriteRenderer", content);
 
-        var textureArea = CreateAssetDropTarget(
+        ref var sprite = ref entity.Get<SpriteRendererComponent>();
+
+        // ── 纹理（支持从 ContentBrowser 拖拽资产）──
+        string? currentTextureName = GetCurrentTextureName(entityHandle);
+        var textureArea = AssetReferenceField.Create(
             currentTextureName ?? "Drop\nTexture",
             assetPath => ApplyTextureAsset(assetPath, entityHandle));
-        content.Children.Add(CreatePropertyRow("Texture", textureArea));
+        content.Children.Add(PropertyRows.Create("Texture", textureArea));
 
-        // 颜色 RGBA（与 Transform 的 XYZ 同风格）
-        content.Children.Add(CreateColorRow("Color", 255, 255, 255, 255));
+        // ── 颜色 RGBA（0-255 显示，内部 0-1）──
+        content.Children.Add(VectorFields.CreateColor("Color",
+            sprite.ColorR * 255f, sprite.ColorG * 255f, sprite.ColorB * 255f, sprite.ColorA * 255f,
+            (r, g, b, a) =>
+            {
+                if (!entity.IsValid || !entity.Has<SpriteRendererComponent>()) return;
+                ref var s = ref entity.Get<SpriteRendererComponent>();
+                s.ColorR = r / 255f;
+                s.ColorG = g / 255f;
+                s.ColorB = b / 255f;
+                s.ColorA = a / 255f;
+            }));
 
-        content.Children.Add(CreatePropertyRow("Layer", CreateNumericInput(0, 1)));
-        content.Children.Add(CreatePropertyRow("Sort Order", CreateNumericInput(0, 1)));
-        content.Children.Add(CreatePropertyRow("Blend Mode", CreateComboBox(new[] { "Alpha", "Additive", "Multiply" })));
+        // ── Layer ──
+        content.Children.Add(PropertyRows.Create("Layer",
+            NumericFields.CreateUInt(sprite.Layer, 1, value =>
+            {
+                if (!entity.IsValid || !entity.Has<SpriteRendererComponent>()) return;
+                ref var s = ref entity.Get<SpriteRendererComponent>();
+                s.Layer = value;
+            })));
+
+        // ── Sort Order ──
+        content.Children.Add(PropertyRows.Create("Sort Order",
+            NumericFields.CreateUInt(sprite.SortOrder, 1, value =>
+            {
+                if (!entity.IsValid || !entity.Has<SpriteRendererComponent>()) return;
+                ref var s = ref entity.Get<SpriteRendererComponent>();
+                s.SortOrder = value;
+            })));
+
+        // ── Blend Mode ──
+        var blendModes = Enum.GetNames<BlendMode>();
+        content.Children.Add(PropertyRows.Create("Blend Mode",
+            NumericFields.CreateCombo(blendModes, (int)sprite.Blend, index =>
+            {
+                if (!entity.IsValid || !entity.Has<SpriteRendererComponent>()) return;
+                ref var s = ref entity.Get<SpriteRendererComponent>();
+                s.Blend = (BlendMode)index;
+            })));
 
         return CreateCollapsiblePanel("SpriteRenderer", content);
     }
@@ -53,7 +93,7 @@ public class SpriteRendererInspector : AvaloniaInspectorBase
     /// <summary>
     /// 拖拽纹理资产到 Inspector 后，更新 ECS 中 SpriteRendererComponent 的 TextureAsset 字段。
     /// </summary>
-    private static void ApplyTextureAsset(string assetPath, ulong entityHandle)
+    private void ApplyTextureAsset(string assetPath, ulong entityHandle)
     {
         // 1. 从路径查找资产 GUID
         var virtualPath = new NVirtualPath(assetPath);
@@ -86,7 +126,7 @@ public class SpriteRendererInspector : AvaloniaInspectorBase
     /// <summary>
     /// 获取当前 SpriteRenderer 组件的纹理资产名称（用于初始化显示）。
     /// </summary>
-    private static string? GetCurrentTextureName(ulong entityHandle)
+    private string? GetCurrentTextureName(ulong entityHandle)
     {
         try
         {
@@ -110,23 +150,4 @@ public class SpriteRendererInspector : AvaloniaInspectorBase
         return null;
     }
 
-    /// <summary>
-    /// 通过 IInspectorService 获取实体（避免直接依赖 internal 的 SceneModuleImp）。
-    /// </summary>
-    private static Runtime.Scene.IEntity? GetEntityById(int entityId)
-    {
-        try
-        {
-            var context = EditorCoreModule.Context;
-            if (context.TryGetService<IInspectorService>(out var inspectorService))
-            {
-                return inspectorService.GetEntityById(entityId);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[SpriteRenderer] 获取实体失败: {ex.Message}");
-        }
-        return null;
-    }
 }

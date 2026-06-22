@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Neverness.Editor.AvaloniaFrontend.Styling;
 using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Scene.Components;
 
@@ -132,7 +133,7 @@ public class CameraInspector : AvaloniaInspectorBase
     // ── 投影类型选择行 ──
 
     /// <summary>创建投影类型选择行（Perspective / Orthographic）。</summary>
-    private static Control CreateProjectionTypeRow(bool isOrthographic, Action<bool> onValueChanged)
+    private Control CreateProjectionTypeRow(bool isOrthographic, Action<bool> onValueChanged)
     {
         var row = new DockPanel
         {
@@ -146,7 +147,7 @@ public class CameraInspector : AvaloniaInspectorBase
             Width = 80,
             FontSize = 12,
             VerticalAlignment = VerticalAlignment.Center,
-            Foreground = ColorLabel,
+            Foreground = EditorTheme.TextSecondary,
         };
         DockPanel.SetDock(labelText, Avalonia.Controls.Dock.Left);
         row.Children.Add(labelText);
@@ -177,7 +178,7 @@ public class CameraInspector : AvaloniaInspectorBase
     /// <summary>
     /// 创建可编辑的浮点输入行，DragFloat 值变化时回调 onValueChanged。
     /// </summary>
-    private static Control CreateEditableFloatRow(string label, float initialValue,
+    private Control CreateEditableFloatRow(string label, float initialValue,
         float increment, float min, float max, Action<float> onValueChanged)
     {
         var row = new DockPanel
@@ -192,7 +193,7 @@ public class CameraInspector : AvaloniaInspectorBase
             Width = 80,
             FontSize = 12,
             VerticalAlignment = VerticalAlignment.Center,
-            Foreground = ColorLabel,
+            Foreground = EditorTheme.TextSecondary,
         };
         DockPanel.SetDock(labelText, Avalonia.Controls.Dock.Left);
         row.Children.Add(labelText);
@@ -218,23 +219,4 @@ public class CameraInspector : AvaloniaInspectorBase
         return row;
     }
 
-    // ── 实体访问 ──
-
-    /// <summary>通过 IInspectorService 获取实体（与 SpriteRendererInspector 一致的模式）。</summary>
-    private static Runtime.Scene.IEntity? GetEntityById(int entityId)
-    {
-        try
-        {
-            var context = EditorCoreModule.Context;
-            if (context.TryGetService<IInspectorService>(out var inspectorService))
-            {
-                return inspectorService.GetEntityById(entityId);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[CameraInspector] 获取实体失败: {ex.Message}");
-        }
-        return null;
-    }
 }

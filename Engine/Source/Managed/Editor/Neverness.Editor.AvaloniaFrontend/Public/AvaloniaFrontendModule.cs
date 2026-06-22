@@ -138,12 +138,11 @@ public static class AvaloniaFrontendModule
         try
         {
             var context = CoreModuleImp.Context;
-            if (context.TryGetService<IEditorEventBus>(out var eventBus))
-            {
-                eventBus.Subscribe(EditorEventType.ShowToast, OnShowToast);
-                eventBus.Subscribe(EditorEventType.PlayModeChanged, OnPlayModeChanged);
-                Console.WriteLine("[AvaloniaFrontendModule] 已订阅 ShowToast 和 PlayModeChanged 事件");
-            }
+            // 直接使用 context.Events，因为 IEditorEventBus 没有注册为服务
+            var eventBus = context.Events;
+            eventBus.Subscribe(EditorEventType.ShowToast, OnShowToast);
+            eventBus.Subscribe(EditorEventType.PlayModeChanged, OnPlayModeChanged);
+            Console.WriteLine("[AvaloniaFrontendModule] 已订阅 ShowToast 和 PlayModeChanged 事件");
         }
         catch (Exception ex)
         {

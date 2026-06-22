@@ -1,38 +1,47 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Neverness.Editor.AvaloniaFrontend.ContentBrowser;
+using Neverness.Editor.AvaloniaFrontend.Styling;
+using Neverness.Editor.Core.Public;
 
 namespace Neverness.Editor.AvaloniaFrontend.Inspectors;
 
 /// <summary>
 /// Avalonia Inspector 基类——组件检查器的抽象基类。
+/// 只定义 Inspector 接口和 Inspector 专属的 UI 方法。
+/// 通用属性编辑控件请使用 PropertyEditor 命名空间下的类。
 /// </summary>
 public abstract class AvaloniaInspectorBase
 {
-    // ── 颜色常量 ──
-    protected static readonly SolidColorBrush ColorBg = new(Color.Parse("#FF1E1E1E"));
-    protected static readonly SolidColorBrush ColorHeaderBg = new(Color.Parse("#FF2D2D30"));
-    protected static readonly SolidColorBrush ColorRowBg = new(Color.Parse("#FF252526"));
-    protected static readonly SolidColorBrush ColorLabel = new(Color.Parse("#FF999999"));
-    protected static readonly SolidColorBrush ColorText = new(Color.Parse("#FFCCCCCC"));
-    protected static readonly SolidColorBrush ColorAxisX = new(Color.Parse("#FFF44336"));
-    protected static readonly SolidColorBrush ColorAxisY = new(Color.Parse("#FF4CAF50"));
-    protected static readonly SolidColorBrush ColorAxisZ = new(Color.Parse("#FF2196F3"));
-    protected static readonly SolidColorBrush ColorR = new(Color.Parse("#FFF44336"));
-    protected static readonly SolidColorBrush ColorG = new(Color.Parse("#FF4CAF50"));
-    protected static readonly SolidColorBrush ColorB = new(Color.Parse("#FF2196F3"));
-    protected static readonly SolidColorBrush ColorA = new(Color.Parse("#FFCCCCCC"));
-
     public abstract string DisplayName { get; }
     public abstract bool CanInspect(ulong typeId);
     public abstract Control CreateInspector(ulong sceneHandle, ulong entityHandle, ulong typeId);
 
-    // ── 可折叠组件面板 ──
+    // ── 实体访问（所有子类共用）──
 
+    /// <summary>通过 IInspectorService 获取实体，日志前缀自动使用子类名。</summary>
+    protected Runtime.Scene.IEntity? GetEntityById(int entityId)
+    {
+        try
+        {
+            var context = EditorCoreModule.Context;
+            if (context.TryGetService<IInspectorService>(out var inspectorService))
+            {
+                return inspectorService.GetEntityById(entityId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[{GetType().Name}] 获取实体失败: {ex.Message}");
+        }
+        return null;
+    }
+
+    // ── 可折叠组件面板（Inspector 专属）──
+
+    /// <summary>创建可折叠的组件面板。</summary>
     protected static Control CreateCollapsiblePanel(string title, Control content, bool isExpanded = true)
     {
         var root = new DockPanel { Margin = new Thickness(0, 0, 0, 2) };
@@ -40,9 +49,9 @@ public abstract class AvaloniaInspectorBase
         // 头部
         var header = new DockPanel
         {
-            Background = ColorHeaderBg,
+            Background = EditorTheme.HeaderBackground,
             Height = 26,
-            Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            Cursor = new Cursor(StandardCursorType.Hand),
         };
 
         var expandIcon = new TextBlock
@@ -52,7 +61,7 @@ public abstract class AvaloniaInspectorBase
             FontSize = 9,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
-            Foreground = ColorLabel,
+            Foreground = EditorTheme.TextSecondary,
         };
         DockPanel.SetDock(expandIcon, Avalonia.Controls.Dock.Left);
         header.Children.Add(expandIcon);
@@ -64,7 +73,7 @@ public abstract class AvaloniaInspectorBase
             FontWeight = FontWeight.Bold,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 0),
-            Foreground = ColorText,
+            Foreground = EditorTheme.TextPrimary,
         };
         header.Children.Add(titleBlock);
 
@@ -83,337 +92,5 @@ public abstract class AvaloniaInspectorBase
         };
 
         return root;
-    }
-
-    // ── 属性行 ──
-
-    protected static Control CreatePropertyRow(string label, Control editor)
-    {
-        var row = new DockPanel
-        {
-            Margin = new Thickness(8, 3, 4, 3),
-            MinHeight = 24,
-        };
-
-        var labelBlock = new TextBlock
-        {
-            Text = label,
-            Width = 90,
-            FontSize = 12,
-            VerticalAlignment = VerticalAlignment.Center,
-            Foreground = ColorLabel,
-        };
-        DockPanel.SetDock(labelBlock, Avalonia.Controls.Dock.Left);
-        row.Children.Add(labelBlock);
-
-        row.Children.Add(editor);
-        return row;
-    }
-
-    // ── 三轴输入（ImGui 风格：一行 Label + X/Y/Z 并排）──
-
-    /// <summary>创建三轴并排输入行（Position / Rotation / Scale），轴标签可点击重置。</summary>
-    protected static Control CreateVector3Row(string label, float x, float y, float z,
-        float increment = 0.1f, float resetValue = 0f)
-    {
-        var row = new DockPanel
-        {
-            Margin = new Thickness(8, 4, 8, 4),
-            MinHeight = 24,
-        };
-
-        var labelText = new TextBlock
-        {
-            Text = label,
-            Width = 80,
-            FontSize = 12,
-            VerticalAlignment = VerticalAlignment.Center,
-            Foreground = ColorLabel,
-        };
-        DockPanel.SetDock(labelText, Avalonia.Controls.Dock.Left);
-        row.Children.Add(labelText);
-
-        var axes = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            Spacing = 2,
-        };
-
-        axes.Children.Add(CreateAxisInput("X", ColorAxisX, x, increment, resetValue));
-        axes.Children.Add(CreateAxisInput("Y", ColorAxisY, y, increment, resetValue));
-        axes.Children.Add(CreateAxisInput("Z", ColorAxisZ, z, increment, resetValue));
-
-        row.Children.Add(axes);
-        return row;
-    }
-
-    /// <summary>创建 RGBA 颜色行，标签可点击重置为 255。</summary>
-    protected static Control CreateColorRow(string label, float r, float g, float b, float a)
-    {
-        var row = new DockPanel
-        {
-            Margin = new Thickness(8, 4, 8, 4),
-            MinHeight = 24,
-        };
-
-        var labelText = new TextBlock
-        {
-            Text = label,
-            Width = 80,
-            FontSize = 12,
-            VerticalAlignment = VerticalAlignment.Center,
-            Foreground = ColorLabel,
-        };
-        DockPanel.SetDock(labelText, Avalonia.Controls.Dock.Left);
-        row.Children.Add(labelText);
-
-        var axes = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            Spacing = 2,
-        };
-
-        axes.Children.Add(CreateAxisInput("R", ColorR, r, 1f, 255f));
-        axes.Children.Add(CreateAxisInput("G", ColorG, g, 1f, 255f));
-        axes.Children.Add(CreateAxisInput("B", ColorB, b, 1f, 255f));
-        axes.Children.Add(CreateAxisInput("A", ColorA, a, 1f, 255f));
-
-        row.Children.Add(axes);
-        return row;
-    }
-
-    /// <summary>创建单轴输入（轴标签按钮 + DragFloat），点击轴标签重置数值。</summary>
-    private static Control CreateAxisInput(string axisLabel, SolidColorBrush color, float value, float speed, float resetValue)
-    {
-        var panel = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            Spacing = 2,
-        };
-
-        // 轴标签按钮：毛玻璃背景，点击重置数值
-        var dragInput = new DragFloat
-        {
-            Value = value,
-            Speed = speed,
-            MinWidth = 70,
-        };
-
-        var labelBtn = new Button
-        {
-            Content = axisLabel,
-            FontSize = 11,
-            FontWeight = FontWeight.Bold,
-            Width = 20,
-            Height = 22,
-            Padding = new Thickness(0),
-            Background = new SolidColorBrush(Color.FromArgb(180, 55, 55, 60)),
-            BorderThickness = new Thickness(0),
-            CornerRadius = new CornerRadius(3),
-            Foreground = color,
-            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
-            Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-        };
-        labelBtn.Click += (_, _) => dragInput.Value = resetValue;
-        panel.Children.Add(labelBtn);
-
-        panel.Children.Add(dragInput);
-
-        return panel;
-    }
-
-    // ── Slider 行（给 SpriteRenderer 等用）──
-
-    /// <summary>创建单个 Slider 行（标签 + 轴标签 + Slider + 数值显示）。</summary>
-    protected static Control CreateSliderRow(string label, string axisLabel, SolidColorBrush axisColor,
-        float value, float min = -10000f, float max = 10000f, float tickFreq = 1f)
-    {
-        var row = new DockPanel
-        {
-            Margin = new Thickness(12, 2, 8, 2),
-            Height = 22,
-        };
-
-        var axis = new TextBlock
-        {
-            Text = axisLabel,
-            Width = 16,
-            FontSize = 11,
-            FontWeight = FontWeight.Bold,
-            VerticalAlignment = VerticalAlignment.Center,
-            Foreground = axisColor,
-        };
-        DockPanel.SetDock(axis, Avalonia.Controls.Dock.Left);
-        row.Children.Add(axis);
-
-        var valueText = new TextBlock
-        {
-            Text = value.ToString("F2"),
-            Width = 50,
-            FontSize = 11,
-            VerticalAlignment = VerticalAlignment.Center,
-            Foreground = ColorText,
-            TextAlignment = TextAlignment.Right,
-            Margin = new Thickness(4, 0, 0, 0),
-        };
-        DockPanel.SetDock(valueText, Avalonia.Controls.Dock.Right);
-        row.Children.Add(valueText);
-
-        var slider = new Slider
-        {
-            Minimum = min,
-            Maximum = max,
-            Value = value,
-            TickFrequency = tickFreq,
-            IsSnapToTickEnabled = false,
-            VerticalAlignment = VerticalAlignment.Center,
-            Height = 16,
-        };
-        slider.PropertyChanged += (_, e) =>
-        {
-            if (e.Property.Name == nameof(Slider.Value))
-                valueText.Text = slider.Value.ToString("F2");
-        };
-        row.Children.Add(slider);
-
-        return row;
-    }
-
-    // ── 资产拖拽目标（用于纹理、Mesh 等资产引用字段）──
-
-    /// <summary>创建可接收资产拖拽的引用字段。</summary>
-    /// <param name="placeholderText">未拖入资产时显示的占位文字（如 "Drop Texture"）。</param>
-    /// <param name="onAssetDropped">拖入资产后的回调（参数为资产路径）。</param>
-    /// <param name="width">控件宽度，默认 80。</param>
-    /// <param name="height">控件高度，默认 80。</param>
-    protected static Control CreateAssetDropTarget(
-        string placeholderText,
-        Action<string>? onAssetDropped,
-        double width = 80,
-        double height = 80)
-    {
-        // 拖拽高亮边框颜色
-        var highlightBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x21, 0x96, 0xF3));
-        var normalBorderBrush = new SolidColorBrush(Color.Parse("#FF3F3F46"));
-        var normalBg = new SolidColorBrush(Color.Parse("#FF2D2D30"));
-
-        // 资产名称显示
-        var assetLabel = new TextBlock
-        {
-            Text = placeholderText,
-            FontSize = 10,
-            Foreground = new SolidColorBrush(Color.Parse("#FF656565")),
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            TextAlignment = TextAlignment.Center,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            MaxLines = 2,
-            Margin = new Thickness(4),
-        };
-
-        var dropArea = new Border
-        {
-            Width = width,
-            Height = height,
-            Background = normalBg,
-            BorderBrush = normalBorderBrush,
-            BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(4),
-            Child = assetLabel,
-            Cursor = new Cursor(StandardCursorType.Hand),
-        };
-
-        // 检查拖拽数据是否包含资产格式
-        static bool HasAssetData(DragEventArgs e)
-        {
-            return e.DataTransfer.Contains(AssetDragFormats.SystemPath) ||
-                   e.DataTransfer.Contains(AssetDragFormats.VirtualPath);
-        }
-
-        // 拖拽进入 → 高亮
-        Avalonia.Input.DragDrop.AddDragEnterHandler(dropArea, (_, e) =>
-        {
-            if (HasAssetData(e))
-            {
-                dropArea.BorderBrush = highlightBrush;
-                dropArea.BorderThickness = new Thickness(2);
-                e.DragEffects = DragDropEffects.Copy;
-            }
-            else
-            {
-                e.DragEffects = DragDropEffects.None;
-            }
-        });
-
-        // 拖拽悬停 → 保持高亮
-        Avalonia.Input.DragDrop.AddDragOverHandler(dropArea, (_, e) =>
-        {
-            e.DragEffects = HasAssetData(e) ? DragDropEffects.Copy : DragDropEffects.None;
-        });
-
-        // 拖拽离开 → 取消高亮
-        Avalonia.Input.DragDrop.AddDragLeaveHandler(dropArea, (_, _) =>
-        {
-            dropArea.BorderBrush = normalBorderBrush;
-            dropArea.BorderThickness = new Thickness(1);
-        });
-
-        // 拖拽放下 → 接收资产
-        Avalonia.Input.DragDrop.AddDropHandler(dropArea, (_, e) =>
-        {
-            // 恢复边框
-            dropArea.BorderBrush = normalBorderBrush;
-            dropArea.BorderThickness = new Thickness(1);
-
-            var assetPath = AssetDragFormats.GetAssetPathFromDrag(e);
-            if (!string.IsNullOrEmpty(assetPath))
-            {
-                // 显示资产名称
-                var name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
-                assetLabel.Text = name;
-                assetLabel.Foreground = new SolidColorBrush(Color.Parse("#FFCCCCCC"));
-
-                onAssetDropped?.Invoke(assetPath);
-                e.DragEffects = DragDropEffects.Copy;
-            }
-            else
-            {
-                e.DragEffects = DragDropEffects.None;
-            }
-        });
-
-        // 允许接收拖拽
-        Avalonia.Input.DragDrop.SetAllowDrop(dropArea, true);
-
-        return dropArea;
-    }
-
-    // ── 数值输入框（保留给 Camera 等需要精确输入的场景）──
-
-    protected static NumericUpDown CreateNumericInput(float value, float increment = 0.1f)
-    {
-        return new NumericUpDown
-        {
-            Value = (decimal)value,
-            Increment = (decimal)increment,
-            FormatString = "F2",
-            MinWidth = 70,
-            Height = 22,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-        };
-    }
-
-    // ── ComboBox ──
-
-    protected static ComboBox CreateComboBox(string[] items, int selectedIndex = 0)
-    {
-        return new ComboBox
-        {
-            ItemsSource = items,
-            SelectedIndex = selectedIndex,
-            MinWidth = 100,
-            Height = 22,
-        };
     }
 }

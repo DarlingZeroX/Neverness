@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Neverness.Editor.AvaloniaFrontend.Styling;
 using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Scene.Components;
 
@@ -107,7 +108,7 @@ public class TransformInspector : AvaloniaInspectorBase
             Width = 80,
             FontSize = 12,
             VerticalAlignment = VerticalAlignment.Center,
-            Foreground = ColorLabel,
+            Foreground = EditorTheme.TextSecondary,
         };
         DockPanel.SetDock(labelText, Avalonia.Controls.Dock.Left);
         row.Children.Add(labelText);
@@ -119,9 +120,9 @@ public class TransformInspector : AvaloniaInspectorBase
         };
 
         // 创建三轴（轴标签按钮 + DragFloat），保持 DragFloat 引用
-        var (panelX, dragX) = CreateAxisWithButton("X", ColorAxisX, initialValue.X, increment, resetValue);
-        var (panelY, dragY) = CreateAxisWithButton("Y", ColorAxisY, initialValue.Y, increment, resetValue);
-        var (panelZ, dragZ) = CreateAxisWithButton("Z", ColorAxisZ, initialValue.Z, increment, resetValue);
+        var (panelX, dragX) = CreateAxisWithButton("X", EditorTheme.AxisX, initialValue.X, increment, resetValue);
+        var (panelY, dragY) = CreateAxisWithButton("Y", EditorTheme.AxisY, initialValue.Y, increment, resetValue);
+        var (panelZ, dragZ) = CreateAxisWithButton("Z", EditorTheme.AxisZ, initialValue.Z, increment, resetValue);
 
         // 监听值变化，聚合为 Vector3 回调
         void NotifyChange()
@@ -239,23 +240,4 @@ public class TransformInspector : AvaloniaInspectorBase
     private static float ToDegrees(float radians) => radians * (180f / MathF.PI);
     private static float ToRadians(float degrees) => degrees * (MathF.PI / 180f);
 
-    // ── 实体访问 ──
-
-    /// <summary>通过 IInspectorService 获取实体（与 SpriteRendererInspector 一致的模式）。</summary>
-    private static Runtime.Scene.IEntity? GetEntityById(int entityId)
-    {
-        try
-        {
-            var context = EditorCoreModule.Context;
-            if (context.TryGetService<IInspectorService>(out var inspectorService))
-            {
-                return inspectorService.GetEntityById(entityId);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[TransformInspector] 获取实体失败: {ex.Message}");
-        }
-        return null;
-    }
 }

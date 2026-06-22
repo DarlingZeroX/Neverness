@@ -34,7 +34,7 @@
       }
     },
     {
-      "id": 3,
+      "id": 2,
       "name": "RmlUI Document",
       "parentId": -1,
       "components": {
@@ -65,7 +65,7 @@
       }
     },
     {
-      "id": 2,
+      "id": 3,
       "name": "Sprite",
       "parentId": -1,
       "components": {
@@ -92,6 +92,47 @@
         },
         "SpriteRendererComponent": {
           "textureAsset": "c6e81ad72b9030409da690c014160e5a",
+          "materialAsset": "00000000000000000000000000000000",
+          "colorR": 1,
+          "colorG": 1,
+          "colorB": 1,
+          "colorA": 1,
+          "uvU0": 0,
+          "uvV0": 0,
+          "uvU1": 1,
+          "uvV1": 1,
+          "layer": 0,
+          "sortOrder": 0,
+          "blend": "Alpha",
+          "flags": "Visible"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Sprite",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "SpriteRendererComponent": {
+          "textureAsset": "749830377da0524c847afa4ee4b38208",
           "materialAsset": "00000000000000000000000000000000",
           "colorR": 1,
           "colorG": 1,

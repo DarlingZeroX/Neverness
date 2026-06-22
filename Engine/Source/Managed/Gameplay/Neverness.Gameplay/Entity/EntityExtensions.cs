@@ -18,11 +18,21 @@ public static class EntityExtensions
     // ========================================================================
 
     /// <summary>
-    /// 获取或添加组件。
+    /// 获取或添加组件（不存在时自动添加默认值）。
     /// </summary>
     /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="entity">Entity 实例。</param>
-    /// <returns>组件值。</returns>
+    /// <returns>组件值拷贝。</returns>
+    /// <remarks>
+    /// ⚠️ 返回的是值拷贝。如需修改已存在的组件，请使用 ref GetComponent：
+    /// <code>
+    /// // 需要修改时：先确保存在，再拿 ref
+    /// if (!entity.HasComponent&lt;TransformComponent&gt;())
+    ///     entity.AddComponent&lt;TransformComponent&gt;();
+    /// ref var transform = ref entity.GetComponent&lt;TransformComponent&gt;();
+    /// transform.Position.X = 10;  // 直接生效
+    /// </code>
+    /// </remarks>
     public static T GetOrAddComponent<T>(this Entity entity) where T : struct, IComponent
     {
         if (entity.TryGetComponent<T>(out var component))
@@ -33,11 +43,15 @@ public static class EntityExtensions
     }
 
     /// <summary>
-    /// 安全获取组件（无组件时返回默认值）。
+    /// 安全获取组件快照（无组件时返回默认值，适用于只读场景）。
     /// </summary>
     /// <typeparam name="T">组件类型（必须是 struct，实现 IComponent）。</typeparam>
     /// <param name="entity">Entity 实例。</param>
-    /// <returns>组件值或默认值。</returns>
+    /// <returns>组件值拷贝或默认值。</returns>
+    /// <remarks>
+    /// ⚠️ 返回的是值拷贝，修改不会反映到 ECS。
+    /// 如需修改组件，请使用 HasComponent + GetComponent 组合。
+    /// </remarks>
     public static T GetComponentOrDefault<T>(this Entity entity) where T : struct, IComponent
     {
         if (entity.TryGetComponent<T>(out var component))

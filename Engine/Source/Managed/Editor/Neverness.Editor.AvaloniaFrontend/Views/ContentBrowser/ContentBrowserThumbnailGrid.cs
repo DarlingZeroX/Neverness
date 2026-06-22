@@ -7,55 +7,63 @@ using Neverness.Editor.AvaloniaFrontend.ContentBrowser;
 using Neverness.Editor.AvaloniaFrontend.DragDrop;
 using Neverness.Editor.Core.Controllers;
 using Neverness.Editor.Core.ViewModels;
-using Neverness.Runtime.Assets;
+using Neverness.Editor.AvaloniaFrontend.Views.ContentBrowser.ThumbnailGrid;
 using static Neverness.Editor.AvaloniaFrontend.Views.ContentBrowser.ContentBrowserColors;
 
 namespace Neverness.Editor.AvaloniaFrontend.Views.ContentBrowser;
 
 /// <summary>
 /// 内容浏览器缩略图网格——右侧文件/文件夹缩略图列表。
+/// 职责：容器布局、文件列表刷新、协调子组件。
 /// </summary>
 internal sealed class ContentBrowserThumbnailGrid
 {
     private readonly ContentBrowserViewModel _viewModel;
     private readonly ContentBrowserController _controller;
-    private readonly Action<string>? _onOpenDirectory;
-    private readonly Action<string>? _onOpenFile;
-    private readonly Action<int>? _onSelectionChanged;
 
+    // 子组件
+    private readonly ThumbnailPresenter _presenter;
+    private readonly ThumbnailRenameService _renameService;
+
+    // UI 控件
     private WrapPanel? _fileGrid;
     private ScrollViewer? _fileScroll;
     private Panel? _selectionCanvas;
     private Border? _selectionBorder;
     private RubberBandSelection? _rubberBand;
 
-    // 选中状态
-    private readonly HashSet<string> _selectedPaths = new();
-    private readonly Dictionary<string, Border> _thumbnailBorders = new();
-    private readonly Dictionary<string, TextBlock> _nameLabels = new();
-
-    // 右键菜单状态
-    private string? _selectedItemPath;
-    private string? _selectedItemName;
-    private bool _selectedItemIsDirectory;
-
-    // 拖拽资产状态
-    private bool _isDragPending;
-    private Point _dragStartPos;
-    private PointerPressedEventArgs? _dragPressedArgs; // 保存原始按下事件用于 DoDragDropAsync
-    private const double DragThreshold = 5.0;
-
     // 外部文件拖入相关
     private AvaloniaDropHandler? _dropHandler;
-    private Border? _dropHighlight; // 拖拽高亮边框
+    private Border? _dropHighlight;
 
     /// <summary>选中的路径集合。</summary>
-    internal IReadOnlySet<string> SelectedPaths => _selectedPaths;
+    internal IReadOnlySet<string> SelectedPaths => _presenter.SelectedPaths;
 
     /// <summary>当前选中的项信息（用于右键菜单）。</summary>
-    internal string? SelectedItemPath => _selectedItemPath;
-    internal string? SelectedItemName => _selectedItemName;
-    internal bool SelectedItemIsDirectory => _selectedItemIsDirectory;
+    internal string? SelectedItemPath => _presenter.SelectedItemPath;
+    internal string? SelectedItemName => _presenter.SelectedItemName;
+    internal bool SelectedItemIsDirectory => _presenter.SelectedItemIsDirectory;
+
+    /// <summary>右键菜单请求事件（点击缩略图项）。</summary>
+    internal event Action<Control, string, string, bool>? OnContextMenuRequested
+    {
+        add => _presenter.OnContextMenuRequested += value;
+        remove => _presenter.OnContextMenuRequested -= value;
+    }
+
+    /// <summary>背景右键菜单请求事件（点击空白区域）。</summary>
+    internal event Action<Control>? OnBackgroundContextMenuRequested
+    {
+        add => _presenter.OnBackgroundContextMenuRequested += value;
+        remove => _presenter.OnBackgroundContextMenuRequested -= value;
+    }
+
+    /// <summary>重命名提交事件（path, newName）。</summary>
+    internal event Action<string, string>? OnRenameCommitted
+    {
+        add => _renameService.OnRenameCommitted += value;
+        remove => _renameService.OnRenameCommitted -= value;
+    }
 
     internal ContentBrowserThumbnailGrid(
         ContentBrowserViewModel viewModel,
@@ -66,9 +74,10 @@ internal sealed class ContentBrowserThumbnailGrid
     {
         _viewModel = viewModel;
         _controller = controller;
-        _onOpenDirectory = onOpenDirectory;
-        _onOpenFile = onOpenFile;
-        _onSelectionChanged = onSelectionChanged;
+
+        // 初始化子组件
+        _renameService = new ThumbnailRenameService();
+        _presenter = new ThumbnailPresenter(controller, _renameService, onOpenDirectory, onOpenFile, onSelectionChanged);
     }
 
     /// <summary>创建缩略图区域控件（含左侧内阴影）。</summary>
@@ -165,12 +174,12 @@ internal sealed class ContentBrowserThumbnailGrid
         // 框选管理器
         _rubberBand = new RubberBandSelection(
             _fileScroll, _selectionCanvas, _fileGrid, _selectionBorder,
-            OnRubberBandSelectionChanged);
+            _presenter.OnRubberBandSelectionChanged);
         _rubberBand.Attach();
 
         // 事件
-        _fileScroll.PointerPressed += (_, _) => { _selectedItemPath = null; };
-        _fileScroll.PointerReleased += OnFileAreaPointerReleased;
+        _fileScroll.PointerPressed += (_, _) => _presenter.SetSelectedItem(null, null, false);
+        _fileScroll.PointerReleased += (s, e) => _presenter.OnFileAreaPointerReleased(s, e, _fileScroll!);
 
         // 添加拖拽高亮边框（初始隐藏）
         _dropHighlight = new Border
@@ -186,8 +195,6 @@ internal sealed class ContentBrowserThumbnailGrid
         _selectionCanvas.Children.Add(_dropHighlight);
 
         // 初始化外部文件拖拽处理器
-        // 注意：附加到 fileShadow（Grid 容器）而不是 _fileScroll
-        // 因为 ScrollViewer 可能会拦截拖拽事件
         _dropHandler = new AvaloniaDropHandler();
         _dropHandler.Attach(fileShadow);
         _dropHandler.FilesDropped += OnFilesDropped;
@@ -203,7 +210,6 @@ internal sealed class ContentBrowserThumbnailGrid
         if (_fileGrid == null || _controller == null) return;
 
         _fileGrid.Children.Clear();
-        _thumbnailBorders.Clear();
 
         var filter = _viewModel?.SearchFilter?.Trim() ?? "";
 
@@ -216,7 +222,10 @@ internal sealed class ContentBrowserThumbnailGrid
                     !dir.Name.Contains(filter, StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                _fileGrid.Children.Add(CreateThumbnail(dir.Name, "📁", dir.SystemPath.FullPath, isDirectory: true, typeLabel: "DIR"));
+                var thumb = ThumbnailView.Create(dir.Name, "📁", dir.SystemPath.FullPath,
+                    isDirectory: true, typeLabel: "DIR", isSelected: _presenter.SelectedPaths.Contains(dir.SystemPath.FullPath));
+                _presenter.AttachEvents(thumb, dir.SystemPath.FullPath, dir.Name, isDirectory: true);
+                _fileGrid.Children.Add(thumb);
             }
 
             // 文件
@@ -226,31 +235,41 @@ internal sealed class ContentBrowserThumbnailGrid
                     !file.Name.Contains(filter, StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                var (icon, label, badgeColor) = GetFileInfo(file.Extension, file.AssetType);
-                _fileGrid.Children.Add(CreateThumbnail(file.Name, icon, file.SystemPath.FullPath, isDirectory: false, typeLabel: label, badgeColor: badgeColor));
+                var (icon, label, badgeColor) = ThumbnailFileInfoProvider.GetInfo(file.Extension, file.AssetType);
+                var thumb = ThumbnailView.Create(file.Name, icon, file.SystemPath.FullPath,
+                    isDirectory: false, typeLabel: label,
+                    isSelected: _presenter.SelectedPaths.Contains(file.SystemPath.FullPath),
+                    badgeColor: badgeColor);
+                _presenter.AttachEvents(thumb, file.SystemPath.FullPath, file.Name, isDirectory: false);
+                _fileGrid.Children.Add(thumb);
             }
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"[ContentBrowser] 文件列表加载失败: {ex.Message}");
         }
-
-        _onSelectionChanged?.Invoke(_selectedPaths.Count);
     }
 
     /// <summary>清除选中状态。</summary>
-    internal void ClearSelection()
-    {
-        _selectedPaths.Clear();
-        UpdateSelectionVisuals();
-    }
+    internal void ClearSelection() => _presenter.ClearSelection();
 
     /// <summary>设置右键菜单选中项信息。</summary>
     internal void SetSelectedItem(string? path, string? name, bool isDirectory)
+        => _presenter.SetSelectedItem(path, name, isDirectory);
+
+    /// <summary>开始内联重命名。</summary>
+    internal void BeginRename(string path, string currentName)
     {
-        _selectedItemPath = path;
-        _selectedItemName = name;
-        _selectedItemIsDirectory = isDirectory;
+        // 找到对应的缩略图控件
+        if (_fileGrid == null) return;
+        foreach (var child in _fileGrid.Children)
+        {
+            if (child is Control ctrl && ctrl.Tag is string tag && tag == path)
+            {
+                _renameService.BeginRename(ctrl, path, currentName);
+                return;
+            }
+        }
     }
 
     /// <summary>释放资源。</summary>
@@ -265,14 +284,11 @@ internal sealed class ContentBrowserThumbnailGrid
 
     // ── 外部文件拖入处理 ──
 
-    /// <summary>处理外部文件拖入。</summary>
     private void OnFilesDropped(string[] files)
     {
-        // 隐藏高亮
         if (_dropHighlight != null)
             _dropHighlight.IsVisible = false;
 
-        // 过滤出支持的图片文件
         var imageExtensions = new HashSet<string>(
             new[] { ".png", ".jpg", ".jpeg", ".tga", ".bmp", ".dds", ".hdr" },
             StringComparer.OrdinalIgnoreCase);
@@ -282,396 +298,18 @@ internal sealed class ContentBrowserThumbnailGrid
         if (imageFiles.Length == 0)
             return;
 
-        // 触发导入（通过 Controller）
         _controller.ImportDroppedFiles(imageFiles);
     }
 
-    /// <summary>外部拖拽进入时显示高亮。</summary>
     private void OnExternalDragEnter()
     {
         if (_dropHighlight != null)
             _dropHighlight.IsVisible = true;
     }
 
-    /// <summary>外部拖拽离开时隐藏高亮。</summary>
     private void OnExternalDragLeave()
     {
         if (_dropHighlight != null)
             _dropHighlight.IsVisible = false;
-    }
-
-    /* ======================== 缩略图创建 ======================== */
-
-    private Control CreateThumbnail(string name, string icon, string path, bool isDirectory, string typeLabel, IBrush? badgeColor = null)
-    {
-        var isSelected = _selectedPaths.Contains(path);
-
-        // 外层容器（提供阴影空间 + Tag 用于事件识别）
-        var shadowPad = 4; // 阴影扩展空间
-        var outer = new Border
-        {
-            Width = ThumbCardWidth + shadowPad * 2,
-            Height = ThumbCardHeight + shadowPad * 2,
-            Margin = new Thickness(ThumbSpacing / 2 - shadowPad),
-            Padding = new Thickness(shadowPad),
-            Background = Brushes.Transparent,
-            Tag = path,
-        };
-
-        // 卡片 Border（圆角 + 选中高亮 + 阴影）
-        var card = new Border
-        {
-            Width = ThumbCardWidth,
-            Height = ThumbCardHeight,
-            CornerRadius = new CornerRadius(4),
-            Background = isSelected ? BgThumbSelected : (isDirectory ? BgThumbDir : BgThumbFile),
-            BorderBrush = isSelected ? BorderSelected : Brushes.Transparent,
-            BorderThickness = new Thickness(isSelected ? 2 : 0),
-            BoxShadow = new BoxShadows(new BoxShadow
-            {
-                Color = Color.FromArgb(0xA0, 0x00, 0x00, 0x00),
-                Blur = 12,
-                OffsetX = 0,
-                OffsetY = 4,
-            }),
-        };
-
-        outer.Child = card;
-
-        // 卡片内部垂直布局
-        var cardContent = new DockPanel();
-
-        // ── 图标区域（居中）──
-        var iconArea = new Panel
-        {
-            Height = ThumbIconSize,
-        };
-        iconArea.Children.Add(new TextBlock
-        {
-            Text = icon,
-            FontSize = 72,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-        });
-        DockPanel.SetDock(iconArea, Avalonia.Controls.Dock.Top);
-        cardContent.Children.Add(iconArea);
-
-        // ── 文字区域（下方）──
-        var textArea = new StackPanel
-        {
-            Margin = new Thickness(ThumbTextPad, ThumbTextPad, ThumbTextPad, ThumbTextPad),
-        };
-
-        // 文件名
-        var nameLabel = new TextBlock
-        {
-            Text = name,
-            FontSize = 11,
-            Foreground = isSelected ? TextBright : TextPrimary,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            MaxLines = 1,
-            Height = ThumbNameHeight,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        textArea.Children.Add(nameLabel);
-        _nameLabels[path] = nameLabel;
-
-        // 资产类型
-        textArea.Children.Add(new TextBlock
-        {
-            Text = typeLabel,
-            FontSize = 9,
-            Foreground = badgeColor ?? TextSecondary,
-            FontWeight = FontWeight.Bold,
-            Height = ThumbTypeHeight,
-            VerticalAlignment = VerticalAlignment.Center,
-        });
-
-        cardContent.Children.Add(textArea);
-        card.Child = cardContent;
-
-        _thumbnailBorders[path] = card;
-
-        // ── 交互事件（挂在 outer 上，视觉效果改 card）──
-
-        // 单击选中 + 记录拖拽起始位置
-        outer.PointerPressed += (_, e) =>
-        {
-            var point = e.GetCurrentPoint(outer);
-            if (!point.Properties.IsLeftButtonPressed) return;
-
-            var isCtrl = e.KeyModifiers.HasFlag(KeyModifiers.Control);
-            if (isCtrl)
-            {
-                if (_selectedPaths.Contains(path))
-                    _selectedPaths.Remove(path);
-                else
-                    _selectedPaths.Add(path);
-            }
-            else
-            {
-                _selectedPaths.Clear();
-                _selectedPaths.Add(path);
-            }
-
-            UpdateSelectionVisuals();
-
-            // 记录拖拽起始位置（用于区分单击和拖拽）
-            _isDragPending = true;
-            _dragStartPos = e.GetPosition(outer);
-            _dragPressedArgs = e; // 保存原始事件用于 DoDragDropAsync
-
-            e.Handled = true;
-        };
-
-        // 拖拽启动——左键按住移动超过阈值时启动资产拖拽
-        outer.PointerMoved += async (_, e) =>
-        {
-            if (!_isDragPending || _dragPressedArgs == null) return;
-            if (!e.GetCurrentPoint(outer).Properties.IsLeftButtonPressed)
-            {
-                _isDragPending = false;
-                _dragPressedArgs = null;
-                return;
-            }
-
-            var currentPos = e.GetPosition(outer);
-            var delta = currentPos - _dragStartPos;
-            if (Math.Abs(delta.X) < DragThreshold && Math.Abs(delta.Y) < DragThreshold)
-                return;
-
-            // 超过阈值 → 启动拖拽
-            _isDragPending = false;
-
-            // 获取虚拟路径（可选）
-            string? virtualPath = null;
-            try
-            {
-                var vPath = _controller.GetAssetVirtualPath(path);
-                if (!vPath.IsEmpty)
-                    virtualPath = vPath.ToString();
-            }
-            catch
-            {
-                // 获取虚拟路径失败不影响拖拽
-            }
-
-            var transfer = AssetDragFormats.CreateTransfer(path, virtualPath);
-            var pressedArgs = _dragPressedArgs;
-            _dragPressedArgs = null;
-            await Avalonia.Input.DragDrop.DoDragDropAsync(pressedArgs, transfer, DragDropEffects.Copy);
-        };
-
-        // 释放——重置拖拽状态
-        outer.PointerReleased += (s, e) =>
-        {
-            _isDragPending = false;
-            _dragPressedArgs = null;
-
-            if (e.InitialPressMouseButton != MouseButton.Right) return;
-
-            _selectedItemPath = path;
-            _selectedItemName = name;
-            _selectedItemIsDirectory = isDirectory;
-
-            // 触发右键菜单（由外部处理）
-            OnContextMenuRequested?.Invoke(s as Control ?? outer, path, name, isDirectory);
-            e.Handled = true;
-        };
-
-        // 双击
-        outer.DoubleTapped += (_, _) =>
-        {
-            _isDragPending = false;
-            _dragPressedArgs = null;
-            if (isDirectory) _onOpenDirectory?.Invoke(path);
-            else _onOpenFile?.Invoke(path);
-        };
-
-        // 悬停
-        outer.PointerEntered += (_, _) =>
-        {
-            if (!_selectedPaths.Contains(path))
-                card.Background = BgThumbHover;
-            outer.Cursor = new Cursor(StandardCursorType.Hand);
-        };
-        outer.PointerExited += (_, _) =>
-        {
-            if (!_selectedPaths.Contains(path))
-                card.Background = isDirectory ? BgThumbDir : BgThumbFile;
-        };
-
-        return outer;
-    }
-
-    /// <summary>右键菜单请求事件（点击缩略图项）。</summary>
-    internal event Action<Control, string, string, bool>? OnContextMenuRequested;
-
-    /// <summary>背景右键菜单请求事件（点击空白区域）。</summary>
-    internal event Action<Control>? OnBackgroundContextMenuRequested;
-
-    /// <summary>文件区域右键释放——空白区域显示背景菜单。</summary>
-    private void OnFileAreaPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        if (e.InitialPressMouseButton != MouseButton.Right) return;
-        if (!string.IsNullOrEmpty(_selectedItemPath)) return;
-
-        // 点击空白区域，触发背景菜单
-        OnBackgroundContextMenuRequested?.Invoke(_fileScroll!);
-        e.Handled = true;
-    }
-
-    /* ======================== 内联重命名 ======================== */
-
-    /// <summary>重命名提交事件（path, newName）。</summary>
-    internal event Action<string, string>? OnRenameCommitted;
-
-    /// <summary>开始内联重命名——将文件名 TextBlock 替换为 TextBox。</summary>
-    internal void BeginRename(string path, string currentName)
-    {
-        if (!_nameLabels.TryGetValue(path, out var nameLabel)) return;
-
-        // 找到 nameLabel 的父容器（StackPanel）
-        if (nameLabel.Parent is not StackPanel textArea) return;
-
-        // 隐藏原文件名
-        nameLabel.IsVisible = false;
-
-        // 创建内联编辑框
-        var textBox = new TextBox
-        {
-            Text = currentName,
-            FontSize = 11,
-            MinWidth = 60,
-            Height = ThumbNameHeight,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(-2, 0, -2, 0),
-            Padding = new Thickness(2, 0),
-            Background = new SolidColorBrush(Color.Parse("#FF1E1E1E")),
-            Foreground = TextBright,
-            BorderBrush = new SolidColorBrush(Color.Parse("#FF007ACC")),
-            BorderThickness = new Thickness(1),
-        };
-
-        // 选中文件名（不含扩展名）
-        var dotIndex = currentName.LastIndexOf('.');
-        textBox.SelectionStart = 0;
-        textBox.SelectionEnd = dotIndex > 0 ? dotIndex : currentName.Length;
-
-        // 提交重命名
-        void CommitRename()
-        {
-            var newName = textBox.Text?.Trim() ?? "";
-            if (!string.IsNullOrEmpty(newName) && newName != currentName)
-            {
-                OnRenameCommitted?.Invoke(path, newName);
-            }
-            CancelRename(path, nameLabel, textBox);
-        }
-
-        // 取消重命名
-        void CancelRenameHandler()
-        {
-            CancelRename(path, nameLabel, textBox);
-        }
-
-        textBox.KeyDown += (_, e) =>
-        {
-            if (e.Key == Key.Enter)
-            {
-                CommitRename();
-                e.Handled = true;
-            }
-            else if (e.Key == Key.Escape)
-            {
-                CancelRenameHandler();
-                e.Handled = true;
-            }
-        };
-
-        // 失焦也提交
-        textBox.LostFocus += (_, _) => CommitRename();
-
-        textArea.Children.Add(textBox);
-
-        // 聚焦并延迟选中（等控件加载完）
-        textBox.AttachedToVisualTree += (_, _) =>
-        {
-            textBox.Focus();
-            textBox.SelectAll();
-        };
-    }
-
-    /// <summary>取消重命名——移除 TextBox，恢复 TextBlock。</summary>
-    private static void CancelRename(string path, TextBlock nameLabel, TextBox textBox)
-    {
-        if (textBox.Parent is StackPanel textArea)
-            textArea.Children.Remove(textBox);
-        nameLabel.IsVisible = true;
-    }
-
-    /* ======================== 框选回调 ======================== */
-
-    private void OnRubberBandSelectionChanged(IReadOnlyList<Control> selected, bool append)
-    {
-        if (!append)
-            _selectedPaths.Clear();
-
-        foreach (var ctrl in selected)
-        {
-            if (ctrl.Tag is string path)
-                _selectedPaths.Add(path);
-        }
-
-        UpdateSelectionVisuals();
-    }
-
-    private void UpdateSelectionVisuals()
-    {
-        foreach (var (path, border) in _thumbnailBorders)
-        {
-            var isSelected = _selectedPaths.Contains(path);
-            border.Background = isSelected ? BgThumbSelected : BgThumbFile;
-            border.BorderBrush = isSelected ? BorderSelected : Brushes.Transparent;
-            border.BorderThickness = new Thickness(isSelected ? 2 : 0);
-        }
-
-        _onSelectionChanged?.Invoke(_selectedPaths.Count);
-    }
-
-    /* ======================== 文件信息 ======================== */
-
-    private static (string Icon, string Label, IBrush BadgeColor) GetFileInfo(string extension, string? assetType)
-    {
-        return extension?.ToLower() switch
-        {
-            ".png" or ".jpg" or ".jpeg" or ".bmp" or ".tga" or ".hdr"
-                => ("🖼️", "TEX", BadgeTexture),
-            ".fbx" or ".obj" or ".gltf" or ".glb"
-                => ("🧊", "MESH", BadgeDefault),
-            ".wav" or ".mp3" or ".ogg"
-                => ("🎵", "AUD", BadgeAudio),
-            ".mp4" or ".avi" or ".mov"
-                => ("🎬", "VID", BadgeAudio),
-            ".cs" or ".cpp" or ".h" or ".py"
-                => ("📝", "CODE", BadgeScript),
-            ".json" or ".xml" or ".yaml" or ".yml"
-                => ("📋", "CFG", BadgeDefault),
-            ".txt" or ".md"
-                => ("📄", "TXT", BadgeDefault),
-            ".shader" or ".hlsl" or ".glsl"
-                => ("☀️", "SHD", BadgeMaterial),
-            ".scene"
-                => ("🗺️", "SCENE", BadgeScene),
-            ".prefab"
-                => ("🧊", "PREFB", BadgePrefab),
-            ".mat"
-                => ("📋", "MATER", BadgeMaterial),
-            ".html"
-                => ("🌐", "HTML", BadgeDefault),
-            ".lua"
-                => ("📜", "LUA", BadgeScript),
-            _ => ("📄", "FILE", BadgeDefault)
-        };
     }
 }

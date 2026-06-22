@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Neverness.Editor.Assets;
+using Neverness.Editor.AvaloniaFrontend.PropertyEditor;
 using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
@@ -67,12 +68,12 @@ public class RmlUIDocumentInspector : AvaloniaInspectorBase
 
         // ── DocumentAsset（支持拖拽） ──
         string? currentAssetName = GetCurrentAssetName(currentGuid);
-        var documentArea = CreateAssetDropTarget(
+        var documentArea = AssetReferenceField.Create(
             currentAssetName ?? "Drop\nHTML/RML",
             assetPath => ApplyDocumentAsset(assetPath, entityHandle, guidLabel),
             width: 120, height: 60);
-        content.Children.Add(CreatePropertyRow("Document", documentArea));
-        content.Children.Add(CreatePropertyRow("GUID", guidLabel));
+        content.Children.Add(PropertyRows.Create("Document", documentArea));
+        content.Children.Add(PropertyRows.Create("GUID", guidLabel));
 
         // ── SortOrder ──
         var sortOrderDrag = new DragFloat
@@ -91,7 +92,7 @@ public class RmlUIDocumentInspector : AvaloniaInspectorBase
             ref var c = ref ent.Get<RmlUIDocumentComponent>();
             c.SortOrder = (int)sortOrderDrag.Value;
         };
-        content.Children.Add(CreatePropertyRow("Sort Order", sortOrderDrag));
+        content.Children.Add(PropertyRows.Create("Sort Order", sortOrderDrag));
 
         // ── ViewTarget ──
         var viewTargetCombo = new ComboBox
@@ -109,7 +110,7 @@ public class RmlUIDocumentInspector : AvaloniaInspectorBase
             ref var c = ref ent.Get<RmlUIDocumentComponent>();
             c.ViewTarget = (RmlUIViewTarget)viewTargetCombo.SelectedIndex;
         };
-        content.Children.Add(CreatePropertyRow("View Target", viewTargetCombo));
+        content.Children.Add(PropertyRows.Create("View Target", viewTargetCombo));
 
         // ── Flags ──
         var flagsPanel = new StackPanel
@@ -144,7 +145,7 @@ public class RmlUIDocumentInspector : AvaloniaInspectorBase
             else c.Flags &= ~RmlUIDocumentFlags.ReceivesInput;
         }));
 
-        content.Children.Add(CreatePropertyRow("Flags", flagsPanel));
+        content.Children.Add(PropertyRows.Create("Flags", flagsPanel));
 
         return CreateCollapsiblePanel("RmlUI Document", content);
     }
@@ -155,7 +156,7 @@ public class RmlUIDocumentInspector : AvaloniaInspectorBase
     /// 拖拽 HTML/RML 资产后，更新 ECS 中 RmlUIDocumentComponent 的 DocumentAsset 字段。
     /// 同时更新 UI 上的 GUID 标签。
     /// </summary>
-    private static void ApplyDocumentAsset(string assetPath, ulong entityHandle, TextBlock guidLabel)
+    private void ApplyDocumentAsset(string assetPath, ulong entityHandle, TextBlock guidLabel)
     {
         // 1. 从路径查找资产 GUID
         var virtualPath = new NVirtualPath(assetPath);
@@ -237,23 +238,4 @@ public class RmlUIDocumentInspector : AvaloniaInspectorBase
         return checkBox;
     }
 
-    // ── 实体访问 ──
-
-    /// <summary>通过 IInspectorService 获取实体（与 TransformInspector 一致的模式）。</summary>
-    private static Runtime.Scene.IEntity? GetEntityById(int entityId)
-    {
-        try
-        {
-            var context = EditorCoreModule.Context;
-            if (context.TryGetService<IInspectorService>(out var inspectorService))
-            {
-                return inspectorService.GetEntityById(entityId);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[RmlUIDocumentInspector] 获取实体失败: {ex.Message}");
-        }
-        return null;
-    }
 }
