@@ -14,7 +14,7 @@
 #include <NNCore/Include/Event/HEventDelegate.h>
 #include <NNCore/Include/Event/HWindowEvents.h>
 
-#include "NNNativeEngineAPI/Include/WindowAPI.h"
+#include "Engine/WindowAPI.h"
 
 // 前向声明 Diligent 设备
 namespace NN::Runtime::Render { class INNRenderDevice; }

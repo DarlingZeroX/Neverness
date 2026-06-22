@@ -9,8 +9,8 @@
 
 #include "Core/Window.h"
 
-#include "NNNativeEngineAPI/Include/WindowAPI.h"
-#include "NNNativeEngineAPI/Include/WindowTypes.h"
+#include "Engine/WindowAPI.h"
+#include "Engine/WindowTypes.h"
 
 struct SDL_Window;
 

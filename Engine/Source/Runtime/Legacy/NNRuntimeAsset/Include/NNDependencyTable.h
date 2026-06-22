@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "../NNRuntimeAssetExport.h"
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
+#include "Engine/EngineTypes.h"
 
 namespace NN::Runtime::Asset
 {

@@ -8,8 +8,8 @@
 #include "Core/WindowRegistry.h"
 #include "RuntimeApplicationInstance.h"
 
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
-#include "NNNativeEngineAPI/Include/WindowAPI.h"
+#include "Engine/NativeInterop.h"
+#include "Engine/WindowAPI.h"
 
 #include <SDL3/SDL.h>
 

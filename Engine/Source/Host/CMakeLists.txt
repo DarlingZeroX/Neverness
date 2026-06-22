@@ -9,7 +9,7 @@ add_executable(NevernessHost
 )
 
 # 必须要注意引用，以自动编译C++ 端的DLL，并且在运行时能够正确加载。
-target_link_libraries(NevernessHost PRIVATE NevernessRuntime-Managed)
+target_link_libraries(NevernessHost PRIVATE NevernessRuntime-EngineServices)
 
 # C# Managed Editor 编译（默认关闭，手动 dotnet build 管理）
 option(VISIONGAL_BUILD_MANAGED_EDITOR "Build C# Managed Editor via CMake (calls dotnet build)" OFF)

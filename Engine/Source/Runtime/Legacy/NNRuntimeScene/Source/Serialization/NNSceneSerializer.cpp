@@ -7,7 +7,7 @@
 
 #include <cstring>
 
-#include "../../../NNNativeEngineAPI/Include/EngineTypes.h"
+#include "../../../Engine/EngineTypes.h"
 #include "Reflection/NNComponentRegistry.h"
 #include "Scene/NNRuntimeScene.h"
 

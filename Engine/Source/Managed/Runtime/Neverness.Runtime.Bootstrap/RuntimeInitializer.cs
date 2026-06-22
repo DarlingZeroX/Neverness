@@ -38,7 +38,6 @@ public static class RuntimeInitializer
 		RegisterDefaultSubsystems(Loop);
 		Loop.InitializeRegistered();
 
-		NativeApiBootstrap.LogInfoUtf8("Neverness.Managed.Bootstrap RuntimeInitializer OK"u8);
 		s_initialized = true;
 		return true;
 	}

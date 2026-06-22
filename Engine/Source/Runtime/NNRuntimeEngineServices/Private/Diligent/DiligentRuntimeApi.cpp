@@ -10,8 +10,8 @@
 
 #include "Internal/RuntimeApiBuilders.h"
 
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
-#include "NNNativeEngineAPI/Include/DiligentAPI.h"
+#include "Engine/NativeInterop.h"
+#include "Engine/DiligentAPI.h"
 #include "Core/WindowRegistry.h"
 #include <Device/INNRenderDevice.h>
 

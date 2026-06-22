@@ -6,8 +6,8 @@
 #include "ApplicationApiExport.h"
 #include "RuntimeApplicationInstance.h"
 
-#include "NNNativeEngineAPI/Include/ApplicationAPI.h"
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
+#include "Engine/ApplicationAPI.h"
+#include "Engine/NativeInterop.h"
 
 namespace
 {

@@ -8,9 +8,9 @@
 #include "Core/EventQueue.h"
 #include "RuntimeApplicationInstance.h"
 
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
-#include "NNNativeEngineAPI/Include/EventTypes.h"
-#include "NNNativeEngineAPI/Include/EventAPI.h"
+#include "Engine/NativeInterop.h"
+#include "Engine/EventTypes.h"
+#include "Engine/EventAPI.h"
 
 namespace
 {

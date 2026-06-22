@@ -14,7 +14,7 @@
 #include <mutex>
 #include <unordered_map>
 
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
+#include "Engine/EngineTypes.h"
 
 namespace NN::Runtime::Asset
 {

@@ -27,7 +27,7 @@
 #include "../NNRuntimeAssetExport.h"
 #include "NNGuidTable.h"
 #include "NNDependencyTable.h"
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
+#include "Engine/EngineTypes.h"
 
 namespace NN::Runtime::Asset
 {

@@ -1,4 +1,8 @@
-# NevernessRuntime-EngineServices — 將 NNNativeEngineAPI 轉發至 NNEngineRuntime（不鏈結 VGEngine）。
+# NevernessRuntime-EngineServices — Engine Service ABI 运行时转发 + NNNativeAPI 导出表（SHARED）
+#
+# 导出：
+#   - NNNativeApi_GetDefaultTable()  — 进程单例 NNNativeAPI* 指针
+#   - NNNativeApiTable_BuildDefault() — 填充默认表（挂载 Runtime EngineServices）
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,48 +17,59 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 	add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
 
-add_library(NevernessRuntime-EngineServices STATIC)
+# ── 源文件 ──────────────────────────────────────────────────────
+set(ENGINE_SERVICES_SOURCES
+	# Runtime Engine Service 转发
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Registry/NativeEngineRuntimeApiTable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Async/AsyncWaitRuntimeApi.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/ViewportRender/ViewportRenderRuntimeApi.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Diligent/DiligentRuntimeApi.cpp"
+	# NNNativeAPI 导出表（从 NNAPI 迁入）
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Registry/ManagedExports.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Registry/ManagedRuntimeServices.cpp"
+)
 
-target_sources(NevernessRuntime-EngineServices
+# ── 目标（SHARED） ─────────────────────────────────────────────
+add_library(NevernessRuntime-EngineServices SHARED ${ENGINE_SERVICES_SOURCES})
+
+target_compile_definitions(NevernessRuntime-EngineServices
 	PRIVATE
-		Private/Registry/NativeEngineRuntimeApiTable.cpp
-		Private/Async/AsyncWaitRuntimeApi.cpp
-		Private/ViewportRender/ViewportRenderRuntimeApi.cpp
-		Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp
-		Private/Diligent/DiligentRuntimeApi.cpp
+		NN_ENGINE_SERVICES_EXPORT
+		NEVERNESS_USE_ENGINE_RUNTIME_SERVICES=1
 )
 
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
-target_include_directories(NevernessRuntime-EngineServices PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeEngine/Include)
-
-target_include_directories(NevernessRuntime-EngineServices PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Private)
-
-target_include_directories(NevernessRuntime-EngineServices PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeApplication/Include
-	${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeVFS/Include
-	# Rendering include（INNRenderDevice 等接口）
-	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering
-	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender
-	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore
-	# NNRuntimeDiligent include（NNDiligentViewportSurface 等）
-	${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent
+target_include_directories(NevernessRuntime-EngineServices
+	PUBLIC
+		"${CMAKE_CURRENT_SOURCE_DIR}/Include"
+		# NNAPI 头文件（Engine Service ABI + Stub 声明）
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNAPI/Include"
+	PRIVATE
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Runtime"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Core"
+		"${CMAKE_CURRENT_SOURCE_DIR}/Interface"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeEngine/Include"
+		"${CMAKE_CURRENT_SOURCE_DIR}/Private"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeApplication/Include"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeVFS/Include"
+		# Rendering include（INNRenderDevice 等接口）
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender"
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore"
+		# NNRuntimeDiligent include（NNDiligentViewportSurface 等）
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent"
 )
 
-target_link_libraries(NevernessRuntime-EngineServices PUBLIC
-	NevernessRuntime-NativeEngineAPI
-	NevernessRuntime-NativeEngineAPIStub
-	NevernessRuntime-Engine
-	NevernessRuntime-Application
-	NevernessRuntime-VFS
-	NevernessRuntime-RmlUI
-	# ViewportSurface 需要 NNRuntimeDiligent（NNDiligentViewportSurface、SwapChain 创建）
-	NNRuntimeDiligent
-	# ViewportSurfaceRuntimeApi 直接使用 Renderer2D（RenderCommands 路径）
-	NevernessRuntime-Renderer2D
+target_link_libraries(NevernessRuntime-EngineServices
+	PUBLIC
+		NevernessRuntime-API
+	PRIVATE
+		NevernessRuntime-Engine
+		NevernessRuntime-Application
+		NevernessRuntime-VFS
+		NevernessRuntime-RmlUI
+		NNRuntimeDiligent
+		NevernessRuntime-Renderer2D
 )
 
 add_library(NNEngineRuntimeServices ALIAS NevernessRuntime-EngineServices)

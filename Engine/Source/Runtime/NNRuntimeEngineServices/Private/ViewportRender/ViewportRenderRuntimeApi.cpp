@@ -13,8 +13,8 @@
 
 #include "Internal/RuntimeApiBuilders.h"
 
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
-#include "NNNativeEngineAPI/Include/ViewportRenderAPI.h"
+#include "Engine/NativeInterop.h"
+#include "Engine/ViewportRenderAPI.h"
 #include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"

@@ -18,8 +18,8 @@
 #include <unordered_map>
 
 #include "../../NNRuntimeScene/NNRuntimeSceneExport.h"
-#include "NNNativeEngineAPI/Include/EngineHandles.h"
-#include "NNNativeEngineAPI/Include/VfsAPI.h"
+#include "Engine/EngineHandles.h"
+#include "Engine/VfsAPI.h"
 
 namespace NN::Runtime::Scene
 {

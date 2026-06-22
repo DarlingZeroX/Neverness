@@ -23,7 +23,7 @@ project ("Neverness" LANGUAGES C CXX)
 ############ 全局设置多线程编译（MSVC）
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
-############ 强制关闭 VS 头文件包含输出（终极版）
+############ MSVC 编译选项
 if(MSVC AND TRUE)
     message(STATUS "Using MSVC")
 
@@ -32,9 +32,7 @@ if(MSVC AND TRUE)
         "/wd4819"
     )
 
-    # 关闭 /showIncludes
-    string(REPLACE "/showIncludes" "" CMAKE_DEPFILE_FLAGS_C "${CMAKE_DEPFILE_FLAGS_C}")
-    string(REPLACE "/showIncludes" "" CMAKE_DEPFILE_FLAGS_CXX "${CMAKE_DEPFILE_FLAGS_CXX}")
+    # /showIncludes 保留：CMake 依赖扫描需要它来追踪头文件变更（增量编译）
 endif()
 
 ############ 如果支持，请为 MSVC 编译器启用热重载。

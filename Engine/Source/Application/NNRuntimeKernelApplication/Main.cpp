@@ -6,8 +6,8 @@
 #include "ManagedRuntimeBridge.h"
 #include "NativeEngineRuntimeServices.h"
 
-#include "NNNativeEngineAPI/Include/WindowAPI.h"
-#include "NNNativeEngineAPI/Include/WindowTypes.h"
+#include "Engine/WindowAPI.h"
+#include "Engine/WindowTypes.h"
 
 #include <chrono>
 #include <cmath>

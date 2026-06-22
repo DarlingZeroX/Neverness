@@ -8,7 +8,7 @@ namespace NevernessEditor;
 /// </summary>
 internal static class NativeApiTableLoader
 {
-	private const string ManagedDllFileName = "NevernessRuntime-Managed.dll";
+	private const string ManagedDllFileName = "NevernessRuntime-EngineServices.dll";
 	private const string ExportName = "NNNativeApi_GetDefaultTable";
 	private const string EnvDllPath = "NEVERNESS_NATIVE_MANAGED_DLL";
 

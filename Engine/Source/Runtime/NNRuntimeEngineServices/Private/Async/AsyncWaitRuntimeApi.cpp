@@ -5,7 +5,7 @@
 
 #include "Internal/RuntimeApiBuilders.h"
 
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
+#include "Engine/NativeInterop.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 
 namespace

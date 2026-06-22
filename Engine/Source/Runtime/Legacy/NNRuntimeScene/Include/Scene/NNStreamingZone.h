@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "../../../NNNativeEngineAPI/Include/EngineTypes.h"
+#include "../../../Engine/EngineTypes.h"
 #include "../../NNRuntimeScene/NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene

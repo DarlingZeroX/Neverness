@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
-#include "NNNativeEngineAPI/Include/EngineAPIRegistry.h"
+#include "Engine/EngineAPIRegistry.h"
 
 #ifdef __cplusplus
 extern "C" {

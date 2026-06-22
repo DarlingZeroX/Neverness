@@ -26,8 +26,8 @@
 #include <thread>
 #include <vector>
 
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
-#include "NNNativeEngineAPI/Include/EngineHandles.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/EngineHandles.h"
 
 namespace NN::Runtime::Asset
 {

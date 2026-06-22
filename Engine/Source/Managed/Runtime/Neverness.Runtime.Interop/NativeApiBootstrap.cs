@@ -6,7 +6,7 @@ using Neverness.Runtime.Core;
 namespace Neverness.Runtime.Interop;
 
 /// <summary>
-/// 将 Native 传入的 <c>NNNativeAPI*</c> 安装到进程内静态缓存，并提供 UTF-8 日志封装。
+/// 将 Native 传入的 <c>NNNativeAPI*</c> 安装到进程内静态缓存。
 /// </summary>
 public static unsafe class NativeApiBootstrap
 {
@@ -30,40 +30,7 @@ public static unsafe class NativeApiBootstrap
 			return;
 		}
 
-		if (p->LogInfo == null)
-		{
-			return;
-		}
-
 		s_api = *p;
 		s_installed = true;
-	}
-
-	/// <summary>经已安装函数表写入 UTF-8 日志。</summary>
-	public static void LogInfoUtf8(ReadOnlySpan<byte> utf8Text)
-	{
-		if (!s_installed || s_api.LogInfo == null)
-		{
-			return;
-		}
-
-		if (utf8Text.IsEmpty)
-		{
-			ReadOnlySpan<byte> empty = [(byte)'\0'];
-			fixed (byte* pb = empty)
-			{
-				s_api.LogInfo(pb);
-			}
-
-			return;
-		}
-
-		Span<byte> buf = stackalloc byte[utf8Text.Length + 1];
-		utf8Text.CopyTo(buf);
-		buf[^1] = 0;
-		fixed (byte* pb = buf)
-		{
-			s_api.LogInfo(pb);
-		}
 	}
 }

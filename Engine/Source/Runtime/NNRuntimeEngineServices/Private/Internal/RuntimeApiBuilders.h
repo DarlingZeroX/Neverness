@@ -5,13 +5,13 @@
  * @brief 將 **NNEngineRuntime** 子系統能力覆寫至 **NNNativeEngineAPI** 子表（僅寫函數指標）。
  */
 
-#include "NNNativeEngineAPI/Include/AsyncWaitAPI.h"
+#include "Engine/AsyncWaitAPI.h"
 // 已移除：SceneAPI / EditorSceneAPI / ObjectAPI / TimingAPI（已迁移至 C# 或废弃）
 // 已移除：RenderAssetAPI（NNRenderAssets 移至 Legacy）
-// #include "NNNativeEngineAPI/Include/RenderAssetAPI.h"
-#include "NNNativeEngineAPI/Include/ViewportRenderAPI.h"
-#include "NNNativeEngineAPI/Include/ViewportSurfaceAPI.h"
-#include "NNNativeEngineAPI/Include/DiligentAPI.h"
+// #include "Engine/RenderAssetAPI.h"
+#include "Engine/ViewportRenderAPI.h"
+#include "Engine/ViewportSurfaceAPI.h"
+#include "Engine/DiligentAPI.h"
 
 #ifdef __cplusplus
 extern "C" {

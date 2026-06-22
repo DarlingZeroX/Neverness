@@ -4,10 +4,10 @@ add_subdirectory ("NNRuntimeVFS")
 add_subdirectory ("NNRuntimePak")
 add_subdirectory ("NNRuntimeImGui")
 add_subdirectory ("NNRuntimeCore")
-add_subdirectory ("NNNativeEngineAPI")
+# NNNativeEngineAPI 已合并至 NNAPI
 add_subdirectory ("NNRuntimeApplication")
-add_subdirectory ("NNRuntimeNativeEngineAPIStub")
-add_subdirectory ("NNRuntimeManaged")
+# NNRuntimeNativeEngineAPIStub 已合并至 NNAPI
+add_subdirectory ("NNAPI")
 
 #add_subdirectory("NNRuntimeManagedBridge")
 add_subdirectory ("NNRuntimeEngine")

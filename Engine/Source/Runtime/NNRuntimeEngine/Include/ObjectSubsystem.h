@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "NNNativeEngineAPI/Include/EngineHandles.h"
+#include "Engine/EngineHandles.h"
 
 namespace NN::Runtime::engine
 {

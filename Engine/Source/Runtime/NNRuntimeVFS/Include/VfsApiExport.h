@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NNNativeEngineAPI/Include/VfsAPI.h"
+#include "Engine/VfsAPI.h"
 #include "../RuntimeVFSExport.h"
 
 #ifdef __cplusplus

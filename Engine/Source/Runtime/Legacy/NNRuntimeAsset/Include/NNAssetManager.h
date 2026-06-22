@@ -34,8 +34,8 @@
 #include "NNAssetHandle.h"
 #include "NNAssetTypes.h"
 #include "NNStreamingManager.h"
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
-#include "NNNativeEngineAPI/Include/EngineHandles.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/EngineHandles.h"
 
 namespace NN::Runtime::Asset
 {

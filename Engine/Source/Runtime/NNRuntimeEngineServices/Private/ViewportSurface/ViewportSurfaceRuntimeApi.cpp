@@ -12,9 +12,9 @@
 
 #include "Internal/RuntimeApiBuilders.h"
 
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
-#include "NNNativeEngineAPI/Include/ViewportSurfaceAPI.h"
-#include "NNNativeEngineAPI/Include/RenderCommands.h"
+#include "Engine/NativeInterop.h"
+#include "Engine/ViewportSurfaceAPI.h"
+#include "Engine/RenderCommands.h"
 #include "Core/WindowRegistry.h"
 #include <Device/INNRenderDevice.h>
 

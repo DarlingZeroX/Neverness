@@ -19,7 +19,7 @@
 
 #include <cstdint>
 
-#include "NNNativeEngineAPI/Include/EngineTypes.h"
+#include "Engine/EngineTypes.h"
 
 #ifdef __cplusplus
 extern "C" {

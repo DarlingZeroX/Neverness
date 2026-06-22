@@ -5,7 +5,7 @@
 #include "Core/Window.h"
 #include "Engine/ImGuiLayer.h"
 
-#include "NNNativeEngineAPI/Include/WindowTypes.h"
+#include "Engine/WindowTypes.h"
 
 namespace NN::Runtime::Application
 {

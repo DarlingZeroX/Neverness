@@ -6,5 +6,5 @@ namespace Neverness.Runtime.Core;
 public static class NNNativeApiConstants
 {
 	/// <summary>当前 <c>NNNativeAPI</c> 结构体布局版本；破坏性变更时递增。</summary>
-	public const uint ApiVersion = 2;
+	public const uint ApiVersion = 3;
 }

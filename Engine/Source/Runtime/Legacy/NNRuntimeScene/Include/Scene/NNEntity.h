@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-#include "NNNativeEngineAPI/Include/EngineHandles.h"
+#include "Engine/EngineHandles.h"
 #include "../../NNRuntimeSceneExport.h"
 
 namespace NN::Runtime::Scene

@@ -14,7 +14,7 @@
  * 通过 NNEvent.stringPoolIdx（字节偏移）引用。
  */
 
-#include "NNNativeEngineAPI/Include/EventTypes.h"
+#include "Engine/EventTypes.h"
 
 #include <atomic>
 #include <cstring>

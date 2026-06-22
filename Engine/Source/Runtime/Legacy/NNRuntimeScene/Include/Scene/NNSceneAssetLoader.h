@@ -20,7 +20,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../../../NNNativeEngineAPI/Include/EngineTypes.h"
+#include "../../../Engine/EngineTypes.h"
 #include "../../NNRuntimeScene/NNRuntimeSceneExport.h"
 #include "../Scene/NNEntity.h"
 

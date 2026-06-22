@@ -5,7 +5,7 @@
  * @brief 填充指向进程内 **EventQueue** + **SDL3EventTranslator** 的 **NNEventAPI**。
  */
 
-#include "NNNativeEngineAPI/Include/EventAPI.h"
+#include "Engine/EventAPI.h"
 
 #ifdef __cplusplus
 extern "C" {

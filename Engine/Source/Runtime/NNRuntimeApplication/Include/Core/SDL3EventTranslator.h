@@ -18,8 +18,8 @@
  * - 线程安全：仅由生产者（SDL 线程）调用
  */
 
-#include "NNNativeEngineAPI/Include/EventTypes.h"
-#include "NNNativeEngineAPI/Include/WindowTypes.h"
+#include "Engine/EventTypes.h"
+#include "Engine/WindowTypes.h"
 #include "WindowRegistry.h"
 #include "EventQueue.h"
 

@@ -11,8 +11,8 @@
 
 #include "VFSService.h"
 
-#include "NNNativeEngineAPI/Include/NativeInterop.h"
-#include "NNNativeEngineAPI/Include/VfsAPI.h"
+#include "Engine/NativeInterop.h"
+#include "Engine/VfsAPI.h"
 
 #include <cstdlib>
 #include <cstring>

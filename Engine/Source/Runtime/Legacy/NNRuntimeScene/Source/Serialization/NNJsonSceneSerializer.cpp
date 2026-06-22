@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../../../NNNativeEngineAPI/Include/EngineTypes.h"
+#include "../../../Engine/EngineTypes.h"
 #include <NNCore/Include/File/NlohmannJson.h>
 #include "Reflection/NNComponentRegistry.h"
 #include "Scene/NNRuntimeScene.h"
