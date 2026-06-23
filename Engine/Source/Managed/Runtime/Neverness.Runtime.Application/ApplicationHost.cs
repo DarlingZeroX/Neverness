@@ -1,7 +1,6 @@
 // Neverness.Runtime.Application — NNApplicationAPI 托管门面；禁止在产品代码中散落 delegate*。
 
 using Neverness.Runtime.Engine;
-using Neverness.Runtime.Interop;
 
 namespace Neverness.Runtime.Application;
 

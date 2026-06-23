@@ -1,6 +1,6 @@
 // Neverness.Runtime.Bootstrap — 有序安装 Interop 与子系统（禁止 DllImport；仅函数表）。
 
-using Neverness.Runtime.Interop;
+using Neverness.Runtime.Engine;
 using Neverness.Runtime.RuntimeLoop;
 
 namespace Neverness.Runtime.Bootstrap;

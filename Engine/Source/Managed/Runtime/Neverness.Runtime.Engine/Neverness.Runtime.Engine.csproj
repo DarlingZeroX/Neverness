@@ -8,7 +8,4 @@
     <RollForward>LatestMinor</RollForward>
     <RootNamespace>Neverness.Managed.Engine</RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="Neverness.Runtime.Interop" />
-  </ItemGroup>
 </Project>

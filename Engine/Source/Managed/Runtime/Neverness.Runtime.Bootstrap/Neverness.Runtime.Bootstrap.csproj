@@ -9,7 +9,7 @@
     <RollForward>LatestMinor</RollForward>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
   </ItemGroup>
 </Project>

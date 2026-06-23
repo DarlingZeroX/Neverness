@@ -1,7 +1,7 @@
 namespace Neverness.Runtime.Engine;
 
 /// <summary>
-/// 已安装的 <see cref="NNNativeEngineApi"/> 进程内缓存；由 <c>Neverness.Runtime.Interop</c> 在安装时写入。
+/// 已安装的 <see cref="NNNativeEngineApi"/> 进程内缓存；由 <c>Neverness.Runtime.Engine</c> 在安装时写入。
 /// </summary>
 public static unsafe class EngineNativeApiCache
 {

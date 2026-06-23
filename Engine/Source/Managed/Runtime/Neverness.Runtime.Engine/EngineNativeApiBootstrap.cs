@@ -1,10 +1,9 @@
-// Neverness.Runtime.Interop — Engine Service 函数表安装；禁止 DllImport。
+// Neverness.Runtime.Engine — Engine Service 函数表安装；禁止 DllImport。
 
 using System.Runtime.InteropServices;
 using Neverness.Runtime.Core;
-using Neverness.Runtime.Engine;
 
-namespace Neverness.Runtime.Interop;
+namespace Neverness.Runtime.Engine;
 
 /// <summary>
 /// 从 <c>NNNativeAPI.engineServices</c> 安装 <see cref="NNNativeEngineApi"/> 镜像（按值复制函数指针）。

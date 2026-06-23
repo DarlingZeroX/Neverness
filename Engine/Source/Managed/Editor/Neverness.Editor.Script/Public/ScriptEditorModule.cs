@@ -66,7 +66,7 @@ public static class ScriptEditorModule
                 "Neverness.Runtime.Scene",
                 "Neverness.Runtime.Engine",
                 "Neverness.Runtime.Assets",
-                "Neverness.Runtime.Interop",
+                "Neverness.Runtime.Engine",
             },
             OutputPath = Path.Combine(libraryDir, "Scripts"),
         };

@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Assets\Neverness.Runtime.Assets.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.RuntimeLoop\Neverness.Runtime.RuntimeLoop.csproj" />
-    <ProjectReference Include="..\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Bootstrap\Neverness.Runtime.Bootstrap.csproj" />
     <ProjectReference Include="..\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />

@@ -4,7 +4,7 @@ namespace NevernessEditor;
 
 /// <summary>
 /// 从 <c>NevernessRuntime-Managed.dll</c> 解析 <c>NNNativeApi_GetDefaultTable</c> 导出。
-/// 仅用于 Editor 可执行文件；<see cref="Neverness.Runtime.Interop"/> 仍禁止 DllImport。
+/// 仅用于 Editor 可执行文件；<see cref="Neverness.Runtime.Engine"/> 仍禁止 DllImport。
 /// </summary>
 internal static class NativeApiTableLoader
 {

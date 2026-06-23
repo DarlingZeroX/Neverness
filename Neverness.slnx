@@ -53,7 +53,6 @@
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Bootstrap/Neverness.Runtime.Bootstrap.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.ImageCodec/Neverness.Runtime.ImageCodec.csproj" />
-    <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Interop/Neverness.Runtime.Interop.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.RuntimeLoop/Neverness.Runtime.RuntimeLoop.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Scene/Neverness.Runtime.Scene.csproj" />
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Scripting/Neverness.Runtime.Scripting.csproj" />

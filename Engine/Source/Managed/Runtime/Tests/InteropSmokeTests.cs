@@ -1,4 +1,4 @@
-using Neverness.Runtime.Interop;
+using Neverness.Runtime.Engine;
 
 namespace Neverness.Runtime.Foundation.Tests;
 

@@ -31,8 +31,8 @@
       <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Assets.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Neverness.Runtime.Interop">
-      <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Interop.dll</HintPath>
+    <Reference Include="Neverness.Runtime.Engine">
+      <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Engine.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

@@ -1,9 +1,9 @@
-// Neverness.Runtime.Interop — 禁止 DllImport；仅通过 NNNativeAPI 函数表间接调用 Native。
+// Neverness.Runtime.Engine — 禁止 DllImport；仅通过 NNNativeAPI 函数表间接调用 Native。
 
 using System.Runtime.InteropServices;
 using Neverness.Runtime.Core;
 
-namespace Neverness.Runtime.Interop;
+namespace Neverness.Runtime.Engine;
 
 /// <summary>
 /// 将 Native 传入的 <c>NNNativeAPI*</c> 安装到进程内静态缓存。

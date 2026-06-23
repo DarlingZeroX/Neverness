@@ -10,6 +10,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Editor.Reflection\Neverness.Editor.Reflection.csproj" />
     <ProjectReference Include="..\..\Runtime\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
-    <ProjectReference Include="..\..\Runtime\Neverness.Runtime.Interop\Neverness.Runtime.Interop.csproj" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Application.Private;
 using Neverness.Runtime.Engine;
-using Neverness.Runtime.Interop;
 
 namespace Neverness.Runtime.Foundation.Tests;
 
