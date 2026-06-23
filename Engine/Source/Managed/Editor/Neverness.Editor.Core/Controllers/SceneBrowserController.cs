@@ -37,11 +37,15 @@ public class SceneBrowserController : IController
     /// <summary>刷新实体树。</summary>
     public void RefreshTree()
     {
+        Console.WriteLine($"[SceneBrowserController] RefreshTree: HasActiveScene={_sceneQueryService.HasActiveScene}");
+
         // 通过 Service 获取层级数据
         if (_sceneQueryService.TryRefreshHierarchy())
         {
             var rootNodes = _sceneQueryService.GetHierarchyTree();
             var allNodes = _sceneQueryService.GetAllNodes();
+
+            Console.WriteLine($"[SceneBrowserController] 层级刷新成功: rootNodes={rootNodes.Count}, allNodes={allNodes.Count}");
 
             // 转换为 ViewModel 数据
             var vmRootNodes = rootNodes.Select(ConvertToVM).ToList();
@@ -49,6 +53,10 @@ public class SceneBrowserController : IController
 
             _viewModel.RebuildTree(vmRootNodes, vmAllNodes);
             _viewModel.HasScene = _sceneQueryService.HasActiveScene;
+        }
+        else
+        {
+            Console.WriteLine($"[SceneBrowserController] TryRefreshHierarchy 返回 false");
         }
     }
 

@@ -12,9 +12,11 @@
 #include "EventApiExport.h"
 #include "WindowApiExport.h"
 #include "VfsApiExport.h"
+#include "Engine/ImGuiBackendApi.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "NativeEngineRuntimeServices.h"
+#include "NNRuntimeApplication/Include/Engine/ImGuiBackendApi.h"
 
 extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 {
@@ -41,6 +43,7 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildViewportRenderRuntimeApi(&outTable->viewportRender);
 	NNBuildViewportSurfaceRuntimeApi(&outTable->viewportSurface);
 	NNBuildDiligentRuntimeApi(&outTable->diligent);
+	NNBuildImGuiBackendRuntimeApi(&outTable->imguiBackend);
 
 	std::cout << "NNNative Engine Api Table built." << std::endl;
 	std::cout << "---------------------------------------" << std::endl;

@@ -2,6 +2,9 @@
 
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "ManagedRuntimeServices.h"
+
+#include <iostream>
+
 #include "NativeAPI.h"
 
 #if defined(NEVERNESS_USE_ENGINE_RUNTIME_SERVICES) && NEVERNESS_USE_ENGINE_RUNTIME_SERVICES
@@ -14,6 +17,9 @@ extern "C" void NNNativeApiTable_BuildDefault(NNNativeAPI* outTable)
 	{
 		return;
 	}
+
+	std::locale::global(std::locale(".utf8"));
+	std::cout << "Initialize: locale " << std::endl;
 
 	std::memset(outTable, 0, sizeof(NNNativeAPI));
 	outTable->apiVersion = NN_NATIVE_API_VERSION;

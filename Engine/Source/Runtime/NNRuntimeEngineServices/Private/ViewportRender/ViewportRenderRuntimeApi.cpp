@@ -22,8 +22,7 @@
 #include "NNRuntimeDiligent/Device/NNDiligentDevice.h"
 #include "NativeEngineRuntimeServices.h"
 
-// 获取 Diligent 设备
-#include "Core/WindowRegistry.h"
+// 获取 Diligent 设备（通过 NNDiligentAPI，不依赖 WindowRegistry）
 #include <Device/INNRenderDevice.h>
 
 #include <iostream>
@@ -49,12 +48,15 @@ bool EnsureRmlUIRenderer()
 
     std::cout << "[ViewportRender] EnsureRmlUIRenderer: 开始初始化" << std::endl;
 
-    // 从主窗口获取 Diligent 设备
-    NN::Runtime::Render::INNRenderDevice* device = nullptr;
-    if (auto* window = NN::Runtime::WindowRegistry::Resolve(NN::Runtime::WindowRegistry::GetPrimaryHandle()))
+    // 直接通过 NNDiligentAPI 获取 INNRenderDevice（不依赖 WindowRegistry）
+    auto* runtimeTable = NNNativeEngineApi_GetRuntimeTable();
+    if (!runtimeTable)
     {
-        device = window->GetDevice();
+        std::cerr << "[ViewportRender] Runtime API 表未初始化" << std::endl;
+        return false;
     }
+    auto* device = static_cast<NN::Runtime::Render::INNRenderDevice*>(
+        runtimeTable->diligent.GetPrimaryRenderDevice());
     if (!device)
     {
         std::cerr << "[ViewportRender] 无法获取 Diligent 设备" << std::endl;

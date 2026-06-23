@@ -86,21 +86,37 @@ public sealed class SceneWorld : IScene
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
 
+        Console.WriteLine($"[SceneWorld] LoadFromAsset: name={name}, vfsPath={vfsPath}");
+
         var world = new SceneWorld(name);
 
         try
         {
+            // 诊断：检查 VFS 路径解析
+            var absPath = Neverness.Runtime.VFS.Public.VFS.GetAbsolutePath(vfsPath);
+            Console.WriteLine($"[SceneWorld] VFS 路径解析: {vfsPath} → {absPath ?? "null"}");
+
+            // 诊断：检查 VFS alias 是否注册
+            var assetsRegistered = Neverness.Runtime.VFS.Public.VFS.IsAliasRegistered("/assets/");
+            Console.WriteLine($"[SceneWorld] /assets/ alias 已注册: {assetsRegistered}");
+
             var json = Neverness.Runtime.VFS.Public.VFS.ReadText(vfsPath);
             if (json != null)
             {
+                Console.WriteLine($"[SceneWorld] VFS 读取成功: {json.Length} 字符");
                 using var stream = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(json));
                 world._scene.Deserialize(stream, "json");
+                Console.WriteLine($"[SceneWorld] 反序列化成功: EntityCount={world.EntityCount}");
+            }
+            else
+            {
+                Console.Error.WriteLine($"[SceneWorld] VFS.ReadText 返回 null: {vfsPath}");
             }
             world.AssetPath = vfsPath;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[SceneWorld] 从 VFS 加载场景失败: {ex.Message}");
+            Console.Error.WriteLine($"[SceneWorld] 从 VFS 加载场景失败: {ex.Message}");
             world.Dispose();
             return null;
         }

@@ -61,30 +61,41 @@ public sealed class SceneManager
 
     /// <summary>从 VFS 资产路径加载并激活场景世界。</summary>
     /// <param name="name">场景名称。</param>
-    /// <param name="vfsPath">VFS 虚拟路径（例如 "assets://scenes/main.json"）。</param>
+    /// <param name="vfsPath">VFS 虚拟路径（例如 "/assets/scenes/main.json"）。</param>
     /// <returns>是否加载成功。</returns>
     public bool LoadSceneFromAsset(string name, string vfsPath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(vfsPath);
 
+        Console.WriteLine($"[SceneManager] LoadSceneFromAsset: name={name}, vfsPath={vfsPath}");
+
         if (_worlds.ContainsKey(name))
         {
-            // 已加载同名场景，直接激活
+            Console.WriteLine($"[SceneManager] 场景已加载，直接激活: {name}");
             return ActivateScene(name);
         }
 
         // 使用 SceneWorld.LoadFromAsset 加载场景
         var world = SceneWorld.LoadFromAsset(name, vfsPath);
-        if (world == null) return false;
+        if (world == null)
+        {
+            Console.Error.WriteLine($"[SceneManager] SceneWorld.LoadFromAsset 返回 null: {vfsPath}");
+            return false;
+        }
 
         _worlds[name] = world;
+        Console.WriteLine($"[SceneManager] 场景已创建: {name}, EntityCount={world.EntityCount}");
+
         SceneLoaded?.Invoke(world);
 
         // 首个加载的场景自动激活
         _activeWorld ??= world;
         if (_activeWorld == world)
+        {
+            Console.WriteLine($"[SceneManager] 激活场景: {name}");
             SceneActivated?.Invoke(world);
+        }
 
         return true;
     }

@@ -53,7 +53,7 @@ public static class AvaloniaFrontendModule
     ///
     /// 与 ImGuiFrontendModule.InstallShell() 对应。
     /// </summary>
-    public static void InstallShell(Neverness.Runtime.Application.Public.Window nativeWindow)
+    public static void InstallShell(Neverness.Runtime.Application.Public.SdlWindow nativeWindow)
     {
         Console.WriteLine("[AvaloniaFrontendModule] 等待 Avalonia 主窗口就绪...");
 

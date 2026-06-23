@@ -173,6 +173,8 @@ internal static class SceneModuleImp
     /// <summary>设置场景（场景切换时调用）。</summary>
     public static void SetScene(SceneWorld? world)
     {
+        Console.WriteLine($"[SceneModuleImp] SetScene: world={world?.Name ?? "null"}, SceneQueryService={SceneQueryService != null}");
+
         // 同步场景到 Service 层
         SceneQueryService?.SetActiveScene(world);
         ViewportService?.SetScene(world);

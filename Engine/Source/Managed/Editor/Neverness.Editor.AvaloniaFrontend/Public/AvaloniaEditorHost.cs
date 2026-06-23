@@ -1,3 +1,4 @@
+using Neverness.Runtime.Application.Private;
 using Neverness.Runtime.Application.Public;
 
 namespace Neverness.Editor.AvaloniaFrontend.Public;
@@ -31,7 +32,7 @@ public class AvaloniaEditorHost : IDisposable
     /// 启动 Avalonia 编辑器。
     /// </summary>
     /// <param name="nativeWindow">原生窗口（用于事件循环集成）。</param>
-    public void Start(Window nativeWindow)
+    public void Start(SdlWindow nativeWindow)
     {
         if (_isRunning)
         {
@@ -87,7 +88,7 @@ public class AvaloniaEditorHost : IDisposable
     /// 安装主窗口。
     /// 必须在 Framework.Install() 之后、Core.Install() 之前调用。
     /// </summary>
-    public void InstallShell(Window nativeWindow)
+    public void InstallShell(SdlWindow nativeWindow)
     {
         Console.WriteLine("[AvaloniaEditorHost] 安装主窗口...");
         AvaloniaFrontendModule.InstallShell(nativeWindow);

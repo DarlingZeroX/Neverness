@@ -3,7 +3,7 @@
  * @brief NNDiligentAPI Runtime 实现：暴露底层 Diligent 设备指针。
  *
  * 设计：
- * - 通过 WindowRegistry → VGWindow → NNDiligentDevice 获取 Diligent 指针
+ * - 全局 NNDiligentDevice 由 C# 端通过 CreateDeviceForNativeHandle 创建
  * - 返回 void* 隔离 Diligent 头文件依赖
  * - SwapChain 生命周期由 C# 端管理
  */
@@ -12,11 +12,11 @@
 
 #include "Engine/NativeInterop.h"
 #include "Engine/DiligentAPI.h"
-#include "Core/WindowRegistry.h"
 #include <Device/INNRenderDevice.h>
 
 // NNRuntimeDiligent（NNDiligentDevice）
 #include "Device/NNDiligentDevice.h"
+#include "NNRenderBootstrap.h"
 
 #include <iostream>
 
@@ -25,32 +25,17 @@
 
 namespace
 {
-    /// 获取主窗口的 NNDiligentDevice（失败返回 nullptr）
+    /// 全局 Diligent 设备（C# 端通过 CreateDeviceForNativeHandle 创建）
+    NNDiligent::NNDiligentDevice* g_PrimaryDevice = nullptr;
+
+    /// 获取主设备（失败返回 nullptr）
     NNDiligent::NNDiligentDevice* GetPrimaryDiligentDevice()
     {
-        auto primaryHandle = NN::Runtime::WindowRegistry::GetPrimaryHandle();
-        if (primaryHandle == 0)
+        if (!g_PrimaryDevice)
         {
-            std::cerr << "[Diligent] 主窗口未创建" << std::endl;
-            return nullptr;
+            std::cerr << "[Diligent] 设备未创建（需先调用 CreateDeviceForNativeHandle）" << std::endl;
         }
-
-        auto* window = NN::Runtime::WindowRegistry::Resolve(primaryHandle);
-        if (!window)
-        {
-            std::cerr << "[Diligent] 主窗口无法解析" << std::endl;
-            return nullptr;
-        }
-
-        // 通过 VGWindow 获取 INNRenderDevice，cast 为 NNDiligentDevice
-        auto* iDevice = static_cast<NN::Runtime::Render::INNRenderDevice*>(window->GetDevice());
-        if (!iDevice)
-        {
-            std::cerr << "[Diligent] Diligent 设备未初始化" << std::endl;
-            return nullptr;
-        }
-
-        return static_cast<NNDiligent::NNDiligentDevice*>(iDevice);
+        return g_PrimaryDevice;
     }
 
     // ── API 实现 ──
@@ -135,6 +120,116 @@ namespace
         return swapChain;
     }
 
+    std::uint32_t NN_ENGINE_ABI_STDCALL rt_diligent_createDeviceForWindow(
+        void* sdlWindow,
+        std::uint32_t width,
+        std::uint32_t height)
+    {
+        if (!sdlWindow)
+        {
+            std::cerr << "[Diligent] CreateDeviceForWindow: sdlWindow 为空" << std::endl;
+            return 0;
+        }
+
+        // 已有设备时直接返回成功（不重复创建）
+        if (g_PrimaryDevice)
+        {
+            std::cout << "[Diligent] CreateDeviceForWindow: 设备已存在，跳过" << std::endl;
+            return 1;
+        }
+
+        // 最小尺寸保护
+        if (width < 1) width = 1;
+        if (height < 1) height = 1;
+
+        // 构建设备创建信息
+        NN::Runtime::Render::NNRenderDeviceCreateInfo createInfo{};
+        createInfo.Window = sdlWindow;
+        createInfo.Width = width;
+        createInfo.Height = height;
+        createInfo.Backend = NN::Runtime::Render::NNRenderBackendType::Backend_D3D12;
+        createInfo.EnableValidation = true;
+        createInfo.VSync = true;
+
+        auto device = NN::Runtime::Render::NNRenderBootstrap::CreateDevice(createInfo);
+        if (!device)
+        {
+            std::cerr << "[Diligent] CreateDeviceForWindow: 设备创建失败" << std::endl;
+            return 0;
+        }
+
+        g_PrimaryDevice = static_cast<NNDiligent::NNDiligentDevice*>(device.Detach());
+        std::cout << "[Diligent] CreateDeviceForWindow: 设备创建成功" << std::endl;
+        return 1;
+    }
+
+    /// 释放全局 Diligent 设备（由 ApplicationShutdown 调用）
+    void ReleasePrimaryDevice()
+    {
+        if (g_PrimaryDevice)
+        {
+            g_PrimaryDevice->Release();
+            g_PrimaryDevice = nullptr;
+            std::cout << "[Diligent] 全局设备已释放" << std::endl;
+        }
+    }
+
+    /// 从平台原生句柄创建 Diligent 设备（绕过 SDL，解决 C#/C++ SDL3 实例不共享问题）
+    std::uint32_t NN_ENGINE_ABI_STDCALL rt_diligent_createDeviceForNativeHandle(
+        void* nativeHandle,
+        std::uint32_t handleType,
+        std::uint32_t width,
+        std::uint32_t height)
+    {
+        if (!nativeHandle)
+        {
+            std::cerr << "[Diligent] CreateDeviceForNativeHandle: nativeHandle 为空" << std::endl;
+            return 0;
+        }
+
+        // 已有设备时直接返回成功（不重复创建）
+        if (g_PrimaryDevice)
+        {
+            std::cout << "[Diligent] CreateDeviceForNativeHandle: 设备已存在，跳过" << std::endl;
+            return 1;
+        }
+
+        // 最小尺寸保护
+        if (width < 1) width = 1;
+        if (height < 1) height = 1;
+
+        auto* device = new NNDiligent::NNDiligentDevice();
+        if (!device->InitializeFromNativeHandle(
+                nativeHandle, handleType, width, height,
+                NN::Runtime::Render::NNRenderBackendType::Backend_D3D12,
+                true, true))
+        {
+            std::cerr << "[Diligent] CreateDeviceForNativeHandle: 设备创建失败" << std::endl;
+            device->Release();
+            return 0;
+        }
+
+        g_PrimaryDevice = device;
+        std::cout << "[Diligent] CreateDeviceForNativeHandle: 设备创建成功" << std::endl;
+        return 1;
+    }
+
+    void NN_ENGINE_ABI_STDCALL rt_diligent_presentPrimarySwapChain()
+    {
+        auto* diliDevice = GetPrimaryDiligentDevice();
+        if (!diliDevice)
+            return;
+
+        auto* sc = diliDevice->GetDiligentSwapChain();
+        if (sc)
+            sc->Present();
+    }
+
+    void* NN_ENGINE_ABI_STDCALL rt_diligent_getPrimaryRenderDevice()
+    {
+        return GetPrimaryDiligentDevice();
+    }
+
 } // anonymous namespace
 
 // ── Builder ──
@@ -149,6 +244,10 @@ extern "C" void NNBuildDiligentRuntimeApi(NNDiligentAPI* api)
     api->GetPrimaryContext  = &rt_diligent_getPrimaryContext;
     api->GetPrimarySwapChain = &rt_diligent_getPrimarySwapChain;
     api->CreateViewportSurfaceWithSwapChain = &rt_diligent_createViewportSurfaceWithSwapChain;
+    api->CreateDeviceForWindow = &rt_diligent_createDeviceForWindow;
+    api->CreateDeviceForNativeHandle = &rt_diligent_createDeviceForNativeHandle;
+    api->PresentPrimarySwapChain = &rt_diligent_presentPrimarySwapChain;
+    api->GetPrimaryRenderDevice = &rt_diligent_getPrimaryRenderDevice;
 
     std::cout << "Diligent Runtime API built." << std::endl;
 }

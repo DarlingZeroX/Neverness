@@ -366,13 +366,50 @@ public unsafe struct NNDiligentApi
 
 	/// <summary>创建 ViewportSurface 并返回其 ISwapChain*。</summary>
 	public delegate* unmanaged<void*, uint, uint, uint, void*> CreateViewportSurfaceWithSwapChain;
+
+	/// <summary>为外部创建的 SDL_Window 创建 Diligent 设备。返回 1=成功，0=失败。</summary>
+	public delegate* unmanaged<void*, uint, uint, uint> CreateDeviceForWindow;
+
+	/// <summary>从平台原生窗口句柄创建 Diligent 设备（绕过 SDL）。nativeHandle + handleType。</summary>
+	public delegate* unmanaged<void*, uint, uint, uint, uint> CreateDeviceForNativeHandle;
+
+	/// <summary>Present 主 SwapChain。</summary>
+	public delegate* unmanaged<void> PresentPrimarySwapChain;
+
+	/// <summary>获取主窗口的 INNRenderDevice*（NNRuntimeRender 接口）。</summary>
+	public delegate* unmanaged<void*> GetPrimaryRenderDevice;
+}
+
+/// <summary>
+/// 與 Native <c>NNImGuiBackendAPI</c> 對齊：ImGui SDL3/Diligent 后端封装。
+/// v33 新增。
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 8)]
+public unsafe struct NNImGuiBackendApi
+{
+	public uint Size;
+
+	/// <summary>初始化 ImGui SDL3 + Diligent 后端。</summary>
+	public delegate* unmanaged<void*, void*, void*, void*, bool> Initialize;
+
+	/// <summary>关闭 ImGui 后端。</summary>
+	public delegate* unmanaged<void> Shutdown;
+
+	/// <summary>ImGui NewFrame（SDL3 + Diligent 后端）。</summary>
+	public delegate* unmanaged<int, int, int, void> NewFrame;
+
+	/// <summary>ImGui Render（设置渲染目标 + 提交绘制数据）。</summary>
+	public delegate* unmanaged<void*, void*, void> Render;
+
+	/// <summary>将 SDL_Event 传递给 ImGui 后端处理输入。</summary>
+	public delegate* unmanaged<void*, bool> ProcessEvent;
 }
 
 /// <summary>
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v32**：移除 EditorSceneAPI（已迁移至 C# Friflo ECS）。
+/// **layout v33**：新增 ImGuiBackendAPI（ImGui SDL3/Diligent 后端封装）。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -399,4 +436,6 @@ public unsafe struct NNNativeEngineApi
 	public NNViewportSurfaceApi ViewportSurface;
 	/// <summary>對應 C 聚合體成員 <c>diligent</c>（型別 <c>NNDiligentAPI</c>）；Diligent 底层指针（v28）。</summary>
 	public NNDiligentApi Diligent;
+	/// <summary>對應 C 聚合體成員 <c>imguiBackend</c>（型別 <c>NNImGuiBackendAPI</c>）；ImGui 后端封装（v33）。</summary>
+	public NNImGuiBackendApi ImGuiBackend;
 }

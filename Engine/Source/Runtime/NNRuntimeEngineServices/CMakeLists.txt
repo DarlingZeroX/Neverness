@@ -57,6 +57,8 @@ target_include_directories(NevernessRuntime-EngineServices
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender"
 		# NNRuntimeDiligent include（NNDiligentViewportSurface 等）
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent"
+		# NNRenderBootstrap include（设备创建工厂）
+		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRenderBootstrap/Include"
 )
 
 target_link_libraries(NevernessRuntime-EngineServices
@@ -68,6 +70,7 @@ target_link_libraries(NevernessRuntime-EngineServices
 		NevernessRuntime-VFS
 		NevernessRuntime-RmlUI
 		NNRuntimeDiligent
+		NNRuntimeRenderBootstrap
 		NevernessRuntime-Renderer2D
 )
 

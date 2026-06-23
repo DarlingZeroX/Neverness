@@ -9,6 +9,8 @@
     <RollForward>LatestMinor</RollForward>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="ppy.SDL3-CS" Version="2026.623.0" />
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
   </ItemGroup>
 </Project>

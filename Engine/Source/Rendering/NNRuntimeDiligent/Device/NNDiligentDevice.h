@@ -20,6 +20,15 @@ namespace NNDiligent
         ~NNDiligentDevice() override;
 
         bool Initialize(const NNRenderDeviceCreateInfo& info);
+
+        /// @brief 从平台原生窗口句柄初始化设备，绕过 SDL。
+        /// @param nativeHandle 平台原生句柄（HWND / X11 Window / NSView 等）
+        /// @param handleType 句柄类型：0=Win32HWND, 1=X11Window, 2=Wayland, 3=NSView
+        bool InitializeFromNativeHandle(void* nativeHandle, uint32_t handleType,
+                                        uint32_t width, uint32_t height,
+                                        NNRenderBackendType backend = NNRenderBackendType::Backend_D3D12,
+                                        bool enableValidation = true, bool vsync = true);
+
         void Shutdown();
 
         NNRef<INNBuffer> CreateBuffer(const NNBufferDesc& desc, const void* initialData = nullptr) override;

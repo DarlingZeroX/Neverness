@@ -5,6 +5,7 @@ using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
 using Neverness.Editor.ImGuiFrontend.Menu;
 using Neverness.Runtime.Application;
+using Neverness.Runtime.Application.Private;
 using Neverness.Runtime.Application.Public;
 
 namespace Neverness.Editor.ImGuiFrontend.Shell;
@@ -16,13 +17,13 @@ public class ImGuiMenuBar : IEditorPanel
 {
     private bool m_Dragging;
     private bool m_EditorMaximized;
-    private Window m_EditorWindow;
+    private SdlWindow m_EditorWindow;
 
     private bool m_ShowImGuiDemo;
     private static (int X, int Y) s_WindowSize = (0, 0);
     private static (int X, int Y) s_WindowPos = (0, 0);
 
-    public ImGuiMenuBar(Window window)
+    public ImGuiMenuBar(SdlWindow window)
     {
         m_EditorWindow = window;
     }

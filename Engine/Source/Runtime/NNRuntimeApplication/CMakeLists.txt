@@ -25,6 +25,7 @@ target_sources(NevernessRuntime-Application
 		Include/ApplicationApiExport.h
 		Include/WindowApiExport.h
 		Include/EventApiExport.h
+		Include/Engine/ImGuiBackendApi.h
 		Include/Core/EventQueue.h
 		Include/Core/SDL3EventTranslator.h
 		Include/Core/Window.h
@@ -37,11 +38,13 @@ target_sources(NevernessRuntime-Application
 		Private/Editor/EditorCore.cpp
 		Private/Editor/EditorInitializer.cpp
 		Private/Engine/ImGuiLayer.cpp
+		Private/Engine/ImGuiBackendApi.cpp
 		Private/RuntimeApplication.cpp
 		Private/RuntimeApplicationInstance.cpp
 		Private/BuildApplicationApi.cpp
 		Private/BuildWindowApi.cpp
 		Private/BuildEventApi.cpp
+		Private/BuildImGuiBackendApi.cpp
 		"Include/Editor/EditorInitializer.h"
 		"Private/Editor/EditorInitializer.cpp"
 		"Include/Editor/EditorCore.h"

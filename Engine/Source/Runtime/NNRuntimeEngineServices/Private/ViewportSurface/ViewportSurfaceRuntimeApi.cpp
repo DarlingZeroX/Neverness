@@ -15,7 +15,6 @@
 #include "Engine/NativeInterop.h"
 #include "Engine/ViewportSurfaceAPI.h"
 #include "Engine/RenderCommands.h"
-#include "Core/WindowRegistry.h"
 #include <Device/INNRenderDevice.h>
 
 // NNRuntimeDiligent（NNDiligentViewportSurface、NNDiligentDevice）
@@ -93,42 +92,25 @@ namespace
         if (width < 1) width = 1;
         if (height < 1) height = 1;
 
-        // 获取主窗口的 Diligent Device/Context
-        auto primaryHandle = NN::Runtime::WindowRegistry::GetPrimaryHandle();
-        if (primaryHandle == 0)
+        // 通过 NNDiligentAPI 获取 Diligent Device/Context
+        auto* runtimeTable = NNNativeEngineApi_GetRuntimeTable();
+        if (!runtimeTable)
         {
-            std::cerr << "[ViewportSurface] 主窗口未创建" << std::endl;
+            std::cerr << "[ViewportSurface] Runtime API 表未初始化" << std::endl;
             return 0;
         }
 
-        auto* window = NN::Runtime::WindowRegistry::Resolve(primaryHandle);
-        if (!window)
-        {
-            std::cerr << "[ViewportSurface] 主窗口无法解析" << std::endl;
-            return 0;
-        }
-
-        // 通过 VGWindow 获取 INNRenderDevice，cast 为 NNDiligentDevice
-        // Neverness 目前只使用 NNDiligent 作为渲染后端，此 cast 安全
-        auto* iDevice = static_cast<NN::Runtime::Render::INNRenderDevice*>(window->GetDevice());
-        if (!iDevice)
-        {
-            std::cerr << "[ViewportSurface] Diligent 设备未初始化" << std::endl;
-            return 0;
-        }
-
-        auto* diliDevice = static_cast<NNDiligent::NNDiligentDevice*>(iDevice);
-        auto* device  = diliDevice->GetDiligentDevice();
-        auto* context = diliDevice->GetDiligentContext();
+        auto* device  = runtimeTable->diligent.GetPrimaryDevice();
+        auto* context = runtimeTable->diligent.GetPrimaryContext();
         if (!device || !context)
         {
-            std::cerr << "[ViewportSurface] Diligent Device/Context 无效" << std::endl;
+            std::cerr << "[ViewportSurface] Diligent Device/Context 无效（未创建？）" << std::endl;
             return 0;
         }
 
         // 创建 Surface
         auto* surface = new NNDiligent::NNDiligentViewportSurface();
-        if (!surface->Create(device, context, nativeHandle, static_cast<uint32_t>(handleType), width, height))
+        if (!surface->Create((::Diligent::IRenderDevice*)device, (::Diligent::IDeviceContext*)context, nativeHandle, static_cast<uint32_t>(handleType), width, height))
         {
             std::cerr << "[ViewportSurface] SwapChain 创建失败" << std::endl;
             delete surface;
@@ -245,13 +227,16 @@ namespace
         if (g_CommandsRendererInitialized)
             return g_CommandsRenderer != nullptr;
 
-        // 从主窗口获取 Diligent 设备
-        NN::Runtime::Render::INNRenderDevice* device = nullptr;
-        if (auto* window = NN::Runtime::WindowRegistry::Resolve(
-                NN::Runtime::WindowRegistry::GetPrimaryHandle()))
+        // 直接通过 NNDiligentAPI 获取 INNRenderDevice（不依赖 WindowRegistry）
+        auto* runtimeTable = NNNativeEngineApi_GetRuntimeTable();
+        if (!runtimeTable)
         {
-            device = window->GetDevice();
+            std::cerr << "[ViewportSurface] RenderCommands: Runtime API 表未初始化" << std::endl;
+            return false;
         }
+
+        auto* device = static_cast<NN::Runtime::Render::INNRenderDevice*>(
+            runtimeTable->diligent.GetPrimaryRenderDevice());
         if (!device)
         {
             std::cerr << "[ViewportSurface] RenderCommands: 无法获取 Diligent 设备" << std::endl;

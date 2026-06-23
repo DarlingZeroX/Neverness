@@ -1,5 +1,6 @@
 using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Application;
+using Neverness.Runtime.Application.Private;
 using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Bootstrap;
 using Neverness.Runtime.Engine;
@@ -64,7 +65,7 @@ internal static class EditorApplicationRunner
 		return EditorFrontend.Avalonia;
 	}
 
-    public static void Install(Window window)
+    public static void Install(SdlWindow window)
     {
         /* Native 事件泵：RuntimeBootstrap 之后即可创建 */
         var nativePump = new NativeEventPump();
@@ -142,14 +143,6 @@ internal static class EditorApplicationRunner
 
 		try
 		{
-			if (!ApplicationHost.IsAvailable)
-			{
-				Console.Error.WriteLine(
-					"NervernessEditor: Native Application API is unavailable.\n" +
-					"Please confirm NevernessRuntime-Managed.dll was built with NEVERNESS_USE_ENGINE_RUNTIME_SERVICES and SDL3.dll can be loaded.");
-				return 1;
-			}
-
 			if (!ApplicationHost.Initialize())
 			{
 				Console.Error.WriteLine(
@@ -158,15 +151,42 @@ internal static class EditorApplicationRunner
 				return 1;
 			}
 
+            //if (!ApplicationHost.IsAvailable)
+            //{
+            //    Console.Error.WriteLine(
+            //        "NervernessEditor: Native Application API is unavailable.\n" +
+            //        "Please confirm NevernessRuntime-Managed.dll was built with NEVERNESS_USE_ENGINE_RUNTIME_SERVICES and SDL3.dll can be loaded.");
+            //    return 1;
+            //}
 
-
-			Window? window = Window.Create(options.WindowTitle, options.Width, options.Height);
-			if (window is null)
+            var windowHandle = SdlWindowManager.Create(options.WindowTitle, options.Width, options.Height);
+			if (!windowHandle.IsValid)
 			{
-				Console.Error.WriteLine("NervernessEditor: Window.Create failed.");
+				Console.Error.WriteLine("NervernessEditor: SdlWindowManager.Create failed.");
 				//nativePump.Dispose();
 				return 1;
 			}
+
+			var window = SdlWindowManager.Resolve(windowHandle)!;
+
+			// 创建渲染表面（含 Diligent 设备创建）
+			var renderSurface = RenderSurfaceHost.CreateSurface(windowHandle);
+			if (renderSurface == null)
+			{
+				Console.Error.WriteLine("NervernessEditor: RenderSurfaceHost.CreateSurface failed.");
+				return 1;
+			}
+
+			// 初始化 ImGui Backend（SDL3 + Diligent）
+			//if (!ImGuiBackendBridge.Initialize(
+			//	window.NativeWindowPtr,
+			//	renderSurface.Surface,
+			//	renderSurface.Context,
+			//	renderSurface.SwapChain))
+			//{
+			//	Console.Error.WriteLine("NervernessEditor: ImGuiBackendBridge.Initialize failed.");
+			//	return 1;
+			//}
 
             // 安装编辑器（模块注册、前端安装、事件泵创建等）
             Install(window);
@@ -252,7 +272,7 @@ internal static class EditorApplicationRunner
 	/// <summary>
 	/// 安装 Avalonia 前端。
 	/// </summary>
-	private static void InstallAvaloniaFrontend(Window window)
+	private static void InstallAvaloniaFrontend(SdlWindow window)
 	{
 		Console.WriteLine("[EditorApplicationRunner] 安装 Avalonia 前端...");
 

@@ -31,9 +31,29 @@ if(MSVC AND TRUE)
     add_compile_options(
         "/wd4819"
     )
-
-    # /showIncludes 保留：CMake 依赖扫描需要它来追踪头文件变更（增量编译）
 endif()
+
+# 关闭 Ninja 的 /showIncludes 输出。
+# CMake Ninja generator 硬编码 /showIncludes 在 rules.ninja 命令模板中，
+# 无法通过任何 CMake 变量控制。使用 DEFER 在 configure 最后阶段修改 rules.ninja。
+if(CMAKE_GENERATOR STREQUAL "Ninja")
+    cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}"
+        CALL _nn_strip_showincludes_from_rules_ninja)
+endif()
+
+function(_nn_strip_showincludes_from_rules_ninja)
+    set(_rules_ninja "${CMAKE_BINARY_DIR}/CMakeFiles/rules.ninja")
+    if(NOT EXISTS "${_rules_ninja}")
+        message(WARNING "rules.ninja 未找到，无法删除 /showIncludes")
+        return()
+    endif()
+    file(READ "${_rules_ninja}" _rules_content)
+    string(REPLACE " /showIncludes " " " _rules_content "${_rules_content}")
+    # 处理行尾的情况：/showIncludes 后紧跟换行
+    string(REPLACE "/showIncludes " "" _rules_content "${_rules_content}")
+    file(WRITE "${_rules_ninja}" "${_rules_content}")
+    message(STATUS "已从 rules.ninja 中删除 /showIncludes")
+endfunction()
 
 ############ 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)

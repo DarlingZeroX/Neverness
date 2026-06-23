@@ -1,4 +1,4 @@
-﻿#ifndef NATIVEFILESYSTEM_H
+#ifndef NATIVEFILESYSTEM_H
 #define NATIVEFILESYSTEM_H
 
 #undef CreateFile // windows.h define CreateFile macro which cause compile error
@@ -6,6 +6,7 @@
 #include "VFSConfig.h"
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <mutex>
 #include "IFileSystem.h"
 #include "StringUtils.h"
@@ -15,7 +16,7 @@ namespace fs = std::filesystem;
 
 namespace NN::Runtime::VFS
 {
-
+	 
 using NativeFileSystemPtr = std::shared_ptr<class NativeFileSystem>;
 using NativeFileSystemWeakPtr = std::weak_ptr<class NativeFileSystem>;
 
@@ -314,6 +315,20 @@ private:
 
         IFilePtr file = FindFile(filePath, m_FileList);
         bool isInCache = (file != nullptr);
+
+        if (!isInCache) {
+            std::cerr << "[NativeFileSystem] 文件未命中缓存: " << filePath.AbsolutePath()
+                      << " (缓存文件数=" << m_FileList.size()
+                      << ", basePath=" << m_BasePath << ")" << std::endl;
+            // 列出缓存中所有文件（调试用）
+            int count = 0;
+            for (const auto& [key, val] : m_FileList) {
+                if (count < 5) {
+                    std::cerr << "  缓存[" << count << "]: " << key.string() << std::endl;
+                }
+                count++;
+            }
+        }
 
         if (!isInCache && !IsReadOnlyST()) {
             /* 快取未命中 ≠ 檔案不存在：先檢查磁碟上的真實檔案系統，

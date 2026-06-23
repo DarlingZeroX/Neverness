@@ -48,6 +48,7 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     private uint _pendingWidth;
     private uint _pendingHeight;
     private bool _resizePending;
+    private int _frameCount;
 
     public ViewportAvaloniaView() : base("Viewport")
     {
@@ -61,6 +62,7 @@ public class ViewportAvaloniaView : AvaloniaViewBase
 
         // 获取 Surface Registry（由 SceneModule 注册）
         _surfaceRegistry = CoreModuleImp.Context.GetService<IViewportSurfaceRegistry>();
+        Console.WriteLine($"[ViewportAvaloniaView] Bind: _surfaceRegistry={_surfaceRegistry?.GetType().Name ?? "null"}");
 
         // 创建 Avalonia 控件树
         var panel = new DockPanel();
@@ -90,9 +92,11 @@ public class ViewportAvaloniaView : AvaloniaViewBase
 
         // 将 ViewportHostControl 添加到面板
         var hostControl = _surfaceService.GetControl();
+        Console.WriteLine($"[ViewportAvaloniaView] hostControl={hostControl?.GetType().Name ?? "null"}");
         if (hostControl != null)
         {
             _viewportPanel.Children.Add(hostControl);
+            Console.WriteLine($"[ViewportAvaloniaView] hostControl 已添加到 _viewportPanel");
         }
 
         // 监听 Bounds 变化（Deferred Resize）
@@ -144,7 +148,12 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     /// <summary>原生句柄创建完成——注册到 Surface Registry。</summary>
     private void OnSurfaceCreated(IntPtr handle)
     {
-        if (_surfaceRegistry == null || _surfaceService?.Surface == null) return;
+        Console.WriteLine($"[ViewportAvaloniaView] OnSurfaceCreated 被调用: handle=0x{handle:X}, _surfaceRegistry={_surfaceRegistry?.GetType().Name ?? "null"}");
+        if (_surfaceRegistry == null || _surfaceService?.Surface == null)
+        {
+            Console.WriteLine($"[ViewportAvaloniaView] OnSurfaceCreated 提前返回: _surfaceRegistry={_surfaceRegistry != null}, _surfaceService?.Surface={_surfaceService?.Surface != null}");
+            return;
+        }
 
         var surface = _surfaceService.Surface;
         var handleDescriptor = (_surfaceService as ViewportHostService)?.GetHandleDescriptor() ?? "";
@@ -249,7 +258,16 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     /// <summary>主线程渲染回调——每帧由 TickRendering 调用。</summary>
     private void OnMainThreadRender()
     {
-        if (_surfaceId == 0 || _surfaceRegistry == null) return;
+        if (_surfaceId == 0 || _surfaceRegistry == null)
+        {
+            // 诊断日志：每 60 帧输出一次
+            if (_frameCount % 60 == 0)
+            {
+                Console.WriteLine($"[ViewportAvaloniaView] OnMainThreadRender 跳过: _surfaceId={_surfaceId}, _surfaceRegistry={_surfaceRegistry?.GetType().Name ?? "null"}");
+            }
+            _frameCount++;
+            return;
+        }
 
         // 1. Deferred Resize：帧末统一执行
         if (_resizePending)

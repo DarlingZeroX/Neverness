@@ -23,13 +23,14 @@
 #include "ViewportRenderAPI.h"
 #include "ViewportSurfaceAPI.h"
 #include "DiligentAPI.h"
+#include "ImGuiBackendAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v32：移除 EditorSceneAPI（已迁移至 C# Friflo ECS）。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 32u
+/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v36：NNDiligentAPI 新增 GetPrimaryRenderDevice。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 36u
 
 typedef struct NNNativeEngineAPI
 {
@@ -57,6 +58,8 @@ typedef struct NNNativeEngineAPI
 	NNViewportSurfaceAPI viewportSurface;
 	/** @brief Diligent 底层设备指针暴露；見 `DiligentAPI.h`。v28 新增。 */
 	NNDiligentAPI diligent;
+	/** @brief ImGui SDL3/Diligent 后端封装；見 `ImGuiBackendAPI.h`。v33 新增。 */
+	NNImGuiBackendAPI imguiBackend;
 } NNNativeEngineAPI;
 
 #ifdef __cplusplus

@@ -136,6 +136,159 @@ namespace NNDiligent
         return true;
     }
 
+    // ── 从平台原生句柄初始化（绕过 SDL）──
+    // C# 端创建 SDL 窗口后获取 HWND/X11/NSView，直接传入此函数。
+    bool NNDiligentDevice::InitializeFromNativeHandle(
+        void* nativeHandle, uint32_t handleType,
+        uint32_t width, uint32_t height,
+        NNRenderBackendType backend, bool enableValidation, bool vsync)
+    {
+        std::cout << "[NNDiligentDevice] InitializeFromNativeHandle: type=" << handleType
+                  << " " << width << "x" << height << std::endl;
+
+        if (!nativeHandle) return false;
+
+        // 构建 Diligent::NativeWindow（跨平台）
+        ::Diligent::NativeWindow nw{};
+        switch (handleType)
+        {
+        case 0: // Win32HWND
+#if PLATFORM_WIN32
+            nw.hWnd = nativeHandle;
+#else
+            std::cerr << "[NNDiligentDevice] Win32HWND 仅限 Windows 平台" << std::endl;
+            return false;
+#endif
+            break;
+        case 1: // X11Window
+#if PLATFORM_LINUX
+            nw.WindowId = reinterpret_cast<uintptr_t>(nativeHandle);
+#else
+            std::cerr << "[NNDiligentDevice] X11Window 仅限 Linux 平台" << std::endl;
+            return false;
+#endif
+            break;
+        case 2: // Wayland
+#if PLATFORM_LINUX
+            nw.pSurface = nativeHandle;
+#else
+            std::cerr << "[NNDiligentDevice] Wayland 仅限 Linux 平台" << std::endl;
+            return false;
+#endif
+            break;
+        case 3: // NSView (macOS)
+#if PLATFORM_MACOS
+            nw.pNSView = nativeHandle;
+#else
+            std::cerr << "[NNDiligentDevice] NSView 仅限 macOS 平台" << std::endl;
+            return false;
+#endif
+            break;
+        default:
+            std::cerr << "[NNDiligentDevice] 不支持的句柄类型: " << handleType << std::endl;
+            return false;
+        }
+
+        // 以下逻辑与 Initialize() 完全一致，只是 NativeWindow 来自原生句柄而非 SDL
+        ::Diligent::SwapChainDesc scDesc;
+        scDesc.Width  = width;
+        scDesc.Height = height;
+
+        if (backend == NNRenderBackendType::Auto)
+        {
+#if VULKAN_SUPPORTED
+            backend = NNRenderBackendType::Backend_Vulkan;
+#elif D3D12_SUPPORTED
+            backend = NNRenderBackendType::Backend_D3D12;
+#elif D3D11_SUPPORTED
+            backend = NNRenderBackendType::Backend_D3D11;
+#elif GL_SUPPORTED
+            backend = NNRenderBackendType::Backend_OpenGL;
+#else
+            return false;
+#endif
+        }
+
+        bool ok = false;
+
+#if VULKAN_SUPPORTED
+        if (backend == NNRenderBackendType::Backend_Vulkan)
+        {
+            std::cout << "[NNDiligentDevice] Vulkan" << std::endl;
+            auto* F = ::Diligent::LoadAndGetEngineFactoryVk();
+            if (F) {
+                ::Diligent::EngineVkCreateInfo ci;
+                ci.SetValidationLevel(enableValidation ? ::Diligent::VALIDATION_LEVEL_2 : ::Diligent::VALIDATION_LEVEL_DISABLED);
+                F->CreateDeviceAndContextsVk(ci, &m_Device, &m_Context);
+                if (m_Device && m_Context) { F->CreateSwapChainVk(m_Device, m_Context, scDesc, nw, &m_SwapChain); ok = true; }
+            }
+        }
+#endif
+#if D3D12_SUPPORTED
+        if (!ok && backend == NNRenderBackendType::Backend_D3D12)
+        {
+            std::cout << "[NNDiligentDevice] D3D12" << std::endl;
+            auto* F = ::Diligent::LoadAndGetEngineFactoryD3D12();
+            if (F) {
+                ::Diligent::EngineD3D12CreateInfo ci;
+                ci.SetValidationLevel(enableValidation ? ::Diligent::VALIDATION_LEVEL_2 : ::Diligent::VALIDATION_LEVEL_DISABLED);
+                ci.GPUDescriptorHeapSize[0]        = 32768;
+                ci.GPUDescriptorHeapDynamicSize[0] = 16384;
+                ci.GPUDescriptorHeapSize[1]        = 1536;
+                ci.GPUDescriptorHeapDynamicSize[1] = 512;
+                F->CreateDeviceAndContextsD3D12(ci, &m_Device, &m_Context);
+                if (m_Device && m_Context) { F->CreateSwapChainD3D12(m_Device, m_Context, scDesc, ::Diligent::FullScreenModeDesc{}, nw, &m_SwapChain); ok = true; }
+            }
+        }
+#endif
+#if D3D11_SUPPORTED
+        if (!ok && backend == NNRenderBackendType::Backend_D3D11)
+        {
+            std::cout << "[NNDiligentDevice] D3D11" << std::endl;
+            auto* F = ::Diligent::LoadAndGetEngineFactoryD3D11();
+            if (F) {
+                ::Diligent::EngineD3D11CreateInfo ci;
+                ci.SetValidationLevel(enableValidation ? ::Diligent::VALIDATION_LEVEL_2 : ::Diligent::VALIDATION_LEVEL_DISABLED);
+                F->CreateDeviceAndContextsD3D11(ci, &m_Device, &m_Context);
+                if (m_Device && m_Context) { F->CreateSwapChainD3D11(m_Device, m_Context, scDesc, ::Diligent::FullScreenModeDesc{}, nw, &m_SwapChain); ok = true; }
+            }
+        }
+#endif
+#if GL_SUPPORTED
+        if (!ok && backend == NNRenderBackendType::Backend_OpenGL)
+        {
+            std::cout << "[NNDiligentDevice] OpenGL" << std::endl;
+            auto* F = ::Diligent::LoadAndGetEngineFactoryOpenGL();
+            if (F) {
+                ::Diligent::EngineGLCreateInfo ci;
+                ci.Window = nw;
+                ci.SetValidationLevel(enableValidation ? ::Diligent::VALIDATION_LEVEL_2 : ::Diligent::VALIDATION_LEVEL_DISABLED);
+                F->CreateDeviceAndSwapChainGL(ci, &m_Device, &m_Context, scDesc, &m_SwapChain);
+                if (m_Device && m_Context && m_SwapChain) ok = true;
+            }
+        }
+#endif
+
+        if (!ok || !m_Device || !m_Context || !m_SwapChain) { Shutdown(); return false; }
+
+        m_DeviceInfo.Backend = backend;
+        m_DeviceInfo.MaxTextureSize = m_Device->GetAdapterInfo().Texture.MaxTexture2DDimension;
+        m_DeviceInfo.MaxBufferSize = 256ULL * 1024 * 1024;
+        m_DeviceInfo.SupportsCompute = m_Device->GetDeviceInfo().Features.ComputeShaders != 0;
+        m_DeviceInfo.SupportsRayTracing = m_Device->GetDeviceInfo().Features.RayTracing != 0;
+
+        const char* name = "Unknown";
+        if (backend == NNRenderBackendType::Backend_Vulkan) name = "Vulkan";
+        else if (backend == NNRenderBackendType::Backend_D3D12) name = "D3D12";
+        else if (backend == NNRenderBackendType::Backend_D3D11) name = "D3D11";
+        else if (backend == NNRenderBackendType::Backend_OpenGL) name = "OpenGL";
+        else if (backend == NNRenderBackendType::Backend_Metal) name = "Metal";
+        m_DeviceInfo.DeviceName = name;
+
+        std::cout << "[NNDiligentDevice] OK! Backend: " << m_DeviceInfo.DeviceName << std::endl;
+        return true;
+    }
+
     void NNDiligentDevice::Shutdown()
     {
         m_ImmediateCmd = nullptr;

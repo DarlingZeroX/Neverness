@@ -57,7 +57,7 @@ public static class ImGuiFrontendModule
     /// 安装主窗口和菜单栏（原 Shell 模块职责）。
     /// 必须在 Framework.Install() 之后、Core.Install() 之前调用。
     /// </summary>
-    public static void InstallShell(Window window)
+    public static void InstallShell(SdlWindow window)
     {
         var panelManager = PanelManager.Instance;
 

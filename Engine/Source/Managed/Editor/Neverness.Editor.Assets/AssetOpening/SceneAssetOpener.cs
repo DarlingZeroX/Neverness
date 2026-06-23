@@ -21,11 +21,18 @@ public sealed class SceneAssetOpener : IAssetOpener
     public Task OpenAsync(AssetOpenContext context)
     {
         var sceneName = context.VirtualPath.FileNameWithoutExtension;
+        var vfsPath = context.VirtualPath.FullPath;
 
-        var result = _sceneManager.LoadSceneFromAsset(sceneName, context.VirtualPath.FullPath);
+        Console.WriteLine($"[SceneAssetOpener] 打开场景: name={sceneName}, vfsPath={vfsPath}");
+
+        var result = _sceneManager.LoadSceneFromAsset(sceneName, vfsPath);
         if (!result)
         {
-            Console.WriteLine($"[SceneAssetOpener] 加载场景失败: {context.VirtualPath}");
+            Console.Error.WriteLine($"[SceneAssetOpener] 加载场景失败: {vfsPath}");
+        }
+        else
+        {
+            Console.WriteLine($"[SceneAssetOpener] 场景加载成功: {sceneName}, 激活场景数={_sceneManager.LoadedCount}");
         }
 
         return Task.CompletedTask;
