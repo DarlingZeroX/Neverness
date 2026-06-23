@@ -15,25 +15,25 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 # 添加宏
-add_definitions(-DVGCORE_DYNAMIC) 
+#add_definitions(-DVGCORE_DYNAMIC) 
 add_definitions(-DVG_CORE_API_EXPORT) 
 
-add_library(NevernessRuntime-Core SHARED)
+add_library(NevernessRuntime-Core STATIC)
 
 target_sources(NevernessRuntime-Core
   PRIVATE
-    Include/Core/Application.h
+    
     Include/Core/CoreTypes.h
     Include/Core/EventBus.h
     Include/Core/Events.h
     Include/Core/Input.h
     Include/Core/RuntimeCore.h
     Include/Core/Viewport.h
-    Include/Data/DataContainer.h
-    Include/Data/DataNamespace.h
-    Include/Data/DataVariant.h
+
+    NNObject.h
+    Include/Handle/NNHandleTypes.h
+    Include/Handle/NNObjectHandleRegistry.h
     
-    Include/Utils/LuaHelper.h
     Include/Utils/TimeHelper.h
     Include/Utils/TransitionHelper.h
     RuntimeCoreExport.h
@@ -42,32 +42,23 @@ target_sources(NevernessRuntime-Core
     Source/Core/Input.cpp
     Source/Core/RuntimeCore.cpp
     Source/Core/Viewport.cpp
-    Source/Data/DataContainer.cpp
-    Source/Data/DataNamespace.cpp
-    Source/Data/DataVariant.cpp
-    Source/Interface/AssetInterface.cpp
-    Source/Interface/EngineState.cpp
-    Source/Interface/FileInterface.cpp
-    Source/Interface/GameInterface.cpp
-    Source/Interface/ISceneFactory.cpp
-    Source/Interface/Loader.cpp
-    Source/Interface/SceneInterface.cpp
     
-    Source/Utils/LuaHelper.cpp
     Source/Utils/TimeHelper.cpp
     Source/Utils/TransitionHelper.cpp
 )
 
 # 添加头文件搜索路径
-target_include_directories(NevernessRuntime-Core PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+# PUBLIC Runtime/: <NNRuntimeCore/NNObject.h>
+# PUBLIC Include/: <NNRuntimeCore/Handle/NNHandleTypes.h>
+target_include_directories(NevernessRuntime-Core PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+target_include_directories(NevernessRuntime-Core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-Core PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Core)
-target_include_directories(NevernessRuntime-Core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 target_include_directories(NevernessRuntime-Core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
-target_include_directories(NevernessRuntime-Core PRIVATE ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeLua/Include)
  
-find_package(SDL3 CONFIG REQUIRED)
-target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-Lua)
-target_link_libraries(NevernessRuntime-Core PUBLIC SDL3::SDL3)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-Core)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessCore-PlatformCore)
 target_link_libraries(NevernessRuntime-Core PRIVATE NevernessRuntime-VFS)
+
+# 兼容旧的 NNRuntimeCore 目标名（Rendering 模块使用）
+add_library(NNRuntimeCore INTERFACE)
+target_link_libraries(NNRuntimeCore INTERFACE NevernessRuntime-Core)

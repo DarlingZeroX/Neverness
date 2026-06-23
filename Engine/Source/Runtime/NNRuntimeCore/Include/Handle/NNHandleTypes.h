@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "NNObject.h"
+#include "../../NNObject.h"
 
 namespace NN::Runtime::Core
 {

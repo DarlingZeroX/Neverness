@@ -10,9 +10,9 @@
 */
 
 #pragma once
+/*
 #include "Events.h"
 #include "RuntimeCore.h"
-#include "../../Interface/GameInterface.h"
 //#include "../Graphics/Interface/Texture.h"
 //#include <NNRuntimeRHI/Interface/Texture.h>
 #include <NNPlatformCore/Include/WindowInterface.h>
@@ -20,6 +20,43 @@
 
 namespace NN::Runtime
 {
+	// 内联定义 ICamera 和 IViewport，原 GameInterface.h 已移除
+	struct IViewport;
+
+	struct NN_RUNTIME_CORE_API ICamera
+	{
+		virtual ~ICamera();
+
+		virtual const matrix4x4& GetMatrix() = 0;
+		virtual void OnViewportSizeChange(int width, int height) = 0;
+		virtual std::string GetCameraType() = 0;
+
+		virtual void AttachViewport(IViewport* viewport);
+	private:
+		std::vector<IViewport*> m_Viewports;
+	};
+
+	struct IViewport
+	{
+		virtual ~IViewport() = default;
+
+		virtual void AttachCamera(ICamera* camera) = 0;
+		virtual bool RemoveCamera(ICamera* camera) = 0;
+	};
+
+	struct IOrthoCamera : public ICamera
+	{
+		~IOrthoCamera() override = default;
+		std::string GetCameraType() override { return "Ortho"; }
+
+		virtual float GetLeft() = 0;
+		virtual float GetRight() = 0;
+		virtual float GetTop() = 0;
+		virtual float GetBottom() = 0;
+		virtual float GetWidth() = 0;
+		virtual float GetHeight() = 0;
+	};
+
 	struct MouseHoveredData
 	{
 		bool Valid;
@@ -122,3 +159,4 @@ namespace NN::Runtime
 		WindowID m_WindowID = 0;
 	};
 }
+*/

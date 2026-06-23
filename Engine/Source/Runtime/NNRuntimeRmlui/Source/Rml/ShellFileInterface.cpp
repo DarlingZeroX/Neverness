@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This source file is part of VisionGal, the Visual Novel Engine
  *
  * For the latest information, see https://darlingzerox.github.io/VisionGalDoc/
@@ -11,7 +11,7 @@
 
 #include "Rml/ShellFileInterface.h"
 #include "NNRuntimeVFS/Include/VFSService.h"
-#include "NNRuntimeCore/Include/Core/EventBus.h"
+//#include "NNRuntimeCore/Include/Core/EventBus.h"
 
 ShellFileInterface::ShellFileInterface(const Rml::String& root) : root(root) {}
 
@@ -142,10 +142,10 @@ bool UIFileInterfaceVFS::FilePtr::Open(PathType pathType, const Rml::String& pat
 			return false;
 
 		// 事件
-		NN::Runtime::UISystemEvent evt;
-		evt.EventType = NN::Runtime::UISystemEventType::UIFileOpen;
-		evt.UIFilePath = filePath;
-		NN::Runtime::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
+		//NN::Runtime::UISystemEvent evt;
+		//evt.EventType = NN::Runtime::UISystemEventType::UIFileOpen;
+		//evt.UIFilePath = filePath;
+		//NN::Runtime::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
 
 		return true;
 	}
@@ -170,10 +170,10 @@ void UIFileInterfaceVFS::FilePtr::Close()
 		fpVFS->Close();
 
 		// 事件
-		NN::Runtime::UISystemEvent evt;
-		evt.EventType = NN::Runtime::UISystemEventType::UIFileClose;
-		evt.UIFilePath = filePath;
-		NN::Runtime::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
+		//NN::Runtime::UISystemEvent evt;
+		//evt.EventType = NN::Runtime::UISystemEventType::UIFileClose;
+		//evt.UIFilePath = filePath;
+		//NN::Runtime::EngineEventBus::Get().OnUISystemEvent.Invoke(evt);
 	}
 
 	if (type == PathType::FS)

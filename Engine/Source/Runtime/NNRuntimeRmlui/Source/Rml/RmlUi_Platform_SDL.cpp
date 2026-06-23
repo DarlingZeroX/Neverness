@@ -275,6 +275,7 @@ bool RmlSDL::InputEventHandler(Rml::Context* context, SDL_Window* window, SDL_Ev
 	return result;
 }
 
+/*
 bool RmlSDL::InputEventHandler(Rml::Context* context, SDL_Window* window, NN::Runtime::Viewport* viewport, SDL_Event& ev)
 {
 #if SDL_MAJOR_VERSION >= 3
@@ -404,7 +405,7 @@ bool RmlSDL::InputEventHandler(Rml::Context* context, SDL_Window* window, NN::Ru
 	}
 
 	return result;
-}
+}*/
 
 Rml::Input::KeyIdentifier RmlSDL::ConvertKey(int sdlkey)
 {

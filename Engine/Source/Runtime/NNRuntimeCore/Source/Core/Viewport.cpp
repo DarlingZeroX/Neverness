@@ -10,7 +10,7 @@
 */
 
 #include "Core/Viewport.h"
-
+/*
 namespace NN::Runtime
 {
 	Viewport::Viewport(const float2& viewport_size)
@@ -194,6 +194,20 @@ namespace NN::Runtime
 
 		m_FrameEvents.emplace_back(std::move(evt));
 	}
+
+	// ICamera 实现（原 GameInterface.cpp）
+	ICamera::~ICamera()
+	{
+		for (auto viewport : m_Viewports)
+		{
+			viewport->RemoveCamera(this);
+		}
+	}
+
+	void ICamera::AttachViewport(IViewport* viewport)
+	{
+		m_Viewports.push_back(viewport);
+	}
 }
 
-
+*/

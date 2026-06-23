@@ -55,7 +55,6 @@ target_include_directories(NevernessRuntime-EngineServices
 		# Rendering include（INNRenderDevice 等接口）
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering"
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender"
-		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore"
 		# NNRuntimeDiligent include（NNDiligentViewportSurface 等）
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent"
 )

@@ -52,7 +52,7 @@ add_subdirectory(${DILIGENT_ENGINE_DIR} ${DILIGENT_BIN_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_SAVED}")
 
 # === 子模块 ===
-add_subdirectory(NNRuntimeCore)
+# add_subdirectory(NNRuntimeCore)
 add_subdirectory(NNRuntimeRender)
 add_subdirectory(NNRuntimeRenderAssets)
 add_subdirectory(NNRuntimeSRP)

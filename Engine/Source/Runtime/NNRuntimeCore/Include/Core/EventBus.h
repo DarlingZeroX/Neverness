@@ -10,17 +10,14 @@
 */
 
 #pragma once
+#include "../../RuntimeCoreExport.h"
 #include "Events.h"
 #include <NNCore/Include/Event/HEventDelegate.h>
 
 namespace NN::Runtime
 {
-	struct NN_RUNTIME_CORE_API EngineEventBus
+	struct EngineEventBus
 	{
-		//NN::Core::HEventDelegate<const TransformUpdateEvent&> OnTransformUpdateEvent;
-
-		NN::Core::HEventDelegate<const SceneEvent&> OnSceneEvent;
-
 		NN::Core::HEventDelegate<const EngineEvent&> OnEngineEvent;
 
 		NN::Core::HEventDelegate<const LuaScriptEvent&> OnLuaScriptEvent;

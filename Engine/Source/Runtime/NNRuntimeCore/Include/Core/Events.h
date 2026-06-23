@@ -11,7 +11,7 @@
 
 #pragma once
 //#include "../Include/EngineConfig.h"
-#include "../../Interface/SceneInterface.h"
+#include "../Core/CoreTypes.h"
 #include <NNCore/Interface/HVector.h>
 
 namespace NN::Runtime
@@ -57,8 +57,8 @@ namespace NN::Runtime
 	struct EngineEvent
 	{
 		EngineEventType EventType = EngineEventType::None;
-		IScene* Scene = nullptr;
-		IScene* PrevScene = nullptr;
+		void* Scene = nullptr;
+		void* PrevScene = nullptr;
 	};
 
 	////////////////		Scene Event
@@ -73,8 +73,7 @@ namespace NN::Runtime
 	struct SceneEvent
 	{
 		SceneEventType EventType = SceneEventType::None;
-		IGameActor* Actor = nullptr;
-		VGActorID ActorID = 0;
+		void* Actor = nullptr;
 	};
 
 	////////////////		 Viewport Event

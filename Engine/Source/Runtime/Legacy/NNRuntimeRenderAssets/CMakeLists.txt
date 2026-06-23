@@ -41,7 +41,6 @@ endif()
 target_include_directories(${MODULE_NAME}
     PRIVATE
         "${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender"
-        "${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore"
 )
 
 target_link_libraries(${MODULE_NAME}

@@ -28,7 +28,7 @@ namespace NN::Runtime
 			StartTime = std::chrono::high_resolution_clock::now();
 		}
 
-		FileInterface* FileInterface;
+		//FileInterface* FileInterface;
 		std::string ContentRootDirectory;
 		std::chrono::time_point<std::chrono::high_resolution_clock> StartTime;
 	};
@@ -45,15 +45,15 @@ namespace NN::Runtime
 		return duration.count();
 	}
 
-	void RuntimeCore::SetFileInterface(FileInterface* file_interface)
-	{
-		CoreImp::Get()->FileInterface = file_interface;
-	}
-
-	FileInterface* RuntimeCore::GetFileInterface()
-	{
-		return CoreImp::Get()->FileInterface;
-	}
+	//void RuntimeCore::SetFileInterface(FileInterface* file_interface)
+	//{
+	//	CoreImp::Get()->FileInterface = file_interface;
+	//}
+	//
+	//FileInterface* RuntimeCore::GetFileInterface()
+	//{
+	//	return CoreImp::Get()->FileInterface;
+	//}
 
 	std::string RuntimeCore::GetDefaultSpriteTexturePath()
 	{

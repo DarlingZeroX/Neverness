@@ -12,7 +12,7 @@
 #pragma once
 #include "CoreTypes.h"
 #include "../../RuntimeCoreExport.h"
-#include "../../Interface/FileInterface.h"
+//#include "../../Interface/FileInterface.h"
 
 namespace NN::Runtime
 {
@@ -36,8 +36,8 @@ namespace NN::Runtime
 		static void Initialize();
 		static float GetCurrentTime();
 
-		static void SetFileInterface(FileInterface* file_interface);
-		static FileInterface* GetFileInterface();
+		//static void SetFileInterface(FileInterface* file_interface);
+		//static FileInterface* GetFileInterface();
 
 		static std::string GetDefaultSpriteTexturePath();
 

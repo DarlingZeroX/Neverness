@@ -81,7 +81,6 @@ target_include_directories(NevernessRuntime-RmlUI PRIVATE
     ${RML_DILIGENT_DIR}/Shaders
     # Rendering 核心 include
     ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender
-    ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore
     ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent
     ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent/Include
     # Diligent Core（RmlDiligent 需要）

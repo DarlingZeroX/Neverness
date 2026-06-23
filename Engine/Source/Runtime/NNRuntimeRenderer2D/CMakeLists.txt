@@ -45,7 +45,6 @@ target_include_directories(NevernessRuntime-Renderer2D
         ${CMAKE_CURRENT_SOURCE_DIR}/Include/Renderer2D
         # Rendering 静态库 include 路径
         ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender
-        ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore
         ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent
         ${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent/Include
         # Diligent Core（Texture.h 等）

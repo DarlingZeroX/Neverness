@@ -10,6 +10,7 @@
 */
 
 #include "Core/Input.h"
+/*
 #include <NNPlatformCore/Interface/HInput.h>
 
 #include "NNCore/Interface/HStringTools.h"
@@ -200,3 +201,4 @@ namespace NN::Runtime
 		NN::Core::HInput::FrameUpdate();
 	}
 }
+*/

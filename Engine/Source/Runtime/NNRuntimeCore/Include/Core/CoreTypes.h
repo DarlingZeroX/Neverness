@@ -11,9 +11,6 @@
 
 #pragma once
 #include <NNCore/Interface/HCoreTypes.h>
-#include <NNCore/Include/Scene/HEntityInterface.h>
-#include <string>
-#include <SDL3/SDL.h>
 
 namespace NN::Runtime
 {
@@ -54,14 +51,13 @@ namespace NN::Runtime
 	using matrix = matrix4x4;
 	using quaternion = NN::Core::quaternion;
 
-	using WindowID = SDL_WindowID;
-
 	using String = std::string;
-	using VGPath = String;
-
 	using FileHandle = uintptr_t;
 
-	typedef NN::Core::HEntityID VGActorID;
-	using VGComponentID = NN::Core::uint64;
-	constexpr VGActorID ACTOR_ID_NULL = 0;
+	//using WindowID = SDL_WindowID;
+	//using VGPath = String;
+
+	//typedef NN::Core::HEntityID VGActorID;
+	//using VGComponentID = NN::Core::uint64;
+	//constexpr VGActorID ACTOR_ID_NULL = 0;
 }

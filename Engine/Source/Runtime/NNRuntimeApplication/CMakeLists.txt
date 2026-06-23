@@ -58,7 +58,6 @@ target_include_directories(NevernessRuntime-Application
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Core"
 		# Rendering include（Diligent 设备/交换链）
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRender"
-		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeCore"
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent"
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeDiligent/Include"
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering/NNRuntimeRenderBootstrap/Include"

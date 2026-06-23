@@ -30,7 +30,7 @@ namespace NN::Runtime
 
 		virtual void AddApplicationLayer(IEngineApplicationLayer* layer) = 0;
 		virtual void OnApplicationUpdate(float deltaTime) = 0;
-		virtual int ProcessEvent(const SDL_Event& event) = 0;
+		//virtual int ProcessEvent(const SDL_Event& event) = 0;
 		virtual void MakeCurrentRenderContext() = 0;
 	};
 

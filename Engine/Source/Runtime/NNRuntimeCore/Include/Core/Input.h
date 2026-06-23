@@ -10,6 +10,7 @@
 */
 
 #pragma once
+/*
 #include "RuntimeCore.h"
 #include "Viewport.h"
 #include <NNPlatformCore/Include/SDL3/SDL3Input.h>
@@ -53,3 +54,4 @@ namespace NN::Runtime
 	};
 
 }
+*/

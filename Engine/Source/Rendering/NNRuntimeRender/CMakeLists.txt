@@ -21,5 +21,7 @@ target_include_directories(NNRuntimeRender PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}       # NNRuntimeRender/ → 内部可以用 <Device/...>
 )
 
+target_include_directories(NNRuntimeRender PUBLIC ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime)
+
 # 依赖 NNRuntimeCore
 target_link_libraries(NNRuntimeRender PUBLIC NNRuntimeCore)

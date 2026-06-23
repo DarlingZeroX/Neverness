@@ -70,7 +70,7 @@ namespace NN::Runtime::Render
             for (auto b : available)
                 if (b == pref) return b;
         }
-        return NNRenderBackendType::Backend_OpenGL;
+        return NNRenderBackendType::Backend_Vulkan;
     }
 
 } // namespace NN::Runtime::Render
