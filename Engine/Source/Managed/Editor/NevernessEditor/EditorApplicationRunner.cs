@@ -20,6 +20,7 @@ using Neverness.Runtime.Assets;
 using Neverness.Runtime.Audio;
 using Neverness.Runtime.Audio.Native;
 using Neverness.Runtime.Scene;
+using Neverness.Editor.Settings;
 
 namespace NevernessEditor;
 
@@ -77,8 +78,8 @@ internal static class EditorApplicationRunner
         EditorFrameworkModule.Install();
         EditorCoreModule.Install(); // 注册 BuiltinMenuContributor
 
-        /* Phase 1.5: 偏好设置服务（必须在 AssetsModule 之前，CSharpScriptAssetOpener 依赖） */
-        RegisterPreferencesService();
+        /* Phase 1.5: 设置系统（必须在 AssetsModule 之前，CSharpScriptAssetOpener 依赖） */
+        SettingsModule.Install();
 
         /* Phase 2: 业务模块（注册菜单贡献者、命令等） */
         MediaImporterModule.Install();
@@ -265,16 +266,5 @@ internal static class EditorApplicationRunner
 		s_avaloniaHost.InstallShell(window);
 
 		Console.WriteLine("[EditorApplicationRunner] Avalonia 前端已安装");
-	}
-
-	/// <summary>
-	/// 注册偏好设置服务（必须在 AssetsModule 之前，CSharpScriptAssetOpener 依赖）。
-	/// </summary>
-	private static void RegisterPreferencesService()
-	{
-		var preferencesService = new PreferencesServiceImpl();
-		preferencesService.Load();
-		CoreModuleImp.Context.RegisterService<IPreferencesService>(preferencesService);
-		Console.WriteLine("[EditorApplicationRunner] 偏好设置服务已注册");
 	}
 }

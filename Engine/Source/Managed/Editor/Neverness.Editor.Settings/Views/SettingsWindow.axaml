@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Neverness.Editor.Settings.Views.SettingsWindow"
+        Width="800"
+        Height="550"
+        MinWidth="600"
+        MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        Background="#FF2D2D30"
+        Foreground="#FFCCCCCC"
+        WindowDecorations="None">
+
+    <!-- 内容容器 -->
+    <Border Background="#FF2D2D30"
+            CornerRadius="0"
+            Margin="0">
+        <DockPanel>
+            <!-- 标题栏 -->
+            <Border DockPanel.Dock="Top"
+                    Height="36"
+                    Background="Transparent"
+                    x:Name="TitleBar">
+                <Grid Margin="16,0">
+                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                               VerticalAlignment="Center"
+                               FontSize="14"
+                               Foreground="#FFCCCCCC"/>
+                    <Button x:Name="CloseButton"
+                            Content="✕"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Background="Transparent"
+                            Foreground="#FF999999"
+                            FontSize="14"
+                            Width="28"
+                            Height="28"
+                            Padding="0"/>
+                </Grid>
+            </Border>
+
+            <!-- 底部按钮栏 -->
+            <StackPanel DockPanel.Dock="Bottom"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8"
+                        Margin="16,8,16,16">
+                <Button x:Name="ResetButton"
+                        Content="重置默认"
+                        Width="90"
+                        Height="28"/>
+                <Button x:Name="ApplyButton"
+                        Content="应用"
+                        Width="80"
+                        Height="28"/>
+                <Button x:Name="OkButton"
+                        Content="确定"
+                        Width="80"
+                        Height="28"/>
+                <Button x:Name="CancelButton"
+                        Content="取消"
+                        Width="80"
+                        Height="28"/>
+            </StackPanel>
+
+            <!-- 主内容区 -->
+            <Grid ColumnDefinitions="200,8,*" Margin="8,0,8,8">
+                <!-- 左侧 TreeView -->
+                <Border Grid.Column="0"
+                        Background="#FF252526"
+                        CornerRadius="8"
+                        BorderBrush="#FF3F3F46"
+                        BorderThickness="1">
+                    <TreeView x:Name="SettingsTree"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              Margin="4"/>
+                </Border>
+
+                <!-- 分隔线 -->
+                <GridSplitter Grid.Column="1"
+                              Width="8"
+                              Background="Transparent"
+                              HorizontalAlignment="Stretch"/>
+
+                <!-- 右侧内容区 -->
+                <Border Grid.Column="2"
+                        Background="#FF2D2D30"
+                        CornerRadius="8"
+                        BorderBrush="#FF3F3F46"
+                        BorderThickness="1">
+                    <ContentControl x:Name="SettingsContent"
+                                    Margin="16,12"/>
+                </Border>
+            </Grid>
+        </DockPanel>
+    </Border>
+</Window>

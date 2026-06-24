@@ -1,6 +1,9 @@
 using System.Diagnostics;
-using Neverness.Editor.Core.Public;
+using Neverness.Editor.Core.Private;
+using Neverness.Editor.Settings;
+using Neverness.Editor.Settings.Private.Descriptors;
 using Neverness.Editor.ProjectSystem.Public;
+using Neverness.Runtime.Settings;
 using Neverness.Runtime.VFS.Public;
 
 namespace Neverness.Editor.Assets.AssetOpening;
@@ -16,13 +19,6 @@ namespace Neverness.Editor.Assets.AssetOpening;
 [AssetOpener(AssetTypeId.CSharpScript)]
 public sealed class CSharpScriptAssetOpener : IAssetOpener
 {
-    private readonly IPreferencesService _preferencesService;
-
-    public CSharpScriptAssetOpener(IPreferencesService preferencesService)
-    {
-        _preferencesService = preferencesService;
-    }
-
     public bool CanOpen(ulong assetTypeId) => assetTypeId == AssetTypeId.CSharpScript;
 
     public Task OpenAsync(AssetOpenContext context)
@@ -40,7 +36,8 @@ public sealed class CSharpScriptAssetOpener : IAssetOpener
             return Task.CompletedTask;
         }
 
-        var ide = _preferencesService.PreferredIDE;
+        // 从新的设置系统获取首选 IDE
+        var ide = GetPreferredIDE();
         Console.WriteLine($"[CSharpScriptAssetOpener] 打开 IDE ({ide}): {slnPath}");
 
         try
@@ -64,6 +61,23 @@ public sealed class CSharpScriptAssetOpener : IAssetOpener
         }
 
         return Task.CompletedTask;
+    }
+
+    /// <summary>从设置系统获取首选 IDE。</summary>
+    private static IDEPreference GetPreferredIDE()
+    {
+        // 优先从新的设置系统获取
+        if (CoreModuleImp.Context.TryGetService<ISettingsService>(out var settingsService))
+        {
+            var table = settingsService.GetTable("editorPreferences");
+            if (table is EditorPreferencesSettings prefs)
+            {
+                return prefs.PreferredIDE;
+            }
+        }
+
+        // 默认值
+        return IDEPreference.VisualStudio;
     }
 
     /// <summary>获取 Game.sln 的物理路径。</summary>

@@ -53,14 +53,14 @@ namespace NN::Runtime::Renderer2D
     static_assert(sizeof(SpriteCB) == 176, "SpriteCB size mismatch");
 
     // ========================================================================
-    //  Unit Quad 顶点数据
+    //  Unit Quad 顶点数据（DirectX 纹理坐标系：V=0 在顶部，V=1 在底部）
     // ========================================================================
     static constexpr float QuadVertices[] = {
         // x      y      z     u     v
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  // 左下
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // 右下
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  // 右上
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,  // 左上
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // 左下
+         0.5f, -0.5f, 0.0f, 1.0f, 1.0f,  // 右下
+         0.5f,  0.5f, 0.0f, 1.0f, 0.0f,  // 右上
+        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f,  // 左上
     };
 
     static constexpr unsigned int QuadIndices[] = {

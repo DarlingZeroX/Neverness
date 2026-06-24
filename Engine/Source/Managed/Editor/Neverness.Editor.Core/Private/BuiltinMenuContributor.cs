@@ -24,9 +24,7 @@ public sealed class BuiltinMenuContributor : IMenuContributor
         registry.Register(new EditorMenuItem("Edit/Cut", SortOrder: 400, Icon: "✂️", Shortcut: "Ctrl+X"));
         registry.Register(new EditorMenuItem("Edit/Copy", SortOrder: 500, Icon: "📋", Shortcut: "Ctrl+C"));
         registry.Register(new EditorMenuItem("Edit/Paste", SortOrder: 600, Icon: "📌", Shortcut: "Ctrl+V"));
-        registry.Register(new EditorMenuItem("Edit/sep2", IsSeparator: true, SortOrder: 700));
-        registry.Register(new EditorMenuItem("Edit/Project Settings...", SortOrder: 800, Icon: "⚙️"));
-        registry.Register(new EditorMenuItem("Edit/Preferences...", CommandId: "editor.preferences", SortOrder: 900, Icon: "🔧"));
+        // 注意：Project Settings 和 Preferences 菜单项由 SettingsModule 直接注册
 
         // Window 菜单
         registry.Register(new EditorMenuItem("Window/Rendering", SortOrder: 100, Icon: "🖥️"));

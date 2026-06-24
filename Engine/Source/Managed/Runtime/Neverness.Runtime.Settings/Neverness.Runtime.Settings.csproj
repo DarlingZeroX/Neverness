@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Runtime.Settings</AssemblyName>
+    <RootNamespace>Neverness.Runtime.Settings</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RollForward>LatestMinor</RollForward>
+  </PropertyGroup>
+  <!-- 零引擎依赖：只依赖 System.Text.Json + BCL -->
+</Project>

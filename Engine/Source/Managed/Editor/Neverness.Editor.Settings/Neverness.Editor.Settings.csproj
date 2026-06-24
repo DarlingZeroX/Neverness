@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Editor.Settings</AssemblyName>
+    <RootNamespace>Neverness.Editor.Settings</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RollForward>LatestMinor</RollForward>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Avalonia UI（设置窗口需要） -->
+    <PackageReference Include="Avalonia" Version="12.0.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.0.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Runtime.Settings（核心设置框架） -->
+    <ProjectReference Include="..\..\Runtime\Neverness.Runtime.Settings\Neverness.Runtime.Settings.csproj" />
+    <!-- Editor.Core（IEditorFeature, IEditorContext） -->
+    <ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
+    <!-- VFS（路径解析） -->
+    <ProjectReference Include="..\..\Runtime\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
+    <!-- ProjectSystem（ProjectPaths） -->
+    <ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
+  </ItemGroup>
+</Project>
