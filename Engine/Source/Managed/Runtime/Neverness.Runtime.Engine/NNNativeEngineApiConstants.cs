@@ -13,6 +13,9 @@ namespace Neverness.Runtime.Engine;
 /// layout v34：NNDiligentAPI 新增 CreateDeviceForWindow + PresentPrimarySwapChain。
 /// layout v35：NNDiligentAPI 新增 CreateDeviceForNativeHandle（绕过 SDL，直接传平台原生句柄）。
 /// layout v36：NNDiligentAPI 新增 GetPrimaryRenderDevice；ViewportSurface 移除 WindowRegistry 依赖。
+/// layout v37：移除 Application/Window 子表（迁移至 C# Neverness.Runtime.Application）。
+/// layout v38：移除 Input/RenderAsset 子表（迁移至 C#）。
+/// layout v39：移除 ImGuiBackend 子表（独立为 NNRuntimeImGui 模块）。
 /// </remarks>
 public static class NNNativeEngineApiConstants
 {
@@ -27,6 +30,9 @@ public static class NNNativeEngineApiConstants
 	/// v34：NNDiligentAPI 新增 CreateDeviceForWindow + PresentPrimarySwapChain（2 个函数指针）。
 	/// v35：NNDiligentAPI 新增 CreateDeviceForNativeHandle（1 个函数指针，绕过 SDL 直传原生句柄）。
 	/// v36：NNDiligentAPI 新增 GetPrimaryRenderDevice（1 个函数指针）；ViewportSurface 移除 WindowRegistry 依赖。
+	/// v37：移除 Application/Window 子表（迁移至 C# Neverness.Runtime.Application）。
+	/// v38：移除 Input/RenderAsset 子表（迁移至 C#）。
+	/// v39：移除 ImGuiBackend 子表（独立为 NNRuntimeImGui 模块）。
 	/// </summary>
-	public const uint LayoutVersion = 36;
+	public const uint LayoutVersion = 39;
 }

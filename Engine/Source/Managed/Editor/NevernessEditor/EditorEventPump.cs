@@ -36,9 +36,9 @@ public sealed class EditorEventPump : IDisposable
 	/// <summary>消费本帧所有 Native 事件并分发到 Editor 系统。</summary>
 	public void PollAndDispatch()
 	{
-		_nativePump.OnEvent += DispatchNativeEvent;
-		_nativePump.PollEvents();
-		_nativePump.OnEvent -= DispatchNativeEvent;
+		//_nativePump.OnEvent += DispatchNativeEvent;
+		//_nativePump.PollEvents();
+		//_nativePump.OnEvent -= DispatchNativeEvent;
 	}
 
 	/// <summary>重置退出请求状态。</summary>

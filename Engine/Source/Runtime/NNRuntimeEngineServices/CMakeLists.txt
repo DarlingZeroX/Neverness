@@ -50,7 +50,7 @@ target_include_directories(NevernessRuntime-EngineServices
 		"${CMAKE_CURRENT_SOURCE_DIR}/Interface"
 		"${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeEngine/Include"
 		"${CMAKE_CURRENT_SOURCE_DIR}/Private"
-		"${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeApplication/Include"
+		# NNRuntimeApplication 已移至 Legacy (2026-06-24)
 		"${CMAKE_CURRENT_SOURCE_DIR}/../NNRuntimeVFS/Include"
 		# Rendering include（INNRenderDevice 等接口）
 		"${PROJECT_SOURCE_DIR}/Engine/Source/Rendering"
@@ -66,7 +66,7 @@ target_link_libraries(NevernessRuntime-EngineServices
 		NevernessRuntime-API
 	PRIVATE
 		NevernessRuntime-Engine
-		NevernessRuntime-Application
+		# NevernessRuntime-Application 已移至 Legacy (2026-06-24)
 		NevernessRuntime-VFS
 		NevernessRuntime-RmlUI
 		NNRuntimeDiligent

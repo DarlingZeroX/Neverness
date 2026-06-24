@@ -1,6 +1,7 @@
 // Neverness.Runtime.Application — SDL3 窗口注册表。
 // 替代 C++ WindowRegistry，直接管理 SDL_Window*。
 
+using System.Diagnostics;
 using Neverness.Runtime.Application.Public;
 
 namespace Neverness.Runtime.Application.Private;
@@ -59,6 +60,7 @@ public static unsafe class SdlWindowManager
             s_primaryHandle = handle;
         }
 
+        Console.WriteLine(SDL.SDL3.SDL_VERSION);
         Console.WriteLine($"[SdlWindowManager] 窗口已创建: ID={sdlId}, Primary={isPrimary}, Title=\"{title}\"");
         return handle;
     }

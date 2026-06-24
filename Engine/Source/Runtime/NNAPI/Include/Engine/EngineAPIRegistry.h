@@ -11,26 +11,21 @@
  * - 擴充規則：僅能在各子表尾或本聚合體尾 **追加** 欄位；禁止重排既有欄位。
  */
 
-#include "ApplicationAPI.h"
-#include "WindowAPI.h"
 #include "AsyncWaitAPI.h"
 #include "AudioAPI.h"
-#include "InputAPI.h"
 #include "RenderAPI.h"
 #include "VfsAPI.h"
 #include "EventAPI.h"
-#include "RenderAssetAPI.h"
 #include "ViewportRenderAPI.h"
 #include "ViewportSurfaceAPI.h"
 #include "DiligentAPI.h"
-#include "ImGuiBackendAPI.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v36：NNDiligentAPI 新增 GetPrimaryRenderDevice。 */
-#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 36u
+/** 当前发布之 NNNativeEngineAPI 内存布局版本（与托管 NNNativeEngineApiConstants.LayoutVersion 对齐）。v39：移除 ImGuiBackend 子表（独立为 NNRuntimeImGui 模块）。 */
+#define NN_NATIVE_ENGINE_API_LAYOUT_VERSION 39u
 
 typedef struct NNNativeEngineAPI
 {
@@ -38,28 +33,22 @@ typedef struct NNNativeEngineAPI
 	std::uint32_t reserved0;
 	NNRenderAPI render;
 	NNAudioAPI audio;
-	NNInputAPI input;
 	//NNSceneAPI scene;
 	//NNEditorSceneAPI editorScene; — 已移除：迁移至 C# Friflo ECS
 	NNAsyncWaitAPI asyncWait;
-	/** @brief Runtime Host 生命周期（SDL 子系统、事件泵、帧边界）；见 `ApplicationAPI.h`。 */
-	NNApplicationAPI application;
-	/** @brief 窗口子系统（多窗口、Native 句柄）；见 `WindowAPI.h`。 */
-	NNWindowAPI window;
+	// Application/Window 已移除：C# Neverness.Runtime.Application 接管 (2026-06-24)
 	/** @brief 虚拟文件系统（Phase 1 文本/二进制 IO）；见 `VfsAPI.h`。 */
 	NNVfsAPI vfs;
 	/** @brief 事件队列（Pull-Based Event Pump）；見 `EventAPI.h`。 */
 	NNEventAPI events;
-	/** @brief Render 資產 GPU 管理器（CPU Asset → GPU Resource、ImGui Handle）；見 `RenderAssetAPI.h`。 */
-	NNRenderAssetAPI renderAsset;
+	// Input/RenderAsset 已移除：迁移至 C# (2026-06-24)
 	/** @brief 视口渲染 API（场景 → 离屏 Framebuffer → Texture ID）；見 `ViewportRenderAPI.h`。 */
 	NNViewportRenderAPI viewportRender;
 	/** @brief 视口 Surface API（SwapChain 生命周期管理 + RenderCommands）；見 `ViewportSurfaceAPI.h`。v23 新增，v29 新增 RenderViewportCommands。 */
 	NNViewportSurfaceAPI viewportSurface;
 	/** @brief Diligent 底层设备指针暴露；見 `DiligentAPI.h`。v28 新增。 */
 	NNDiligentAPI diligent;
-	/** @brief ImGui SDL3/Diligent 后端封装；見 `ImGuiBackendAPI.h`。v33 新增。 */
-	NNImGuiBackendAPI imguiBackend;
+	// ImGuiBackend 已移除：独立为 NNRuntimeImGui 模块 (2026-06-24)
 } NNNativeEngineAPI;
 
 #ifdef __cplusplus

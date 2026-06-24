@@ -14,25 +14,6 @@ public unsafe struct NNRenderApi
 }
 
 /// <summary>
-/// 與 Native <c>NNRenderAssetAPI</c> 逐欄位對齊（<c>RenderAssetAPI.h</c>）。
-/// v20 新增：GPU Texture 資源管理（CPU Asset → GPU Resource）。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNRenderAssetApi
-{
-	public delegate* unmanaged<ulong, ulong> GetImGuiTextureHandle;
-	public delegate* unmanaged<uint, uint, byte*, nuint, int, ulong> CreateTextureFromPixels;
-	public delegate* unmanaged<ulong, void> ReleaseTexture;
-	public delegate* unmanaged<ulong, uint, uint, byte*, nuint, int, void> ReloadTextureFromPixels;
-	public delegate* unmanaged<ulong, uint*, uint*, int> GetTextureDesc;
-	public delegate* unmanaged<ulong, int> IsTextureResident;
-	public delegate* unmanaged<ulong> GetCachedTextureCount;
-	public delegate* unmanaged<ulong> GetTotalGPUMemory;
-	public delegate* unmanaged<ulong, ulong, ulong> LoadTextureFromAsset;
-	public delegate* unmanaged<void*, ulong, void*, ulong, ulong, ulong> LoadTextureFromBlob;
-}
-
-/// <summary>
 /// 與 Native <c>NNViewportRenderAPI</c> 逐欄位對齊（<c>ViewportRenderAPI.h</c>）。
 /// v21 新增子表。已移除 RenderSceneToTexture / GetLastRenderedTexture / GetRenderStats（Legacy Scene）。
 /// </summary>
@@ -110,16 +91,6 @@ public unsafe struct NNAudioApi
 }
 
 /// <summary>
-/// 與 Native <c>NNInputAPI</c> 對齊。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNInputApi
-{
-	public delegate* unmanaged<int, int> IsKeyPressed;
-}
-
-
-/// <summary>
 /// 與 Native <c>NNAsyncWaitAPI</c> 對齊。
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
@@ -138,43 +109,6 @@ public struct NNGuid
 {
 	public ulong High;
 	public ulong Low;
-}
-
-/// <summary>
-/// 與 Native <c>NNWindowDesc</c> 對齊（<c>WindowAPI.h</c>）：創建窗口時的描述塊。
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct NNWindowDesc
-{
-	public byte* Title;
-	public int Width;
-	public int Height;
-	public bool Resizable;
-	public bool Maximized;
-	public bool Hidden;
-}
-
-/// <summary>
-/// 與 Native <c>NNWindowAPI</c> 對齊（<c>WindowAPI.h</c>）：多窗口、Native 句柄。
-/// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 8)]
-public unsafe struct NNWindowApi
-{
-	public uint Size;
-	public delegate* unmanaged<NNWindowDesc*, ulong> Create;
-	public delegate* unmanaged<ulong, void> Destroy;
-	public delegate* unmanaged<ulong, byte*, void> SetTitle;
-	public delegate* unmanaged<ulong, int, int, void> SetSize;
-	public delegate* unmanaged<ulong, int*, int*, void> GetSize;
-	public delegate* unmanaged<ulong, int, int, void> SetPosition;
-	public delegate* unmanaged<ulong, int*, int*, void> GetPosition;
-	public delegate* unmanaged<ulong, bool, void> SetResizable;
-	public delegate* unmanaged<ulong, void> Maximize;
-	public delegate* unmanaged<ulong, void> Minimize;
-	public delegate* unmanaged<ulong, void> Restore;
-	public delegate* unmanaged<ulong, void> Show;
-	public delegate* unmanaged<ulong, void> Hide;
-	public delegate* unmanaged<ulong, void*> GetNativeHandle;
 }
 
 /// <summary>
@@ -220,20 +154,6 @@ public unsafe struct NNVfsApi
 	public delegate* unmanaged<byte*, void> UnregisterAlias;
 	/// <summary>查询 alias 是否已注册，非 0 已注册。</summary>
 	public delegate* unmanaged<byte*, int> IsAliasRegistered;
-}
-
-/// <summary>
-/// 與 Native <c>NNApplicationAPI</c> 對齊（<c>ApplicationAPI.h</c>）：SDL 子系統、事件泵、幀邊界。
-/// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 8)]
-public unsafe struct NNApplicationApi
-{
-	public uint Size;
-	public delegate* unmanaged<int> Initialize;
-	public delegate* unmanaged<bool> PumpEvents;
-	public delegate* unmanaged<void> Shutdown;
-	public delegate* unmanaged<void> BeginFrame;
-	public delegate* unmanaged<void> EndFrame;
 }
 
 /// <summary>
@@ -381,35 +301,10 @@ public unsafe struct NNDiligentApi
 }
 
 /// <summary>
-/// 與 Native <c>NNImGuiBackendAPI</c> 對齊：ImGui SDL3/Diligent 后端封装。
-/// v33 新增。
-/// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 8)]
-public unsafe struct NNImGuiBackendApi
-{
-	public uint Size;
-
-	/// <summary>初始化 ImGui SDL3 + Diligent 后端。</summary>
-	public delegate* unmanaged<void*, void*, void*, void*, bool> Initialize;
-
-	/// <summary>关闭 ImGui 后端。</summary>
-	public delegate* unmanaged<void> Shutdown;
-
-	/// <summary>ImGui NewFrame（SDL3 + Diligent 后端）。</summary>
-	public delegate* unmanaged<int, int, int, void> NewFrame;
-
-	/// <summary>ImGui Render（设置渲染目标 + 提交绘制数据）。</summary>
-	public delegate* unmanaged<void*, void*, void> Render;
-
-	/// <summary>将 SDL_Event 传递给 ImGui 后端处理输入。</summary>
-	public delegate* unmanaged<void*, bool> ProcessEvent;
-}
-
-/// <summary>
 /// 與 Native <c>NNNativeEngineAPI</c> 聚合體對齊（<c>EngineAPIRegistry.h</c>）；欄位順序須與 C 結構逐字節一致。
 /// </summary>
 /// <remarks>
-/// **layout v33**：新增 ImGuiBackendAPI（ImGui SDL3/Diligent 后端封装）。
+/// **layout v39**：移除 ImGuiBackend 子表（独立为 NNRuntimeImGui 模块）。
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct NNNativeEngineApi
@@ -418,24 +313,18 @@ public unsafe struct NNNativeEngineApi
 	public uint Reserved0;
 	public NNRenderApi Render;
 	public NNAudioApi Audio;
-	public NNInputApi Input;
 	public NNAsyncWaitApi AsyncWait;
-	/// <summary>對應 C 聚合體成員 <c>application</c>（型別 <c>NNApplicationAPI</c>）。</summary>
-	public NNApplicationApi Application;
-	/// <summary>對應 C 聚合體成員 <c>window</c>（型別 <c>NNWindowAPI</c>）。</summary>
-	public NNWindowApi Window;
+	// Application/Window 已移除：C# Neverness.Runtime.Application 接管 (2026-06-24)
 	/// <summary>對應 C 聚合體末尾成員 <c>vfs</c>（型別 <c>NNVfsAPI</c>）。</summary>
 	public NNVfsApi Vfs;
 	/// <summary>對應 C 聚合體成員 <c>events</c>（型別 <c>NNEventAPI</c>）；事件队列（Pull-Based）。</summary>
 	public NNEventApi Events;
-	/// <summary>對應 C 聚合體成員 <c>renderAsset</c>（型別 <c>NNRenderAssetAPI</c>）；GPU Texture 資源管理（v20）。</summary>
-	public NNRenderAssetApi RenderAsset;
+	// Input/RenderAsset 已移除：迁移至 C# (2026-06-24)
 	/// <summary>對應 C 聚合體成員 <c>viewportRender</c>（型別 <c>NNViewportRenderAPI</c>）；场景渲染到离屏 FBO（v21）。</summary>
 	public NNViewportRenderApi ViewportRender;
 	/// <summary>對應 C 聚合體成員 <c>viewportSurface</c>（型別 <c>NNViewportSurfaceAPI</c>）；SwapChain 生命周期管理（v23）。</summary>
 	public NNViewportSurfaceApi ViewportSurface;
 	/// <summary>對應 C 聚合體成員 <c>diligent</c>（型別 <c>NNDiligentAPI</c>）；Diligent 底层指针（v28）。</summary>
 	public NNDiligentApi Diligent;
-	/// <summary>對應 C 聚合體成員 <c>imguiBackend</c>（型別 <c>NNImGuiBackendAPI</c>）；ImGui 后端封装（v33）。</summary>
-	public NNImGuiBackendApi ImGuiBackend;
+	// ImGuiBackend 已移除：独立为 NNRuntimeImGui 模块 (2026-06-24)
 }

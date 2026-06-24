@@ -143,22 +143,6 @@ internal static class EditorApplicationRunner
 
 		try
 		{
-			if (!ApplicationHost.Initialize())
-			{
-				Console.Error.WriteLine(
-					"NervernessEditor: ApplicationHost.Initialize failed.\n" +
-					"Check the native log output above. Common causes are SDL initialization failure or an invalid startup project path.");
-				return 1;
-			}
-
-            //if (!ApplicationHost.IsAvailable)
-            //{
-            //    Console.Error.WriteLine(
-            //        "NervernessEditor: Native Application API is unavailable.\n" +
-            //        "Please confirm NevernessRuntime-Managed.dll was built with NEVERNESS_USE_ENGINE_RUNTIME_SERVICES and SDL3.dll can be loaded.");
-            //    return 1;
-            //}
-
             var windowHandle = SdlWindowManager.Create(options.WindowTitle, options.Width, options.Height);
 			if (!windowHandle.IsValid)
 			{

@@ -6,37 +6,33 @@
  */
 
 #include "Engine/ImGuiBackendApi.h"
-#include "Engine/NativeInterop.h"
-
 #include <SDL3/SDL.h>
-
-#include "NNAPI/Include/Engine/ImGuiBackendAPI.h"
 
 namespace
 {
-bool NN_ENGINE_ABI_STDCALL ImGuiBackendInitialize(void* sdlWindow, void* device, void* context, void* swapChain)
+bool NN_IMGUI_BACKEND_STDCALL ImGuiBackendInitialize(void* sdlWindow, void* device, void* context, void* swapChain)
 {
 	return nn_imgui_backend_initialize(
 		static_cast<SDL_Window*>(sdlWindow),
 		device, context, swapChain);
 }
 
-void NN_ENGINE_ABI_STDCALL ImGuiBackendShutdown(void)
+void NN_IMGUI_BACKEND_STDCALL ImGuiBackendShutdown(void)
 {
 	nn_imgui_backend_shutdown();
 }
 
-void NN_ENGINE_ABI_STDCALL ImGuiBackendNewFrame(int width, int height, int preTransform)
+void NN_IMGUI_BACKEND_STDCALL ImGuiBackendNewFrame(int width, int height, int preTransform)
 {
 	nn_imgui_backend_new_frame(width, height, preTransform);
 }
 
-void NN_ENGINE_ABI_STDCALL ImGuiBackendRender(void* context, void* swapChain)
+void NN_IMGUI_BACKEND_STDCALL ImGuiBackendRender(void* context, void* swapChain)
 {
 	nn_imgui_backend_render(context, swapChain);
 }
 
-bool NN_ENGINE_ABI_STDCALL ImGuiBackendProcessEvent(const void* event)
+bool NN_IMGUI_BACKEND_STDCALL ImGuiBackendProcessEvent(const void* event)
 {
 	return nn_imgui_backend_process_event(static_cast<const SDL_Event*>(event));
 }

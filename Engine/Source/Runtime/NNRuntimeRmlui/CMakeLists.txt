@@ -45,7 +45,7 @@ find_package(SDL3 CONFIG REQUIRED)
 find_package(RmlUi CONFIG REQUIRED)
 
 # ── 链接依赖（顺序重要：RmlUi 先于 RmlDiligent 源码）──
-target_link_libraries(NevernessRuntime-RmlUI PRIVATE
+target_link_libraries(NevernessRuntime-RmlUI PUBLIC
     # RmlUi（提供 RmlUi/Core/*.h PUBLIC include 路径）
     RmlUi::RmlUi
     SDL3::SDL3
@@ -53,6 +53,7 @@ target_link_libraries(NevernessRuntime-RmlUI PRIVATE
     # NNRuntimeRender + NNRuntimeDiligent（替代 NevernessRuntime-RHI）
     NNRuntimeRender
     NNRuntimeDiligent
+    PRIVATE
     # Neverness 内部依赖
     NevernessCore-Core
     NevernessCore-PlatformCore

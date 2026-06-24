@@ -70,16 +70,6 @@ public static unsafe class EngineNativeApiBootstrap
 			_ = s_engineApi.AsyncWait.TryComplete(h);
 			s_engineApi.AsyncWait.ReleaseWait(h);
 		}
-
-		if (s_engineApi.Application.Initialize != null)
-		{
-			_ = s_engineApi.Application.Initialize();
-		}
-
-		if (s_engineApi.Application.PumpEvents != null)
-		{
-			_ = s_engineApi.Application.PumpEvents();
-		}
 	}
 
 	/// <summary>测试重置。</summary>

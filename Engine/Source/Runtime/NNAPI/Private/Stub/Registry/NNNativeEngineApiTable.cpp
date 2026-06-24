@@ -22,13 +22,11 @@ extern "C" void NNNativeEngineApiTable_BuildDefault(NNNativeEngineAPI* outTable)
 
 	NNBuildRenderApiStubs(&outTable->render);
 	NNBuildAudioApiStubs(&outTable->audio);
-	NNBuildInputApiStubs(&outTable->input);
 	NNBuildAsyncWaitApiStubs(&outTable->asyncWait);
-	NNBuildApplicationApiStubs(&outTable->application);
-	NNBuildWindowApiStubs(&outTable->window);
+	// Application/Window 已移除：C# Neverness.Runtime.Application 接管 (2026-06-24)
 	NNBuildVfsApiStubs(&outTable->vfs);
 	NNBuildEventApiStubs(&outTable->events);
-	NNBuildRenderAssetApiStubs(&outTable->renderAsset);
+	// Input/RenderAsset 已移除：迁移至 C# (2026-06-24)
 	NNBuildViewportRenderApiStubs(&outTable->viewportRender);
 }
 

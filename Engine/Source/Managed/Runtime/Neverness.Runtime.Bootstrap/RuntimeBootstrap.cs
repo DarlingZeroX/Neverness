@@ -1,5 +1,6 @@
 // Neverness.Runtime.Bootstrap — 进程级托管 Runtime 启动/关闭门面（Runtime 主导权迁移 Phase 1）。
 
+using Neverness.Runtime.Application;
 using Neverness.Runtime.Engine;
 
 namespace Neverness.Runtime.Bootstrap;
@@ -13,24 +14,47 @@ public static class RuntimeBootstrap
 	private static volatile bool s_quitRequested;
 
 	/// <summary>是否已通过 <see cref="Start"/> 成功初始化。</summary>
-	public static bool IsInitialized => RuntimeInitializer.IsInitialized;
+	public static bool IsInitialized => RuntimeInitializer.IsInitialized && ApplicationHost.IsAvailable;
 
 	/// <summary>托管外循环是否仍在运行。</summary>
 	public static bool IsRunning => s_running;
 
 	/// <summary>
 	/// 启动托管 Runtime：安装 Interop、注册子系统；<see cref="NativeBootstrapRunMode.NativeDriven"/> 下立即返回。
+	/// 初始化顺序：RuntimeInitializer（Native API 表） → ApplicationHost（SDL3 + VFS）。
 	/// </summary>
 	public static bool Start(in NativeBootstrapContext ctx)
 	{
 		s_quitRequested = false;
+
+		// 1. 安装 Native API 表（ApplicationHost 依赖此步骤）
 		if (!RuntimeInitializer.Initialize(ctx.NativeApiTable))
 		{
 			s_running = false;
 			return false;
 		}
 
-		s_running = true;
+		// 2. 初始化 ApplicationHost（SDL3 + VFS + 窗口管理）
+		if (!ApplicationHost.Initialize())
+		{
+			Console.Error.WriteLine(
+                "[RuntimeBootstrap] ApplicationHost.Initialize failed. 初始化失败" +
+                "Check the native log output above. Common causes are SDL initialization failure or an invalid startup project path."
+                );
+            s_running = false;
+			return false;
+		}
+
+        if (!ApplicationHost.IsAvailable)
+        {
+            Console.Error.WriteLine(
+                "NervernessEditor: Native Application API is unavailable.\n" +
+                "Please confirm NevernessRuntime-Managed.dll was built with NEVERNESS_USE_ENGINE_RUNTIME_SERVICES and SDL3.dll can be loaded.");
+            s_running = false;
+            return false;
+        }
+
+        s_running = true;
 
 		if (ctx.RunMode == NativeBootstrapRunMode.ManagedOuterLoop)
 		{
@@ -46,6 +70,7 @@ public static class RuntimeBootstrap
 	/// <summary>关闭子系统并清除运行状态。</summary>
 	public static void Shutdown()
 	{
+		ApplicationHost.Shutdown();
 		RuntimeInitializer.Shutdown();
 		s_running = false;
 		s_quitRequested = false;
@@ -65,6 +90,13 @@ public static class RuntimeBootstrap
 			var elapsed = (float)sw.Elapsed.TotalSeconds;
 			sw.Restart();
 			accum += elapsed;
+
+			// 泵送 SDL3 事件（窗口、输入、退出等）
+			if (!ApplicationHost.PumpEvents())
+			{
+				break;
+			}
+
 			while (accum >= targetDelta && !s_quitRequested)
 			{
 				RuntimeMainLoop.Tick(targetDelta);

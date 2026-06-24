@@ -8,7 +8,7 @@
  * 不管理 ImGui 生命周期（由 C# Hexa.NET.ImGui 管理）。
  */
 
-#include "Engine/ImGuiBackendApi.h"
+#include "../../Include/Engine/ImGuiBackendApi.h"
 
 #include <SDL3/SDL.h>
 
@@ -30,7 +30,7 @@ namespace
     bool g_Initialized = false;
 }
 
-NN_RUNTIME_APPLICATION_API bool nn_imgui_backend_initialize(
+bool nn_imgui_backend_initialize(
     SDL_Window* sdlWindow,
     void* device,
     void* context,
@@ -65,7 +65,7 @@ NN_RUNTIME_APPLICATION_API bool nn_imgui_backend_initialize(
     return true;
 }
 
-NN_RUNTIME_APPLICATION_API void nn_imgui_backend_shutdown(void)
+void nn_imgui_backend_shutdown(void)
 {
     if (g_Backend)
     {
@@ -74,7 +74,7 @@ NN_RUNTIME_APPLICATION_API void nn_imgui_backend_shutdown(void)
     g_Initialized = false;
 }
 
-NN_RUNTIME_APPLICATION_API void nn_imgui_backend_new_frame(
+void nn_imgui_backend_new_frame(
     int width,
     int height,
     int preTransform)
@@ -87,7 +87,7 @@ NN_RUNTIME_APPLICATION_API void nn_imgui_backend_new_frame(
     g_Backend->NewFrame(width, height, static_cast<Diligent::SURFACE_TRANSFORM>(preTransform));
 }
 
-NN_RUNTIME_APPLICATION_API void nn_imgui_backend_render(
+void nn_imgui_backend_render(
     void* context,
     void* swapChain)
 {
@@ -116,7 +116,7 @@ NN_RUNTIME_APPLICATION_API void nn_imgui_backend_render(
     }
 }
 
-NN_RUNTIME_APPLICATION_API bool nn_imgui_backend_process_event(const SDL_Event* event)
+bool nn_imgui_backend_process_event(const SDL_Event* event)
 {
     if (!g_Initialized || !g_Backend || !event)
     {

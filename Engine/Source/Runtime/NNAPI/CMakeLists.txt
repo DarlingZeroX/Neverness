@@ -26,13 +26,11 @@ set(NNAPI_STUB_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Registry/NNNativeEngineApiTable.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Render/RenderApiStubs.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Audio/AudioApiStubs.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Input/InputApiStubs.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Application/ApplicationApiStubs.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Window/WindowApiStubs.cpp"
+	# Application/Window 已移除：C# Neverness.Runtime.Application 接管 (2026-06-24)
+	# Input/RenderAsset 已移除：迁移至 C# (2026-06-24)
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Vfs/VfsApiStubs.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Async/AsyncWaitApiStubs.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/Event/EventApiStubs.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/RenderAsset/RenderAssetApiStubs.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Stub/ViewportRender/ViewportRenderApiStubs.cpp"
 )
 

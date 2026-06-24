@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using Neverness.Runtime.Engine;
 using Neverness.Runtime.VFS.Public;
 using StbImageSharp;
 
@@ -282,52 +281,9 @@ public sealed class EditorResourceCache
     /// </summary>
     private ulong LoadAndCacheTexture(string vfsPath)
     {
-        try
-        {
-            // 通过 VFS 读取纹理文件
-            var fileData = VFS.ReadBytes(vfsPath);
-            if (fileData == null || fileData.Length == 0)
-            {
-                Console.WriteLine($"[EditorResourceCache] 纹理加载失败: {vfsPath}");
-                return 0;
-            }
-
-            // 解码为 RGBA8
-            var (width, height, pixelData) = DecodePngToRgba8(fileData);
-            if (pixelData == null || width == 0 || height == 0)
-            {
-                Console.WriteLine($"[EditorResourceCache] 纹理解码失败: {vfsPath}");
-                return 0;
-            }
-
-            // 创建 GPU 纹理
-            var textureKey = TextureInterop.CreateTexture(
-                (uint)width, (uint)height,
-                pixelData.AsSpan(),
-                isSRGB: true);
-
-            if (textureKey == 0)
-            {
-                Console.WriteLine($"[EditorResourceCache] GPU 纹理创建失败: {vfsPath}");
-                return 0;
-            }
-
-            // 获取 ImGui 纹理句柄
-            var imGuiHandle = TextureInterop.GetImGuiTextureHandle(textureKey);
-
-            // 缓存
-            _textureCache[vfsPath] = imGuiHandle;
-            _textureKeys[vfsPath] = textureKey;
-            _textureSizeCache[vfsPath] = ((uint)width, (uint)height);
-
-            Console.WriteLine($"[EditorResourceCache] 纹理已加载: {vfsPath} ({width}x{height})");
-            return imGuiHandle;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[EditorResourceCache] 纹理加载异常: {vfsPath} - {ex.Message}");
-            return 0;
-        }
+        // TODO: TextureInterop 已移除（NNRenderAssetAPI 迁移至 C#），需要通过新的 C# 纹理管理 API 重新实现
+        Console.WriteLine($"[EditorResourceCache] 纹理加载暂未实现（TextureInterop 已移除）: {vfsPath}");
+        return 0;
     }
 
     /// <summary>
@@ -418,11 +374,7 @@ public sealed class EditorResourceCache
     /// </summary>
     public void Dispose()
     {
-        foreach (var kvp in _textureKeys)
-        {
-            TextureInterop.ReleaseTexture(kvp.Value);
-        }
-
+        // TODO: TextureInterop 已移除，纹理释放需要通过新的 C# 纹理管理 API 重新实现
         _textureCache.Clear();
         _textureKeys.Clear();
         _textureSizeCache.Clear();

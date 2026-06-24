@@ -82,4 +82,7 @@ set(NNRuntimeImGui_SOURCES
     Source/ImNodeEditor/imgui_node_editor_api.cpp
     Source/Imnodes/imnodes.cpp
     Source/pch.cpp
+    Include/Engine/ImGuiBackendApi.h
+    Source/Engine/ImGuiBackendApi.cpp
+    Source/Engine/BuildImGuiBackendApi.cpp
 )

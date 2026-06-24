@@ -13,7 +13,7 @@ namespace Neverness.Runtime.Application.Private;
 public static unsafe class ImGuiBackendBridge
 {
     // C++ ImGui Backend 函数导入
-    [DllImport("NevernessRuntime-Application", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("NevernessRuntime-ImGui", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.I1)]
     private static extern bool nn_imgui_backend_initialize(
         SDL.SDL_Window* sdlWindow,
@@ -21,21 +21,21 @@ public static unsafe class ImGuiBackendBridge
         IntPtr context,
         IntPtr swapChain);
 
-    [DllImport("NevernessRuntime-Application", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("NevernessRuntime-ImGui", CallingConvention = CallingConvention.Cdecl)]
     private static extern void nn_imgui_backend_shutdown();
 
-    [DllImport("NevernessRuntime-Application", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("NevernessRuntime-ImGui", CallingConvention = CallingConvention.Cdecl)]
     private static extern void nn_imgui_backend_new_frame(
         int width,
         int height,
         int preTransform);
 
-    [DllImport("NevernessRuntime-Application", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("NevernessRuntime-ImGui", CallingConvention = CallingConvention.Cdecl)]
     private static extern void nn_imgui_backend_render(
         IntPtr context,
         IntPtr swapChain);
 
-    [DllImport("NevernessRuntime-Application", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("NevernessRuntime-ImGui", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.I1)]
     private static extern bool nn_imgui_backend_process_event(SDL.SDL_Event* e);
 
@@ -61,8 +61,6 @@ public static unsafe class ImGuiBackendBridge
     /// </summary>
     public static bool Initialize(IntPtr sdlWindowPtr, IntPtr device, IntPtr context, IntPtr swapChain)
     {
-        return false;
-
         if (s_initialized)
         {
             return true;

@@ -8,15 +8,12 @@
 
 #include "Internal/RuntimeApiBuilders.h"
 //#include "ManagedRuntimeBridge.h"
-#include "ApplicationApiExport.h"
-#include "EventApiExport.h"
-#include "WindowApiExport.h"
+//#include "EventApiExport.h"
 #include "VfsApiExport.h"
-#include "Engine/ImGuiBackendApi.h"
 #include "NNRuntimeEngine/Include/NNEngineRuntime.h"
 #include "NNRuntimeNativeEngineApiStub.h"
 #include "NativeEngineRuntimeServices.h"
-#include "NNRuntimeApplication/Include/Engine/ImGuiBackendApi.h"
+//#include "NNRuntimeApplication/Include/Engine/ImGuiBackendApi.h"
 
 extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 {
@@ -35,15 +32,14 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	//NNBuildSceneRuntimeApi(&outTable->scene);           // 已移除：SceneRuntimeApi 随 NNRuntimeScene 移至 Legacy
 	//NNBuildEditorSceneRuntimeApi(&outTable->editorScene); // 已移除：同上
 	//NNBuildAssetCookerRuntimeApi(&outTable->assetCooker); // 已移除：已迁移至 C#
-	NNBuildApplicationRuntimeApi(&outTable->application);
-	NNBuildWindowRuntimeApi(&outTable->window);
+	// Application/Window 已移除：C# Neverness.Runtime.Application 接管 (2026-06-24)
 	NNBuildVfsRuntimeApi(&outTable->vfs);
-	NNBuildEventRuntimeApi(&outTable->events);
+	//NNBuildEventRuntimeApi(&outTable->events);
 	//NNBuildRenderAssetRuntimeApi(&outTable->renderAsset);  // 已移除：RenderAssetRuntimeApi 随 NNRenderAssets 移至 Legacy
 	NNBuildViewportRenderRuntimeApi(&outTable->viewportRender);
 	NNBuildViewportSurfaceRuntimeApi(&outTable->viewportSurface);
 	NNBuildDiligentRuntimeApi(&outTable->diligent);
-	NNBuildImGuiBackendRuntimeApi(&outTable->imguiBackend);
+	// ImGuiBackend 已移除：独立为 NNRuntimeImGui 模块 (2026-06-24)
 
 	std::cout << "NNNative Engine Api Table built." << std::endl;
 	std::cout << "---------------------------------------" << std::endl;
