@@ -1,4 +1,5 @@
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets.AssetOpening;
 
@@ -10,7 +11,7 @@ public sealed class AssetOpenContext
     /// <summary>资产元数据（GUID、TypeId、Importer 等）。</summary>
     public required AssetMeta Meta { get; init; }
 
-    /// <summary>资产 VFS 虚拟路径。</summary>
+    /// <summary>资产 VFSService 虚拟路径。</summary>
     public required NVirtualPath VirtualPath { get; init; }
 
     /// <summary>资产 GUID。</summary>

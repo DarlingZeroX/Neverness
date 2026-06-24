@@ -1,3 +1,5 @@
+using Neverness.Runtime.VFS;
+
 namespace Neverness.Runtime.Assets;
 
 /// <summary>

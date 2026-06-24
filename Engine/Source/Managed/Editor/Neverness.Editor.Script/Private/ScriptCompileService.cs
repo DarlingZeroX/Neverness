@@ -14,10 +14,10 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Threading;
 using Microsoft.CodeAnalysis;
-using Neverness.Editor.ProjectSystem.Public;
+using Neverness.Runtime.VFS;
 using Neverness.Gameplay;
 using Neverness.Runtime.Scripting;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Script.Private;
 
@@ -226,7 +226,7 @@ public sealed class ScriptCompileService
     private ScriptCompilationContext? BuildCompilationContext(ScriptAssemblyDefinition assembly)
     {
         // 1. 扫描源文件
-        var assetsDir = VFS.GetAbsolutePath(ProjectPaths.Assets.FullPath);
+        var assetsDir = VFSService.GetAbsolutePath(ProjectPaths.Assets.FullPath);
         if (string.IsNullOrEmpty(assetsDir))
         {
             Console.WriteLine("[ScriptCompileService] Assets directory not resolvable");
@@ -271,7 +271,7 @@ public sealed class ScriptCompileService
     {
         var builder = ImmutableArray.CreateBuilder<MetadataReference>();
 
-        var projectRoot = VFS.GetAbsolutePath("/");
+        var projectRoot = VFSService.GetAbsolutePath("/");
         if (string.IsNullOrEmpty(projectRoot))
             return builder.ToImmutable();
 
@@ -304,7 +304,7 @@ public sealed class ScriptCompileService
     /// <summary>获取引擎 DLL 目录。</summary>
     private static string GetEngineBinariesDir()
     {
-        var engineRoot = VFS.GetAbsolutePath("/");
+        var engineRoot = VFSService.GetAbsolutePath("/");
         if (!string.IsNullOrEmpty(engineRoot))
         {
             var candidates = new[]

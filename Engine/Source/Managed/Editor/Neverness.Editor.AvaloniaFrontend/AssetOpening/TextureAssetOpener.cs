@@ -6,7 +6,8 @@ using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Editor.AvaloniaFrontend.Views;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.AvaloniaFrontend.AssetOpening;
 
@@ -87,7 +88,7 @@ public sealed class TextureAssetOpener : IAssetOpener
             return (handle, context.Guid);
         }
 
-        var absolutePath = VFS.GetAbsolutePath(context.VirtualPath.FullPath);
+        var absolutePath = VFSService.GetAbsolutePath(context.VirtualPath.FullPath);
         if (absolutePath == null)
         {
             Console.WriteLine($"[TextureAssetOpener] Failed to resolve absolute path: {context.VirtualPath}");

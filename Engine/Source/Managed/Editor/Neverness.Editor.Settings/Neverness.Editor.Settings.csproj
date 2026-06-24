@@ -19,9 +19,7 @@
     <ProjectReference Include="..\..\Runtime\Neverness.Runtime.Settings\Neverness.Runtime.Settings.csproj" />
     <!-- Editor.Core（IEditorFeature, IEditorContext） -->
     <ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
-    <!-- VFS（路径解析） -->
+    <!-- VFS（路径解析 + ProjectPaths） -->
     <ProjectReference Include="..\..\Runtime\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
-    <!-- ProjectSystem（ProjectPaths） -->
-    <ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
   </ItemGroup>
 </Project>

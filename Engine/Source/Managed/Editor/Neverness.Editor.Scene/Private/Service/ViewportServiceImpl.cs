@@ -25,7 +25,7 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
     public bool HasScene => _scene != null;
 
     /// <summary>
-    /// 资产 GUID → VFS 路径解析器（由上层注入，避免 Editor.Scene 直接依赖 Editor.Assets）。
+    /// 资产 GUID → VFSService 路径解析器（由上层注入，避免 Editor.Scene 直接依赖 Editor.Assets）。
     /// 返回 null 表示解析失败。
     /// </summary>
     public Func<NNGuid, string?>? AssetPathResolver { get; set; }
@@ -272,7 +272,7 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
             rmlView.Refresh();
             rmlView.ForEach((IEntity entity, RmlUIDocumentComponent doc) =>
             {
-                // 通过注入的解析器获取 VFS 路径
+                // 通过注入的解析器获取 VFSService 路径
                 var path = AssetPathResolver(doc.DocumentAsset);
                 if (string.IsNullOrEmpty(path))
                     return;

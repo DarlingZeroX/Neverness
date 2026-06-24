@@ -1,7 +1,7 @@
 using Neverness.Editor.Assets.AssetOpening;
 using Neverness.Editor.Core.Public;
-using Neverness.Editor.ProjectSystem.Public;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets.Private.Core;
 

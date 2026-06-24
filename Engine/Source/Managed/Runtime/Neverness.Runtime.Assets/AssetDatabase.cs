@@ -1,4 +1,5 @@
 using Neverness.Runtime.Assets.Registry;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Runtime.Assets;
 

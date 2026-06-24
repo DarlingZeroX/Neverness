@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
 using StbImageSharp;
 
 namespace Neverness.Editor.Framework.Public;
@@ -13,7 +13,7 @@ namespace Neverness.Editor.Framework.Public;
 /// 设计原则：
 /// 1. 纹理按需加载，缓存 ImGui 纹理句柄，生命周期跟随编辑器
 /// 2. 本地化文本启动时预加载，支持 Key=Value 格式
-/// 3. 所有读取通过 VFS，不直接访问物理路径
+/// 3. 所有读取通过 VFSService，不直接访问物理路径
 /// 4. 线程安全：纹理使用 ConcurrentDictionary，文本加载在主线程
 /// </summary>
 public sealed class EditorResourceCache
@@ -48,12 +48,12 @@ public sealed class EditorResourceCache
 
     // ── 模板缓存 ──
 
-    /// <summary>模板内容缓存：VFS 路径 → 文件内容。</summary>
+    /// <summary>模板内容缓存：VFSService 路径 → 文件内容。</summary>
     private readonly ConcurrentDictionary<string, string> _templateCache = new();
 
     // ── 常量 ──
 
-    /// <summary>编辑器资源 VFS 前缀。</summary>
+    /// <summary>编辑器资源 VFSService 前缀。</summary>
     public const string VfsPrefix = "/editor/";
 
     /// <summary>图标子目录。</summary>
@@ -91,9 +91,9 @@ public sealed class EditorResourceCache
     }
 
     /// <summary>
-    /// 获取指定 VFS 路径的纹理 ImGui 句柄。
+    /// 获取指定 VFSService 路径的纹理 ImGui 句柄。
     /// </summary>
-    /// <param name="vfsPath">完整 VFS 路径（如 "/editor/icons/folder.png"）。</param>
+    /// <param name="vfsPath">完整 VFSService 路径（如 "/editor/icons/folder.png"）。</param>
     /// <returns>ImGui 纹理句柄，0 = 加载失败。</returns>
     public ulong GetTexture(string vfsPath)
     {
@@ -210,7 +210,7 @@ public sealed class EditorResourceCache
 
     /// <summary>
     /// 获取资产模板内容。
-    /// 首次调用时从 VFS 加载并缓存，后续直接返回缓存。
+    /// 首次调用时从 VFSService 加载并缓存，后续直接返回缓存。
     /// </summary>
     /// <param name="templateName">模板文件名（使用 <see cref="TemplateNames"/> 常量）。</param>
     /// <returns>模板内容，加载失败返回 null。</returns>
@@ -225,10 +225,10 @@ public sealed class EditorResourceCache
         if (_templateCache.TryGetValue(vfsPath, out var cached))
             return cached;
 
-        // 从 VFS 加载
+        // 从 VFSService 加载
         try
         {
-            var content = VFS.ReadText(vfsPath);
+            var content = VFSService.ReadText(vfsPath);
             if (string.IsNullOrEmpty(content))
             {
                 Console.WriteLine($"[EditorResourceCache] 模板加载失败: {vfsPath}");
@@ -295,7 +295,7 @@ public sealed class EditorResourceCache
 
         try
         {
-            var text = VFS.ReadText(vfsPath);
+            var text = VFSService.ReadText(vfsPath);
             if (text == null)
             {
                 Console.WriteLine($"[EditorResourceCache] 本地化文件加载失败: {vfsPath}");

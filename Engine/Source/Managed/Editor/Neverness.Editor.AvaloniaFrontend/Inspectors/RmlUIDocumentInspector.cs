@@ -6,6 +6,7 @@ using Neverness.Editor.Assets;
 using Neverness.Editor.AvaloniaFrontend.PropertyEditor;
 using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene.Components;
 

@@ -42,7 +42,7 @@ public interface IViewportService
     byte[]? CollectRenderCommands(float width, float height);
 
     /// <summary>
-    /// 资产 GUID → VFS 路径解析器（由上层注入，避免 Scene 模块直接依赖 Assets 模块）。
+    /// 资产 GUID → VFSService 路径解析器（由上层注入，避免 Scene 模块直接依赖 Assets 模块）。
     /// 用于 RmlUIDocument 组件的 GUID → 路径解析。返回 null 表示解析失败。
     /// </summary>
     Func<NNGuid, string?>? AssetPathResolver { get; set; }

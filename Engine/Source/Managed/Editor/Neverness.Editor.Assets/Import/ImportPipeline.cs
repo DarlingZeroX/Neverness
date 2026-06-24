@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets;
 

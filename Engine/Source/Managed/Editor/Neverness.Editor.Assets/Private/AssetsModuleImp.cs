@@ -5,10 +5,10 @@ using Neverness.Editor.Assets.Private.Core;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Private;
 using Neverness.Editor.Framework.Public;
-using Neverness.Editor.ProjectSystem.Public;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Scene;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets.Private;
 
@@ -26,7 +26,7 @@ internal static class AssetsModuleImp
     public static void Install(SceneManager sceneManager)
     {
         // 1. 初始化 ContentBrowser 引擎
-        string? path = VFS.GetAbsolutePath(ProjectPaths.Assets.FullPath);
+        string? path = VFSService.GetAbsolutePath(ProjectPaths.Assets.FullPath);
         if (path != null)
         {
             ContentBrowser.Create(path);
@@ -40,7 +40,7 @@ internal static class AssetsModuleImp
         }
 
         // 1.2 初始化 EditorAssetDatabase（路径索引、类型查询基础）
-        var libraryPath = VFS.GetAbsolutePath(ProjectPaths.Library.FullPath);
+        var libraryPath = VFSService.GetAbsolutePath(ProjectPaths.Library.FullPath);
         if (path != null && libraryPath != null)
         {
             EditorAssetDatabase.Initialize(new NPath(path), new NPath(libraryPath));

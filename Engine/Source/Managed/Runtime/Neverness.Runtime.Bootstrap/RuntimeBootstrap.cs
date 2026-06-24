@@ -21,7 +21,7 @@ public static class RuntimeBootstrap
 
 	/// <summary>
 	/// 启动托管 Runtime：安装 Interop、注册子系统；<see cref="NativeBootstrapRunMode.NativeDriven"/> 下立即返回。
-	/// 初始化顺序：RuntimeInitializer（Native API 表） → ApplicationHost（SDL3 + VFS）。
+	/// 初始化顺序：RuntimeInitializer（Native API 表） → ApplicationHost（SDL3 + VFSService）。
 	/// </summary>
 	public static bool Start(in NativeBootstrapContext ctx)
 	{
@@ -34,7 +34,7 @@ public static class RuntimeBootstrap
 			return false;
 		}
 
-		// 2. 初始化 ApplicationHost（SDL3 + VFS + 窗口管理）
+		// 2. 初始化 ApplicationHost（SDL3 + VFSService + 窗口管理）
 		if (!ApplicationHost.Initialize())
 		{
 			Console.Error.WriteLine(

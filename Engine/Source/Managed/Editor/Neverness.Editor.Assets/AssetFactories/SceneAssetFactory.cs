@@ -1,13 +1,13 @@
 using Neverness.Editor.Framework.Public;
-using Neverness.Editor.ProjectSystem.Public;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets.AssetFactories;
 
 /// <summary>
-/// 场景资产工厂——在指定目录创建含默认 Camera 实体的场景文件（VGSC 二进制格式，经 VFS 序列化）。
+/// 场景资产工厂——在指定目录创建含默认 Camera 实体的场景文件（VGSC 二进制格式，经 VFSService 序列化）。
 /// 经由 SceneWorld 高层 API 操作，不直接引用 Native Bridge。
 /// </summary>
 public sealed class SceneAssetFactory : IAssetFactory
@@ -29,11 +29,11 @@ public sealed class SceneAssetFactory : IAssetFactory
                 filePath = directoryPath.Combine($"New Scene {index++}.scene");
             }
 
-            // 组装 VFS 虚拟路径（"/assets/相对路径"）
+            // 组装 VFSService 虚拟路径（"/assets/相对路径"）
             var vfsDir = ProjectPaths.GetResourcePath(directoryPath);
             if (vfsDir == null)
             {
-                Console.WriteLine("SceneAssetFactory: Failed to resolve VFS path");
+                Console.WriteLine("SceneAssetFactory: Failed to resolve VFSService path");
                 return null;
             }
             var vfsPath = vfsDir.Value.Combine(filePath.FileName);

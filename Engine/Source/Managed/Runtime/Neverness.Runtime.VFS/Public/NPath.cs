@@ -1,4 +1,4 @@
-namespace Neverness.Runtime.Assets;
+namespace Neverness.Runtime.VFS;
 
 /// <summary>
 /// OS 磁盘路径类型——表示真实文件系统路径。

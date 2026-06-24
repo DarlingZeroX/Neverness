@@ -3,8 +3,8 @@ using Neverness.Editor.Assets.AssetFactories;
 using Neverness.Editor.Core.Controllers;
 using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Editor.Framework.Public;
-using Neverness.Editor.ProjectSystem.Public;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.ImGuiFrontend.ContextMenus;
 
@@ -85,7 +85,7 @@ public sealed class AssetCreationImGuiMenuContributor : IContextMenuContributor
         // 2. 推断资产类型 ID
         var typeId = AssetMeta.InferAssetTypeId(filePath.Extension);
 
-        // 3. 绝对路径 → VFS 虚拟路径 → 注册
+        // 3. 绝对路径 → VFSService 虚拟路径 → 注册
         var virtualPath = ProjectPaths.GetResourcePath(filePath);
         if (virtualPath is { IsEmpty: false } vp)
         {

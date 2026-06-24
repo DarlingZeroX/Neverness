@@ -9,6 +9,7 @@ using Neverness.Editor.Core.Public;
 using Neverness.Editor.Script.Private;
 using Neverness.Gameplay;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene.Components;
 

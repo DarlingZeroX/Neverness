@@ -18,7 +18,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Application\Neverness.Runtime.Application.csproj" />
-		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Assets\Neverness.Runtime.Assets.csproj" />
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="StbImageSharp" Version="2.30.15" />

@@ -9,7 +9,7 @@ namespace Neverness.Editor.Scene.Private.PlayMode;
 internal sealed class PlayModeSnapshot
 {
     /// <summary>
-    /// 快照 VFS 路径。
+    /// 快照 VFSService 路径。
     /// 格式：Cache/PlayModeSnapshots/{guid}.vgsc
     /// 使用 Guid.NewGuid() 生成，避免多次 Play/Stop 或多实例冲突。
     /// </summary>

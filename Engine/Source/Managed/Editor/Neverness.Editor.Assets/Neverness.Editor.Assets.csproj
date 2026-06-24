@@ -18,7 +18,6 @@
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Reflection\Neverness.Editor.Reflection.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Serialization\Neverness.Editor.Serialization.csproj" />
-		<ProjectReference Include="..\Neverness.Editor.ProjectSystem\Neverness.Editor.ProjectSystem.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Settings\Neverness.Editor.Settings.csproj" />
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
 		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Assets\Neverness.Runtime.Assets.csproj" />

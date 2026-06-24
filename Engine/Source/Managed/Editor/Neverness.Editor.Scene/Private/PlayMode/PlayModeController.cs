@@ -76,7 +76,7 @@ internal sealed class PlayModeController
 
         PlayModeLifecycle?.Invoke(new PlayModeEvent(PlayModeEventType.EnteringPlayMode));
 
-        // 快照可能失败（磁盘满、权限、VFS 异常），必须异常安全
+        // 快照可能失败（磁盘满、权限、VFSService 异常），必须异常安全
         try
         {
             _prePlaySnapshot = CaptureSnapshot();
@@ -259,7 +259,7 @@ internal sealed class PlayModeController
 
         try
         {
-            // TODO: VFS.Delete(_prePlaySnapshot.SnapshotPath);
+            // TODO: VFSService.Delete(_prePlaySnapshot.SnapshotPath);
         }
         catch
         {

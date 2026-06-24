@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets;
 

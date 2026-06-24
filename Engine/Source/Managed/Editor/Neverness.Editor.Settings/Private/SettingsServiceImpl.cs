@@ -5,6 +5,7 @@ namespace Neverness.Editor.Settings.Private;
 
 /// <summary>
 /// 设置服务实现——协调 Registry、Storage 和 UI。
+/// UI 方法（ShowXxxWindow）为 internal，由 SettingsModule 菜单命令调用。
 /// </summary>
 internal sealed class SettingsServiceImpl : ISettingsService
 {
@@ -22,7 +23,7 @@ internal sealed class SettingsServiceImpl : ISettingsService
         _storage = storage;
     }
 
-    // ── 查询 ──
+    // ── 查询（公共接口） ──
 
     public IReadOnlyList<SettingsTable> GetAllTables()
     {
@@ -34,9 +35,12 @@ internal sealed class SettingsServiceImpl : ISettingsService
         return _registry.GetTable(tableId);
     }
 
-    public IReadOnlyList<SettingsTable> GetTablesByCategory(string category)
+    public T? GetTable<T>() where T : SettingsTable
     {
-        return _registry.GetByCategory(category).Select(r => r.Table).ToList();
+        return _registry.GetAll()
+            .Select(r => r.Table)
+            .OfType<T>()
+            .FirstOrDefault();
     }
 
     public IReadOnlyList<SettingsTable> GetTablesByScope(SettingsScope scope)
@@ -59,35 +63,13 @@ internal sealed class SettingsServiceImpl : ISettingsService
         _registry.Register(table, descriptor);
     }
 
-    public void RegisterPageProvider(ISettingsPageProvider provider)
-    {
-        _pageProviders[provider.TableId] = provider;
-    }
-
     // ── 持久化 ──
-
-    public void LoadAll()
-    {
-        foreach (var reg in _registry.GetAll())
-        {
-            LoadTable(reg.Table);
-        }
-    }
 
     public void SaveAll()
     {
         foreach (var reg in _registry.GetAll())
         {
             _storage.Save(reg.Table);
-        }
-    }
-
-    public void Load(string tableId)
-    {
-        var table = _registry.GetTable(tableId);
-        if (table != null)
-        {
-            LoadTable(table);
         }
     }
 
@@ -100,40 +82,6 @@ internal sealed class SettingsServiceImpl : ISettingsService
         }
     }
 
-    // ── UI ──
-
-    public void ShowProjectSettingsWindow()
-    {
-        // 如果窗口已打开且未关闭，激活它
-        if (_projectSettingsWindow != null)
-        {
-            _projectSettingsWindow.Activate();
-            return;
-        }
-
-        // 创建项目设置窗口（只显示 Project 范围的设置表）
-        _projectSettingsWindow = new Views.SettingsWindow(this, SettingsScope.Project);
-        _projectSettingsWindow.Title = "Project Settings";
-        _projectSettingsWindow.Closed += (_, _) => _projectSettingsWindow = null;
-        _projectSettingsWindow.Show();
-    }
-
-    public void ShowPreferencesWindow()
-    {
-        // 如果窗口已打开且未关闭，激活它
-        if (_preferencesWindow != null)
-        {
-            _preferencesWindow.Activate();
-            return;
-        }
-
-        // 创建用户偏好窗口（只显示 User 范围的设置表）
-        _preferencesWindow = new Views.SettingsWindow(this, SettingsScope.User);
-        _preferencesWindow.Title = "Preferences";
-        _preferencesWindow.Closed += (_, _) => _preferencesWindow = null;
-        _preferencesWindow.Show();
-    }
-
     // ── 事件 ──
 
     public event Action<string, string>? SettingChanged;
@@ -144,10 +92,67 @@ internal sealed class SettingsServiceImpl : ISettingsService
         SettingChanged?.Invoke(tableId, fieldName);
     }
 
+    // ── 内部方法（SettingsModule / SettingsWindow 调用） ──
+
+    /// <summary>加载所有设置表。</summary>
+    internal void LoadAll()
+    {
+        foreach (var reg in _registry.GetAll())
+        {
+            LoadTable(reg.Table);
+        }
+    }
+
+    /// <summary>加载单个设置表。</summary>
+    internal void Load(string tableId)
+    {
+        var table = _registry.GetTable(tableId);
+        if (table != null)
+        {
+            LoadTable(table);
+        }
+    }
+
+    /// <summary>注册自定义页面提供者。</summary>
+    internal void RegisterPageProvider(ISettingsPageProvider provider)
+    {
+        _pageProviders[provider.TableId] = provider;
+    }
+
     /// <summary>获取自定义页面提供者。</summary>
     internal ISettingsPageProvider? GetPageProvider(string tableId)
     {
         return _pageProviders.TryGetValue(tableId, out var provider) ? provider : null;
+    }
+
+    /// <summary>打开项目设置窗口。</summary>
+    internal void ShowProjectSettingsWindow()
+    {
+        if (_projectSettingsWindow != null)
+        {
+            _projectSettingsWindow.Activate();
+            return;
+        }
+
+        _projectSettingsWindow = new Views.SettingsWindow(this, SettingsScope.Project);
+        _projectSettingsWindow.Title = "Project Settings";
+        _projectSettingsWindow.Closed += (_, _) => _projectSettingsWindow = null;
+        _projectSettingsWindow.Show();
+    }
+
+    /// <summary>打开用户偏好窗口。</summary>
+    internal void ShowPreferencesWindow()
+    {
+        if (_preferencesWindow != null)
+        {
+            _preferencesWindow.Activate();
+            return;
+        }
+
+        _preferencesWindow = new Views.SettingsWindow(this, SettingsScope.User);
+        _preferencesWindow.Title = "Preferences";
+        _preferencesWindow.Closed += (_, _) => _preferencesWindow = null;
+        _preferencesWindow.Show();
     }
 
     /// <summary>获取所有注册条目（供 SettingsWindow 使用）。</summary>
@@ -170,7 +175,7 @@ internal sealed class SettingsServiceImpl : ISettingsService
         return _registry.GetCategories();
     }
 
-    // ── 内部方法 ──
+    // ── 私有方法 ──
 
     /// <summary>加载单个设置表。</summary>
     private void LoadTable(SettingsTable table)

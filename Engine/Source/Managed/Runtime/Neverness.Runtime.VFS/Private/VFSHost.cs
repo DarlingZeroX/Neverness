@@ -1,4 +1,4 @@
-// Neverness.Runtime.VFS — NNVfsAPI 托管门面；禁止在产品代码中散落 delegate*。
+// Neverness.Runtime.VFSService — NNVfsAPI 托管门面；禁止在产品代码中散落 delegate*。
 
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,7 +11,7 @@ namespace Neverness.Runtime.VFS;
 /// </summary>
 internal static unsafe class VFSHost
 {
-	/// <summary>VFS 子表是否已安装且可用。</summary>
+	/// <summary>VFSService 子表是否已安装且可用。</summary>
 	public static bool IsAvailable =>
 		EngineNativeApiBootstrap.IsInstalled &&
 		EngineNativeApiBootstrap.EngineApi.Vfs.ReadText != null;
@@ -102,7 +102,7 @@ internal static unsafe class VFSHost
 	}
 
 	/// <summary>
-	/// 将磁盘绝对路径转换为相对 <paramref name="relativePath"/> 的 VFS 路径。
+	/// 将磁盘绝对路径转换为相对 <paramref name="relativePath"/> 的 VFSService 路径。
 	/// </summary>
 	public static string? GetRelativePath(string relativePath, string absolutePath)
 	{
@@ -136,7 +136,7 @@ internal static unsafe class VFSHost
 	}
 
 	/// <summary>
-	/// 将 VFS 虚拟路径解析为绝对路径（<c>VFSService::GetAbsolutePath</c>）。
+	/// 将 VFSService 虚拟路径解析为绝对路径（<c>VFSService::GetAbsolutePath</c>）。
 	/// </summary>
 	public static string? GetAbsolutePath(string relativePath)
 	{
@@ -167,7 +167,7 @@ internal static unsafe class VFSHost
 	}
 
 	/// <summary>
-	/// 刷新指定 VFS 路径下单一 Native 文件系统的文件列表缓存。
+	/// 刷新指定 VFSService 路径下单一 Native 文件系统的文件列表缓存。
 	/// </summary>
 	public static bool RebuildNativeFileSystemFiles(string path)
 	{
@@ -184,7 +184,7 @@ internal static unsafe class VFSHost
 		}
 	}
 
-	/// <summary>将二进制缓冲区写入 VFS 路径（覆盖写）。</summary>
+	/// <summary>将二进制缓冲区写入 VFSService 路径（覆盖写）。</summary>
 	public static bool WriteBuffer(string path, byte[] buffer)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -230,7 +230,7 @@ internal static unsafe class VFSHost
 		return api.RemoveFileSystem(handle) != 0;
 	}
 
-	/// <summary>查询 handle 是否仍在 VFS 中。</summary>
+	/// <summary>查询 handle 是否仍在 VFSService 中。</summary>
 	public static bool HasFileSystem(ulong handle)
 	{
 		if (!TryGetVfsApi(out var api) || api.HasFileSystem == null)

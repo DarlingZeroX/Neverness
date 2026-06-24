@@ -1,6 +1,7 @@
 using Neverness.Editor.Assets.AssetFactories;
 using Neverness.Editor.Framework.Public;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Rmlui.AssetFactories;
 

@@ -1,6 +1,7 @@
 using Neverness.Editor.Assets;
 using Neverness.Editor.Assets.Private.Core;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 using ImportPipeline = Neverness.Editor.Assets.ImportPipeline;
 

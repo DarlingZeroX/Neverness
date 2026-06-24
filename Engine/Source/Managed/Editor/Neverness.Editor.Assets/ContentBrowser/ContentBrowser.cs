@@ -1,9 +1,9 @@
 using Neverness.Editor.Assets;
 using Neverness.Editor.Framework.Public;
-using Neverness.Editor.ProjectSystem.Public;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Engine;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
+using Neverness.Runtime.VFS;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices.JavaScript;
 
@@ -88,8 +88,8 @@ public sealed class ContentBrowser
     {
         // TODO:
         // VFSHost.RebuildNativeFilesystem(...)
-        // Runtime VFS rebuild integration
-        VFS.RebuildNativeFileSystemFiles(_currentDirectory);
+        // Runtime VFSService rebuild integration
+        VFSService.RebuildNativeFileSystemFiles(_currentDirectory);
 
         _isRefreshed = true;
 

@@ -28,7 +28,7 @@ public sealed class SceneWorld : IScene
     /// <summary>场景资产 GUID（可选，用于序列化和热重载）。</summary>
     public NNGuid AssetGuid { get; set; }
 
-    /// <summary>场景资产 VFS 路径（null = 未保存的新场景）。</summary>
+    /// <summary>场景资产 VFSService 路径（null = 未保存的新场景）。</summary>
     public string? AssetPath { get; set; }
 
     // ── 子系统 ──
@@ -80,7 +80,7 @@ public sealed class SceneWorld : IScene
         return new SceneWorld(name);
     }
 
-    /// <summary>从 VFS 资产路径加载并创建场景世界。</summary>
+    /// <summary>从 VFSService 资产路径加载并创建场景世界。</summary>
     public static SceneWorld? LoadFromAsset(string name, string vfsPath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -92,31 +92,31 @@ public sealed class SceneWorld : IScene
 
         try
         {
-            // 诊断：检查 VFS 路径解析
-            var absPath = Neverness.Runtime.VFS.Public.VFS.GetAbsolutePath(vfsPath);
-            Console.WriteLine($"[SceneWorld] VFS 路径解析: {vfsPath} → {absPath ?? "null"}");
+            // 诊断：检查 VFSService 路径解析
+            var absPath = Neverness.Runtime.VFS.VFSService.GetAbsolutePath(vfsPath);
+            Console.WriteLine($"[SceneWorld] VFSService 路径解析: {vfsPath} → {absPath ?? "null"}");
 
-            // 诊断：检查 VFS alias 是否注册
-            var assetsRegistered = Neverness.Runtime.VFS.Public.VFS.IsAliasRegistered("/assets/");
+            // 诊断：检查 VFSService alias 是否注册
+            var assetsRegistered = Neverness.Runtime.VFS.VFSService.IsAliasRegistered("/assets/");
             Console.WriteLine($"[SceneWorld] /assets/ alias 已注册: {assetsRegistered}");
 
-            var json = Neverness.Runtime.VFS.Public.VFS.ReadText(vfsPath);
+            var json = Neverness.Runtime.VFS.VFSService.ReadText(vfsPath);
             if (json != null)
             {
-                Console.WriteLine($"[SceneWorld] VFS 读取成功: {json.Length} 字符");
+                Console.WriteLine($"[SceneWorld] VFSService 读取成功: {json.Length} 字符");
                 using var stream = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(json));
                 world._scene.Deserialize(stream, "json");
                 Console.WriteLine($"[SceneWorld] 反序列化成功: EntityCount={world.EntityCount}");
             }
             else
             {
-                Console.Error.WriteLine($"[SceneWorld] VFS.ReadText 返回 null: {vfsPath}");
+                Console.Error.WriteLine($"[SceneWorld] VFSService.ReadText 返回 null: {vfsPath}");
             }
             world.AssetPath = vfsPath;
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"[SceneWorld] 从 VFS 加载场景失败: {ex.Message}");
+            Console.Error.WriteLine($"[SceneWorld] 从 VFSService 加载场景失败: {ex.Message}");
             world.Dispose();
             return null;
         }
@@ -270,7 +270,7 @@ public sealed class SceneWorld : IScene
         _scene.Serialize(stream, format);
     }
 
-    /// <summary>序列化场景到 VFS 路径（JSON 格式）。</summary>
+    /// <summary>序列化场景到 VFSService 路径（JSON 格式）。</summary>
     public NNSceneResult Save(string vfsPath)
     {
         if (_disposed) return NNSceneResult.Invalid;
@@ -281,7 +281,7 @@ public sealed class SceneWorld : IScene
             using var stream = new System.IO.MemoryStream();
             _scene.Serialize(stream, "json");
             var json = Encoding.UTF8.GetString(stream.ToArray());
-            return Neverness.Runtime.VFS.Public.VFS.WriteText(vfsPath, json)
+            return Neverness.Runtime.VFS.VFSService.WriteText(vfsPath, json)
                 ? NNSceneResult.Ok
                 : NNSceneResult.Failed;
         }

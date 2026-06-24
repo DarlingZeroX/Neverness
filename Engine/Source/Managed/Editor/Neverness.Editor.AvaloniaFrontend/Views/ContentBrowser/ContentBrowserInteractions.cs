@@ -8,6 +8,7 @@ using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.Framework.Private.Menu;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 using AssetsContentBrowser = Neverness.Editor.Assets.Private.Core.ContentBrowser;
 using AssetsContentFile = Neverness.Editor.Assets.Private.Core.ContentFile;
 using AssetsContentDirectory = Neverness.Editor.Assets.Private.Core.ContentDirectory;

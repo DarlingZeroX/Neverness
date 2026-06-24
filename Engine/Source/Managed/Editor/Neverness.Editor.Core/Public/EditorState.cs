@@ -21,7 +21,7 @@ public sealed class EditorState
     /// <summary>是否处于播放模式。</summary>
     public bool IsPlaying => PlayMode == PlayMode.Playing;
 
-    /// <summary>当前场景 VFS 路径（null = 无场景）。</summary>
+    /// <summary>当前场景 VFSService 路径（null = 无场景）。</summary>
     public string? CurrentScenePath { get; set; }
 
     /// <summary>当前激活场景的 Native 句柄（0 = 无场景）。</summary>

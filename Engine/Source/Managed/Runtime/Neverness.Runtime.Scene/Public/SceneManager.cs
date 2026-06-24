@@ -1,6 +1,6 @@
 using System.Text;
 using Neverness.Runtime.Scene.Internal;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Runtime.Scene;
 
@@ -59,9 +59,9 @@ public sealed class SceneManager
         return true;
     }
 
-    /// <summary>从 VFS 资产路径加载并激活场景世界。</summary>
+    /// <summary>从 VFSService 资产路径加载并激活场景世界。</summary>
     /// <param name="name">场景名称。</param>
-    /// <param name="vfsPath">VFS 虚拟路径（例如 "/assets/scenes/main.json"）。</param>
+    /// <param name="vfsPath">VFSService 虚拟路径（例如 "/assets/scenes/main.json"）。</param>
     /// <returns>是否加载成功。</returns>
     public bool LoadSceneFromAsset(string name, string vfsPath)
     {
@@ -100,9 +100,9 @@ public sealed class SceneManager
         return true;
     }
 
-    /// <summary>从 VFS 资产路径加载并激活场景世界（二进制格式）。</summary>
+    /// <summary>从 VFSService 资产路径加载并激活场景世界（二进制格式）。</summary>
     /// <param name="name">场景名称。</param>
-    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <param name="vfsPath">VFSService 虚拟路径。</param>
     /// <returns>是否加载成功。</returns>
     public bool LoadSceneFromAssetBinary(string name, string vfsPath)
     {
@@ -151,8 +151,8 @@ public sealed class SceneManager
         return true;
     }
 
-    /// <summary>保存激活场景到 VFS 路径。</summary>
-    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <summary>保存激活场景到 VFSService 路径。</summary>
+    /// <param name="vfsPath">VFSService 虚拟路径。</param>
     /// <returns>操作结果。</returns>
     public NNSceneResult SaveActiveScene(string vfsPath)
     {
@@ -173,9 +173,9 @@ public sealed class SceneManager
         return _activeWorld.Save(_activeWorld.AssetPath);
     }
 
-    /// <summary>保存指定场景到 VFS 路径。</summary>
+    /// <summary>保存指定场景到 VFSService 路径。</summary>
     /// <param name="name">场景名称。</param>
-    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <param name="vfsPath">VFSService 虚拟路径。</param>
     /// <returns>是否保存成功。</returns>
     public bool SaveScene(string name, string vfsPath)
     {
@@ -185,8 +185,8 @@ public sealed class SceneManager
         return world.Save(vfsPath).IsSuccess();
     }
 
-    /// <summary>保存激活场景到 VFS 路径（二进制格式）。</summary>
-    /// <param name="vfsPath">VFS 虚拟路径。</param>
+    /// <summary>保存激活场景到 VFSService 路径（二进制格式）。</summary>
+    /// <param name="vfsPath">VFSService 虚拟路径。</param>
     /// <returns>是否保存成功。</returns>
     public bool SaveActiveSceneBinary(string vfsPath)
     {

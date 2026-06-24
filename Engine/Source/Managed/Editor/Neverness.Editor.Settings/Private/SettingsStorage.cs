@@ -1,11 +1,11 @@
-using Neverness.Editor.ProjectSystem.Public;
+using Neverness.Runtime.VFS;
 using Neverness.Runtime.Settings;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Settings.Private;
 
 /// <summary>
-/// 设置持久化层——使用 VFS 解析路径，JSON 序列化。
+/// 设置持久化层——使用 VFSService 解析路径，JSON 序列化。
 /// 每个设置表一个 JSON 文件，存储在 projectSettings/Settings/ 目录下。
 ///
 /// 文件布局：
@@ -71,7 +71,7 @@ internal sealed class SettingsStorage
     {
         // 清理 tableId 中的非法文件名字符
         var safeFileName = string.Join("_", tableId.Split(Path.GetInvalidFileNameChars()));
-        var settingsDir = VFS.GetAbsolutePath(ProjectPaths.Settings.FullPath);
+        var settingsDir = VFSService.GetAbsolutePath(ProjectPaths.Settings.FullPath);
         if (string.IsNullOrEmpty(settingsDir))
             return null;
 

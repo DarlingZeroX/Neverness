@@ -13,7 +13,7 @@
 using Neverness.Editor.Assets.AssetFactories;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Framework.Public;
-using Neverness.Editor.ProjectSystem.Public;
+using Neverness.Runtime.VFS;
 using Neverness.Editor.Core.Public.Inspector;
 using Neverness.Editor.Script.Private;
 using Neverness.Editor.Scene.Private.PlayMode;
@@ -21,7 +21,7 @@ using Neverness.Editor.Scene.Public;
 using Neverness.Gameplay;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Scripting;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Script.Public;
 
@@ -41,13 +41,13 @@ public static class ScriptEditorModule
     public static void Install(IEditorContext context)
     {
         // ── 路径解析 ──
-        var projectRoot = VFS.GetAbsolutePath(ProjectPaths.Project.FullPath);
-        var assetsDir = VFS.GetAbsolutePath(ProjectPaths.Assets.FullPath);
-        var libraryDir = VFS.GetAbsolutePath(ProjectPaths.Library.FullPath);
+        var projectRoot = VFSService.GetAbsolutePath(ProjectPaths.Project.FullPath);
+        var assetsDir = VFSService.GetAbsolutePath(ProjectPaths.Assets.FullPath);
+        var libraryDir = VFSService.GetAbsolutePath(ProjectPaths.Library.FullPath);
 
         if (string.IsNullOrEmpty(projectRoot) || string.IsNullOrEmpty(assetsDir) || string.IsNullOrEmpty(libraryDir))
         {
-            Console.WriteLine("[ScriptEditorModule] VFS paths not resolvable, script system disabled");
+            Console.WriteLine("[ScriptEditorModule] VFSService paths not resolvable, script system disabled");
             return;
         }
 
@@ -325,7 +325,7 @@ public static class ScriptEditorModule
     /// <summary>获取引擎 DLL 目录。</summary>
     private static string GetEngineBinariesDir()
     {
-        var engineRoot = VFS.GetAbsolutePath("/");
+        var engineRoot = VFSService.GetAbsolutePath("/");
         if (!string.IsNullOrEmpty(engineRoot))
         {
             var candidates = new[]

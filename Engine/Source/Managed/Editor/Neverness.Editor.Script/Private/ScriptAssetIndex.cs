@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 using Neverness.Editor.Assets;
 using Neverness.Gameplay;
 using Neverness.Runtime.Assets;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Script.Private;
 
@@ -151,16 +151,16 @@ public sealed class ScriptAssetIndex
                 continue;
             csCount++;
 
-            // 获取 VFS 路径
+            // 获取 VFSService 路径
             if (!EditorAssetDatabase.TryGetPath(guid, out var virtualPath))
                 continue;
             vfsOk++;
 
-            // VFS 路径 → OS 绝对路径
-            var osPath = VFS.GetAbsolutePath(virtualPath.FullPath);
+            // VFSService 路径 → OS 绝对路径
+            var osPath = VFSService.GetAbsolutePath(virtualPath.FullPath);
             if (string.IsNullOrEmpty(osPath))
             {
-                Console.WriteLine($"[ScriptAssetIndex] VFS returned null for: {virtualPath.FullPath}");
+                Console.WriteLine($"[ScriptAssetIndex] VFSService returned null for: {virtualPath.FullPath}");
                 continue;
             }
             if (!File.Exists(osPath))

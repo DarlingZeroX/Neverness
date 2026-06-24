@@ -2,6 +2,7 @@ using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.Framework.Public.Mvvm;
 using Neverness.Runtime.Assets;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Core.Controllers;
 

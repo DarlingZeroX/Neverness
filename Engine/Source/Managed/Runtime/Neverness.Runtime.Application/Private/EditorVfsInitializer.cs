@@ -1,19 +1,20 @@
-// Neverness.Runtime.Application — VFS 初始化（C# 版）。
+// Neverness.Runtime.Application — VFSService 初始化（C# 版）。
 // 替代 C++ EditorInitializer::InitializeVFS。
-// 挂载项目目录、编辑器资源、引擎资源到 VFS。
+// 挂载项目目录、编辑器资源、引擎资源到 VFSService。
 
 using Neverness.Runtime.Engine;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Runtime.Application.Private;
 
 /// <summary>
-/// Editor VFS 初始化器。
+/// Editor VFSService 初始化器。
 /// 在 SDL 初始化之前执行，挂载所有虚拟文件系统。
 /// </summary>
 internal static class EditorVfsInitializer
 {
-    /// <summary>VFS 路径配置。</summary>
+    /// <summary>VFSService 路径配置。</summary>
     public struct VfsPaths
     {
         public string Project;
@@ -28,13 +29,13 @@ internal static class EditorVfsInitializer
     }
 
     /// <summary>
-    /// 初始化 VFS。
+    /// 初始化 VFSService。
     /// </summary>
     public static bool InitializeVfs(string projectRoot, string editorRoot)
     {
-        if (!VFS.Public.VFS.IsAvailable)
+        if (!VFS.VFSService.IsAvailable)
         {
-            Console.Error.WriteLine("[EditorVfsInitializer] VFS API 不可用");
+            Console.Error.WriteLine("[EditorVfsInitializer] VFSService API 不可用");
             return false;
         }
 
@@ -53,25 +54,25 @@ internal static class EditorVfsInitializer
         };
 
         // 挂载编辑器资源（Pak + 目录回退）
-        MountPakFileSystem("/editor/", "Data/editor.pak", paths.Editor);
+        MountPakFileSystem(ProjectPaths.EditorResource.FullPath, "Data/editor.pak", paths.Editor);
 
         // 挂载引擎资源（Pak + 目录回退）
-        MountPakFileSystem("/engine/", "Data/engine.pak", paths.Engine);
+        MountPakFileSystem(ProjectPaths.EngineResource.FullPath, "Data/engine.pak", paths.Engine);
 
         // 挂载原生文件系统
-        MountNativeFileSystem("/project/", paths.Project);
-        MountNativeFileSystem("/assets/", paths.Assets);
-        MountNativeFileSystem("/Library/", paths.Library);
-        MountNativeFileSystem("/Build/", paths.Build);
-        MountNativeFileSystem("/Packages/", paths.Packages);
-        MountNativeFileSystem("/ProjectSettings/", paths.ProjectSettings);
-        MountNativeFileSystem("/ProjectIntermediate/", paths.ProjectIntermediate);
+        MountNativeFileSystem(ProjectPaths.Project.FullPath, paths.Project);
+        MountNativeFileSystem(ProjectPaths.Assets.FullPath, paths.Assets);
+        MountNativeFileSystem(ProjectPaths.Library.FullPath, paths.Library);
+        MountNativeFileSystem(ProjectPaths.Build.FullPath, paths.Build);
+        MountNativeFileSystem(ProjectPaths.Packages.FullPath, paths.Packages);
+        MountNativeFileSystem(ProjectPaths.Settings.FullPath, paths.ProjectSettings);
+        MountNativeFileSystem(ProjectPaths.Intermediate.FullPath, paths.ProjectIntermediate);
 
         // 挂载内存文件系统（Cache）
-        VFS.Public.VFS.AddFileSystem("/Cache/", NNVfsFileSystemType.Memory, null);
+        VFS.VFSService.AddFileSystem("/Cache/", NNVfsFileSystemType.Memory, null);
         Console.WriteLine("[EditorVfsInitializer] 挂载内存: /Cache/");
 
-        Console.WriteLine($"[EditorVfsInitializer] VFS 初始化完成: Project={projectRoot}");
+        Console.WriteLine($"[EditorVfsInitializer] VFSService 初始化完成: Project={projectRoot}");
         return true;
     }
 
@@ -84,14 +85,14 @@ internal static class EditorVfsInitializer
         // 优先尝试挂载 pak 文件
         if (File.Exists(pakPath))
         {
-            VFS.Public.VFS.AddFileSystem(alias, NNVfsFileSystemType.Zip, pakPath);
+            VFS.VFSService.AddFileSystem(alias, NNVfsFileSystemType.Zip, pakPath);
             Console.WriteLine($"[EditorVfsInitializer] 挂载 Pak: {alias} -> {pakPath}");
         }
 
         // 挂载目录作为回退
         if (Directory.Exists(fallbackDir))
         {
-            VFS.Public.VFS.AddFileSystem(alias, NNVfsFileSystemType.Native, fallbackDir);
+            VFS.VFSService.AddFileSystem(alias, NNVfsFileSystemType.Native, fallbackDir);
             Console.WriteLine($"[EditorVfsInitializer] 挂载目录: {alias} -> {fallbackDir}");
         }
     }
@@ -115,7 +116,7 @@ internal static class EditorVfsInitializer
             }
         }
 
-        VFS.Public.VFS.AddFileSystem(alias, NNVfsFileSystemType.Native, rootPath);
+        VFS.VFSService.AddFileSystem(alias, NNVfsFileSystemType.Native, rootPath);
         Console.WriteLine($"[EditorVfsInitializer] 挂载原生: {alias} -> {rootPath}");
     }
 }

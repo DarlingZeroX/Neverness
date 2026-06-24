@@ -4,7 +4,8 @@ using Neverness.Editor.Assets.AssetOpening;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.ImGuiEx;
 using Neverness.Runtime.Assets;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
+using Neverness.Runtime.VFS;
 
 using ImportPipeline = Neverness.Editor.Assets.ImportPipeline;
 
@@ -151,7 +152,7 @@ public sealed class VideoAssetOpener : IAssetOpener
     {
         try
         {
-            var absolutePath = VFS.GetAbsolutePath(context.VirtualPath.FullPath);
+            var absolutePath = VFSService.GetAbsolutePath(context.VirtualPath.FullPath);
             if (absolutePath == null) return (AssetHandle.Zero, context.Guid);
 
             var sourcePath = new NPath(absolutePath);

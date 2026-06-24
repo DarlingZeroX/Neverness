@@ -1,13 +1,13 @@
-namespace Neverness.Runtime.Assets;
+namespace Neverness.Runtime.VFS;
 
 /// <summary>
-/// Runtime VFS 路径类型——表示虚拟文件系统路径。
+/// Runtime VFSService 路径类型——表示虚拟文件系统路径。
 ///
 /// 设计原则：
 ///   - immutable，构造时 normalize 一次
 ///   - 统一 `/` 分隔符，折叠双斜杠
 ///   - 支持 URI scheme 检测（assets://, engine://, memory:// 等）
-///   - Runtime 永远只接触此类型，不接触 NPath（OS 路径）
+///   - Runtime 永远只接触此类型，不接触 NPath（OS 路径，同模块）
 ///   - 相等性基于 OrdinalIgnoreCase
 ///
 /// 示例：

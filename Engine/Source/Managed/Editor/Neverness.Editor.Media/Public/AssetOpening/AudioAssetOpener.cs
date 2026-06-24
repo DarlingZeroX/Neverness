@@ -5,7 +5,8 @@ using Neverness.Editor.Core.Public;
 using Neverness.Editor.ImGuiEx;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Audio;
-using Neverness.Runtime.VFS.Public;
+using Neverness.Runtime.VFS;
+using Neverness.Runtime.VFS;
 
 using ImportPipeline = Neverness.Editor.Assets.ImportPipeline;
 
@@ -114,7 +115,7 @@ public sealed class AudioAssetOpener : IAssetOpener
         string absPath = "";
         try
         {
-            var p = VFS.GetAbsolutePath(vfsPath);
+            var p = VFSService.GetAbsolutePath(vfsPath);
             if (p != null) absPath = p;
         }
         catch { }
@@ -226,7 +227,7 @@ public sealed class AudioAssetOpener : IAssetOpener
     {
         try
         {
-            var absolutePath = VFS.GetAbsolutePath(context.VirtualPath.FullPath);
+            var absolutePath = VFSService.GetAbsolutePath(context.VirtualPath.FullPath);
             if (absolutePath == null) return (AssetHandle.Zero, context.Guid);
             var sourcePath = new NPath(absolutePath);
             if (!File.Exists(sourcePath.FullPath)) return (AssetHandle.Zero, context.Guid);

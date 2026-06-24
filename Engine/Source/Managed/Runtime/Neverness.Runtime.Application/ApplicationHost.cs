@@ -1,5 +1,5 @@
 // Neverness.Runtime.Application — 应用生命周期管理（C# 驱动）。
-// 整合 SDL3-CS、窗口管理、事件泵、VFS 初始化。
+// 整合 SDL3-CS、窗口管理、事件泵、VFSService 初始化。
 // ImGui Backend 通过 ImGuiBackendBridge 调用 C++ 封装。
 
 using Neverness.Runtime.Application.Private;
@@ -28,7 +28,7 @@ public static unsafe class ApplicationHost
 
     /// <summary>
     /// 初始化应用生命周期。
-    /// 顺序：NativeApiBootstrap → 项目根目录发现 → VFS → SDL3。
+    /// 顺序：NativeApiBootstrap → 项目根目录发现 → VFSService → SDL3。
     /// </summary>
     public static bool Initialize()
     {
@@ -56,10 +56,10 @@ public static unsafe class ApplicationHost
         Console.WriteLine($"[ApplicationHost] 项目目录: {s_projectRoot}");
         Console.WriteLine($"[ApplicationHost] 编辑器目录: {s_editorRoot}");
 
-        // 3. VFS 初始化（在 SDL 之前）
+        // 3. VFSService 初始化（在 SDL 之前）
         if (!EditorVfsInitializer.InitializeVfs(s_projectRoot, s_editorRoot))
         {
-            Console.Error.WriteLine("[ApplicationHost] VFS 初始化失败");
+            Console.Error.WriteLine("[ApplicationHost] VFSService 初始化失败");
             return false;
         }
 
