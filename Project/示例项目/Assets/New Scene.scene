@@ -57,7 +57,7 @@
           ]
         },
         "RmlUIDocumentComponent": {
-          "documentAsset": "b6bb83515422214cb9cb1d0ddde4205a",
+          "documentAsset": "cc2dd0e7da26f244b8fe3b11739afb01",
           "flags": "AutoLoad, ReceivesInput",
           "sortOrder": 0,
           "viewTarget": "Both"

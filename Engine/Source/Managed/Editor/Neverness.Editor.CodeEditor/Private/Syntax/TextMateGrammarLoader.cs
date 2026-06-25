@@ -87,25 +87,29 @@ public sealed class TextMateGrammarLoader
         return installation;
     }
 
-    /// <summary>从 VFS 路径解析物理路径。</summary>
+    /// <summary>从 VFS 读取语法文件，写入临时文件供 TextMateSharp 使用。</summary>
     private void ResolvePhysicalPath(string language, string vfsPath)
     {
         try
         {
-            var absPath = Neverness.Runtime.VFS.VFSService.GetAbsolutePath(vfsPath);
-            if (!string.IsNullOrEmpty(absPath) && File.Exists(absPath))
+            var content = Neverness.Runtime.VFS.VFSService.ReadText(vfsPath);
+            if (string.IsNullOrEmpty(content))
             {
-                _physicalPaths[language] = absPath;
-                Console.WriteLine($"[TextMateGrammarLoader] VFS 解析成功: {language} → {absPath}");
+                Console.WriteLine($"[TextMateGrammarLoader] VFS 读取为空: {vfsPath}");
+                return;
             }
-            else
-            {
-                Console.WriteLine($"[TextMateGrammarLoader] VFS 路径不存在: {vfsPath} → {absPath ?? "null"}");
-            }
+
+            // 写入临时文件（TextMateSharp.SetGrammarFile 需要物理路径）
+            var tempDir = Path.Combine(Path.GetTempPath(), "Neverness", "TextMate");
+            Directory.CreateDirectory(tempDir);
+            var tempPath = Path.Combine(tempDir, $"{language}.tmLanguage.json");
+            File.WriteAllText(tempPath, content);
+            _physicalPaths[language] = tempPath;
+            Console.WriteLine($"[TextMateGrammarLoader] VFS 加载成功: {language} ({content.Length} bytes) → {tempPath}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[TextMateGrammarLoader] VFS 解析失败: {language}, {ex.Message}");
+            Console.WriteLine($"[TextMateGrammarLoader] VFS 加载失败: {language}, {ex.Message}");
         }
     }
 
@@ -158,16 +162,51 @@ public sealed class TextMateGrammarLoader
 
         public ICollection<IRawThemeSetting> GetTokenColors() => new IRawThemeSetting[]
         {
-            new ThemeSetting("keyword", "#C586C0", null),
-            new ThemeSetting("string", "#CE9178", null),
-            new ThemeSetting("number", "#B5CEA8", null),
-            new ThemeSetting("comment", "#6A9955", null),
-            new ThemeSetting("type", "#4EC9B0", null),
-            new ThemeSetting("function", "#DCDCAA", null),
-            new ThemeSetting("variable", "#9CDCFE", null),
-            new ThemeSetting("tag", "#569CD6", null),
-            new ThemeSetting("attribute", "#9CDCFE", null),
-            new ThemeSetting("punctuation", "#808080", null),
+            // ── 通用 ──
+            new ThemeSetting("keyword", "#C586C0"),
+            new ThemeSetting("keyword.control", "#C586C0"),
+            new ThemeSetting("string", "#CE9178"),
+            new ThemeSetting("number", "#B5CEA8"),
+            new ThemeSetting("comment", "#6A9955"),
+            new ThemeSetting("type", "#4EC9B0"),
+            new ThemeSetting("function", "#DCDCAA"),
+            new ThemeSetting("variable", "#9CDCFE"),
+            new ThemeSetting("constant", "#569CD6"),
+            new ThemeSetting("operator", "#D4D4D4"),
+
+            // ── HTML 标签 ──
+            new ThemeSetting("entity.name.tag", "#569CD6"),
+            new ThemeSetting("entity.other.attribute-name", "#9CDCFE"),
+            new ThemeSetting("punctuation.definition.tag", "#808080"),
+            new ThemeSetting("punctuation.definition.tag.begin", "#808080"),
+            new ThemeSetting("punctuation.definition.tag.end", "#808080"),
+            new ThemeSetting("meta.tag", "#D4D4D4"),
+            new ThemeSetting("meta.tag.html", "#D4D4D4"),
+            new ThemeSetting("meta.tag.block.any", "#D4D4D4"),
+            new ThemeSetting("meta.tag.inline.any", "#D4D4D4"),
+
+            // ── HTML 属性 ──
+            new ThemeSetting("entity.other.attribute-name.html", "#9CDCFE"),
+            new ThemeSetting("string.quoted.double.html", "#CE9178"),
+            new ThemeSetting("string.quoted.single.html", "#CE9178"),
+
+            // ── CSS ──
+            new ThemeSetting("entity.name.tag.css", "#569CD6"),
+            new ThemeSetting("support.type.property-name.css", "#9CDCFE"),
+            new ThemeSetting("support.constant.property-value.css", "#CE9178"),
+            new ThemeSetting("keyword.control.at-rule.css", "#C586C0"),
+            new ThemeSetting("entity.other.attribute-name.class.css", "#DCDCAA"),
+            new ThemeSetting("entity.other.attribute-name.id.css", "#DCDCAA"),
+
+            // ── C# ──
+            new ThemeSetting("keyword.type.cs", "#569CD6"),
+            new ThemeSetting("entity.name.type.cs", "#4EC9B0"),
+            new ThemeSetting("variable.other.readwrite.cs", "#9CDCFE"),
+            new ThemeSetting("entity.name.function.cs", "#DCDCAA"),
+            new ThemeSetting("string.quoted.double.cs", "#CE9178"),
+            new ThemeSetting("string.quoted.single.cs", "#CE9178"),
+            new ThemeSetting("comment.line.double-slash.cs", "#6A9955"),
+            new ThemeSetting("comment.block.cs", "#6A9955"),
         };
 
         public ICollection<KeyValuePair<string, object>> GetGuiColors() => new List<KeyValuePair<string, object>>
@@ -184,7 +223,7 @@ public sealed class TextMateGrammarLoader
         private readonly string _foreground;
         private readonly string _background;
 
-        public ThemeSetting(string name, string foreground, string background)
+        public ThemeSetting(string name, string foreground, string background = null)
         {
             _name = name;
             _foreground = foreground;
@@ -192,7 +231,7 @@ public sealed class TextMateGrammarLoader
         }
 
         public string GetName() => _name;
-        public object GetScope() => _name != null ? new[] { _name } : null;
+        public object GetScope() => _name;
         public IThemeSetting GetSetting() => new ThemeSettingValue(_foreground, _background);
     }
 
