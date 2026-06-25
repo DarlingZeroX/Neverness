@@ -13,6 +13,7 @@ if(NOT CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "E:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 endif()
 
+
 ############ 启用测试选项
 #option(ENABLE_TESTS "Enable building tests" OFF)
 option(ENABLE_TESTS "Enable building tests" ON)
@@ -20,40 +21,23 @@ option(ENABLE_TESTS "Enable building tests" ON)
 ############ 项目名称
 project ("Neverness" LANGUAGES C CXX)
 
+
 ############ 全局设置多线程编译（MSVC）
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
 ############ MSVC 编译选项
 if(MSVC AND TRUE)
     message(STATUS "Using MSVC")
-
+    set(CMAKE_C_CL_SHOWINCLUDES_PREFIX "注意: 包含文件:  " CACHE STRING "MSVC /showIncludes prefix for C" FORCE)
+    set(CMAKE_CXX_CL_SHOWINCLUDES_PREFIX "注意: 包含文件:  " CACHE STRING "MSVC /showIncludes prefix for CXX" FORCE)
     # 关闭警告 C4819: 无效的字符。避免中文注释被警告
     add_compile_options(
         "/wd4819"
     )
 endif()
 
-# 关闭 Ninja 的 /showIncludes 输出。
-# CMake Ninja generator 硬编码 /showIncludes 在 rules.ninja 命令模板中，
-# 无法通过任何 CMake 变量控制。使用 DEFER 在 configure 最后阶段修改 rules.ninja。
-if(CMAKE_GENERATOR STREQUAL "Ninja")
-    cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}"
-        CALL _nn_strip_showincludes_from_rules_ninja)
-endif()
+# Ninja + MSVC must keep /showIncludes so dependency scanning can track headers.
 
-function(_nn_strip_showincludes_from_rules_ninja)
-    set(_rules_ninja "${CMAKE_BINARY_DIR}/CMakeFiles/rules.ninja")
-    if(NOT EXISTS "${_rules_ninja}")
-        message(WARNING "rules.ninja 未找到，无法删除 /showIncludes")
-        return()
-    endif()
-    file(READ "${_rules_ninja}" _rules_content)
-    string(REPLACE " /showIncludes " " " _rules_content "${_rules_content}")
-    # 处理行尾的情况：/showIncludes 后紧跟换行
-    string(REPLACE "/showIncludes " "" _rules_content "${_rules_content}")
-    file(WRITE "${_rules_ninja}" "${_rules_content}")
-    message(STATUS "已从 rules.ninja 中删除 /showIncludes")
-endfunction()
 
 ############ 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)
@@ -160,3 +144,4 @@ if(MSVC)
         $<$<CONFIG:Debug>:/Oi>       # 启用 intrinsic（更快）
     )
 endif()
+

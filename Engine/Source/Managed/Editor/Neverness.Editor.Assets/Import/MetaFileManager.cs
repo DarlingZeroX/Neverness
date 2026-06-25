@@ -382,6 +382,7 @@ public sealed class AssetMeta
             ".anim" => 8,      // Animation
             ".lua" => 9,       // LuaScript
             ".cs" => 11,       // CSharpScript
+            ".html" or ".htm" or ".rml" or ".css" or ".rcss" or ".js" => 12, // HtmlDocument
             _ => 0
         };
     }

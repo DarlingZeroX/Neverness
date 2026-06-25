@@ -91,6 +91,7 @@ public static class AssetTypeId
     public const ulong LuaScript = 9;
     public const ulong VideoClip = 10;
     public const ulong CSharpScript = 11;
+    public const ulong HtmlDocument = 12;
 
     /// <summary>
     /// 预定义 blob 类型常量。

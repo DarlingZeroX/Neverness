@@ -191,11 +191,27 @@ public static class AvaloniaFrontendModule
             return;
         }
 
-        // 注册 TextureAssetOpener
         var editorManager = CoreModuleImp.Context.GetService<AssetEditorManager>();
-        if (editorManager != null)
+        if (editorManager == null)
         {
-            openerRegistry.Register(new AssetOpening.TextureAssetOpener(editorManager));
+            Console.WriteLine("[AvaloniaFrontendModule] AssetEditorManager 不可用，跳过注册 AssetOpener");
+            return;
+        }
+
+        // 注册 TextureAssetOpener
+        openerRegistry.Register(new AssetOpening.TextureAssetOpener(editorManager));
+
+        // 注册 CodeEditorAssetOpener（晚于 CSharpScriptAssetOpener，可接管 TypeId 11）
+        if (CodeEditor.Public.CodeEditorModule.IsInitialized)
+        {
+            var serviceImpl = CodeEditor.Public.CodeEditorModule.ServiceImpl;
+            var grammarLoader = CodeEditor.Public.CodeEditorModule.GrammarLoader;
+            if (serviceImpl != null && grammarLoader != null)
+            {
+                openerRegistry.Register(new AssetOpening.CodeEditorAssetOpener(
+                    editorManager, serviceImpl, grammarLoader));
+                Console.WriteLine("[AvaloniaFrontendModule] CodeEditorAssetOpener 已注册");
+            }
         }
     }
 

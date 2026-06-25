@@ -5,15 +5,13 @@ using Neverness.Editor.Settings.Private;
 using Neverness.Editor.Settings.Private.Descriptors;
 using Neverness.Runtime.Settings;
 using Neverness.Runtime.Settings.Descriptors;
-using Neverness.Runtime.VFS;
-using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Settings;
 
 /// <summary>
 /// 设置系统模块入口——由 EditorApplicationRunner 调用 Install()。
 ///
-/// 负责：
+/// 职责：
 /// 1. 初始化 RuntimeSettings（全局静态访问）
 /// 2. 注册所有设置表到 Editor 服务（供 UI 编辑）
 /// 3. 加载已保存的 Editor 专属设置
@@ -22,19 +20,24 @@ namespace Neverness.Editor.Settings;
 /// </summary>
 public static class SettingsModule
 {
+    // ── 状态 ──
+
+    private static bool _initialized;
+
+    /// <summary>模块是否已初始化。</summary>
+    public static bool IsInitialized => _initialized;
+
     /// <summary>安装设置系统模块。</summary>
     public static void Install()
     {
-        // 1. 初始化 RuntimeSettings（全局静态访问，从项目目录加载）
-        var settingsDir = VFSService.GetAbsolutePath(ProjectPaths.Settings.FullPath);
-        if (string.IsNullOrEmpty(settingsDir))
+        if (_initialized)
         {
-            Console.WriteLine("[SettingsModule] 无法获取设置目录路径，RuntimeSettings 初始化跳过。");
+            Console.WriteLine("[SettingsModule] 已初始化，跳过重复调用。");
             return;
         }
 
-        var runtimeSettingsDir = Path.Combine(settingsDir, "Settings");
-        RuntimeSettings.Initialize(runtimeSettingsDir);
+        // 1. 初始化 RuntimeSettings（全局静态访问，通过 VFS 读写）
+        RuntimeSettings.Initialize();
 
         // 2. 创建 Editor 服务
         var registry = new SettingsRegistry();
@@ -46,34 +49,53 @@ public static class SettingsModule
         service.Register(RuntimeSettings.Audio, AudioSettingsDescriptor.Instance);
 
         // 4. 注册 Editor 专属设置表
-        service.Register(
-            new EditorPreferencesSettings(),
-            EditorPreferencesSettingsDescriptor.Instance);
+        service.Register(EditorSettings.Preferences, EditorPreferencesSettingsDescriptor.Instance);
+        service.Register(EditorSettings.Session, EditorSessionSettingsDescriptor.Instance);
 
         // 5. 加载 Editor 专属设置（Runtime 设置已由 RuntimeSettings.Initialize 加载）
         service.Load("editorPreferences");
+        service.Load("editorSession");
 
-        // 6. 转发 RuntimeSettings.SettingsChanged 到 ISettingsService.SettingChanged
+        // 6. 转发变更事件到 ISettingsService
         RuntimeSettings.SettingsChanged += (tableId, field) =>
             service.RaiseSettingChanged(tableId, field);
+        EditorSettings.SettingsChanged += (tableId, field) =>
+            service.RaiseSettingChanged(tableId, field);
 
-        // 7. 注册到服务定位器
+        // 7. 订阅 EditorSettings.PropertyChanged，转发到 EditorSettings.SettingsChanged
+        EditorSettings.Preferences.PropertyChanged += (_, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.PropertyName))
+                EditorSettings.RaiseSettingChanged("editorPreferences", e.PropertyName);
+        };
+        EditorSettings.Session.PropertyChanged += (_, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.PropertyName))
+            {
+                EditorSettings.RaiseSettingChanged("editorSession", e.PropertyName);
+                // 会话状态变更时自动持久化（变更频率低，无需节流）
+                service.Save("editorSession");
+            }
+        };
+
+        // 8. 注册到服务定位器
         CoreModuleImp.Context.RegisterService<ISettingsService>(service);
 
-        // 8. 注册菜单命令和菜单项
+        // 9. 注册菜单命令和菜单项
         RegisterMenuIntegration(service);
 
+        _initialized = true;
         Console.WriteLine("[SettingsModule] 设置系统已初始化。");
     }
 
     /// <summary>注册菜单命令和菜单项。</summary>
     private static void RegisterMenuIntegration(SettingsServiceImpl service)
     {
-        // 注册 "editor.project_settings" 命令（Project Settings）
+        // 注册 "editor.project_settings" 命令（Project ProjectSettings）
         var projectSettingsCmd = new EditorCommand
         {
             Id = "editor.project_settings",
-            DisplayName = "Project Settings",
+            DisplayName = "Project ProjectSettings",
             Execute = _ => service.ShowProjectSettingsWindow(),
             Tooltip = "打开项目设置（图形、音频等运行时配置）"
         };
@@ -89,9 +111,9 @@ public static class SettingsModule
         };
         CoreModuleImp.Context.Menus.RegisterCommand(preferencesCmd);
 
-        // 注册菜单项：Edit/Project Settings...
+        // 注册菜单项：Edit/Project ProjectSettings...
         CoreModuleImp.Context.Menus.Register(new EditorMenuItem(
-            "Edit/Project Settings...",
+            "Edit/Project ProjectSettings...",
             CommandId: "editor.project_settings",
             SortOrder: 800,
             Icon: "⚙️",

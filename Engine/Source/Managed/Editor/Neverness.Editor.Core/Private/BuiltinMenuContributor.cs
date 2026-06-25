@@ -13,7 +13,7 @@ public sealed class BuiltinMenuContributor : IMenuContributor
     {
         // File 菜单（Scene 相关项由 Scene 模块注册）
         registry.Register(new EditorMenuItem("File/sep1", IsSeparator: true, SortOrder: 500));
-        registry.Register(new EditorMenuItem("File/Build Settings...", SortOrder: 600, Icon: "⚙️"));
+        registry.Register(new EditorMenuItem("File/Build ProjectSettings...", SortOrder: 600, Icon: "⚙️"));
         registry.Register(new EditorMenuItem("File/sep2", IsSeparator: true, SortOrder: 700));
         registry.Register(new EditorMenuItem("File/Exit", SortOrder: 900, Icon: "🚪"));
 
@@ -24,7 +24,7 @@ public sealed class BuiltinMenuContributor : IMenuContributor
         registry.Register(new EditorMenuItem("Edit/Cut", SortOrder: 400, Icon: "✂️", Shortcut: "Ctrl+X"));
         registry.Register(new EditorMenuItem("Edit/Copy", SortOrder: 500, Icon: "📋", Shortcut: "Ctrl+C"));
         registry.Register(new EditorMenuItem("Edit/Paste", SortOrder: 600, Icon: "📌", Shortcut: "Ctrl+V"));
-        // 注意：Project Settings 和 Preferences 菜单项由 SettingsModule 直接注册
+        // 注意：Project ProjectSettings 和 Preferences 菜单项由 SettingsModule 直接注册
 
         // Window 菜单
         registry.Register(new EditorMenuItem("Window/Rendering", SortOrder: 100, Icon: "🖥️"));

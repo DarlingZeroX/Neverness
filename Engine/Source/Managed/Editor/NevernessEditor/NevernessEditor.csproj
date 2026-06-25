@@ -25,6 +25,7 @@
 		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Rmlui\Neverness.Editor.Rmlui.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.CodeEditor\Neverness.Editor.CodeEditor.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.AvaloniaFrontend\Neverness.Editor.AvaloniaFrontend.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Settings\Neverness.Editor.Settings.csproj" />
 	</ItemGroup>

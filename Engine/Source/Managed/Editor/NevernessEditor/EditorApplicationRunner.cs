@@ -16,6 +16,7 @@ using Neverness.Editor.MediaImporter;
 using Neverness.Editor.Media;
 using Neverness.Editor.Rmlui.Public;
 using Neverness.Editor.Script.Public;
+using Neverness.Editor.CodeEditor.Public;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Audio;
 using Neverness.Runtime.Audio.Native;
@@ -89,6 +90,7 @@ internal static class EditorApplicationRunner
         AssetsModule.Install(sceneManager);
         SceneModule.Install(sceneManager);
         ScriptEditorModule.Install(CoreModuleImp.Context);
+        CodeEditorModule.Install();
 
         /* Phase 3: 前端安装（所有菜单贡献者已注册） */
         InstallAvaloniaFrontend(window);
@@ -111,6 +113,9 @@ internal static class EditorApplicationRunner
         /* Phase 5: 前端面板内容和上下文菜单 */
         AvaloniaFrontendModule.SetDockPanelContent();
         s_avaloniaHost?.RegisterContextMenuContributors();
+
+        /* Phase 6: 自动加载上次打开的场景 */
+        AutoLoadLastScene(sceneManager);
     }
 
 
@@ -252,6 +257,29 @@ internal static class EditorApplicationRunner
 		};
 
 		Console.WriteLine("[EditorApplicationRunner] RmlUI 资产路径解析器已注入");
+	}
+
+	/// <summary>
+	/// 自动加载上次打开的场景（从 EditorSettings.Session 读取）。
+	/// </summary>
+	private static void AutoLoadLastScene(SceneManager sceneManager)
+	{
+		var lastScene = EditorSettings.Session.LastOpenedScene;
+		if (string.IsNullOrEmpty(lastScene))
+		{
+			Console.WriteLine("[EditorApplicationRunner] 无上次场景记录，跳过自动加载。");
+			return;
+		}
+
+		Console.WriteLine($"[EditorApplicationRunner] 自动加载上次场景: {lastScene}");
+		var sceneName = System.IO.Path.GetFileNameWithoutExtension(lastScene);
+		var result = sceneManager.LoadSceneFromAsset(sceneName, lastScene);
+		if (!result)
+		{
+			Console.WriteLine($"[EditorApplicationRunner] 自动加载失败（场景文件可能已删除）: {lastScene}");
+			// 清除无效记录
+			EditorSettings.Session.LastOpenedScene = null;
+		}
 	}
 
 	/// <summary>

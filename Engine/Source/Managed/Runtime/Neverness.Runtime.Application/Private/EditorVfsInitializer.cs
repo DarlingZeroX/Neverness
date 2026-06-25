@@ -65,7 +65,7 @@ internal static class EditorVfsInitializer
         MountNativeFileSystem(ProjectPaths.Library.FullPath, paths.Library);
         MountNativeFileSystem(ProjectPaths.Build.FullPath, paths.Build);
         MountNativeFileSystem(ProjectPaths.Packages.FullPath, paths.Packages);
-        MountNativeFileSystem(ProjectPaths.Settings.FullPath, paths.ProjectSettings);
+        MountNativeFileSystem(ProjectPaths.ProjectSettings.FullPath, paths.ProjectSettings);
         MountNativeFileSystem(ProjectPaths.Intermediate.FullPath, paths.ProjectIntermediate);
 
         // 挂载内存文件系统（Cache）

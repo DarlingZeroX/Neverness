@@ -17,6 +17,9 @@
         <FluentTheme />
         <fluent:DockFluentTheme />
 
+        <!-- AvaloniaEdit 主题（TextEditor 控件必须） -->
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+
         <!-- HostWindow 显式模板：DockFluentTheme 的模板未被应用，手动指定 -->
         <Style Selector="dock|HostWindow">
             <Setter Property="Template">

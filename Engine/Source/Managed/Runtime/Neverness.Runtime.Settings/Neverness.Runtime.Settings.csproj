@@ -7,5 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RollForward>LatestMinor</RollForward>
   </PropertyGroup>
-  <!-- 零引擎依赖：只依赖 System.Text.Json + BCL -->
+  <ItemGroup>
+    <!-- VFS（路径解析 + 文件读写） -->
+    <ProjectReference Include="..\Neverness.Runtime.VFS\Neverness.Runtime.VFS.csproj" />
+  </ItemGroup>
 </Project>

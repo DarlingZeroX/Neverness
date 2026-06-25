@@ -93,6 +93,7 @@ public class EditorDockFactory : Factory
         public const string ContentBrowser = "ContentBrowser";
         public const string Console = "Console";
         public const string TextureViewerPrefix = "TextureViewer_";
+        public const string CodeEditorPrefix = "CodeEditor_";
     }
 
     // 面板引用（供外部设置内容）
@@ -105,6 +106,7 @@ public class EditorDockFactory : Factory
     private Tool? _console;
     private readonly Dictionary<string, Tool> _textureViewers = new();
     private readonly Dictionary<string, Document> _textureViewerDocuments = new();
+    private readonly Dictionary<string, Document> _codeEditorDocuments = new();
 
     public Document? ViewportPanel => _viewport;
     public DocumentDock? CenterDock => _centerDock;
@@ -114,6 +116,7 @@ public class EditorDockFactory : Factory
     public Tool? ConsolePanel => _console;
     public IReadOnlyDictionary<string, Tool> TextureViewerPanels => _textureViewers;
     public IReadOnlyDictionary<string, Document> TextureViewerDocuments => _textureViewerDocuments;
+    public IReadOnlyDictionary<string, Document> CodeEditorDocuments => _codeEditorDocuments;
 
     /// <summary>
     /// 创建默认编辑器布局。
@@ -256,14 +259,31 @@ public class EditorDockFactory : Factory
         return document;
     }
 
+    /// <summary>创建代码编辑器文档页（可停靠到中央文档区）。</summary>
+    public Document CreateCodeEditorDocument(string fileName, Guid guid)
+    {
+        var panelId = $"{PanelIds.CodeEditorPrefix}{guid}";
+        var document = new Document
+        {
+            Id = panelId,
+            Title = fileName,
+            CanFloat = true,
+            CanClose = true,
+        };
+
+        _codeEditorDocuments[panelId] = document;
+        return document;
+    }
+
     public Document? FindDocument(string panelId)
     {
         if (_viewport?.Id == panelId)
-        {
             return _viewport;
-        }
 
-        return _textureViewerDocuments.TryGetValue(panelId, out var document) ? document : null;
+        if (_textureViewerDocuments.TryGetValue(panelId, out var tvDoc))
+            return tvDoc;
+
+        return _codeEditorDocuments.TryGetValue(panelId, out var ceDoc) ? ceDoc : null;
     }
 
     /// <summary>移除纹理查看器面板。</summary>
@@ -271,5 +291,11 @@ public class EditorDockFactory : Factory
     {
         _textureViewers.Remove(panelId);
         _textureViewerDocuments.Remove(panelId);
+    }
+
+    /// <summary>移除代码编辑器面板。</summary>
+    public void RemoveCodeEditorPanel(string panelId)
+    {
+        _codeEditorDocuments.Remove(panelId);
     }
 }

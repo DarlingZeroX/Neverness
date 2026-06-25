@@ -43,4 +43,9 @@
     <!-- 分割线 -->
     <Color x:Key="Editor.SeparatorColor">#FF3F3F46</Color>
 
+    <!-- ── SolidColorBrush 供 AXAML DynamicResource 使用 ── -->
+    <SolidColorBrush x:Key="EditorPanelBackground" Color="{DynamicResource Editor.PanelColor}" />
+    <SolidColorBrush x:Key="EditorBorderBrush" Color="{DynamicResource Editor.BorderColor}" />
+    <SolidColorBrush x:Key="EditorCodeBackground" Color="{DynamicResource Editor.BackgroundColor}" />
+
 </ResourceDictionary>

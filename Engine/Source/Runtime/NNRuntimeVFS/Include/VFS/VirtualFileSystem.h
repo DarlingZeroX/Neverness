@@ -1,4 +1,4 @@
-﻿#ifndef VIRTUALFILESYSTEM_H
+#ifndef VIRTUALFILESYSTEM_H
 #define VIRTUALFILESYSTEM_H
 
 #include "VFSConfig.h"
@@ -18,7 +18,6 @@ namespace NN::Runtime::VFS
 
 using VirtualFileSystemPtr = std::shared_ptr<class VirtualFileSystem>;
 using VirtualFileSystemWeakPtr = std::weak_ptr<class VirtualFileSystem>;
-    
 
 class VirtualFileSystem final
 {
@@ -203,11 +202,11 @@ public:
                     // Is it last filesystem
                     IFileSystemPtr fs = *it;
                     bool isMain = (fs == filesystems.front());
-
+					 
                     // If file exists in filesystem we try to open it. 
                     // In case file not exists and we are in first filesystem we try to create new file if mode allows it
                     FileInfo realPath(fs->BasePath(), relativePath, false);
-                    if (fs->IsFileExists(realPath) || isMain) {
+                    if (fs->IsFileExists(realPath) || isMain || mode == IFile::FileMode::Write) {
                         IFilePtr file = fs->OpenFile(realPath, mode);
                         if (file) {
                             return file;

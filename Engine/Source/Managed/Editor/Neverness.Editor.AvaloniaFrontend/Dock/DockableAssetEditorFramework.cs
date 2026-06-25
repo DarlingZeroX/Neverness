@@ -72,6 +72,33 @@ public sealed class DockableAssetEditorFramework
         _assetEditorManager.UnregisterEditor(editorId);
     }
 
+    public Document OpenCodeEditor(string assetName, GUID assetGuid, Control content)
+    {
+        var editorId = ToEditorId(assetGuid);
+        var panelId = GetCodeEditorPanelId(editorId);
+
+        if (_dockFactory.CodeEditorDocuments.TryGetValue(panelId, out var existing))
+        {
+            existing.Context ??= content;
+            _mainWindow.ShowDocument(existing, (Control)existing.Context!);
+            _assetEditorManager.RegisterEditor(assetGuid, editorId);
+            return existing;
+        }
+
+        var document = _dockFactory.CreateCodeEditorDocument(assetName, editorId);
+        _mainWindow.ShowDocument(document, content);
+        _assetEditorManager.RegisterEditor(assetGuid, editorId);
+        return document;
+    }
+
+    public void CloseCodeEditor(Guid editorId)
+    {
+        var panelId = GetCodeEditorPanelId(editorId);
+        _mainWindow.RemoveDocument(panelId);
+        _dockFactory.RemoveCodeEditorPanel(panelId);
+        _assetEditorManager.UnregisterEditor(editorId);
+    }
+
     public static Guid ToEditorId(GUID assetGuid)
     {
         Span<byte> bytes = stackalloc byte[16];
@@ -83,5 +110,10 @@ public sealed class DockableAssetEditorFramework
     public static string GetPanelId(Guid editorId)
     {
         return $"{EditorDockFactory.PanelIds.TextureViewerPrefix}{editorId:D}";
+    }
+
+    public static string GetCodeEditorPanelId(Guid editorId)
+    {
+        return $"{EditorDockFactory.PanelIds.CodeEditorPrefix}{editorId:D}";
     }
 }

@@ -10,7 +10,7 @@ namespace Neverness.Editor.Settings.Views;
 
 /// <summary>
 /// 设置窗口——左侧 TreeView 分类导航，右侧显示设置面板。
-/// 根据 SettingsScope 过滤显示 Project Settings 或 Preferences。
+/// 根据 SettingsScope 过滤显示 Project ProjectSettings 或 Preferences。
 /// </summary>
 internal partial class SettingsWindow : Window
 {

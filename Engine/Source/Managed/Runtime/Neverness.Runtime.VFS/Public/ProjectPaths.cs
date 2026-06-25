@@ -24,7 +24,7 @@ public static class ProjectPaths
 
     public static NVirtualPath Intermediate { get; } = new("/projectIntermediate/");
 
-    public static NVirtualPath Settings { get; } = new("/projectSettings/");
+    public static NVirtualPath ProjectSettings { get; } = new("/projectSettings/");
     public static NVirtualPath EngineResource { get; } = new("/engine/");
     public static NVirtualPath EditorResource { get; } = new("/editor/");
     public static NVirtualPath DefaultSpriteTexture { get; } = new("/engine/textures/white.png");

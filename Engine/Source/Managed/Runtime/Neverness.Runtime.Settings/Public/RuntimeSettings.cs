@@ -1,16 +1,17 @@
 using System.ComponentModel;
 using Neverness.Runtime.Settings.Descriptors;
+using Neverness.Runtime.VFS;
 
 namespace Neverness.Runtime.Settings;
 
 /// <summary>
 /// 运行时设置的全局静态访问器。
-/// 初始化时从文件加载，运行时可读写，修改即时生效。
+/// 通过 VFS 读写设置文件，运行时可读写，修改即时生效。
 ///
 /// 用法：
 /// <code>
-/// // 初始化（启动时调用一次）
-/// RuntimeSettings.Initialize("path/to/settings");
+/// // 初始化（VFS 就绪后调用一次）
+/// RuntimeSettings.Initialize();
 ///
 /// // 读取
 /// bool vsync = RuntimeSettings.Graphics.VSync;
@@ -43,21 +44,22 @@ public static class RuntimeSettings
 
     // ── 状态 ──
 
-    private static string? _settingsDir;
     private static bool _initialized;
+
+    /// <summary>设置文件的 VFS 基础路径（/projectSettings/Settings/）。</summary>
+    private static string SettingsVfsBase => ProjectPaths.ProjectSettings.Combine("Settings").FullPath;
 
     // ── 初始化 ──
 
     /// <summary>
-    /// 初始化运行时设置——从指定目录加载 JSON 文件。
-    /// 应在应用启动时调用一次。
+    /// 初始化运行时设置——通过 VFS 加载 JSON 文件。
+    /// 应在 VFS 就绪后调用一次。
     ///
-    /// 文件布局：
-    ///   {settingsDir}/graphics.json
-    ///   {settingsDir}/audio.json
+    /// 文件布局（VFS 路径）：
+    ///   /projectSettings/Settings/graphics.json
+    ///   /projectSettings/Settings/audio.json
     /// </summary>
-    /// <param name="settingsDir">设置文件目录路径。</param>
-    public static void Initialize(string settingsDir)
+    public static void Initialize()
     {
         if (_initialized)
         {
@@ -65,7 +67,6 @@ public static class RuntimeSettings
             return;
         }
 
-        _settingsDir = settingsDir;
         _initialized = true;
 
         // 订阅每个设置表的 PropertyChanged，转发到全局 SettingsChanged
@@ -75,7 +76,7 @@ public static class RuntimeSettings
         // 加载已保存的设置
         ReloadAll();
 
-        Console.WriteLine($"[RuntimeSettings] 已初始化，目录: {settingsDir}");
+        Console.WriteLine("[RuntimeSettings] 已初始化。");
     }
 
     // ── 持久化 ──
@@ -84,20 +85,22 @@ public static class RuntimeSettings
     /// <param name="tableId">设置表 ID（如 "graphics"）。</param>
     public static void Reload(string tableId)
     {
-        if (!_initialized || string.IsNullOrEmpty(_settingsDir))
+        if (!_initialized)
             return;
 
         var table = FindTable(tableId);
         if (table == null) return;
 
-        var filePath = GetFilePath(tableId);
-        if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
-            return;
+        var vfsPath = GetVfsPath(tableId);
+        if (string.IsNullOrEmpty(vfsPath)) return;
 
         try
         {
-            var json = File.ReadAllText(filePath);
-            table.LoadFromJson(json);
+            var json = VFSService.ReadText(vfsPath);
+            if (!string.IsNullOrEmpty(json))
+            {
+                table.LoadFromJson(json);
+            }
         }
         catch (Exception ex)
         {
@@ -116,23 +119,19 @@ public static class RuntimeSettings
     /// <param name="tableId">设置表 ID（如 "graphics"）。</param>
     public static void Save(string tableId)
     {
-        if (!_initialized || string.IsNullOrEmpty(_settingsDir))
+        if (!_initialized)
             return;
 
         var table = FindTable(tableId);
         if (table == null) return;
 
+        var vfsPath = GetVfsPath(tableId);
+        if (string.IsNullOrEmpty(vfsPath)) return;
+
         try
         {
-            var filePath = GetFilePath(tableId);
-            if (string.IsNullOrEmpty(filePath)) return;
-
-            var dir = Path.GetDirectoryName(filePath);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
             var json = SettingsSerializer.Save(table);
-            File.WriteAllText(filePath, json);
+            VFSService.WriteText(vfsPath, json);
         }
         catch (Exception ex)
         {
@@ -172,13 +171,10 @@ public static class RuntimeSettings
         };
     }
 
-    /// <summary>获取设置文件的完整路径。</summary>
-    private static string? GetFilePath(string tableId)
+    /// <summary>获取设置文件的 VFS 路径。</summary>
+    private static string? GetVfsPath(string tableId)
     {
-        if (string.IsNullOrEmpty(_settingsDir))
-            return null;
-
         var safeFileName = string.Join("_", tableId.Split(Path.GetInvalidFileNameChars()));
-        return Path.Combine(_settingsDir, $"{safeFileName}.json");
+        return $"{SettingsVfsBase}/{safeFileName}.json";
     }
 }

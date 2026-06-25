@@ -135,7 +135,7 @@ internal sealed class SettingsServiceImpl : ISettingsService
         }
 
         _projectSettingsWindow = new Views.SettingsWindow(this, SettingsScope.Project);
-        _projectSettingsWindow.Title = "Project Settings";
+        _projectSettingsWindow.Title = "Project ProjectSettings";
         _projectSettingsWindow.Closed += (_, _) => _projectSettingsWindow = null;
         _projectSettingsWindow.Show();
     }

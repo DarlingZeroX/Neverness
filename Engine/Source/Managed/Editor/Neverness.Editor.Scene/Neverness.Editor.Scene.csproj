@@ -22,5 +22,6 @@
 		<ProjectReference Include="..\..\Rendering\Neverness.Rendering.RenderAssets\Neverness.Rendering.RenderAssets.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
+		<ProjectReference Include="..\Neverness.Editor.Settings\Neverness.Editor.Settings.csproj" />
 	</ItemGroup>
 </Project>

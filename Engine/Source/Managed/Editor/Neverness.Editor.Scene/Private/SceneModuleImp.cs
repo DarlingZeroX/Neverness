@@ -3,6 +3,7 @@ using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Scene.Private.PlayMode;
 using Neverness.Editor.Scene.Private.Panel;
 using Neverness.Editor.Scene.Private.Inspector;
+using Neverness.Editor.Settings;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Scene.Components;
 using Neverness.Runtime.Engine;
@@ -132,6 +133,10 @@ internal static class SceneModuleImp
                 var result = sceneManager.SaveActiveScene();
                 if (result.IsSuccess())
                 {
+                    // 同步更新会话状态（SaveAs 后 AssetPath 会变）
+                    var assetPath = sceneManager.ActiveWorld?.AssetPath;
+                    if (!string.IsNullOrEmpty(assetPath))
+                        EditorSettings.Session.LastOpenedScene = assetPath;
                     Console.WriteLine("[Scene] 场景已保存");
                 }
                 else

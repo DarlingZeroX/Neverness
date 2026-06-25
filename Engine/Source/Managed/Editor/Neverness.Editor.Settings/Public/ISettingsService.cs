@@ -7,7 +7,7 @@ namespace Neverness.Editor.Settings;
 /// 通过 CoreModuleImp.Context.TryGetService&lt;ISettingsService&gt;() 获取。
 ///
 /// Runtime 设置通过 RuntimeSettings 静态类直接访问，此接口主要用于：
-/// 1. Editor 专属设置（EditorPreferences 等）
+/// 1. Editor 专属设置（EditorSettings 等）
 /// 2. 注册外部模块的设置表
 /// 3. 触发 UI 窗口
 /// 4. 获取描述符（供 UI 渲染）

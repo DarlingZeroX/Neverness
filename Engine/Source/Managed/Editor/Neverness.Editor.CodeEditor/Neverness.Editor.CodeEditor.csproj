@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>Neverness.Editor.CodeEditor</AssemblyName>
+		<TargetFramework>net10.0</TargetFramework>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<EnableNativeCodeDebugging>true</EnableNativeCodeDebugging>
+		<DebugType>portable</DebugType>
+		<RootNamespace>Neverness.Editor.CodeEditor</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- AvaloniaEdit 核心 + TextMate 语法高亮 -->
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
+		<PackageReference Include="AvaloniaEdit.TextMate" Version="12.0.0" />
+		<PackageReference Include="TextMateSharp" Version="2.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- 内嵌语法/主题资源 -->
+		<EmbeddedResource Include="Resources\Grammars\**" />
+		<EmbeddedResource Include="Resources\Themes\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Framework（UI 无关基础设施：IView, IViewModel, IPanel, Services） -->
+		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
+		<!-- Core（ViewModel + Controller + CompositionRoot） -->
+		<ProjectReference Include="..\Neverness.Editor.Core\Neverness.Editor.Core.csproj" />
+		<!-- Assets（资产工厂、MetaFileManager、EditorAssetDatabase） -->
+		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
+		<!-- Settings（EditorPreferences） -->
+		<ProjectReference Include="..\Neverness.Editor.Settings\Neverness.Editor.Settings.csproj" />
+	</ItemGroup>
+</Project>

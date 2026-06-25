@@ -1,39 +1,30 @@
-using Neverness.Runtime.VFS;
 using Neverness.Runtime.Settings;
 using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Settings.Private;
 
 /// <summary>
-/// 设置持久化层——使用 VFSService 解析路径，JSON 序列化。
-/// 每个设置表一个 JSON 文件，存储在 projectSettings/Settings/ 目录下。
+/// 设置持久化层——通过 VFS 读写 JSON 文件。
+/// 每个设置表一个 JSON 文件，存储在 /projectSettings/Settings/ 目录下。
 ///
-/// 文件布局：
-///   {projectRoot}/projectSettings/Settings/{tableId}.json
-///   例：projectSettings/Settings/graphics.json
+/// 文件布局（VFS 路径）：
+///   /projectSettings/Settings/{tableId}.json
 /// </summary>
 internal sealed class SettingsStorage
 {
-    private const string SettingsSubDirectory = "Settings";
+    /// <summary>设置文件的 VFS 基础路径。</summary>
+    private static string SettingsVfsBase => ProjectPaths.ProjectSettings.Combine("Settings").FullPath;
 
     /// <summary>保存设置表到 JSON 文件。</summary>
     public void Save(SettingsTable table)
     {
         try
         {
-            var filePath = GetFilePath(table.TableId);
-            if (string.IsNullOrEmpty(filePath))
-            {
-                Console.WriteLine($"[SettingsStorage] 无法获取路径，保存 '{table.TableId}' 失败。");
-                return;
-            }
-
-            var dir = Path.GetDirectoryName(filePath);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
+            var vfsPath = GetVfsPath(table.TableId);
+            if (string.IsNullOrEmpty(vfsPath)) return;
 
             var json = SettingsSerializer.Save(table);
-            File.WriteAllText(filePath, json);
+            VFSService.WriteText(vfsPath, json);
         }
         catch (Exception ex)
         {
@@ -46,11 +37,10 @@ internal sealed class SettingsStorage
     {
         try
         {
-            var filePath = GetFilePath(tableId);
-            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
-                return null;
+            var vfsPath = GetVfsPath(tableId);
+            if (string.IsNullOrEmpty(vfsPath)) return null;
 
-            return File.ReadAllText(filePath);
+            return VFSService.ReadText(vfsPath);
         }
         catch (Exception ex)
         {
@@ -59,22 +49,10 @@ internal sealed class SettingsStorage
         }
     }
 
-    /// <summary>检查设置文件是否存在。</summary>
-    public bool Exists(string tableId)
+    /// <summary>获取设置文件的 VFS 路径。</summary>
+    private static string? GetVfsPath(string tableId)
     {
-        var filePath = GetFilePath(tableId);
-        return !string.IsNullOrEmpty(filePath) && File.Exists(filePath);
-    }
-
-    /// <summary>获取设置文件的物理路径。</summary>
-    private static string? GetFilePath(string tableId)
-    {
-        // 清理 tableId 中的非法文件名字符
         var safeFileName = string.Join("_", tableId.Split(Path.GetInvalidFileNameChars()));
-        var settingsDir = VFSService.GetAbsolutePath(ProjectPaths.Settings.FullPath);
-        if (string.IsNullOrEmpty(settingsDir))
-            return null;
-
-        return Path.Combine(settingsDir, SettingsSubDirectory, $"{safeFileName}.json");
+        return $"{SettingsVfsBase}/{safeFileName}.json";
     }
 }

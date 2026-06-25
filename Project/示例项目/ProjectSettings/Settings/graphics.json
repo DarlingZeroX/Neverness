@@ -1,0 +1,8 @@
+{
+  "scope": "project",
+  "vSync": true,
+  "fPSLimit": 60,
+  "renderScale": 1,
+  "fullscreen": "windowed",
+  "internalVersion": 1
+}

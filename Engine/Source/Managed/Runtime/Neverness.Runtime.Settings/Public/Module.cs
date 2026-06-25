@@ -4,13 +4,13 @@ namespace Neverness.Runtime.Settings;
 /// Neverness.Runtime.Settings 模块入口。
 ///
 /// 职责：
-///   - 初始化运行时设置系统（加载 JSON 配置文件）
+///   - 初始化运行时设置系统（通过 VFS 加载 JSON 配置文件）
 ///   - 关闭时持久化所有设置
 ///
 /// 用法：
 /// <code>
-/// // 启动时
-/// SettingsModule.Initialize("path/to/settings");
+/// // VFS 就绪后
+/// SettingsModule.Initialize();
 ///
 /// // 退出时
 /// SettingsModule.Shutdown();
@@ -24,11 +24,10 @@ public static class SettingsModule
     public static bool IsInitialized => _initialized;
 
     /// <summary>
-    /// 初始化设置模块——从指定目录加载 JSON 配置文件。
-    /// 应在应用启动时调用一次。
+    /// 初始化设置模块——通过 VFS 加载 JSON 配置文件。
+    /// 应在 VFS 就绪后调用一次。
     /// </summary>
-    /// <param name="settingsDir">设置文件目录路径。</param>
-    public static void Initialize(string settingsDir)
+    public static void Initialize()
     {
         if (_initialized)
         {
@@ -36,7 +35,7 @@ public static class SettingsModule
             return;
         }
 
-        RuntimeSettings.Initialize(settingsDir);
+        RuntimeSettings.Initialize();
         _initialized = true;
     }
 

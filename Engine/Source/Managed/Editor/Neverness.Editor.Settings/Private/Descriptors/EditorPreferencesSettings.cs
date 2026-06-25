@@ -30,6 +30,9 @@ public sealed class EditorPreferencesSettings : SettingsTable
     [SettingField(DisplayName = "自动保存间隔（秒）")]
     [SettingRange(30, 600)]
     public int AutoSaveInterval { get; set; } = 120;
+
+    [SettingField(DisplayName = ".cs 文件编辑方式")]
+    public CsEditorMode CsEditorMode { get; set; } = CsEditorMode.ExternalIDE;
 }
 
 /// <summary>IDE 偏好枚举。</summary>
@@ -37,4 +40,14 @@ public enum IDEPreference
 {
     VisualStudio,
     VSCode
+}
+
+/// <summary>.cs 文件编辑方式枚举。</summary>
+public enum CsEditorMode
+{
+    /// <summary>外部 IDE（VS / VSCode）。</summary>
+    ExternalIDE,
+
+    /// <summary>编辑器内联代码编辑器。</summary>
+    InlineEditor
 }

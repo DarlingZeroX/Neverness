@@ -1,0 +1,8 @@
+{
+  "scope": "user",
+  "preferredIDE": "visualStudio",
+  "fontSize": 14,
+  "showLineNumbers": true,
+  "autoSave": true,
+  "autoSaveInterval": 120
+}

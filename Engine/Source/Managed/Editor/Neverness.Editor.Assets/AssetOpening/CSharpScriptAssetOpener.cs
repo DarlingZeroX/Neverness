@@ -1,9 +1,6 @@
 using System.Diagnostics;
-using Neverness.Editor.Core.Private;
 using Neverness.Editor.Settings;
 using Neverness.Editor.Settings.Private.Descriptors;
-using Neverness.Runtime.VFS;
-using Neverness.Runtime.Settings;
 using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets.AssetOpening;
@@ -66,14 +63,7 @@ public sealed class CSharpScriptAssetOpener : IAssetOpener
     /// <summary>从设置系统获取首选 IDE。</summary>
     private static IDEPreference GetPreferredIDE()
     {
-        if (CoreModuleImp.Context.TryGetService<ISettingsService>(out var settingsService))
-        {
-            var prefs = settingsService.GetTable<EditorPreferencesSettings>();
-            if (prefs != null)
-                return prefs.PreferredIDE;
-        }
-
-        return IDEPreference.VisualStudio;
+        return EditorSettings.Preferences.PreferredIDE;
     }
 
     /// <summary>获取 Game.sln 的物理路径。</summary>

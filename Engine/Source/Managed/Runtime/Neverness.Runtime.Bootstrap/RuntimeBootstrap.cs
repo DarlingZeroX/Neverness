@@ -2,6 +2,7 @@
 
 using Neverness.Runtime.Application;
 using Neverness.Runtime.Engine;
+using Neverness.Runtime.Settings;
 
 namespace Neverness.Runtime.Bootstrap;
 
@@ -54,10 +55,12 @@ public static class RuntimeBootstrap
             return false;
         }
 
-        s_running = true;
+        // 3. 初始化设置系统（VFS 就绪后）
+        SettingsModule.Initialize();
 
-		if (ctx.RunMode == NativeBootstrapRunMode.ManagedOuterLoop)
-		{
+        s_running = true;
+        if (ctx.RunMode == NativeBootstrapRunMode.ManagedOuterLoop)
+        {
 			RunManagedOuterLoop();
 		}
 
@@ -70,6 +73,7 @@ public static class RuntimeBootstrap
 	/// <summary>关闭子系统并清除运行状态。</summary>
 	public static void Shutdown()
 	{
+		SettingsModule.Shutdown();
 		ApplicationHost.Shutdown();
 		RuntimeInitializer.Shutdown();
 		s_running = false;

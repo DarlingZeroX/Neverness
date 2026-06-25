@@ -73,6 +73,19 @@ public sealed class EditorPreferencesSettingsDescriptor : ISettingsDescriptor
             Getter = t => ((EditorPreferencesSettings)t).AutoSaveInterval,
             Setter = (t, v) => ((EditorPreferencesSettings)t).AutoSaveInterval = (int)v!,
         },
+        new FieldDescriptor
+        {
+            Name = "CsEditorMode",
+            DisplayName = ".cs 文件编辑方式",
+            FieldType = FieldType.Enum,
+            ValueType = typeof(CsEditorMode),
+            EnumType = typeof(CsEditorMode),
+            EnumValues = Enum.GetValues<CsEditorMode>(),
+            EnumDisplayNames = Enum.GetNames<CsEditorMode>(),
+            Order = 5,
+            Getter = t => ((EditorPreferencesSettings)t).CsEditorMode,
+            Setter = (t, v) => ((EditorPreferencesSettings)t).CsEditorMode = (CsEditorMode)v!,
+        },
     };
 
     public SettingsTable CreateDefault() => new EditorPreferencesSettings();
