@@ -60,28 +60,39 @@ public sealed class TextMateGrammarLoader
     /// </summary>
     public TextMate.Installation Install(TextEditor editor, string language)
     {
-        // 使用最小化的 IRegistryOptions（让 TextMateSharp 使用默认行为）
         var locator = new MinimalRegistryOptions();
-
-        // 安装 TextMate
         var installation = editor.InstallTextMate(locator);
 
-        // 如果有自定义语法文件，通过 SetGrammarFile 加载
-        if (_physicalPaths.TryGetValue(language, out var physicalPath))
+        // 1. 先加载被 injection 的语法（CSS、JS）——必须在 HTML 之前
+        var injectionOrder = new[] { "CSS", "JavaScript", "C#" };
+        foreach (var lang in injectionOrder)
+        {
+            if (_physicalPaths.TryGetValue(lang, out var path))
+            {
+                try
+                {
+                    installation.SetGrammarFile(path);
+                    Console.WriteLine($"[TextMateGrammarLoader] 注册依赖语法: {lang}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[TextMateGrammarLoader] 注册依赖语法失败: {lang}, {ex.Message}");
+                }
+            }
+        }
+
+        // 2. 加载目标语言语法（此时 injection 的语法已在注册表中）
+        if (_physicalPaths.TryGetValue(language, out var targetPath))
         {
             try
             {
-                installation.SetGrammarFile(physicalPath);
-                Console.WriteLine($"[TextMateGrammarLoader] 已加载自定义语法: {language} ← {Path.GetFileName(physicalPath)}");
+                installation.SetGrammarFile(targetPath);
+                Console.WriteLine($"[TextMateGrammarLoader] 激活语法: {language}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[TextMateGrammarLoader] 自定义语法加载失败，使用默认: {language}, {ex.Message}");
+                Console.WriteLine($"[TextMateGrammarLoader] 激活语法失败: {language}, {ex.Message}");
             }
-        }
-        else
-        {
-            Console.WriteLine($"[TextMateGrammarLoader] 使用默认语法: {language}");
         }
 
         return installation;
@@ -140,10 +151,19 @@ public sealed class TextMateGrammarLoader
         }
     }
 
-    /// <summary>最小化 IRegistryOptions 实现——提供 DarkPlus 主题。</summary>
+    /// <summary>最小化 IRegistryOptions 实现——提供 DarkPlus 主题和 HTML injection。</summary>
     private sealed class MinimalRegistryOptions : IRegistryOptions
     {
-        public ICollection<string> GetInjections(string scopeName) => Array.Empty<string>();
+        public ICollection<string> GetInjections(string scopeName)
+        {
+            // HTML 文件中注入 CSS 和 JS 语法
+            if (scopeName == "text.html.basic")
+            {
+                return new[] { "source.css", "source.js" };
+            }
+            return Array.Empty<string>();
+        }
+
         public IRawTheme GetDefaultTheme() => new DarkPlusTheme();
         public IRawTheme GetTheme(string scopeName) => new DarkPlusTheme();
         public IRawGrammar GetGrammar(string scopeName) => null;
@@ -190,13 +210,19 @@ public sealed class TextMateGrammarLoader
             new ThemeSetting("string.quoted.double.html", "#CE9178"),
             new ThemeSetting("string.quoted.single.html", "#CE9178"),
 
-            // ── CSS ──
-            new ThemeSetting("entity.name.tag.css", "#569CD6"),
+            // ── CSS（injection 生效时，<style> 内的代码）──
             new ThemeSetting("support.type.property-name.css", "#9CDCFE"),
             new ThemeSetting("support.constant.property-value.css", "#CE9178"),
+            new ThemeSetting("support.constant.color.w3c-standard-color-name.css", "#CE9178"),
             new ThemeSetting("keyword.control.at-rule.css", "#C586C0"),
+            new ThemeSetting("keyword.control.at-rule.import.css", "#C586C0"),
             new ThemeSetting("entity.other.attribute-name.class.css", "#DCDCAA"),
             new ThemeSetting("entity.other.attribute-name.id.css", "#DCDCAA"),
+            new ThemeSetting("entity.name.tag.css", "#569CD6"),
+            new ThemeSetting("entity.name.function.css", "#DCDCAA"),
+            new ThemeSetting("constant.numeric.css", "#B5CEA8"),
+            new ThemeSetting("comment.block.css", "#6A9955"),
+            new ThemeSetting("punctuation.definition.entity.css", "#D4D4D4"),
 
             // ── C# ──
             new ThemeSetting("keyword.type.cs", "#569CD6"),
