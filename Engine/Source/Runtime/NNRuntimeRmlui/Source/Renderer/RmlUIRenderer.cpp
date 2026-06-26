@@ -466,6 +466,51 @@ namespace NN::Runtime::Renderer
 		m_AssetResolver = resolver;
 	}
 
+	void RmlUIRenderer::ReloadDocumentByPath(const std::string& vfsPath)
+	{
+		if (!m_Initialized || !m_Context)
+			return;
+
+		std::cout << "[RmlUIRenderer] ReloadDocumentByPath: " << vfsPath << std::endl;
+
+		// 查找 SourceURL 匹配的文档，关闭并从 map 移除
+		for (auto it = m_Documents.begin(); it != m_Documents.end(); )
+		{
+			if (it->second.doc)
+			{
+				const auto& sourceURL = it->second.doc->GetSourceURL();
+				if (sourceURL == vfsPath)
+				{
+					std::cout << "[RmlUIRenderer] ReloadDocumentByPath: 关闭文档 entity="
+					          << it->first << " url=" << sourceURL << std::endl;
+					it->second.doc->Close();
+					it = m_Documents.erase(it);
+					continue;
+				}
+			}
+			++it;
+		}
+		// 下次 Sync() 时会自动重新加载（路径仍在 DrawList 中）
+	}
+
+	void RmlUIRenderer::ReloadAllDocuments()
+	{
+		if (!m_Initialized || !m_Context)
+			return;
+
+		std::cout << "[RmlUIRenderer] ReloadAllDocuments: 关闭所有文档 ("
+		          << m_Documents.size() << " 个)" << std::endl;
+
+		// 关闭全部文档
+		for (auto& [entity, runtime] : m_Documents)
+		{
+			if (runtime.doc)
+				runtime.doc->Close();
+		}
+		m_Documents.clear();
+		// 下次 Sync() 时会自动重新加载
+	}
+
 	Rml::ElementDocument* RmlUIRenderer::LoadDocument(NNGuid assetGuid)
 	{
 		if (!m_Context)

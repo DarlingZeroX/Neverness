@@ -1,7 +1,7 @@
 # RmlUI HTML/CSS 外部修改热重载 — 实施计划
 
 > 日期: 2026-06-25
-> 状态: 待审查
+> 状态: **已完成**
 
 ---
 
@@ -74,7 +74,7 @@ public unsafe struct NNViewportRenderApi
 
 **C++ 端同步修改:**
 ```cpp
-struct NNViewportRenderApi
+struct NNViewportRenderAPI
 {
     // 现有...
     void (*ReloadRmlDocument)(const char* vfsPath);
@@ -82,38 +82,78 @@ struct NNViewportRenderApi
 };
 ```
 
-### 改动 2: 新增 `RmlDocumentReloadService`
+### 改动 2: C++ 端热重载队列 + FlushRmlReloads
+
+**位置:** `RmlUIRuntimeApi.cpp`
+
+```cpp
+// 热重载请求队列
+std::vector<std::string> s_PendingReloadPaths;
+bool s_ReloadAll = false;
+
+void NN_ENGINE_ABI_STDCALL rt_rmlUI_reloadDocument(const char* vfsPath)
+{
+    if (vfsPath && vfsPath[0] != '\0')
+        s_PendingReloadPaths.emplace_back(vfsPath);
+}
+
+void NN_ENGINE_ABI_STDCALL rt_rmlUI_reloadAllDocuments(void)
+{
+    s_ReloadAll = true;
+    s_PendingReloadPaths.clear();
+}
+
+// 渲染帧开始前调用
+void FlushRmlReloads()
+{
+    if (!g_RmlUIRenderer) return;
+    if (s_ReloadAll)
+    {
+        g_RmlUIRenderer->ReloadAllDocuments();
+        s_ReloadAll = false;
+        s_PendingReloadPaths.clear();
+        return;
+    }
+    for (const auto& path : s_PendingReloadPaths)
+        g_RmlUIRenderer->ReloadDocumentByPath(path);
+    s_PendingReloadPaths.clear();
+}
+```
+
+### 改动 3: RmlUIRenderer 新增热重载方法
+
+**位置:** `RmlUIRenderer.h` / `RmlUIRenderer.cpp`
+
+```cpp
+/// 按 VFS 路径关闭并重新加载指定文档
+void ReloadDocumentByPath(const std::string& vfsPath);
+
+/// 关闭并重新加载所有文档
+void ReloadAllDocuments();
+```
+
+实现逻辑：
+- `ReloadDocumentByPath`：遍历 `m_Documents`，查找 `SourceURL` 匹配的文档，`Close()` 后从 map 移除
+- `ReloadAllDocuments`：关闭全部文档，清空 `m_Documents`
+- 下次 `Sync()` 时三路 Diff 自动重新加载（路径仍在 DrawList 中）
+
+### 改动 4: 渲染管线插入 FlushRmlReloads
+
+**位置:** `ViewportSurfaceRuntimeApi.cpp` → `RenderViewportCommands`
+
+```cpp
+// 热重载：处理 C# 端入队的重载请求（在 Sync 之前）
+FlushRmlReloads();
+rmlRenderer->Sync(rmlDrawItems);
+```
+
+### 改动 5: C# RmlDocumentReloadService
 
 **位置:** `Neverness.Editor.Rmlui` 模块（新增文件）
 
-**职责:**
-- 订阅 `EditorEventBus.AssetReloaded` 事件
-- `.html`/`.htm`/`.rml` 变更 → 调用 `ReloadRmlDocument(path)`
-- `.css`/`.rcss` 变更 → 调用 `ReloadAllRmlDocuments()`
-- 提供 P/Invoke 包装方法
-
 ```csharp
-using System.Runtime.InteropServices;
-using Neverness.Editor.Core.Public;
-using Neverness.Runtime.Assets;
-
-namespace Neverness.Editor.Rmlui;
-
-/// <summary>
-/// RmlUI 文档热重载服务。
-///
-/// 订阅 AssetReloaded 事件，当 .html/.css 文件变更时
-/// 通知 native RmlUI 渲染器重新加载文档。
-///
-/// 使用方法：
-///   var service = new RmlDocumentReloadService(eventBus);
-///   // 自动订阅事件，无需手动调用
-///
-/// @threadsafe Reload 调用从主线程 Tick 触发（通过 HotReloadCoordinator 事件队列）。
-/// </summary>
 public sealed class RmlDocumentReloadService
 {
-    /// <summary>创建热重载服务并订阅事件。</summary>
     public RmlDocumentReloadService(IEditorEventBus eventBus)
     {
         eventBus.Subscribe(EditorEventType.AssetReloaded, OnAssetReloaded);
@@ -121,144 +161,67 @@ public sealed class RmlDocumentReloadService
 
     private void OnAssetReloaded(EditorEvent evt)
     {
-        if (evt.Payload is not AssetReloadedEventPayload payload)
-            return;
-
+        if (evt.Payload is not AssetReloadedEventPayload payload) return;
         var ext = payload.Path.Extension.ToLowerInvariant();
-
         if (ext is ".html" or ".htm" or ".rml")
-        {
-            /* HTML 自身变更：重载指定文档 */
-            ReloadDocument(payload.Path.FullPath);
-        }
+            RmluiNativeApi.ReloadDocument(payload.Path.FullPath);
         else if (ext is ".css" or ".rcss")
-        {
-            /* CSS 变更：全量重载（Editor 场景文档数量少） */
-            ReloadAllDocuments();
-        }
-    }
-
-    /* ======================== Native API 调用 ======================== */
-
-    /// <summary>通知 native 端重新加载指定文档。</summary>
-    private static unsafe void ReloadDocument(string vfsPath)
-    {
-        var api = GetRenderApi();
-        if (api == null || api->ReloadRmlDocument == null)
-            return;
-
-        var pathBytes = System.Text.Encoding.UTF8.GetBytes(vfsPath + '\0');
-        fixed (byte* p = pathBytes)
-        {
-            api->ReloadRmlDocument(p);
-        }
-
-        Console.WriteLine($"[RmlDocumentReloadService] 重载文档: {vfsPath}");
-    }
-
-    /// <summary>通知 native 端重新加载所有文档。</summary>
-    private static unsafe void ReloadAllDocuments()
-    {
-        var api = GetRenderApi();
-        if (api == null || api->ReloadAllRmlDocuments == null)
-            return;
-
-        api->ReloadAllRmlDocuments();
-        Console.WriteLine("[RmlDocumentReloadService] 全量重载所有文档");
-    }
-
-    /// <summary>获取 NNViewportRenderApi 指针。</summary>
-    private static unsafe NNViewportRenderApi* GetRenderApi()
-    {
-        // 通过已有的 native API 获取方式取得指针
-        // 具体实现取决于项目的 native API 访问模式
-        return NNRuntimeEngineServices.GetViewportRenderApi();
+            RmluiNativeApi.ReloadAllDocuments();
     }
 }
 ```
 
-### 改动 3: 注册服务
+### 改动 6: RmluiModule 注册服务
 
-**位置:** `RmluiModule.cs` 或 `EditorApplicationRunner.cs`
+**位置:** `RmluiModule.cs`
 
 ```csharp
-// 在 RmluiModule.Install() 中
-var reloadService = new RmlDocumentReloadService(EditorCoreModule.Context.Events);
-// 如需外部访问，注册到服务定位器
-EditorCoreModule.Context.RegisterService(reloadService);
-```
-
-### 改动 4: C++ 端实现
-
-**职责:**
-- `ReloadRmlDocument(path)` → 将路径加入 `_pendingReloadPaths` 队列
-- `ReloadAllRmlDocuments()` → 设置 `_reloadAll = true` 标志
-- 渲染帧开始前 → 检查队列/标志，清除对应文档缓存，重新加载
-
-```cpp
-// 伪代码
-static std::vector<std::string> s_pendingReloadPaths;
-static bool s_reloadAll = false;
-
-void NNRmlui_ReloadDocument(const char* vfsPath)
-{
-    s_pendingReloadPaths.push_back(vfsPath);
-}
-
-void NNRmlui_ReloadAllDocuments()
-{
-    s_reloadAll = true;
-}
-
-// 渲染帧开始前调用
-void FlushRmlReloads()
-{
-    if (s_reloadAll)
-    {
-        RmlContext->UnloadAllDocuments();
-        s_reloadAll = false;
-        s_pendingReloadPaths.clear();
-        return;
-    }
-
-    for (auto& path : s_pendingReloadPaths)
-    {
-        RmlContext->UnloadDocument(path);
-    }
-    s_pendingReloadPaths.clear();
-}
+s_reloadService = new RmlDocumentReloadService(EditorCoreModule.Context.Events);
 ```
 
 ---
 
-## 四、影响的文件清单
+## 四、完整链路
+
+```
+.html/.css 文件变更
+  → AssetWatcher 检测（200ms 防抖 + SHA256）
+  → HotReloadCoordinator.ProcessEvent()
+  → ImportPipeline.Reimport() → AssetHandle.MarkForReload()
+  → EditorEventBus.AssetReloaded 事件
+  → RmlDocumentReloadService.OnAssetReloaded()
+    → .html/.htm/.rml → RmluiNativeApi.ReloadDocument(path)
+    → .css/.rcss      → RmluiNativeApi.ReloadAllDocuments()
+  → C++ rt_rmlUI_reloadDocument() 入队
+  → 下一帧 RenderViewportCommands:
+    → FlushRmlReloads()
+      → RmlUIRenderer::ReloadDocumentByPath()
+        → doc->Close() + 从 m_Documents 移除
+    → Sync() → 检测到文档不在 map → 重新加载
+    → Update() → Render()
+```
+
+---
+
+## 五、影响的文件清单
 
 ### C# 端
 
 | 文件 | 模块 | 改动 |
 |------|------|------|
 | `NNNativeEngineApiTypes.cs` | Runtime.Engine | `NNViewportRenderApi` 增加 2 个函数指针 |
+| `RmluiNativeApi.cs` | Runtime.Rmlui | **新增** — P/Invoke 包装（ReloadDocument / ReloadAllDocuments） |
 | `RmlDocumentReloadService.cs` | Editor.Rmlui | **新增** — 订阅事件 + 调用 native API |
-| `RmluiModule.cs` | Editor.Rmlui | 创建并注册 `RmlDocumentReloadService` |
+| `Module.cs` | Editor.Rmlui | 创建并注册 `RmlDocumentReloadService` |
 
 ### C++ 端
 
 | 文件 | 改动 |
 |------|------|
-| `NNViewportRenderApi` 结构体 | 增加 2 个函数指针 |
-| 函数实现文件 | 实现 `ReloadRmlDocument` / `ReloadAllRmlDocuments` |
-| 渲染帧入口 | 调用 `FlushRmlReloads()` |
-
-**注意:** C# 端的 `RmlDocumentEntry` 结构体**不需要修改**，ABI 不变。
-
----
-
-## 五、需要确认的问题
-
-1. **Native API 访问方式**：`NNViewportRenderApi*` 的获取方式是什么？是通过 `NNRuntimeEngineServices.GetViewportRenderApi()` 还是其他途径？
-
-2. **C++ 端文件位置**：`ReloadRmlDocument` / `ReloadAllRmlDocuments` 的实现应该放在哪个 C++ 文件？`FlushRmlReloads()` 应该在渲染管线的哪个阶段调用？
-
-3. **`NNViewportRenderApi` 结构体布局**：增加 2 个函数指针后，结构体大小从 24 bytes 变为 40 bytes。已有的代码是否通过 `sizeof` 或偏移量访问？是否需要保持向后兼容？
-
-4. **RmlContext 的文档管理 API**：C++ 端的 RmlUI 集成是否暴露了 `UnloadDocument(path)` 或类似 API？还是需要自己实现缓存管理？
+| `ViewportRenderAPI.h` | `NNViewportRenderAPI` 增加 2 个函数指针 |
+| `ViewportRenderApiStubs.cpp` | 新增 2 个 stub 函数 |
+| `RmlUIRuntimeApi.h` | +`FlushRmlReloads()` 导出声明 |
+| `RmlUIRuntimeApi.cpp` | +队列/标志 + 2 个 API 函数 + `FlushRmlReloads()` + 接线 |
+| `RmlUIRenderer.h` | +`ReloadDocumentByPath` / `ReloadAllDocuments` 声明 |
+| `RmlUIRenderer.cpp` | +`ReloadDocumentByPath` / `ReloadAllDocuments` 实现 |
+| `ViewportSurfaceRuntimeApi.cpp` | +`FlushRmlReloads()` 调用（Sync 之前） |

@@ -122,6 +122,18 @@ namespace NN::Runtime::Renderer
 		/// @brief 设置资产路径解析器。
 		void SetAssetResolver(NN::Runtime::RmlUI::IRmlUIAssetResolver* resolver);
 
+		/// @brief 热重载：按 VFS 路径关闭并重新加载指定文档。
+		///
+		/// 查找 SourceURL 匹配的文档，关闭后从 m_Documents 移除。
+		/// 下次 Sync() 时会自动重新加载（路径仍在 DrawList 中）。
+		void ReloadDocumentByPath(const std::string& vfsPath);
+
+		/// @brief 热重载：关闭并重新加载所有文档。
+		///
+		/// 关闭全部文档，清空 m_Documents。
+		/// 下次 Sync() 时会自动重新加载。
+		void ReloadAllDocuments();
+
 	private:
 		Rml::ElementDocument* LoadDocument(NNGuid assetGuid);
 		Rml::ElementDocument* LoadDocumentByPath(const std::string& assetPath);

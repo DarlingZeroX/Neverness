@@ -26,6 +26,8 @@
 #include <Device/INNRenderDevice.h>
 
 #include <iostream>
+#include <vector>
+#include <string>
 
 namespace
 {
@@ -37,6 +39,16 @@ NN::Runtime::RmlUI::NNRmlUISystem* g_RmlUISystem = nullptr;
 NN::Runtime::Render::INNRenderDevice* g_RenderDevice = nullptr;
 bool g_Initialized = false;
 std::uint64_t g_LastRmluiTextureId = 0;
+
+/**
+ * @brief 热重载请求队列（C++ 侧入队，渲染帧开始前统一执行）。
+ *
+ * ReloadRmlDocument() 将路径加入队列，ReloadAllRmlDocuments() 设置标志。
+ * FlushRmlReloads() 在渲染前调用，处理队列后清空。
+ * 不需要锁——所有操作都在主线程。
+ */
+std::vector<std::string> s_PendingReloadPaths;
+bool s_ReloadAll = false;
 
 /// 确保 RmlUI 渲染器已初始化（惰性初始化）
 bool EnsureRmlUIRenderer(NN::Runtime::Render::INNRenderDevice* device)
@@ -104,6 +116,22 @@ std::uint64_t NN_ENGINE_ABI_STDCALL rt_rmlUI_getLastTexture(void)
     return g_LastRmluiTextureId;
 }
 
+void NN_ENGINE_ABI_STDCALL rt_rmlUI_reloadDocument(const char* vfsPath)
+{
+    if (vfsPath && vfsPath[0] != '\0')
+    {
+        s_PendingReloadPaths.emplace_back(vfsPath);
+        std::cout << "[RmlUIRuntimeApi] 入队重载文档: " << vfsPath << std::endl;
+    }
+}
+
+void NN_ENGINE_ABI_STDCALL rt_rmlUI_reloadAllDocuments(void)
+{
+    s_ReloadAll = true;
+    s_PendingReloadPaths.clear();  // 全量重载时清空单个路径队列
+    std::cout << "[RmlUIRuntimeApi] 标记全量重载所有文档" << std::endl;
+}
+
 } // namespace
 
 // ── Getter / 初始化函数 ──
@@ -134,11 +162,39 @@ extern "C" void NNBuildRmlUIRuntimeApi(NNViewportRenderAPI* api)
     api->SetRmlUIViewportSize   = &rt_rmlUI_setViewportSize;
     api->ProcessRmlUIInput      = &rt_rmlUI_processInput;
     api->GetLastRmluiTexture    = &rt_rmlUI_getLastTexture;
-    // 热重载 API — 待 RmlUIRenderer 实现 ReloadDocument 后接线
-    api->ReloadRmlDocument      = nullptr;
-    api->ReloadAllRmlDocuments  = nullptr;
+    api->ReloadRmlDocument      = &rt_rmlUI_reloadDocument;
+    api->ReloadAllRmlDocuments  = &rt_rmlUI_reloadAllDocuments;
 
     std::cout << "[RmlUIRuntimeApi] RmlUI Runtime API built." << std::endl;
+}
+
+// ── 热重载队列刷新（渲染帧开始前调用） ──
+
+void FlushRmlReloads()
+{
+    if (!g_RmlUIRenderer)
+        return;
+
+    if (s_ReloadAll)
+    {
+        std::cout << "[RmlUIRuntimeApi] FlushRmlReloads: 全量重载" << std::endl;
+        g_RmlUIRenderer->ReloadAllDocuments();
+        s_ReloadAll = false;
+        s_PendingReloadPaths.clear();
+        return;
+    }
+
+    if (s_PendingReloadPaths.empty())
+        return;
+
+    std::cout << "[RmlUIRuntimeApi] FlushRmlReloads: 重载 "
+              << s_PendingReloadPaths.size() << " 个文档" << std::endl;
+
+    for (const auto& path : s_PendingReloadPaths)
+    {
+        g_RmlUIRenderer->ReloadDocumentByPath(path);
+    }
+    s_PendingReloadPaths.clear();
 }
 
 extern "C" void ShutdownRmlUI(void)

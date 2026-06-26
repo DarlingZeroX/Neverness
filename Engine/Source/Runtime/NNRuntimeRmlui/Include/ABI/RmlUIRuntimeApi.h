@@ -26,6 +26,14 @@ NN_RUNTIME_RMLUI_API void NNBuildRmlUIRuntimeApi(NNViewportRenderAPI* api);
 /** @brief 关闭 RmlUI 渲染器资源（引擎退出时调用）。 */
 NN_RUNTIME_RMLUI_API void ShutdownRmlUI(void);
 
+/**
+ * @brief 刷新 RmlUI 热重载队列（渲染帧开始前调用）。
+ *
+ * 处理通过 ReloadRmlDocument / ReloadAllRmlDocuments 入队的重载请求。
+ * 在 ViewportSurfaceRuntimeApi 的 RenderViewportCommands 中 Sync() 之前调用。
+ */
+NN_RUNTIME_RMLUI_API void FlushRmlReloads(void);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

@@ -11,6 +11,7 @@
 		<RootNamespace>Neverness.Editor.Rmlui</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\Runtime\Neverness.Runtime.Rmlui\Neverness.Runtime.Rmlui.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Framework\Neverness.Editor.Framework.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Assets\Neverness.Editor.Assets.csproj" />
 		<ProjectReference Include="..\Neverness.Editor.Scene\Neverness.Editor.Scene.csproj" />

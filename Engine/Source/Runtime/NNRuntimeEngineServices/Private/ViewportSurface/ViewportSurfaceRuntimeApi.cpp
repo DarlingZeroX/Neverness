@@ -616,6 +616,10 @@ namespace
             if (rmlRenderer)
             {
                 rmlRenderer->SetViewport(width, height);
+
+                // 热重载：处理 C# 端入队的重载请求（在 Sync 之前）
+                FlushRmlReloads();
+
                 rmlRenderer->Sync(rmlDrawItems);
                 rmlRenderer->Update();
 

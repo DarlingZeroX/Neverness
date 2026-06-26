@@ -1,4 +1,5 @@
 using Neverness.Editor.Framework.Public;
+using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.Public.Inspector;
 
 namespace Neverness.Editor.Rmlui.Public;
@@ -9,9 +10,12 @@ namespace Neverness.Editor.Rmlui.Public;
 /// - RmlDocumentAssetFactory 通过 AssetFactoryRegistry 自动发现
 /// - Inspector 通过 ComponentInspectorRegistry.DiscoverFromAssembly() 注册
 /// - ContextMenuContributor 通过 EditorMenuRegistry.RegisterContextMenuContributor() 注册
+/// - RmlDocumentReloadService 订阅 AssetReloaded 事件，通知 native 端热重载
 /// </summary>
 public static class RmluiModule
 {
+    private static RmlDocumentReloadService? s_reloadService;
+
     /// <summary>安装 RmlUI 模块。</summary>
     public static void Install()
     {
@@ -23,6 +27,9 @@ public static class RmluiModule
         // 注册场景右键菜单贡献者（UI/RmlUI Document 实体创建）
         EditorMenuRegistry.RegisterContextMenuContributor(new RmlUIContextMenuContributor());
 
-        Console.WriteLine("[RmluiModule] 已注册 Inspector + ContextMenu");
+        // 注册 RmlUI 文档热重载服务（订阅 AssetReloaded 事件）
+        s_reloadService = new RmlDocumentReloadService(EditorCoreModule.Context.Events);
+
+        Console.WriteLine("[RmluiModule] 已注册 Inspector + ContextMenu + HotReload");
     }
 }
