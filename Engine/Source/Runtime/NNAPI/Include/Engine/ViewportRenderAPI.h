@@ -49,9 +49,21 @@ typedef struct NNViewportRenderAPI
 
     /**
      * @brief 获取上次 RmlUI 渲染的纹理 ID（不重新渲染）。
-     * @return OpenGL Texture ID（0 = 未渲染过或无 RmlUI 内容）
+     * @return 纹理 ID（0 = 未渲染过或无 RmlUI 内容）
      */
     std::uint64_t (NN_ENGINE_ABI_STDCALL *GetLastRmluiTexture)(void);
+
+    /**
+     * @brief 通知 native 端重新加载指定文档（热重载）。
+     * @param vfsPath 文档的 VFS 路径（UTF-8，NUL 终结）
+     */
+    void (NN_ENGINE_ABI_STDCALL *ReloadRmlDocument)(
+        const char* vfsPath);
+
+    /**
+     * @brief 通知 native 端重新加载所有文档（热重载）。
+     */
+    void (NN_ENGINE_ABI_STDCALL *ReloadAllRmlDocuments)(void);
 
 } NNViewportRenderAPI;
 

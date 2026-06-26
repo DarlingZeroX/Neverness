@@ -24,6 +24,12 @@ public unsafe struct NNViewportRenderApi
 	public delegate* unmanaged<uint, uint, void> SetRmlUIViewportSize;
 	public delegate* unmanaged<uint, int, int, int, int, uint, uint, uint, void> ProcessRmlUIInput;
 	public delegate* unmanaged<ulong> GetLastRmluiTexture;
+
+	// ── RmlUI 文档热重载 ──
+	/// <summary>通知 native 端重新加载指定文档（UTF-8 VFS 路径，NUL 终结）。</summary>
+	public delegate* unmanaged<byte*, void> ReloadRmlDocument;
+	/// <summary>通知 native 端重新加载所有文档。</summary>
+	public delegate* unmanaged<void> ReloadAllRmlDocuments;
 }
 
 /// <summary>

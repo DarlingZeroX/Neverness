@@ -35,7 +35,10 @@ list(APPEND NNRuntimeRmlui_SOURCES
 )
 
 add_library(NevernessRuntime-RmlUI SHARED)
-target_sources(NevernessRuntime-RmlUI PRIVATE ${NNRuntimeRmlui_SOURCES})
+target_sources(NevernessRuntime-RmlUI PRIVATE
+    ${NNRuntimeRmlui_SOURCES}
+    ABI/RmlUIRuntimeApi.cpp
+)
 
 target_compile_definitions(NevernessRuntime-RmlUI PRIVATE VG_UI_EXPORT)
 
@@ -69,6 +72,10 @@ target_include_directories(NevernessRuntime-RmlUI PRIVATE
     ${PROJECT_SOURCE_DIR}/Engine/Source/Core
     ${CMAKE_CURRENT_SOURCE_DIR}/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/Interface
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/ABI
+    ${CMAKE_CURRENT_SOURCE_DIR}/ABI
+    # NNAPI 头文件（NNViewportRenderAPI.h 等）
+    ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNAPI/Include
 )
 target_include_directories(NevernessRuntime-RmlUI PUBLIC
     ${PROJECT_SOURCE_DIR}/Engine/Source/Runtime/NNRuntimeLua/Include

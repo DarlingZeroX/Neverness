@@ -9,22 +9,17 @@
 // 已移除：SceneAPI / EditorSceneAPI / ObjectAPI / TimingAPI（已迁移至 C# 或废弃）
 // 已移除：RenderAssetAPI（NNRenderAssets 移至 Legacy）
 // #include "Engine/RenderAssetAPI.h"
-#include "Engine/ViewportRenderAPI.h"
 #include "Engine/ViewportSurfaceAPI.h"
 #include "Engine/DiligentAPI.h"
+
+// ViewportRender 已迁移至 NNRuntimeRmlui 模块（ABI/RmlUIRuntimeApi.cpp）
+#include "NNRuntimeRmlui/Include/ABI/RmlUIRuntimeApi.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void NNBuildAsyncWaitRuntimeApi(NNAsyncWaitAPI* api);
-// 已移除：NNBuildSceneRuntimeApi / NNBuildEditorSceneRuntimeApi（NNRuntimeScene 移至 Legacy）
-// void NNBuildSceneRuntimeApi(NNSceneAPI* api);
-// void NNBuildEditorSceneRuntimeApi(NNEditorSceneAPI* api);
-// 已移除：NNBuildAssetCookerRuntimeApi（已迁移至 C#）
-// 已移除：NNBuildRenderAssetRuntimeApi（NNRenderAssets 移至 Legacy）
-// void NNBuildRenderAssetRuntimeApi(NNRenderAssetAPI* api);
-void NNBuildViewportRenderRuntimeApi(NNViewportRenderAPI* api);
 void NNBuildViewportSurfaceRuntimeApi(NNViewportSurfaceAPI* api);
 void NNBuildDiligentRuntimeApi(NNDiligentAPI* api);
 
@@ -33,5 +28,4 @@ void NNBuildDiligentRuntimeApi(NNDiligentAPI* api);
 #endif
 
 // C++ shutdown functions（引擎退出时调用）
-void ShutdownViewportRender();
 void ShutdownViewportSurface();

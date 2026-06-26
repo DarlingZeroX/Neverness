@@ -21,9 +21,6 @@ target_sources(NevernessRuntime-VFS
     RuntimeVFSExport.h
     Include/VFS/VFSConfig.h
     Include/VFS/VFS.h
-    Include/VFS/VFSNative.h
-    Include/VFS/VFSMemory.h
-    Include/VFS/VFSZip.h
     Include/VFS/VFSBackends.h
     Include/VFS/IFile.h
     Include/VFS/IFileSystem.h

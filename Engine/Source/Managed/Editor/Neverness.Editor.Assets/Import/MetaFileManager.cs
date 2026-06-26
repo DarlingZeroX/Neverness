@@ -154,6 +154,7 @@ public static class MetaFileManager
             ".lua" => "LuaScriptImporter",
             ".anim" => "AnimationImporter",
             ".cs" => "ScriptAssetImporter",
+            ".css" or ".rcss" => "RmlStyleImporter",
             _ => "DefaultImporter"
         };
     }

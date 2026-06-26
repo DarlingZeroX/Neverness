@@ -91,6 +91,7 @@ public class SceneImporter : IAssetImporter
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"场景导入异常: {ex.Message}");
             return ImportResult.Fail($"场景导入异常: {ex.Message}");
         }
     }

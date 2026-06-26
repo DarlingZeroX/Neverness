@@ -73,6 +73,37 @@
           "flags": "Visible"
         }
       }
+    },
+    {
+      "id": 3,
+      "name": "RmlUI Document",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "RmlUIDocumentComponent": {
+          "documentAsset": "e3827e6ba197a148a7a1df847140fc3b",
+          "flags": "AutoLoad, ReceivesInput",
+          "sortOrder": 0,
+          "viewTarget": "Both"
+        }
+      }
     }
   ]
 }

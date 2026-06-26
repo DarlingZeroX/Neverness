@@ -22,7 +22,7 @@ set(ENGINE_SERVICES_SOURCES
 	# Runtime Engine Service 转发
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Registry/NativeEngineRuntimeApiTable.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Async/AsyncWaitRuntimeApi.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Private/ViewportRender/ViewportRenderRuntimeApi.cpp"
+	# ViewportRender 已迁移至 NNRuntimeRmlui 模块（ABI/RmlUIRuntimeApi.cpp）
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/ViewportSurface/ViewportSurfaceRuntimeApi.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Private/Diligent/DiligentRuntimeApi.cpp"
 	# NNNativeAPI 导出表（从 NNAPI 迁入）

@@ -47,8 +47,8 @@
 #include "NativeEngineRuntimeServices.h"
 #include "NNCore/Interface/HLog.h"
 
-// RmlUI 单例 getter 函数声明
-#include "Internal/RmlUISingletonAccess.h"
+// RmlUI 单例 getter 函数声明（已迁移至 NNRuntimeRmlui 模块）
+#include "NNRuntimeRmlui/Include/ABI/RmlUIRuntimeApi.h"
 
 namespace
 {
@@ -358,8 +358,15 @@ namespace
         if (!ValidateCommandBuffer(commands, commandsSize))
             return 0;
 
-        // 确保 RmlUI 渲染器已初始化（惰性，由 ViewportRenderRuntimeApi 管理生命周期）
-        EnsureViewportRenderInitialized();
+        // 确保 RmlUI 渲染器已初始化（惰性，设备指针由首次调用时注入）
+        {
+            auto* runtimeTable = NNNativeEngineApi_GetRuntimeTable();
+            auto* device = runtimeTable
+                ? static_cast<NN::Runtime::Render::INNRenderDevice*>(
+                    runtimeTable->diligent.GetPrimaryRenderDevice())
+                : nullptr;
+            EnsureRmlUIInitialized(device);
+        }
 
         // 2. 获取 Surface 和 SwapChain
         std::lock_guard<std::mutex> lock(g_SurfaceMutex);

@@ -16,6 +16,7 @@ public static class TypeId
     public const ulong LuaScript = 0x00000009;
     public const ulong VideoClip = 0x0000000A;
     public const ulong CSharpScript = 0x0000000B;
+    public const ulong HtmlDocument = 0x0000000C;
 }
 
 /// <summary>
@@ -105,6 +106,7 @@ public sealed class AssetTypeRegistry
         RegisterType("LuaScript", TypeId.LuaScript);
         RegisterType("VideoClip", TypeId.VideoClip);
         RegisterType("CSharpScript", TypeId.CSharpScript);
+        RegisterType("HtmlDocument", TypeId.HtmlDocument);
     }
 
     /// <summary>

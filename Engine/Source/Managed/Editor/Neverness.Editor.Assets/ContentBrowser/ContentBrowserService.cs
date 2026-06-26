@@ -10,7 +10,7 @@ namespace Neverness.Editor.Assets.Private.Core;
 /// </summary>
 internal sealed class ContentBrowserService : IContentBrowserService
 {
-    public ContentBrowserService()
+    public ContentBrowserService(IEditorEventBus? eventBus = null)
     {
         // 订阅 ContentBrowser 的内容变更事件，转发为 DirectoryChanged
         var cb = ContentBrowser.Instance;
@@ -18,6 +18,12 @@ internal sealed class ContentBrowserService : IContentBrowserService
         {
             cb.ContentChanged += OnContentChanged;
         }
+
+        // 订阅资产重载事件，自动刷新当前目录
+        eventBus?.Subscribe(EditorEventType.AssetReloaded, _ =>
+        {
+            Refresh();
+        });
     }
 
     private void OnContentChanged()

@@ -36,7 +36,7 @@ internal static class AssetsModuleImp
         if (ContentBrowser.Instance != null)
         {
             EditorCoreModule.Context.RegisterService<IContentBrowserService>(
-                new ContentBrowserService());
+                new ContentBrowserService(EditorCoreModule.Context.Events));
         }
 
         // 1.2 初始化 EditorAssetDatabase（路径索引、类型查询基础）
@@ -98,6 +98,7 @@ internal static class AssetsModuleImp
             }
 
             s_hotReloadCoordinator = new HotReloadCoordinator(new NPath(path));
+            s_hotReloadCoordinator.EventBus = EditorCoreModule.Context.Events;
             s_hotReloadCoordinator.Start();
 
             // 8. 启动 DropImportService（拖放外部文件导入）
@@ -111,10 +112,11 @@ internal static class AssetsModuleImp
 
     }
 
-    /// <summary>每帧 Tick——批量保存脏缓存。</summary>
+    /// <summary>每帧 Tick——批量保存脏缓存 + 处理热重载事件。</summary>
     public static void Tick()
     {
         EditorAssetDatabase.SaveIfDirty();
+        s_hotReloadCoordinator?.Tick();
     }
 
     /// <summary>关闭模块（停止热重载、强制保存）。</summary>

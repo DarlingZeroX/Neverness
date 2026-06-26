@@ -10,6 +10,7 @@ public enum EditorEventType
     AssetCreated,
     AssetDeleted,
     AssetRenamed,
+    AssetReloaded,
     SceneOpened,
     SceneClosed,
     PlayModeChanged,

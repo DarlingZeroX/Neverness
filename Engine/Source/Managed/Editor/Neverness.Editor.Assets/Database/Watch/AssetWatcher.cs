@@ -1,21 +1,22 @@
 using System.Security.Cryptography;
-using Neverness.Runtime.Assets;
+using System.Threading;
 using Neverness.Runtime.VFS;
 
 namespace Neverness.Editor.Assets;
 
 /// <summary>
-/// 資產檔案監視器。
+/// 资产文件监视器。
 ///
-/// 封裝 FileSystemWatcher，提供：
-///   - 防抖處理（200ms 延遲合併連續事件）
-///   - 事件過濾（忽略 Library/、.meta 檔案）
-///   - 增量掃描（content hash 比對）
-///   - 與 EditorAssetDatabase 整合
+/// 封装 FileSystemWatcher，提供：
+///   - 防抖处理（200ms 延迟合并连续事件）
+///   - 增量扫描（content hash 比对）
+///   - 错误恢复（条件定期扫描）
 ///
-/// @threadsafe 內部使用 lock(_lock) 保護事件佇列，
-///   FlushPendingEvents 從 Timer 回調執行（執行緒集區），事件在鎖外觸發。
-///   ImportStateCache 各自獨立加鎖。
+/// 过滤规则见 <see cref="AssetWatcherFilter"/>。
+/// 内容哈希缓存见 <see cref="ImportStateCache"/>。
+///
+/// @threadsafe 内部使用 lock(_lock) 保护事件队列，
+///   FlushPendingEvents 从 Timer 回调执行（线程池），事件在锁外触发。
 /// </summary>
 public sealed class AssetWatcher : IDisposable
 {
@@ -24,12 +25,16 @@ public sealed class AssetWatcher : IDisposable
     private readonly NPath _assetsRoot;
     private readonly int _debounceMilliseconds;
 
-    /* 防抖計時器 */
+    /* 防抖计时器 */
     private Timer? _debounceTimer;
     private readonly HashSet<NPath> _pendingChanges = new();
     private readonly HashSet<NPath> _pendingCreations = new();
     private readonly HashSet<NPath> _pendingDeletions = new();
     private readonly List<(NPath from, NPath to)> _pendingRenames = new();
+
+    /* 错误恢复 */
+    private int _errorCount;
+    private Timer? _recoveryScanTimer;
 
     /* 事件 */
     public event Action<NPath>? OnAssetChanged;
@@ -37,7 +42,7 @@ public sealed class AssetWatcher : IDisposable
     public event Action<NPath>? OnAssetDeleted;
     public event Action<NPath, NPath>? OnAssetRenamed;
 
-    /// <summary>Content hash 快取。</summary>
+    /// <summary>Content hash 缓存。</summary>
     private readonly ImportStateCache _stateCache;
 
     /// <summary>创建资产监视器。</summary>
@@ -51,9 +56,9 @@ public sealed class AssetWatcher : IDisposable
         _stateCache = stateCache ?? new ImportStateCache();
     }
 
-    /* ======================== 公開 API ======================== */
+    /* ======================== 公开 API ======================== */
 
-    /// <summary>開始監視。</summary>
+    /// <summary>开始监视。</summary>
     public void Start()
     {
         lock (_lock)
@@ -63,7 +68,7 @@ public sealed class AssetWatcher : IDisposable
 
             if (!Directory.Exists(_assetsRoot.FullPath))
             {
-                Console.WriteLine($"[AssetWatcher] Assets 目錄不存在: {_assetsRoot}");
+                Console.WriteLine($"[AssetWatcher] Assets 目录不存在: {_assetsRoot}");
                 return;
             }
 
@@ -85,11 +90,11 @@ public sealed class AssetWatcher : IDisposable
 
             _debounceTimer = new Timer(FlushPendingEvents, null, Timeout.Infinite, Timeout.Infinite);
 
-            Console.WriteLine($"[AssetWatcher] 開始監視: {_assetsRoot}");
+            Console.WriteLine($"[AssetWatcher] 开始监视: {_assetsRoot}");
         }
     }
 
-    /// <summary>停止監視。</summary>
+    /// <summary>停止监视。</summary>
     public void Stop()
     {
         lock (_lock)
@@ -104,22 +109,25 @@ public sealed class AssetWatcher : IDisposable
             _debounceTimer?.Dispose();
             _debounceTimer = null;
 
+            _recoveryScanTimer?.Dispose();
+            _recoveryScanTimer = null;
+
             _pendingChanges.Clear();
             _pendingCreations.Clear();
             _pendingDeletions.Clear();
             _pendingRenames.Clear();
 
-            Console.WriteLine("[AssetWatcher] 停止監視");
+            Console.WriteLine("[AssetWatcher] 停止监视");
         }
     }
 
-    /// <summary>是否正在監視。</summary>
+    /// <summary>是否正在监视。</summary>
     public bool IsWatching
     {
         get { lock (_lock) return _watcher is { EnableRaisingEvents: true }; }
     }
 
-    /// <summary>強制全量掃描（不依賴 FileSystemWatcher）。</summary>
+    /// <summary>强制全量扫描（不依赖 FileSystemWatcher）。</summary>
     public void ForceFullScan()
     {
         lock (_lock)
@@ -128,14 +136,14 @@ public sealed class AssetWatcher : IDisposable
         }
     }
 
-    /// <summary>Content hash 快取。</summary>
+    /// <summary>Content hash 缓存。</summary>
     public ImportStateCache StateCache => _stateCache;
 
-    /* ======================== 事件處理 ======================== */
+    /* ======================== 事件处理 ======================== */
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        if (ShouldIgnore(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
 
         lock (_lock)
         {
@@ -146,7 +154,7 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnFileCreated(object sender, FileSystemEventArgs e)
     {
-        if (ShouldIgnore(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
 
         lock (_lock)
         {
@@ -157,7 +165,7 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnFileDeleted(object sender, FileSystemEventArgs e)
     {
-        if (ShouldIgnore(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
 
         lock (_lock)
         {
@@ -168,7 +176,7 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnFileRenamed(object sender, RenamedEventArgs e)
     {
-        if (ShouldIgnore(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
 
         lock (_lock)
         {
@@ -179,7 +187,37 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnWatcherError(object sender, ErrorEventArgs e)
     {
-        Console.WriteLine($"[AssetWatcher] FileSystemWatcher 錯誤: {e.GetException().Message}");
+        Console.WriteLine($"[AssetWatcher] FileSystemWatcher 错误: {e.GetException().Message}");
+        var count = Interlocked.Increment(ref _errorCount);
+
+        /* 首次错误时启动定期恢复扫描（每 30 秒） */
+        if (count == 1)
+        {
+            Console.WriteLine("[AssetWatcher] 启动定期恢复扫描（每 30 秒）");
+            _recoveryScanTimer?.Dispose();
+            _recoveryScanTimer = new Timer(RecoveryScanCallback, null,
+                TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+        }
+    }
+
+    /// <summary>恢复扫描回调——扫描成功后停止定期扫描。</summary>
+    private void RecoveryScanCallback(object? state)
+    {
+        try
+        {
+            Console.WriteLine("[AssetWatcher] 执行恢复扫描...");
+            ForceFullScan();
+
+            /* 扫描成功，重置错误计数，停止定期扫描 */
+            Interlocked.Exchange(ref _errorCount, 0);
+            _recoveryScanTimer?.Dispose();
+            _recoveryScanTimer = null;
+            Console.WriteLine("[AssetWatcher] 恢复扫描成功，停止定期扫描");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AssetWatcher] 恢复扫描失败: {ex.Message}");
+        }
     }
 
     /* ======================== 防抖 ======================== */
@@ -211,7 +249,7 @@ public sealed class AssetWatcher : IDisposable
             _pendingRenames.Clear();
         }
 
-        /* 處理事件 */
+        /* 处理事件 */
         foreach (var path in creations)
         {
             try
@@ -227,7 +265,7 @@ public sealed class AssetWatcher : IDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AssetWatcher] 處理建立事件失敗: {path} → {ex.Message}");
+                Console.WriteLine($"[AssetWatcher] 处理创建事件失败: {path} → {ex.Message}");
             }
         }
 
@@ -235,7 +273,7 @@ public sealed class AssetWatcher : IDisposable
         {
             try
             {
-                /* Content hash 比對，只在真正變化時觸發 */
+                /* Content hash 比对，只在真正变化时触发 */
                 if (_stateCache.HasChanged(path))
                 {
                     OnAssetChanged?.Invoke(path);
@@ -244,7 +282,7 @@ public sealed class AssetWatcher : IDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AssetWatcher] 處理變更事件失敗: {path} → {ex.Message}");
+                Console.WriteLine($"[AssetWatcher] 处理变更事件失败: {path} → {ex.Message}");
             }
         }
 
@@ -257,7 +295,7 @@ public sealed class AssetWatcher : IDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AssetWatcher] 處理刪除事件失敗: {path} → {ex.Message}");
+                Console.WriteLine($"[AssetWatcher] 处理删除事件失败: {path} → {ex.Message}");
             }
         }
 
@@ -269,12 +307,12 @@ public sealed class AssetWatcher : IDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AssetWatcher] 處理重命名事件失敗: {from} → {to} → {ex.Message}");
+                Console.WriteLine($"[AssetWatcher] 处理重命名事件失败: {from} → {to} → {ex.Message}");
             }
         }
     }
 
-    /* ======================== 增量掃描 ======================== */
+    /* ======================== 增量扫描 ======================== */
 
     private void ScanDirectory(NPath dir)
     {
@@ -285,52 +323,33 @@ public sealed class AssetWatcher : IDisposable
         {
             foreach (var file in Directory.EnumerateFiles(dir.FullPath))
             {
-                if (ShouldIgnore(file))
+                if (AssetWatcherFilter.ShouldIgnoreFile(file))
                     continue;
 
                 var filePath = new NPath(file);
                 if (_stateCache.HasChanged(filePath))
                 {
-                    OnAssetCreated?.Invoke(filePath);
+                    /* 缓存中有记录 → 已有文件变化，无记录 → 新文件 */
+                    if (_stateCache.GetCachedHash(filePath) != null)
+                        OnAssetChanged?.Invoke(filePath);
+                    else
+                        OnAssetCreated?.Invoke(filePath);
+
                     _stateCache.MarkImported(filePath, ComputeContentHash(filePath));
                 }
             }
 
             foreach (var subDir in Directory.EnumerateDirectories(dir.FullPath))
             {
-                if (ShouldIgnoreDirectory(subDir))
+                if (AssetWatcherFilter.ShouldIgnoreDirectory(subDir))
                     continue;
                 ScanDirectory(new NPath(subDir));
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AssetWatcher] 掃描目錄失敗: {dir} → {ex.Message}");
+            Console.WriteLine($"[AssetWatcher] 扫描目录失败: {dir} → {ex.Message}");
         }
-    }
-
-    /* ======================== 過濾 ======================== */
-
-    private static bool ShouldIgnore(string path)
-    {
-        /* 忽略 .meta 檔案 */
-        if (path.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        /* 忽略暫存檔案 */
-        var fileName = Path.GetFileName(path);
-        if (fileName.StartsWith('.') || fileName.StartsWith('~'))
-            return true;
-
-        return false;
-    }
-
-    private static bool ShouldIgnoreDirectory(string dirPath)
-    {
-        var dirName = Path.GetFileName(dirPath);
-        return dirName.Equals("Library", StringComparison.OrdinalIgnoreCase)
-            || dirName.Equals("Temp", StringComparison.OrdinalIgnoreCase)
-            || dirName.StartsWith('.');
     }
 
     /* ======================== Content Hash ======================== */
@@ -353,139 +372,5 @@ public sealed class AssetWatcher : IDisposable
     public void Dispose()
     {
         Stop();
-    }
-}
-
-/// <summary>
-/// 匯入狀態快取（content hash 比對）。
-///
-/// 用於增量匯入：檔案未變化時跳過 reimport。
-/// </summary>
-public sealed class ImportStateCache
-{
-    private readonly Dictionary<NPath, (DateTime lastWrite, byte[] hash)> _cache = new();
-
-    private readonly object _lock = new();
-
-    /// <summary>檔案是否有變化（hash 不匹配或不存在於快取）。</summary>
-    public bool HasChanged(NPath path)
-    {
-        lock (_lock)
-        {
-            if (!File.Exists(path.FullPath))
-                return true;
-
-            var lastWrite = File.GetLastWriteTimeUtc(path.FullPath);
-
-            if (_cache.TryGetValue(path, out var entry))
-            {
-                /* 時間戳相同，認定未變化 */
-                if (entry.lastWrite == lastWrite)
-                    return false;
-            }
-
-            return true;
-        }
-    }
-
-    /// <summary>標記檔案為已匯入。</summary>
-    public void MarkImported(NPath path, byte[] hash)
-    {
-        lock (_lock)
-        {
-            var lastWrite = File.Exists(path.FullPath) ? File.GetLastWriteTimeUtc(path.FullPath) : DateTime.UtcNow;
-            _cache[path] = (lastWrite, hash);
-        }
-    }
-
-    /// <summary>取得已快取的 hash。</summary>
-    public byte[]? GetCachedHash(NPath path)
-    {
-        lock (_lock)
-        {
-            return _cache.TryGetValue(path, out var entry) ? entry.hash : null;
-        }
-    }
-
-    /// <summary>移除快取條目。</summary>
-    public void Remove(NPath path)
-    {
-        lock (_lock) _cache.Remove(path);
-    }
-
-    /// <summary>快取條目數量。</summary>
-    public int Count
-    {
-        get { lock (_lock) return _cache.Count; }
-    }
-
-    /// <summary>儲存快取至磁碟。</summary>
-    public void Save(NPath cachePath)
-    {
-        lock (_lock)
-        {
-            try
-            {
-                var dir = Path.GetDirectoryName(cachePath.FullPath);
-                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-
-                using var stream = File.Create(cachePath.FullPath);
-                using var writer = new BinaryWriter(stream);
-
-                writer.Write(0x4E4E4943u); /* 'NNIC' = Neverness Import Cache */
-                writer.Write(1u);          /* version */
-                writer.Write(_cache.Count);
-
-                foreach (var (path, entry) in _cache)
-                {
-                    writer.Write(path.FullPath);
-                    writer.Write(entry.lastWrite.ToBinary());
-                    writer.Write(entry.hash.Length);
-                    writer.Write(entry.hash);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ImportStateCache] 儲存失敗: {ex.Message}");
-            }
-        }
-    }
-
-    /// <summary>從磁碟載入快取。</summary>
-    public void Load(NPath cachePath)
-    {
-        lock (_lock)
-        {
-            if (!File.Exists(cachePath.FullPath))
-                return;
-
-            try
-            {
-                using var stream = File.OpenRead(cachePath.FullPath);
-                using var reader = new BinaryReader(stream);
-
-                var magic = reader.ReadUInt32();
-                var version = reader.ReadUInt32();
-                if (magic != 0x4E4E4943u || version != 1u)
-                    return;
-
-                var count = reader.ReadInt32();
-                for (var i = 0; i < count; i++)
-                {
-                    var path = reader.ReadString();
-                    var lastWriteBinary = reader.ReadInt64();
-                    var hashLen = reader.ReadInt32();
-                    var hash = reader.ReadBytes(hashLen);
-
-                    _cache[new NPath(path)] = (DateTime.FromBinary(lastWriteBinary), hash);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ImportStateCache] 載入失敗: {ex.Message}");
-                _cache.Clear();
-            }
-        }
     }
 }

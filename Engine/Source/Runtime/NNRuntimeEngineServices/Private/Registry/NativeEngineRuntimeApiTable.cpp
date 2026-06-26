@@ -36,7 +36,8 @@ extern "C" void NNNativeEngineApiTable_BuildRuntime(NNNativeEngineAPI* outTable)
 	NNBuildVfsRuntimeApi(&outTable->vfs);
 	//NNBuildEventRuntimeApi(&outTable->events);
 	//NNBuildRenderAssetRuntimeApi(&outTable->renderAsset);  // 已移除：RenderAssetRuntimeApi 随 NNRenderAssets 移至 Legacy
-	NNBuildViewportRenderRuntimeApi(&outTable->viewportRender);
+	// ViewportRender 已迁移至 NNRuntimeRmlui 模块
+	NNBuildRmlUIRuntimeApi(&outTable->viewportRender);
 	NNBuildViewportSurfaceRuntimeApi(&outTable->viewportSurface);
 	NNBuildDiligentRuntimeApi(&outTable->diligent);
 	// ImGuiBackend 已移除：独立为 NNRuntimeImGui 模块 (2026-06-24)
@@ -74,6 +75,6 @@ extern "C" void NNEngineRuntimeHost_Tick(float deltaTimeSeconds)
 extern "C" void NNEngineRuntimeHost_Shutdown(void)
 {
 	ShutdownViewportSurface();
-	ShutdownViewportRender();
+	ShutdownRmlUI();
 	NN::Runtime::engine::NNEngineRuntime::Instance().Shutdown();
 }
