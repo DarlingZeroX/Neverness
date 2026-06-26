@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "EngineServicesConfig.h"
 #include "NativeAPI.h"
@@ -17,8 +17,8 @@ extern "C" {
  * @param outTable 非空；写入前会将 reserved 字段清零。
  */
 NN_API void NNNativeApiTable_BuildDefault(NNNativeAPI* outTable);
-
-
+  
+  
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

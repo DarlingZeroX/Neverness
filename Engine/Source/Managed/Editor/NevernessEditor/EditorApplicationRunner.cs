@@ -17,6 +17,7 @@ using Neverness.Editor.Media;
 using Neverness.Editor.Rmlui.Public;
 using Neverness.Editor.Script.Public;
 using Neverness.Editor.CodeEditor.Public;
+using Neverness.Rendering.Core;
 using Neverness.Runtime.Assets;
 using Neverness.Runtime.Audio;
 using Neverness.Runtime.Audio.Native;
@@ -202,11 +203,8 @@ internal static class EditorApplicationRunner
 
 				RuntimeMainLoop.Tick(deltaTime);
 
-				// Avalonia 模式下在主线程执行 Diligent 渲染（Diligent immediate context 非线程安全）
-				if (frontend == EditorFrontend.Avalonia)
-				{
-					AvaloniaFrontendModule.TickRendering();
-				}
+				// 主线程渲染调度（Diligent immediate context 非线程安全）
+				RenderingLoop.TickRendering();
 
 				AssetsModule.Tick();
 

@@ -40,6 +40,8 @@
 		<ProjectReference Include="..\Neverness.Editor.Script\Neverness.Editor.Script.csproj" />
 		<!-- CodeEditor（代码编辑器服务 + 控件） -->
 		<ProjectReference Include="..\Neverness.Editor.CodeEditor\Neverness.Editor.CodeEditor.csproj" />
+		<!-- Rendering.Core（渲染循环调度器） -->
+		<ProjectReference Include="..\..\Rendering\Neverness.Rendering.Core\Neverness.Rendering.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

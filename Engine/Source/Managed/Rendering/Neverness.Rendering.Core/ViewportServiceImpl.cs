@@ -1,6 +1,5 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Neverness.Editor.Core.Public;
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Scene.Components;
@@ -8,7 +7,7 @@ using Neverness.Rendering.Diligent.Commands;
 using Neverness.Rendering.RenderAssets;
 using SpriteFlags = Neverness.Runtime.Scene.Components.SpriteFlags;
 
-namespace Neverness.Editor.Scene.Private.Service;
+namespace Neverness.Rendering.Core;
 
 /// <summary>
 /// 视口服务实现——封装 Native 渲染 API。

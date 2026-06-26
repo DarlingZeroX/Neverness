@@ -1,7 +1,7 @@
 using Neverness.Runtime.Engine;
 using Neverness.Runtime.Scene;
 
-namespace Neverness.Editor.Core.Public;
+namespace Neverness.Rendering.Core;
 
 /// <summary>
 /// 视口服务接口——提供场景渲染和视口操作。

@@ -9,6 +9,7 @@ using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.AvaloniaFrontend.Services;
 using Neverness.Editor.AvaloniaFrontend.Viewport;
 using Neverness.Editor.AvaloniaFrontend.Public;
+using Neverness.Rendering.Core;
 using Neverness.Runtime.Engine;
 
 namespace Neverness.Editor.AvaloniaFrontend.Views;
@@ -21,7 +22,7 @@ namespace Neverness.Editor.AvaloniaFrontend.Views;
 /// - Diligent 通过 SwapChain 直接渲染到原生窗口
 /// - Deferred Resize：BoundsProperty 变化 → MarkResize → 帧末 FlushResizes
 /// - Surface Lost：HandleDestroyed → MarkSurfaceLost → HandleCreated → RecreateSurface
-/// - 主线程渲染：AvaloniaFrontendModule.RegisterRenderCallback
+/// - 主线程渲染：RenderingLoop.RegisterRenderCallback
 ///
 /// 数据流：
 ///   Bind() → ViewportHostService.CreateSurface → new ViewportHostControl
@@ -244,14 +245,14 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     private void RegisterRenderingCallback()
     {
         if (_renderCallbackRegistered) return;
-        AvaloniaFrontendModule.RegisterRenderCallback(OnMainThreadRender);
+        RenderingLoop.RegisterRenderCallback(OnMainThreadRender);
         _renderCallbackRegistered = true;
     }
 
     private void UnregisterRenderingCallback()
     {
         if (!_renderCallbackRegistered) return;
-        AvaloniaFrontendModule.UnregisterRenderCallback(OnMainThreadRender);
+        RenderingLoop.UnregisterRenderCallback(OnMainThreadRender);
         _renderCallbackRegistered = false;
     }
 

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Neverness.Rendering.Core</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Neverness.Rendering.Core</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Runtime/Neverness.Runtime.Engine/Neverness.Runtime.Engine.csproj" />
+    <ProjectReference Include="../../Runtime/Neverness.Runtime.Scene/Neverness.Runtime.Scene.csproj" />
+    <ProjectReference Include="../Neverness.Rendering.Diligent/Neverness.Rendering.Diligent.csproj" />
+    <ProjectReference Include="../Neverness.Rendering.RenderAssets/Neverness.Rendering.RenderAssets.csproj" />
+  </ItemGroup>
+</Project>

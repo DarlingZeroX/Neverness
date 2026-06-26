@@ -10,6 +10,7 @@ using Neverness.Editor.Framework.Public;
 using Neverness.Editor.Framework.Public.Services;
 using Neverness.Editor.AvaloniaFrontend.Services;
 using Neverness.Editor.AvaloniaFrontend.Views;
+using Neverness.Rendering.Core;
 
 namespace Neverness.Editor.AvaloniaFrontend.Public;
 
@@ -300,39 +301,4 @@ public static class AvaloniaFrontendModule
         return new Dock.DockableAssetEditorFramework(mainWindow, dockFactory, editorManager);
     }
 
-    // ── 渲染回调注册 ──
-
-    private static readonly List<Action> _renderCallbacks = new();
-
-    /// <summary>注册主线程渲染回调。</summary>
-    public static void RegisterRenderCallback(Action callback)
-    {
-        if (!_renderCallbacks.Contains(callback))
-            _renderCallbacks.Add(callback);
-    }
-
-    /// <summary>注销主线程渲染回调。</summary>
-    public static void UnregisterRenderCallback(Action callback)
-    {
-        _renderCallbacks.Remove(callback);
-    }
-
-    /// <summary>
-    /// 主线程渲染 Tick——由 EditorApplicationRunner 每帧调用。
-    /// 执行所有已注册的渲染回调（Diligent immediate context 非线程安全，必须主线程调用）。
-    /// </summary>
-    public static void TickRendering()
-    {
-        foreach (var callback in _renderCallbacks)
-        {
-            try
-            {
-                callback();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"[AvaloniaFrontendModule] 渲染回调异常: {ex.Message}");
-            }
-        }
-    }
 }

@@ -1,10 +1,9 @@
-namespace Neverness.Editor.Core;
+namespace Neverness.Rendering.Core;
 
 /// <summary>
 /// 视口表面注册表——管理多个 ViewportSurface 的生命周期。
 ///
 /// 设计原则：
-/// - 放在 Editor.Core，ImGuiFrontend 和 AvaloniaFrontend 共享
 /// - 每个 Surface 持有独立 SwapChain
 /// - Device/Context 全局共享，由 Renderer 管理
 /// - Deferred Resize：MarkResize → FlushResizes（帧末统一执行）

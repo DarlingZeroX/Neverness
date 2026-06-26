@@ -1,7 +1,6 @@
-using Neverness.Editor.Core;
 using Neverness.Runtime.Engine;
 
-namespace Neverness.Editor.Scene.Private.Service;
+namespace Neverness.Rendering.Core;
 
 /// <summary>
 /// 视口表面注册表实现——管理多个 ViewportSurface 的 SwapChain 生命周期。

@@ -3,6 +3,7 @@ using Neverness.Editor.Core.Private;
 using Neverness.Editor.Core.ViewModels;
 using Neverness.Editor.Framework.Interface;
 using Neverness.Editor.Framework.Private;
+using Neverness.Rendering.Core;
 
 namespace Neverness.Editor.Core.Public;
 

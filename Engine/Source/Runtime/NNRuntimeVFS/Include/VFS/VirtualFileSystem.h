@@ -15,7 +15,7 @@
 
 namespace NN::Runtime::VFS
 {
-
+	    
 using VirtualFileSystemPtr = std::shared_ptr<class VirtualFileSystem>;
 using VirtualFileSystemWeakPtr = std::weak_ptr<class VirtualFileSystem>;
 
