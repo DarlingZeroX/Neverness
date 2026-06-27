@@ -27,6 +27,12 @@ public sealed class RmlRenderer : IDisposable
     /// <summary>已加载的文档列表。</summary>
     private readonly List<RmlDocument> _documents = new();
 
+    /// <summary>热重载管理器。</summary>
+    private RmlHotReloader? _hotReloader;
+
+    /// <summary>同步管理器。</summary>
+    private SyncManager? _syncManager;
+
     /// <summary>是否已释放。</summary>
     private bool _disposed;
 
@@ -51,6 +57,8 @@ public sealed class RmlRenderer : IDisposable
             throw new InvalidOperationException("Failed to create RmlUI context");
     }
 
+    #region 属性
+
     /// <summary>
     /// 渲染器 Handle（传给 ViewportSurface 执行渲染）。
     /// </summary>
@@ -62,6 +70,44 @@ public sealed class RmlRenderer : IDisposable
     internal Context? Context => _context;
 
     /// <summary>
+    /// 已加载的文档列表（只读）。
+    /// </summary>
+    public IReadOnlyList<RmlDocument> Documents => _documents;
+
+    /// <summary>
+    /// 热重载管理器（懒加载）。
+    /// </summary>
+    public RmlHotReloader HotReloader
+    {
+        get
+        {
+            _hotReloader ??= new RmlHotReloader(this);
+            return _hotReloader;
+        }
+    }
+
+    /// <summary>
+    /// 同步管理器（懒加载）。
+    /// </summary>
+    public SyncManager Sync
+    {
+        get
+        {
+            _syncManager ??= new SyncManager(this);
+            return _syncManager;
+        }
+    }
+
+    /// <summary>
+    /// 调试器是否可见。
+    /// </summary>
+    public bool IsDebuggerVisible => RmlUiNet.Debugger.IsVisible();
+
+    #endregion
+
+    #region 视口
+
+    /// <summary>
     /// 调整视口尺寸。
     /// </summary>
     public void Resize(int width, int height)
@@ -69,14 +115,17 @@ public sealed class RmlRenderer : IDisposable
         _context?.SetDimensions(width, height);
     }
 
+    #endregion
+
     #region 文档管理
 
     /// <summary>
     /// 加载文档。
     /// </summary>
     /// <param name="path">文档 VFS 路径。</param>
+    /// <param name="autoShow">是否自动显示。</param>
     /// <returns>文档实例，失败返回 null。</returns>
-    public RmlDocument? LoadDocument(string path)
+    public RmlDocument? LoadDocument(string path, bool autoShow = true)
     {
         if (_context == null) return null;
 
@@ -85,15 +134,48 @@ public sealed class RmlRenderer : IDisposable
 
         var rmlDoc = new RmlDocument(this, doc, path);
         _documents.Add(rmlDoc);
+
+        if (autoShow)
+        {
+            rmlDoc.Show();
+        }
+
         return rmlDoc;
     }
 
     /// <summary>
-    /// 卸载文档。
+    /// 获取指定路径的文档。
+    /// </summary>
+    /// <param name="path">文档路径。</param>
+    /// <returns>文档实例，未找到返回 null。</returns>
+    public RmlDocument? GetDocument(string path)
+    {
+        return _documents.FirstOrDefault(d =>
+            string.Equals(d.Path, path, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// 卸载文档（通过路径）。
+    /// </summary>
+    /// <param name="path">文档路径。</param>
+    public void UnloadDocument(string path)
+    {
+        var doc = GetDocument(path);
+        if (doc != null)
+        {
+            doc.Close();
+            _documents.Remove(doc);
+            _hotReloader?.UnregisterDocument(doc);
+        }
+    }
+
+    /// <summary>
+    /// 卸载文档（内部调用）。
     /// </summary>
     internal void RemoveDocument(RmlDocument doc)
     {
         _documents.Remove(doc);
+        _hotReloader?.UnregisterDocument(doc);
     }
 
     /// <summary>
@@ -102,7 +184,12 @@ public sealed class RmlRenderer : IDisposable
     public void ReloadAllDocuments()
     {
         foreach (var doc in _documents)
-            doc.Reload();
+        {
+            if (doc.IsValid)
+            {
+                doc.Reload();
+            }
+        }
     }
 
     #endregion
@@ -137,14 +224,29 @@ public sealed class RmlRenderer : IDisposable
     }
 
     /// <summary>
-    /// 处理键盘按键。
+    /// 处理键盘按键（带快捷键支持）。
     /// </summary>
-    public bool OnKey(KeyIdentifier key, bool down, KeyModifier modifiers)
+    public bool OnKey(KeyIdentifier key, bool down, KeyModifier modifiers, float nativeDpRatio = 1.0f)
     {
-        if (down)
-            return _context?.ProcessKeyDown(key, modifiers) ?? false;
-        else
-            return _context?.ProcessKeyUp(key, modifiers) ?? false;
+        if (!down) return _context?.ProcessKeyUp(key, modifiers) ?? false;
+
+        // 优先级快捷键（在 Context 处理前）
+        bool propagate = RmlShell.ProcessKeyDownShortcuts(
+            _context!, key, modifiers, nativeDpRatio, priority: true);
+
+        if (!propagate) return true;
+
+        // 提交给 Context 处理
+        bool handled = _context?.ProcessKeyDown(key, modifiers) ?? false;
+
+        if (!handled)
+        {
+            // 低优先级快捷键（在 Context 未处理时）
+            propagate = RmlShell.ProcessKeyDownShortcuts(
+                _context!, key, modifiers, nativeDpRatio, priority: false);
+        }
+
+        return handled || !propagate;
     }
 
     /// <summary>
@@ -153,6 +255,14 @@ public sealed class RmlRenderer : IDisposable
     public bool OnTextInput(string text)
     {
         return _context?.ProcessTextInput(text) ?? false;
+    }
+
+    /// <summary>
+    /// 处理鼠标离开窗口。
+    /// </summary>
+    public void OnMouseLeave()
+    {
+        _context?.ProcessMouseLeave();
     }
 
     #endregion
@@ -174,12 +284,17 @@ public sealed class RmlRenderer : IDisposable
     /// <summary>
     /// 加载字体。
     /// </summary>
-    /// <param name="path">字体文件路径。</param>
-    /// <param name="fallback">是否作为 fallback 字体。</param>
-    /// <returns>是否成功。</returns>
     public bool LoadFontFace(string path, bool fallback = false)
     {
         return Rml.LoadFontFace(path, fallback);
+    }
+
+    /// <summary>
+    /// 加载默认字体集。
+    /// </summary>
+    public void LoadDefaultFonts(string fontsPath)
+    {
+        RmlShell.LoadFonts(fontsPath);
     }
 
     #endregion
@@ -195,9 +310,132 @@ public sealed class RmlRenderer : IDisposable
     }
 
     /// <summary>
-    /// 调试器是否可见。
+    /// 切换调试器可见性。
     /// </summary>
-    public bool IsDebuggerVisible => RmlUiNet.Debugger.IsVisible();
+    public void ToggleDebugger()
+    {
+        SetDebuggerVisible(!IsDebuggerVisible);
+    }
+
+    #endregion
+
+    #region SyncManager（内部类）
+
+    /// <summary>
+    /// 文档同步管理器。
+    ///
+    /// 对应 C++ RmlUIRenderer::Sync() 的三路 Diff 逻辑：
+    /// - 删除不在列表中的文档
+    /// - 加载新文档
+    /// - 保持已存在的文档
+    /// </summary>
+    public sealed class SyncManager
+    {
+        private readonly RmlRenderer _renderer;
+        private readonly HashSet<string> _activePaths = new(StringComparer.OrdinalIgnoreCase);
+
+        internal SyncManager(RmlRenderer renderer)
+        {
+            _renderer = renderer;
+        }
+
+        /// <summary>
+        /// 当前活跃的文档路径。
+        /// </summary>
+        public IReadOnlyCollection<string> ActivePaths => _activePaths;
+
+        /// <summary>
+        /// 同步文档列表（三路 Diff）。
+        /// </summary>
+        /// <param name="paths">要同步的文档路径列表。</param>
+        public void Sync(IEnumerable<string> paths)
+        {
+            var newPaths = new HashSet<string>(paths, StringComparer.OrdinalIgnoreCase);
+
+            // 1. 删除不在新列表中的文档
+            var toRemove = new List<string>();
+            foreach (var activePath in _activePaths)
+            {
+                if (!newPaths.Contains(activePath))
+                {
+                    toRemove.Add(activePath);
+                }
+            }
+
+            foreach (var path in toRemove)
+            {
+                _renderer.UnloadDocument(path);
+                _activePaths.Remove(path);
+            }
+
+            // 2. 加载新文档
+            foreach (var path in newPaths)
+            {
+                if (_activePaths.Contains(path))
+                    continue;
+
+                var doc = _renderer.LoadDocument(path);
+                if (doc != null)
+                {
+                    _activePaths.Add(path);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 添加单个文档。
+        /// </summary>
+        public bool Add(string path)
+        {
+            if (_activePaths.Contains(path))
+                return true;
+
+            var doc = _renderer.LoadDocument(path);
+            if (doc != null)
+            {
+                _activePaths.Add(path);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 移除单个文档。
+        /// </summary>
+        public void Remove(string path)
+        {
+            if (!_activePaths.Contains(path))
+                return;
+
+            _renderer.UnloadDocument(path);
+            _activePaths.Remove(path);
+        }
+
+        /// <summary>
+        /// 清除所有文档。
+        /// </summary>
+        public void Clear()
+        {
+            foreach (var path in _activePaths)
+            {
+                _renderer.UnloadDocument(path);
+            }
+            _activePaths.Clear();
+        }
+
+        /// <summary>
+        /// 重新加载所有活跃文档。
+        /// </summary>
+        public void ReloadAll()
+        {
+            foreach (var path in _activePaths)
+            {
+                var doc = _renderer.GetDocument(path);
+                doc?.Reload();
+            }
+        }
+    }
 
     #endregion
 
@@ -206,6 +444,13 @@ public sealed class RmlRenderer : IDisposable
     public void Dispose()
     {
         if (_disposed) return;
+
+        // 释放同步管理器
+        _syncManager?.Clear();
+
+        // 释放热重载管理器
+        _hotReloader?.Dispose();
+        _hotReloader = null;
 
         // 释放所有文档
         foreach (var doc in _documents.ToArray())

@@ -8,7 +8,8 @@ set(NNRuntimeRmlui_SOURCES
     Include/Rml/RmlUi_Renderer_GL3.h
     Include/Rml/Shell.h
     Include/Rml/ShellFileInterface.h
-    
+    Include/ABI/RmlRendererAbi.h
+
     Source/Rml/RendererExtensions.cpp
     Source/Rml/RenderInterfaceGL3SDL.cpp
     Source/Rml/RmlUi_Platform_SDL.cpp
@@ -19,7 +20,9 @@ set(NNRuntimeRmlui_SOURCES
     Source/System/NNRmlUIModule.cpp
     Source/System/NNRmlUISystem.cpp
     Source/Renderer/RmlUIRenderer.cpp
+    Source/Renderer/RmlRenderer.cpp
     Source/ABI/RmlUIRuntimeApi.cpp
+    Source/ABI/RmlRendererAbi.cpp
 
     # Native
     Source/Native/Context.cpp
