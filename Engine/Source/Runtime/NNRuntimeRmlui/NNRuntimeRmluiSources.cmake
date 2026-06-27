@@ -19,4 +19,49 @@ set(NNRuntimeRmlui_SOURCES
     Source/System/NNRmlUIModule.cpp
     Source/System/NNRmlUISystem.cpp
     Source/Renderer/RmlUIRenderer.cpp
+
+    # Native
+    Source/Native/Context.cpp
+
+    Source/Native/Element.cpp
+    Source/Native/ElementDocument.cpp
+    Source/Native/ElementFormControlInput.cpp
+    Source/Native/ElementCustom.cpp
+    Source/Native/ElementInstancer.cpp
+
+    Source/Native/Variant.cpp
+    Source/Native/VariableDefinition.cpp
+    Source/Native/StructHandle.cpp
+    Source/Native/Dictionary.cpp
+    Source/Native/DataVariable.cpp
+    Source/Native/DataModelHandle.cpp
+    Source/Native/DataModelConstructor.cpp
+    Source/Native/Event.cpp
+    Source/Native/EventInstancer.cpp
+    Source/Native/EventListener.h
+    Source/Native/EventListenerInstancer.cpp
+
+    Source/Native/Box.cpp
+    Source/Native/RenderManager.cpp
+
+    Source/Native/RenderInterface.cpp
+    Source/Native/SystemInterface.cpp
+    Source/Native/FileInterface.cpp
+    Source/Native/Plugin.cpp
+
+    Source/Native/StyleSheetContainer.cpp
+    Source/Native/StyleSheetSpecification.cpp
+    
+    Source/Native/XMLAttributes.cpp
+    Source/Native/PropertyDefinition.cpp
+    Source/Native/Property.cpp
+    Source/Native/Rml.cpp
+    Source/Native/Debugger.cpp
+    Source/Native/Util.h
+    Source/Native/Buffer.cpp
+
+    Include/Native/Buffer.h
+    Include/Native/Pool.h
+    Include/Native/RmlNative.h
+    Include/Native/StreamFile.h
 )

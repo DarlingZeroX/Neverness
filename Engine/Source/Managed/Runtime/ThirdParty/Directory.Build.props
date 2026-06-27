@@ -1,0 +1,13 @@
+<Project>
+  <!-- 导入父目录的公共配置 -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- Runtime 专有的路径变量 -->
+    <NevernessManagedRuntimeProjectDir>$([MSBuild]::EnsureTrailingSlash('$(MSBuildThisFileDirectory)'))</NevernessManagedRuntimeProjectDir>
+    <NevernessNativeRuntimeProjectDir>$(SolutionDir)Engine\Source\Runtime\</NevernessNativeRuntimeProjectDir>
+
+    <!-- Runtime 需要关闭 TFM attribute -->
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+</Project>

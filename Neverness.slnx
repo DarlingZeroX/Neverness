@@ -65,5 +65,8 @@
   <Folder Name="/Runtime/Tests/">
     <Project Path="Engine/Source/Managed/Runtime/Neverness.Runtime.Scene/Tests/Neverness.Runtime.Scene.Tests.csproj" />
   </Folder>
+  <Folder Name="/Runtime/ThirdParty/">
+    <Project Path="Engine/Source/Managed/Runtime/ThirdParty/RmlUi.Net/RmlUi.Net.csproj" />
+  </Folder>
   <Project Path="Engine/Source/Managed/Runtime/Tests/NevernessRuntimeManaged-Foundation.Tests.csproj" />
 </Solution>
