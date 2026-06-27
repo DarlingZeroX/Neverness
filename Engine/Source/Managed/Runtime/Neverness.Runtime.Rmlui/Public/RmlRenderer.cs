@@ -9,12 +9,10 @@ namespace Neverness.Runtime.Rmlui;
 ///
 /// 职责：
 /// - 持有 C++ RmlUIRenderer 的 Handle（用于 ViewportSurface 渲染）
-/// - 使用 RmlUi.Net 管理 Context、Document、输入、更新等逻辑
+/// - 管理 RmlUi.Net Context 生命周期
+/// - 提供输入处理、更新、字体、调试等功能
 ///
-/// 架构：
-/// - C++ 只管 GPU 渲染（RmlDiligentRenderInterface）
-/// - C# 管理所有逻辑（文档、输入、更新）
-/// - 渲染时把 Handle 传给 ViewportSurface
+/// 文档管理由 RmlDocumentManager 负责。
 /// </summary>
 public sealed class RmlRenderer : IDisposable
 {
@@ -24,14 +22,8 @@ public sealed class RmlRenderer : IDisposable
     /// <summary>RmlUi.Net Context，用于逻辑管理。</summary>
     private Context? _context;
 
-    /// <summary>已加载的文档列表。</summary>
-    private readonly List<RmlDocument> _documents = new();
-
-    /// <summary>热重载管理器。</summary>
-    private RmlHotReloader? _hotReloader;
-
-    /// <summary>同步管理器。</summary>
-    private SyncManager? _syncManager;
+    /// <summary>文档管理器。</summary>
+    private RmlDocumentManager _documentManager;
 
     /// <summary>是否已释放。</summary>
     private bool _disposed;
@@ -55,6 +47,9 @@ public sealed class RmlRenderer : IDisposable
         _context = Rml.CreateContext("Main", new Vector2i(width, height));
         if (_context == null)
             throw new InvalidOperationException("Failed to create RmlUI context");
+
+        // 创建文档管理器
+        _documentManager = new RmlDocumentManager(_context);
     }
 
     #region 属性
@@ -67,36 +62,12 @@ public sealed class RmlRenderer : IDisposable
     /// <summary>
     /// RmlUi.Net Context。
     /// </summary>
-    internal Context? Context => _context;
+    public Context? Context => _context;
 
     /// <summary>
-    /// 已加载的文档列表（只读）。
+    /// 文档管理器。
     /// </summary>
-    public IReadOnlyList<RmlDocument> Documents => _documents;
-
-    /// <summary>
-    /// 热重载管理器（懒加载）。
-    /// </summary>
-    public RmlHotReloader HotReloader
-    {
-        get
-        {
-            _hotReloader ??= new RmlHotReloader(this);
-            return _hotReloader;
-        }
-    }
-
-    /// <summary>
-    /// 同步管理器（懒加载）。
-    /// </summary>
-    public SyncManager Sync
-    {
-        get
-        {
-            _syncManager ??= new SyncManager(this);
-            return _syncManager;
-        }
-    }
+    public RmlDocumentManager DocumentManager => _documentManager;
 
     /// <summary>
     /// 调试器是否可见。
@@ -113,83 +84,6 @@ public sealed class RmlRenderer : IDisposable
     public void Resize(int width, int height)
     {
         _context?.SetDimensions(width, height);
-    }
-
-    #endregion
-
-    #region 文档管理
-
-    /// <summary>
-    /// 加载文档。
-    /// </summary>
-    /// <param name="path">文档 VFS 路径。</param>
-    /// <param name="autoShow">是否自动显示。</param>
-    /// <returns>文档实例，失败返回 null。</returns>
-    public RmlDocument? LoadDocument(string path, bool autoShow = true)
-    {
-        if (_context == null) return null;
-
-        var doc = _context.LoadDocument(path);
-        if (doc == null) return null;
-
-        var rmlDoc = new RmlDocument(this, doc, path);
-        _documents.Add(rmlDoc);
-
-        if (autoShow)
-        {
-            rmlDoc.Show();
-        }
-
-        return rmlDoc;
-    }
-
-    /// <summary>
-    /// 获取指定路径的文档。
-    /// </summary>
-    /// <param name="path">文档路径。</param>
-    /// <returns>文档实例，未找到返回 null。</returns>
-    public RmlDocument? GetDocument(string path)
-    {
-        return _documents.FirstOrDefault(d =>
-            string.Equals(d.Path, path, StringComparison.OrdinalIgnoreCase));
-    }
-
-    /// <summary>
-    /// 卸载文档（通过路径）。
-    /// </summary>
-    /// <param name="path">文档路径。</param>
-    public void UnloadDocument(string path)
-    {
-        var doc = GetDocument(path);
-        if (doc != null)
-        {
-            doc.Close();
-            _documents.Remove(doc);
-            _hotReloader?.UnregisterDocument(doc);
-        }
-    }
-
-    /// <summary>
-    /// 卸载文档（内部调用）。
-    /// </summary>
-    internal void RemoveDocument(RmlDocument doc)
-    {
-        _documents.Remove(doc);
-        _hotReloader?.UnregisterDocument(doc);
-    }
-
-    /// <summary>
-    /// 重新加载所有文档。
-    /// </summary>
-    public void ReloadAllDocuments()
-    {
-        foreach (var doc in _documents)
-        {
-            if (doc.IsValid)
-            {
-                doc.Reload();
-            }
-        }
     }
 
     #endregion
@@ -319,143 +213,14 @@ public sealed class RmlRenderer : IDisposable
 
     #endregion
 
-    #region SyncManager（内部类）
-
-    /// <summary>
-    /// 文档同步管理器。
-    ///
-    /// 对应 C++ RmlUIRenderer::Sync() 的三路 Diff 逻辑：
-    /// - 删除不在列表中的文档
-    /// - 加载新文档
-    /// - 保持已存在的文档
-    /// </summary>
-    public sealed class SyncManager
-    {
-        private readonly RmlRenderer _renderer;
-        private readonly HashSet<string> _activePaths = new(StringComparer.OrdinalIgnoreCase);
-
-        internal SyncManager(RmlRenderer renderer)
-        {
-            _renderer = renderer;
-        }
-
-        /// <summary>
-        /// 当前活跃的文档路径。
-        /// </summary>
-        public IReadOnlyCollection<string> ActivePaths => _activePaths;
-
-        /// <summary>
-        /// 同步文档列表（三路 Diff）。
-        /// </summary>
-        /// <param name="paths">要同步的文档路径列表。</param>
-        public void Sync(IEnumerable<string> paths)
-        {
-            var newPaths = new HashSet<string>(paths, StringComparer.OrdinalIgnoreCase);
-
-            // 1. 删除不在新列表中的文档
-            var toRemove = new List<string>();
-            foreach (var activePath in _activePaths)
-            {
-                if (!newPaths.Contains(activePath))
-                {
-                    toRemove.Add(activePath);
-                }
-            }
-
-            foreach (var path in toRemove)
-            {
-                _renderer.UnloadDocument(path);
-                _activePaths.Remove(path);
-            }
-
-            // 2. 加载新文档
-            foreach (var path in newPaths)
-            {
-                if (_activePaths.Contains(path))
-                    continue;
-
-                var doc = _renderer.LoadDocument(path);
-                if (doc != null)
-                {
-                    _activePaths.Add(path);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 添加单个文档。
-        /// </summary>
-        public bool Add(string path)
-        {
-            if (_activePaths.Contains(path))
-                return true;
-
-            var doc = _renderer.LoadDocument(path);
-            if (doc != null)
-            {
-                _activePaths.Add(path);
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// 移除单个文档。
-        /// </summary>
-        public void Remove(string path)
-        {
-            if (!_activePaths.Contains(path))
-                return;
-
-            _renderer.UnloadDocument(path);
-            _activePaths.Remove(path);
-        }
-
-        /// <summary>
-        /// 清除所有文档。
-        /// </summary>
-        public void Clear()
-        {
-            foreach (var path in _activePaths)
-            {
-                _renderer.UnloadDocument(path);
-            }
-            _activePaths.Clear();
-        }
-
-        /// <summary>
-        /// 重新加载所有活跃文档。
-        /// </summary>
-        public void ReloadAll()
-        {
-            foreach (var path in _activePaths)
-            {
-                var doc = _renderer.GetDocument(path);
-                doc?.Reload();
-            }
-        }
-    }
-
-    #endregion
-
     #region IDisposable
 
     public void Dispose()
     {
         if (_disposed) return;
 
-        // 释放同步管理器
-        _syncManager?.Clear();
-
-        // 释放热重载管理器
-        _hotReloader?.Dispose();
-        _hotReloader = null;
-
-        // 释放所有文档
-        foreach (var doc in _documents.ToArray())
-            doc.Dispose();
-        _documents.Clear();
+        // 释放文档管理器
+        _documentManager.Clear();
 
         // 释放 Context
         _context?.Dispose();

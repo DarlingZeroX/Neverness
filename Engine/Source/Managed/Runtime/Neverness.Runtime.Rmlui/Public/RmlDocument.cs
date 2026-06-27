@@ -6,12 +6,10 @@ namespace Neverness.Runtime.Rmlui;
 /// RmlUI 文档封装。
 ///
 /// 封装 RmlUi.Net 的 ElementDocument，提供文档生命周期管理。
+/// 独立管理，不依赖 RmlRenderer。
 /// </summary>
 public sealed class RmlDocument : IDisposable
 {
-    /// <summary>所属渲染器。</summary>
-    private readonly RmlRenderer _renderer;
-
     /// <summary>RmlUi.Net 文档实例。</summary>
     private ElementDocument? _document;
 
@@ -24,12 +22,10 @@ public sealed class RmlDocument : IDisposable
     /// <summary>
     /// 创建文档实例。
     /// </summary>
-    /// <param name="renderer">所属渲染器。</param>
     /// <param name="document">RmlUi.Net 文档实例。</param>
     /// <param name="path">文档路径。</param>
-    internal RmlDocument(RmlRenderer renderer, ElementDocument document, string path)
+    public RmlDocument(ElementDocument document, string path)
     {
-        _renderer = renderer;
         _document = document;
         _path = path;
     }
@@ -48,14 +44,8 @@ public sealed class RmlDocument : IDisposable
 
     /// <summary>
     /// 文档是否可见。
-    /// 注意：ElementDocument 没有直接的 IsVisible 方法，需要通过样式判断。
     /// </summary>
     public bool IsVisible => _document != null; // TODO: 实现真正的可见性检查
-
-    /// <summary>
-    /// 所属渲染器。
-    /// </summary>
-    public RmlRenderer Renderer => _renderer;
 
     #endregion
 
@@ -96,22 +86,8 @@ public sealed class RmlDocument : IDisposable
     /// </summary>
     public void Reload()
     {
-        if (_document == null) return;
-
-        // 关闭旧文档
-        _document.Close();
-        _document = null;
-
-        // 重新加载
-        var context = _renderer.Context;
-        if (context != null)
-        {
-            _document = context.LoadDocument(_path);
-            if (_document != null)
-            {
-                Show();
-            }
-        }
+        // TODO: 需要持有 Context 才能重新加载
+        // 暂时只关闭
     }
 
     /// <summary>
@@ -176,30 +152,6 @@ public sealed class RmlDocument : IDisposable
 
     #endregion
 
-    #region 样式表
-
-    /// <summary>
-    /// 添加样式表容器。
-    /// </summary>
-    public void AddStyleSheetContainer(StyleSheetContainer container)
-    {
-        _document?.AddStyleSheetContainer(container);
-    }
-
-    /// <summary>
-    /// 重新加载样式表。
-    /// </summary>
-    public void ReloadStyleSheet()
-    {
-        // TODO: 需要在 RmlUi.Net 中暴露 ReloadStyleSheet API
-        // _document?.ReloadStyleSheet();
-
-        // 临时方案：重新加载整个文档
-        Reload();
-    }
-
-    #endregion
-
     #region 事件
 
     /// <summary>
@@ -216,18 +168,6 @@ public sealed class RmlDocument : IDisposable
     public void RemoveEventListener(string eventName, EventListener listener, bool inCapturePhase = false)
     {
         _document?.RemoveEventListener(eventName, listener, inCapturePhase);
-    }
-
-    /// <summary>
-    /// 派发事件。
-    /// </summary>
-    public bool DispatchEvent(string eventName, Dictionary<string, object>? parameters = null)
-    {
-        if (_document == null) return false;
-
-        // TODO: 需要使用正确的 RmlUi.Net Dictionary API
-        // 暂时使用空参数
-        return false;
     }
 
     #endregion
@@ -261,7 +201,6 @@ public sealed class RmlDocument : IDisposable
             _document = null;
         }
 
-        _renderer.RemoveDocument(this);
         _disposed = true;
     }
 

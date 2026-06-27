@@ -69,17 +69,17 @@ namespace RmlUiNet
         public void Click();
 
         /// <summary>
-        /// The distance from this element’s top border to its offset parent’s top border.
+        /// The distance from this elementï¿½s top border to its offset parentï¿½s top border.
         /// </summary>
         float GetOffsetTop();
 
         /// <summary>
-        /// The distance from the context’s left edge and the element’s left border.
+        /// The distance from the contextï¿½s left edge and the elementï¿½s left border.
         /// </summary>
         float GetAbsoluteLeft();
 
         /// <summary>
-        /// The distance from the context’s top edge and the element’s top border.
+        /// The distance from the contextï¿½s top edge and the elementï¿½s top border.
         /// </summary>
         float GetAbsoluteTop();
 

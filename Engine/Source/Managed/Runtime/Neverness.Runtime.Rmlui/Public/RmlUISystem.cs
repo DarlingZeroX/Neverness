@@ -6,11 +6,11 @@ namespace Neverness.Runtime.Rmlui;
 /// RmlUI 全局系统。
 ///
 /// 提供便捷的静态方法访问 RmlRenderer。
-/// 管理渲染器生命周期和全局状态。
+/// 文档管理通过 DocumentManager 进行。
 ///
 /// 使用方法：
 ///   RmlUISystem.Initialize(1920, 1080);
-///   var doc = RmlUISystem.LoadDocument("/ui/main.rml");
+///   RmlUISystem.DocumentManager.LoadDocument(1, "/ui/main.rml");
 ///   // 每帧调用
 ///   RmlUISystem.Update(deltaTime);
 ///   // 渲染由 ViewportSurface 处理
@@ -74,50 +74,14 @@ public static class RmlUISystem
     public static uint RendererHandle => _renderer?.Handle ?? 0;
 
     /// <summary>
-    /// 获取热重载管理器。
+    /// 获取 RmlUi Context。
     /// </summary>
-    public static RmlHotReloader? HotReloader => _renderer?.HotReloader;
+    public static RmlUiNet.Context? Context => _renderer?.Context;
 
     /// <summary>
-    /// 获取同步管理器。
+    /// 获取文档管理器。
     /// </summary>
-    public static RmlRenderer.SyncManager? Sync => _renderer?.Sync;
-
-    #endregion
-
-    #region 文档管理
-
-    /// <summary>
-    /// 加载文档。
-    /// </summary>
-    public static RmlDocument? LoadDocument(string path, bool autoShow = true)
-    {
-        return _renderer?.LoadDocument(path, autoShow);
-    }
-
-    /// <summary>
-    /// 获取指定路径的文档。
-    /// </summary>
-    public static RmlDocument? GetDocument(string path)
-    {
-        return _renderer?.GetDocument(path);
-    }
-
-    /// <summary>
-    /// 卸载文档。
-    /// </summary>
-    public static void UnloadDocument(string path)
-    {
-        _renderer?.UnloadDocument(path);
-    }
-
-    /// <summary>
-    /// 重新加载所有文档。
-    /// </summary>
-    public static void ReloadAllDocuments()
-    {
-        _renderer?.ReloadAllDocuments();
-    }
+    public static RmlDocumentManager? DocumentManager => _renderer?.DocumentManager;
 
     #endregion
 
@@ -225,66 +189,38 @@ public static class RmlUISystem
 
     #endregion
 
-    #region 热重载
-
-    /// <summary>
-    /// 文件变化通知。
-    /// </summary>
-    public static void NotifyFileChanged(string filePath)
-    {
-        _renderer?.HotReloader.NotifyFileChanged(filePath);
-    }
-
-    /// <summary>
-    /// 注册文档到热重载。
-    /// </summary>
-    public static void RegisterDocumentForReload(RmlDocument document, IEnumerable<string>? watchedFiles = null)
-    {
-        _renderer?.HotReloader.RegisterDocument(document, watchedFiles);
-    }
-
-    #endregion
-
-    #region 文档同步
+    #region 文档管理委托
 
     /// <summary>
     /// 同步文档列表（三路 Diff）。
     /// </summary>
-    public static void SyncDocuments(IEnumerable<string> paths)
+    public static void SyncDocuments(IEnumerable<(ulong Entity, string VfsPath)> items)
     {
-        _renderer?.Sync.Sync(paths);
+        _renderer?.DocumentManager.Sync(items);
     }
 
     /// <summary>
-    /// 添加单个文档到同步列表。
+    /// 加载单个文档。
     /// </summary>
-    public static bool SyncAddDocument(string path)
+    public static bool LoadDocument(ulong entity, string vfsPath)
     {
-        return _renderer?.Sync.Add(path) ?? false;
+        return _renderer?.DocumentManager.LoadDocument(entity, vfsPath) ?? false;
     }
 
     /// <summary>
-    /// 从同步列表移除文档。
+    /// 卸载单个文档。
     /// </summary>
-    public static void SyncRemoveDocument(string path)
+    public static void UnloadDocument(ulong entity)
     {
-        _renderer?.Sync.Remove(path);
+        _renderer?.DocumentManager.UnloadDocument(entity);
     }
 
     /// <summary>
-    /// 清除同步列表中的所有文档。
+    /// 文件变化通知（热重载）。
     /// </summary>
-    public static void SyncClearDocuments()
+    public static void NotifyFileChanged(string filePath)
     {
-        _renderer?.Sync.Clear();
-    }
-
-    /// <summary>
-    /// 重新加载同步列表中的所有文档。
-    /// </summary>
-    public static void SyncReloadAllDocuments()
-    {
-        _renderer?.Sync.ReloadAll();
+        _renderer?.DocumentManager.NotifyFileChanged(filePath);
     }
 
     #endregion
