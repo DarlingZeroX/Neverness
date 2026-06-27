@@ -281,18 +281,13 @@ public class ViewportAvaloniaView : AvaloniaViewBase
         // 2. FlushResizes（SwapChain ResizeBuffers）
         _surfaceRegistry.FlushResizes();
 
-        // 3. 渲染视口（RenderCommands 路径）
+        // 3. 渲染视口（View 不关心命令收集细节，交给 Registry 处理）
         var w = (_viewModel?.ViewportWidth ?? 0);
         var h = (_viewModel?.ViewportHeight ?? 0);
 
         if (w > 0 && h > 0 && _controller != null)
         {
-            // 从 ECS 收集渲染命令（SetCamera + DrawSpriteBatch）
-            var commands = _controller.CollectRenderCommands(w, h);
-            if (commands != null)
-            {
-                _surfaceRegistry.RenderViewportCommands(_surfaceId, commands);
-            }
+            _surfaceRegistry.RenderViewport(_surfaceId, w, h, _controller.ViewportService);
         }
     }
 

@@ -48,6 +48,7 @@
 #include "NNCore/Interface/HLog.h"
 
 // RmlUI 单例 getter 函数声明（已迁移至 NNRuntimeRmlui 模块）
+#include "NNRuntimeRmlui/Include/ABI/RmlRendererAbi.h"
 #include "NNRuntimeRmlui/Include/ABI/RmlUIRuntimeApi.h"
 
 namespace
@@ -359,14 +360,14 @@ namespace
             return 0;
 
         // 确保 RmlUI 渲染器已初始化（惰性，设备指针由首次调用时注入）
-        {
-            auto* runtimeTable = NNNativeEngineApi_GetRuntimeTable();
-            auto* device = runtimeTable
-                ? static_cast<NN::Runtime::Render::INNRenderDevice*>(
-                    runtimeTable->diligent.GetPrimaryRenderDevice())
-                : nullptr;
-            EnsureRmlUIInitialized(device);
-        }
+        //{
+        //    auto* runtimeTable = NNNativeEngineApi_GetRuntimeTable();
+        //    auto* device = runtimeTable
+        //        ? static_cast<NN::Runtime::Render::INNRenderDevice*>(
+        //            runtimeTable->diligent.GetPrimaryRenderDevice())
+        //        : nullptr;
+        //    EnsureRmlUIInitialized(device);
+        //}
 
         // 2. 获取 Surface 和 SwapChain
         std::lock_guard<std::mutex> lock(g_SurfaceMutex);
@@ -610,30 +611,49 @@ namespace
 
         // 8. RmlUI Overlay Pass（C# 通过 SetRmlDocuments 命令传入文档列表）
         //    管线：Renderer2D (World Pass) → RmlUI (UI Overlay Pass) → CopyTexture → Present
-        if (!rmlDrawItems.empty())
-        {
-            auto* rmlRenderer = GetRmlUIRenderer();
-            if (rmlRenderer)
-            {
-                rmlRenderer->SetViewport(width, height);
+        //if (!rmlDrawItems.empty())
+        //{
+        //    auto* rmlRenderer = GetRmlUIRenderer();
+        //    if (rmlRenderer)
+        //    {
+        //        rmlRenderer->SetViewport(width, height);
+		//
+        //        // 热重载：处理 C# 端入队的重载请求（在 Sync 之前）
+        //        FlushRmlReloads();
+		//
+        //        rmlRenderer->Sync(rmlDrawItems);
+        //        rmlRenderer->Update();
+		//
+        //        if (g_CommandsFBO && g_CommandsFBO->GetColorRTV())
+        //        {
+        //            rmlRenderer->RenderOverlayOnScene(
+        //                rmlDrawItems,
+        //                NN::Runtime::RmlUI::NNRmlUIViewTarget::Scene,
+        //                g_CommandsFBO->GetColorRTV(),
+        //                g_CommandsFBO->GetDepthDSV(),
+        //                width, height);
+        //        }
+        //    }
+        //}
+		if (!rmlDrawItems.empty())
+		{
+			auto* rmlRenderer = RmlRenderer_Get(surfaceId);
+			if (rmlRenderer)
+			{
+				if (g_CommandsFBO && g_CommandsFBO->GetColorRTV())
+				{
+					rmlRenderer->SetViewport(width, height);
+					rmlRenderer->Update();
 
-                // 热重载：处理 C# 端入队的重载请求（在 Sync 之前）
-                FlushRmlReloads();
-
-                rmlRenderer->Sync(rmlDrawItems);
-                rmlRenderer->Update();
-
-                if (g_CommandsFBO && g_CommandsFBO->GetColorRTV())
-                {
-                    rmlRenderer->RenderOverlayOnScene(
-                        rmlDrawItems,
-                        NN::Runtime::RmlUI::NNRmlUIViewTarget::Scene,
-                        g_CommandsFBO->GetColorRTV(),
-                        g_CommandsFBO->GetDepthDSV(),
-                        width, height);
-                }
-            }
-        }
+					rmlRenderer->RenderOverlayOnScene(
+						rmlDrawItems,
+						NN::Runtime::RmlUI::NNRmlUIViewTarget::Scene,
+						g_CommandsFBO->GetColorRTV(),
+						g_CommandsFBO->GetDepthDSV(),
+						width, height);
+				}
+			}
+		}
 
         // 9. CopyTexture（FBO → SwapChain back buffer）
         auto* srcTextureView = reinterpret_cast<::Diligent::ITextureView*>(

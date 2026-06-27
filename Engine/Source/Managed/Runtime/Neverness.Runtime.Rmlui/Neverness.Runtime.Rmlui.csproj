@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Neverness.Runtime.Engine\Neverness.Runtime.Engine.csproj" />
+    <ProjectReference Include="..\Neverness.Runtime.Scene\Neverness.Runtime.Scene.csproj" />
     <ProjectReference Include="..\ThirdParty\RmlUi.Net\RmlUi.Net.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -70,4 +70,17 @@ public interface IViewportSurfaceRegistry
     /// <param name="commands">命令缓冲区字节数组。</param>
     /// <returns>是否成功。</returns>
     bool RenderViewportCommands(ulong surfaceId, byte[] commands);
+
+    /// <summary>
+    /// 渲染视口——内部收集渲染命令并提交。
+    ///
+    /// View 不需要知道 CollectRenderCommands 的细节，只需告诉 Registry「渲染这个表面」。
+    /// 内部流程：viewportService.CollectRenderCommands → RenderViewportCommands → C++ Renderer。
+    /// </summary>
+    /// <param name="surfaceId">表面 ID。</param>
+    /// <param name="width">视口宽度。</param>
+    /// <param name="height">视口高度。</param>
+    /// <param name="viewportService">视口服务，用于收集渲染命令。</param>
+    /// <returns>是否成功。</returns>
+    bool RenderViewport(ulong surfaceId, float width, float height, IViewportService viewportService);
 }

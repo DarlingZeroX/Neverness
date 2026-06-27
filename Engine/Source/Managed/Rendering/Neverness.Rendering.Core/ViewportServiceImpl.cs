@@ -5,6 +5,7 @@ using Neverness.Runtime.Scene;
 using Neverness.Runtime.Scene.Components;
 using Neverness.Rendering.Diligent.Commands;
 using Neverness.Rendering.RenderAssets;
+using Neverness.Runtime.Rmlui;
 using SpriteFlags = Neverness.Runtime.Scene.Components.SpriteFlags;
 
 namespace Neverness.Rendering.Core;
@@ -88,7 +89,7 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
     /// 数据流：
     /// Friflo ECS → SetCamera + DrawSpriteBatch → RenderCommandBuffer → byte[]
     /// </summary>
-    public byte[]? CollectRenderCommands(float width, float height)
+    public byte[]? CollectRenderCommands(ulong surfaceId, float width, float height)
     {
         _debugFrameCounter++;
         bool shouldLog = (_debugFrameCounter % DebugLogInterval == 1);
@@ -263,7 +264,13 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
             buffer.AddDrawSpriteBatch(CollectionsMarshal.AsSpan(sprites));
         }
 
-        // ── 4. 收集 RmlUIDocument 组件（直接 Friflo Query，不依赖 IInspectorService） ──
+        // ── 4. RmlUI 文档同步 + 收集渲染命令 ──
+        var rmlRenderer = RmlRendererManager.Instance.GetOrCreateRenderer(surfaceId);
+        //rmlRenderer.Resize((int)width, (int)height);
+
+        // RmlRenderer 内部读取场景 RmlUIDocumentComponent 并同步文档
+        rmlRenderer.SyncFromScene(_scene.Scene, AssetPathResolver);
+
         var rmlDocs = new List<RmlDocumentEntry>();
         if (AssetPathResolver != null)
         {
@@ -294,7 +301,7 @@ public sealed unsafe class ViewportServiceImpl : IViewportService
                 entry.SortOrder = doc.SortOrder;
                 entry.ViewTarget = (uint)doc.ViewTarget;
                 entry.EntityHandle = (uint)entity.Id;
-                entry.ViewportId = 0;
+                entry.ViewportId = (uint)surfaceId;
                 rmlDocs.Add(entry);
             });
         }

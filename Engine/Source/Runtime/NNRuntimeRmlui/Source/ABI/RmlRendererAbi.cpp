@@ -160,3 +160,12 @@ void RmlRenderer_SetContext(RmlRendererHandle handle, void* contextPtr)
 }
 
 } // extern "C"
+void RmlRenderer_SetRenderDevice(void* device)
+{
+	RmlRendererHandleManager::Get().SetRenderDevice(static_cast<NN::Runtime::Render::INNRenderDevice*>(device));
+}
+
+NN::Runtime::Renderer::RmlRenderer* RmlRenderer_Get(RmlRendererHandle handle)
+{
+	return RmlRendererHandleManager::Get().Get(handle);
+}

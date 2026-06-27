@@ -20,6 +20,9 @@ public class EditorViewportController : IController
         _viewportService = viewportService;
     }
 
+    /// <summary>视口服务——供 View 传给 Registry 的 RenderViewport 使用。</summary>
+    public IViewportService ViewportService => _viewportService;
+
     public void Initialize()
     {
         // 初始同步场景状态
@@ -67,8 +70,8 @@ public class EditorViewportController : IController
     /// 从 ECS 收集渲染命令（SetCamera + DrawSpriteBatch）并序列化为 Flat Buffer。
     /// 返回 null 表示无场景或收集失败。
     /// </summary>
-    public byte[]? CollectRenderCommands(float width, float height)
+    public byte[]? CollectRenderCommands(ulong surfaceId, float width, float height)
     {
-        return _viewportService.CollectRenderCommands(width, height);
+        return _viewportService.CollectRenderCommands(surfaceId, width, height);
     }
 }

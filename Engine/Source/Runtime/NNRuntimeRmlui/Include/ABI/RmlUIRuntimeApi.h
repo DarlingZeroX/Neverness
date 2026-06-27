@@ -41,13 +41,13 @@ NN_RUNTIME_RMLUI_API void FlushRmlReloads(void);
 // ── C++ getter / 初始化函数（供 ViewportSurfaceRuntimeApi 内部调用） ──
 
 /** @brief 获取 RmlUI 渲染器单例（由本模块管理生命周期）。 */
-NN_RUNTIME_RMLUI_API NN::Runtime::Renderer::RmlUIRenderer* GetRmlUIRenderer();
-
-/** @brief 获取 RmlUI 系统单例（由本模块管理生命周期）。 */
-NN_RUNTIME_RMLUI_API NN::Runtime::RmlUI::NNRmlUISystem* GetRmlUISystem();
-
-/**
- * @brief 确保 RmlUI 单例已初始化（惰性初始化，可重复调用）。
- * @param device Diligent 渲染设备指针（首次调用时必须非空，后续调用可忽略）
- */
-NN_RUNTIME_RMLUI_API void EnsureRmlUIInitialized(NN::Runtime::Render::INNRenderDevice* device = nullptr);
+//NN_RUNTIME_RMLUI_API NN::Runtime::Renderer::RmlUIRenderer* GetRmlUIRenderer();
+//
+///** @brief 获取 RmlUI 系统单例（由本模块管理生命周期）。 */
+//NN_RUNTIME_RMLUI_API NN::Runtime::RmlUI::NNRmlUISystem* GetRmlUISystem();
+//
+///**
+// * @brief 确保 RmlUI 单例已初始化（惰性初始化，可重复调用）。
+// * @param device Diligent 渲染设备指针（首次调用时必须非空，后续调用可忽略）
+// */
+//NN_RUNTIME_RMLUI_API void EnsureRmlUIInitialized(NN::Runtime::Render::INNRenderDevice* device = nullptr);

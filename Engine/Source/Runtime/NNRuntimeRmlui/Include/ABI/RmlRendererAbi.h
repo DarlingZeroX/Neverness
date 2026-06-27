@@ -9,6 +9,7 @@
  */
 
 #include "../../RuntimeRmlUIExport.h"
+#include "../Renderer/RmlRenderer.h"
 
 #include <cstdint>
 
@@ -33,6 +34,8 @@ constexpr RmlRendererHandle InvalidRmlRendererHandle = 0;
  */
 NN_RUNTIME_RMLUI_API RmlRendererHandle RmlRenderer_Create(int width, int height);
 
+NN_RUNTIME_RMLUI_API NN::Runtime::Renderer::RmlRenderer* RmlRenderer_Get(RmlRendererHandle handle);
+
 /**
  * @brief 销毁 RmlUI 渲染器实例。
  *
@@ -52,6 +55,9 @@ NN_RUNTIME_RMLUI_API void RmlRenderer_Destroy(RmlRendererHandle handle);
  */
 NN_RUNTIME_RMLUI_API void RmlRenderer_SetContext(RmlRendererHandle handle, void* contextPtr);
 
+NN_RUNTIME_RMLUI_API void RmlRenderer_SetRenderDevice(void* device);
+
 #ifdef __cplusplus
 } /* extern "C" */
+
 #endif

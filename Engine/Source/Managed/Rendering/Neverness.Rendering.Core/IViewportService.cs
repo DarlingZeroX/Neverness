@@ -39,7 +39,7 @@ public interface IViewportService
     /// <param name="width">视口宽度。</param>
     /// <param name="height">视口高度。</param>
     /// <returns>序列化的命令缓冲区，可直接传给 RenderViewportCommands。无场景时返回 null。</returns>
-    byte[]? CollectRenderCommands(float width, float height);
+    byte[]? CollectRenderCommands(ulong surfaceId, float width, float height);
 
     /// <summary>
     /// 资产 GUID → VFSService 路径解析器（由上层注入，避免 Scene 模块直接依赖 Assets 模块）。

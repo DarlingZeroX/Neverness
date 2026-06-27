@@ -56,12 +56,12 @@ namespace NN::Runtime::Renderer
 
         // Diligent 后端
         Render::INNRenderDevice* m_Device = nullptr;
-        RmlDiligent::RmlDiligentRenderInterface* m_RenderInterface = nullptr;
+        //RmlDiligent::RmlDiligentRenderInterface* m_RenderInterface = nullptr;
         Render::INNRenderTarget* m_OffscreenRT = nullptr;
-
-        // 平台后端
-        SystemInterface_SDL* m_SystemInterface = nullptr;
-        UIFileInterfaceVFS* m_FileInterface = nullptr;
+		//
+        //// 平台后端
+        //SystemInterface_SDL* m_SystemInterface = nullptr;
+        //UIFileInterfaceVFS* m_FileInterface = nullptr;
 
         Rml::Context* m_Context = nullptr;
 

@@ -12,5 +12,6 @@
     <ProjectReference Include="../../Runtime/Neverness.Runtime.Scene/Neverness.Runtime.Scene.csproj" />
     <ProjectReference Include="../Neverness.Rendering.Diligent/Neverness.Rendering.Diligent.csproj" />
     <ProjectReference Include="../Neverness.Rendering.RenderAssets/Neverness.Rendering.RenderAssets.csproj" />
+    <ProjectReference Include="..\..\Runtime\Neverness.Runtime.Rmlui\Neverness.Runtime.Rmlui.csproj" />
   </ItemGroup>
 </Project>

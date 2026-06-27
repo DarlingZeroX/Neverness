@@ -44,6 +44,125 @@ using namespace Diligent;
 
 namespace NN::Runtime::Renderer
 {
+	struct RmlSystem
+	{
+		static RmlSystem* Get()
+		{
+			return s_Instance;
+		}
+
+		static void CreateOrGet(Render::INNRenderDevice* device)
+		{
+			if (s_Instance == nullptr)
+				s_Instance = new RmlSystem(device);
+		}
+
+		RmlSystem(Render::INNRenderDevice* device)
+		{
+			Initialize(device);
+		}
+
+		bool Initialize(Render::INNRenderDevice* device)
+		{
+			int viewportWidth = 1280;
+			int viewportHeight = 720;
+
+			if (!device)
+			{
+				std::cerr << "[RmlSystem] Initialize: device is null" << std::endl;
+				return false;
+			}
+
+			m_Device = device;
+
+			std::cout << "[RmlSystem] Initialize: 开始 ("
+				<< viewportWidth << "x" << viewportHeight << ")" << std::endl;
+
+			// 1. 初始化 Shell（VFS 文件接口）
+			std::cout << "[RmlSystem] Initialize: Shell::Initialize..." << std::endl;
+			if (!Shell::Initialize())
+			{
+				std::cerr << "[RmlSystem] Shell::Initialize failed" << std::endl;
+				return false;
+			}
+
+			// 2. 获取 Diligent 原始对象
+			auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(device);
+			auto* diliDevice  = dilDev->GetDiligentDevice();
+			auto* diliContext = dilDev->GetDiligentContext();
+			auto* diliSwapChain = dilDev->GetDiligentSwapChain();
+
+			if (!diliDevice || !diliContext)
+			{
+				std::cerr << "[RmlSystem] Diligent device/context is null" << std::endl;
+				Shell::Shutdown();
+				return false;
+			}
+
+			// 3. 创建 RmlDiligent 渲染后端
+			std::cout << "[RmlSystem] Initialize: 创建 RmlDiligent 渲染后端..." << std::endl;
+			m_RenderInterface = new RmlDiligent::RmlDiligentRenderInterface();
+			m_RenderInterface->Initialize(diliDevice, diliContext, diliSwapChain);
+			m_RenderInterface->SetProjectionMatrix((int)viewportWidth, (int)viewportHeight);
+
+			// 4. 创建平台后端（Runtime 版本，支持 VFS）
+			m_SystemInterface = new SystemInterface_SDL();
+
+			// 5. 设置 RmlUI 全局接口
+			std::cout << "[RmlSystem] Initialize: 设置全局接口..." << std::endl;
+			Rml::SetSystemInterface(m_SystemInterface);
+			Rml::SetRenderInterface(m_RenderInterface);
+
+			// 6. 初始化 RmlUI 核心
+			std::cout << "[RmlSystem] Initialize: Rml::Initialise..." << std::endl;
+			Rml::Initialise();
+
+			// 8. 加载默认字体
+			std::cout << "[RmlIRenderer] Initialize: LoadFonts..." << std::endl;
+			Shell::LoadFonts();
+
+			return true;
+		}
+
+		~RmlSystem()
+		{
+			// 关闭 RmlUI
+			Rml::Shutdown();
+
+			// 关闭 Shell
+			Shell::Shutdown();
+
+			// 销毁离屏渲染目标
+			if (m_OffscreenRT)
+			{
+				m_OffscreenRT->Release();
+				m_OffscreenRT = nullptr;
+			}
+
+			// 销毁后端
+			delete m_RenderInterface;
+			m_RenderInterface = nullptr;
+			delete m_SystemInterface;
+			m_SystemInterface = nullptr;
+
+			m_Device = nullptr;
+		}
+
+		// Diligent 后端
+		Render::INNRenderDevice* m_Device = nullptr;
+		RmlDiligent::RmlDiligentRenderInterface* m_RenderInterface = nullptr;
+		Render::INNRenderTarget* m_OffscreenRT = nullptr;
+
+		// 平台后端
+		SystemInterface_SDL* m_SystemInterface = nullptr;
+		UIFileInterfaceVFS* m_FileInterface = nullptr;
+	private:
+		static RmlSystem* s_Instance;
+	};
+
+	// 静态成员定义
+	RmlSystem* RmlSystem::s_Instance = nullptr;
+
 	RmlRenderer::RmlRenderer() = default;
 
 	RmlRenderer::~RmlRenderer()
@@ -58,56 +177,58 @@ namespace NN::Runtime::Renderer
 		if (m_Initialized)
 			return true;
 
-		if (!device)
-		{
-			std::cerr << "[RmlIRenderer] Initialize: device is null" << std::endl;
-			return false;
-		}
-
 		m_Device = device;
+		RmlSystem::CreateOrGet(device);
+		//if (!device)
+		//{
+		//	std::cerr << "[RmlIRenderer] Initialize: device is null" << std::endl;
+		//	return false;
+		//}
+		//
+		//m_Device = device;
 		m_ViewportWidth = viewportWidth;
 		m_ViewportHeight = viewportHeight;
 
-		std::cout << "[RmlIRenderer] Initialize: 开始 ("
-			<< viewportWidth << "x" << viewportHeight << ")" << std::endl;
-
-		// 1. 初始化 Shell（VFS 文件接口）
-		std::cout << "[RmlIRenderer] Initialize: Shell::Initialize..." << std::endl;
-		if (!Shell::Initialize())
-		{
-			std::cerr << "[RmlIRenderer] Shell::Initialize failed" << std::endl;
-			return false;
-		}
-
-		// 2. 获取 Diligent 原始对象
-		auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(device);
-		auto* diliDevice  = dilDev->GetDiligentDevice();
-		auto* diliContext = dilDev->GetDiligentContext();
-		auto* diliSwapChain = dilDev->GetDiligentSwapChain();
-
-		if (!diliDevice || !diliContext)
-		{
-			std::cerr << "[RmlIRenderer] Diligent device/context is null" << std::endl;
-			Shell::Shutdown();
-			return false;
-		}
-
-		// 3. 创建 RmlDiligent 渲染后端
-		std::cout << "[RmlIRenderer] Initialize: 创建 RmlDiligent 渲染后端..." << std::endl;
-		m_RenderInterface = new RmlDiligent::RmlDiligentRenderInterface();
-		m_RenderInterface->Initialize(diliDevice, diliContext, diliSwapChain);
-		m_RenderInterface->SetProjectionMatrix((int)viewportWidth, (int)viewportHeight);
-
-		// 4. 创建平台后端（Runtime 版本，支持 VFS）
-		m_SystemInterface = new SystemInterface_SDL();
-
-		// 5. 设置 RmlUI 全局接口
-		std::cout << "[RmlIRenderer] Initialize: 设置全局接口..." << std::endl;
-		Rml::SetSystemInterface(m_SystemInterface);
-		Rml::SetRenderInterface(m_RenderInterface);
-
-		// 6. 初始化 RmlUI 核心
-		std::cout << "[RmlIRenderer] Initialize: Rml::Initialise..." << std::endl;
+		//std::cout << "[RmlIRenderer] Initialize: 开始 ("
+		//	<< viewportWidth << "x" << viewportHeight << ")" << std::endl;
+		//
+		//// 1. 初始化 Shell（VFS 文件接口）
+		//std::cout << "[RmlIRenderer] Initialize: Shell::Initialize..." << std::endl;
+		//if (!Shell::Initialize())
+		//{
+		//	std::cerr << "[RmlIRenderer] Shell::Initialize failed" << std::endl;
+		//	return false;
+		//}
+		//
+		//// 2. 获取 Diligent 原始对象
+		//auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(device);
+		//auto* diliDevice  = dilDev->GetDiligentDevice();
+		//auto* diliContext = dilDev->GetDiligentContext();
+		//auto* diliSwapChain = dilDev->GetDiligentSwapChain();
+		//
+		//if (!diliDevice || !diliContext)
+		//{
+		//	std::cerr << "[RmlIRenderer] Diligent device/context is null" << std::endl;
+		//	Shell::Shutdown();
+		//	return false;
+		//}
+		//
+		//// 3. 创建 RmlDiligent 渲染后端
+		//std::cout << "[RmlIRenderer] Initialize: 创建 RmlDiligent 渲染后端..." << std::endl;
+		//m_RenderInterface = new RmlDiligent::RmlDiligentRenderInterface();
+		//m_RenderInterface->Initialize(diliDevice, diliContext, diliSwapChain);
+		//m_RenderInterface->SetProjectionMatrix((int)viewportWidth, (int)viewportHeight);
+		//
+		//// 4. 创建平台后端（Runtime 版本，支持 VFS）
+		//m_SystemInterface = new SystemInterface_SDL();
+		//
+		//// 5. 设置 RmlUI 全局接口
+		//std::cout << "[RmlIRenderer] Initialize: 设置全局接口..." << std::endl;
+		//Rml::SetSystemInterface(m_SystemInterface);
+		//Rml::SetRenderInterface(m_RenderInterface);
+		//
+		//// 6. 初始化 RmlUI 核心
+		//std::cout << "[RmlIRenderer] Initialize: Rml::Initialise..." << std::endl;
 		
 		
 		//Rml::Initialise();
@@ -123,10 +244,6 @@ namespace NN::Runtime::Renderer
 		//	Shell::Shutdown();
 		//	return false;
 		//}
-
-		// 8. 加载默认字体
-		std::cout << "[RmlIRenderer] Initialize: LoadFonts..." << std::endl;
-		Shell::LoadFonts();
 
 		// 9. 创建离屏渲染目标
 		Render::NNRenderTargetDesc rtDesc{};
@@ -149,12 +266,12 @@ namespace NN::Runtime::Renderer
 			return;
 
 		// 关闭所有文档
-		for (auto& [entity, runtime] : m_Documents)
-		{
-			if (runtime.doc)
-				runtime.doc->Close();
-		}
-		m_Documents.clear();
+		//for (auto& [entity, runtime] : m_Documents)
+		//{
+		//	if (runtime.doc)
+		//		runtime.doc->Close();
+		//}
+		//m_Documents.clear();
 
 		// 销毁 Context
 		//if (m_Context)
@@ -164,10 +281,10 @@ namespace NN::Runtime::Renderer
 		//}
 
 		// 关闭 RmlUI
-		Rml::Shutdown();
-
-		// 关闭 Shell
-		Shell::Shutdown();
+		//Rml::Shutdown();
+		//
+		//// 关闭 Shell
+		//Shell::Shutdown();
 
 		// 销毁离屏渲染目标
 		if (m_OffscreenRT)
@@ -175,14 +292,6 @@ namespace NN::Runtime::Renderer
 			m_OffscreenRT->Release();
 			m_OffscreenRT = nullptr;
 		}
-
-		// 销毁后端
-		delete m_RenderInterface;
-		m_RenderInterface = nullptr;
-		delete m_SystemInterface;
-		m_SystemInterface = nullptr;
-
-		m_Device = nullptr;
 		m_Initialized = false;
 	}
 
@@ -195,8 +304,8 @@ namespace NN::Runtime::Renderer
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
-		if (m_RenderInterface)
-			m_RenderInterface->SetProjectionMatrix((int)width, (int)height);
+		if (RmlSystem::Get()->m_RenderInterface)
+			RmlSystem::Get()->m_RenderInterface->SetProjectionMatrix((int)width, (int)height);
 
 		if (m_Context)
 			m_Context->SetDimensions(Rml::Vector2i((int)width, (int)height));
@@ -302,7 +411,7 @@ namespace NN::Runtime::Renderer
 	{
 		using namespace NN::Runtime::RmlUI;
 
-		if (!m_Initialized || !m_Context || !m_RenderInterface || !sceneRTV)
+		if (!m_Initialized || !m_Context || !RmlSystem::Get()->m_RenderInterface || !sceneRTV)
 			return;
 
 		// 按 ViewTarget 控制文档可见性
@@ -338,9 +447,9 @@ namespace NN::Runtime::Renderer
 		auto* dsv = static_cast<Diligent::ITextureView*>(sceneDSV);
 
 		m_Context->Update();
-		m_RenderInterface->CompositeOnTop(rtv, dsv, static_cast<int>(width), static_cast<int>(height));
+		RmlSystem::Get()->m_RenderInterface->CompositeOnTop(rtv, dsv, static_cast<int>(width), static_cast<int>(height));
 		m_Context->Render();
-		m_RenderInterface->EndOffscreenFrame();
+		RmlSystem::Get()->m_RenderInterface->EndOffscreenFrame();
 	}
 
 	void RmlRenderer::SetContext(Rml::Context* ctx)

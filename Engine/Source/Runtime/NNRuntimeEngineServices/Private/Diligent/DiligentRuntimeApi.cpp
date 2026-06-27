@@ -22,6 +22,7 @@
 
 #include "NativeEngineRuntimeServices.h"
 #include "Device/NNDiligentViewportSurface.h"
+#include "NNRuntimeRmlui/Include/ABI/RmlRendererAbi.h"
 
 namespace
 {
@@ -211,6 +212,9 @@ namespace
 
         g_PrimaryDevice = device;
         std::cout << "[Diligent] CreateDeviceForNativeHandle: 设备创建成功" << std::endl;
+
+		//RmlRendererHandleManager::Get()->SetDevice();
+		RmlRenderer_SetRenderDevice(g_PrimaryDevice);
         return 1;
     }
 

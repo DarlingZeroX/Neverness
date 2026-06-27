@@ -1,5 +1,8 @@
 using RmlUiNet;
 using RmlUiNet.Input;
+using Neverness.Runtime.Engine;
+using Neverness.Runtime.Scene;
+using Neverness.Runtime.Scene.Components;
 using Neverness.Runtime.Rmlui.Internal;
 
 namespace Neverness.Runtime.Rmlui;
@@ -28,23 +31,43 @@ public sealed class RmlRenderer : IDisposable
     /// <summary>是否已释放。</summary>
     private bool _disposed;
 
+    /// <summary>是否拥有全局初始化（由 Manager 创建时为 false）。</summary>
+    private readonly bool _ownsGlobalInit;
+
     /// <summary>
-    /// 创建渲染器。
+    /// 创建渲染器（公开构造函数，自行管理全局初始化）。
     /// </summary>
     /// <param name="width">视口宽度。</param>
     /// <param name="height">视口高度。</param>
-    public RmlRenderer(int width, int height)
+    public RmlRenderer(int width, int height) : this(width, height, skipGlobalInit: false)
     {
+    }
+
+    /// <summary>
+    /// 创建渲染器（内部构造函数，允许跳过全局初始化）。
+    ///
+    /// RmlRendererManager 创建多个渲染器时，只需第一个调 Rml.Initialise()，
+    /// 后续渲染器传 skipGlobalInit=true 跳过。
+    /// </summary>
+    /// <param name="width">视口宽度。</param>
+    /// <param name="height">视口高度。</param>
+    /// <param name="skipGlobalInit">是否跳过 Rml.Initialise()。</param>
+    internal RmlRenderer(int width, int height, bool skipGlobalInit)
+    {
+        _ownsGlobalInit = !skipGlobalInit;
+
         // 创建 C++ 渲染器（初始化 Diligent 渲染后端 + RmlUI 全局接口）
         _handle = RmlNativeInterop.RmlRenderer_Create(width, height);
         if (_handle == 0)
             throw new InvalidOperationException("Failed to create RmlUI renderer");
 
-        // 初始化 RmlUi.Net（C# 侧逻辑管理）
-        Rml.Initialise();
+        //if (_ownsGlobalInit)
+        //{
+        //    Rml.Initialise();
+        //}
 
-        // 创建 Context（RmlUi.Net 包装）
-        _context = Rml.CreateContext("Main", new Vector2i(width, height));
+        // 创建 Context（RmlUi.Net 包装，每个渲染器独立 Context）
+        _context = Rml.CreateContext($"RmlCtx_{_handle}", new Vector2i(width, height));
         if (_context == null)
             throw new InvalidOperationException("Failed to create RmlUI context");
 
@@ -176,6 +199,39 @@ public sealed class RmlRenderer : IDisposable
 
     #endregion
 
+    #region 场景同步
+
+    /// <summary>
+    /// 从场景读取 RmlUIDocumentComponent 并同步文档。
+    ///
+    /// 内部查询场景 ECS，通过 assetPathResolver 将 GUID 解析为 VFS 路径，
+    /// 然后调用 DocumentManager.Sync 执行三路 Diff（新增加载、移除卸载、保留已有）。
+    /// </summary>
+    /// <param name="scene">场景实例（IScene 接口）。</param>
+    /// <param name="assetPathResolver">GUID → VFS 路径解析器。为 null 时跳过同步。</param>
+    public void SyncFromScene(IScene scene, Func<NNGuid, string?>? assetPathResolver)
+    {
+        if (assetPathResolver == null) return;
+
+        var view = scene.CreateView<RmlUIDocumentComponent>();
+        view.Refresh();
+
+        var syncItems = new List<(ulong Entity, string VfsPath)>();
+
+        view.ForEach((IEntity entity, RmlUIDocumentComponent doc) =>
+        {
+            var path = assetPathResolver(doc.DocumentAsset);
+            if (!string.IsNullOrEmpty(path))
+            {
+                syncItems.Add(((ulong)entity.Id, path));
+            }
+        });
+
+        _documentManager.Sync(syncItems);
+    }
+
+    #endregion
+
     #region 字体管理
 
     /// <summary>
@@ -236,8 +292,11 @@ public sealed class RmlRenderer : IDisposable
             _handle = 0;
         }
 
-        // 关闭 RmlUi
-        Rml.Shutdown();
+        // 关闭 RmlUi（仅由拥有全局初始化的实例负责）
+        if (_ownsGlobalInit)
+        {
+            Rml.Shutdown();
+        }
 
         _disposed = true;
     }

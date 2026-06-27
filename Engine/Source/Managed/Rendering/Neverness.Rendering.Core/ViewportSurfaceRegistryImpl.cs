@@ -145,6 +145,20 @@ public sealed unsafe class ViewportSurfaceRegistryImpl : IViewportSurfaceRegistr
     }
 
     /// <summary>
+    /// 渲染视口——内部收集渲染命令并提交。
+    /// View 不需要知道 CollectRenderCommands 的细节。
+    /// </summary>
+    public bool RenderViewport(ulong surfaceId, float width, float height, IViewportService viewportService)
+    {
+        if (width <= 0 || height <= 0) return false;
+
+        var commands = viewportService.CollectRenderCommands(surfaceId, width, height);
+        if (commands == null) return false;
+
+        return RenderViewportCommands(surfaceId, commands);
+    }
+
+    /// <summary>
     /// 通过渲染命令缓冲区渲染视口（C# Scene → Commands → C++ Renderer）。
     /// v29 新增。
     /// </summary>
