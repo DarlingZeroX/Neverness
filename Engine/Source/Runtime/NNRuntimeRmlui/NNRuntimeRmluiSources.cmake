@@ -15,10 +15,11 @@ set(NNRuntimeRmlui_SOURCES
     Source/Rml/RmlUi_Renderer_GL3.cpp
     Source/Rml/Shell.cpp
     Source/Rml/ShellFileInterface.cpp
-    
+     
     Source/System/NNRmlUIModule.cpp
     Source/System/NNRmlUISystem.cpp
     Source/Renderer/RmlUIRenderer.cpp
+    Source/ABI/RmlUIRuntimeApi.cpp
 
     # Native
     Source/Native/Context.cpp

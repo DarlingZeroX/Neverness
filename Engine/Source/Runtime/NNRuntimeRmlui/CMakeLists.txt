@@ -37,9 +37,8 @@ list(APPEND NNRuntimeRmlui_SOURCES
 add_library(NevernessRuntime-RmlUI SHARED)
 target_sources(NevernessRuntime-RmlUI PRIVATE
     ${NNRuntimeRmlui_SOURCES}
-    ABI/RmlUIRuntimeApi.cpp
 )
-
+ 
 target_compile_definitions(NevernessRuntime-RmlUI PRIVATE VG_UI_EXPORT)
 
 # ── 依赖包查找（必须在 include 路径之前，确保 RmlUi PUBLIC include 生效）──
