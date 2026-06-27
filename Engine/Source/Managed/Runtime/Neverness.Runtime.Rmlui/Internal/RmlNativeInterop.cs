@@ -5,9 +5,10 @@ namespace Neverness.Runtime.Rmlui.Internal;
 /// <summary>
 /// C++ RmlUIRenderer ABI P/Invoke 声明。
 ///
-/// 只暴露渲染器生命周期管理：
+/// 暴露渲染器生命周期管理 + Context 绑定：
 /// - Create: 创建 C++ RmlUIRenderer 实例，返回 Handle
 /// - Destroy: 销毁实例
+/// - SetContext: 将 C# RmlUi.Net Context 的原生指针传给 C++ 渲染器
 ///
 /// 其他逻辑（文档管理、输入处理、更新）全部在 C# 端通过 RmlUi.Net 实现。
 /// C++ 端只负责 GPU 渲染，Handle 传给 ViewportSurface 执行渲染。
@@ -31,4 +32,15 @@ internal static partial class RmlNativeInterop
     /// <param name="handle">渲染器 Handle。</param>
     [LibraryImport(NativeLib, EntryPoint = "RmlRenderer_Destroy")]
     internal static partial void RmlRenderer_Destroy(uint handle);
+
+    /// <summary>
+    /// 设置渲染器的 RmlUI Context。
+    ///
+    /// 将 C# RmlUi.Net 创建的 Context 原生指针传给 C++ 渲染器，
+    /// 使 C++ 渲染器使用同一个 Context 进行渲染。
+    /// </summary>
+    /// <param name="handle">渲染器 Handle。</param>
+    /// <param name="contextPtr">Rml::Context* 原生指针（从 Context.NativePtr 获取）。</param>
+    [LibraryImport(NativeLib, EntryPoint = "RmlRenderer_SetContext", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void RmlRenderer_SetContext(uint handle, IntPtr contextPtr);
 }

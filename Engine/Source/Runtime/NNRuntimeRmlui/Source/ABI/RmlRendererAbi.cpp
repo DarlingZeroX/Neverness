@@ -137,4 +137,26 @@ void RmlRenderer_Destroy(RmlRendererHandle handle)
     RmlRendererHandleManager::Get().Destroy(handle);
 }
 
+void RmlRenderer_SetContext(RmlRendererHandle handle, void* contextPtr)
+{
+    if (handle == InvalidRmlRendererHandle || !contextPtr)
+    {
+        std::cerr << "[RmlRendererAbi] SetContext: 无效参数 handle="
+                  << handle << " contextPtr=" << contextPtr << std::endl;
+        return;
+    }
+
+    auto* renderer = RmlRendererHandleManager::Get().Get(handle);
+    if (!renderer)
+    {
+        std::cerr << "[RmlRendererAbi] SetContext: 无效的 Handle: " << handle << std::endl;
+        return;
+    }
+
+    auto* context = static_cast<Rml::Context*>(contextPtr);
+    renderer->SetContext(context);
+
+    std::cout << "[RmlRendererAbi] SetContext: Handle=" << handle << " 完成" << std::endl;
+}
+
 } // extern "C"

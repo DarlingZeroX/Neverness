@@ -35,18 +35,21 @@ public sealed class RmlRenderer : IDisposable
     /// <param name="height">视口高度。</param>
     public RmlRenderer(int width, int height)
     {
-        // 创建 C++ 渲染器（用于 ViewportSurface 渲染）
+        // 创建 C++ 渲染器（初始化 Diligent 渲染后端 + RmlUI 全局接口）
         _handle = RmlNativeInterop.RmlRenderer_Create(width, height);
         if (_handle == 0)
             throw new InvalidOperationException("Failed to create RmlUI renderer");
 
-        // 初始化 RmlUi.Net（用于逻辑管理）
+        // 初始化 RmlUi.Net（C# 侧逻辑管理）
         Rml.Initialise();
 
-        // 创建 Context（使用公共 API）
+        // 创建 Context（RmlUi.Net 包装）
         _context = Rml.CreateContext("Main", new Vector2i(width, height));
         if (_context == null)
             throw new InvalidOperationException("Failed to create RmlUI context");
+
+        // 将 C# Context 的原生指针传给 C++ 渲染器，使两者共享同一个 Context
+        RmlNativeInterop.RmlRenderer_SetContext(_handle, _context.NativePtr);
 
         // 创建文档管理器
         _documentManager = new RmlDocumentManager(_context);

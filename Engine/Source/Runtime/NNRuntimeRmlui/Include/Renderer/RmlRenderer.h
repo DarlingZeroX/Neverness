@@ -48,6 +48,8 @@ namespace NN::Runtime::Renderer
 			void* sceneRTV, void* sceneDSV,
 			std::uint32_t width, std::uint32_t height);
 
+		void SetContext(Rml::Context* ctx);
+
     private:
 		Rml::ElementDocument* LoadDocumentByPath(const std::string& assetPath);
 		void UnloadDocument(NN::Runtime::RmlUI::NNEntity entity);

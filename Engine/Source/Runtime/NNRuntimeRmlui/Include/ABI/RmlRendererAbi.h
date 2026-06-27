@@ -40,6 +40,18 @@ NN_RUNTIME_RMLUI_API RmlRendererHandle RmlRenderer_Create(int width, int height)
  */
 NN_RUNTIME_RMLUI_API void RmlRenderer_Destroy(RmlRendererHandle handle);
 
+/**
+ * @brief 设置渲染器的 RmlUI Context。
+ *
+ * 将 C# RmlUi.Net 创建的 Context 原生指针传给 C++ 渲染器，
+ * 使 C++ 渲染器使用同一个 Context 进行渲染。
+ * 调用后会替换掉 Initialize 时创建的内部 Context。
+ *
+ * @param handle 渲染器 Handle
+ * @param contextPtr Rml::Context* 原生指针（从 RmlUi.Net Context.NativePtr 获取）
+ */
+NN_RUNTIME_RMLUI_API void RmlRenderer_SetContext(RmlRendererHandle handle, void* contextPtr);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

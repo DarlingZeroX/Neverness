@@ -108,23 +108,25 @@ namespace NN::Runtime::Renderer
 
 		// 6. 初始化 RmlUI 核心
 		std::cout << "[RmlIRenderer] Initialize: Rml::Initialise..." << std::endl;
-		Rml::Initialise();
+		
+		
+		//Rml::Initialise();
 
 		// 7. 创建 Context
-		std::cout << "[RmlIRenderer] Initialize: CreateContext..." << std::endl;
-		m_Context = Rml::CreateContext("scene_ui",
-			Rml::Vector2i((int)viewportWidth, (int)viewportHeight));
-		if (!m_Context)
-		{
-			std::cerr << "[RmlIRenderer] Rml::CreateContext failed" << std::endl;
-			Rml::Shutdown();
-			Shell::Shutdown();
-			return false;
-		}
+		//std::cout << "[RmlIRenderer] Initialize: CreateContext..." << std::endl;
+		//m_Context = Rml::CreateContext("scene_ui",
+		//	Rml::Vector2i((int)viewportWidth, (int)viewportHeight));
+		//if (!m_Context)
+		//{
+		//	std::cerr << "[RmlIRenderer] Rml::CreateContext failed" << std::endl;
+		//	Rml::Shutdown();
+		//	Shell::Shutdown();
+		//	return false;
+		//}
 
 		// 8. 加载默认字体
-//	std::cout << "[RmlIRenderer] Initialize: LoadFonts..." << std::endl;
-//	Shell::LoadFonts();
+		std::cout << "[RmlIRenderer] Initialize: LoadFonts..." << std::endl;
+		Shell::LoadFonts();
 
 		// 9. 创建离屏渲染目标
 		Render::NNRenderTargetDesc rtDesc{};
@@ -155,11 +157,11 @@ namespace NN::Runtime::Renderer
 		m_Documents.clear();
 
 		// 销毁 Context
-		if (m_Context)
-		{
-			Rml::RemoveContext(m_Context->GetName());
-			m_Context = nullptr;
-		}
+		//if (m_Context)
+		//{
+		//	Rml::RemoveContext(m_Context->GetName());
+		//	m_Context = nullptr;
+		//}
 
 		// 关闭 RmlUI
 		Rml::Shutdown();
@@ -339,6 +341,11 @@ namespace NN::Runtime::Renderer
 		m_RenderInterface->CompositeOnTop(rtv, dsv, static_cast<int>(width), static_cast<int>(height));
 		m_Context->Render();
 		m_RenderInterface->EndOffscreenFrame();
+	}
+
+	void RmlRenderer::SetContext(Rml::Context* ctx)
+	{
+		m_Context = ctx;
 	}
 
 	Rml::ElementDocument* RmlRenderer::LoadDocumentByPath(const std::string& assetPath)
