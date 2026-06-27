@@ -1,15 +1,4 @@
 #pragma once
-
-/**
- * @file RmlRenderer.h
- * @brief RmlUI 渲染器（新版）——匹配 C# Neverness.Runtime.Rmlui 的 ABI 接口。
- *
- * 从 RmlUIRenderer 复制，用于 C# ABI 调用。
- * 文档管理使用 entity（uint64_t）作为标识，与原始 RmlUIRenderer 一致。
- *
- * 渲染后端：RmlDiligent（Diligent Engine）
- */
-
 #include "Header.h"
 
 namespace NN::Runtime::Renderer
@@ -36,9 +25,6 @@ namespace NN::Runtime::Renderer
 
         void SetViewport(std::uint32_t width, std::uint32_t height);
 
-		/// @brief 同步 DrawList（Update 阶段调用）。
-		void Sync(const std::vector<NN::Runtime::RmlUI::RmlDrawItem>& drawList);
-
         /// @brief 更新 Context（Update 阶段调用）。
         void Update();
 
@@ -51,22 +37,11 @@ namespace NN::Runtime::Renderer
 		void SetContext(Rml::Context* ctx);
 
     private:
-		Rml::ElementDocument* LoadDocumentByPath(const std::string& assetPath);
-		void UnloadDocument(NN::Runtime::RmlUI::NNEntity entity);
-
         // Diligent 后端
         Render::INNRenderDevice* m_Device = nullptr;
-        //RmlDiligent::RmlDiligentRenderInterface* m_RenderInterface = nullptr;
         Render::INNRenderTarget* m_OffscreenRT = nullptr;
-		//
-        //// 平台后端
-        //SystemInterface_SDL* m_SystemInterface = nullptr;
-        //UIFileInterfaceVFS* m_FileInterface = nullptr;
 
         Rml::Context* m_Context = nullptr;
-
-        // entity → 文档运行时实例
-        std::unordered_map<std::uint64_t, RmlDocumentRuntime> m_Documents;
 
         std::uint32_t m_ViewportWidth = 0;
         std::uint32_t m_ViewportHeight = 0;

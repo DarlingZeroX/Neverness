@@ -11,11 +11,6 @@
 #include "Engine/ViewportRenderAPI.h"
 #include "../../RuntimeRmlUIExport.h"
 
-// 前向声明
-namespace NN::Runtime::Renderer { class RmlUIRenderer; }
-namespace NN::Runtime::RmlUI { class NNRmlUISystem; }
-namespace NN::Runtime::Render { class INNRenderDevice; }
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,31 +18,6 @@ extern "C" {
 /** @brief 填充指向 RmlUI 渲染器的 NNViewportRenderAPI 函数表。 */
 NN_RUNTIME_RMLUI_API void NNBuildRmlUIRuntimeApi(NNViewportRenderAPI* api);
 
-/** @brief 关闭 RmlUI 渲染器资源（引擎退出时调用）。 */
-NN_RUNTIME_RMLUI_API void ShutdownRmlUI(void);
-
-/**
- * @brief 刷新 RmlUI 热重载队列（渲染帧开始前调用）。
- *
- * 处理通过 ReloadRmlDocument / ReloadAllRmlDocuments 入队的重载请求。
- * 在 ViewportSurfaceRuntimeApi 的 RenderViewportCommands 中 Sync() 之前调用。
- */
-NN_RUNTIME_RMLUI_API void FlushRmlReloads(void);
-
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
-// ── C++ getter / 初始化函数（供 ViewportSurfaceRuntimeApi 内部调用） ──
-
-/** @brief 获取 RmlUI 渲染器单例（由本模块管理生命周期）。 */
-//NN_RUNTIME_RMLUI_API NN::Runtime::Renderer::RmlUIRenderer* GetRmlUIRenderer();
-//
-///** @brief 获取 RmlUI 系统单例（由本模块管理生命周期）。 */
-//NN_RUNTIME_RMLUI_API NN::Runtime::RmlUI::NNRmlUISystem* GetRmlUISystem();
-//
-///**
-// * @brief 确保 RmlUI 单例已初始化（惰性初始化，可重复调用）。
-// * @param device Diligent 渲染设备指针（首次调用时必须非空，后续调用可忽略）
-// */
-//NN_RUNTIME_RMLUI_API void EnsureRmlUIInitialized(NN::Runtime::Render::INNRenderDevice* device = nullptr);

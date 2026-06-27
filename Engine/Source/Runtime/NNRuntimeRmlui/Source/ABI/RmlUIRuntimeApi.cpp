@@ -17,139 +17,12 @@
  */
 
 #include "ABI/RmlUIRuntimeApi.h"
-
 #include "Engine/ViewportRenderAPI.h"
 #include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"
-#include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
-#include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"
-
-#include <Device/INNRenderDevice.h>
 
 #include <iostream>
 #include <vector>
 #include <string>
-
-namespace
-{
-/**
- * @brief 进程级 RmlUI 渲染器单例管理。
- */
-NN::Runtime::Renderer::RmlUIRenderer* g_RmlUIRenderer = nullptr;
-NN::Runtime::RmlUI::NNRmlUISystem* g_RmlUISystem = nullptr;
-NN::Runtime::Render::INNRenderDevice* g_RenderDevice = nullptr;
-bool g_Initialized = false;
-std::uint64_t g_LastRmluiTextureId = 0;
-
-/**
- * @brief 热重载请求队列（C++ 侧入队，渲染帧开始前统一执行）。
- *
- * ReloadRmlDocument() 将路径加入队列，ReloadAllRmlDocuments() 设置标志。
- * FlushRmlReloads() 在渲染前调用，处理队列后清空。
- * 不需要锁——所有操作都在主线程。
- */
-std::vector<std::string> s_PendingReloadPaths;
-bool s_ReloadAll = false;
-
-/// 确保 RmlUI 渲染器已初始化（惰性初始化）
-bool EnsureRmlUIRenderer(NN::Runtime::Render::INNRenderDevice* device)
-{
-    if (g_Initialized)
-        return g_RmlUIRenderer != nullptr;
-
-    // 首次调用时缓存设备指针
-    if (device)
-        g_RenderDevice = device;
-
-    if (!g_RenderDevice)
-    {
-        std::cerr << "[RmlUIRuntimeApi] 渲染设备为空，无法初始化" << std::endl;
-        g_Initialized = true;
-        return false;
-    }
-
-    std::cout << "[RmlUIRuntimeApi] EnsureRmlUIRenderer: 开始初始化" << std::endl;
-
-    // 初始化 RmlUI 渲染器
-    g_RmlUIRenderer = new NN::Runtime::Renderer::RmlUIRenderer();
-    if (!g_RmlUIRenderer->Initialize(g_RenderDevice, 1280, 720))
-    {
-        std::cerr << "[RmlUIRuntimeApi] RmlUIRenderer 初始化失败" << std::endl;
-        delete g_RmlUIRenderer;
-        g_RmlUIRenderer = nullptr;
-    }
-    else
-    {
-        std::cout << "[RmlUIRuntimeApi] RmlUIRenderer 初始化成功" << std::endl;
-    }
-
-    // 创建 RmlUI 系统（负责构建 DrawList）
-    g_RmlUISystem = NN::Runtime::RmlUI::CreateRmlUISystem();
-    std::cout << "[RmlUIRuntimeApi] RmlUISystem 已创建" << std::endl;
-
-    g_Initialized = true;
-    return g_RmlUIRenderer != nullptr;
-}
-
-// ── NNViewportRenderAPI 函数实现 ──
-
-void NN_ENGINE_ABI_STDCALL rt_rmlUI_setViewportSize(
-    std::uint32_t width,
-    std::uint32_t height)
-{
-    if (g_RmlUIRenderer)
-        g_RmlUIRenderer->SetViewport(width, height);
-}
-
-void NN_ENGINE_ABI_STDCALL rt_rmlUI_processInput(
-    std::uint32_t type,
-    std::int32_t mouseX, std::int32_t mouseY,
-    std::int32_t wheelX, std::int32_t wheelY,
-    std::uint32_t button,
-    std::uint32_t keyCode, std::uint32_t keyMod)
-{
-    if (g_RmlUIRenderer)
-        g_RmlUIRenderer->ProcessInput(type, mouseX, mouseY, wheelX, wheelY, button, keyCode, keyMod);
-}
-
-std::uint64_t NN_ENGINE_ABI_STDCALL rt_rmlUI_getLastTexture(void)
-{
-    return g_LastRmluiTextureId;
-}
-
-void NN_ENGINE_ABI_STDCALL rt_rmlUI_reloadDocument(const char* vfsPath)
-{
-    if (vfsPath && vfsPath[0] != '\0')
-    {
-        s_PendingReloadPaths.emplace_back(vfsPath);
-        std::cout << "[RmlUIRuntimeApi] 入队重载文档: " << vfsPath << std::endl;
-    }
-}
-
-void NN_ENGINE_ABI_STDCALL rt_rmlUI_reloadAllDocuments(void)
-{
-    s_ReloadAll = true;
-    s_PendingReloadPaths.clear();  // 全量重载时清空单个路径队列
-    std::cout << "[RmlUIRuntimeApi] 标记全量重载所有文档" << std::endl;
-}
-
-} // namespace
-
-// ── Getter / 初始化函数 ──
-
-NN::Runtime::Renderer::RmlUIRenderer* GetRmlUIRenderer()
-{
-    return g_RmlUIRenderer;
-}
-
-NN::Runtime::RmlUI::NNRmlUISystem* GetRmlUISystem()
-{
-    return g_RmlUISystem;
-}
-
-void EnsureRmlUIInitialized(NN::Runtime::Render::INNRenderDevice* device)
-{
-    EnsureRmlUIRenderer(device);
-}
 
 // ── 导出函数 ──
 
@@ -159,58 +32,11 @@ extern "C" void NNBuildRmlUIRuntimeApi(NNViewportRenderAPI* api)
     if (api == nullptr)
         return;
 
-    api->SetRmlUIViewportSize   = &rt_rmlUI_setViewportSize;
-    api->ProcessRmlUIInput      = &rt_rmlUI_processInput;
-    api->GetLastRmluiTexture    = &rt_rmlUI_getLastTexture;
-    api->ReloadRmlDocument      = &rt_rmlUI_reloadDocument;
-    api->ReloadAllRmlDocuments  = &rt_rmlUI_reloadAllDocuments;
+    //api->SetRmlUIViewportSize   = &rt_rmlUI_setViewportSize;
+    //api->ProcessRmlUIInput      = &rt_rmlUI_processInput;
+    //api->GetLastRmluiTexture    = &rt_rmlUI_getLastTexture;
+    //api->ReloadRmlDocument      = &rt_rmlUI_reloadDocument;
+    //api->ReloadAllRmlDocuments  = &rt_rmlUI_reloadAllDocuments;
 
     std::cout << "[RmlUIRuntimeApi] RmlUI Runtime API built." << std::endl;
-}
-
-// ── 热重载队列刷新（渲染帧开始前调用） ──
-
-void FlushRmlReloads()
-{
-    if (!g_RmlUIRenderer)
-        return;
-
-    if (s_ReloadAll)
-    {
-        std::cout << "[RmlUIRuntimeApi] FlushRmlReloads: 全量重载" << std::endl;
-        g_RmlUIRenderer->ReloadAllDocuments();
-        s_ReloadAll = false;
-        s_PendingReloadPaths.clear();
-        return;
-    }
-
-    if (s_PendingReloadPaths.empty())
-        return;
-
-    std::cout << "[RmlUIRuntimeApi] FlushRmlReloads: 重载 "
-              << s_PendingReloadPaths.size() << " 个文档" << std::endl;
-
-    for (const auto& path : s_PendingReloadPaths)
-    {
-        g_RmlUIRenderer->ReloadDocumentByPath(path);
-    }
-    s_PendingReloadPaths.clear();
-}
-
-extern "C" void ShutdownRmlUI(void)
-{
-    if (g_RmlUIRenderer)
-    {
-        g_RmlUIRenderer->Shutdown();
-        delete g_RmlUIRenderer;
-        g_RmlUIRenderer = nullptr;
-    }
-    if (g_RmlUISystem)
-    {
-        NN::Runtime::RmlUI::DestroyRmlUISystem(g_RmlUISystem);
-        g_RmlUISystem = nullptr;
-    }
-    g_Initialized = false;
-    g_LastRmluiTextureId = 0;
-    g_RenderDevice = nullptr;
 }

@@ -17,8 +17,6 @@ set(NNRuntimeRmlui_SOURCES
     Source/Rml/Shell.cpp
     Source/Rml/ShellFileInterface.cpp
      
-    Source/System/NNRmlUIModule.cpp
-    Source/System/NNRmlUISystem.cpp
     Source/Renderer/RmlUIRenderer.cpp
     Source/Renderer/RmlRenderer.cpp
     Source/ABI/RmlUIRuntimeApi.cpp

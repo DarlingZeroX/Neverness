@@ -45,44 +45,4 @@ namespace NN::Runtime::RmlUI
 		std::uint32_t         viewportId = 0;         ///< 预留：视口 ID
 	};
 
-	/**
-	 * @brief RmlUI 系统——只负责构建 DrawList。
-	 *
-	 * 每帧 Tick：
-	 * 1. 同步外部传入的 DrawItem 列表（由 C# RenderCommands 或外部调用方提供）
-	 * 2. 与上一帧快照 diff
-	 * 3. 重建 DrawList（仅在脏时）
-	 * 4. 按 SortOrder 排序
-	 *
-	 * Renderer 通过 GetDrawList() 读取本帧数据。
-	 *
-	 * 已移除：ECS Query（NNRuntimeScene 移至 Legacy）。
-	 * 现在由外部调用方（C# RenderCommands）直接传入 DrawItem 列表。
-	 */
-	class VG_UI_API NNRmlUISystem
-	{
-	public:
-		NNRmlUISystem() = default;
-		~NNRmlUISystem() = default;
-
-		NNRmlUISystem(const NNRmlUISystem&) = delete;
-		NNRmlUISystem& operator=(const NNRmlUISystem&) = delete;
-
-		/// @brief 每帧调用，同步状态并构建 DrawList。
-		void Tick(float deltaTimeSeconds);
-
-		/// @brief 设置 DrawItem 列表（由外部调用方提供，替代原 ECS Query）。
-		void SetDrawItems(const std::vector<RmlDrawItem>& items);
-
-		/// @brief 获取本帧的绘制列表（按 SortOrder 排序）。
-		[[nodiscard]] const std::vector<RmlDrawItem>& GetDrawList() const { return m_DrawList; }
-
-	private:
-		/// 输出给 Renderer 的绘制列表
-		std::vector<RmlDrawItem> m_DrawList;
-
-		/// DrawList 是否需要重建
-		bool m_DrawListDirty = true;
-	};
-
 } // namespace NN::Runtime::RmlUI

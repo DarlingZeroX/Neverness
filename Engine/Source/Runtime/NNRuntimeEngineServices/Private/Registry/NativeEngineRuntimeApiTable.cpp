@@ -75,6 +75,5 @@ extern "C" void NNEngineRuntimeHost_Tick(float deltaTimeSeconds)
 extern "C" void NNEngineRuntimeHost_Shutdown(void)
 {
 	ShutdownViewportSurface();
-	ShutdownRmlUI();
 	NN::Runtime::engine::NNEngineRuntime::Instance().Shutdown();
 }

@@ -6,7 +6,7 @@ namespace Neverness.Runtime.Rmlui;
 /// RmlUI 文档管理器。
 ///
 /// 使用 Entity（uint64_t）管理文档，对应 C++ RmlUIRenderer::Sync() 的逻辑。
-/// 包含热重载功能。
+/// 内置热重载：按文件路径追踪 Entity，文件变化时自动卸载+重载。
 ///
 /// 使用方法：
 ///   var docMgr = new RmlDocumentManager(context);
@@ -21,8 +21,8 @@ public sealed class RmlDocumentManager
     /// <summary>Entity → 文档运行时实例。</summary>
     private readonly Dictionary<ulong, DocRuntime> _documents = new();
 
-    /// <summary>热重载管理器。</summary>
-    private readonly HotReloader _hotReloader;
+    /// <summary>文件变化回调（外部可订阅）。</summary>
+    public event Action<string>? OnFileChanged;
 
     /// <summary>
     /// 创建文档管理器。
@@ -31,7 +31,6 @@ public sealed class RmlDocumentManager
     public RmlDocumentManager(Context context)
     {
         _context = context;
-        _hotReloader = new HotReloader(this);
     }
 
     #region 内部类型
@@ -70,11 +69,6 @@ public sealed class RmlDocumentManager
     /// 活跃文档数量。
     /// </summary>
     public int Count => _documents.Count;
-
-    /// <summary>
-    /// 热重载管理器。
-    /// </summary>
-    public HotReloader HotReload => _hotReloader;
 
     #endregion
 
@@ -175,9 +169,6 @@ public sealed class RmlDocumentManager
 
         runtime.Document?.Close();
         _documents.Remove(entity);
-
-        // 注销热重载监听
-        _hotReloader.UnregisterEntity(entity);
 
         Console.WriteLine($"[RmlDocumentManager] Unloaded: entity={entity}");
     }
@@ -321,31 +312,39 @@ public sealed class RmlDocumentManager
 
     #endregion
 
-    #region 热重载委托
+    #region 热重载
 
     /// <summary>
-    /// 文件变化通知（委托给 HotReloader）。
+    /// 文件变化通知——遍历 _documents 找到路径匹配的文档，卸载并重载。
     /// </summary>
+    /// <param name="filePath">变化的文件路径。</param>
     public void NotifyFileChanged(string filePath)
     {
-        _hotReloader.NotifyFileChanged(filePath);
+        OnFileChanged?.Invoke(filePath);
+
+        // 收集匹配的 Entity，避免迭代中修改字典
+        List<ulong>? toReload = null;
+        foreach (var (entity, runtime) in _documents)
+        {
+            if (string.Equals(runtime.VfsPath, filePath, StringComparison.OrdinalIgnoreCase))
+            {
+                toReload ??= new List<ulong>();
+                toReload.Add(entity);
+            }
+        }
+
+        if (toReload == null) return;
+
+        foreach (var entity in toReload)
+        {
+            var vfsPath = GetDocumentPath(entity);
+            if (vfsPath == null) continue;
+
+            UnloadDocument(entity);
+            LoadDocument(entity, vfsPath);
+        }
     }
 
-    /// <summary>
-    /// 注册 Entity 到热重载。
-    /// </summary>
-    public void RegisterForReload(ulong entity, IEnumerable<string>? watchedFiles = null)
-    {
-        _hotReloader.RegisterEntity(entity, watchedFiles);
-    }
-
-    /// <summary>
-    /// 注销 Entity 的热重载监听。
-    /// </summary>
-    public void UnregisterForReload(ulong entity)
-    {
-        _hotReloader.UnregisterEntity(entity);
-    }
 
     #endregion
 }

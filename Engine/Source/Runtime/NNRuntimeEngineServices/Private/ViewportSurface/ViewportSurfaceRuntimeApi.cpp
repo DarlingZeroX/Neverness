@@ -30,7 +30,6 @@
 // RmlUI（Overlay Pass）
 #include "NNRuntimeRmlui/Include/Renderer/RmlUIRenderer.h"
 #include "NNRuntimeRmlui/Include/System/NNRmlUISystem.h"
-#include "NNRuntimeRmlui/Include/System/NNRmlUIModule.h"
 
 // Diligent（CopyTexture / ITextureView）
 #include "NNDiligentConfig.h"
