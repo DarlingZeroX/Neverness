@@ -182,6 +182,18 @@ public static class ViewportIdManager
     }
 
     /// <summary>
+    /// 获取游戏视口 ViewportId。
+    ///
+    /// 返回第一个有效的 ViewportId（游戏主视口）。
+    /// 如果无可用视口，返回 ViewportId.Invalid。
+    /// </summary>
+    /// <returns>游戏视口 ViewportId。</returns>
+    public static ViewportId GetGameViewportId()
+    {
+        return s_byWindowHandle.Values.FirstOrDefault(v => v.IsValid, ViewportId.Invalid);
+    }
+
+    /// <summary>
     /// 清理所有 ViewportId。
     ///
     /// 调用时机：ApplicationHost.Shutdown() 时。

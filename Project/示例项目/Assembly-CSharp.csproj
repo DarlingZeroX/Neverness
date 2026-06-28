@@ -15,6 +15,10 @@
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Friflo.Engine.ECS">
+      <HintPath>..\..\Build\bin\Debug\Friflo.Engine.ECS.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Neverness.Gameplay">
       <HintPath>..\..\Build\bin\Debug\Neverness.Gameplay.dll</HintPath>
       <Private>false</Private>

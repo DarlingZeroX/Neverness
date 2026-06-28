@@ -9,6 +9,7 @@ using Neverness.Runtime.Engine;
 
 namespace Neverness.Gameplay;
 
+/*
 /// <summary>
 /// 相机组件。
 /// </summary>
@@ -78,4 +79,4 @@ public enum CameraClearFlags
 
     /// <summary>不清除。</summary>
     Nothing = 3
-}
+}*/

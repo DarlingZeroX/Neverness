@@ -5,8 +5,6 @@
 // ============================================================================
 
 using Neverness.Gameplay;
-using Neverness.Runtime.Scene.Components;
-using Neverness.Runtime.Application;
 
 namespace Game.Scripts
 {
@@ -14,7 +12,7 @@ namespace Game.Scripts
     /// NewScript 脚本。
     /// </summary>
     [AutoRegisterScript]
-    public class NewScript : EntityBehaviour
+    public class CameraScript : EntityBehaviour
     {
         // ========================================================================
         // 公共字段（可在 Inspector 中编辑）
@@ -55,29 +53,7 @@ namespace Game.Scripts
         {
             base.OnUpdate(deltaTime);
 
-            // ── 直接通过 ref 修改组件，无需 SetComponent ──
-            // Transform 是 EntityBehaviour 的快捷属性，返回 ref TransformComponent
-            //Transform.Position.X += Speed * deltaTime;
-            //Debug.Log(Transform.Position.X);
-            //Debug.Log(Input._provider);
-           if (Input.GetMouseButtonDown(0))
-           {
-               Debug.Log("Input.GetMouseButtonDown(0)");
-            }
-
-            // Debug.Log(Window.Size);
-            // 获取其他组件也是 ref，修改直接生效
-            // ref var camera = ref GetComponent<CameraComponent>();
-            // camera.FieldOfView = 60f;
-
-            // 可选组件先检查再获取
-            // if (HasComponent<RigidbodyComponent>())
-            // {
-            //     ref var rb = ref GetComponent<RigidbodyComponent>();
-            //     rb.Velocity = Vector3.Zero;
-            // }
-
-            //TODO: 在此添加游戏逻辑
+            // TODO: 在此添加游戏逻辑
         }
 
         /// <summary>
@@ -87,7 +63,7 @@ namespace Game.Scripts
         public override void OnFixedUpdate(float fixedDeltaTime)
         {
             base.OnFixedUpdate(fixedDeltaTime);
-            Debug.Log("NewScript: OnFixedUpdate");
+
             // TODO: 在此添加物理相关逻辑
         }
 

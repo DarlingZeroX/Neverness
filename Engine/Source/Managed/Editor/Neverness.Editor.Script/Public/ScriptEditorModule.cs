@@ -74,6 +74,7 @@ public static class ScriptEditorModule
             SourceGlobs = new[] { @"Assets\**\*.cs" },
             References = new[]
             {
+                "Friflo.Engine.ECS",
                 "Neverness.Gameplay",
                 "Neverness.Runtime.Scene",
                 "Neverness.Runtime.Engine",
@@ -302,9 +303,9 @@ public static class ScriptEditorModule
     {
         if (InputProvider == null) return;
 
-        // 从 ViewportIdManager 获取第一个 Viewport
-        var viewport = ViewportIdManager.GetAll().FirstOrDefault();
-        if (viewport == null || !viewport.IsValid)
+        // 从 ViewportIdManager 获取游戏视口
+        var viewport = ViewportIdManager.GetGameViewportId();
+        if (!viewport.IsValid)
         {
             Console.WriteLine("[ScriptEditorModule] 无可用 Viewport，InputProvider 未绑定窗口");
             return;

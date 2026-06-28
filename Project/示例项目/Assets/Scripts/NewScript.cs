@@ -6,7 +6,6 @@
 
 using Neverness.Gameplay;
 using Neverness.Runtime.Scene.Components;
-using Neverness.Runtime.Application;
 
 namespace Game.Scripts
 {
@@ -14,7 +13,7 @@ namespace Game.Scripts
     /// NewScript 脚本。
     /// </summary>
     [AutoRegisterScript]
-    public class NewScript : EntityBehaviour
+    public class NewScript1 : EntityBehaviour
     {
         // ========================================================================
         // 公共字段（可在 Inspector 中编辑）
@@ -54,30 +53,47 @@ namespace Game.Scripts
         public override void OnUpdate(float deltaTime)
         {
             base.OnUpdate(deltaTime);
+            ref var camera = ref GetComponent<CameraComponent>();
+            var (width, height) = Window.Size;
 
-            // ── 直接通过 ref 修改组件，无需 SetComponent ──
-            // Transform 是 EntityBehaviour 的快捷属性，返回 ref TransformComponent
-            //Transform.Position.X += Speed * deltaTime;
-            //Debug.Log(Transform.Position.X);
-            //Debug.Log(Input._provider);
-           if (Input.GetMouseButtonDown(0))
-           {
-               Debug.Log("Input.GetMouseButtonDown(0)");
+            //Debug.Log(actualWidth.ToString() + actualHeight.ToString());
+
+            float designWidth = 1920;
+            float designHeight = 1080;
+            float actualWidth = width;
+            float actualHeight = height;
+
+            // 计算设计宽高比与实际宽高比
+            float designAspect = designWidth / designHeight;
+            float actualAspect = actualWidth / actualHeight;
+
+            bool screen_small = (designWidth >= actualWidth) && (designHeight >= actualHeight);
+
+            if (actualAspect > designAspect)
+            {
+                // 实际屏幕更宽，固定垂直范围，缩放水平范围
+                float scale = designAspect / actualAspect;
+
+                // 显示的屏幕小于逻辑尺寸要换为倒数
+                if (screen_small)
+                    scale = 1.0f / scale;
+
+                designWidth *= scale;
+            }
+            else
+            {
+                // 实际屏幕更高，固定水平范围，缩放垂直范围
+                float scale = actualAspect / designAspect;
+
+                // 显示的屏幕小于逻辑尺寸要换为倒数
+                if (screen_small)
+                    scale = 1.0f / scale;
+
+                designHeight *= scale;
             }
 
-            // Debug.Log(Window.Size);
-            // 获取其他组件也是 ref，修改直接生效
-            // ref var camera = ref GetComponent<CameraComponent>();
-            // camera.FieldOfView = 60f;
-
-            // 可选组件先检查再获取
-            // if (HasComponent<RigidbodyComponent>())
-            // {
-            //     ref var rb = ref GetComponent<RigidbodyComponent>();
-            //     rb.Velocity = Vector3.Zero;
-            // }
-
-            //TODO: 在此添加游戏逻辑
+            camera.OrthographicSize = designHeight;
+            camera.AspectRatio = designWidth / designHeight;
         }
 
         /// <summary>
@@ -87,7 +103,7 @@ namespace Game.Scripts
         public override void OnFixedUpdate(float fixedDeltaTime)
         {
             base.OnFixedUpdate(fixedDeltaTime);
-            Debug.Log("NewScript: OnFixedUpdate");
+
             // TODO: 在此添加物理相关逻辑
         }
 

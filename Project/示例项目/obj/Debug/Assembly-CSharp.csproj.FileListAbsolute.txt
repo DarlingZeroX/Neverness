@@ -8,3 +8,9 @@ E:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.dll
 E:\Neverness\Project\示例项目\obj\Debug\refint\Assembly-CSharp.dll
 E:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.pdb
 E:\Neverness\Project\示例项目\obj\Debug\ref\Assembly-CSharp.dll
+G:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.csproj.AssemblyReference.cache
+G:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.GeneratedMSBuildEditorConfig.editorconfig
+G:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
+G:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.dll
+G:\Neverness\Project\示例项目\obj\Debug\refint\Assembly-CSharp.dll
+G:\Neverness\Project\示例项目\obj\Debug\Assembly-CSharp.pdb

@@ -2,39 +2,6 @@
   "entities": [
     {
       "id": 1,
-      "name": "Camera",
-      "parentId": -1,
-      "components": {
-        "TransformComponent": {
-          "position": [
-            0,
-            0,
-            0
-          ],
-          "rotation": [
-            0,
-            0,
-            0,
-            1
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ]
-        },
-        "CameraComponent": {
-          "fieldOfView": 1.0471976,
-          "aspectRatio": 1.7777778,
-          "nearPlane": 0.1,
-          "farPlane": 1000,
-          "isOrthographic": true,
-          "orthographicSize": 10
-        }
-      }
-    },
-    {
-      "id": 2,
       "name": "RmlUI Document",
       "parentId": -1,
       "components": {
@@ -65,7 +32,7 @@
       }
     },
     {
-      "id": 3,
+      "id": 2,
       "name": "Sprite",
       "parentId": -1,
       "components": {
@@ -109,7 +76,7 @@
       }
     },
     {
-      "id": 4,
+      "id": 3,
       "name": "Sprite",
       "parentId": -1,
       "components": {
@@ -146,6 +113,42 @@
           "sortOrder": 0,
           "blend": "Alpha",
           "flags": "Visible"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Camera",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "CameraComponent": {
+          "fieldOfView": 1.0471976,
+          "aspectRatio": 1.7777778,
+          "nearPlane": 0.1,
+          "farPlane": 1000,
+          "isOrthographic": true,
+          "orthographicSize": 10
+        },
+        "ScriptComponent": {
+          "scriptTypeId": 2041572126221987505
         }
       }
     }
