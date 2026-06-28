@@ -1,5 +1,6 @@
 // Neverness.Runtime.Application — SDL3 窗口对象封装。
 // 替代 C++ VGWindow + Window.cs，直接操作 SDL_Window*。
+// 支持普通窗口和输入窗口两种模式。
 
 using System.Runtime.InteropServices;
 
@@ -8,11 +9,18 @@ namespace Neverness.Runtime.Application.Public;
 /// <summary>
 /// SDL3 窗口对象封装。
 /// 持有 SDL_Window* 指针，提供窗口操作和原生句柄获取。
+///
+/// 支持两种模式：
+/// 1. 普通窗口：完整的 SDL 窗口，支持渲染、输入等
+/// 2. 输入窗口：绑定到 Avalonia DumbWindow，只接管输入
 /// </summary>
 public sealed unsafe class SdlWindow : IDisposable
 {
     private bool _disposed;
     private SDL.SDL_Window* _window;
+
+    /// <summary>窗口事件分发器。</summary>
+    public SdlWindowEvents Events { get; } = new();
 
     /// <summary>SDL_Window 原生指针。</summary>
     public SDL.SDL_Window* SdlWindowPtr => _window;
@@ -25,6 +33,12 @@ public sealed unsafe class SdlWindow : IDisposable
 
     /// <summary>是否为主窗口。</summary>
     public bool IsPrimary { get; internal set; }
+
+    /// <summary>是否为输入窗口（绑定到外部 HWND，只接管输入）。</summary>
+    public bool IsInputOnly { get; }
+
+    /// <summary>父窗口 HWND（仅输入窗口有效）。</summary>
+    public IntPtr ParentHwnd { get; }
 
     /// <summary>是否有效。</summary>
     public bool IsValid => !_disposed && _window != null;
@@ -39,11 +53,28 @@ public sealed unsafe class SdlWindow : IDisposable
         }
     }
 
+    /// <summary>
+    /// 创建普通 SDL 窗口。
+    /// </summary>
     internal SdlWindow(SDL.SDL_Window* window, WindowHandle handle, bool isPrimary = false)
     {
         _window = window;
         Handle = handle;
         IsPrimary = isPrimary;
+        IsInputOnly = false;
+        ParentHwnd = IntPtr.Zero;
+    }
+
+    /// <summary>
+    /// 创建输入窗口（绑定到外部 HWND）。
+    /// </summary>
+    internal SdlWindow(SDL.SDL_Window* window, WindowHandle handle, IntPtr parentHwnd)
+    {
+        _window = window;
+        Handle = handle;
+        IsPrimary = false;
+        IsInputOnly = true;
+        ParentHwnd = parentHwnd;
     }
 
     /// <summary>设置窗口标题。</summary>

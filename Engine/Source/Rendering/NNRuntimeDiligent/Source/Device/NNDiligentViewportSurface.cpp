@@ -149,21 +149,23 @@ namespace NNDiligent
 
         switch (handleType)
         {
-        case 0: // Win32HWND
+        case 1: // Win32HWND
 #if PLATFORM_WIN32
             nw.hWnd = handle;
+			return nw;
 #endif
             break;
 
-        case 1: // X11Window
+        case 2: // X11Window
 #if PLATFORM_LINUX
             nw.WindowId = reinterpret_cast<uintptr_t>(handle);
+			return nw;
 #endif
             break;
 
         // TODO: Wayland (2) 和 NSView (3) 的支持
         default:
-            std::cerr << "[NNDiligentViewportSurface] 不支持的句柄类型: " << handleType << std::endl;
+            throw "[NNDiligentViewportSurface] 不支持的句柄类型: " + handleType;
             break;
         }
 

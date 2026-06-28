@@ -10,6 +10,8 @@ using Neverness.Editor.AvaloniaFrontend.Services;
 using Neverness.Editor.AvaloniaFrontend.Viewport;
 using Neverness.Editor.AvaloniaFrontend.Public;
 using Neverness.Rendering.Core;
+using Neverness.Runtime.Application.Private;
+using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Engine;
 
 namespace Neverness.Editor.AvaloniaFrontend.Views;
@@ -26,11 +28,11 @@ namespace Neverness.Editor.AvaloniaFrontend.Views;
 ///
 /// 数据流：
 ///   Bind() → ViewportHostService.CreateSurface → new ViewportHostControl
-///   HandleCreated → Registry.Register → surfaceId
-///   Bounds 变化 → MarkResize(surfaceId, w, h)
-///   TickRendering → FlushResizes → RenderViewport → Present
-///   HandleDestroyed → MarkSurfaceLost
-///   HandleCreated (重建) → RecreateSurface
+///   HandleCreated → ViewportId.Register() → SurfaceId
+///   Bounds 变化 → ViewportId.MarkResize(w, h)
+///   TickRendering → ViewportId.FlushResizes → ViewportId.RenderViewport
+///   HandleDestroyed → ViewportId.MarkSurfaceLost
+///   HandleCreated (重建) → ViewportId.RecreateSurface
 /// </summary>
 public class ViewportAvaloniaView : AvaloniaViewBase
 {
@@ -39,10 +41,10 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     private Panel? _viewportPanel;
     private TextBlock? _sizeLabel;
 
-    // ── 视口表面管理 ──
+    // ── 视口管理 ──
     private ViewportHostService? _surfaceService;
     private IViewportSurfaceRegistry? _surfaceRegistry;
-    private ulong _surfaceId;
+    private ViewportId? _viewportId;
     private bool _renderCallbackRegistered;
 
     // ── Deferred Resize ──
@@ -123,10 +125,10 @@ public class ViewportAvaloniaView : AvaloniaViewBase
             _viewModel.PropertyChanged -= OnPropertyChanged;
 
         // 注销 Surface
-        if (_surfaceId != 0 && _surfaceRegistry != null)
+        if (_viewportId != null && _viewportId.IsRegistered && _surfaceRegistry != null)
         {
-            _surfaceRegistry.Unregister(_surfaceId);
-            _surfaceId = 0;
+            _viewportId.Unregister(_surfaceRegistry);
+            _viewportId = null;
         }
 
         _surfaceService?.Dispose();
@@ -147,26 +149,17 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     // ── 原生句柄事件 ──
 
     /// <summary>原生句柄创建完成——注册到 Surface Registry。</summary>
-    private void OnSurfaceCreated(IntPtr handle)
+    private void OnSurfaceCreated(ViewportId viewportId)
     {
-        Console.WriteLine($"[ViewportAvaloniaView] OnSurfaceCreated 被调用: handle=0x{handle:X}, _surfaceRegistry={_surfaceRegistry?.GetType().Name ?? "null"}");
-        if (_surfaceRegistry == null || _surfaceService?.Surface == null)
+        Console.WriteLine($"[ViewportAvaloniaView] OnSurfaceCreated 被调用: viewportId={viewportId}, _surfaceRegistry={_surfaceRegistry?.GetType().Name ?? "null"}");
+        if (_surfaceRegistry == null)
         {
-            Console.WriteLine($"[ViewportAvaloniaView] OnSurfaceCreated 提前返回: _surfaceRegistry={_surfaceRegistry != null}, _surfaceService?.Surface={_surfaceService?.Surface != null}");
+            Console.WriteLine($"[ViewportAvaloniaView] OnSurfaceCreated 提前返回: _surfaceRegistry=null");
             return;
         }
 
-        var surface = _surfaceService.Surface;
-        var handleDescriptor = (_surfaceService as ViewportHostService)?.GetHandleDescriptor() ?? "";
-
-        // 根据 HandleDescriptor 确定 handleType
-        uint handleType = handleDescriptor switch
-        {
-            "HWND" => (uint)NNNativeHandleType.Win32HWND,
-            "X11" => (uint)NNNativeHandleType.X11Window,
-            "NSView" => (uint)NNNativeHandleType.NSView,
-            _ => 0
-        };
+        // 保存 ViewportId 引用
+        _viewportId = viewportId;
 
         // 使用实际面板尺寸（ViewModel 可能还没初始化）
         var panelW = _viewportPanel?.Bounds.Width > 0 ? (uint)_viewportPanel.Bounds.Width : 800u;
@@ -178,25 +171,25 @@ public class ViewportAvaloniaView : AvaloniaViewBase
         var height = vmH > 0 ? vmH : panelH;
 
         // 如果是重建的句柄（Surface Lost 后），执行 RecreateSurface
-        if (_surfaceId != 0)
+        if (viewportId.IsRegistered)
         {
-            var success = _surfaceRegistry.RecreateSurface(_surfaceId, handle, handleType);
-            Console.WriteLine($"[ViewportAvaloniaView] RecreateSurface: surfaceId={_surfaceId}, success={success}");
+            var success = viewportId.RecreateSurface(_surfaceRegistry);
+            Console.WriteLine($"[ViewportAvaloniaView] RecreateSurface: viewportId={viewportId}, success={success}");
             return;
         }
 
         // 首次注册
-        _surfaceId = _surfaceRegistry.Register(handle, handleType, width, height);
-        Console.WriteLine($"[ViewportAvaloniaView] Surface 注册成功: surfaceId={_surfaceId}, handle=0x{handle:X}, {width}x{height}");
+        var registered = viewportId.Register(_surfaceRegistry, width, height);
+        Console.WriteLine($"[ViewportAvaloniaView] Surface 注册: viewportId={viewportId}, success={registered}, {width}x{height}");
     }
 
     /// <summary>原生句柄销毁——标记 Surface Lost。</summary>
     private void OnSurfaceDestroyed()
     {
-        if (_surfaceId == 0 || _surfaceRegistry == null) return;
+        if (_viewportId == null || !_viewportId.IsRegistered || _surfaceRegistry == null) return;
 
-        _surfaceRegistry.MarkSurfaceLost(_surfaceId);
-        Console.WriteLine($"[ViewportAvaloniaView] Surface Lost: surfaceId={_surfaceId}");
+        _viewportId.MarkSurfaceLost(_surfaceRegistry);
+        Console.WriteLine($"[ViewportAvaloniaView] Surface Lost: viewportId={_viewportId}");
     }
 
     /// <summary>表面尺寸变更。</summary>
@@ -259,12 +252,12 @@ public class ViewportAvaloniaView : AvaloniaViewBase
     /// <summary>主线程渲染回调——每帧由 TickRendering 调用。</summary>
     private void OnMainThreadRender()
     {
-        if (_surfaceId == 0 || _surfaceRegistry == null)
+        if (_viewportId == null || !_viewportId.IsRegistered || _surfaceRegistry == null)
         {
             // 诊断日志：每 60 帧输出一次
             if (_frameCount % 60 == 0)
             {
-                Console.WriteLine($"[ViewportAvaloniaView] OnMainThreadRender 跳过: _surfaceId={_surfaceId}, _surfaceRegistry={_surfaceRegistry?.GetType().Name ?? "null"}");
+                Console.WriteLine($"[ViewportAvaloniaView] OnMainThreadRender 跳过: _viewportId={_viewportId}, _surfaceRegistry={_surfaceRegistry?.GetType().Name ?? "null"}");
             }
             _frameCount++;
             return;
@@ -274,20 +267,21 @@ public class ViewportAvaloniaView : AvaloniaViewBase
         if (_resizePending)
         {
             _resizePending = false;
-            _surfaceRegistry.MarkResize(_surfaceId, _pendingWidth, _pendingHeight);
+            _viewportId.MarkResize(_surfaceRegistry, _pendingWidth, _pendingHeight);
             _surfaceService?.Resize((int)_pendingWidth, (int)_pendingHeight);
         }
 
         // 2. FlushResizes（SwapChain ResizeBuffers）
-        _surfaceRegistry.FlushResizes();
+        _viewportId.FlushResizes(_surfaceRegistry);
 
-        // 3. 渲染视口（View 不关心命令收集细节，交给 Registry 处理）
+        // 3. 渲染视口（View 不关心命令收集细节，交给 ViewportId 处理）
         var w = (_viewModel?.ViewportWidth ?? 0);
         var h = (_viewModel?.ViewportHeight ?? 0);
 
         if (w > 0 && h > 0 && _controller != null)
         {
-            _surfaceRegistry.RenderViewport(_surfaceId, w, h, _controller.ViewportService);
+            _viewportId.SetViewportService(_controller.ViewportService);
+            _viewportId.RenderViewport(_surfaceRegistry, w, h);
         }
     }
 

@@ -73,17 +73,19 @@ public unsafe struct NNViewportSurfaceApi
 /// </summary>
 public enum NNNativeHandleType : uint
 {
+	None = 0,
+
 	/// <summary>Win32 HWND（Windows）。</summary>
-	Win32HWND = 0,
+	Win32HWND = 1,
 
 	/// <summary>X11 Window ID（Linux X11）。</summary>
-	X11Window = 1,
+	X11Window = 2,
 
 	/// <summary>Wayland wl_surface（Linux Wayland）。</summary>
-	WaylandSurface = 2,
+	WaylandSurface = 3,
 
 	/// <summary>NSView 指针（macOS）。</summary>
-	NSView = 3,
+	NSView = 4,
 }
 
 /// <summary>

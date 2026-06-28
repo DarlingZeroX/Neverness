@@ -22,14 +22,17 @@ extern "C" {
 /** 原生窗口句柄类型——跨平台标识 HWND / X11 / NSView。 */
 typedef enum NNNativeHandleType
 {
+	/** Win32 HWND（Windows）。 */
+	NN_NATIVE_HANDLE_TYPE_NONE  = 0,
+
     /** Win32 HWND（Windows）。 */
-    NN_NATIVE_HANDLE_TYPE_WIN32_HWND  = 0,
+    NN_NATIVE_HANDLE_TYPE_WIN32_HWND  = 1,
     /** X11 Window ID（Linux X11）。 */
-    NN_NATIVE_HANDLE_TYPE_X11_WINDOW  = 1,
+    NN_NATIVE_HANDLE_TYPE_X11_WINDOW  = 2,
     /** Wayland wl_surface（Linux Wayland）。 */
-    NN_NATIVE_HANDLE_TYPE_WAYLAND_SURFACE = 2,
+    NN_NATIVE_HANDLE_TYPE_WAYLAND_SURFACE = 3,
     /** NSView 指针（macOS）。 */
-    NN_NATIVE_HANDLE_TYPE_NS_VIEW     = 3
+    NN_NATIVE_HANDLE_TYPE_NS_VIEW     = 4
 } NNNativeHandleType;
 
 typedef struct NNViewportSurfaceAPI

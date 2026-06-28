@@ -2,7 +2,10 @@
 // GameplayContext.cs - Gameplay 上下文
 // ============================================================================
 // 包含所有 Gameplay 服务的容器，避免 static 全局污染。
+// IInputProvider 已下沉到 Neverness.Runtime.Application。
 // ============================================================================
+
+using Neverness.Runtime.Application;
 
 namespace Neverness.Gameplay;
 

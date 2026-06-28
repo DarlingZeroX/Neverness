@@ -1,10 +1,7 @@
-// ============================================================================
-// IInputProvider.cs - 输入提供者接口
-// ============================================================================
-// 输入提供者接口，避免 static 全局污染，支持多后端。
-// ============================================================================
+// Neverness.Runtime.Application — 输入提供者接口。
+// 从 Neverness.Gameplay 移入，供 Gameplay.Input 和 SdlInputProvider 使用。
 
-namespace Neverness.Gameplay;
+namespace Neverness.Runtime.Application;
 
 /// <summary>
 /// 输入提供者接口：避免 static 全局污染，支持多后端。
@@ -38,7 +35,7 @@ public interface IInputProvider
     bool GetMouseButtonUp(MouseButton button);
 
     /// <summary>鼠标位置（屏幕坐标）。</summary>
-    Vector2 MousePosition { get; }
+    (float X, float Y) MousePosition { get; }
 
     /// <summary>鼠标滚轮增量。</summary>
     float MouseScrollDelta { get; }

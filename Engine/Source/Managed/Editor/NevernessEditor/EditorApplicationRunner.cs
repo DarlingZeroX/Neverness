@@ -7,6 +7,7 @@ using Neverness.Runtime.Engine;
 using Neverness.Runtime.Engine.Runtime;
 using Neverness.Editor.Core.Public;
 using Neverness.Editor.Core.Private;
+using Neverness.Editor.Script.Public;
 // using Neverness.Editor.ImGuiFrontend.Features;
 // using Neverness.Editor.ImGuiFrontend.Public;
 using Neverness.Editor.AvaloniaFrontend.Public;
@@ -70,9 +71,6 @@ internal static class EditorApplicationRunner
 
     public static void Install(SdlWindow window)
     {
-        /* Native 事件泵：RuntimeBootstrap 之后即可创建 */
-        var nativePump = new NativeEventPump();
-
         s_isInstalled = true;
         var sceneManager = new SceneManager();
 
@@ -93,6 +91,9 @@ internal static class EditorApplicationRunner
         ScriptEditorModule.Install(CoreModuleImp.Context);
         CodeEditorModule.Install();
 
+        /* Phase 2.5: 初始化 Application 模块（创建 SdlInputProvider） */
+        ApplicationModule.Initialize();
+
         /* Phase 3: 前端安装（所有菜单贡献者已注册） */
         InstallAvaloniaFrontend(window);
         s_avaloniaHost?.InstallModule();
@@ -100,9 +101,9 @@ internal static class EditorApplicationRunner
         /* 注册场景子系统到 RuntimeLoop，驱动 ECS Tick */
         RuntimeInitializer.RegisterSubsystem(new SceneSubsystem(sceneManager));
 
-        /* 模块就绪后创建编辑器事件路由器 */
+        /* 模块就绪后创建编辑器事件路由器（替换 NativeEventPump） */
         s_editorEventPump = new EditorEventPump(
-            nativePump,
+            window.Events,
             CoreModuleImp.Context.Events);
 
         /* Phase 4: 编辑器组装（ViewModel、Controller、View） */
@@ -168,22 +169,15 @@ internal static class EditorApplicationRunner
 				return 1;
 			}
 
-			// 初始化 ImGui Backend（SDL3 + Diligent）
-			//if (!ImGuiBackendBridge.Initialize(
-			//	window.NativeWindowPtr,
-			//	renderSurface.Surface,
-			//	renderSurface.Context,
-			//	renderSurface.SwapChain))
-			//{
-			//	Console.Error.WriteLine("NervernessEditor: ImGuiBackendBridge.Initialize failed.");
-			//	return 1;
-			//}
-
             // 安装编辑器（模块注册、前端安装、事件泵创建等）
             Install(window);
 
             while (ApplicationHost.PumpEvents())
 			{
+				/* 清除输入瞬态标志（Down/Up），必须在 Gameplay Tick 之前 */
+				var frameDeltaTime = EngineTime.DeltaTime;
+				if (frameDeltaTime <= 0f) frameDeltaTime = FallbackDeltaSeconds;
+
 				/* 在 BeginFrame 之前消费 Native 事件 */
 				s_editorEventPump?.PollAndDispatch();
 
@@ -212,7 +206,9 @@ internal static class EditorApplicationRunner
 				s_editorEventPump?.FlushDeferred();
 
 				ApplicationHost.EndFrame();
-			}
+
+                ApplicationModule.EndFrame(frameDeltaTime);
+            }
 
 			return 0;
 		}
@@ -228,6 +224,7 @@ internal static class EditorApplicationRunner
 			/* 清理 CompositionRoot */
 			EditorCompositionRoot.Shutdown();
 
+			ApplicationModule.Shutdown();
 			ApplicationHost.Shutdown();
 			RuntimeBootstrap.Shutdown();
 		}

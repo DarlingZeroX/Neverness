@@ -6,6 +6,7 @@
 
 using Neverness.Gameplay;
 using Neverness.Runtime.Scene.Components;
+using Neverness.Runtime.Application;
 
 namespace Game.Scripts
 {
@@ -56,8 +57,13 @@ namespace Game.Scripts
 
             // ── 直接通过 ref 修改组件，无需 SetComponent ──
             // Transform 是 EntityBehaviour 的快捷属性，返回 ref TransformComponent
-            Transform.Position.X += Speed * deltaTime;
-            Debug.Log(Transform.Position.X);
+            //Transform.Position.X += Speed * deltaTime;
+            //Debug.Log(Transform.Position.X);
+            //Debug.Log(Input._provider);
+           if (Input.GetMouseButtonDown(0))
+           {
+               Debug.Log("Input.GetMouseButtonDown(0)");
+            }
 
             // 获取其他组件也是 ref，修改直接生效
             // ref var camera = ref GetComponent<CameraComponent>();

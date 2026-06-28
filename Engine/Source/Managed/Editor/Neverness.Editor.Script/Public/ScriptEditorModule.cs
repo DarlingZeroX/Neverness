@@ -19,6 +19,9 @@ using Neverness.Editor.Script.Private;
 using Neverness.Editor.Scene.Private.PlayMode;
 using Neverness.Editor.Scene.Public;
 using Neverness.Gameplay;
+using Neverness.Runtime.Application;
+using Neverness.Runtime.Application.Private;
+using Neverness.Runtime.Application.Public;
 using Neverness.Runtime.Scene;
 using Neverness.Runtime.Scripting;
 using Neverness.Runtime.VFS;
@@ -36,6 +39,15 @@ public static class ScriptEditorModule
     private static ScriptAssemblyDefinition? _assemblyDefinition;
     private static GameplayContext? _gameplayContext;
     private static ScriptBehaviourBridge? _bridge;
+
+    /// <summary>
+    /// 输入提供者（从 ApplicationModule 获取）。
+    /// EnterPlayMode 时绑定到 Viewport 窗口并传给 GameplayContext。
+    /// </summary>
+    private static SdlInputProvider? InputProvider => ApplicationModule.InputProvider;
+
+    /// <summary>当前绑定的 Viewport 窗口（用于 ExitPlayMode 时解绑）。</summary>
+    private static SdlWindow? _inputWindow;
 
     /// <summary>安装脚本编辑器模块。</summary>
     public static void Install(IEditorContext context)
@@ -67,6 +79,7 @@ public static class ScriptEditorModule
                 "Neverness.Runtime.Engine",
                 "Neverness.Runtime.Assets",
                 "Neverness.Runtime.Engine",
+                "Neverness.Runtime.Application",
             },
             OutputPath = Path.Combine(libraryDir, "Scripts"),
         };
@@ -215,6 +228,12 @@ public static class ScriptEditorModule
 
         // 2. 初始化 GameplayContext
         _gameplayContext = new GameplayContext();
+        if (InputProvider != null)
+        {
+            // 将 InputProvider 绑定到 Viewport 窗口的事件
+            AttachInputProviderToViewport();
+            _gameplayContext.InputProvider = InputProvider;
+        }
         _gameplayContext.Initialize();
         Console.WriteLine("[ScriptEditorModule] GameplayContext initialized");
 
@@ -260,6 +279,9 @@ public static class ScriptEditorModule
     {
         Console.WriteLine("[ScriptEditorModule] Exiting play mode...");
 
+        // 解绑 InputProvider
+        DetachInputProvider();
+
         _bridge = null;
 
         if (_gameplayContext != null)
@@ -270,6 +292,45 @@ public static class ScriptEditorModule
         }
 
         Console.WriteLine("[ScriptEditorModule] ✅ Play mode exited");
+    }
+
+    /// <summary>
+    /// 将 InputProvider 绑定到 Viewport 窗口的事件。
+    /// 从 ViewportIdManager 获取第一个 Viewport 的 SdlWindow。
+    /// </summary>
+    private static void AttachInputProviderToViewport()
+    {
+        if (InputProvider == null) return;
+
+        // 从 ViewportIdManager 获取第一个 Viewport
+        var viewport = ViewportIdManager.GetAll().FirstOrDefault();
+        if (viewport == null || !viewport.IsValid)
+        {
+            Console.WriteLine("[ScriptEditorModule] 无可用 Viewport，InputProvider 未绑定窗口");
+            return;
+        }
+
+        var window = viewport.Window;
+        if (window == null)
+        {
+            Console.Error.WriteLine($"[ScriptEditorModule] 无法解析 Viewport 窗口: {viewport.WindowHandle}");
+            return;
+        }
+
+        InputProvider.Attach(window.Events);
+        _inputWindow = window;
+        Console.WriteLine($"[ScriptEditorModule] InputProvider 已绑定到 Viewport 窗口: {viewport.WindowHandle}");
+    }
+
+    /// <summary>解绑 InputProvider。</summary>
+    private static void DetachInputProvider()
+    {
+        if (InputProvider != null && _inputWindow != null)
+        {
+            InputProvider.Detach(_inputWindow.Events);
+            Console.WriteLine("[ScriptEditorModule] InputProvider 已解绑");
+        }
+        _inputWindow = null;
     }
 
     // ========================================================================

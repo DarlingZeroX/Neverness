@@ -30,6 +30,9 @@
     </Project>
     <Project Path="Engine/Source/Managed/Editor/ThirdParty/Neverness.Editor.ImGui/Neverness.Editor.ImGui.csproj" />
   </Folder>
+  <Folder Name="/Game/">
+    <Project Path="Project/示例项目/Assembly-CSharp.csproj" />
+  </Folder>
   <Folder Name="/Gameplay/">
     <Project Path="Engine/Source/Managed/Gameplay/Neverness.Gameplay/Neverness.Gameplay.csproj" />
     <Project Path="Engine/Source/Managed/Gameplay/Neverness.SourceGenerators/Neverness.SourceGenerators.csproj" />

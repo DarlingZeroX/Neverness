@@ -104,7 +104,7 @@ public static unsafe class ApplicationHost
         // 销毁所有渲染表面
         RenderSurfaceHost.DestroyAll();
 
-        // 销毁所有窗口
+        // 销毁所有窗口（包括普通窗口和输入窗口）
         SdlWindowManager.DestroyAll();
 
         // 关闭 SDL3

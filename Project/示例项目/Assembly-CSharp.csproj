@@ -35,6 +35,10 @@
       <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Engine.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Neverness.Runtime.Application">
+      <HintPath>..\..\Build\bin\Debug\Neverness.Runtime.Application.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\**\*.cs" />

@@ -85,7 +85,7 @@ namespace NN::Runtime::Renderer
 				std::cerr << "[RmlSystem] Shell::Initialize failed" << std::endl;
 				return false;
 			}
-
+			
 			// 2. 获取 Diligent 原始对象
 			auto* dilDev = static_cast<NNDiligent::NNDiligentDevice*>(device);
 			auto* diliDevice  = dilDev->GetDiligentDevice();

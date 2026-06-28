@@ -2,7 +2,10 @@
 // Input.cs - 输入系统静态 API
 // ============================================================================
 // 输入系统静态 API，通过 GameplayContext 获取 IInputProvider。
+// IInputProvider/KeyCode/MouseButton 已下沉到 Neverness.Runtime.Application。
 // ============================================================================
+
+using Neverness.Runtime.Application;
 
 namespace Neverness.Gameplay;
 
@@ -19,7 +22,7 @@ public static class Input
     // ========================================================================
 
     /// <summary>输入提供者。</summary>
-    private static IInputProvider? _provider;
+    public static IInputProvider? _provider;
 
     // ========================================================================
     // 初始化
@@ -59,7 +62,7 @@ public static class Input
     public static bool GetMouseButtonUp(MouseButton button) => _provider?.GetMouseButtonUp(button) ?? false;
 
     /// <summary>鼠标位置（屏幕坐标）。</summary>
-    public static Vector2 MousePosition => _provider?.MousePosition ?? Vector2.Zero;
+    public static (float X, float Y) MousePosition => _provider?.MousePosition ?? (0f, 0f);
 
     /// <summary>鼠标滚轮增量。</summary>
     public static float MouseScrollDelta => _provider?.MouseScrollDelta ?? 0f;
