@@ -1,6 +1,24 @@
 namespace Neverness.Editor.Assets;
 
 /// <summary>
+/// 文件系统事件类型。
+/// </summary>
+internal enum FileEventType
+{
+    /// <summary>文件内容变更。</summary>
+    Changed,
+
+    /// <summary>文件新建。</summary>
+    Created,
+
+    /// <summary>文件删除。</summary>
+    Deleted,
+
+    /// <summary>文件重命名。</summary>
+    Renamed,
+}
+
+/// <summary>
 /// 资产监视器文件过滤规则。
 ///
 /// 判断哪些文件/目录应该被 AssetWatcher 忽略：
@@ -8,6 +26,8 @@ namespace Neverness.Editor.Assets;
 ///   - 临时文件（dotfiles、~ 前缀）
 ///   - Editor 内部管理的资产（.scene、.prefab）
 ///   - 系统目录（Library、Temp、dotfile 目录）
+///
+/// 支持按事件类型精细过滤（如忽略 Editor 管理资产的 Created 事件但不忽略 Renamed）。
 ///
 /// @threadsafe 所有方法为纯函数，无状态。
 /// </summary>
@@ -26,24 +46,44 @@ internal static class AssetWatcherFilter
         ".prefab",
     };
 
-    /// <summary>判断文件路径是否应被忽略。</summary>
-    internal static bool ShouldIgnoreFile(string path)
+    /// <summary>
+    /// 对 Editor 管理资产要忽略的事件类型集合。
+    /// 默认忽略 Created 和 Changed（内部保存会触发），
+    /// 但保留 Renamed 和 Deleted（用户可能在外部移动/删除）。
+    /// </summary>
+    private static readonly HashSet<FileEventType> s_editorManagedIgnoredEvents = new()
     {
-        /* 忽略 .meta 文件 */
+        FileEventType.Changed,
+        FileEventType.Created,
+    };
+
+    /// <summary>判断文件路径是否应被忽略（指定事件类型）。</summary>
+    internal static bool ShouldIgnoreFile(string path, FileEventType eventType)
+    {
+        /* 忽略 .meta 文件（所有事件） */
         if (path.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
             return true;
 
-        /* 忽略临时文件 */
+        /* 忽略临时文件（所有事件） */
         var fileName = Path.GetFileName(path);
         if (fileName.StartsWith('.') || fileName.StartsWith('~'))
             return true;
 
-        /* 忽略 Editor 内部管理的资产 */
+        /* 忽略 Editor 内部管理的资产（仅指定事件类型） */
         var ext = Path.GetExtension(path);
         if (!string.IsNullOrEmpty(ext) && s_editorManagedExtensions.Contains(ext))
-            return true;
+        {
+            if (s_editorManagedIgnoredEvents.Contains(eventType))
+                return true;
+        }
 
         return false;
+    }
+
+    /// <summary>判断文件路径是否应被忽略（兼容旧调用，默认 Changed 事件）。</summary>
+    internal static bool ShouldIgnoreFile(string path)
+    {
+        return ShouldIgnoreFile(path, FileEventType.Changed);
     }
 
     /// <summary>判断目录路径是否应被忽略。</summary>

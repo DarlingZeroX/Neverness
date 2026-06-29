@@ -32,7 +32,7 @@ namespace Game.Scripts
         public override void OnCreate()
         {
             base.OnCreate();
-            Debug.Log("NewScript: OnCreate");
+            Debug.Log("CameraScript: OnCreate");
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Game.Scripts
         public override void OnStart()
         {
             base.OnStart();
-            Debug.Log("NewScript: OnStart");
+            Debug.Log("CameraScript: OnStart");
         }
 
         /// <summary>

@@ -33,7 +33,7 @@ namespace Game.Scripts
         public override void OnCreate()
         {
             base.OnCreate();
-            Debug.Log("NewScript: OnCreate");
+            Debug.Log("Camera: OnCreate");
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Game.Scripts
         public override void OnStart()
         {
             base.OnStart();
-            Debug.Log("NewScript: OnStart");
+            Debug.Log("Camera: OnStart");
         }
 
         /// <summary>
@@ -58,8 +58,8 @@ namespace Game.Scripts
 
             //Debug.Log(actualWidth.ToString() + actualHeight.ToString());
 
-            float designWidth = 1920;
-            float designHeight = 1080;
+            float designWidth = 2732;
+            float designHeight = 1534;
             float actualWidth = width;
             float actualHeight = height;
 
@@ -94,6 +94,8 @@ namespace Game.Scripts
 
             camera.OrthographicSize = designHeight;
             camera.AspectRatio = designWidth / designHeight;
+
+            GameManager.GetInstance()._Camera = Entity;
         }
 
         /// <summary>

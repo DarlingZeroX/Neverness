@@ -42,6 +42,7 @@
 #include <atomic>
 #include <vector>
 #include <cstring>
+#include <algorithm>
 
 #include "NativeEngineRuntimeServices.h"
 #include "NNCore/Interface/HLog.h"
@@ -603,6 +604,17 @@ namespace
             NN::Runtime::Renderer2D::CameraData defaultCamera{};
             camera = defaultCamera;
         }
+
+        // 按 Layer 升序排序，同 Layer 内按 SortOrder 升序排序
+        // 小的先渲染（被遮挡），大的后渲染（覆盖）
+        std::sort(spriteCommands.begin(), spriteCommands.end(),
+            [](const NN::Runtime::Renderer2D::SpriteDrawCommand& a,
+               const NN::Runtime::Renderer2D::SpriteDrawCommand& b)
+            {
+                if (a.Layer != b.Layer)
+                    return a.Layer < b.Layer;
+                return a.SortOrder < b.SortOrder;
+            });
 
         g_CommandsRenderer->BeginScene(camera, width, height);
         g_CommandsRenderer->Submit(spriteCommands);

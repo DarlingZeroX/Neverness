@@ -211,4 +211,69 @@ public abstract class EntityBehaviour
     {
         return Entity.HasComponent<T>();
     }
+
+    // ========================================================================
+    // Instantiate 方法（类似 Unity）
+    // ========================================================================
+
+    /// <summary>
+    /// 克隆实体（类似 Unity 的 Instantiate）。
+    /// </summary>
+    /// <param name="source">源实体。</param>
+    /// <returns>克隆的新实体。</returns>
+    /// <remarks>
+    /// ⚠️ 仅克隆组件数据，不克隆 Behaviour 脚本。
+    /// 如需为克隆体添加 Behaviour，请手动调用 AddBehaviour。
+    /// </remarks>
+    protected Entity Instantiate(Entity source)
+    {
+        return source.Clone();
+    }
+
+    /// <summary>
+    /// 克隆实体并设置世界位置和旋转（类似 Unity 的 Instantiate）。
+    /// </summary>
+    /// <param name="source">源实体。</param>
+    /// <param name="position">世界位置（System.Numerics.Vector3）。</param>
+    /// <param name="rotation">世界旋转（System.Numerics.Quaternion）。</param>
+    /// <returns>克隆的新实体。</returns>
+    protected Entity Instantiate(Entity source, System.Numerics.Vector3 position, System.Numerics.Quaternion? rotation = null)
+    {
+        var clone = source.Clone();
+
+        ref var transform = ref clone.GetComponent<TransformComponent>();
+        transform.Position = position;
+        transform.Rotation = rotation ?? System.Numerics.Quaternion.Identity;
+
+        return clone;
+    }
+
+    /// <summary>
+    /// 克隆实体并设置为指定父实体的子实体（类似 Unity 的 Instantiate）。
+    /// </summary>
+    /// <param name="source">源实体。</param>
+    /// <param name="parent">父实体。</param>
+    /// <param name="worldPositionStays">是否保持世界位置（默认 true，与 Unity 行为一致）。</param>
+    /// <returns>克隆的新实体。</returns>
+    protected Entity Instantiate(Entity source, Entity parent, bool worldPositionStays = true)
+    {
+        var clone = source.Clone();
+
+        if (worldPositionStays)
+        {
+            // 保持世界位置：计算相对父实体的局部位置
+            if (parent.HasComponent<TransformComponent>())
+            {
+                ref var parentTransform = ref parent.GetComponent<TransformComponent>();
+                ref var cloneTransform = ref clone.GetComponent<TransformComponent>();
+
+                // 简化处理：直接使用世界位置（忽略旋转和缩放的影响）
+                // TODO: 完整的逆变换计算
+                cloneTransform.Position = cloneTransform.Position - parentTransform.Position;
+            }
+        }
+
+        clone.SetParent(parent);
+        return clone;
+    }
 }

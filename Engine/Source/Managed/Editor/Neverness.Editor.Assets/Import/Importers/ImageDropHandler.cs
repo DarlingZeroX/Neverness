@@ -39,7 +39,8 @@ public class ImageDropHandler : IDropFileHandler
         ImportPipeline.StateCache.MarkImported(targetPath, contentHash);
 
         // 4. 注册到 EditorAssetDatabase
-        var virtualPath = new NVirtualPath($"/assets/{fileName}");
+        //var virtualPath = new NVirtualPath($"/assets/{fileName}");
+        var virtualPath = (NVirtualPath)ProjectPaths.GetResourcePath(targetPath);
         EditorAssetDatabase.Register(virtualPath, meta.Guid, AssetTypeId.Texture2D);
         EditorAssetDatabase.SetSourcePath(virtualPath, targetPath);
 

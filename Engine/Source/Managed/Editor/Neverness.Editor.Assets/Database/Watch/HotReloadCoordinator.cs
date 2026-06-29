@@ -238,7 +238,10 @@ public sealed class HotReloadCoordinator : IDisposable
         ImportPipeline.StateCache.Remove(oldPath);
 
         /* 更新 Database 映射 */
-        EditorAssetDatabase.MoveAsset(new NVirtualPath(oldPath.FullPath), new NVirtualPath(newPath.FullPath));
+        EditorAssetDatabase.MoveAsset(
+            (NVirtualPath)ProjectPaths.GetResourcePath(oldPath),
+            (NVirtualPath)ProjectPaths.GetResourcePath(newPath)
+            );
 
         /* 新路径需要重新导入 */
         HandleAssetCreated(newPath);

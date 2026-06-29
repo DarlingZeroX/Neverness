@@ -91,8 +91,8 @@ public static class ImportPipeline
         {
             EnsureInitialized();
             ImporterRegistry.Discover();
-
             var virtualPath = ResolveVirtualPath(sourceAssetPath);
+            //var virtualPath = (NVirtualPath)ProjectPaths.GetResourcePath(sourceAssetPath);
             var result = ImportInternal(sourceAssetPath, virtualPath);
             return result;
         }
@@ -618,8 +618,9 @@ public static class ImportPipeline
     /// <summary>将源文件路径解析为虚拟路径。</summary>
     private static NVirtualPath ResolveVirtualPath(NPath sourceAssetPath)
     {
+        return (NVirtualPath)ProjectPaths.GetResourcePath(sourceAssetPath);
         /* NPath → 相对于 Library 的虚拟路径 */
-        return new NVirtualPath($"/assets/{sourceAssetPath.FileName}");
+        //return new NVirtualPath($"/assets/{sourceAssetPath.FileName}");
     }
 
     private static long Align64(long offset)

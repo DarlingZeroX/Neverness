@@ -49,8 +49,8 @@
             1
           ],
           "scale": [
-            19,
-            10,
+            1920,
+            1080,
             1
           ]
         },
@@ -93,8 +93,8 @@
             1
           ],
           "scale": [
-            1,
-            1,
+            100,
+            100,
             1
           ]
         },
@@ -145,7 +145,7 @@
           "nearPlane": 0.1,
           "farPlane": 1000,
           "isOrthographic": true,
-          "orthographicSize": 10
+          "orthographicSize": 1080
         },
         "ScriptComponent": {
           "scriptTypeId": 2041572126221987505

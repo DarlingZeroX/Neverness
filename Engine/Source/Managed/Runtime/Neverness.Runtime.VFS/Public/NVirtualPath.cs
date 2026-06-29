@@ -33,6 +33,11 @@ public readonly record struct NVirtualPath : IEquatable<NVirtualPath>
     {
         FullPath = Normalize(path);
     }
+    //public static NVirtualPath? FromResourcePath(NPath absolutePath)
+    //{
+    //    var result = VFSService.GetRelativePath(Assets.FullPath, absolutePath.FullPath);
+    //    return result != null ? new NVirtualPath(result) : null;
+    //}
 
     /* ======================== 属性 ======================== */
 

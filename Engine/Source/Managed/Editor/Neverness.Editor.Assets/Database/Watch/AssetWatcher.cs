@@ -143,7 +143,7 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath, FileEventType.Changed)) return;
 
         lock (_lock)
         {
@@ -154,7 +154,7 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnFileCreated(object sender, FileSystemEventArgs e)
     {
-        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath, FileEventType.Created)) return;
 
         lock (_lock)
         {
@@ -165,7 +165,7 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnFileDeleted(object sender, FileSystemEventArgs e)
     {
-        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath, FileEventType.Deleted)) return;
 
         lock (_lock)
         {
@@ -176,7 +176,7 @@ public sealed class AssetWatcher : IDisposable
 
     private void OnFileRenamed(object sender, RenamedEventArgs e)
     {
-        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath)) return;
+        if (AssetWatcherFilter.ShouldIgnoreFile(e.FullPath, FileEventType.Renamed)) return;
 
         lock (_lock)
         {

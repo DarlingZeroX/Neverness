@@ -1,0 +1,216 @@
+{
+  "entities": [
+    {
+      "id": 1,
+      "name": "Camera",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "CameraComponent": {
+          "fieldOfView": 1.0471976,
+          "aspectRatio": 2.4515464,
+          "nearPlane": 0.1,
+          "farPlane": 1000,
+          "isOrthographic": true,
+          "orthographicSize": 1534
+        },
+        "ScriptComponent": {
+          "scriptTypeId": 2041572126221987505
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Sprite",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            96,
+            -5,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            40,
+            40,
+            1
+          ]
+        },
+        "ScriptComponent": {
+          "scriptTypeId": 3649406800368478608
+        },
+        "SpriteRendererComponent": {
+          "textureAsset": "00000000000000000000000000000000",
+          "materialAsset": "00000000000000000000000000000000",
+          "colorR": 1,
+          "colorG": 0,
+          "colorB": 0,
+          "colorA": 1,
+          "uvU0": 0,
+          "uvV0": 0,
+          "uvU1": 1,
+          "uvV1": 1,
+          "layer": 1,
+          "sortOrder": 0,
+          "blend": "Alpha",
+          "flags": "Visible"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Sprite",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            52,
+            70,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            40,
+            40,
+            1
+          ]
+        },
+        "ScriptComponent": {
+          "scriptTypeId": 3649407899880106819
+        },
+        "SpriteRendererComponent": {
+          "textureAsset": "00000000000000000000000000000000",
+          "materialAsset": "00000000000000000000000000000000",
+          "colorR": 0,
+          "colorG": 1,
+          "colorB": 0,
+          "colorA": 1,
+          "uvU0": 0,
+          "uvV0": 0,
+          "uvU1": 1,
+          "uvV1": 1,
+          "layer": 1,
+          "sortOrder": 0,
+          "blend": "Alpha",
+          "flags": "Visible"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Sprite",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            -34,
+            70,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            20,
+            20,
+            1
+          ]
+        },
+        "ScriptComponent": {
+          "scriptTypeId": 3649408999391735030
+        },
+        "SpriteRendererComponent": {
+          "textureAsset": "00000000000000000000000000000000",
+          "materialAsset": "00000000000000000000000000000000",
+          "colorR": 1,
+          "colorG": 1,
+          "colorB": 1,
+          "colorA": 1,
+          "uvU0": 0,
+          "uvV0": 0,
+          "uvU1": 1,
+          "uvV1": 1,
+          "layer": 1,
+          "sortOrder": 0,
+          "blend": "Alpha",
+          "flags": "Visible"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Sprite",
+      "parentId": -1,
+      "components": {
+        "TransformComponent": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            2732,
+            1534,
+            1
+          ]
+        },
+        "ScriptComponent": {
+          "scriptTypeId": 8185653866505020146
+        },
+        "SpriteRendererComponent": {
+          "textureAsset": "ad334129a36a2749b69964d48f06040d",
+          "materialAsset": "00000000000000000000000000000000",
+          "colorR": 1,
+          "colorG": 1,
+          "colorB": 1,
+          "colorA": 1,
+          "uvU0": 0,
+          "uvV0": 0,
+          "uvU1": 1,
+          "uvV1": 1,
+          "layer": 0,
+          "sortOrder": 1,
+          "blend": "Alpha",
+          "flags": "Visible"
+        }
+      }
+    }
+  ]
+}

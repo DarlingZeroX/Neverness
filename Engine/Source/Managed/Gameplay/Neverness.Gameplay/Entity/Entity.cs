@@ -229,6 +229,127 @@ public sealed class Entity
     // ========================================================================
 
     /// <summary>
+    /// 克隆实体（深拷贝所有组件）。
+    /// </summary>
+    /// <param name="newName">新实体名称（null 则使用原名 + " (Clone)"）。</param>
+    /// <returns>克隆的新实体。</returns>
+    /// <remarks>
+    /// ⚠️ 仅克隆组件数据，不克隆 Behaviour 脚本。
+    /// 如需为克隆体添加 Behaviour，请手动调用 AddBehaviour。
+    /// </remarks>
+    public Entity Clone(string? newName = null)
+    {
+        var name = newName ?? $"{Name} (Clone)";
+        var newSceneEntity = SceneWorld.CreateEntity(name);
+        if (newSceneEntity == null)
+            throw new InvalidOperationException("无法创建克隆实体");
+
+        var newEntity = new Entity(newSceneEntity, SceneWorld);
+
+        // 复制 TransformComponent
+        if (HasComponent<TransformComponent>())
+        {
+            ref var src = ref GetComponent<TransformComponent>();
+            newEntity.AddComponent(new TransformComponent
+            {
+                Position = src.Position,
+                Rotation = src.Rotation,
+                Scale = src.Scale,
+            });
+        }
+
+        // 复制 SpriteRendererComponent
+        if (HasComponent<SpriteRendererComponent>())
+        {
+            ref var src = ref GetComponent<SpriteRendererComponent>();
+            newEntity.AddComponent(new SpriteRendererComponent
+            {
+                TextureAsset = src.TextureAsset,
+                MaterialAsset = src.MaterialAsset,
+                ColorR = src.ColorR,
+                ColorG = src.ColorG,
+                ColorB = src.ColorB,
+                ColorA = src.ColorA,
+                UvU0 = src.UvU0,
+                UvV0 = src.UvV0,
+                UvU1 = src.UvU1,
+                UvV1 = src.UvV1,
+                Layer = src.Layer,
+                SortOrder = src.SortOrder,
+                Blend = src.Blend,
+                Flags = src.Flags,
+            });
+        }
+
+        // 复制 CameraComponent
+        if (HasComponent<CameraComponent>())
+        {
+            ref var src = ref GetComponent<CameraComponent>();
+            newEntity.AddComponent(new CameraComponent
+            {
+                FieldOfView = src.FieldOfView,
+                AspectRatio = src.AspectRatio,
+                NearPlane = src.NearPlane,
+                FarPlane = src.FarPlane,
+                IsOrthographic = src.IsOrthographic,
+                OrthographicSize = src.OrthographicSize,
+            });
+        }
+
+        // 复制 AudioSourceComponent
+        if (HasComponent<AudioSourceComponent>())
+        {
+            ref var src = ref GetComponent<AudioSourceComponent>();
+            newEntity.AddComponent(new AudioSourceComponent
+            {
+                Volume = src.Volume,
+                Pitch = src.Pitch,
+                MinDistance = src.MinDistance,
+                MaxDistance = src.MaxDistance,
+                Flags = src.Flags,
+            });
+        }
+
+        // 复制 VideoPlayerComponent
+        if (HasComponent<VideoPlayerComponent>())
+        {
+            ref var src = ref GetComponent<VideoPlayerComponent>();
+            newEntity.AddComponent(new VideoPlayerComponent
+            {
+                Volume = src.Volume,
+                Flags = src.Flags,
+            });
+        }
+
+        // 复制 RmlUIDocumentComponent
+        if (HasComponent<RmlUIDocumentComponent>())
+        {
+            ref var src = ref GetComponent<RmlUIDocumentComponent>();
+            newEntity.AddComponent(new RmlUIDocumentComponent
+            {
+                Flags = src.Flags,
+                SortOrder = src.SortOrder,
+                ViewTarget = src.ViewTarget,
+            });
+        }
+
+        // 复制 ScriptComponent
+        if (HasComponent<ScriptComponent>())
+        {
+            ref var src = ref GetComponent<ScriptComponent>();
+            newEntity.AddComponent(new ScriptComponent
+            {
+                ScriptTypeId = src.ScriptTypeId,
+            });
+        }
+
+        // 发射实体创建事件
+        SceneWorld.EmitEntityCreated(newSceneEntity);
+
+        return newEntity;
+    }
+
+    /// <summary>
     /// 销毁实体。
     /// </summary>
     /// <remarks>
